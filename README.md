@@ -2,7 +2,7 @@
 
 A private, premium, strictly read-only portfolio intelligence platform for Trading 212. It combines auditable brokerage-data ingestion, deterministic financial accounting, reconciliation, historical snapshots, portfolio analytics, a responsive web/PWA application, and a ChatGPT-native MCP app.
 
-> **Current state:** Architecture Design Freeze v0.1 and the Phase 1 implementation handoff are approved. Application implementation has not started.
+> **Current state:** Architecture Design Freeze v0.1 is approved. The complete Phase 1 implementation and isolated local runtime/restart evidence exist on the review branch. All fourteen mandatory synthetic scenarios have complete working-tree evidence; final release-SHA validation, pushed-SHA security jobs, Trading 212 Demo, and deployed ChatGPT gates remain pending. Real Trading 212 opening-history coverage is still unavailable and is not inferred from the synthetic scenario 8 acceptance fixture.
 
 ## Product objective
 
@@ -44,7 +44,7 @@ API, web, workers, reports, and MCP tools share the same canonical domain, autho
 
 | Phase | Release | Outcome | Status |
 |---|---:|---|---|
-| 1. Trusted Foundation | `0.1.0` | Monorepo, domain/persistence, GET-only Trading 212 ingestion, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, CI and operations | Ready to implement |
+| 1. Trusted Foundation | `0.1.0` | Monorepo, domain/persistence, GET-only Trading 212 ingestion, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, CI and operations | Local runtime evidence recorded; final SHA/CI pending |
 | 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | Not started |
 | 3. Premium Intelligence & Productization | `1.0.0` | Advanced risk/scenarios/projections/goals, research cockpit, rich ChatGPT UI, PWA polish, premium providers and production hardening | Not started |
 
@@ -58,6 +58,22 @@ API, web, workers, reports, and MCP tools share the same canonical domain, autho
 - Docker Compose and GitHub Actions
 
 Exact compatible dependency versions and lockfiles are established in P1-01. See [Phase 1 Technical Baseline](docs/implementation/PHASE_1_TECHNICAL_BASELINE.md).
+
+## Reproducible local workspace
+
+Prerequisites are pinned to Python `3.13.15`, Node.js `24.20.0`, pnpm `10.34.5`, a current `uv`, Docker with Compose, and GNU Make. Corepack reads the exact pnpm release from `package.json`; `uv` reads the Python release from `.python-version`.
+
+```bash
+make bootstrap
+make docs-check
+make format-check
+make lint
+make typecheck
+make test-unit
+make build
+```
+
+Start only pinned PostgreSQL 18.6 and non-authoritative Redis 8.10.1 with `make run-dependencies`, or build, migrate, seed, and start the complete container stack with `make run-local`. PostgreSQL remains the sole authoritative financial system of record. `make dev` migrates/seeds the local database and starts the API/web host processes with loopback synthetic authentication. See the [P1-01 dependency baseline](docs/implementation/P1_01_DEPENDENCY_BASELINE.md) for registry evidence and exact pins and the [Phase 1 operations runbook](docs/operations/LOCAL_AND_DEPLOYMENT.md) for deployment, recovery, and health procedures.
 
 ## Documentation entry point
 
@@ -81,9 +97,9 @@ Critical documents:
 - [Repository Agent Policy](AGENTS.md)
 - [Validation Report](VALIDATION_REPORT.md)
 
-## Direct-main workflow
+## Delivery workflow
 
-The owner requires ChatGPT and Codex to commit directly to `main`:
+The standing repository policy requires ChatGPT and Codex to commit directly to `main`:
 
 - no branches or pull requests;
 - small coherent fast-forward commits;
@@ -94,15 +110,40 @@ The owner requires ChatGPT and Codex to commit directly to `main`:
 
 See [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Starting Phase 1
+For the Phase 1 `0.1.0` candidate, the owner explicitly required the isolated
+`codex/phase-1-trusted-foundation` branch and an unmerged review pull request.
+[ADR-0009](docs/adr/ADR-0009-PHASE-1-REVIEW-BRANCH-EXCEPTION.md) records this
+one-release exception without rewriting ADR-0007. The candidate must be validated at an
+immutable SHA and reviewed before merge.
 
-Select the repository in Codex and paste the complete prompt from:
+## Phase 1 candidate status
+
+The complete execution authority remains recorded in:
 
 ```text
 docs/implementation/prompts/PHASE_1_CODEX_PROMPT.md
 ```
 
-Codex is instructed to inspect current `main`, implement all P1-01 through P1-12, validate coherent increments, commit directly to `main`, and stop before Phase 2.
+P1-01 through P1-12 are implemented in the working tree. An isolated Compose runtime
+validated authenticated API-backed web rendering, exact API/MCP canonical parity,
+durable queued-run worker recovery, full-stack state retention, non-root containers,
+latency smoke measurements, and runtime secret-canary containment. See the
+[validation report](VALIDATION_REPORT.md) and
+[mandatory scenario evidence](docs/implementation/PHASE_1_SCENARIO_EVIDENCE.md).
+
+The candidate is not release-approved. Scenario 8 now passes through one retained
+synthetic immutable quantity/cash mismatch fixture across PostgreSQL, API/MCP, and the
+actual API-backed desktop/mobile web experience. This synthetic acceptance path does not
+erase the real-provider limitation: quantity and cash movement bridges remain
+unavailable when Trading 212 opening-history coverage is insufficient. The complete
+matrix and the pinned no-upload Semgrep, dependency, secret, Trivy filesystem, and
+hardened-image gates must pass at the final candidate SHA; the review pull request must
+remain unmerged pending owner review.
+
+The complete working-tree Semgrep, Gitleaks, Trivy filesystem/config/license, and
+six-image high/critical vulnerability/secret matrix returned clean results. Every
+workflow action and external Docker base is immutable SHA/digest pinned. These results
+must still be repeated by CI at the final candidate SHA.
 
 ## External gates
 
@@ -113,6 +154,7 @@ Local Phase 1 implementation does not require real credentials. These remain exp
 - live ChatGPT app registration against the deployed authenticated MCP endpoint.
 
 No real connectivity or deployment claim is made until the corresponding gate passes.
+The owner procedure for the Demo-only probe is documented in [Credentials and Demo Validation](docs/operations/CREDENTIALS_AND_DEMO_VALIDATION.md); MCP Inspector and ChatGPT Developer Mode are documented separately in [MCP and ChatGPT Validation](docs/operations/MCP_CHATGPT_VALIDATION.md).
 
 ## License
 

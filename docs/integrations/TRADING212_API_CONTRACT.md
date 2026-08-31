@@ -59,6 +59,16 @@ The base URLs already include `/api/v0`; paths below are relative to that base.
 
 Only provider-documented parameters may be represented, using capability-specific typed request models. Provider IDs used in path segments are validated and encoded.
 
+### 5.1 Account-summary `totalValue` compatibility gate
+
+The official account-summary prose describes `totalValue` as total account value, while
+the bundled OpenAPI component describes the same field as investments value. Phase 1
+does not silently choose between those meanings. It retains the exact source value and
+its provenance, but excludes it from Trading 212 value reconciliation and reports an
+explicit partial/schema-mapping warning until the Demo smoke records which interpretation
+matches observed cash, positions, and wallet-impact values. Synthetic fixtures define
+their own unambiguous total and remain eligible for mismatch/reconciliation tests.
+
 Historical export creation is intentionally not supported because it requires a mutating request. The GET capability may observe already-existing export metadata but can be disabled when unnecessary.
 
 If official documentation removes, renames, or semantically changes an endpoint, contract tests must fail until this document, the machine allowlist, DTOs, fixtures, and exact/negative tests are deliberately updated from primary documentation. The adapter must not probe alternative paths.
@@ -147,6 +157,10 @@ Each paginated capability has a dedicated paginator with:
 - persisted coverage, truncation, and warning metadata.
 
 Never assume identical pagination fields or semantics across capabilities. Verify each from the current official OpenAPI.
+
+For `historical_transactions`, a completed checkpoint retains a monotonic source-time high-water mark. An incremental run starts from the exact persisted high-water mark minus the configured seven-day overlap and sends that aware UTC instant through the documented `time` filter. The filter must remain byte-equivalent after UTC normalization on every provider-supplied cursor page; a missing, changed, malformed, or duplicate filter fails the pagination unit before another request. An incomplete traversal always resumes its exact durable cursor and original overlap window.
+
+The verified historical-order and dividend contracts expose no time boundary. Their incremental-safe behavior is therefore a full replay followed by immutable provider-ID/fingerprint deduplication; they never pretend that a terminal cursor is an incremental watermark. Empty terminal pages cannot regress an existing high-water mark. Once a resumed historical traversal reaches a durable terminal checkpoint, canonical publication includes every atomically committed page in that traversal, including pages retained from an interrupted predecessor run.
 
 ## 12. Schema validation and drift
 

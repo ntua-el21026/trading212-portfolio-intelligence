@@ -15,8 +15,8 @@ Environment selection is explicit. Production fails closed when authentication, 
 
 Docker Compose provides:
 
-- PostgreSQL 17;
-- optional Redis 7;
+- PostgreSQL 18;
+- optional Redis 8, strictly non-authoritative coordination/cache/job infrastructure;
 - optional local object-storage substitute when reports are introduced.
 
 Applications run through documented make targets or containers. A single command should bootstrap dependencies, migrate the database, seed a synthetic portfolio, and start API/worker/MCP/web for development.
@@ -162,3 +162,11 @@ Any indication of a broker write request is critical even if rejected upstream; 
 - smoke tests for API, worker, MCP, and web;
 - rollback/restore procedures documented;
 - monitoring/alerts receiving expected signals.
+
+## 12. Phase 1 implementation runbooks
+
+- [Local operation and deployment](../operations/LOCAL_AND_DEPLOYMENT.md)
+- [PostgreSQL backup and restore](../operations/BACKUP_RESTORE.md)
+- [Credentials and Trading 212 Demo validation](../operations/CREDENTIALS_AND_DEMO_VALIDATION.md)
+- [MCP Inspector and ChatGPT Developer Mode](../operations/MCP_CHATGPT_VALIDATION.md)
+- [Troubleshooting](../operations/TROUBLESHOOTING.md)

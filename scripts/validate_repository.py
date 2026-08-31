@@ -10,9 +10,9 @@ from __future__ import annotations
 import json
 import re
 import sys
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -33,6 +33,8 @@ REQUIRED_FILES = (
     ".dockerignore",
     ".github/CODEOWNERS",
     ".github/workflows/documentation-validation.yml",
+    ".github/workflows/phase-1-ci.yml",
+    ".github/workflows/security.yml",
     "docs/DESIGN_INDEX.md",
     "docs/DESIGN_FREEZE_V0_1.md",
     "docs/DOCUMENT_GOVERNANCE.md",
@@ -52,8 +54,14 @@ REQUIRED_FILES = (
     "docs/engineering/ENGINEERING_STANDARDS.md",
     "docs/engineering/TEST_STRATEGY.md",
     "docs/engineering/DEPLOYMENT_OPERATIONS.md",
+    "docs/operations/LOCAL_AND_DEPLOYMENT.md",
+    "docs/operations/BACKUP_RESTORE.md",
+    "docs/operations/CREDENTIALS_AND_DEMO_VALIDATION.md",
+    "docs/operations/MCP_CHATGPT_VALIDATION.md",
+    "docs/operations/TROUBLESHOOTING.md",
     "docs/implementation/MASTER_IMPLEMENTATION_PLAN.md",
     "docs/implementation/PHASE_1_TECHNICAL_BASELINE.md",
+    "docs/implementation/P1_01_DEPENDENCY_BASELINE.md",
     "docs/implementation/PHASE_1_TRUSTED_FOUNDATION.md",
     "docs/implementation/PHASE_1_EXECUTION_MANIFEST.md",
     "docs/implementation/PHASE_1_ACCEPTANCE_MATRIX.md",
@@ -63,7 +71,44 @@ REQUIRED_FILES = (
     "docs/implementation/prompts/PHASE_1_CODEX_PROMPT.md",
     "config/contracts/trading212-read-allowlist.yaml",
     "scripts/validate_repository.py",
+    "scripts/check_workspace.py",
+    "compose.yaml",
+    "Makefile",
+    "pyproject.toml",
+    "uv.lock",
+    "package.json",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
 )
+
+EXPECTED_ACCEPTANCE_IDS = {
+    "P1-API-001",
+    "P1-API-002",
+    "P1-AUTH-001",
+    "P1-CALC-001",
+    "P1-CALC-002",
+    "P1-CALC-003",
+    "P1-DATA-001",
+    "P1-DATA-002",
+    "P1-DATA-003",
+    "P1-DOM-001",
+    "P1-DOM-002",
+    "P1-E2E-001",
+    "P1-EXT-001",
+    "P1-EXT-002",
+    "P1-MCP-001",
+    "P1-MCP-002",
+    "P1-OPS-001",
+    "P1-OPS-002",
+    "P1-REC-001",
+    "P1-SAFE-001",
+    "P1-SAFE-002",
+    "P1-SAFE-003",
+    "P1-SEC-001",
+    "P1-SNAP-001",
+    "P1-WEB-001",
+    "P1-WEB-002",
+}
 
 EXPECTED_CAPABILITIES = {
     "account_summary": ("GET", "/equity/account/summary"),
@@ -96,7 +141,11 @@ AUTHORITATIVE_ENDPOINT_FILES = (
 TEXT_SUFFIXES = {
     ".md",
     ".txt",
+    ".css",
     ".py",
+    ".sh",
+    ".ts",
+    ".tsx",
     ".json",
     ".yaml",
     ".yml",
@@ -114,6 +163,7 @@ MARKDOWN_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 CAPABILITY_RE = re.compile(r"^\s*-\s+capability:\s*([A-Za-z0-9_-]+)\s*$")
 METHOD_RE = re.compile(r"^\s+method:\s*([A-Z]+)\s*$")
 PATH_RE = re.compile(r"^\s+path:\s*(\S+)\s*$")
+ACCEPTANCE_ID_RE = re.compile(r"\bP1-[A-Z0-9]+-\d{3}\b")
 
 
 @dataclass(frozen=True)
@@ -213,7 +263,8 @@ def validate_allowlist() -> list[Failure]:
         failures.append(
             Failure(
                 "allowlist",
-                f"exact capability registry mismatch; expected {EXPECTED_CAPABILITIES!r}, got {parsed!r}",
+                "exact capability registry mismatch; "
+                f"expected {EXPECTED_CAPABILITIES!r}, got {parsed!r}",
             )
         )
     if "default_deny: true" not in text:
@@ -233,13 +284,17 @@ def validate_endpoint_contract() -> list[Failure]:
         if path not in prompt:
             failures.append(Failure("endpoint-contract", f"Codex prompt missing {path}"))
         if method != "GET":
-            failures.append(Failure("endpoint-contract", f"non-GET expected capability {capability}"))
+            failures.append(
+                Failure("endpoint-contract", f"non-GET expected capability {capability}")
+            )
 
     for relative in AUTHORITATIVE_ENDPOINT_FILES:
         text = read_text(relative)
         for stale in STALE_ENDPOINTS:
             if stale in text:
-                failures.append(Failure("endpoint-contract", f"stale endpoint {stale} in {relative}"))
+                failures.append(
+                    Failure("endpoint-contract", f"stale endpoint {stale} in {relative}")
+                )
     return failures
 
 
@@ -265,10 +320,16 @@ def validate_markdown_links() -> list[Failure]:
             try:
                 resolved.relative_to(ROOT.resolve())
             except ValueError:
-                failures.append(Failure("markdown-links", f"{path.relative_to(ROOT)} -> {target} escapes repository"))
+                failures.append(
+                    Failure(
+                        "markdown-links", f"{path.relative_to(ROOT)} -> {target} escapes repository"
+                    )
+                )
                 continue
             if not resolved.exists():
-                failures.append(Failure("markdown-links", f"{path.relative_to(ROOT)} -> missing {target}"))
+                failures.append(
+                    Failure("markdown-links", f"{path.relative_to(ROOT)} -> missing {target}")
+                )
     return failures
 
 
@@ -279,9 +340,14 @@ def validate_env_example() -> list[Failure]:
         if not stripped or stripped.startswith("#") or "=" not in stripped:
             continue
         key, value = stripped.split("=", 1)
-        sensitive = any(token in key.upper() for token in ("SECRET", "TOKEN", "PASSWORD", "API_KEY", "CREDENTIAL"))
+        sensitive = any(
+            token in key.upper()
+            for token in ("SECRET", "TOKEN", "PASSWORD", "API_KEY", "CREDENTIAL")
+        )
         if sensitive and value.strip():
-            failures.append(Failure("env-example", f"line {line_number}: sensitive example {key} must be blank"))
+            failures.append(
+                Failure("env-example", f"line {line_number}: sensitive example {key} must be blank")
+            )
     return failures
 
 
@@ -301,14 +367,48 @@ def validate_governance_and_prompt() -> list[Failure]:
         if phrase not in freeze:
             failures.append(Failure("governance", f"design freeze missing phrase: {phrase}"))
 
-    for token in ("P1-01", "P1-12", "work directly on `main`", "Do not implement any broker `POST`", "Stop after Phase 1"):
+    for token in (
+        "P1-01",
+        "P1-12",
+        "work directly on `main`",
+        "Do not implement any broker `POST`",
+        "Stop after Phase 1",
+    ):
         if token not in prompt:
             failures.append(Failure("codex-prompt", f"Phase 1 prompt missing token: {token}"))
 
     packages = progress.get("phases", {}).get("phase_1", {}).get("work_packages", {})
     expected_package_ids = {f"P1-{number:02d}" for number in range(1, 13)}
     if set(packages) != expected_package_ids:
-        failures.append(Failure("progress", "PROJECT_PROGRESS.json must contain exactly P1-01 through P1-12"))
+        failures.append(
+            Failure("progress", "PROJECT_PROGRESS.json must contain exactly P1-01 through P1-12")
+        )
+    return failures
+
+
+def validate_acceptance_traceability() -> list[Failure]:
+    """Require the acceptance matrix and traceability index to expose identical IDs."""
+    matrix_ids = set(
+        ACCEPTANCE_ID_RE.findall(read_text("docs/implementation/PHASE_1_ACCEPTANCE_MATRIX.md"))
+    )
+    traceability_ids = set(ACCEPTANCE_ID_RE.findall(read_text("docs/REQUIREMENTS_TRACEABILITY.md")))
+    failures: list[Failure] = []
+    if matrix_ids != EXPECTED_ACCEPTANCE_IDS:
+        failures.append(
+            Failure(
+                "acceptance-ids",
+                "acceptance matrix mismatch: "
+                f"expected {sorted(EXPECTED_ACCEPTANCE_IDS)}, got {sorted(matrix_ids)}",
+            )
+        )
+    if traceability_ids != matrix_ids:
+        failures.append(
+            Failure(
+                "acceptance-ids",
+                "traceability mismatch: "
+                f"matrix {sorted(matrix_ids)}, traceability {sorted(traceability_ids)}",
+            )
+        )
     return failures
 
 
@@ -338,6 +438,7 @@ def main() -> int:
         validate_markdown_links,
         validate_env_example,
         validate_governance_and_prompt,
+        validate_acceptance_traceability,
         validate_case_collisions,
     )
     failures: list[Failure] = []
@@ -351,7 +452,10 @@ def main() -> int:
         return 1
 
     print("Repository documentation and Phase 1 handoff validation passed.")
-    print(f"Validated {len(REQUIRED_FILES)} required files and {len(EXPECTED_CAPABILITIES)} exact GET capabilities.")
+    print(
+        f"Validated {len(REQUIRED_FILES)} required files and "
+        f"{len(EXPECTED_CAPABILITIES)} exact GET capabilities."
+    )
     return 0
 
 

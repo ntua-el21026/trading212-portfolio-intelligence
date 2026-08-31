@@ -1,6 +1,6 @@
 # Primary External References
 
-**Last reviewed:** 2026-08-31
+**Last reviewed:** 2026-09-01
 
 Primary sources are authoritative for external contracts. The application must fail closed when a beta provider contract cannot be verified.
 
@@ -9,13 +9,13 @@ Primary sources are authoritative for external contracts. The application must f
 - Public API overview and environments: https://docs.trading212.com/
 - OpenAPI/API reference: https://docs.trading212.com/api/
 - Rate limiting: https://docs.trading212.com/api/section/rate-limiting/
-- Account summary: https://docs.trading212.com/api/account/summary
+- Account summary: https://docs.trading212.com/api/accounts/getaccountsummary
 - Positions: https://docs.trading212.com/api/portfolio/positions
 - Pending orders: https://docs.trading212.com/api/orders/pending
-- Historical orders: https://docs.trading212.com/api/history/orders
-- Historical transactions: https://docs.trading212.com/api/history/transactions
-- Historical dividends: https://docs.trading212.com/api/history/dividends
-- Historical exports: https://docs.trading212.com/api/history/exports
+- Historical orders: https://docs.trading212.com/api/historical-events/orders_1
+- Historical transactions: https://docs.trading212.com/api/historical-events/transactions
+- Historical dividends: https://docs.trading212.com/api/historical-items/dividends
+- Historical exports: https://docs.trading212.com/api/historical-events/getreports
 - API-key help: https://helpcentre.trading212.com/hc/en-us/articles/14584770928157-Trading-212-API-key
 
 Endpoint names/slugs on the documentation website may move; verify the official OpenAPI before implementing P1-04. The frozen relative-path templates are maintained in the Trading 212 contract and machine allowlist.

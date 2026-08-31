@@ -29,17 +29,29 @@ This matrix links product requirements to implementation phases and verification
 
 - `P1-SAFE-001`: exact GET-only Trading 212 registry.
 - `P1-SAFE-002`: no generic provider/request surface.
+- `P1-SAFE-003`: no order, Pie, transfer, CFD, or export-creation code path.
 - `P1-SEC-001`: secrets remain server-side and redacted.
 - `P1-AUTH-001`: owner/account authorization on every scoped use case.
-- `P1-DOM-001`: exact decimal and UTC domain values.
-- `P1-DATA-001`: idempotent canonical ingestion and checkpoints.
+- `P1-DOM-001`: exact decimal semantics for money, quantity, price, FX, and ratios.
+- `P1-DOM-002`: timezone-aware UTC and distinct data-quality states.
+- `P1-DATA-001`: idempotent full and incremental canonical ingestion.
+- `P1-DATA-002`: checkpoints advance only after durable atomic success.
+- `P1-DATA-003`: schema, pagination, and rate-limit failures are bounded and explicit.
 - `P1-REC-001`: explicit quantity/cash reconciliation and discrepancy history.
 - `P1-SNAP-001`: immutable versioned snapshots with source cutoff.
 - `P1-CALC-001`: deposits excluded from investment gain.
-- `P1-CALC-002`: coverage-gated returns and explicit unavailable states.
-- `P1-API-001`: versioned bounded API and generated client.
-- `P1-WEB-001`: accessible responsive Phase 1 views with quality metadata.
-- `P1-MCP-001`: authenticated bounded MCP tools with API parity.
-- `P1-OPS-001`: reproducible local stack, CI, telemetry, backup/incident runbooks.
+- `P1-CALC-002`: core values and direct allocations reconcile exactly.
+- `P1-CALC-003`: return metrics are coverage-gated and never invent missing data.
+- `P1-API-001`: versioned, typed, bounded, authorized, stable API.
+- `P1-API-002`: generated TypeScript client matches OpenAPI and compiles.
+- `P1-WEB-001`: responsive accessible Phase 1 views.
+- `P1-WEB-002`: web exposes timestamps, methodology, quality, and warnings without recalculation.
+- `P1-MCP-001`: authenticated, bounded, typed, allowlisted MCP tools.
+- `P1-MCP-002`: MCP and API results match canonical fixtures exactly.
+- `P1-OPS-001`: clean-clone bootstrap, migrate, seed, run, test, and build.
+- `P1-OPS-002`: containers, telemetry, migrations, and backup/incident runbooks.
+- `P1-E2E-001`: all fourteen mandatory synthetic scenarios pass.
+- `P1-EXT-001`: Trading 212 Demo smoke passes or remains explicitly `blocked_external`.
+- `P1-EXT-002`: deployed ChatGPT app registration passes or remains explicitly `blocked_external`.
 
 `docs/implementation/PHASE_1_ACCEPTANCE_MATRIX.md` maps these identifiers to concrete evidence.

@@ -2,8 +2,10 @@
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
   "repository": "ntua-el21026/trading212-portfolio-intelligence",
-  "branch": "main",
-  "updated_at": "2026-08-31T00:00:00Z",
+  "branch": "codex/phase-1-trusted-foundation",
+  "base_branch": "main",
+  "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
+  "updated_at": "2026-08-31T22:00:00Z",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -11,12 +13,58 @@
   "documentation_readiness": "approved",
   "current_phase": "phase_1",
   "current_release_target": "0.1.0",
-  "implementation_status": "not_started",
+  "implementation_status": "implemented_with_local_runtime_evidence_pending_final_release_validation",
+  "release_readiness": "not_yet_approved",
+  "release_candidate_sha": null,
+  "pull_request_url": null,
   "broker_mode": "strictly_read_only",
   "default_broker_environment": "demo",
   "external_gates": [
     "trading212_demo_credentials_and_smoke",
     "remote_hosting_domain_and_production_auth",
     "deployed_chatgpt_app_registration"
-  ]
+  ],
+  "external_gate_status": {
+    "trading212_demo_credentials_and_smoke": "blocked_external",
+    "remote_hosting_domain_and_production_auth": "blocked_external",
+    "deployed_chatgpt_app_registration": "blocked_external"
+  },
+  "security_gate_architecture": {
+    "github_code_scanning_upload": "unavailable_private_user_owned_repository_entitlement",
+    "sast": "semgrep_ce_1.175.0_pinned_digest_local_rules_no_upload",
+    "repository_and_image_scan": "trivy_0.74.0_pinned",
+    "runtime_images": "hardened_postgres_redis_and_minimized_nonroot_applications",
+    "final_release_sha_results": "pending"
+  },
+  "working_tree_evidence": {
+    "compose_project": "t212pi_phase1_final_20260831",
+    "runtime_status": "passed",
+    "mandatory_scenarios": {
+      "passed_or_implemented_evidence": 14,
+      "partial_evidence": 0,
+      "partial_scenario_ids": []
+    },
+    "scenario_8_synthetic_quantity_cash_mismatch": "passed_working_tree",
+    "scenario_8_real_provider_opening_history": "unavailable_explicit",
+    "scenario_9_explicit_fx": "passed_working_tree",
+    "scenario_11_secret_canary": "passed_working_tree",
+    "scenario_13_api_web_mcp_parity": "passed_working_tree",
+    "scenario_14_restart_resume": "passed_working_tree",
+    "hardened_postgres_redis_nonroot_startup": "passed_working_tree",
+    "application_nonroot_runtime_and_package_manager_removal": "passed_working_tree",
+    "trivy_api_high_critical_vulnerability_and_secret_scan": "passed_working_tree",
+    "trivy_remaining_images": "passed_working_tree",
+    "trivy_filesystem_vulnerability_secret_misconfiguration_license": "passed_working_tree",
+    "gitleaks_history": "passed_working_tree",
+    "semgrep_7_rules_142_targets": "passed_working_tree",
+    "complete_make_validate": "passed_working_tree",
+    "workflow_actions_and_docker_bases_immutable": true,
+    "canonical_api_summary_sha256": "81fc4f21d76b0a2f4e80d3cba3ee32afc670ab150f997d630c520372cc09c391"
+  },
+  "pending_release_gates": [
+    "complete_local_validation_at_release_candidate_sha",
+    "pushed_sha_semgrep_dependency_secret_and_trivy",
+    "push_branch_and_open_review_pull_request"
+  ],
+  "next_gate": "commit_candidate_and_complete_all_local_validation_at_that_sha"
 }

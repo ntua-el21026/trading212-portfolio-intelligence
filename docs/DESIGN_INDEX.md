@@ -103,6 +103,11 @@ The last three are primarily Phase 2/3 authorities and must not be represented a
 - `docs/engineering/ENGINEERING_STANDARDS.md`
 - `docs/engineering/TEST_STRATEGY.md`
 - `docs/engineering/DEPLOYMENT_OPERATIONS.md`
+- `docs/operations/LOCAL_AND_DEPLOYMENT.md`
+- `docs/operations/BACKUP_RESTORE.md`
+- `docs/operations/CREDENTIALS_AND_DEMO_VALIDATION.md`
+- `docs/operations/MCP_CHATGPT_VALIDATION.md`
+- `docs/operations/TROUBLESHOOTING.md`
 - `SECURITY.md`
 - `CONTRIBUTING.md`
 
@@ -113,6 +118,7 @@ The last three are primarily Phase 2/3 authorities and must not be represented a
 - `docs/implementation/PHASE_2_PORTFOLIO_INTELLIGENCE.md`
 - `docs/implementation/PHASE_3_PREMIUM_PRODUCTIZATION.md`
 - `docs/implementation/PHASE_1_TECHNICAL_BASELINE.md`
+- `docs/implementation/P1_01_DEPENDENCY_BASELINE.md`
 - `docs/implementation/PHASE_1_EXECUTION_MANIFEST.md`
 - `docs/implementation/PHASE_1_ACCEPTANCE_MATRIX.md`
 - `docs/implementation/PHASE_1_READINESS_REVIEW.md`

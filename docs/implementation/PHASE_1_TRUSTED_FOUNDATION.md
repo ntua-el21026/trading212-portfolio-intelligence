@@ -84,11 +84,11 @@ docs/
 ### Deliverables
 
 - Python 3.13 `uv` workspace and lockfile.
-- Node.js 22/pnpm workspace and lockfile.
+- Node.js 24/pnpm 10 workspace and lockfile.
 - Application/package skeletons matching architecture boundaries.
 - Root `Makefile` with discoverable commands.
 - `.editorconfig`, `.gitignore`, `.dockerignore`, environment examples, lint/type/test configuration.
-- Docker Compose for PostgreSQL 17 and optional Redis 7.
+- Docker Compose for PostgreSQL 18 and optional Redis 8.
 - Pre-commit or equivalent local checks without making them the only enforcement.
 - GitHub Actions on every push to `main`.
 - Documentation/link/JSON/YAML/secret validation.

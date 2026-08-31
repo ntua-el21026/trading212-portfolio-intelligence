@@ -26,7 +26,7 @@
 
 ## 3. TypeScript/web
 
-- Node.js 22 LTS baseline and pnpm workspace with committed lockfile.
+- Node.js 24 LTS baseline and pnpm 10 workspace with committed lockfile.
 - Strict TypeScript; avoid `any`, unsafe casts, and unchecked JSON.
 - Next.js/React architecture follows server/client boundaries that keep secrets server-side.
 - Generated API types/client from versioned OpenAPI where practical.
