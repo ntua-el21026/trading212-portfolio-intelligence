@@ -1,0 +1,462 @@
+from __future__ import annotations
+
+import asyncio
+from collections.abc import Callable
+from datetime import UTC, datetime, timedelta
+from decimal import Decimal
+
+import pytest
+from trading212_application.ingestion import (
+    CURRENT_REFRESH_ORDER,
+    FULL_REFRESH_ORDER,
+    HISTORY_REFRESH_ORDER,
+    Checkpoint,
+    FailureCategory,
+    IngestionCapability,
+    IngestionCoordinator,
+    IngestionFailure,
+    InMemoryIngestionStore,
+    InMemoryRateCoordinator,
+    RateObservation,
+    RefreshScope,
+    RunMode,
+    RunStatus,
+    SourcePage,
+    SourceRecord,
+    capabilities_for_scope,
+    validate_refresh_capabilities,
+)
+
+NOW = datetime(2026, 8, 31, 12, 0, tzinfo=UTC)
+
+
+@pytest.mark.parametrize(
+    ("scope", "expected"),
+    [
+        (RefreshScope.CURRENT, CURRENT_REFRESH_ORDER),
+        (RefreshScope.HISTORY, HISTORY_REFRESH_ORDER),
+        (RefreshScope.ALL, FULL_REFRESH_ORDER),
+    ],
+)
+def test_refresh_scopes_map_to_frozen_capability_orders(
+    scope: RefreshScope,
+    expected: tuple[IngestionCapability, ...],
+) -> None:
+    assert capabilities_for_scope(scope) == expected
+    assert validate_refresh_capabilities(expected) == expected
+
+
+def test_refresh_selection_rejects_arbitrary_capability_subsets() -> None:
+    with pytest.raises(ValueError, match="supported refresh scope"):
+        validate_refresh_capabilities((IngestionCapability.ACCOUNT,))
+
+
+def _record(
+    record_id: str,
+    *,
+    amount: str = "10.00",
+    timestamp: datetime = NOW,
+) -> SourceRecord:
+    return SourceRecord(
+        provider_record_id=record_id,
+        source_timestamp=timestamp,
+        observed_at=NOW,
+        payload={"id": record_id, "amount": Decimal(amount), "currency": "EUR"},
+        schema_version="trading212-v0-20260831",
+    )
+
+
+class ScriptedProvider:
+    def __init__(
+        self,
+        scripts: dict[
+            IngestionCapability,
+            Callable[[Checkpoint | None], SourcePage],
+        ],
+    ) -> None:
+        self.scripts = scripts
+        self.calls: list[tuple[IngestionCapability, Checkpoint | None]] = []
+
+    async def read_page(
+        self,
+        *,
+        owner_id: str,
+        account_id: str,
+        capability: IngestionCapability,
+        checkpoint: Checkpoint | None,
+        correlation_id: str,
+    ) -> SourcePage:
+        del owner_id, account_id, correlation_id
+        self.calls.append((capability, checkpoint))
+        return self.scripts[capability](checkpoint)
+
+
+def _coordinator(
+    provider: ScriptedProvider,
+    store: InMemoryIngestionStore | None = None,
+    *,
+    max_pages: int = 10,
+) -> tuple[IngestionCoordinator, InMemoryIngestionStore]:
+    selected_store = store or InMemoryIngestionStore()
+    return (
+        IngestionCoordinator(
+            provider=provider,
+            store=selected_store,
+            clock=lambda: NOW,
+            max_pages_per_capability=max_pages,
+        ),
+        selected_store,
+    )
+
+
+@pytest.mark.asyncio
+async def test_repeated_ingestion_is_idempotent() -> None:
+    capability = IngestionCapability.TRANSACTIONS
+    provider = ScriptedProvider({capability: lambda _: SourcePage((_record("tx-1"),), None, True)})
+    coordinator, store = _coordinator(provider)
+    first = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="refresh-1",
+        capabilities=(capability,),
+    )
+    second = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.INCREMENTAL,
+        idempotency_key="refresh-2",
+        capabilities=(capability,),
+    )
+    assert first.status is second.status is RunStatus.SUCCEEDED
+    assert first.steps[0].inserted == 1
+    assert second.steps[0].unchanged == 1
+    assert len(store.source_records) == 1
+
+
+@pytest.mark.asyncio
+async def test_interrupted_ingestion_resumes_from_last_atomic_checkpoint() -> None:
+    capability = IngestionCapability.TRANSACTIONS
+    fail_once = True
+
+    def script(checkpoint: Checkpoint | None) -> SourcePage:
+        nonlocal fail_once
+        if checkpoint is None:
+            return SourcePage((_record("tx-1"),), Checkpoint(cursor="page-2"), False)
+        if fail_once:
+            fail_once = False
+            raise IngestionFailure(FailureCategory.INTERRUPTED, "synthetic worker stop")
+        return SourcePage((_record("tx-2"),), None, True)
+
+    provider = ScriptedProvider({capability: script})
+    coordinator, store = _coordinator(provider)
+    interrupted = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="interrupted",
+        capabilities=(capability,),
+    )
+    assert interrupted.status is RunStatus.FAILED
+    assert store.checkpoints[("account-1", capability)] == Checkpoint(
+        cursor="page-2",
+        source_timestamp=NOW,
+    )
+
+    resumed = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.INCREMENTAL,
+        idempotency_key="resumed",
+        capabilities=(capability,),
+    )
+    assert resumed.status is RunStatus.SUCCEEDED
+    assert provider.calls[-1] == (
+        capability,
+        Checkpoint(cursor="page-2", source_timestamp=NOW),
+    )
+    assert len(store.source_records) == 2
+
+
+@pytest.mark.asyncio
+async def test_duplicate_and_updated_provider_records_remain_auditable() -> None:
+    capability = IngestionCapability.DIVIDENDS
+    pages = iter(
+        [
+            SourcePage((_record("div-1"), _record("div-1")), None, True),
+            SourcePage((_record("div-1", amount="12.00"),), None, True),
+        ]
+    )
+    provider = ScriptedProvider({capability: lambda _: next(pages)})
+    coordinator, store = _coordinator(provider)
+    first = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="first",
+        capabilities=(capability,),
+    )
+    second = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.INCREMENTAL,
+        idempotency_key="second",
+        capabilities=(capability,),
+    )
+    assert first.steps[0].inserted == 1
+    assert first.steps[0].unchanged == 1
+    assert second.steps[0].updated == 1
+    assert len(store.source_records) == 2
+
+
+@pytest.mark.asyncio
+async def test_completed_transaction_checkpoint_drives_bounded_incremental_overlap() -> None:
+    capability = IngestionCapability.TRANSACTIONS
+    source_at = NOW - timedelta(days=2)
+    provider = ScriptedProvider(
+        {
+            capability: lambda _: SourcePage(
+                (_record("tx-watermark", timestamp=source_at),), None, True
+            )
+        }
+    )
+    coordinator, _ = _coordinator(provider)
+
+    await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="watermark-full",
+        capabilities=(capability,),
+    )
+    await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.INCREMENTAL,
+        idempotency_key="watermark-incremental",
+        capabilities=(capability,),
+    )
+    await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="watermark-full-again",
+        capabilities=(capability,),
+    )
+
+    assert provider.calls[0] == (capability, None)
+    assert provider.calls[1] == (
+        capability,
+        Checkpoint(
+            source_timestamp=source_at,
+            overlap_started_at=source_at - timedelta(days=7),
+        ),
+    )
+    assert provider.calls[2] == (capability, None)
+
+
+@pytest.mark.asyncio
+async def test_empty_completed_transaction_has_no_false_incremental_watermark() -> None:
+    capability = IngestionCapability.TRANSACTIONS
+    provider = ScriptedProvider({capability: lambda _: SourcePage((), None, True)})
+    coordinator, _ = _coordinator(provider)
+
+    await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="empty-watermark-full",
+        capabilities=(capability,),
+    )
+    await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.INCREMENTAL,
+        idempotency_key="empty-watermark-incremental",
+        capabilities=(capability,),
+    )
+
+    assert provider.calls == [(capability, None), (capability, None)]
+
+
+@pytest.mark.asyncio
+async def test_repeated_page_and_max_page_bounds_fail_visibly() -> None:
+    capability = IngestionCapability.TRANSACTIONS
+    repeated = SourcePage((), Checkpoint(cursor="same"), False)
+    provider = ScriptedProvider({capability: lambda _: repeated})
+    coordinator, _ = _coordinator(provider, max_pages=5)
+    run = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="loop",
+        capabilities=(capability,),
+    )
+    assert run.status is RunStatus.FAILED
+    assert run.steps[0].failure_category is FailureCategory.PAGINATION
+    assert "repeated" in (run.steps[0].failure_message or "")
+
+
+@pytest.mark.asyncio
+async def test_empty_intermediate_page_is_explicit_but_resumable() -> None:
+    capability = IngestionCapability.HISTORICAL_ORDERS
+
+    def script(checkpoint: Checkpoint | None) -> SourcePage:
+        if checkpoint is None:
+            return SourcePage((), Checkpoint(cursor="next"), False)
+        return SourcePage((_record("order-history-1"),), None, True)
+
+    coordinator, _ = _coordinator(ScriptedProvider({capability: script}))
+    run = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="empty-page",
+        capabilities=(capability,),
+    )
+    assert run.status is RunStatus.SUCCEEDED
+    assert run.steps[0].pages == 2
+    assert "empty intermediate page" in run.steps[0].warnings[0]
+
+
+@pytest.mark.asyncio
+async def test_partial_capability_failure_never_reports_success() -> None:
+    account = IngestionCapability.ACCOUNT
+    positions = IngestionCapability.POSITIONS
+
+    def fail(_: Checkpoint | None) -> SourcePage:
+        raise IngestionFailure(FailureCategory.CONTRACT, "schema changed")
+
+    provider = ScriptedProvider(
+        {
+            account: lambda _: SourcePage((_record("account"),), None, True),
+            positions: fail,
+        }
+    )
+    coordinator, _ = _coordinator(provider)
+    run = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="partial",
+        capabilities=(account, positions),
+    )
+    assert run.status is RunStatus.PARTIAL
+    assert [step.status for step in run.steps] == [RunStatus.SUCCEEDED, RunStatus.FAILED]
+
+
+@pytest.mark.asyncio
+async def test_atomic_commit_failure_does_not_advance_checkpoint_or_source_state() -> None:
+    capability = IngestionCapability.TRANSACTIONS
+    provider = ScriptedProvider(
+        {
+            capability: lambda _: SourcePage(
+                (_record("tx-1"),),
+                Checkpoint(cursor="unsafe-to-advance"),
+                False,
+            )
+        }
+    )
+    store = InMemoryIngestionStore()
+    store.fail_next_commit = True
+    coordinator, _ = _coordinator(provider, store)
+    run = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="rollback",
+        capabilities=(capability,),
+    )
+    assert run.status is RunStatus.FAILED
+    assert ("account-1", capability) not in store.checkpoints
+    assert store.source_records == {}
+
+
+@pytest.mark.asyncio
+async def test_concurrent_identical_refreshes_coalesce() -> None:
+    capability = IngestionCapability.ACCOUNT
+    entered = asyncio.Event()
+    release = asyncio.Event()
+
+    class BlockingProvider(ScriptedProvider):
+        async def read_page(self, **kwargs: object) -> SourcePage:
+            entered.set()
+            await release.wait()
+            return SourcePage((_record("account"),), None, True)
+
+    provider = BlockingProvider({})
+    coordinator, _ = _coordinator(provider)
+    first_task = asyncio.create_task(
+        coordinator.refresh(
+            owner_id="owner-1",
+            account_id="account-1",
+            mode=RunMode.FULL,
+            idempotency_key="same-refresh",
+            capabilities=(capability,),
+        )
+    )
+    await entered.wait()
+    coalesced = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="same-refresh",
+        capabilities=(capability,),
+    )
+    assert coalesced.status is RunStatus.RUNNING
+    release.set()
+    completed = await first_task
+    assert completed.id == coalesced.id
+    assert completed.status is RunStatus.SUCCEEDED
+
+
+@pytest.mark.asyncio
+async def test_rate_observation_defers_the_next_account_capability_read() -> None:
+    current = NOW
+    delays: list[float] = []
+
+    async def sleep(delay: float) -> None:
+        nonlocal current
+        delays.append(delay)
+        current += timedelta(seconds=delay)
+
+    coordinator = InMemoryRateCoordinator(clock=lambda: current, sleep=sleep)
+    observation = RateObservation(
+        limit=1,
+        period_seconds=5,
+        remaining=0,
+        reset_at=NOW + timedelta(seconds=5),
+        used=1,
+    )
+    await coordinator.observe(
+        account_id="account-1",
+        capability=IngestionCapability.ACCOUNT,
+        observation=observation,
+    )
+    await coordinator.before_read(
+        account_id="account-1",
+        capability=IngestionCapability.ACCOUNT,
+    )
+    assert delays == [5.0]
+
+
+def test_source_payload_rejects_secret_shaped_fields() -> None:
+    with pytest.raises(ValueError, match="sensitive"):
+        SourceRecord(
+            provider_record_id="bad",
+            source_timestamp=NOW,
+            observed_at=NOW,
+            payload={"authorization": "synthetic-canary"},
+            schema_version="test",
+        )
+
+
+def test_naive_source_timestamp_is_rejected() -> None:
+    with pytest.raises(ValueError, match="timezone-aware"):
+        SourceRecord(
+            provider_record_id="bad-time",
+            source_timestamp=datetime(2026, 1, 1),
+            observed_at=NOW,
+            payload={"id": "bad-time"},
+            schema_version="test",
+        )
