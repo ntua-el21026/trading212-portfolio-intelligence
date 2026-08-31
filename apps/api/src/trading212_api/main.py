@@ -1,0 +1,977 @@
+"""Authenticated FastAPI composition root for the complete Phase 1 HTTP surface."""
+
+from __future__ import annotations
+
+import logging
+import os
+import re
+import secrets
+import time
+import uuid
+from collections.abc import Awaitable, Callable
+from dataclasses import dataclass
+from datetime import UTC, datetime
+from typing import Annotated, Any, Literal, cast
+
+from celery import Celery  # type: ignore[import-untyped]
+from fastapi import (
+    Cookie,
+    Depends,
+    FastAPI,
+    Header,
+    Query,
+    Request,
+    Response,
+    status,
+)
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import JSONResponse
+from sqlalchemy import text as sql_text
+from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.responses import Response as StarletteResponse
+from trading212_application.ingestion import (
+    RefreshScope,
+    RunMode,
+    capabilities_for_scope,
+)
+from trading212_application.services import (
+    PortfolioService,
+    RefreshUnavailableError,
+)
+from trading212_application.views import Page
+from trading212_observability import (
+    AuthenticationMethod,
+    OperationalMetrics,
+    SecurityAuditAction,
+    SecurityAuditEvent,
+    SecurityAuditOutcome,
+    SecurityAuditSink,
+    StructuredLogSecurityAuditSink,
+    bind_correlation_id,
+    clear_request_context,
+    configure_logging,
+    configure_tracing,
+    opaque_audit_reference,
+)
+from trading212_persistence import (
+    PostgresPortfolioService,
+    create_database_engine,
+    create_session_factory,
+)
+from trading212_security.principals import (
+    AuthenticationError,
+    AuthorizationError,
+    Authorizer,
+    Principal,
+    Scope,
+)
+from trading212_security.sessions import InMemorySessionStore, SessionManager
+from trading212_security.settings import RuntimeEnvironment, SecuritySettings
+from trading212_security.tokens import BearerAuthenticator, LocalSyntheticAuthenticator
+
+from .refresh_queue import PostgresRefreshQueue
+from .schemas import (
+    AccountResponse,
+    AccountSummaryResponse,
+    ActivityResponse,
+    AllocationResponse,
+    BrokerConnectionResponse,
+    DividendResponse,
+    ErrorBody,
+    ErrorEnvelope,
+    HealthResponse,
+    InstrumentResponse,
+    LocalSessionResponse,
+    OrderResponse,
+    PageResponse,
+    PerformanceSummaryResponse,
+    PositionResponse,
+    PrincipalResponse,
+    QualityResponse,
+    ReconciliationIssueResponse,
+    ReconciliationResponse,
+    RefreshRequest,
+    RefreshRunResponse,
+    ReturnMetricResponse,
+    SnapshotComparisonResponse,
+    SnapshotResponse,
+)
+
+SESSION_COOKIE = "t212pi_session"
+CORRELATION_HEADER = "X-Correlation-ID"
+_CORRELATION_PATTERN = re.compile(r"^[A-Za-z0-9._:-]{1,120}$")
+_LOCAL_DATABASE_URL = "postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio"
+_LOCAL_CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+
+
+async def _ready() -> bool:
+    return True
+
+
+@dataclass(slots=True)
+class ApiContext:
+    settings: SecuritySettings
+    service: PortfolioService
+    sessions: SessionManager
+    local_authenticator: LocalSyntheticAuthenticator | None
+    bearer_authenticator: BearerAuthenticator | None
+    clock: Callable[[], datetime]
+    readiness_probe: Callable[[], Awaitable[bool]]
+    metrics: OperationalMetrics
+    audit_sink: SecurityAuditSink
+
+
+def create_app(
+    *,
+    settings: SecuritySettings | None = None,
+    service: PortfolioService | None = None,
+    session_manager: SessionManager | None = None,
+    bearer_authenticator: BearerAuthenticator | None = None,
+    clock: Callable[[], datetime] | None = None,
+    readiness_probe: Callable[[], Awaitable[bool]] | None = None,
+    audit_sink: SecurityAuditSink | None = None,
+) -> FastAPI:
+    runtime_clock = clock or (lambda: datetime.now(UTC))
+    security_settings = settings or SecuritySettings()
+    deployed = security_settings.environment in {
+        RuntimeEnvironment.STAGING,
+        RuntimeEnvironment.PRODUCTION,
+    }
+    if deployed and (service is None or session_manager is None or bearer_authenticator is None):
+        raise ValueError(
+            "deployed API requires explicit service, durable session manager, "
+            "and bearer authenticator"
+        )
+    if service is None:
+        portfolio_service, default_readiness = _local_runtime_defaults(
+            security_settings,
+            runtime_clock,
+        )
+    else:
+        portfolio_service = service
+        default_readiness = _ready
+    sessions = session_manager or SessionManager(
+        store=InMemorySessionStore(),
+        signing_key=secrets.token_bytes(32),
+        clock=runtime_clock,
+    )
+    local_authenticator = (
+        LocalSyntheticAuthenticator(security_settings, clock=runtime_clock)
+        if security_settings.local_synthetic_auth_enabled
+        else None
+    )
+    context = ApiContext(
+        settings=security_settings,
+        service=portfolio_service,
+        sessions=sessions,
+        local_authenticator=local_authenticator,
+        bearer_authenticator=bearer_authenticator,
+        clock=runtime_clock,
+        readiness_probe=readiness_probe or default_readiness,
+        metrics=OperationalMetrics(service="api"),
+        audit_sink=audit_sink or StructuredLogSecurityAuditSink(),
+    )
+    application = FastAPI(
+        title="Trading 212 Portfolio Intelligence API",
+        description="Private, authenticated, strictly read-only portfolio intelligence API.",
+        version="0.1.0",
+        docs_url=None,
+        redoc_url=None,
+        openapi_url="/openapi.json",
+    )
+    application.state.context = context
+    application.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=list(security_settings.allowed_hosts),
+    )
+    if security_settings.allowed_origins:
+        application.add_middleware(
+            CORSMiddleware,
+            allow_origins=list(security_settings.allowed_origins),
+            allow_credentials=True,
+            allow_methods=["GET", "POST"],
+            allow_headers=[
+                "Authorization",
+                "Content-Type",
+                CORRELATION_HEADER,
+                "X-CSRF-Token",
+                "X-Idempotency-Key",
+            ],
+        )
+    _register_error_handlers(application)
+    _register_middleware(application)
+    _register_routes(application)
+    _install_openapi_contract(application)
+    return application
+
+
+def _local_runtime_defaults(
+    settings: SecuritySettings,
+    clock: Callable[[], datetime],
+) -> tuple[PortfolioService, Callable[[], Awaitable[bool]]]:
+    database_url = os.environ.get("DATABASE_URL")
+    broker_url = os.environ.get("CELERY_BROKER_URL")
+    if database_url is None and broker_url is None:
+        database_url = _LOCAL_DATABASE_URL
+        broker_url = _LOCAL_CELERY_BROKER_URL
+    if not database_url or not broker_url:
+        raise ValueError("DATABASE_URL and CELERY_BROKER_URL must be configured together")
+    if settings.environment not in {RuntimeEnvironment.LOCAL, RuntimeEnvironment.TEST}:
+        raise ValueError("implicit PostgreSQL runtime is restricted to local/test")
+    engine = create_database_engine(database_url)
+    sessions = create_session_factory(engine)
+    celery = Celery("trading212_api_refresh", broker=broker_url)
+    queue = PostgresRefreshQueue(sessions=sessions, celery=celery, clock=clock)
+
+    async def database_readiness() -> bool:
+        try:
+            with engine.connect() as connection:
+                value = cast(int | None, connection.scalar(sql_text("SELECT 1")))
+                return value == 1
+        except Exception:
+            return False
+
+    return (
+        PostgresPortfolioService(sessions=sessions, clock=clock, refresh_queue=queue),
+        database_readiness,
+    )
+
+
+def _install_openapi_contract(application: FastAPI) -> None:
+    """Document both supported client authentication mechanisms explicitly."""
+
+    def openapi_schema() -> dict[str, Any]:
+        if application.openapi_schema is not None:
+            return application.openapi_schema
+        schema = get_openapi(
+            title=application.title,
+            version=application.version,
+            description=application.description,
+            routes=application.routes,
+        )
+        components = schema.setdefault("components", {})
+        schemes = components.setdefault("securitySchemes", {})
+        schemes.update(
+            {
+                "bearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer",
+                    "bearerFormat": "JWT",
+                    "description": "Validated external identity-provider access token.",
+                },
+                "sessionCookie": {
+                    "type": "apiKey",
+                    "in": "cookie",
+                    "name": SESSION_COOKIE,
+                    "description": "Opaque, signed, revocable server-side browser session.",
+                },
+            }
+        )
+        for path, path_item in schema.get("paths", {}).items():
+            if path == "/api/v1/auth/local-session":
+                continue
+            if not path.startswith("/api/v1/"):
+                continue
+            security: list[dict[str, list[str]]] = (
+                [{"sessionCookie": []}]
+                if path == "/api/v1/auth/logout"
+                else [{"bearerAuth": []}, {"sessionCookie": []}]
+            )
+            for method, operation in path_item.items():
+                if method in {"get", "post", "put", "patch", "delete"}:
+                    operation["security"] = security
+        application.openapi_schema = schema
+        return schema
+
+    application.openapi = openapi_schema  # type: ignore[method-assign]
+
+
+def _context(request: Request) -> ApiContext:
+    return cast(ApiContext, request.app.state.context)
+
+
+async def _principal(request: Request) -> Principal:
+    context = _context(request)
+    authorization = request.headers.get("authorization")
+    if authorization is not None:
+        request.state.authentication_method = AuthenticationMethod.BEARER
+        scheme, separator, token = authorization.partition(" ")
+        if separator != " " or scheme.casefold() != "bearer" or not token:
+            raise AuthenticationError("invalid bearer credential")
+        if context.bearer_authenticator is None:
+            raise AuthenticationError("bearer authentication is unavailable")
+        principal = await context.bearer_authenticator.authenticate(token)
+        request.state.principal = principal
+        return principal
+    cookie = request.cookies.get(SESSION_COOKIE)
+    if cookie is None:
+        request.state.authentication_method = AuthenticationMethod.NONE
+        raise AuthenticationError("authentication required")
+    request.state.authentication_method = AuthenticationMethod.SESSION
+    principal = await context.sessions.authenticate(cookie)
+    request.state.principal = principal
+    return principal
+
+
+PrincipalDependency = Annotated[Principal, Depends(_principal)]
+
+
+def _safe_operation(request: Request) -> str:
+    route = request.scope.get("route")
+    operation = getattr(route, "name", "unmatched")
+    if not isinstance(operation, str) or not re.fullmatch(r"[A-Za-z0-9_.:-]{1,100}", operation):
+        return "unmatched"
+    return operation
+
+
+def _authentication_method(request: Request) -> AuthenticationMethod:
+    value = getattr(request.state, "authentication_method", AuthenticationMethod.NONE)
+    return value if isinstance(value, AuthenticationMethod) else AuthenticationMethod.NONE
+
+
+async def _record_security_audit(
+    request: Request,
+    *,
+    action: SecurityAuditAction,
+    outcome: SecurityAuditOutcome,
+    principal: Principal | None = None,
+) -> None:
+    context = _context(request)
+    actor = principal or getattr(request.state, "principal", None)
+    event = SecurityAuditEvent(
+        event_id=str(uuid.uuid4()),
+        action=action,
+        outcome=outcome,
+        occurred_at=context.clock(),
+        correlation_id=getattr(request.state, "correlation_id", str(uuid.uuid4())),
+        operation=_safe_operation(request),
+        authentication_method=_authentication_method(request),
+        actor_ref=(
+            opaque_audit_reference(actor.principal_id) if isinstance(actor, Principal) else None
+        ),
+        owner_ref=(
+            opaque_audit_reference(actor.owner_id) if isinstance(actor, Principal) else None
+        ),
+    )
+    try:
+        await context.audit_sink.record(event)
+    except Exception:
+        # Audit transport failure must never convert an access denial into access.
+        logging.getLogger("trading212_api.security_audit").error(
+            "security_audit_delivery_failed action=%s correlation_id=%s",
+            event.action.value,
+            event.correlation_id,
+        )
+
+
+def _register_middleware(application: FastAPI) -> None:
+    @application.middleware("http")
+    async def correlation_middleware(
+        request: Request,
+        call_next: Callable[[Request], Awaitable[StarletteResponse]],
+    ) -> StarletteResponse:
+        supplied = request.headers.get(CORRELATION_HEADER)
+        correlation_id = (
+            supplied
+            if supplied is not None and _CORRELATION_PATTERN.fullmatch(supplied)
+            else str(uuid.uuid4())
+        )
+        request.state.correlation_id = correlation_id
+        bind_correlation_id(correlation_id)
+        started = time.perf_counter()
+        outcome = "error"
+        try:
+            response = await call_next(request)
+            outcome = "success" if response.status_code < 500 else "error"
+            response.headers[CORRELATION_HEADER] = correlation_id
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["X-Content-Type-Options"] = "nosniff"
+            response.headers["Referrer-Policy"] = "no-referrer"
+            return response
+        finally:
+            operation = _safe_operation(request)
+            context = _context(request)
+            context.metrics.requests.labels(operation=operation, outcome=outcome).inc()
+            context.metrics.duration.labels(operation=operation).observe(
+                time.perf_counter() - started
+            )
+            clear_request_context()
+
+
+def _register_error_handlers(application: FastAPI) -> None:
+    def envelope(
+        request: Request,
+        code: str,
+        message: str,
+        retryable: bool = False,
+    ) -> dict[str, Any]:
+        return ErrorEnvelope(
+            error=ErrorBody(
+                code=code,
+                message=message,
+                correlation_id=getattr(request.state, "correlation_id", str(uuid.uuid4())),
+                retryable=retryable,
+            )
+        ).model_dump(mode="json")
+
+    @application.exception_handler(AuthenticationError)
+    async def authentication_error(request: Request, _: AuthenticationError) -> JSONResponse:
+        await _record_security_audit(
+            request,
+            action=SecurityAuditAction.AUTHENTICATION_DENIED,
+            outcome=SecurityAuditOutcome.DENIED,
+        )
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content=envelope(request, "AUTHENTICATION_REQUIRED", "Authentication is required."),
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    @application.exception_handler(AuthorizationError)
+    async def authorization_error(request: Request, _: AuthorizationError) -> JSONResponse:
+        await _record_security_audit(
+            request,
+            action=SecurityAuditAction.AUTHORIZATION_DENIED,
+            outcome=SecurityAuditOutcome.DENIED,
+        )
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content=envelope(request, "ACCESS_DENIED", "Access denied."),
+        )
+
+    @application.exception_handler(LookupError)
+    async def not_found(request: Request, _: LookupError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=envelope(request, "NOT_FOUND", "The requested resource was not found."),
+        )
+
+    @application.exception_handler(ValueError)
+    async def validation_error(request: Request, _: ValueError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content=envelope(request, "VALIDATION_FAILED", "The request is invalid."),
+        )
+
+    @application.exception_handler(RequestValidationError)
+    async def request_validation_error(request: Request, _: RequestValidationError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content=envelope(request, "VALIDATION_FAILED", "The request is invalid."),
+        )
+
+    @application.exception_handler(RefreshUnavailableError)
+    async def refresh_unavailable(request: Request, _: RefreshUnavailableError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content=envelope(
+                request,
+                "REFRESH_UNAVAILABLE",
+                "The refresh service is temporarily unavailable.",
+                retryable=True,
+            ),
+        )
+
+
+def _page[ViewT, ResponseT](
+    page: Page[ViewT], converter: Callable[[ViewT], ResponseT]
+) -> PageResponse[ResponseT]:
+    return PageResponse[ResponseT](
+        items=[converter(item) for item in page.items],
+        next_cursor=page.next_cursor,
+        limit=page.limit,
+        total=page.total,
+    )
+
+
+async def _single_authorized_account_id(
+    service: PortfolioService,
+    principal: Principal,
+) -> str:
+    accounts = await service.list_accounts(principal)
+    if not accounts:
+        raise LookupError("account not found")
+    if len(accounts) != 1:
+        raise ValueError("an explicit account-scoped instrument route is required")
+    return accounts[0].id
+
+
+def _register_routes(application: FastAPI) -> None:
+    @application.get("/health/live", response_model=HealthResponse, include_in_schema=False)
+    async def liveness() -> HealthResponse:
+        return HealthResponse(service="api", status="ok")
+
+    @application.get("/health/ready", response_model=HealthResponse, include_in_schema=False)
+    async def readiness(request: Request) -> HealthResponse | JSONResponse:
+        context = _context(request)
+        if not await context.readiness_probe():
+            context.metrics.readiness.set(0)
+            return JSONResponse(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                content={"service": "api", "status": "unavailable"},
+            )
+        context.metrics.readiness.set(1)
+        return HealthResponse(service="api", status="ready")
+
+    @application.get("/internal/metrics", include_in_schema=False)
+    async def metrics(request: Request, principal: PrincipalDependency) -> StarletteResponse:
+        context = _context(request)
+        Authorizer().require_scope(principal, Scope.CONFIGURATION_READ, now=context.clock())
+        return StarletteResponse(
+            content=context.metrics.render(),
+            headers={"Content-Type": "text/plain; version=0.0.4; charset=utf-8"},
+        )
+
+    @application.post(
+        "/api/v1/auth/local-session",
+        response_model=LocalSessionResponse,
+        status_code=status.HTTP_201_CREATED,
+        tags=["authentication"],
+    )
+    async def create_local_session(request: Request, response: Response) -> LocalSessionResponse:
+        context = _context(request)
+        request.state.authentication_method = AuthenticationMethod.LOCAL_SYNTHETIC
+        if context.local_authenticator is None:
+            await _record_security_audit(
+                request,
+                action=SecurityAuditAction.AUTHENTICATION_DENIED,
+                outcome=SecurityAuditOutcome.DENIED,
+            )
+            raise LookupError("local authentication is unavailable")
+        principal = await context.local_authenticator.authenticate("")
+        request.state.principal = principal
+        grant = await context.sessions.create(principal)
+        response.set_cookie(
+            key=SESSION_COOKIE,
+            value=grant.cookie_value,
+            max_age=context.settings.session_ttl_seconds,
+            expires=grant.expires_at,
+            secure=context.settings.cookie_secure,
+            httponly=context.settings.cookie_http_only,
+            samesite=cast(Literal["lax", "strict", "none"], context.settings.cookie_same_site),
+            path="/",
+        )
+        await _record_security_audit(
+            request,
+            action=SecurityAuditAction.LOCAL_SESSION_CREATED,
+            outcome=SecurityAuditOutcome.SUCCEEDED,
+            principal=principal,
+        )
+        return LocalSessionResponse(
+            principal=_principal_response(principal),
+            csrf_token=grant.csrf_token,
+            expires_at=grant.expires_at,
+        )
+
+    @application.post(
+        "/api/v1/auth/logout",
+        status_code=status.HTTP_204_NO_CONTENT,
+        tags=["authentication"],
+    )
+    async def logout(
+        request: Request,
+        response: Response,
+        principal: PrincipalDependency,
+        csrf_token: Annotated[str | None, Header(alias="X-CSRF-Token")] = None,
+        session_cookie: Annotated[str | None, Cookie(alias=SESSION_COOKIE)] = None,
+    ) -> None:
+        context = _context(request)
+        if session_cookie is None or csrf_token is None:
+            raise AuthenticationError("invalid CSRF token")
+        await context.sessions.validate_csrf(session_cookie, csrf_token)
+        await context.sessions.revoke(session_cookie)
+        await _record_security_audit(
+            request,
+            action=SecurityAuditAction.SESSION_REVOKED,
+            outcome=SecurityAuditOutcome.SUCCEEDED,
+            principal=principal,
+        )
+        response.delete_cookie(SESSION_COOKIE, path="/")
+
+    @application.get("/api/v1/me", response_model=PrincipalResponse, tags=["authentication"])
+    async def me(principal: PrincipalDependency) -> PrincipalResponse:
+        return _principal_response(principal)
+
+    @application.get(
+        "/api/v1/broker-connections",
+        response_model=list[BrokerConnectionResponse],
+        tags=["connections"],
+    )
+    async def list_connections(
+        request: Request, principal: PrincipalDependency
+    ) -> list[BrokerConnectionResponse]:
+        accounts = await _context(request).service.list_accounts(principal)
+        return [
+            BrokerConnectionResponse(
+                id=f"{account.provider}-{account.environment}",
+                provider=account.provider,
+                environment=account.environment,
+                status=account.connection_state,
+                credential_state="not_configured",
+            )
+            for account in accounts
+        ]
+
+    @application.get(
+        "/api/v1/accounts",
+        response_model=list[AccountResponse],
+        tags=["accounts"],
+    )
+    async def list_accounts(
+        request: Request, principal: PrincipalDependency
+    ) -> list[AccountResponse]:
+        accounts = await _context(request).service.list_accounts(principal)
+        return [AccountResponse.from_view(account) for account in accounts]
+
+    @application.get(
+        "/api/v1/accounts/{account_id}",
+        response_model=AccountResponse,
+        tags=["accounts"],
+    )
+    async def get_account(
+        account_id: str, request: Request, principal: PrincipalDependency
+    ) -> AccountResponse:
+        return AccountResponse.from_view(
+            await _context(request).service.get_account(principal, account_id)
+        )
+
+    @application.post(
+        "/api/v1/accounts/{account_id}/refresh",
+        response_model=RefreshRunResponse,
+        status_code=status.HTTP_202_ACCEPTED,
+        tags=["synchronization"],
+    )
+    async def refresh_account(
+        account_id: str,
+        body: RefreshRequest,
+        request: Request,
+        principal: PrincipalDependency,
+        idempotency_key: Annotated[
+            str, Header(alias="X-Idempotency-Key", min_length=1, max_length=180)
+        ],
+        csrf_token: Annotated[str | None, Header(alias="X-CSRF-Token")] = None,
+        session_cookie: Annotated[str | None, Cookie(alias=SESSION_COOKIE)] = None,
+    ) -> RefreshRunResponse:
+        context = _context(request)
+        if getattr(request.state, "authentication_method", None) is AuthenticationMethod.SESSION:
+            if session_cookie is None or csrf_token is None:
+                raise AuthenticationError("invalid CSRF token")
+            await context.sessions.validate_csrf(session_cookie, csrf_token)
+        run = await context.service.refresh(
+            principal,
+            account_id,
+            mode=RunMode(body.mode),
+            capabilities=capabilities_for_scope(RefreshScope(body.scope)),
+            idempotency_key=idempotency_key,
+            correlation_id=request.state.correlation_id,
+        )
+        return RefreshRunResponse.from_view(run)
+
+    @application.get(
+        "/api/v1/refresh-runs/{run_id}",
+        response_model=RefreshRunResponse,
+        tags=["synchronization"],
+    )
+    async def get_refresh_run(
+        run_id: str, request: Request, principal: PrincipalDependency
+    ) -> RefreshRunResponse:
+        run = await _context(request).service.get_refresh(principal, run_id)
+        return RefreshRunResponse.from_view(run)
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/summary",
+        response_model=AccountSummaryResponse,
+        tags=["portfolio"],
+    )
+    async def account_summary(
+        account_id: str, request: Request, principal: PrincipalDependency
+    ) -> AccountSummaryResponse:
+        return AccountSummaryResponse.from_view(
+            await _context(request).service.get_summary(principal, account_id)
+        )
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/positions",
+        response_model=PageResponse[PositionResponse],
+        tags=["portfolio"],
+    )
+    async def positions(
+        account_id: str,
+        request: Request,
+        principal: PrincipalDependency,
+        cursor: str | None = None,
+        limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    ) -> PageResponse[PositionResponse]:
+        page = await _context(request).service.list_positions(
+            principal, account_id, cursor=cursor, limit=limit
+        )
+        return _page(page, PositionResponse.from_view)
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/positions/{position_id}",
+        response_model=PositionResponse,
+        tags=["portfolio"],
+    )
+    async def position(
+        account_id: str,
+        position_id: str,
+        request: Request,
+        principal: PrincipalDependency,
+    ) -> PositionResponse:
+        return PositionResponse.from_view(
+            await _context(request).service.get_position(principal, account_id, position_id)
+        )
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/transactions",
+        response_model=PageResponse[ActivityResponse],
+        tags=["activity"],
+    )
+    async def transactions(
+        account_id: str,
+        request: Request,
+        principal: PrincipalDependency,
+        cursor: str | None = None,
+        limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    ) -> PageResponse[ActivityResponse]:
+        page = await _context(request).service.list_activity(
+            principal, account_id, cursor=cursor, limit=limit
+        )
+        return _page(page, ActivityResponse.from_view)
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/dividends",
+        response_model=PageResponse[DividendResponse],
+        tags=["activity"],
+    )
+    async def dividends(
+        account_id: str,
+        request: Request,
+        principal: PrincipalDependency,
+        cursor: str | None = None,
+        limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    ) -> PageResponse[DividendResponse]:
+        page = await _context(request).service.list_dividends(
+            principal, account_id, cursor=cursor, limit=limit
+        )
+        return _page(page, DividendResponse.from_view)
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/orders",
+        response_model=PageResponse[OrderResponse],
+        tags=["activity"],
+    )
+    async def orders(
+        account_id: str,
+        request: Request,
+        principal: PrincipalDependency,
+        cursor: str | None = None,
+        limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    ) -> PageResponse[OrderResponse]:
+        page = await _context(request).service.list_orders(
+            principal, account_id, cursor=cursor, limit=limit
+        )
+        return _page(page, OrderResponse.from_view)
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/snapshots",
+        response_model=PageResponse[SnapshotResponse],
+        tags=["snapshots"],
+    )
+    async def snapshots(
+        account_id: str,
+        request: Request,
+        principal: PrincipalDependency,
+        cursor: str | None = None,
+        limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    ) -> PageResponse[SnapshotResponse]:
+        page = await _context(request).service.list_snapshots(
+            principal, account_id, cursor=cursor, limit=limit
+        )
+        return _page(page, SnapshotResponse.from_view)
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/snapshots/latest",
+        response_model=SnapshotResponse,
+        tags=["snapshots"],
+    )
+    async def latest_snapshot(
+        account_id: str, request: Request, principal: PrincipalDependency
+    ) -> SnapshotResponse:
+        page = await _context(request).service.list_snapshots(
+            principal, account_id, cursor=None, limit=1
+        )
+        if not page.items:
+            raise LookupError("snapshot not found")
+        return SnapshotResponse.from_view(page.items[0])
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/snapshots/compare",
+        response_model=SnapshotComparisonResponse,
+        tags=["snapshots"],
+    )
+    async def compare_snapshots(
+        account_id: str,
+        request: Request,
+        principal: PrincipalDependency,
+        start_id: Annotated[str, Query(min_length=1, max_length=255)],
+        end_id: Annotated[str, Query(min_length=1, max_length=255)],
+    ) -> SnapshotComparisonResponse:
+        comparison = await _context(request).service.compare_snapshots(
+            principal, account_id, start_id, end_id
+        )
+        return SnapshotComparisonResponse.from_view(comparison)
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/allocation",
+        response_model=list[AllocationResponse],
+        tags=["portfolio"],
+    )
+    async def allocation(
+        account_id: str, request: Request, principal: PrincipalDependency
+    ) -> list[AllocationResponse]:
+        values = await _context(request).service.get_allocation(principal, account_id)
+        return [AllocationResponse.from_view(value) for value in values]
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/performance/summary",
+        response_model=PerformanceSummaryResponse,
+        tags=["portfolio"],
+    )
+    async def performance_summary(
+        account_id: str, request: Request, principal: PrincipalDependency
+    ) -> PerformanceSummaryResponse:
+        summary = await _context(request).service.get_summary(principal, account_id)
+        unavailable = ReturnMetricResponse(
+            value=None,
+            availability="unavailable",
+            calculation_version="phase1-performance/1.0.0",
+            methodology="coverage-gated conservative performance policy",
+            unavailable_reason="Full external-flow and valuation coverage is not established.",
+        )
+        return PerformanceSummaryResponse(
+            period_start=None,
+            period_end=summary.quality.as_of.date(),
+            money_weighted_return=unavailable,
+            time_weighted_return=unavailable,
+            modified_dietz_return=unavailable,
+            data_quality=QualityResponse.from_view(summary.quality),
+        )
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/reconciliation",
+        response_model=ReconciliationResponse,
+        tags=["quality"],
+    )
+    async def reconciliation(
+        account_id: str, request: Request, principal: PrincipalDependency
+    ) -> ReconciliationResponse:
+        value = await _context(request).service.get_reconciliation(principal, account_id)
+        return ReconciliationResponse.from_view(value)
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/reconciliation/discrepancies",
+        response_model=list[ReconciliationIssueResponse],
+        tags=["quality"],
+    )
+    async def discrepancies(
+        account_id: str, request: Request, principal: PrincipalDependency
+    ) -> list[ReconciliationIssueResponse]:
+        value = await _context(request).service.get_reconciliation(principal, account_id)
+        return [ReconciliationIssueResponse.from_view(item) for item in value.issues]
+
+    @application.get(
+        "/api/v1/accounts/{account_id}/data-quality",
+        response_model=QualityResponse,
+        tags=["quality"],
+    )
+    async def data_quality(
+        account_id: str, request: Request, principal: PrincipalDependency
+    ) -> QualityResponse:
+        summary = await _context(request).service.get_summary(principal, account_id)
+        return QualityResponse.from_view(summary.quality)
+
+    @application.get(
+        "/api/v1/instruments",
+        response_model=PageResponse[InstrumentResponse],
+        tags=["instruments"],
+    )
+    async def instruments(
+        request: Request,
+        principal: PrincipalDependency,
+        query: Annotated[str | None, Query(min_length=1, max_length=80)] = None,
+        cursor: str | None = None,
+        limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    ) -> PageResponse[InstrumentResponse]:
+        service = _context(request).service
+        account_id = await _single_authorized_account_id(service, principal)
+        page = await service.list_positions(
+            principal,
+            account_id,
+            cursor=cursor,
+            limit=limit,
+        )
+        values = [
+            InstrumentResponse(
+                id=item.id,
+                ticker=item.ticker,
+                name=item.name,
+                instrument_type=item.instrument_type,
+                trading_currency=item.trading_currency,
+            )
+            for item in page.items
+            if query is None
+            or query.casefold() in item.ticker.casefold()
+            or query.casefold() in item.name.casefold()
+        ]
+        return PageResponse(
+            items=values,
+            next_cursor=page.next_cursor,
+            limit=page.limit,
+            total=len(values) if query is not None else page.total,
+        )
+
+    @application.get(
+        "/api/v1/instruments/{instrument_id}",
+        response_model=InstrumentResponse,
+        tags=["instruments"],
+    )
+    async def instrument(
+        instrument_id: str, request: Request, principal: PrincipalDependency
+    ) -> InstrumentResponse:
+        service = _context(request).service
+        account_id = await _single_authorized_account_id(service, principal)
+        value = await service.get_position(
+            principal,
+            account_id,
+            instrument_id,
+        )
+        return InstrumentResponse(
+            id=value.id,
+            ticker=value.ticker,
+            name=value.name,
+            instrument_type=value.instrument_type,
+            trading_currency=value.trading_currency,
+        )
+
+
+def _principal_response(principal: Principal) -> PrincipalResponse:
+    return PrincipalResponse(
+        principal_id=principal.principal_id,
+        owner_id=principal.owner_id,
+        scopes=sorted(scope.value for scope in principal.scopes),
+    )
+
+
+def create_runtime_app() -> FastAPI:
+    """Compose the process app with local JSON telemetry and no implicit exporter."""
+
+    canary = os.environ.get("PHASE1_SECRET_CANARY")
+    configure_logging(service="trading212-api", secret_canaries=(canary,) if canary else ())
+    configure_tracing(service="trading212-api")
+    return create_app()
+
+
+app = create_runtime_app()
