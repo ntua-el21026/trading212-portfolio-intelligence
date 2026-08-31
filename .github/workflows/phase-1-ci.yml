@@ -197,7 +197,6 @@ jobs:
           --health-timeout 3s
           --health-retries 30
     env:
-      DATABASE_URL: postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio
       REDIS_URL: redis://127.0.0.1:6379/0
       TEST_DATABASE_URL: postgresql://portfolio:portfolio@127.0.0.1:5432/portfolio
     steps:
