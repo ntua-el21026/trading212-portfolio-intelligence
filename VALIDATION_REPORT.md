@@ -3,100 +3,135 @@
 **Baseline date:** 2026-08-31  
 **Repository:** `ntua-el21026/trading212-portfolio-intelligence`  
 **Branch:** `main`  
-**Result:** Documentation and execution contract ready for Phase 1 implementation
+**Result:** Approved to begin Phase 1 implementation
 
-## 1. Repository state reviewed
+## 1. Meaning of this result
 
-- Repository is private.
-- Default and required implementation branch is `main`.
-- Direct fast-forward commit policy is recorded in `AGENTS.md`, the design freeze, engineering standards, contribution policy, master plan, Phase 1 specification, Codex prompt, and ADR-0007.
-- Branch/PR workflow is not required by any authoritative implementation document.
-- Shared-history force push/rewrite is prohibited.
+The product design, architecture, provider/security boundaries, financial semantics, implementation sequence, acceptance evidence, and Codex execution contract are sufficiently explicit to begin P1-01 through P1-12.
 
-## 2. Authoritative documentation coverage
+This result does **not** mean the application, Trading 212 Demo/Live integration, remote MCP deployment, ChatGPT registration, or production operations already exist. Those require Phase 1 implementation and evidence.
 
-| Area | Authoritative coverage | Result |
+## 2. Repository governance
+
+| Check | Result |
+|---|---|
+| Current implementation branch is `main` | Pass |
+| Direct fast-forward commit policy documented | Pass |
+| Branch/PR creation forbidden by owner policy | Pass |
+| Force push/history rewrite forbidden | Pass |
+| Document precedence and change control defined | Pass |
+| Human and machine status/progress contracts present | Pass |
+
+## 3. Authoritative documentation coverage
+
+| Area | Authority | Result |
 |---|---|---|
-| Precedence/governance | Design index, design freeze, document governance | Pass |
-| Product and scope | Product requirements, scope/non-goals, open external gates | Pass |
-| Architecture | System, domain/data, API/service, jobs/ingestion | Pass |
-| Trading 212 | Exact ten-capability GET-only contract and negative boundary | Pass |
+| Design precedence/freeze | Design index, design freeze, document governance | Pass |
+| Product/scope | Product requirements, scope/non-goals, open questions | Pass |
+| Architecture/data | System, domain/data, API/service, jobs/ingestion | Pass |
+| Trading 212 | Corrected exact ten-capability GET contract and YAML allowlist | Pass |
 | ChatGPT | MCP/application-service/tool/auth/parity contract | Pass |
-| Financial correctness | Decimal/currency/time/version/quality policy | Pass |
-| Performance | External-flow separation, MWR/TWR/Dietz coverage policy | Pass |
+| Financial correctness | Decimal/currency/time/version/provenance/quality policy | Pass |
+| Performance | External-flow separation and coverage-gated methods | Pass |
 | Reconciliation | Quantity/cash/value bridges and discrepancy model | Pass |
-| Later analytics | Target/optimizer, X-ray, risk/scenario/projection designs | Pass |
+| Later analytics | Optimizer, X-ray, risk/scenario/projection designs | Pass, deferred by phase |
 | Security/privacy | Threat model, secrets, authz, retention, audit | Pass |
-| Engineering | Standards, tests, CI gates, deployment/operations | Pass |
-| Delivery | Three phases, Phase 1 P1-01–P1-12, global exit checklist | Pass |
+| Engineering/operations | Standards, tests, deployment, observability | Pass |
+| Delivery | Three phases, P1-01–P1-12, manifest and matrix | Pass |
 | Codex execution | Complete direct-main implementation prompt | Pass |
 
-## 3. Phase 1 ambiguity review
+## 4. Trading 212 contract correction
+
+The readiness audit identified stale draft paths and corrected them against current official provider documentation.
+
+The frozen Phase 1 registry is now exactly:
+
+```text
+GET /equity/account/summary
+GET /equity/metadata/instruments
+GET /equity/metadata/exchanges
+GET /equity/positions
+GET /equity/orders
+GET /equity/orders/{order_id}
+GET /equity/history/orders
+GET /equity/history/transactions
+GET /equity/history/dividends
+GET /equity/history/exports
+```
+
+The GET exports capability is observational only. Export creation and every other mutating broker request remain forbidden.
+
+The human contract and `config/contracts/trading212-read-allowlist.yaml` must match exactly; implementation tests must reject unknown/non-GET requests before transport.
+
+## 5. Phase 1 ambiguity review
 
 ### Resolved
 
-- Product is analysis/read-only, not an execution system.
-- Trading 212 Demo is the default environment.
-- Broker capability is default-deny and limited to ten exact GET reads.
-- Provider API beta/schema changes are handled through strict contract verification and explicit updates, not path probing.
-- Python/TypeScript/PostgreSQL stack and package boundaries are fixed.
-- Redis is optional coordination infrastructure, not a ledger.
-- Money/quantity/price/FX/weights use exact decimal representations.
-- UTC, provenance, quality states, coverage, and calculation versioning are mandatory.
+- Product is analysis/read-only, not execution.
+- Trading 212 Demo is default.
+- Provider capability is fixed-allowlist and default-deny.
+- Provider beta drift is handled by strict contract verification, not path probing.
+- Runtime/toolchain baseline and dependency-lock protocol are explicit.
+- PostgreSQL is authoritative; Redis is optional coordination infrastructure.
+- Money/quantity/price/FX/ratios use exact decimal representations.
+- UTC, provenance, coverage, quality, missingness, and calculation versioning are mandatory.
 - Canonical domain is provider-independent.
-- Web and MCP share application services.
-- Phase boundaries and deferred features are explicit.
+- Web and MCP share canonical application services.
 - Local/mock implementation is independent of real credentials.
-- Demo and remote ChatGPT registration are explicit external verification gates.
-- Codex has ordered work packages, acceptance criteria, test evidence, commit rules, and stopping conditions.
+- Phase boundaries, deferred capabilities, commands, E2E scenarios, acceptance evidence, and stopping conditions are explicit.
 
-### Intentionally external, non-architectural gates
+### Intentionally external gates
 
-- User-provided Trading 212 Demo read-only credentials.
+- User-provided Trading 212 Demo read-only credentials and Demo smoke.
 - Final remote hosting/domain/production authentication/secret-manager selection.
-- Live ChatGPT app registration against the deployed MCP endpoint.
-- Phase 2 market/ETF data provider selection.
+- Live ChatGPT registration against deployed authenticated MCP.
 
-These do not block Phase 1 implementation. They block only the corresponding real external smoke/deployment claims.
+These do not block locally resolvable Phase 1 implementation. They block only corresponding external connectivity/deployment claims.
 
-## 4. Safety review
+## 6. Safety review
 
-- No design permits Trading 212 `POST`, `PUT`, `PATCH`, or `DELETE` dispatch.
-- Order placement/cancellation/amendment, Pie mutation, transfers, CFDs, and generic provider proxying are explicitly forbidden.
-- Refresh is a high-level application command limited to allowlisted reads.
+- No allowed Trading 212 capability uses `POST`, `PUT`, `PATCH`, or `DELETE`.
+- Order placement/cancellation/amendment, Pie mutation, transfers, CFDs, export creation, and generic provider proxying are explicitly forbidden.
+- Refresh is a high-level closed application command limited to allowlisted reads.
 - MCP has no arbitrary URL, SQL, filesystem, shell, or broker-path tool.
-- Dedicated read-only credentials, server-side secret references, and canary redaction tests are required.
-- Cross-owner authorization, production fail-closed auth, input bounds, rate limiting, and sanitized errors are required.
-- Runtime-negative and architecture tests must prove rejection before network dispatch.
+- Dedicated read-only credentials, server-side secret references, authz, redaction, and canary tests are required.
+- Runtime-negative tests must prove rejection before transport.
 
-## 5. Financial correctness review
+**Result:** Pass for implementation readiness.
 
-- Deposits/withdrawals are external flows; buys/sells/dividends are not contributions.
+## 7. Financial correctness review
+
+- Deposits/withdrawals are external flows; buys/sells are internal.
 - Missing is not zero.
 - Provider-reported and internally derived P/L/cost basis remain distinct.
 - Cross-currency calculations require explicit FX provenance.
-- Performance calculations are coverage-gated and expose residual/quality.
+- Performance is coverage-gated and exposes residual/quality.
 - Reconciliation discrepancies are first-class records.
 - Calculation results carry method/version/time/currency/provenance/assumptions/quality/warnings.
-- Hand-calculated reference and property-based tests are mandatory.
+- Reference and property-based tests are mandatory.
 
-## 6. Implementation-readiness conclusion
+**Result:** Pass.
 
-The repository contains sufficient normative detail for Codex to begin Phase 1 without requesting ordinary architectural or implementation decisions. The prompt explicitly instructs Codex to inspect current `main`, implement all P1-01 through P1-12, validate each coherent direct-main commit, and stop only for genuine external or safety blockers.
+## 8. Automated baseline validation
 
-“Ready for Phase 1” does not mean the application, Demo integration, remote MCP deployment, or production operations already exist. It means the design and execution contract are complete enough to implement them deterministically and validate them without undocumented assumptions.
+`scripts/validate_repository.py` runs without third-party dependencies and validates:
 
-## 7. Phase 1 acceptance remains future evidence
+- required authority and handoff files;
+- UTF-8 text;
+- JSON syntax;
+- exact machine allowlist and ten GET capabilities;
+- absence of stale endpoint paths in authority files;
+- internal Markdown file links;
+- blank sensitive values in `.env.example`;
+- direct-main/freeze/prompt/progress invariants;
+- case-insensitive path collisions.
 
-Codex must generate/update the final Phase 1 acceptance report with:
+GitHub Actions runs this validator on every push to `main` and through manual dispatch.
 
-- exact final commit SHA and ordered commits;
-- passing command/CI results;
-- migration head;
-- OpenAPI/generated client and MCP schemas;
-- exact broker allowlist/default-deny proof;
-- reference/property calculation results;
-- web/MCP E2E evidence;
-- security/redaction/scan evidence;
-- known data coverage limitations;
-- Demo/deployed ChatGPT external gate status.
+## 9. Authorization to proceed
+
+Codex may begin the complete Phase 1 implementation using:
+
+`docs/implementation/prompts/PHASE_1_CODEX_PROMPT.md`
+
+Codex must inspect current `main`, implement rather than merely plan, complete P1-01 through P1-12, commit coherent fast-forward increments directly to `main`, record evidence honestly, and stop before Phase 2.

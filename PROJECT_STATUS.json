@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "project": "trading212-portfolio-intelligence",
+  "repository": "ntua-el21026/trading212-portfolio-intelligence",
+  "branch": "main",
+  "updated_at": "2026-08-31T00:00:00Z",
+  "design_freeze": {
+    "version": "0.1",
+    "status": "accepted"
+  },
+  "documentation_readiness": "approved",
+  "current_phase": "phase_1",
+  "current_release_target": "0.1.0",
+  "implementation_status": "not_started",
+  "broker_mode": "strictly_read_only",
+  "default_broker_environment": "demo",
+  "external_gates": [
+    "trading212_demo_credentials_and_smoke",
+    "remote_hosting_domain_and_production_auth",
+    "deployed_chatgpt_app_registration"
+  ]
+}
