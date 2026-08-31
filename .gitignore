@@ -1,0 +1,74 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
+dist/
+build/
+
+# Node / Next.js
+node_modules/
+.pnpm-store/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Local data and runtime
+*.sqlite
+*.sqlite3
+*.db
+*.log
+logs/
+tmp/
+temp/
+.cache/
+.runtime/
+
+# Private portfolio artifacts
+reports/
+exports/
+backups/
+artifacts/private/
+fixtures/private/
+recordings/private/
+
+# Containers / infrastructure local state
+.postgres-data/
+.redis-data/
+.minio-data/
+
+# Generated clients/contracts (allow explicit committed paths later)
+.generated/
+
+# Environment/tool-specific
+.python-version.local
+.npmrc.local
