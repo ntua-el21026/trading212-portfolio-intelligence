@@ -1,0 +1,325 @@
+name: Phase 1 quality gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase-1-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24.20.0"
+  PNPM_VERSION: "10.34.5"
+  PYTHON_VERSION: "3.13.15"
+  UV_VERSION: "0.12.7"
+
+jobs:
+  governance:
+    name: repository-contracts-and-generated-files
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked Python workspace
+        run: uv sync --frozen --all-packages --all-groups
+
+      - name: Validate repository and workspace contracts
+        run: |
+          python3 scripts/validate_repository.py
+          uv run python scripts/check_workspace.py
+          uv run python scripts/check_architecture.py
+          uv run python scripts/check_trading212_boundary.py
+
+      - name: Reject generated API contract drift
+        run: uv run python scripts/generate_api_contract.py --check
+
+  python-quality:
+    name: python-${{ matrix.gate }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        gate: [format, lint, typecheck, tests, build]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked Python workspace
+        run: uv sync --frozen --all-packages --all-groups
+
+      - name: Check Python formatting
+        if: matrix.gate == 'format'
+        run: uv run ruff format --check apps packages scripts tests
+
+      - name: Lint Python and architecture
+        if: matrix.gate == 'lint'
+        run: |
+          uv run ruff check apps packages scripts tests
+          uv run python scripts/check_architecture.py
+
+      - name: Type-check Python
+        if: matrix.gate == 'typecheck'
+        run: uv run mypy apps packages scripts tests
+
+      - name: Run isolated Python gates
+        if: matrix.gate == 'tests'
+        run: |
+          uv run coverage erase
+          uv run coverage run -m pytest tests/unit tests/property tests/contract tests/security
+          uv run coverage report
+
+      - name: Build every Python distribution
+        if: matrix.gate == 'build'
+        run: uv build --all-packages --out-dir dist/python
+
+  node-quality:
+    name: node-${{ matrix.gate }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        gate: [format, lint, typecheck, unit, build]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install locked pnpm workspace
+        run: pnpm install --frozen-lockfile
+
+      - name: Check TypeScript formatting
+        if: matrix.gate == 'format'
+        run: pnpm format:check
+
+      - name: Lint TypeScript
+        if: matrix.gate == 'lint'
+        run: pnpm lint
+
+      - name: Type-check TypeScript
+        if: matrix.gate == 'typecheck'
+        run: pnpm typecheck
+
+      - name: Run TypeScript unit tests
+        if: matrix.gate == 'unit'
+        run: pnpm test:unit
+
+      - name: Prepare runtime-only web secret canary
+        if: matrix.gate == 'build'
+        run: |
+          canary="$(printf '%s' 'phase1-' 'web-build-secret-' 'canary-31b6d7f90ca2')"
+          printf 'PHASE1_SECRET_CANARY=%s\n' "$canary" >> "$GITHUB_ENV"
+          printf 'T212PI_API_BASE_URL=https://api.invalid/%s\n' "$canary" >> "$GITHUB_ENV"
+
+      - name: Build TypeScript workspaces
+        if: matrix.gate == 'build'
+        run: pnpm build
+
+      - name: Reject secret canary in web runtime artifacts
+        if: matrix.gate == 'build'
+        run: >-
+          python3 scripts/check_secret_canary.py
+          apps/web/.next/standalone
+          apps/web/.next/static
+          apps/web/.next/server
+          apps/web/.next/trace
+          apps/web/.next/trace-build
+
+  postgres:
+    name: postgres-migrations-and-integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:18.6@sha256:4ef4dbc939d61acea57712655ddb4b4ab27419c913f94cca0cd57cb3ea3c2280
+        env:
+          POSTGRES_DB: portfolio
+          POSTGRES_PASSWORD: portfolio
+          POSTGRES_USER: portfolio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U portfolio -d portfolio"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+      redis:
+        image: redis:8.10.1@sha256:298e5b3bc566bade82f46ad5511777a4a07a294097ce16ada2f6a42be5239df5
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      DATABASE_URL: postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio
+      REDIS_URL: redis://127.0.0.1:6379/0
+      TEST_DATABASE_URL: postgresql://portfolio:portfolio@127.0.0.1:5432/portfolio
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked Python workspace
+        run: uv sync --frozen --all-packages --all-groups
+
+      - name: Validate migrations from empty to head twice
+        run: |
+          uv run python scripts/wait_for_services.py --redis
+          uv run alembic -c alembic.ini upgrade head
+          uv run alembic -c alembic.ini upgrade head
+          uv run alembic -c alembic.ini check
+
+      - name: Run migration and integration tests
+        run: uv run pytest -m "migrations or integration"
+
+  browser:
+    name: playwright-chromium
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:18.6@sha256:4ef4dbc939d61acea57712655ddb4b4ab27419c913f94cca0cd57cb3ea3c2280
+        env:
+          POSTGRES_DB: portfolio
+          POSTGRES_PASSWORD: portfolio
+          POSTGRES_USER: portfolio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U portfolio -d portfolio"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      TEST_DATABASE_URL: postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Install locked Python workspace
+        run: uv sync --frozen --all-packages --all-groups
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install locked pnpm workspace
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @trading212/web exec playwright install --with-deps chromium
+
+      - name: Run browser smoke tests
+        run: pnpm test:e2e
+
+  containers:
+    name: application-container-builds
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build every non-root application image
+        run: docker compose build api worker mcp web
+
+  required-gate:
+    name: phase-1-required-gate
+    if: always()
+    needs:
+      [governance, python-quality, node-quality, postgres, browser, containers]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Require every quality gate
+        env:
+          BROWSER_RESULT: ${{ needs.browser.result }}
+          CONTAINERS_RESULT: ${{ needs.containers.result }}
+          GOVERNANCE_RESULT: ${{ needs.governance.result }}
+          NODE_RESULT: ${{ needs.node-quality.result }}
+          POSTGRES_RESULT: ${{ needs.postgres.result }}
+          PYTHON_RESULT: ${{ needs.python-quality.result }}
+        run: |
+          test "$PYTHON_RESULT" = success
+          test "$NODE_RESULT" = success
+          test "$POSTGRES_RESULT" = success
+          test "$BROWSER_RESULT" = success
+          test "$CONTAINERS_RESULT" = success
+          test "$GOVERNANCE_RESULT" = success

@@ -1,0 +1,5 @@
+# Owner: repository owner and designated security reviewer.
+# Reason/scope: this exact historical .env.example fingerprint contains only
+# adjacent blank API key/secret placeholders; no value or credential is present.
+# Review trigger: revalidate on every Gitleaks upgrade and by 2026-12-01.
+53b74c9b7f95c84a66c3618a91d515388760787a:.env.example:generic-api-key:14

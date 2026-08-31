@@ -1,0 +1,55 @@
+rules:
+  - id: t212pi.python.dynamic-code-execution
+    languages: [python]
+    message: Dynamic Python code execution is forbidden in production paths.
+    severity: ERROR
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: exec(...)
+
+  - id: t212pi.python.subprocess-shell
+    languages: [python]
+    message: Shell-enabled subprocess execution requires a reviewed fixed-command abstraction.
+    severity: ERROR
+    pattern-either:
+      - pattern: subprocess.run(..., shell=True, ...)
+      - pattern: subprocess.call(..., shell=True, ...)
+      - pattern: subprocess.Popen(..., shell=True, ...)
+
+  - id: t212pi.python.unsafe-yaml-load
+    languages: [python]
+    message: Use yaml.safe_load for untrusted or repository-controlled YAML.
+    severity: ERROR
+    pattern-either:
+      - pattern: yaml.load(..., Loader=yaml.Loader, ...)
+      - pattern: yaml.load(..., Loader=yaml.UnsafeLoader, ...)
+
+  - id: t212pi.python.formatted-sql-execution
+    languages: [python]
+    message: Formatted SQL passed directly to execute bypasses bound parameters.
+    severity: ERROR
+    pattern-either:
+      - pattern: $SESSION.execute(f"...{$VALUE}...")
+      - pattern: $SESSION.execute("..." % $VALUE)
+
+  - id: t212pi.javascript.dynamic-code-execution
+    languages: [javascript, typescript]
+    message: Dynamic JavaScript execution is forbidden in browser and server paths.
+    severity: ERROR
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: new Function(...)
+
+  - id: t212pi.javascript.unescaped-html
+    languages: [javascript, typescript]
+    message: Unescaped HTML injection requires an explicit sanitization boundary.
+    severity: ERROR
+    pattern: $ELEMENT.dangerouslySetInnerHTML = $VALUE
+
+  - id: t212pi.javascript.child-process-exec
+    languages: [javascript, typescript]
+    message: Shell command execution is forbidden in application TypeScript/JavaScript.
+    severity: ERROR
+    pattern-either:
+      - pattern: child_process.exec(...)
+      - pattern: child_process.execSync(...)

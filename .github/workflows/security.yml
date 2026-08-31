@@ -1,0 +1,233 @@
+name: Security and dependency gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24.20.0"
+  PNPM_VERSION: "10.34.5"
+  PYTHON_VERSION: "3.13.15"
+  UV_VERSION: "0.12.7"
+
+jobs:
+  sast:
+    name: deterministic-private-repository-sast
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Run pinned Semgrep CE rules without external uploads
+        run: >-
+          docker run --rm --network=none --read-only
+          --tmpfs /tmp:rw,noexec,nosuid,size=256m
+          --tmpfs /root:rw,noexec,nosuid,size=128m
+          -v "$PWD:/src:ro" -w /src
+          semgrep/semgrep:1.175.0@sha256:b94b53d02fd4a022f9eac4e2af1380f5c3c4c21400e79d3336bdff1d1db5e796
+          semgrep scan --config .semgrep.yml --error --strict --metrics=off --no-git-ignore
+          apps packages scripts
+
+  repository-secrets:
+    name: repository-secret-scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Run high-confidence local scan
+        run: python3 scripts/check_secrets.py
+
+      - name: Run Gitleaks history scan
+        run: >-
+          docker run --rm
+          -v "$PWD:/repo:ro"
+          ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+          detect --source=/repo --no-banner --redact
+
+  dependency-audit:
+    name: locked-dependency-audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+
+      - name: Audit locked Python dependencies
+        run: |
+          uv export --frozen --all-packages --no-dev --no-emit-workspace --quiet -o requirements-audit.txt
+          uv tool run pip-audit==2.10.1 --requirement requirements-audit.txt --disable-pip
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Audit locked production Node dependencies
+        run: pnpm audit --audit-level high --prod
+
+  dependency-policy:
+    name: pull-request-lock-and-license-policy
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: ${{ env.UV_VERSION }}
+
+      - name: Require an unchanged valid Python lock
+        run: uv lock --check
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Require an unchanged valid Node lock
+        run: pnpm install --frozen-lockfile
+
+  filesystem-scan:
+    name: trivy-filesystem-and-config
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Scan dependencies, files, and configuration
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig,license
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true
+          format: table
+          trivy-config: trivy.yaml
+          version: v0.74.0
+
+  container-scan:
+    name: container-${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: postgres-18.6
+            image: t212pi-postgres:18.6-hardened
+            dockerfile: infrastructure/docker/postgres.Dockerfile
+          - name: redis-8.10.1
+            image: t212pi-redis:8.10.1-hardened
+            dockerfile: infrastructure/docker/redis.Dockerfile
+          - name: phase1-api
+            image: t212pi-api:security-scan
+            dockerfile: infrastructure/docker/api.Dockerfile
+          - name: phase1-worker
+            image: t212pi-worker:security-scan
+            dockerfile: infrastructure/docker/worker.Dockerfile
+          - name: phase1-mcp
+            image: t212pi-mcp:security-scan
+            dockerfile: infrastructure/docker/mcp.Dockerfile
+          - name: phase1-web
+            image: t212pi-web:security-scan
+            dockerfile: infrastructure/docker/web.Dockerfile
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build application image
+        if: matrix.dockerfile != ''
+        run: docker build --file "${{ matrix.dockerfile }}" --tag "${{ matrix.image }}" .
+
+      - name: Scan pinned runtime image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          image-ref: ${{ matrix.image }}
+          scanners: vuln,secret
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true
+          format: table
+          version: v0.74.0
+
+  required-security-gate:
+    name: phase-1-required-security-gate
+    if: always()
+    needs:
+      [
+        sast,
+        repository-secrets,
+        dependency-audit,
+        dependency-policy,
+        filesystem-scan,
+        container-scan,
+      ]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Require every applicable security gate
+        env:
+          CONTAINER_RESULT: ${{ needs.container-scan.result }}
+          DEPENDENCY_RESULT: ${{ needs.dependency-audit.result }}
+          POLICY_RESULT: ${{ needs.dependency-policy.result }}
+          FILESYSTEM_RESULT: ${{ needs.filesystem-scan.result }}
+          SAST_RESULT: ${{ needs.sast.result }}
+          SECRETS_RESULT: ${{ needs.repository-secrets.result }}
+        run: |
+          test "$SAST_RESULT" = success
+          test "$SECRETS_RESULT" = success
+          test "$DEPENDENCY_RESULT" = success
+          test "$POLICY_RESULT" = success -o "$POLICY_RESULT" = skipped
+          test "$FILESYSTEM_RESULT" = success
+          test "$CONTAINER_RESULT" = success

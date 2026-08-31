@@ -1,0 +1,31 @@
+FROM ghcr.io/astral-sh/uv:0.12.7@sha256:95f2aa1fe59274951cfe9b0cbc7972e879ff1004bc8945d130a32eb0dbd85945 AS uv
+FROM python:3.13.15-slim-bookworm@sha256:c45a22ea000adfd9cda29364bbe7edd23001ce5cc2ad15857cfbf7766943b9ca AS builder
+
+COPY --from=uv /uv /uvx /usr/local/bin/
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PROJECT_ENVIRONMENT=/opt/venv
+WORKDIR /build
+COPY . .
+RUN uv sync --frozen --no-dev --package trading212-mcp --no-editable \
+    && rm -rf \
+        /opt/venv/bin/pip* \
+        /opt/venv/lib/python3.13/site-packages/pip \
+        /opt/venv/lib/python3.13/site-packages/pip-* \
+        /opt/venv/lib/python3.13/site-packages/setuptools \
+        /opt/venv/lib/python3.13/site-packages/setuptools-*
+
+FROM python:3.13.15-slim-bookworm@sha256:c45a22ea000adfd9cda29364bbe7edd23001ce5cc2ad15857cfbf7766943b9ca AS runtime
+ENV PATH=/opt/venv/bin:$PATH PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /app
+RUN groupadd --gid 10001 app \
+    && useradd --uid 10001 --gid app --no-create-home app \
+    && rm -rf \
+        /usr/local/bin/pip* \
+        /usr/local/lib/python3.13/ensurepip \
+        /usr/local/lib/python3.13/site-packages/pip \
+        /usr/local/lib/python3.13/site-packages/pip-*
+COPY --from=builder --chown=app:app /opt/venv /opt/venv
+USER app
+EXPOSE 8001
+HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \
+  CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health/ready', timeout=3).read()"]
+CMD ["python", "-m", "trading212_mcp.main"]

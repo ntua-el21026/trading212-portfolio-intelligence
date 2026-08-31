@@ -1,0 +1,134 @@
+# Phase 1 Local Operation and Deployment
+
+**Status:** Phase 1 operational contract
+**Release:** `0.1.0`
+
+This runbook applies to the API, worker, MCP gateway, web application,
+PostgreSQL system of record, and non-authoritative Redis coordination service.
+It does not authorize Trading 212 Live access or public exposure of local
+synthetic authentication.
+
+## 1. Local prerequisites
+
+- Python `3.13.15` and `uv 0.12.7`;
+- Node.js `24.20.0`, Corepack, and pnpm `10.34.5`;
+- Docker with Compose (the Makefile also detects legacy `docker-compose`);
+- GNU Make.
+
+From a clean checkout:
+
+```bash
+make bootstrap
+make run-local
+```
+
+`make run-local` builds and starts the repository's hardened PostgreSQL and Redis
+derivatives, the one-shot migration and
+synthetic seed jobs, API, worker, MCP, and web services. The seed is deterministic
+and idempotent. It is restricted to `local`/`test` and contains no provider
+credentials.
+
+Use `make dev` when running API and web processes on the host. It starts the
+dependencies, migrates, seeds, and launches both processes with loopback-only
+local authentication. Stop containers without deleting the PostgreSQL volume:
+
+```bash
+make stop-local
+```
+
+Never use a volume-removing Compose command as a routine restart procedure.
+
+## 2. Local endpoints and verification
+
+| Surface | Address | Expected check |
+|---|---|---|
+| Web | `http://127.0.0.1:3000` | authenticated local portfolio shell |
+| API liveness | `http://127.0.0.1:8000/health/live` | HTTP 200, bounded status |
+| API readiness | `http://127.0.0.1:8000/health/ready` | HTTP 200 only after required dependencies are ready |
+| MCP liveness | `http://127.0.0.1:8001/health/live` | HTTP 200, bounded status |
+| MCP readiness | `http://127.0.0.1:8001/health/ready` | HTTP 200 only when an authentication mode is configured |
+| PostgreSQL | `127.0.0.1:5432` | `pg_isready` through the container health check |
+| Redis | `127.0.0.1:6379` | `PONG`; never authoritative financial storage |
+
+Inspect service state and sanitized logs with the Compose implementation
+available on the host:
+
+```bash
+docker compose ps
+docker compose logs --since=10m api worker mcp web
+```
+
+Do not use `docker compose config` or environment-dump commands in shared logs
+when a credential bundle has been injected; interpolation can reveal secret
+values.
+
+## 3. Migrations and seed workflow
+
+Run schema changes before compatible application processes:
+
+```bash
+make run-dependencies
+make migrate
+make seed-demo
+```
+
+`make migrate` upgrades to the Alembic head. Re-running the upgrade and synthetic
+seed is safe. Migration downgrades are not an operational rollback mechanism.
+For a deployment, run the migration image as a controlled one-shot job with an
+advisory deployment lock, record the previous and new Alembic revisions, and
+then roll out compatible services.
+
+## 4. Deployment configuration boundary
+
+Use immutable images identified by commit SHA and digest. Runtime configuration
+must be supplied by the deployment platform, not baked into an image.
+
+| Concern | Local/test | Staging/production requirement |
+|---|---|---|
+| Authentication | explicitly enabled loopback synthetic mode | composed bearer/session verifier with issuer, audience, key references, exact origins and hosts |
+| Sessions | insecure cookie permitted only on loopback local HTTP | `Secure`, `HttpOnly`, `SameSite=Strict` or approved `Lax` over TLS |
+| Secrets | allowlisted environment adapter for a private Demo validation shell | external secret-manager adapter and opaque references |
+| Broker | synthetic by default; opt-in Demo smoke | Demo in staging; any Live read-only use needs the separate explicit Live gate and owner review |
+| Database | hardened derivative of pinned PostgreSQL `18.6`, running unprivileged | managed PostgreSQL, encrypted transport/storage, monitored backups |
+| Redis | hardened derivative of pinned Redis `8.10.1`, unprivileged and non-authoritative | private managed service where required; loss must not lose canonical facts/checkpoints |
+| Ingress | loopback only | TLS, exact host/origin allowlists, rate controls, no direct database/Redis exposure |
+| Telemetry | local structured output | redacted logs, bounded metrics, sampled traces, configured error reporter |
+
+Production startup is expected to fail closed until the authentication and
+external secret-provider adapters are composed. Do not weaken this gate to make
+an image start.
+
+## 5. Release deployment sequence
+
+1. Record the reviewed Git SHA, lockfile hashes, image digests, Alembic head, and
+   configuration revision.
+2. Pass repository validation, formatting, lint, type checks, tests, builds,
+   dependency/secret/static analysis, and container scans.
+3. Verify an encrypted backup and a recent isolated restore exercise.
+4. Deploy the migration one-shot job; stop on any schema mismatch.
+5. Deploy API, worker, MCP, and web images by immutable digest.
+6. Require liveness and readiness checks to pass. Confirm structured logs contain
+   correlation/run IDs and no headers, payloads, tokens, or credentials.
+7. Run authenticated synthetic API/web/MCP smoke checks. Use Trading 212 Demo only
+   through the separate opt-in procedure in
+   [Credentials and Demo Validation](CREDENTIALS_AND_DEMO_VALIDATION.md).
+8. Verify metrics, traces, error reporting, backup alerts, worker queue/lease
+   health, and stale-data/reconciliation alerts.
+9. Record the completed deployment evidence. Do not claim ChatGPT registration
+   until the external procedure actually passes.
+
+## 6. Rollback
+
+Roll back to a known compatible application image digest. Do not improvise an
+Alembic downgrade. If a schema change is not backward compatible, stop the
+rollout and follow its reviewed forward-repair or backup-restore plan. Keep
+broker egress disabled during a data restore, reattach credentials only after
+ownership, provenance, migration, and reconciliation validation, and record all
+decisions in the incident timeline.
+
+See also:
+
+- [Backup and Restore](BACKUP_RESTORE.md)
+- [Troubleshooting](TROUBLESHOOTING.md)
+- [MCP Inspector and ChatGPT Validation](MCP_CHATGPT_VALIDATION.md)
+- [Deployment, Observability, and Recovery](../engineering/DEPLOYMENT_OPERATIONS.md)
