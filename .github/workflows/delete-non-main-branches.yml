@@ -1,0 +1,42 @@
+name: Delete non-main branches
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/delete-non-main-branches.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  delete:
+    name: delete-every-branch-except-main
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Delete every branch except main
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const branches = await github.paginate(
+              github.rest.repos.listBranches,
+              { owner, repo, per_page: 100 }
+            );
+
+            for (const { name } of branches) {
+              if (name === "main") {
+                continue;
+              }
+
+              core.info(`Deleting branch: ${name}`);
+              await github.rest.git.deleteRef({
+                owner,
+                repo,
+                ref: `heads/${name}`,
+              });
+            }
