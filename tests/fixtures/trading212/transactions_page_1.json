@@ -1,0 +1,12 @@
+{
+  "items": [
+    {
+      "amount": 1000.0,
+      "currency": "EUR",
+      "dateTime": "2026-01-03T10:15:30Z",
+      "reference": "synthetic-deposit-1",
+      "type": "DEPOSIT"
+    }
+  ],
+  "nextPagePath": "/api/v0/equity/history/transactions?cursor=opaque-2&limit=50"
+}

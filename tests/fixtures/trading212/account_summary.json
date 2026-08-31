@@ -1,0 +1,16 @@
+{
+  "id": 2120001,
+  "currency": "EUR",
+  "cash": {
+    "availableToTrade": 1450.25,
+    "inPies": 0,
+    "reservedForOrders": 0
+  },
+  "investments": {
+    "currentValue": 8550.75,
+    "realizedProfitLoss": 125.4,
+    "totalCost": 8000.0,
+    "unrealizedProfitLoss": 550.75
+  },
+  "totalValue": 10001.0
+}

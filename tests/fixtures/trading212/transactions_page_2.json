@@ -1,0 +1,12 @@
+{
+  "items": [
+    {
+      "amount": -25.5,
+      "currency": "EUR",
+      "dateTime": "2026-01-05T12:00:00+00:00",
+      "reference": "synthetic-withdrawal-1",
+      "type": "WITHDRAWAL"
+    }
+  ],
+  "nextPagePath": null
+}

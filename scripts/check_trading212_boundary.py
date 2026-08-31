@@ -1,0 +1,224 @@
+#!/usr/bin/env python3
+"""Statically enforce the sealed, GET-only Trading 212 production boundary."""
+
+from __future__ import annotations
+
+import ast
+import re
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+PROVIDER_ROOT = ROOT / "packages/trading212/src/trading212_provider"
+TRANSPORT_OWNER = PROVIDER_ROOT / "client.py"
+ORIGIN_OWNER = PROVIDER_ROOT / "configuration.py"
+ORIGIN_CONTRACT = PROVIDER_ROOT / "contracts/trading212-read-allowlist.yaml"
+ORIGIN_OWNERS = frozenset({ORIGIN_OWNER, ORIGIN_CONTRACT})
+
+_PRODUCTION_ROOTS = (ROOT / "apps", ROOT / "packages", ROOT / "scripts")
+_PRODUCTION_TEXT_SUFFIXES = {
+    ".cjs",
+    ".dockerfile",
+    ".js",
+    ".json",
+    ".mjs",
+    ".sh",
+    ".toml",
+    ".ts",
+    ".tsx",
+    ".yaml",
+    ".yml",
+}
+_EXCLUDED_PARTS = {
+    ".next",
+    ".venv",
+    "__pycache__",
+    "coverage",
+    "dist",
+    "docs",
+    "node_modules",
+    "test-results",
+    "tests",
+}
+_TRANSPORT_IMPORTS = {"aiohttp", "http.client", "httpx", "requests", "urllib.request"}
+_MUTATING_METHODS = {"delete", "patch", "post", "put"}
+_MUTATING_LITERALS = {method.upper() for method in _MUTATING_METHODS}
+_FORBIDDEN_PATH_FRAGMENTS = (
+    "/cfd/",
+    "/equity/orders/limit",
+    "/equity/orders/market",
+    "/equity/orders/stop",
+    "/equity/pies",
+    "/equity/transfers",
+    "/equity/payments",
+    "/equity/withdrawals",
+)
+_PROVIDER_ORIGINS = (
+    "demo.trading212.com",
+    "live.trading212.com",
+)
+
+
+def _production_python_files() -> list[Path]:
+    files: list[Path] = []
+    for root in _PRODUCTION_ROOTS:
+        for path in root.rglob("*.py"):
+            if not set(path.parts) & _EXCLUDED_PARTS:
+                files.append(path)
+    return sorted(files)
+
+
+def _production_text_files() -> list[Path]:
+    files: list[Path] = []
+    for root in _PRODUCTION_ROOTS:
+        for path in root.rglob("*"):
+            if (
+                path.is_file()
+                and path.suffix.casefold() in _PRODUCTION_TEXT_SUFFIXES
+                and not set(path.parts) & _EXCLUDED_PARTS
+            ):
+                files.append(path)
+    return sorted(files)
+
+
+def _import_name(node: ast.Import | ast.ImportFrom) -> set[str]:
+    if isinstance(node, ast.Import):
+        return {alias.name for alias in node.names}
+    return {node.module} if node.module is not None else set()
+
+
+def _transport_import_findings(path: Path, tree: ast.AST) -> list[str]:
+    findings: list[str] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.Import, ast.ImportFrom)):
+            continue
+        for imported in _import_name(node):
+            if (
+                any(
+                    imported == transport or imported.startswith(f"{transport}.")
+                    for transport in _TRANSPORT_IMPORTS
+                )
+                and path != TRANSPORT_OWNER
+            ):
+                findings.append(
+                    f"{path.relative_to(ROOT)} imports outbound transport {imported}; "
+                    "only the sealed provider client may own provider transport"
+                )
+    return findings
+
+
+def _provider_call_findings(path: Path, tree: ast.AST) -> list[str]:
+    if PROVIDER_ROOT not in path.parents:
+        return []
+    findings: list[str] = []
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr.casefold() in _MUTATING_METHODS | {"request"}
+        ):
+            findings.append(
+                f"{path.relative_to(ROOT)}:{node.lineno} contains a generic or mutating "
+                f"HTTP call ({node.func.attr})"
+            )
+        if (
+            isinstance(node, ast.Constant)
+            and isinstance(node.value, str)
+            and node.value in _MUTATING_LITERALS
+        ):
+            findings.append(
+                f"{path.relative_to(ROOT)}:{node.lineno} contains mutating method literal "
+                f"{node.value}"
+            )
+    return findings
+
+
+def _text_findings(path: Path, text: str) -> list[str]:
+    if path == Path(__file__).resolve():
+        return []
+    findings: list[str] = []
+    relative = path.relative_to(ROOT)
+    for origin in _PROVIDER_ORIGINS:
+        if origin in text and path not in ORIGIN_OWNERS:
+            findings.append(
+                f"{relative} contains Trading 212 origin {origin}; origins belong only to "
+                "the closed provider configuration"
+            )
+    for fragment in _FORBIDDEN_PATH_FRAGMENTS:
+        if fragment in text.casefold():
+            findings.append(f"{relative} contains forbidden provider path fragment {fragment}")
+    return findings
+
+
+def _non_python_provider_call_findings(path: Path, text: str) -> list[str]:
+    if PROVIDER_ROOT not in path.parents or path.suffix == ".py":
+        return []
+    relative = path.relative_to(ROOT)
+    patterns = (
+        r"\bmethod\s*:\s*['\"](?:DELETE|PATCH|POST|PUT)['\"]",
+        r"\.(?:delete|patch|post|put|request)\s*\(",
+    )
+    return [
+        f"{relative} contains a generic or mutating provider request pattern"
+        for pattern in patterns
+        if re.search(pattern, text, flags=re.IGNORECASE)
+    ]
+
+
+def validate_trading212_text(path: Path, text: str) -> list[str]:
+    """Validate one production text file for forbidden provider boundary material."""
+
+    return sorted(
+        set((*_text_findings(path, text), *_non_python_provider_call_findings(path, text)))
+    )
+
+
+def _client_surface_findings() -> list[str]:
+    tree = ast.parse(TRANSPORT_OWNER.read_text(encoding="utf-8"), filename=str(TRANSPORT_OWNER))
+    for node in tree.body:
+        if not isinstance(node, ast.ClassDef) or node.name != "Trading212Client":
+            continue
+        public = {
+            child.name
+            for child in node.body
+            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and not child.name.startswith("_")
+        }
+        generic = public & {"delete", "fetch", "get", "patch", "post", "put", "request"}
+        return [f"Trading212Client exposes forbidden generic method {name}" for name in generic]
+    return ["Trading212Client class was not found in the sealed transport owner"]
+
+
+def validate_trading212_boundary() -> list[str]:
+    """Return deterministic findings; an empty list proves the static boundary."""
+    findings: list[str] = []
+    for path in _production_python_files():
+        text = path.read_text(encoding="utf-8")
+        try:
+            tree = ast.parse(text, filename=str(path))
+        except SyntaxError as exc:
+            findings.append(f"{path.relative_to(ROOT)} could not be parsed: {exc}")
+            continue
+        findings.extend(_transport_import_findings(path, tree))
+        findings.extend(_provider_call_findings(path, tree))
+        findings.extend(_text_findings(path, text))
+    for path in _production_text_files():
+        if path.suffix == ".py":
+            continue
+        findings.extend(validate_trading212_text(path, path.read_text(encoding="utf-8")))
+    findings.extend(_client_surface_findings())
+    return sorted(set(findings))
+
+
+def main() -> int:
+    findings = validate_trading212_boundary()
+    if findings:
+        print("Trading 212 GET-only boundary validation failed:")
+        for finding in findings:
+            print(f"- {finding}")
+        return 1
+    print("Trading 212 GET-only production boundary validation passed.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

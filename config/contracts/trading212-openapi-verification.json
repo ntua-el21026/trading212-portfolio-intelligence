@@ -1,0 +1,103 @@
+{
+  "source": "https://docs.trading212.com/_bundle/api.json?download",
+  "retrieved_at": "2026-08-31T00:00:00Z",
+  "sha256": "51b0da636efff0b0e4c8e47fc3a5ba804f65d35d4d0beb910416322ffb119c13",
+  "openapi": "3.0.1",
+  "api_version": "v0",
+  "authentication": {
+    "scheme": "basic",
+    "username": "API_KEY",
+    "password": "API_SECRET",
+    "note": "The prose-defined Basic scheme is authoritative; the upstream OpenAPI declares two Authorization schemes in one requirement and cannot be generated safely."
+  },
+  "rate_limit_headers": [
+    "x-ratelimit-limit",
+    "x-ratelimit-period",
+    "x-ratelimit-remaining",
+    "x-ratelimit-reset",
+    "x-ratelimit-used"
+  ],
+  "operations": [
+    {
+      "capability": "account_summary",
+      "path": "/equity/account/summary",
+      "rate_limit": 1,
+      "rate_period_seconds": 5,
+      "query": {}
+    },
+    {
+      "capability": "metadata_instruments",
+      "path": "/equity/metadata/instruments",
+      "rate_limit": 1,
+      "rate_period_seconds": 50,
+      "query": {}
+    },
+    {
+      "capability": "metadata_exchanges",
+      "path": "/equity/metadata/exchanges",
+      "rate_limit": 1,
+      "rate_period_seconds": 30,
+      "query": {}
+    },
+    {
+      "capability": "portfolio_positions",
+      "path": "/equity/positions",
+      "rate_limit": 1,
+      "rate_period_seconds": 1,
+      "query": { "ticker": "string" }
+    },
+    {
+      "capability": "pending_orders",
+      "path": "/equity/orders",
+      "rate_limit": 1,
+      "rate_period_seconds": 5,
+      "query": {}
+    },
+    {
+      "capability": "order_detail",
+      "path": "/equity/orders/{order_id}",
+      "rate_limit": 1,
+      "rate_period_seconds": 1,
+      "query": {}
+    },
+    {
+      "capability": "historical_orders",
+      "path": "/equity/history/orders",
+      "rate_limit": 6,
+      "rate_period_seconds": 60,
+      "query": { "cursor": "int64", "ticker": "string", "limit": "int32:1..50" }
+    },
+    {
+      "capability": "historical_transactions",
+      "path": "/equity/history/transactions",
+      "rate_limit": 6,
+      "rate_period_seconds": 60,
+      "query": {
+        "cursor": "string",
+        "time": "date-time",
+        "limit": "int32:1..50"
+      }
+    },
+    {
+      "capability": "historical_dividends",
+      "path": "/equity/history/dividends",
+      "rate_limit": 6,
+      "rate_period_seconds": 60,
+      "query": { "cursor": "int64", "ticker": "string", "limit": "int32:1..50" }
+    },
+    {
+      "capability": "historical_exports",
+      "path": "/equity/history/exports",
+      "rate_limit": 1,
+      "rate_period_seconds": 60,
+      "query": {}
+    }
+  ],
+  "known_upstream_contract_gaps": [
+    "Component schemas do not declare required fields, nullability, or closed object shapes.",
+    "Pagination prose permits null nextPagePath while the OpenAPI declares only string.",
+    "Rate-limit headers and the documented maximum page size are absent from the OpenAPI schema.",
+    "The account-summary prose describes totalValue as total account value while the bundled schema describes it as investments value; Phase 1 retains the field but excludes it from Trading 212 value reconciliation until Demo behavior is verified.",
+    "The official order-detail template uses {id}; the frozen contract uses the equivalent local alias {order_id}."
+  ]
+}

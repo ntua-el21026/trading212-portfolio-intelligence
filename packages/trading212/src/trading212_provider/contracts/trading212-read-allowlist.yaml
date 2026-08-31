@@ -1,0 +1,65 @@
+schema_version: 1
+provider: trading212
+api_version: v0
+reviewed_at: "2026-08-31"
+default_environment: demo
+base_urls:
+  demo: https://demo.trading212.com/api/v0
+  live: https://live.trading212.com/api/v0
+capabilities:
+  - capability: account_summary
+    method: GET
+    path: /equity/account/summary
+  - capability: metadata_instruments
+    method: GET
+    path: /equity/metadata/instruments
+  - capability: metadata_exchanges
+    method: GET
+    path: /equity/metadata/exchanges
+  - capability: portfolio_positions
+    method: GET
+    path: /equity/positions
+  - capability: pending_orders
+    method: GET
+    path: /equity/orders
+  - capability: order_detail
+    method: GET
+    path: /equity/orders/{order_id}
+    path_parameters:
+      order_id:
+        type: provider_identifier
+        required: true
+  - capability: historical_orders
+    method: GET
+    path: /equity/history/orders
+  - capability: historical_transactions
+    method: GET
+    path: /equity/history/transactions
+  - capability: historical_dividends
+    method: GET
+    path: /equity/history/dividends
+  - capability: historical_exports
+    method: GET
+    path: /equity/history/exports
+policy:
+  default_deny: true
+  arbitrary_urls: false
+  automatic_path_discovery: false
+  redirects: false
+  demo_by_default: true
+  live_requires_explicit_configuration: true
+forbidden_methods:
+  - POST
+  - PUT
+  - PATCH
+  - DELETE
+forbidden_families:
+  - order_placement
+  - order_cancellation
+  - order_amendment
+  - pie_mutation
+  - report_creation
+  - transfers
+  - payments
+  - cfd
+  - generic_proxy
