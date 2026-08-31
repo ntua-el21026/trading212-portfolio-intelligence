@@ -1,0 +1,30 @@
+{
+  "name": "trading212-portfolio-intelligence",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Strictly read-only Trading 212 portfolio intelligence workspace",
+  "engines": {
+    "node": "24.20.0",
+    "pnpm": "10.34.5"
+  },
+  "packageManager": "pnpm@10.34.5",
+  "scripts": {
+    "build": "corepack pnpm -r --if-present build",
+    "format": "prettier --write --ignore-unknown .",
+    "format:check": "prettier --check --ignore-unknown .",
+    "lint": "corepack pnpm -r --if-present lint",
+    "security:dependencies": "corepack pnpm audit --audit-level high --prod",
+    "test:e2e": "corepack pnpm --filter @trading212/web test:e2e",
+    "test:unit": "corepack pnpm -r --if-present test:unit",
+    "typecheck": "corepack pnpm -r --if-present typecheck"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@next/eslint-plugin-next": "16.3.3",
+    "eslint": "10.9.1",
+    "eslint-config-next": "16.3.3",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "prettier": "3.9.6",
+    "typescript": "npm:@typescript/typescript6@6.0.2"
+  }
+}

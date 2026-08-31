@@ -1,0 +1,15 @@
+[build-system]
+requires = ["uv_build==0.12.7"]
+build-backend = "uv_build"
+
+[project]
+name = "trading212-security"
+version = "0.1.0"
+description = "Authentication, authorization, redaction, and secret boundaries"
+requires-python = "==3.13.*"
+dependencies = [
+    "cryptography==50.0.1",
+    "pydantic==2.13.5",
+    "pydantic-settings==2.15.0",
+    "pyjwt==2.13.0",
+]

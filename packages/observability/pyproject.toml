@@ -1,0 +1,19 @@
+[build-system]
+requires = ["uv_build==0.12.7"]
+build-backend = "uv_build"
+
+[project]
+name = "trading212-observability"
+version = "0.1.0"
+description = "Structured logging, metrics, and tracing adapters"
+requires-python = "==3.13.*"
+dependencies = [
+    "opentelemetry-api==1.44.0",
+    "opentelemetry-sdk==1.44.0",
+    "prometheus-client==0.26.0",
+    "structlog==26.1.0",
+    "trading212-security==0.1.0",
+]
+
+[tool.uv.sources]
+trading212-security = { workspace = true }

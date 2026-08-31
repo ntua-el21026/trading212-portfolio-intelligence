@@ -1,0 +1,22 @@
+[build-system]
+requires = ["uv_build==0.12.7"]
+build-backend = "uv_build"
+
+[project]
+name = "trading212-persistence"
+version = "0.1.0"
+description = "PostgreSQL persistence and migration adapters"
+requires-python = "==3.13.*"
+dependencies = [
+    "alembic==1.19.1",
+    "psycopg[binary]==3.3.4",
+    "sqlalchemy==2.0.52",
+    "trading212-application==0.1.0",
+    "trading212-domain==0.1.0",
+    "trading212-security==0.1.0",
+]
+
+[tool.uv.sources]
+trading212-application = { workspace = true }
+trading212-domain = { workspace = true }
+trading212-security = { workspace = true }

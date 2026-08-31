@@ -1,0 +1,14 @@
+.git/
+.next/
+.venv/
+coverage/
+dist/
+htmlcov/
+node_modules/
+playwright-report/
+packages/api-contracts/openapi/phase1-v1.json
+test-results/
+uv.lock
+pnpm-lock.yaml
+docs/
+*.md

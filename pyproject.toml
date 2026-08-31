@@ -1,0 +1,121 @@
+[project]
+name = "trading212-portfolio-intelligence"
+version = "0.1.0"
+description = "Strictly read-only Trading 212 portfolio intelligence platform"
+requires-python = "==3.13.*"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "coverage==7.16.0",
+    "hypothesis==6.167.1",
+    "mypy==2.3.1",
+    "pytest==9.1.1",
+    "pytest-asyncio==1.4.0",
+    "ruff==0.16.5",
+    "types-pyyaml==6.0.12.20260815",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = [
+    "apps/api",
+    "apps/mcp",
+    "apps/worker",
+    "packages/analytics",
+    "packages/api-contracts",
+    "packages/application",
+    "packages/domain",
+    "packages/observability",
+    "packages/persistence",
+    "packages/security",
+    "packages/trading212",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = ["migrations/versions"]
+
+[tool.ruff.format]
+docstring-code-format = true
+quote-style = "double"
+
+[tool.ruff.lint]
+select = ["ASYNC", "B", "E", "F", "I", "PERF", "RUF", "S", "SIM", "UP"]
+ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101", "S105", "S106", "S311"]
+"migrations/**/*.py" = ["E501"]
+"scripts/**/*.py" = ["PERF401"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+warn_unused_configs = true
+show_error_codes = true
+pretty = true
+namespace_packages = true
+explicit_package_bases = true
+exclude = ["migrations/versions"]
+mypy_path = [
+    "apps/api/src",
+    "apps/mcp/src",
+    "apps/worker/src",
+    "packages/analytics/src",
+    "packages/api-contracts/src",
+    "packages/application/src",
+    "packages/domain/src",
+    "packages/observability/src",
+    "packages/persistence/src",
+    "packages/security/src",
+    "packages/trading212/src",
+]
+
+[tool.pytest.ini_options]
+minversion = "9.1"
+addopts = ["--strict-config", "--strict-markers", "-ra"]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "unit: deterministic isolated tests",
+    "property: property-based invariant tests",
+    "contract: schema and interface contract tests",
+    "integration: tests requiring local services",
+    "migrations: database migration tests",
+    "security: negative and security-boundary tests",
+    "e2e: end-to-end tests",
+    "external: credentialed or deployed external tests",
+]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = [
+    "trading212_analytics",
+    "trading212_api",
+    "trading212_api_contracts",
+    "trading212_application",
+    "trading212_domain",
+    "trading212_mcp",
+    "trading212_observability",
+    "trading212_persistence",
+    "trading212_provider",
+    "trading212_security",
+    "trading212_worker",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 70
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]

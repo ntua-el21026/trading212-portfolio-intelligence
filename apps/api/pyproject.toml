@@ -1,0 +1,30 @@
+[build-system]
+requires = ["uv_build==0.12.7"]
+build-backend = "uv_build"
+
+[project]
+name = "trading212-api"
+version = "0.1.0"
+description = "FastAPI composition root for Trading 212 Portfolio Intelligence"
+requires-python = "==3.13.*"
+dependencies = [
+    "celery[redis]==5.6.3",
+    "fastapi==0.141.1",
+    "pydantic==2.13.5",
+    "pydantic-settings==2.15.0",
+    "trading212-api-contracts==0.1.0",
+    "trading212-application==0.1.0",
+    "trading212-domain==0.1.0",
+    "trading212-observability==0.1.0",
+    "trading212-persistence==0.1.0",
+    "trading212-security==0.1.0",
+    "uvicorn==0.41.0",
+]
+
+[tool.uv.sources]
+trading212-api-contracts = { workspace = true }
+trading212-application = { workspace = true }
+trading212-domain = { workspace = true }
+trading212-observability = { workspace = true }
+trading212-persistence = { workspace = true }
+trading212-security = { workspace = true }

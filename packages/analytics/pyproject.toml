@@ -1,0 +1,13 @@
+[build-system]
+requires = ["uv_build==0.12.7"]
+build-backend = "uv_build"
+
+[project]
+name = "trading212-analytics"
+version = "0.1.0"
+description = "Deterministic financial analytics"
+requires-python = "==3.13.*"
+dependencies = ["trading212-domain==0.1.0"]
+
+[tool.uv.sources]
+trading212-domain = { workspace = true }

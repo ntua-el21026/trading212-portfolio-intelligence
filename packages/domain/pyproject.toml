@@ -1,0 +1,10 @@
+[build-system]
+requires = ["uv_build==0.12.7"]
+build-backend = "uv_build"
+
+[project]
+name = "trading212-domain"
+version = "0.1.0"
+description = "Provider-independent canonical financial domain"
+requires-python = "==3.13.*"
+dependencies = []

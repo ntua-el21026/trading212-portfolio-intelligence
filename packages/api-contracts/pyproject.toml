@@ -1,0 +1,10 @@
+[build-system]
+requires = ["uv_build==0.12.7"]
+build-backend = "uv_build"
+
+[project]
+name = "trading212-api-contracts"
+version = "0.1.0"
+description = "Versioned API and cross-language contract artifacts"
+requires-python = "==3.13.*"
+dependencies = ["pydantic==2.13.5"]

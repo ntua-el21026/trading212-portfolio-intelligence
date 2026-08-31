@@ -1,0 +1,19 @@
+packages:
+  - "apps/web"
+  - "packages/api-contracts"
+  - "packages/ui"
+
+catalogMode: strict
+cleanupUnusedCatalogs: true
+linkWorkspacePackages: true
+saveWorkspaceProtocol: rolling
+
+# The pinned ESLint 10 release is accepted by Next, while a few transitive lint
+# plugins still publish peer ranges ending at ESLint 9. Keep peer enforcement
+# strict elsewhere and scope the compatibility exception to this runtime major.
+peerDependencyRules:
+  allowedVersions:
+    eslint: "10"
+
+onlyBuiltDependencies:
+  - unrs-resolver
