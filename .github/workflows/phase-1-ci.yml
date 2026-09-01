@@ -96,10 +96,7 @@ jobs:
 
       - name: Run isolated Python gates
         if: matrix.gate == 'tests'
-        run: |
-          uv run coverage erase
-          uv run coverage run -m pytest tests/unit tests/property tests/contract tests/security
-          uv run coverage report
+        run: uv run pytest tests/unit tests/property tests/contract tests/security
 
       - name: Build every Python distribution
         if: matrix.gate == 'build'
@@ -225,8 +222,13 @@ jobs:
           uv run alembic -c alembic.ini upgrade head
           uv run alembic -c alembic.ini check
 
-      - name: Run migration and integration tests
-        run: uv run pytest -m "migrations or integration"
+      - name: Run complete service-backed Python coverage gate
+        run: |
+          uv run coverage erase
+          uv run coverage run -m pytest tests/unit tests/property tests/contract tests/security
+          uv run coverage run -m pytest -m "migrations or integration"
+          uv run coverage combine
+          uv run coverage report
 
   browser:
     name: playwright-chromium

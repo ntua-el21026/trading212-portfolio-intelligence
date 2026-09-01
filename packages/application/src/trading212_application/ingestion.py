@@ -599,7 +599,13 @@ class IngestionCoordinator:
             while True:
                 done, _pending = await asyncio.wait((task,), timeout=interval)
                 if done:
-                    return await task
+                    result = await task
+                    await self._store.heartbeat(
+                        run_id=run_id,
+                        lease_token=lease.token,
+                        now=_require_utc(self._clock(), "clock"),
+                    )
+                    return result
                 await self._store.heartbeat(
                     run_id=run_id,
                     lease_token=lease.token,

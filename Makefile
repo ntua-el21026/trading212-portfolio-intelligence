@@ -88,9 +88,13 @@ test-security: architecture-check ## Run negative security and secret-canary tes
 	$(UV) run python scripts/check_secrets.py
 	$(UV) run pytest tests/security
 
-test-coverage: ## Enforce the configured branch-aware Python coverage floor.
+test-coverage: ## Enforce branch-aware coverage across isolated and service-backed code.
+	$(COMPOSE) up -d postgres redis
+	TEST_DATABASE_URL="$${TEST_DATABASE_URL:-postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio}" REDIS_URL="$${REDIS_URL:-redis://127.0.0.1:6379/0}" $(UV) run python scripts/wait_for_services.py --redis
 	$(UV) run coverage erase
-	$(UV) run coverage run -m pytest tests/unit tests/property tests/contract tests/security
+	TEST_DATABASE_URL="$${TEST_DATABASE_URL:-postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio}" REDIS_URL="$${REDIS_URL:-redis://127.0.0.1:6379/0}" $(UV) run coverage run -m pytest tests/unit tests/property tests/contract tests/security
+	TEST_DATABASE_URL="$${TEST_DATABASE_URL:-postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio}" REDIS_URL="$${REDIS_URL:-redis://127.0.0.1:6379/0}" $(UV) run coverage run -m pytest -m "migrations or integration"
+	$(UV) run coverage combine
 	$(UV) run coverage report
 
 test-e2e: ## Run the Playwright browser smoke suite.

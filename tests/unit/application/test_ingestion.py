@@ -617,21 +617,32 @@ async def test_expired_lease_takeover_retains_logical_run_and_terminal_binding()
         store,
         lease_duration=timedelta(seconds=5),
     )
-    before_expiry, before_expiry_lease = await _begin_memory_run(
-        store,
+    assert first_lease is not None
+    await store.heartbeat(
+        run_id=first.id,
+        lease_token=first_lease.token,
         now=NOW + timedelta(seconds=4),
+    )
+    before_extended_expiry, before_extended_expiry_lease = await _begin_memory_run(
+        store,
+        now=NOW + timedelta(seconds=8),
         lease_duration=timedelta(seconds=5),
     )
+    with pytest.raises(IngestionFailure, match="lease"):
+        await store.heartbeat(
+            run_id=first.id,
+            lease_token=first_lease.token,
+            now=NOW + timedelta(seconds=9),
+        )
     takeover, takeover_lease = await _begin_memory_run(
         store,
         correlation_id="takeover-correlation",
-        now=NOW + timedelta(seconds=6),
+        now=NOW + timedelta(seconds=10),
         lease_duration=timedelta(seconds=5),
     )
 
-    assert first_lease is not None
-    assert before_expiry.id == first.id
-    assert before_expiry_lease is None
+    assert before_extended_expiry.id == first.id
+    assert before_extended_expiry_lease is None
     assert takeover.id == first.id
     assert takeover_lease is not None
     assert takeover_lease.token != first_lease.token
@@ -640,7 +651,7 @@ async def test_expired_lease_takeover_retains_logical_run_and_terminal_binding()
         await store.heartbeat(
             run_id=first.id,
             lease_token=first_lease.token,
-            now=NOW + timedelta(seconds=7),
+            now=NOW + timedelta(seconds=11),
         )
 
     finished = await store.finish_run(
@@ -648,11 +659,11 @@ async def test_expired_lease_takeover_retains_logical_run_and_terminal_binding()
         status=RunStatus.SUCCEEDED,
         steps=(),
         lease_token=takeover_lease.token,
-        now=NOW + timedelta(seconds=7),
+        now=NOW + timedelta(seconds=11),
     )
     terminal_retry, terminal_lease = await _begin_memory_run(
         store,
-        now=NOW + timedelta(seconds=8),
+        now=NOW + timedelta(seconds=12),
     )
     assert terminal_retry == finished
     assert terminal_lease is None
@@ -680,6 +691,8 @@ async def test_requested_fingerprint_is_not_rebuilt_from_promoted_execution_mode
 async def test_long_rate_and_provider_waits_renew_the_fenced_run_lease() -> None:
     capability = IngestionCapability.ACCOUNT
     stage = {"current": "idle"}
+    rate_release = asyncio.Event()
+    provider_release = asyncio.Event()
 
     class CountingStore(InMemoryIngestionStore):
         def __init__(self) -> None:
@@ -690,13 +703,15 @@ async def test_long_rate_and_provider_waits_renew_the_fenced_run_lease() -> None
             current = stage["current"]
             if current in self.renewals:
                 self.renewals[current] += 1
+                if self.renewals[current] >= 3:
+                    {"rate": rate_release, "provider": provider_release}[current].set()
             await super().heartbeat(run_id=run_id, lease_token=lease_token, now=now)
 
-    class SlowRateCoordinator:
+    class BlockingRateCoordinator:
         async def before_read(self, *, account_id: str, capability: IngestionCapability) -> None:
             del account_id, capability
             stage["current"] = "rate"
-            await asyncio.sleep(0.7)
+            await rate_release.wait()
             stage["current"] = "idle"
 
         async def observe(
@@ -708,27 +723,30 @@ async def test_long_rate_and_provider_waits_renew_the_fenced_run_lease() -> None
         ) -> None:
             del account_id, capability, observation
 
-    class SlowProvider(ScriptedProvider):
+    class BlockingProvider(ScriptedProvider):
         async def read_page(self, **kwargs: object) -> SourcePage:
             del kwargs
             stage["current"] = "provider"
-            await asyncio.sleep(0.7)
+            await provider_release.wait()
             stage["current"] = "idle"
             return SourcePage((_record("slow-account"),), None, True)
 
     store = CountingStore()
-    run = await IngestionCoordinator(
-        provider=SlowProvider({}),
-        store=store,
-        rate_coordinator=SlowRateCoordinator(),
-        clock=lambda: datetime.now(UTC),
-        lease_duration=timedelta(milliseconds=300),
-    ).refresh(
-        owner_id="owner-1",
-        account_id="account-1",
-        mode=RunMode.FULL,
-        idempotency_key="slow-provider-lease-renewal",
-        capabilities=(capability,),
+    run = await asyncio.wait_for(
+        IngestionCoordinator(
+            provider=BlockingProvider({}),
+            store=store,
+            rate_coordinator=BlockingRateCoordinator(),
+            clock=lambda: NOW,
+            lease_duration=timedelta(milliseconds=300),
+        ).refresh(
+            owner_id="owner-1",
+            account_id="account-1",
+            mode=RunMode.FULL,
+            idempotency_key="slow-provider-lease-renewal",
+            capabilities=(capability,),
+        ),
+        timeout=5,
     )
 
     assert run.status is RunStatus.SUCCEEDED
