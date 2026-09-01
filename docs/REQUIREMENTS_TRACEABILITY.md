@@ -1,6 +1,6 @@
 # Requirements Traceability
 
-**Status:** Phase 1 validated at `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+**Status:** Phase 1 validated at `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`
 
 This matrix links product requirements to implementation phases and verification evidence. Detailed acceptance criteria remain authoritative in the phase specifications and acceptance matrix. Phase 2 and Phase 3 rows remain roadmap traceability only and are not started.
 

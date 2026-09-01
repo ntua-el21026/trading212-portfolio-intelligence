@@ -3,7 +3,7 @@
 **Release target:** `0.1.0`
 **Implementation authority:** `main`
 **Imported candidate SHA:** `7119be95ae41d036f1461dd21bfbf10243c64ab0`
-**Validated implementation/evidence SHA:** `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+**Validated implementation/evidence SHA:** `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`
 **Later work:** Phase 2 and Phase 3 are `not_started`.
 
 ## Linear delivery record
@@ -25,11 +25,15 @@ continued directly on `main` in this order:
    canonical-summary parity evidence;
 6. `bba71749096cecbe8732d60e2b5bb1e44c394b7c` — align the pinned Trivy license-policy
    configuration with the current scanner schema and validate the exact fresh-checkout
-   security matrix.
+   security matrix;
+7. `e13916eca34d8e3be1ed130248d6c3d1ed7e3869` — reconcile final acceptance evidence and
+   harden governance validation so acceptance and external-gate states cannot be
+   promoted by token-only document edits; add adversarial regression coverage and
+   validate the corrected exact head in all three GitHub Actions workflows.
 
-The subsequent final documentation/status reconciliation is an evidence-only linear
-descendant. No published commit was amended, rebased, force-pushed, or merged through a
-pull-request merge action.
+The subsequent final evidence-pinning commit is an evidence-only linear descendant.
+No published commit was amended, rebased, force-pushed, or merged through a pull-request
+merge action.
 
 ## Transactional refresh outbox
 

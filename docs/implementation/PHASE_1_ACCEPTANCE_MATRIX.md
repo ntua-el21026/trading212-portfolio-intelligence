@@ -1,6 +1,6 @@
 # Phase 1 Acceptance Matrix
 
-**Status:** Complete at validated implementation SHA `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+**Status:** Complete at validated implementation SHA `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`
 
 **Release target:** `0.1.0`
 
@@ -41,14 +41,14 @@ not converted into a local pass.
 
 ## Validated evidence boundary
 
-- Validated implementation SHA: `bba71749096cecbe8732d60e2b5bb1e44c394b7c`.
+- Validated implementation SHA: `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`.
 - Migrations were validated through `20260901_0007`.
-- Python evidence: 335 isolated tests and 64 migration/integration tests; combined
+- Python evidence: 338 isolated tests and 64 migration/integration tests; combined
   branch coverage was 84% against the unchanged 70% gate.
 - Web evidence: 22 unit tests, 32 synthetic desktop/mobile Playwright tests, and 6
   API-backed desktop/mobile Playwright tests.
-- GitHub Actions at the validated SHA: Phase 1 quality run `33559034274`, security run
-  `33559034279`, and documentation run `33559034182` were green.
+- GitHub Actions at the validated SHA: Phase 1 quality run `33562745986`, security run
+  `33562746060`, and documentation run `33562746052` were green.
 
 ## Release rule
 

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-01T21:20:44Z",
+  "updated_at": "2026-09-01T21:51:27Z",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -32,7 +32,7 @@
       },
       "implementation_branch": "main",
       "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-      "release_candidate_sha": "bba71749096cecbe8732d60e2b5bb1e44c394b7c",
+      "release_candidate_sha": "e13916eca34d8e3be1ed130248d6c3d1ed7e3869",
       "release_candidate_relationship": "validated_evidence_sha_is_ancestor_of_main",
       "acceptance": {
         "status": "complete",
@@ -47,7 +47,7 @@
         "mandatory_scenarios_with_complete_release_evidence": 14,
         "mandatory_scenarios_partial": 0,
         "partial_scenario_ids": [],
-        "release_evidence_sha": "bba71749096cecbe8732d60e2b5bb1e44c394b7c",
+        "release_evidence_sha": "e13916eca34d8e3be1ed130248d6c3d1ed7e3869",
         "scenario_8_evidence_boundary": "synthetic_pass_real_provider_opening_history_unavailable",
         "scenario_14_api_commit_before_publication_recovery": "passed",
         "scenario_14_worker_restart_after_publication": "passed",
@@ -62,7 +62,7 @@
         "release_sha_gate": "passed",
         "pushed_sha_ci_security": "passed",
         "python_coverage_percent": 84,
-        "isolated_python_tests_passed": 335,
+        "isolated_python_tests_passed": 338,
         "migration_and_integration_tests_passed": 64,
         "web_unit_tests_passed": 22,
         "synthetic_playwright_tests_passed": 32,

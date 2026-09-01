@@ -2,7 +2,7 @@
 
 A private, premium, strictly read-only portfolio intelligence platform for Trading 212. It combines auditable brokerage-data ingestion, deterministic financial accounting, reconciliation, historical snapshots, portfolio analytics, a responsive web/PWA application, and a ChatGPT-native MCP app.
 
-> **Current state:** Architecture Design Freeze v0.1 is approved. Phase 1 implementation is complete on `main`, and all 24 locally executable acceptance rows passed at immutable evidence SHA `bba71749096cecbe8732d60e2b5bb1e44c394b7c`. Release readiness is `blocked_external` only by the documented owner/deployment conditions. Real Trading 212 opening-history coverage remains `unavailable_explicit` and is not inferred from the synthetic scenario 8 acceptance fixture. Phase 2 and Phase 3 are `not_started`.
+> **Current state:** Architecture Design Freeze v0.1 is approved. Phase 1 implementation is complete on `main`, and all 24 locally executable acceptance rows passed at immutable evidence SHA `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`. Release readiness is `blocked_external` only by the documented owner/deployment conditions. Real Trading 212 opening-history coverage remains `unavailable_explicit` and is not inferred from the synthetic scenario 8 acceptance fixture. Phase 2 and Phase 3 are `not_started`.
 
 ## Product objective
 
@@ -123,9 +123,9 @@ docs/implementation/prompts/PHASE_1_CODEX_PROMPT.md
 ```
 
 P1-01 through P1-12 are complete. The immutable implementation/evidence commit is
-`bba71749096cecbe8732d60e2b5bb1e44c394b7c`; `main` is the authority, and later
+`e13916eca34d8e3be1ed130248d6c3d1ed7e3869`; `main` is the authority, and later
 governance/evidence reconciliation commits may be descendants of that commit. The release evidence records
-84% Python coverage, 335 isolated Python tests, 64 migration/integration tests, 22 web
+84% Python coverage, 338 isolated Python tests, 64 migration/integration tests, 22 web
 unit tests, 32 synthetic Playwright tests, and 6 API-backed Playwright tests. It also
 validates authenticated API-backed web rendering, exact API/MCP canonical parity, the
 durable refresh outbox crash/recovery path, full-stack state retention, non-root

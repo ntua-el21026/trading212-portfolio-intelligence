@@ -4,7 +4,7 @@
 remain `blocked_external` and one remains `unavailable_explicit`
 **Target release:** `0.1.0`  
 **Execution branch:** `main` only
-**Validated implementation SHA:** `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+**Validated implementation SHA:** `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`
 **Later phases:** Phase 2 and Phase 3 are `not_started`
 **Primary objective:** Build a secure, deterministic, runnable foundation that ingests read-only Trading 212 data into an auditable canonical portfolio model and exposes consistent core results through API, web, and MCP interfaces.
 

@@ -3,7 +3,7 @@
 **Status:** `complete` at the validated implementation SHA
 **Reviewed:** 2026-09-01
 **Authority:** Exact P1-01 dependency selection under `PHASE_1_TECHNICAL_BASELINE.md`
-**Validated implementation SHA:** `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+**Validated implementation SHA:** `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`
 
 This note records the primary registry evidence used to create `uv.lock` and
 `pnpm-lock.yaml`. P1-01 and its locally executable acceptance are complete at the

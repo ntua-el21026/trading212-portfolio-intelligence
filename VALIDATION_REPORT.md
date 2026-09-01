@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-02
 **Repository:** `ntua-el21026/trading212-portfolio-intelligence`
-**Validated implementation/evidence SHA:** `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+**Validated implementation/evidence SHA:** `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`
 **Authority:** `main`; later evidence/governance-only reconciliation commits remain
 linear descendants of the immutable implementation/evidence SHA.
 **Decision:** All 24 locally executable Phase 1 acceptance rows are complete. Release
@@ -12,9 +12,9 @@ readiness remains `blocked_external` only for the explicitly listed external con
 
 The exact implementation SHA has green GitHub Actions runs:
 
-- Phase 1 quality: `33559034274`;
-- security and dependency gates: `33559034279`;
-- documentation baseline validation: `33559034182`.
+- Phase 1 quality: `33562745986`;
+- security and dependency gates: `33562746060`;
+- documentation baseline validation: `33562746052`.
 
 The quality browser log records 32 synthetic tests and 6 API-backed tests with
 Playwright retries disabled and no flaky result. The corrected Compose observation was
@@ -33,11 +33,11 @@ Evidence-only descendants do not change the validated runtime implementation.
 | `make typecheck` | Passed: strict mypy and TypeScript. |
 | `make test-unit` | Passed: Python unit suite and 22 Vitest tests. |
 | `make test-property` | Passed: 10 Hypothesis invariant tests. |
-| `make test-contract` | Passed: 33 contract tests plus workspace/generated-contract checks. |
+| `make test-contract` | Passed: 36 contract tests plus workspace/generated-contract checks. |
 | `make test-integration` | Passed: 50 PostgreSQL/Redis integration tests excluding migration-marked tests. |
 | `make test-migrations` | Passed: 11 migration tests, empty-to-head, repeat upgrade, and ORM/schema drift checks. |
 | `make test-security` | Passed: architecture/secret checks and 16 negative security tests. |
-| `make test-coverage` | Passed: 335 isolated tests plus 64 migration/integration tests; combined branch coverage 84%, unchanged threshold 70%. |
+| `make test-coverage` | Passed: 338 isolated tests plus 64 migration/integration tests; combined branch coverage 84%, unchanged threshold 70%. |
 | `make test-e2e` | Passed with retries disabled: 32 synthetic and 6 API-backed desktop/mobile browser tests. |
 | `make docs-check` | Passed repository, link, JSON/YAML, workflow, and workspace validation. |
 | `make security-check` | Passed pinned no-upload Semgrep, source secret scan, `pip-audit`, and production pnpm audit. |
@@ -51,7 +51,7 @@ the repository intentionally specifies `python3` for the dependency-free validat
 
 ## Test, migration, contract, and browser results
 
-- Python: 276 unit, 10 property, 33 contract, and 16 security tests form the 335-test
+- Python: 276 unit, 10 property, 36 contract, and 16 security tests form the 338-test
   isolated suite; 64 migration/integration tests passed under combined coverage.
 - PostgreSQL integration: 50 non-migration integration tests passed; the 11-file
   migration suite passed separately. Alembic empty-to-head and repeated upgrade both
@@ -117,6 +117,13 @@ event and no stranded queued run.
 The pre-existing, time-bounded `LGPL-3.0-or-later` policy was moved from legacy
 top-level keys to Trivy `0.74.0`'s `license.ignored` schema; the exception scope and
 review deadline were not broadened. The fresh-checkout-equivalent scan then passed.
+
+A final security-diff review reproduced one evidence-integrity weakness in the earlier
+token-only acceptance validator, classified it Medium/P2, and corrected it before the
+validated SHA. Structured acceptance-row parsing now binds local and external states,
+machine-readable readiness, counts, and remaining conditions; adversarial regression
+tests reject relabeling or false external-readiness promotion. The sealed rescan had no
+open finding.
 
 API, worker, dispatcher, MCP, and web ran as UID `10001` with read-only root
 filesystems, all Linux capabilities dropped, `no-new-privileges`, and package managers

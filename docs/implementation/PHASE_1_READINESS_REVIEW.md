@@ -4,7 +4,7 @@
 **Status:** Historical point-in-time readiness record
 **Result at review time:** Approved to begin implementation
 **Current implementation evidence:** Locally executable Phase 1 acceptance is `complete`
-at `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+at `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`
 
 This document records the pre-implementation decision made on the review date. It is not
 the current implementation-status authority and does not authorize a new implementation

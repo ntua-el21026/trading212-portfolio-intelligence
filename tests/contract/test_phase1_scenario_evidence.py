@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / "docs/implementation/PHASE_1_EXECUTION_MANIFEST.md"
 LEDGER = ROOT / "docs/implementation/PHASE_1_SCENARIO_EVIDENCE.md"
 REPORT = ROOT / "VALIDATION_REPORT.md"
-SHA = "bba71749096cecbe8732d60e2b5bb1e44c394b7c"
+SHA = "e13916eca34d8e3be1ed130248d6c3d1ed7e3869"
 
 
 @dataclass(frozen=True, slots=True)
@@ -331,9 +331,9 @@ def test_final_states_validated_evidence_and_external_limit_are_explicit() -> No
     ledger = LEDGER.read_text(encoding="utf-8")
     report = REPORT.read_text(encoding="utf-8")
     for text in (ledger, report):
-        for token in (SHA, "335", "64", "84%", "20260901_0007"):
+        for token in (SHA, "338", "64", "84%", "20260901_0007"):
             assert token in text
-    for run_id in ("33559034274", "33559034279", "33559034182"):
+    for run_id in ("33562745986", "33562746060", "33562746052"):
         assert run_id in report
     for token in (
         "14a",

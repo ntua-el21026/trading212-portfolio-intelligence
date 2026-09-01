@@ -18,11 +18,11 @@
 
 P1-01 through P1-12 and all 24 locally executable acceptance rows are complete. The
 immutable implementation/evidence SHA is
-`bba71749096cecbe8732d60e2b5bb1e44c394b7c`. `main` remains the implementation
+`e13916eca34d8e3be1ed130248d6c3d1ed7e3869`. `main` remains the implementation
 authority; final governance/evidence reconciliation may advance `main` to a descendant
 without changing the commit at which executable evidence was recorded.
 
-The evidence run recorded 84% Python coverage, 335 isolated Python tests, 64
+The evidence run recorded 84% Python coverage, 338 isolated Python tests, 64
 migration/integration tests, 22 web unit tests, 32 synthetic Playwright tests, and 6
 API-backed Playwright tests. Alembic head is `20260901_0007`, and the MCP registry contains
 exactly nine Phase 1 tools. The durable refresh outbox/API crash-recovery path, semantic

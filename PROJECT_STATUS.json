@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-01T21:20:44Z",
+  "updated_at": "2026-09-01T21:51:27Z",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -15,7 +15,7 @@
   "current_release_target": "0.1.0",
   "implementation_status": "complete",
   "release_readiness": "blocked_external",
-  "release_candidate_sha": "bba71749096cecbe8732d60e2b5bb1e44c394b7c",
+  "release_candidate_sha": "e13916eca34d8e3be1ed130248d6c3d1ed7e3869",
   "release_candidate_relationship": "validated_evidence_sha_is_ancestor_of_main",
   "broker_mode": "strictly_read_only",
   "default_broker_environment": "demo",
@@ -43,14 +43,14 @@
     "validated_evidence_results": "passed"
   },
   "validated_evidence": {
-    "sha": "bba71749096cecbe8732d60e2b5bb1e44c394b7c",
+    "sha": "e13916eca34d8e3be1ed130248d6c3d1ed7e3869",
     "all_locally_executable_gates": "passed",
     "locally_executable_acceptance_rows_total": 24,
     "locally_executable_acceptance_rows_complete": 24,
     "mandatory_scenarios_total": 14,
     "mandatory_scenarios_complete": 14,
     "python_coverage_percent": 84,
-    "isolated_python_tests_passed": 335,
+    "isolated_python_tests_passed": 338,
     "migration_and_integration_tests_passed": 64,
     "web_unit_tests_passed": 22,
     "synthetic_playwright_tests_passed": 32,

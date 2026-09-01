@@ -20,6 +20,9 @@ All notable project changes are recorded here. The project follows semantic vers
   nine-tool MCP parity, and route-specific URL pagination in the web application.
 - Completed owner-scoped broker connection, canonical instrument/listing, authorized
   snapshot, core performance, reconciliation, and data-quality application contracts.
+- Hardened Phase 1 evidence validation so acceptance-row states, external-gate states,
+  machine-readable readiness, counts, and remaining conditions are bound fail-closed;
+  adversarial governance regressions cover relabeling and false readiness promotion.
 
 ### Added
 
@@ -58,7 +61,7 @@ All notable project changes are recorded here. The project follows semantic vers
 - Added hardened PostgreSQL `18.6` and Redis `8.10.1` images with patched OpenSSL
   packages, unprivileged runtime users, removal of unused `gosu`/snake-oil key material,
   and minimized application runtimes without package installers.
-- Verified at immutable evidence SHA `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+- Verified at immutable evidence SHA `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`
   that the secret canary is absent from API/worker/MCP/web logs and application image
   filesystems and that the pinned Semgrep, dependency, secret, Trivy filesystem, and
   hardened-image gates pass.
@@ -83,8 +86,8 @@ Monorepo, provider ingestion, canonical history, reconciliation, snapshots, core
 
 Implementation is complete on `main`, all 24 locally executable acceptance rows passed,
 and all fourteen mandatory synthetic scenarios have evidence at immutable commit
-`bba71749096cecbe8732d60e2b5bb1e44c394b7c`. The final evidence includes 84% Python
-coverage, 335 isolated Python tests, 64 migration/integration tests, 22 web unit tests,
+`e13916eca34d8e3be1ed130248d6c3d1ed7e3869`. The final evidence includes 84% Python
+coverage, 338 isolated Python tests, 64 migration/integration tests, 22 web unit tests,
 32 synthetic Playwright tests, 6 API-backed Playwright tests, Alembic head
 `20260901_0007`, and exactly nine MCP tools. Release readiness remains
 `blocked_external` for the Demo smoke, production host/identity/secret-manager selection,

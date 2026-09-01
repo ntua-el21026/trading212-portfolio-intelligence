@@ -1,7 +1,7 @@
 # Phase 1 Mandatory Scenario Evidence
 
 **Authority:** `docs/implementation/PHASE_1_EXECUTION_MANIFEST.md`
-**Validated implementation SHA:** `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+**Validated implementation SHA:** `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`
 **Status:** Complete synthetic evidence
 
 This ledger maps the fourteen mandatory synthetic outcomes to executable evidence. All
@@ -110,7 +110,7 @@ corepack pnpm --filter @trading212/web exec playwright test --config playwright.
 
 ## Validated execution summary
 
-- 335 isolated Python tests and 64 migration/integration tests passed with 84% combined
+- 338 isolated Python tests and 64 migration/integration tests passed with 84% combined
   branch coverage.
 - 22 web unit tests, 32 synthetic desktop/mobile Playwright tests, and 6 API-backed
   desktop/mobile Playwright tests passed.
