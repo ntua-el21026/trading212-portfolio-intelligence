@@ -2,11 +2,13 @@
 
 **Release target:** `0.1.0`
 
-**Implementation branch:** `codex/phase-1-trusted-foundation`
+**Implementation authority:** `main`
 
 **Base branch/SHA:** `main` at `c566c080762f9d74996e1bdd19d1254848f8f17f`
 
-**Candidate SHA:** Not assigned; working tree not yet committed
+**Imported Phase 1 SHA:** `7119be95ae41d036f1461dd21bfbf10243c64ab0`
+
+**Corrected final main SHA:** Pending while corrections are in progress
 
 **Acceptance:** Working-tree implementation and all fourteen synthetic scenario evidence
 assembled; final release-SHA/CI validation remains pending
@@ -47,9 +49,10 @@ No Phase 2 or Phase 3 analytical feature is represented as available.
 
 ## 3. Architecture compliance
 
-The candidate preserves the Design Freeze v0.1 boundaries: PostgreSQL is authoritative; Redis is coordination-only; provider DTOs do not leak into canonical contracts; deterministic code owns financial calculations; API/web/MCP share application services; secrets remain server-side; and the broker adapter is fixed-allowlist GET-only.
+The Phase 1 implementation preserves the Design Freeze v0.1 boundaries: PostgreSQL is authoritative; Redis is coordination-only; provider DTOs do not leak into canonical contracts; deterministic code owns financial calculations; API/web/MCP share application services; secrets remain server-side; and the broker adapter is fixed-allowlist GET-only.
 
-The active owner task requires the feature branch and review-only pull request even though older accepted delivery documents prescribe direct commits to `main`. The explicit current owner instruction has higher authority. This is a delivery-process override only; no frozen architecture decision changes.
+All corrections use the accepted direct-`main` workflow. No release-specific alternate
+delivery path is active, and no frozen architecture decision changes.
 
 ## 4. Trading 212 GET-only enforcement
 
@@ -75,7 +78,7 @@ idempotency constraints, immutable source revisions, calculation versions,
 reconciliation/snapshot history, credential references, and access-path indexes are
 represented. The synthetic seed contains no real account data.
 
-Focused migration tests passed during implementation, including clean disposable database upgrade, repeated upgrade, and Alembic drift checking. Authoritative `make test-migrations` evidence remains pending at the final candidate SHA.
+Focused migration tests passed during implementation, including clean disposable database upgrade, repeated upgrade, and Alembic drift checking. Authoritative `make test-migrations` evidence remains pending at the corrected final `main` SHA.
 
 ## 6. Tests and builds
 

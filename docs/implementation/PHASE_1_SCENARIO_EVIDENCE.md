@@ -2,14 +2,14 @@
 
 **Authority:** `docs/implementation/PHASE_1_EXECUTION_MANIFEST.md`
 
-**Candidate:** uncommitted `codex/phase-1-trusted-foundation` working tree
+**Correction state:** in progress directly on `main`
 
 **Audit date:** 2026-09-01
 
 This ledger maps the fourteen mandatory synthetic end-to-end scenarios to exact,
 executable evidence. It deliberately distinguishes a component test from an end-to-end
 acceptance result. A row is not release evidence until its listed commands pass at the
-immutable candidate SHA.
+immutable corrected `main` SHA.
 
 The fourteen entries in `trading212_analytics.fixtures.PHASE_1_SCENARIOS` are analytics
 reference fixtures with a different numbering and purpose. The metadata check in

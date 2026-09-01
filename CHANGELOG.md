@@ -4,6 +4,12 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Changed
+
+- Fast-forwarded the existing Phase 1 implementation into the authoritative `main`
+  history, retired the unaccepted alternate delivery policy, and added executable
+  validation that rejects non-`main` repository workflow instructions.
+
 ### Added
 
 - Phase 1 mixed Python/TypeScript monorepo with pinned runtimes, locked dependencies, unified Make targets, CI, and generated-contract drift checks.
@@ -48,7 +54,7 @@ All notable project changes are recorded here. The project follows semantic vers
 - Verified working-tree Trivy filesystem vulnerability/secret/misconfiguration/license
   scanning, a clean pre-evidence Gitleaks history scan, and deterministic Semgrep over
   142 targets with zero findings. All workflow actions and external Docker base images
-  are immutable SHA/digest pinned; the immutable candidate-SHA CI rerun remains pending.
+  are immutable SHA/digest pinned; the immutable `main`-SHA CI rerun remains pending.
 - Trading 212 integration frozen as exact GET-only/default-deny.
 - Broker order/Pie mutation, generic proxy, autonomous trading, and credential exposure explicitly prohibited.
 
@@ -58,8 +64,8 @@ All notable project changes are recorded here. The project follows semantic vers
 
 Monorepo, provider ingestion, canonical history, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, and operational baseline.
 
-Implementation and isolated local runtime/restart evidence are present on
-`codex/phase-1-trusted-foundation`. All fourteen mandatory synthetic scenarios have
+Implementation and isolated local runtime/restart evidence are present on `main`. All
+fourteen mandatory synthetic scenarios have
 complete working-tree evidence; scenario 8's synthetic fixture does not claim real
 Trading 212 opening-history coverage. Final release-SHA validation, pushed-SHA security
 jobs, and owner review remain pending. Real Trading 212 Demo and deployed ChatGPT

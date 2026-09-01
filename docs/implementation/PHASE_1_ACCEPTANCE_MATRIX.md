@@ -1,6 +1,6 @@
 # Phase 1 Acceptance Matrix
 
-**Status:** Release-candidate evidence review in progress
+**Status:** Phase 1 correction and final-head evidence review in progress
 
 **Release target:** `0.1.0`
 
@@ -9,7 +9,7 @@ A row is complete only when the implementation records reproducible evidence at 
 The state `Implementation present; final gate pending` means the relevant source and
 focused tests exist. `Working-tree runtime passed; final gate pending` additionally means
 the material runtime behavior was observed locally. Neither state is complete until the
-full command is rerun and recorded at the release-candidate SHA.
+full command is rerun and recorded at the corrected `main` SHA.
 
 | ID | Acceptance condition | Candidate evidence | State |
 |---|---|---|---|
@@ -42,10 +42,10 @@ full command is rerun and recorded at the release-candidate SHA.
 
 ## Current evidence boundary
 
-- Baseline: `c566c080762f9d74996e1bdd19d1254848f8f17f` on `main`.
-- Candidate branch: `codex/phase-1-trusted-foundation`.
-- Release-candidate SHA: not assigned; changes are still uncommitted at this checkpoint.
-- Pull request: not opened at this checkpoint.
+- Starting `main`: `c566c080762f9d74996e1bdd19d1254848f8f17f`.
+- Imported Phase 1 SHA on `main`: `7119be95ae41d036f1461dd21bfbf10243c64ab0`.
+- Corrected final `main` SHA: pending while the correction is in progress.
+- Delivery authority: direct fast-forward commits to `main` only.
 - Focused subsystem checks and an isolated Compose runtime/restart exercise have passed in
   the working tree, but the authoritative repository-wide gate at one immutable SHA
   remains pending.
@@ -59,7 +59,7 @@ full command is rerun and recorded at the release-candidate SHA.
   user-owned repository entitlement. The blocking no-upload SAST substitute is pinned
   Semgrep CE `1.175.0` with repository-local rules. Working-tree Semgrep, Gitleaks,
   Trivy filesystem/config/license, and all six hardened-image scans returned clean;
-  final-SHA Semgrep, dependency, secret, Trivy filesystem, and hardened-image jobs remain
+  corrected-final-SHA Semgrep, dependency, secret, Trivy filesystem, and hardened-image jobs remain
   pending.
 - Real Trading 212 Demo connectivity, production deployment, and ChatGPT Developer Mode registration are not claimed.
 

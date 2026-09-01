@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import re
+import shlex
 import sys
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -164,6 +165,75 @@ CAPABILITY_RE = re.compile(r"^\s*-\s+capability:\s*([A-Za-z0-9_-]+)\s*$")
 METHOD_RE = re.compile(r"^\s+method:\s*([A-Z]+)\s*$")
 PATH_RE = re.compile(r"^\s+path:\s*(\S+)\s*$")
 ACCEPTANCE_ID_RE = re.compile(r"\bP1-[A-Z0-9]+-\d{3}\b")
+BRANCH_METADATA_RE = re.compile(
+    r"^[ \t]*(?:[-*][ \t]*)?\*{0,2}(?P<label>(?:candidate|implementation|execution|working)\s+"
+    r"branch|branch)(?:[ \t]*/[ \t]*SHA)?[ \t]*:\*{0,2}[ \t]*`?(?P<value>[^`\s]+)",
+    re.IGNORECASE | re.MULTILINE,
+)
+NEGATED_WORKFLOW_INSTRUCTION_RE = re.compile(
+    r"\b(?:do not|don't|never|no\s+(?:task|branch|pull request)|must not|cannot|"
+    r"prohibit(?:ed|s)?|reject(?:ed|s)?|rather than|without creating)\b",
+    re.IGNORECASE,
+)
+ACTIVE_WORKFLOW_INSTRUCTION_RES = (
+    re.compile(
+        r"\b(?:commit|create|develop|implement|merge|open|push|use|work)\b.{0,60}\b"
+        r"(?:candidate|review|feature|topic|implementation|demo)[ -]branch\b",
+        re.IGNORECASE,
+    ),
+    re.compile(r"\b(?:create|open|submit|raise)\b.{0,60}\b(?:pull request|PR)\b", re.IGNORECASE),
+)
+
+DIRECT_MAIN_REQUIREMENTS = {
+    "AGENTS.md": ("Commit directly to `main`.", "Do not create branches or pull requests."),
+    "README.md": ("commit directly to `main`", "no branches or pull requests"),
+    "CONTRIBUTING.md": ("Commit directly to `main`", "Never force-push"),
+    "docs/DOCUMENT_GOVERNANCE.md": ("direct commits to `main`",),
+    "docs/adr/ADR-0007-DIRECT-COMMITS-TO-MAIN.md": ("fast-forward commits directly on `main`",),
+    "docs/engineering/ENGINEERING_STANDARDS.md": ("commit directly to `main`",),
+    "docs/engineering/TEST_STRATEGY.md": ("GitHub Actions validates pushes to `main`",),
+    "docs/implementation/MASTER_IMPLEMENTATION_PLAN.md": (
+        "Work directly on `main`; no branches or pull requests.",
+    ),
+    "docs/implementation/PHASE_1_TRUSTED_FOUNDATION.md": (
+        "**Execution branch:** `main` only",
+        "committed directly and incrementally to `main`",
+    ),
+    "docs/implementation/PHASE_1_EXECUTION_MANIFEST.md": ("Direct fast-forward commits to `main`",),
+    "docs/implementation/PHASE_1_READINESS_REVIEW.md": (
+        "commit coherent increments directly to `main`",
+    ),
+    "docs/implementation/prompts/PHASE_1_CODEX_PROMPT.md": (
+        "work directly on `main`;",
+        "do not create a branch or pull request;",
+    ),
+    "docs/operations/LOCAL_AND_DEPLOYMENT.md": ("synchronized `main` line",),
+}
+
+RETIRED_GOVERNANCE_PATHS = ("docs/adr/ADR-0009-PHASE-1-REVIEW-BRANCH-EXCEPTION.md",)
+FORBIDDEN_GOVERNANCE_TOKENS = (
+    "ADR-0009",
+    "codex/phase-1-trusted-foundation",
+    "candidate branch",
+    "review-branch exception",
+    "review branch exception",
+    "review-only pull request",
+)
+GOVERNANCE_TEXT_SUFFIXES = {".md", ".txt", ".json", ".yaml", ".yml", ".toml", ".sh"}
+GOVERNANCE_EXCLUDED_PARTS = {
+    ".git",
+    ".mypy_cache",
+    ".next",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "build",
+    "dist",
+    "node_modules",
+    "work",
+}
+BRANCH_JSON_KEYS = {"branch", "candidate_branch", "execution_branch", "implementation_branch"}
+ALLOWED_MAIN_REFS = {"main", "refs/heads/main", "HEAD:main", "HEAD:refs/heads/main"}
 
 
 @dataclass(frozen=True)
@@ -351,8 +421,232 @@ def validate_env_example() -> list[Failure]:
     return failures
 
 
-def validate_governance_and_prompt() -> list[Failure]:
+def governance_text_files(root: Path = ROOT) -> Iterable[Path]:
+    """Yield deterministic, human-authored governance surfaces."""
+
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or any(part in GOVERNANCE_EXCLUDED_PARTS for part in path.parts):
+            continue
+        if path.name == "Makefile" or path.suffix.lower() in GOVERNANCE_TEXT_SUFFIXES:
+            yield path
+
+
+def _line_number(text: str, offset: int) -> int:
+    return text.count("\n", 0, offset) + 1
+
+
+def _command_tokens(line: str) -> list[str]:
+    stripped = line.strip()
+    stripped = re.sub(r"^(?:[-+*>]|\d+[.)])[ \t]+", "", stripped)
+    stripped = stripped.strip("`").strip()
+    if stripped.startswith("$ "):
+        stripped = stripped[2:].lstrip()
+    if not stripped.startswith(("git ", "gh ")):
+        return []
+    try:
+        return shlex.split(stripped, comments=True)
+    except ValueError:
+        return []
+
+
+def _git_command_violation(tokens: list[str]) -> str | None:
+    if len(tokens) < 2 or tokens[0] != "git":
+        return None
+    command = tokens[1]
+    arguments = tokens[2:]
+
+    if command in {"switch", "checkout"}:
+        if any(
+            argument in {"-b", "-c", "--branch", "--create", "--detach", "--orphan"}
+            for argument in arguments
+        ):
+            return "branch-creation or detached-checkout command is not allowed"
+        if command == "switch" or "--" not in arguments:
+            targets = [argument for argument in arguments if not argument.startswith("-")]
+            if targets and targets[-1] not in {"main", "refs/heads/main"}:
+                return f"{command} command targets non-main ref {targets[-1]!r}"
+
+    if command == "branch":
+        inspection_flags = {"-a", "--all", "--contains", "--list", "--show-current"}
+        if arguments and not any(argument in inspection_flags for argument in arguments):
+            return "branch command may create or mutate a non-main delivery line"
+
+    if command == "merge":
+        targets = [argument for argument in arguments if not argument.startswith("-")]
+        allowed_targets = {"main", "refs/heads/main", "origin/main", "refs/remotes/origin/main"}
+        if targets and targets[-1] not in allowed_targets:
+            return f"merge command targets non-main ref {targets[-1]!r}"
+
+    if command == "pull":
+        targets = [argument for argument in arguments if not argument.startswith("-")]
+        if len(targets) >= 2 and targets[-1] not in {"main", "refs/heads/main"}:
+            return f"pull command targets non-main ref {targets[-1]!r}"
+
+    if command == "rebase":
+        targets = [argument for argument in arguments if not argument.startswith("-")]
+        allowed_targets = {"main", "refs/heads/main", "origin/main", "refs/remotes/origin/main"}
+        if targets and targets[-1] not in allowed_targets:
+            return f"rebase command targets non-main ref {targets[-1]!r}"
+
+    if (
+        command == "worktree"
+        and arguments
+        and arguments[0] == "add"
+        and any(argument in {"-b", "-B", "--detach"} for argument in arguments[1:])
+    ):
+        return "worktree command creates a branch or detached delivery line"
+
+    if command == "push":
+        if any(
+            argument in {"-f", "--force", "--force-with-lease", "--all", "--mirror"}
+            for argument in arguments
+        ):
+            return "force/all/mirror push is not allowed"
+        positional = [argument for argument in arguments if not argument.startswith("-")]
+        refspecs = positional[1:] if positional else []
+        for refspec in refspecs:
+            if refspec not in ALLOWED_MAIN_REFS:
+                return f"push command targets non-main ref {refspec!r}"
+
+    return None
+
+
+def _command_violation(line: str) -> str | None:
+    tokens = _command_tokens(line)
+    if not tokens:
+        return None
+    git_violation = _git_command_violation(tokens)
+    if git_violation is not None:
+        return git_violation
+    if (
+        len(tokens) >= 3
+        and tokens[:2] == ["gh", "pr"]
+        and tokens[2]
+        in {
+            "close",
+            "comment",
+            "create",
+            "checkout",
+            "edit",
+            "lock",
+            "merge",
+            "ready",
+            "reopen",
+            "review",
+            "unlock",
+        }
+    ):
+        return f"pull-request workflow command 'gh pr {tokens[2]}' is not allowed"
+    return None
+
+
+def validate_governance_text(relative: Path, text: str) -> list[Failure]:
+    """Reject active instructions that route repository work away from main."""
+
     failures: list[Failure] = []
+    seen: set[tuple[int, str]] = set()
+
+    def add(line_number: int, detail: str) -> None:
+        key = (line_number, detail)
+        if key in seen:
+            return
+        seen.add(key)
+        failures.append(Failure("direct-main-governance", f"{relative}:{line_number}: {detail}"))
+
+    for token in FORBIDDEN_GOVERNANCE_TOKENS:
+        for match in re.finditer(re.escape(token), text, re.IGNORECASE):
+            add(_line_number(text, match.start()), f"retired workflow token {token!r}")
+
+    for match in BRANCH_METADATA_RE.finditer(text):
+        value = match.group("value").rstrip(".,;:")
+        if value not in {"main", "refs/heads/main"}:
+            add(
+                _line_number(text, match.start()),
+                f"{match.group('label')} metadata targets non-main ref {value!r}",
+            )
+
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        violation = _command_violation(line)
+        if violation is not None:
+            add(line_number, violation)
+        if NEGATED_WORKFLOW_INSTRUCTION_RE.search(line):
+            continue
+        for pattern in ACTIVE_WORKFLOW_INSTRUCTION_RES:
+            if pattern.search(line):
+                add(line_number, "active branch or pull-request workflow instruction")
+                break
+
+    return failures
+
+
+def _branch_json_failures(relative: Path, value: object, location: str = "$") -> list[Failure]:
+    failures: list[Failure] = []
+    if isinstance(value, dict):
+        for key, nested in value.items():
+            nested_location = f"{location}.{key}"
+            if (
+                key.casefold() in BRANCH_JSON_KEYS
+                and isinstance(nested, str)
+                and nested not in {"main", "refs/heads/main"}
+            ):
+                failures.append(
+                    Failure(
+                        "direct-main-governance",
+                        f"{relative}:{nested_location} targets non-main ref {nested!r}",
+                    )
+                )
+            failures.extend(_branch_json_failures(relative, nested, nested_location))
+    elif isinstance(value, list):
+        for index, nested in enumerate(value):
+            failures.extend(_branch_json_failures(relative, nested, f"{location}[{index}]"))
+    return failures
+
+
+def validate_direct_main_governance(root: Path = ROOT) -> list[Failure]:
+    failures: list[Failure] = []
+
+    for relative, required_tokens in DIRECT_MAIN_REQUIREMENTS.items():
+        path = root / relative
+        if not path.is_file():
+            failures.append(Failure("direct-main-governance", f"missing authority {relative}"))
+            continue
+        text = path.read_text(encoding="utf-8")
+        for token in required_tokens:
+            if token not in text:
+                failures.append(
+                    Failure(
+                        "direct-main-governance",
+                        f"{relative} missing main-only token: {token}",
+                    )
+                )
+
+    for relative in RETIRED_GOVERNANCE_PATHS:
+        if (root / relative).exists():
+            failures.append(
+                Failure(
+                    "direct-main-governance", f"retired governance file still exists: {relative}"
+                )
+            )
+
+    for path in governance_text_files(root):
+        relative_path = path.relative_to(root)
+        try:
+            text = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            continue
+        failures.extend(validate_governance_text(relative_path, text))
+        if path.suffix.lower() == ".json":
+            try:
+                parsed = json.loads(text)
+            except json.JSONDecodeError:
+                continue
+            failures.extend(_branch_json_failures(relative_path, parsed))
+
+    return failures
+
+
+def validate_governance_and_prompt() -> list[Failure]:
+    failures = validate_direct_main_governance()
     agents = read_text("AGENTS.md")
     freeze = read_text("docs/DESIGN_FREEZE_V0_1.md")
     prompt = read_text("docs/implementation/prompts/PHASE_1_CODEX_PROMPT.md")

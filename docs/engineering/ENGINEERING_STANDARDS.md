@@ -107,7 +107,10 @@ Before each commit:
 2. run relevant full required gates;
 3. review diff for secrets/private data/generated noise;
 4. update docs/progress;
-5. commit without force-push.
+5. commit directly to `main` without force-push.
+
+Branch-creation, non-`main` push, and pull-request creation commands are invalid repository
+workflow instructions, including when presented as examples or release-specific procedures.
 
 ## 10. Definition of done for a work package
 

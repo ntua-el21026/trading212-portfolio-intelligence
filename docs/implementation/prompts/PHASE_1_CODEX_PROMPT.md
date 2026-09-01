@@ -17,11 +17,13 @@ This is a complete implementation task, not a planning-only, audit-only, or scaf
 
 Inspect current `main` first, record its starting SHA, and implement the entire Phase 1 Trusted Foundation. Continue autonomously through every locally resolvable work package. Build, test, document, and commit coherent increments directly to `main`.
 
-Repository workflow is intentionally:
+Repository workflow is main-only:
 
 - work directly on `main`;
 - do not create a branch or pull request;
 - do not use a detached worktree for final changes;
+- do not treat task-local examples, historical records, or release labels as workflow
+  exceptions;
 - do not force-push, reset shared history, rebase published commits, amend published commits, or rewrite history;
 - synchronize/re-read latest `main` before starting and immediately before every commit;
 - use small coherent fast-forward commits with precise Conventional Commit messages;

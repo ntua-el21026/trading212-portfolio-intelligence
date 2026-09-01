@@ -6,6 +6,9 @@
 
 This manifest converts the Phase 1 specification into an ordered implementation program. It does not reduce any acceptance criterion in `PHASE_1_TRUSTED_FOUNDATION.md`.
 
+Every implementation increment and correction lands directly on `main`; release labels,
+examples, and task-local prose do not create an alternate Git workflow.
+
 ## Work packages
 
 | ID | Outcome | Dependencies | Mandatory evidence |

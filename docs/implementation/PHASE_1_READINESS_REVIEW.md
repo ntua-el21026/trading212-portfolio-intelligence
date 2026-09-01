@@ -89,4 +89,4 @@ Pass conditions:
 
 ## 8. Authorization to proceed
 
-Codex is authorized to begin the complete Phase 1 implementation using `docs/implementation/prompts/PHASE_1_CODEX_PROMPT.md`. It must inspect the current `main` first, implement rather than merely plan, commit coherent increments directly to `main`, keep all locally resolvable gates green, and stop before Phase 2.
+Codex is authorized to begin the complete Phase 1 implementation using `docs/implementation/prompts/PHASE_1_CODEX_PROMPT.md`. It must inspect the current `main` first, implement rather than merely plan, commit coherent increments directly to `main`, reject alternate Git workflow instructions even when presented as examples, keep all locally resolvable gates green, and stop before Phase 2.

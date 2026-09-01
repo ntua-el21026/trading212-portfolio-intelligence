@@ -138,7 +138,10 @@ Recommended pipeline:
 7. dependency/static/container scans;
 8. package/container build.
 
-GitHub Actions runs on pushes to `main` and on pull requests. The standing direct-main policy increases the importance of local full gates and small commits. The owner-requested Phase 1 review-branch exception in proposed ADR-0009 additionally requires all gates to pass on the pull request before owner review; failures are corrected with forward commits without history rewriting.
+GitHub Actions validates pushes to `main`. The direct-main policy makes local full gates and
+small coherent commits mandatory. Failures are corrected with new forward commits without
+history rewriting. Repository governance validation rejects active non-`main` workflow
+instructions and branch-creation command examples.
 
 ## 7. Coverage
 

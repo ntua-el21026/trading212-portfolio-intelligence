@@ -16,8 +16,8 @@ The owner has selected direct commits to `main`:
 8. Never force-push, rebase/reset shared history, create implementation branches, or open pull requests.
 
 Concurrent agents must not edit overlapping files without first reconciling the latest `main`.
-
-The Phase 1 `0.1.0` release candidate has an explicit owner-requested review-branch exception documented in proposed [ADR-0009](docs/adr/ADR-0009-PHASE-1-REVIEW-BRANCH-EXCEPTION.md). That exception requires `codex/phase-1-trusted-foundation`, a pull request against `main`, and owner review; it does not authorize Codex to merge the pull request or change the general workflow silently.
+No task-local example, release procedure, or historical record authorizes an alternate
+delivery path.
 
 ## Required invariants
 

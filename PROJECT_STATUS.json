@@ -2,10 +2,10 @@
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
   "repository": "ntua-el21026/trading212-portfolio-intelligence",
-  "branch": "codex/phase-1-trusted-foundation",
+  "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-08-31T22:00:00Z",
+  "updated_at": "2026-09-01T16:00:14Z",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -13,10 +13,10 @@
   "documentation_readiness": "approved",
   "current_phase": "phase_1",
   "current_release_target": "0.1.0",
-  "implementation_status": "implemented_with_local_runtime_evidence_pending_final_release_validation",
+  "implementation_status": "in_progress",
   "release_readiness": "not_yet_approved",
-  "release_candidate_sha": null,
-  "pull_request_url": null,
+  "release_candidate_sha": "7119be95ae41d036f1461dd21bfbf10243c64ab0",
+  "pull_request_url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/pull/1",
   "broker_mode": "strictly_read_only",
   "default_broker_environment": "demo",
   "external_gates": [
@@ -64,7 +64,7 @@
   "pending_release_gates": [
     "complete_local_validation_at_release_candidate_sha",
     "pushed_sha_semgrep_dependency_secret_and_trivy",
-    "push_branch_and_open_review_pull_request"
+    "correct_phase_1_review_findings_on_main"
   ],
-  "next_gate": "commit_candidate_and_complete_all_local_validation_at_that_sha"
+  "next_gate": "complete_corrections_and_all_local_validation_at_final_main_sha"
 }

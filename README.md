@@ -2,7 +2,7 @@
 
 A private, premium, strictly read-only portfolio intelligence platform for Trading 212. It combines auditable brokerage-data ingestion, deterministic financial accounting, reconciliation, historical snapshots, portfolio analytics, a responsive web/PWA application, and a ChatGPT-native MCP app.
 
-> **Current state:** Architecture Design Freeze v0.1 is approved. The complete Phase 1 implementation and isolated local runtime/restart evidence exist on the review branch. All fourteen mandatory synthetic scenarios have complete working-tree evidence; final release-SHA validation, pushed-SHA security jobs, Trading 212 Demo, and deployed ChatGPT gates remain pending. Real Trading 212 opening-history coverage is still unavailable and is not inferred from the synthetic scenario 8 acceptance fixture.
+> **Current state:** Architecture Design Freeze v0.1 is approved. The complete Phase 1 implementation and isolated local runtime/restart evidence exist on `main`. All fourteen mandatory synthetic scenarios have complete working-tree evidence; final release-SHA validation, pushed-SHA security jobs, Trading 212 Demo, and deployed ChatGPT gates remain pending. Real Trading 212 opening-history coverage is still unavailable and is not inferred from the synthetic scenario 8 acceptance fixture.
 
 ## Product objective
 
@@ -110,13 +110,11 @@ The standing repository policy requires ChatGPT and Codex to commit directly to 
 
 See [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
-For the Phase 1 `0.1.0` candidate, the owner explicitly required the isolated
-`codex/phase-1-trusted-foundation` branch and an unmerged review pull request.
-[ADR-0009](docs/adr/ADR-0009-PHASE-1-REVIEW-BRANCH-EXCEPTION.md) records this
-one-release exception without rewriting ADR-0007. The candidate must be validated at an
-immutable SHA and reviewed before merge.
+This workflow has no task-local or release-specific alternate delivery path. Examples and
+historical records cannot authorize work away from `main`; governance must be changed on
+`main` before a different workflow can become active.
 
-## Phase 1 candidate status
+## Phase 1 status
 
 The complete execution authority remains recorded in:
 
@@ -131,19 +129,18 @@ latency smoke measurements, and runtime secret-canary containment. See the
 [validation report](VALIDATION_REPORT.md) and
 [mandatory scenario evidence](docs/implementation/PHASE_1_SCENARIO_EVIDENCE.md).
 
-The candidate is not release-approved. Scenario 8 now passes through one retained
+Phase 1 is not release-approved. Scenario 8 now passes through one retained
 synthetic immutable quantity/cash mismatch fixture across PostgreSQL, API/MCP, and the
 actual API-backed desktop/mobile web experience. This synthetic acceptance path does not
 erase the real-provider limitation: quantity and cash movement bridges remain
 unavailable when Trading 212 opening-history coverage is insufficient. The complete
 matrix and the pinned no-upload Semgrep, dependency, secret, Trivy filesystem, and
-hardened-image gates must pass at the final candidate SHA; the review pull request must
-remain unmerged pending owner review.
+hardened-image gates must pass at the exact final `main` SHA before the release state changes.
 
 The complete working-tree Semgrep, Gitleaks, Trivy filesystem/config/license, and
 six-image high/critical vulnerability/secret matrix returned clean results. Every
 workflow action and external Docker base is immutable SHA/digest pinned. These results
-must still be repeated by CI at the final candidate SHA.
+must still be repeated by CI at the exact final `main` SHA.
 
 ## External gates
 

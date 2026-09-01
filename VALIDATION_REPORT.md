@@ -4,11 +4,13 @@
 
 **Repository:** `ntua-el21026/trading212-portfolio-intelligence`
 
-**Branch:** `codex/phase-1-trusted-foundation`
+**Authority:** `main`
 
 **Base SHA:** `c566c080762f9d74996e1bdd19d1254848f8f17f`
 
-**Candidate SHA:** Not assigned; working tree not yet committed
+**Imported Phase 1 SHA:** `7119be95ae41d036f1461dd21bfbf10243c64ab0`
+
+**Corrected final main SHA:** Pending while corrections are in progress
 
 **Result:** Implementation and all fourteen working-tree scenario evidence assembled;
 final release-SHA validation and pushed-SHA CI security remain pending
@@ -19,7 +21,7 @@ P1-01 through P1-12 have source, tests, configuration, containers, and runbook
 artifacts. The isolated Compose stack, API-backed browser path, API/MCP parity,
 durable queued-run recovery, full-stack restart, and runtime canary checks passed in
 the current working tree. This is not yet release approval: the complete gate must run
-against one immutable candidate SHA with the pushed-SHA CI security jobs. Scenario 8's
+against the immutable corrected `main` SHA with the pushed-SHA CI security jobs. Scenario 8's
 synthetic pass does not establish real Trading 212 opening-history coverage.
 
 No claim is made that Trading 212 Demo credentials worked, that Live was tested, that a production deployment exists, or that ChatGPT connected to a deployed MCP endpoint.
@@ -140,7 +142,8 @@ These measurements are local smoke evidence, not production capacity claims.
 
 ## 4. Authoritative final command ledger
 
-Every row below remains pending until executed at the final candidate SHA. Results must include exit status and material counts in the pull-request evidence.
+Every row below remains pending until executed at the corrected final `main` SHA. Results
+must include exit status and material counts in the final correction evidence.
 
 | Gate | Exact command | Current state |
 |---|---|---|
@@ -209,9 +212,8 @@ secret-redaction, authentication, or exact-decimal controls to make a gate pass.
 ## 8. Release decision
 
 **Not yet approved.** Preserve the distinction between scenario 8's synthetic pass and
-the unavailable real-provider opening-history basis; commit the candidate; rerun and
-record the complete local gate at that SHA; obtain the pushed-SHA Semgrep, dependency,
-secret, and Trivy results; push the branch; and open the required review-only pull
-request. The pull request must not be merged until owner review.
+the unavailable real-provider opening-history basis; finish the corrections directly on
+`main`; rerun and record the complete local gate at that SHA; and obtain the pushed-SHA
+Semgrep, dependency, secret, and Trivy results.
 
 The earlier documentation-readiness approval remains valid as historical authorization to implement; it is not application acceptance.

@@ -18,7 +18,9 @@ Document precedence is defined in `docs/DESIGN_INDEX.md`. Do not silently resolv
 The owner has explicitly selected direct development on `main`.
 
 - Commit directly to `main`.
-- Do not create branches or pull requests unless the owner explicitly changes this policy.
+- Do not create branches or pull requests.
+- Task-local examples, historical delivery records, and command snippets do not override this
+  main-only workflow.
 - Use small, coherent, fast-forward commits.
 - Synchronize and re-read `main` immediately before each commit.
 - Never force-push, reset shared history, amend published commits, or rewrite history.

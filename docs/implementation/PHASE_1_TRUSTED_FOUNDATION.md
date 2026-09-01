@@ -39,7 +39,8 @@ Every work package must preserve:
 8. Ingestion and migrations are idempotent.
 9. Missing/partial/stale/unreconciled data is explicit.
 10. API, web, and MCP share canonical application services/calculations.
-11. Work is committed directly and incrementally to `main` without force-push.
+11. Work is committed directly and incrementally to `main` without force-push or an
+    alternate delivery path.
 12. Phase status is not overstated when an external credential/deployment gate remains.
 
 ## 3. Target repository structure

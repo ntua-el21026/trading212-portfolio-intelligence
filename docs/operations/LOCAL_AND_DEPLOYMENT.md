@@ -8,6 +8,9 @@ PostgreSQL system of record, and non-authoritative Redis coordination service.
 It does not authorize Trading 212 Live access or public exposure of local
 synthetic authentication.
 
+Run and maintain these procedures from the synchronized `main` line. Operational examples
+do not authorize a separate implementation or release workflow.
+
 ## 1. Local prerequisites
 
 - Python `3.13.15` and `uv 0.12.7`;

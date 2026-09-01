@@ -42,7 +42,7 @@ All GitHub Actions dependencies are pinned to immutable commit SHAs. Every exter
 Docker `FROM` reference is pinned by both readable version tag and immutable digest. The
 working-tree scan used Trivy image digest
 `sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969`;
-release evidence still requires the same gates at the immutable candidate SHA.
+release evidence still requires the same gates at the immutable `main` SHA.
 
 ## Python direct pins
 

@@ -4,9 +4,7 @@
 
 **Repository:** `ntua-el21026/trading212-portfolio-intelligence`
 
-**Implementation branch:** `codex/phase-1-trusted-foundation`
-
-**Base branch:** `main`
+**Implementation authority:** `main`
 
 **Updated:** 2026-09-01
 
@@ -14,11 +12,13 @@
 
 - Architecture Design Freeze v0.1: **Accepted**
 - Documentation and Phase 1 readiness: **Approved**
-- Phase 1 — Trusted Foundation (`0.1.0`): **Implementation and local runtime evidence present; final release validation pending**
+- Phase 1 — Trusted Foundation (`0.1.0`): **Correction in progress on `main`; final release validation pending**
 - Phase 2 — Portfolio Intelligence (`0.2.0`): **Not started**
 - Phase 3 — Premium Intelligence and Productization (`1.0.0`): **Not started**
 
-P1-01 through P1-12 have implementation artifacts in the working tree. An isolated
+The imported Phase 1 implementation is present on `main` at
+`7119be95ae41d036f1461dd21bfbf10243c64ab0`. P1-01 through P1-12 have implementation
+artifacts in the working tree. An isolated
 Compose build/run, API-backed browser probe, API/MCP parity check, durable queued-run
 worker restart, full-stack state-retention restart, latency smoke, and runtime secret
 canary passed. All fourteen mandatory synthetic scenarios now have complete working-tree
@@ -34,28 +34,28 @@ results. All workflow actions and external Docker bases are immutable SHA/digest
 The complete `make validate` aggregate also passed in the working tree. The immutable
 release-SHA validation and pushed-SHA security reruns remain pending.
 
-The release is not yet accepted: the complete deterministic matrix must pass at the
-eventual release-candidate commit, pushed-SHA security jobs must complete, the
-branch must be pushed, and a review-only pull request must be opened. No final commit SHA
-or pull-request URL exists at this status checkpoint.
+The release is not yet accepted. Durable dispatch, semantic idempotency, stable
+collection pagination, missing application contracts, and web completeness corrections
+are in progress. The complete deterministic matrix and pushed-SHA security jobs must pass
+at the corrected final `main` head.
 
 ## Next action
 
-Complete the release-candidate gate at one exact commit:
+Complete the correction gate on `main`:
 
 1. Preserve scenario 8's synthetic-only evidence boundary; real-provider bridge coverage
    stays unavailable unless valid opening-history evidence exists.
-2. Commit the candidate and run every locally executable command recorded in
-   `VALIDATION_REPORT.md` at that exact SHA.
+2. Commit coherent corrections directly to `main` and run every locally executable
+   command recorded in `VALIDATION_REPORT.md` at the corrected head.
 3. Resolve every failure without weakening a test or invariant and obtain pushed-SHA
    Semgrep, dependency, secret, Trivy filesystem, and hardened-image results. GitHub
    code-scanning upload is unavailable for this private user-owned repository; do not
    misreport it as a pending runnable gate.
-4. Record the final SHA and evidence in the implementation report.
-5. Push `codex/phase-1-trusted-foundation` and open the required pull request against
-   `main`; do not merge it.
+4. Record the final `main` SHA and evidence in the implementation report.
+5. Verify that `main` remains the sole local and remote development ref.
 
-The current task's explicit branch-and-pull-request instruction supersedes the older direct-`main` delivery policy for this execution. Frozen architecture and safety decisions are unchanged; only the delivery mechanism differs.
+The accepted direct-`main` policy is the only active delivery mechanism. Frozen
+architecture and safety decisions remain unchanged.
 
 ## Permanent boundaries
 
