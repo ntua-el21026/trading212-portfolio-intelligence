@@ -6,6 +6,18 @@ test.beforeEach(async ({ page }) => {
   await expect(page).toHaveURL("http://127.0.0.1:3001/");
 });
 
+test("API-backed overview renders canonical 248431.27 EUR", async ({
+  page,
+}) => {
+  await expect(
+    page.getByRole("heading", { name: "Overview", exact: true }),
+  ).toBeVisible();
+  const totalValueCard = page
+    .getByText("Total portfolio value", { exact: true })
+    .locator("..");
+  await expect(totalValueCard).toContainText("248,431.27 EUR");
+});
+
 test("persisted quantity and cash mismatches reach the API-backed web experience", async ({
   page,
 }) => {
