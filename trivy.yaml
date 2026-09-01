@@ -4,6 +4,7 @@
 # Review trigger: remove or re-authorize this suppression before public
 # distribution, when sharp/libvips changes, or by 2026-12-01, whichever is first.
 # Source/license notices and relinking obligations remain documented.
-ignored-licenses:
-  - LGPL-3.0-or-later
-license-full: true
+license:
+  full: true
+  ignored:
+    - LGPL-3.0-or-later
