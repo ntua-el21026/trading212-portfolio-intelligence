@@ -1,8 +1,11 @@
 # Phase 1 — Trusted Foundation
 
-**Status:** Approved for implementation  
+**Status:** `complete` for locally executable Phase 1 acceptance; three conditions
+remain `blocked_external` and one remains `unavailable_explicit`
 **Target release:** `0.1.0`  
-**Execution branch:** `main` only  
+**Execution branch:** `main` only
+**Validated implementation SHA:** `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+**Later phases:** Phase 2 and Phase 3 are `not_started`
 **Primary objective:** Build a secure, deterministic, runnable foundation that ingests read-only Trading 212 data into an auditable canonical portfolio model and exposes consistent core results through API, web, and MCP interfaces.
 
 ## 1. Scope
@@ -628,24 +631,33 @@ proof of another:
 
 Phase 1 is complete only when all are true:
 
-- [ ] P1-01 through P1-12 are marked complete with evidence.
-- [ ] Repository builds from a clean checkout.
-- [ ] All required local commands pass at the exact final SHA.
-- [ ] Database migrations are reproducible and tested.
-- [ ] Broker registry contains exactly documented GET capabilities.
-- [ ] Negative write/path tests prove default denial before network dispatch.
-- [ ] Mock provider and synthetic portfolio demonstrate all mandatory scenarios.
-- [ ] Canonical ledger/reconciliation/snapshot/accounting/allocation are deterministic.
-- [ ] Data-quality states and source/calculation metadata appear in every relevant interface.
-- [ ] API/OpenAPI and generated web client are synchronized.
-- [ ] Core web pages are responsive and accessible.
-- [ ] MCP tools are authenticated, bounded, schema-valid, and API-parity tested.
-- [ ] Secret/auth/security scans and canary redaction tests pass.
-- [ ] Observability and operational runbooks exist.
-- [ ] `PROJECT_STATUS.md`, `PROJECT_PROGRESS.json`, changelog, and validation evidence are accurate.
-- [ ] Trading 212 Demo smoke has passed with user credentials, or it is the only explicitly external broker verification gate.
-- [ ] Remote ChatGPT registration has passed, or domain/auth registration is the only explicitly external MCP verification gate.
-- [ ] No Phase 2/3 feature is falsely claimed or partially exposed as production-ready.
+- [x] P1-01 through P1-12 are marked complete with evidence.
+- [x] Repository builds from a clean checkout.
+- [x] All required locally executable commands pass at the validated implementation SHA.
+- [x] Database migrations through `20260901_0007` are reproducible and tested.
+- [x] Broker registry contains exactly the documented GET capabilities.
+- [x] Negative write/path tests prove default denial before network dispatch.
+- [x] Mock provider and synthetic portfolio demonstrate all mandatory scenarios.
+- [x] Canonical ledger/reconciliation/snapshot/accounting/allocation are deterministic.
+- [x] Data-quality states and source/calculation metadata appear in every relevant interface.
+- [x] API/OpenAPI and generated web client are synchronized.
+- [x] Core web pages are responsive and accessible.
+- [x] Exactly nine MCP tools are authenticated, bounded, schema-valid, and API-parity
+  tested.
+- [x] Secret/auth/security scans and canary redaction tests pass.
+- [x] Observability and operational runbooks exist.
+- [x] Status, progress, changelog, acceptance, and validation evidence identify the
+  validated implementation SHA and remaining external conditions accurately.
+- [x] Owner-run Trading 212 read-only Demo smoke remains explicitly `blocked_external`
+  until credentials are supplied.
+- [x] Production host, identity, and secret-manager selection remains explicitly
+  `blocked_external`.
+- [x] Public HTTPS/OAuth MCP deployment and ChatGPT registration remains explicitly
+  `blocked_external`.
+- [x] Real-provider opening-history limitations are explicitly reported and are not
+  inferred from synthetic evidence.
+- [x] Phase 2 and Phase 3 remain `not_started`; no later-phase feature is exposed as
+  production-ready.
 
 ## 18. Codex stopping conditions
 

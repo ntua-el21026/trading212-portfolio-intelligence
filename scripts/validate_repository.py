@@ -97,6 +97,8 @@ EXPECTED_ACCEPTANCE_IDS = {
     "P1-E2E-001",
     "P1-EXT-001",
     "P1-EXT-002",
+    "P1-EXT-003",
+    "P1-EXT-004",
     "P1-MCP-001",
     "P1-MCP-002",
     "P1-OPS-001",
@@ -110,6 +112,25 @@ EXPECTED_ACCEPTANCE_IDS = {
     "P1-WEB-001",
     "P1-WEB-002",
 }
+
+EXPECTED_ACCEPTANCE_STATES = {
+    acceptance_id: "complete" for acceptance_id in EXPECTED_ACCEPTANCE_IDS
+}
+EXPECTED_ACCEPTANCE_STATES.update(
+    {
+        "P1-EXT-001": "blocked_external",
+        "P1-EXT-002": "blocked_external",
+        "P1-EXT-003": "blocked_external",
+        "P1-EXT-004": "unavailable_explicit",
+    }
+)
+EXPECTED_EXTERNAL_GATE_STATUS = {
+    "trading212_demo_smoke": "blocked_external",
+    "production_host_identity_secret_manager_selection": "blocked_external",
+    "public_https_oauth_mcp_and_chatgpt_registration": "blocked_external",
+    "real_provider_opening_history_coverage": "unavailable_explicit",
+}
+EXPECTED_EXTERNAL_REPORTING_STATUS = {"real_provider_opening_history_coverage": "complete"}
 
 EXPECTED_CAPABILITIES = {
     "account_summary": ("GET", "/equity/account/summary"),
@@ -164,7 +185,15 @@ MARKDOWN_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 CAPABILITY_RE = re.compile(r"^\s*-\s+capability:\s*([A-Za-z0-9_-]+)\s*$")
 METHOD_RE = re.compile(r"^\s+method:\s*([A-Z]+)\s*$")
 PATH_RE = re.compile(r"^\s+path:\s*(\S+)\s*$")
-ACCEPTANCE_ID_RE = re.compile(r"\bP1-[A-Z0-9]+-\d{3}\b")
+ACCEPTANCE_TABLE_ROW_RE = re.compile(
+    r"^\|\s*(?P<id>P1-[A-Z0-9]+-\d{3})\s*\|[^|]*\|[^|]*\|"
+    r"\s*(?P<state>[^|]+?)\s*\|\s*$",
+    re.MULTILINE,
+)
+TRACEABILITY_DEFINITION_RE = re.compile(
+    r"^-\s+`(?P<id>P1-[A-Z0-9]+-\d{3})`:\s*(?P<description>.*(?:\n  .*)*)$",
+    re.MULTILINE,
+)
 BRANCH_METADATA_RE = re.compile(
     r"^[ \t]*(?:[-*][ \t]*)?\*{0,2}(?P<label>(?:candidate|implementation|execution|working)\s+"
     r"branch|branch)(?:[ \t]*/[ \t]*SHA)?[ \t]*:\*{0,2}[ \t]*`?(?P<value>[^`\s]+)",
@@ -680,13 +709,52 @@ def validate_governance_and_prompt() -> list[Failure]:
     return failures
 
 
-def validate_acceptance_traceability() -> list[Failure]:
-    """Require the acceptance matrix and traceability index to expose identical IDs."""
-    matrix_ids = set(
-        ACCEPTANCE_ID_RE.findall(read_text("docs/implementation/PHASE_1_ACCEPTANCE_MATRIX.md"))
+def _duplicates(values: Iterable[str]) -> set[str]:
+    seen: set[str] = set()
+    duplicates: set[str] = set()
+    for value in values:
+        if value in seen:
+            duplicates.add(value)
+        seen.add(value)
+    return duplicates
+
+
+def validate_acceptance_traceability(root: Path = ROOT) -> list[Failure]:
+    """Bind structured acceptance rows, traceability definitions, and status state."""
+    matrix_text = (root / "docs/implementation/PHASE_1_ACCEPTANCE_MATRIX.md").read_text(
+        encoding="utf-8"
     )
-    traceability_ids = set(ACCEPTANCE_ID_RE.findall(read_text("docs/REQUIREMENTS_TRACEABILITY.md")))
+    traceability_text = (root / "docs/REQUIREMENTS_TRACEABILITY.md").read_text(encoding="utf-8")
+    matrix_rows = [
+        (match.group("id"), match.group("state").strip().strip("`").casefold())
+        for match in ACCEPTANCE_TABLE_ROW_RE.finditer(matrix_text)
+    ]
+    traceability_rows = [
+        (match.group("id"), match.group("description"))
+        for match in TRACEABILITY_DEFINITION_RE.finditer(traceability_text)
+    ]
+    matrix_ids = {acceptance_id for acceptance_id, _state in matrix_rows}
+    traceability_ids = {acceptance_id for acceptance_id, _description in traceability_rows}
     failures: list[Failure] = []
+
+    matrix_duplicates = _duplicates(acceptance_id for acceptance_id, _state in matrix_rows)
+    if matrix_duplicates:
+        failures.append(
+            Failure(
+                "acceptance-ids",
+                f"acceptance matrix contains duplicate rows: {sorted(matrix_duplicates)}",
+            )
+        )
+    traceability_duplicates = _duplicates(
+        acceptance_id for acceptance_id, _description in traceability_rows
+    )
+    if traceability_duplicates:
+        failures.append(
+            Failure(
+                "acceptance-ids",
+                f"traceability contains duplicate definitions: {sorted(traceability_duplicates)}",
+            )
+        )
     if matrix_ids != EXPECTED_ACCEPTANCE_IDS:
         failures.append(
             Failure(
@@ -701,6 +769,100 @@ def validate_acceptance_traceability() -> list[Failure]:
                 "acceptance-ids",
                 "traceability mismatch: "
                 f"matrix {sorted(matrix_ids)}, traceability {sorted(traceability_ids)}",
+            )
+        )
+
+    matrix_states = dict(matrix_rows)
+    for acceptance_id, expected_state in EXPECTED_ACCEPTANCE_STATES.items():
+        actual_state = matrix_states.get(acceptance_id)
+        if actual_state is not None and actual_state != expected_state:
+            failures.append(
+                Failure(
+                    "acceptance-state",
+                    f"{acceptance_id} must be {expected_state}, got {actual_state}",
+                )
+            )
+
+    traceability_definitions = dict(traceability_rows)
+    for acceptance_id, expected_state in EXPECTED_ACCEPTANCE_STATES.items():
+        if not acceptance_id.startswith("P1-EXT-"):
+            continue
+        description = traceability_definitions.get(acceptance_id)
+        if description is not None and f"`{expected_state}`" not in description:
+            failures.append(
+                Failure(
+                    "acceptance-state",
+                    f"traceability {acceptance_id} must retain state `{expected_state}`",
+                )
+            )
+
+    status = json.loads((root / "PROJECT_STATUS.json").read_text(encoding="utf-8"))
+    progress = json.loads((root / "PROJECT_PROGRESS.json").read_text(encoding="utf-8"))
+    status_external = status.get("external_gate_status")
+    progress_external = progress.get("external_gates")
+    if status_external != EXPECTED_EXTERNAL_GATE_STATUS:
+        failures.append(
+            Failure(
+                "acceptance-state",
+                "PROJECT_STATUS.json external_gate_status must match the fail-closed "
+                "external gate map",
+            )
+        )
+    if progress_external != EXPECTED_EXTERNAL_GATE_STATUS:
+        failures.append(
+            Failure(
+                "acceptance-state",
+                "PROJECT_PROGRESS.json external_gates must match the fail-closed external gate map",
+            )
+        )
+    if set(status.get("external_gates", ())) != set(EXPECTED_EXTERNAL_GATE_STATUS):
+        failures.append(
+            Failure(
+                "acceptance-state",
+                "PROJECT_STATUS.json external_gates must list exactly the external gate map keys",
+            )
+        )
+    for document_name, document in (
+        ("PROJECT_STATUS.json", status),
+        ("PROJECT_PROGRESS.json", progress),
+    ):
+        if document.get("external_gate_reporting") != EXPECTED_EXTERNAL_REPORTING_STATUS:
+            failures.append(
+                Failure(
+                    "acceptance-state",
+                    f"{document_name} external_gate_reporting must preserve explicit "
+                    "limitation reporting",
+                )
+            )
+        if document.get("release_readiness") != "blocked_external":
+            failures.append(
+                Failure(
+                    "acceptance-state",
+                    f"{document_name} release_readiness must remain blocked_external",
+                )
+            )
+
+    acceptance = progress.get("phases", {}).get("phase_1", {}).get("acceptance", {})
+    expected_counts = {
+        "external_conditions_total": len(EXPECTED_EXTERNAL_GATE_STATUS),
+        "external_rows_blocked_external": 3,
+        "external_rows_unavailable_explicit": 1,
+        "external_rows_reporting_complete": 1,
+    }
+    for field, expected_value in expected_counts.items():
+        if acceptance.get(field) != expected_value:
+            failures.append(
+                Failure(
+                    "acceptance-state",
+                    f"PROJECT_PROGRESS.json acceptance.{field} must be {expected_value}",
+                )
+            )
+    if status.get("remaining_external_conditions") != len(EXPECTED_EXTERNAL_GATE_STATUS):
+        failures.append(
+            Failure(
+                "acceptance-state",
+                "PROJECT_STATUS.json remaining_external_conditions must match the "
+                "external gate map",
             )
         )
     return failures

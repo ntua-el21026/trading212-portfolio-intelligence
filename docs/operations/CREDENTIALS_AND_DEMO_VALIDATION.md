@@ -44,14 +44,23 @@ or invalid/missing configuration.
 ## 3. Exact owner procedure
 
 Use a private local shell only after `PROJECT_STATUS.json` records the designated
-corrected release SHA and the owner-run Demo gate is ready. The steps below fetch and
-prune the remote, switch to authoritative `main`, update it by fast-forward only, verify
-that the checkout is exactly the designated release SHA, disable interactive history,
-read the secret without echo, create the strict JSON bundle without placing either value
-in an argument, run the probe, and remove all shell variables afterward:
+validated implementation/evidence SHA and the owner-run Demo gate is ready. Set
+`T212PI_EXPECTED_CORRECTED_MAIN_SHA` to the exact final `main` SHA supplied in the
+standalone correction handoff; do not infer it from a moving branch. The steps below
+fetch and prune the remote, switch to authoritative `main`, update it by fast-forward
+only, require local `HEAD`, `origin/main`, and that supplied final SHA to be identical,
+and also verify that the immutable evidence commit is in that exact history. The
+procedure then disables interactive history, reads the secret without echo, creates the
+strict JSON bundle without placing either value in an argument, runs the probe, and
+removes all shell variables afterward:
 
 ```bash
 cd /home/peppaspan/trading212-portfolio-intelligence
+: "${T212PI_EXPECTED_CORRECTED_MAIN_SHA:?set this to the exact final main SHA from the correction handoff}"
+case "${T212PI_EXPECTED_CORRECTED_MAIN_SHA}" in
+  [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]) ;;
+  *) printf '%s\n' 'expected corrected main SHA must be 40 lowercase hexadecimal characters' >&2; exit 2 ;;
+esac
 git fetch origin --prune
 git switch main
 git pull --ff-only origin main
@@ -67,7 +76,9 @@ if not isinstance(value, str) or len(value) != 40:
 print(value)
 PY
 )"
-test "$(git rev-parse HEAD)" = "${designated_release_sha}"
+test "$(git rev-parse HEAD)" = "${T212PI_EXPECTED_CORRECTED_MAIN_SHA}"
+test "$(git rev-parse refs/remotes/origin/main)" = "${T212PI_EXPECTED_CORRECTED_MAIN_SHA}"
+git merge-base --is-ancestor "${designated_release_sha}" HEAD
 set +o history
 read -r -s -p 'Trading 212 Demo API key: ' demo_api_key
 printf '\n'
@@ -95,15 +106,16 @@ unset T212PI_TRADING212_ENVIRONMENT
 unset T212PI_TRADING212_LIVE_ENABLED
 unset T212PI_RUN_TRADING212_DEMO_SMOKE
 unset designated_release_sha
+unset T212PI_EXPECTED_CORRECTED_MAIN_SHA
 set -o history
 test "${smoke_exit}" -eq 0
 ```
 
-Record the sanitized JSON result, UTC time, release SHA, and command exit status.
-Do not record shell history, environment output, request headers, raw responses,
-or portfolio data. A successful probe establishes only these two Demo GET
-contracts; it is not Live validation and not evidence that a full durable refresh
-completed.
+Record the sanitized JSON result, UTC time, exact corrected `main` SHA, designated
+evidence SHA, and command exit status. Do not record shell history, environment output, request
+headers, raw responses, or portfolio data. A successful probe establishes only these two
+Demo GET contracts; it is not Live validation and not evidence that a full durable
+refresh completed.
 
 ## 4. Full worker connection
 

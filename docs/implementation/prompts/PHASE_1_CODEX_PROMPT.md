@@ -1,6 +1,15 @@
 # Master Codex Prompt — Phase 1: Trusted Foundation
 
-Copy the complete prompt below into Codex with `ntua-el21026/trading212-portfolio-intelligence` selected.
+**Status:** Historical execution prompt retained for reproducibility
+**Validated implementation SHA:** `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+**Current authority:** `main`; Phase 2 and Phase 3 are `not_started`
+
+Phase 1 has completed all locally executable acceptance at the validated implementation
+SHA. Do not replay this prompt as a new implementation request or use it to begin a later
+phase. The four remaining external conditions are recorded in the current status and
+acceptance evidence.
+
+The original execution prompt is retained below for auditability and reproducibility.
 
 ```text
 We are implementing Phase 1 of the private repository:
@@ -374,11 +383,14 @@ The final local/CI state must pass:
 - clean build/container smoke;
 - all 14 mandatory synthetic scenarios in `PHASE_1_EXECUTION_MANIFEST.md`.
 
-A test command must not report success when it is a placeholder. Skips are permitted only for the explicitly recognized external gates:
+A test command must not report success when it is a placeholder. The only conditions
+that may remain external are:
 
-- Trading 212 Demo smoke requiring user credentials;
-- deployed remote ChatGPT registration/domain/auth;
-- production hosting/backup checks unavailable locally.
+- owner-run Trading 212 read-only Demo smoke requiring user credentials;
+- production host, identity, and secret-manager selection;
+- public HTTPS/OAuth MCP deployment and ChatGPT registration;
+- real-provider opening-history limitations, reported explicitly rather than inferred
+  from synthetic fixtures.
 
 Record every external skip exactly. Everything else must run locally or in CI.
 
@@ -395,7 +407,6 @@ At P1-12 produce a final Phase 1 acceptance report containing:
 - exact commands and results;
 - CI links/status at final SHA;
 - runtime/dependency versions and lockfiles;
-- migration head and clean/upgrade test evidence;
 - migration head `20260901_0007`, repeat/upgrade/downgrade-policy/ORM-drift evidence;
 - OpenAPI/generated client/MCP schemas;
 - exact ten-capability GET-only/default-deny proof;

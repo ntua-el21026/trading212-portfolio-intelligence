@@ -12,50 +12,51 @@
 
 - Architecture Design Freeze v0.1: **Accepted**
 - Documentation and Phase 1 readiness: **Approved**
-- Phase 1 — Trusted Foundation (`0.1.0`): **Correction in progress on `main`; final release validation pending**
+- Phase 1 — Trusted Foundation (`0.1.0`): **Implementation complete; 24 locally executable acceptance rows complete; release readiness `blocked_external`**
 - Phase 2 — Portfolio Intelligence (`0.2.0`): **Not started**
 - Phase 3 — Premium Intelligence and Productization (`1.0.0`): **Not started**
 
-The imported Phase 1 implementation is present on `main` at
-`7119be95ae41d036f1461dd21bfbf10243c64ab0`. P1-01 through P1-12 have implementation
-artifacts in the working tree. An isolated
-Compose build/run, API-backed browser probe, API/MCP parity check, durable queued-run
-worker restart, full-stack state-retention restart, latency smoke, and runtime secret
-canary passed. All fourteen mandatory synthetic scenarios now have complete working-tree
-evidence. Scenario 8 uses a retained synthetic immutable quantity/cash mismatch fixture
-through persistence, API/MCP, and actual API-backed desktop/mobile web; it does not claim
-that the real Trading 212 provider supplies a valid opening-history basis.
+P1-01 through P1-12 and all 24 locally executable acceptance rows are complete. The
+immutable implementation/evidence SHA is
+`bba71749096cecbe8732d60e2b5bb1e44c394b7c`. `main` remains the implementation
+authority; final governance/evidence reconciliation may advance `main` to a descendant
+without changing the commit at which executable evidence was recorded.
+
+The evidence run recorded 84% Python coverage, 335 isolated Python tests, 64
+migration/integration tests, 22 web unit tests, 32 synthetic Playwright tests, and 6
+API-backed Playwright tests. Alembic head is `20260901_0007`, and the MCP registry contains
+exactly nine Phase 1 tools. The durable refresh outbox/API crash-recovery path, semantic
+idempotency conflicts, stable complete collection traversal, API/MCP parity, desktop and
+mobile pagination, full-stack state retention, non-root containers, and runtime secret
+containment passed their locally executable gates.
 
 Hardened PostgreSQL and Redis initialized disposable volumes and became healthy as users
-`postgres` and `redis`; API, worker, MCP, and web runtime probes passed as non-root after
-unused package-manager removal. Working-tree Semgrep, Gitleaks, Trivy filesystem/config/
-license, and all six high/critical vulnerability/secret image scans returned clean
-results. All workflow actions and external Docker bases are immutable SHA/digest pinned.
-The complete `make validate` aggregate also passed in the working tree. The immutable
-release-SHA validation and pushed-SHA security reruns remain pending.
+`postgres` and `redis`; API, worker, dispatcher, MCP, and web runtime probes passed as
+non-root. Semgrep, Gitleaks complete-history scanning, dependency audits, Trivy
+filesystem/config/license scanning, and all application/infrastructure container scans
+passed. All workflow actions and external Docker bases are immutable SHA/digest pinned.
 
-The release is not yet accepted. Durable dispatch, semantic idempotency, stable
-collection pagination, missing application contracts, and web completeness corrections
-are in progress. The complete deterministic matrix and pushed-SHA security jobs must pass
-at the corrected final `main` head.
+Scenario 8 uses a retained synthetic immutable quantity/cash mismatch fixture through
+persistence, API/MCP, and actual API-backed desktop/mobile web. It does not claim that
+the real Trading 212 provider supplies a valid opening-history basis. That real-provider
+coverage condition remains `unavailable_explicit`, with the limitation reported rather
+than fabricated.
 
 ## Next action
 
-Complete the correction gate on `main`:
+Preserve the accepted evidence while completing only the external owner/deployment work:
 
-1. Preserve scenario 8's synthetic-only evidence boundary; real-provider bridge coverage
-   stays unavailable unless valid opening-history evidence exists.
-2. Commit coherent corrections directly to `main` and run every locally executable
-   command recorded in `VALIDATION_REPORT.md` at the corrected head.
-3. Resolve every failure without weakening a test or invariant and obtain pushed-SHA
-   Semgrep, dependency, secret, Trivy filesystem, and hardened-image results. GitHub
-   code-scanning upload is unavailable for this private user-owned repository; do not
-   misreport it as a pending runnable gate.
-4. Record the final `main` SHA and evidence in the implementation report.
-5. Verify that `main` remains the sole local and remote development ref.
+1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo
+   credential is supplied.
+2. Select the production host, identity provider, and secret manager.
+3. Deploy the authenticated MCP endpoint over public HTTPS/OAuth and complete ChatGPT
+   registration.
+4. Continue to report unavailable real-provider opening-history coverage explicitly
+   unless valid provider evidence becomes available.
 
 The accepted direct-`main` policy is the only active delivery mechanism. Frozen
-architecture and safety decisions remain unchanged.
+architecture and safety decisions remain unchanged. Phase 2 and Phase 3 remain
+`not_started`.
 
 ## Permanent boundaries
 
@@ -68,15 +69,22 @@ architecture and safety decisions remain unchanged.
 
 ## External gates
 
-These do not block local Phase 1 implementation:
+These are the only remaining external conditions and do not reopen local Phase 1
+implementation:
 
-1. Trading 212 Demo read-only credentials and real Demo smoke.
-2. Remote hosting/domain/production authentication and secret-manager selection.
-3. Live ChatGPT registration against a deployed authenticated MCP endpoint.
+1. Trading 212 Demo read-only credentials and Demo smoke — `blocked_external`.
+2. Production host, identity, and secret-manager selection — `blocked_external`.
+3. Public HTTPS/OAuth MCP deployment and ChatGPT registration — `blocked_external`.
+4. Real-provider opening-history coverage — `unavailable_explicit`; limitation reporting
+   is complete.
 
-No claim of real account connectivity or deployed ChatGPT availability is made until those gates pass.
+No claim of real account connectivity or deployed ChatGPT availability is made until
+those gates pass. Trading 212 Live is disabled and untested; it is not an additional
+Phase 1 gate.
 
-The Demo smoke has not run because no owner credential was supplied. Remote HTTPS/OAuth deployment and ChatGPT Developer Mode registration have not run because no deployed endpoint or production identity configuration was supplied. Live Trading 212 is intentionally not tested.
+The Demo smoke has not run because no owner credential was supplied. Production
+selection and public HTTPS/OAuth MCP deployment with ChatGPT registration have not run
+because those external resources were not supplied.
 
 ## Readiness evidence
 

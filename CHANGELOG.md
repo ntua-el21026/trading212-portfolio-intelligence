@@ -9,6 +9,17 @@ All notable project changes are recorded here. The project follows semantic vers
 - Fast-forwarded the existing Phase 1 implementation into the authoritative `main`
   history, retired the unaccepted alternate delivery policy, and added executable
   validation that rejects non-`main` repository workflow instructions.
+- Corrected refresh dispatch with atomic ingestion-run/outbox persistence, leased
+  at-least-once publication, deterministic task identity, bounded retry/backoff,
+  crash recovery, dispatcher readiness, and outbox telemetry.
+- Corrected refresh idempotency so a key is bound to canonical requested semantics;
+  identical retries coalesce while mismatched mode or scope returns the stable
+  `IDEMPOTENCY_KEY_REUSED` conflict without another publication.
+- Replaced mutable offset/capped collection behavior with filter-bound opaque keyset or
+  immutable-query cursors, complete SQL filtering/counts, dedicated service queries,
+  nine-tool MCP parity, and route-specific URL pagination in the web application.
+- Completed owner-scoped broker connection, canonical instrument/listing, authorized
+  snapshot, core performance, reconciliation, and data-quality application contracts.
 
 ### Added
 
@@ -19,6 +30,9 @@ All notable project changes are recorded here. The project follows semantic vers
 - Authenticated Streamable HTTP MCP gateway with nine frozen read-only tools and a versioned portfolio-overview widget.
 - Non-root application containers, local Compose orchestration, deterministic synthetic seed, observability hooks, external Demo smoke tool, and operations runbooks.
 - Phase 1 implementation, acceptance, and validation evidence ledgers.
+- Alembic revisions `20260901_0004` through `20260901_0007` for the durable refresh
+  outbox/request semantics, safe credential state, immutable collection-query snapshots,
+  and active external-cash-flow revisions.
 - Mode-aware transaction incrementals with a persisted high-water mark, seven-day
   overlap, stable cursor/filter validation, monotonic empty-page behavior, and safe
   full-replay/deduplication fallback for history contracts without a time filter.
@@ -44,17 +58,20 @@ All notable project changes are recorded here. The project follows semantic vers
 - Added hardened PostgreSQL `18.6` and Redis `8.10.1` images with patched OpenSSL
   packages, unprivileged runtime users, removal of unused `gosu`/snake-oil key material,
   and minimized application runtimes without package installers.
-- Verified the working-tree secret canary is absent from API/worker/MCP/web logs and
-  application image filesystems; final-SHA Semgrep, dependency, secret, Trivy filesystem,
-  and hardened-image results remain pending.
+- Verified at immutable evidence SHA `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+  that the secret canary is absent from API/worker/MCP/web logs and application image
+  filesystems and that the pinned Semgrep, dependency, secret, Trivy filesystem, and
+  hardened-image gates pass.
 - Verified hardened PostgreSQL/Redis disposable-volume startup as their unprivileged
-  users and non-root application runtime probes after package-manager removal. The API
-  worker, MCP, web, hardened PostgreSQL, and hardened Redis images all passed working-tree
-  Trivy `0.74.0` high/critical vulnerability and secret scans with no findings.
-- Verified working-tree Trivy filesystem vulnerability/secret/misconfiguration/license
-  scanning, a clean pre-evidence Gitleaks history scan, and deterministic Semgrep over
-  142 targets with zero findings. All workflow actions and external Docker base images
-  are immutable SHA/digest pinned; the immutable `main`-SHA CI rerun remains pending.
+  users and non-root application runtime probes after package-manager removal. The API,
+  worker, MCP, web, hardened PostgreSQL, and hardened Redis images passed Trivy `0.74.0`
+  high/critical vulnerability and secret scans with no findings.
+- Verified Trivy filesystem vulnerability/secret/misconfiguration/license scanning, a
+  clean complete-history Gitleaks scan, and deterministic repository-local Semgrep with
+  zero findings. All workflow actions and external Docker base images are immutable
+  SHA/digest pinned.
+- Corrected the time-bounded LGPL policy entry to Trivy `0.74.0`'s nested
+  `license.ignored` schema, then reran the fresh-checkout filesystem/config/license gate.
 - Trading 212 integration frozen as exact GET-only/default-deny.
 - Broker order/Pie mutation, generic proxy, autonomous trading, and credential exposure explicitly prohibited.
 
@@ -64,17 +81,25 @@ All notable project changes are recorded here. The project follows semantic vers
 
 Monorepo, provider ingestion, canonical history, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, and operational baseline.
 
-Implementation and isolated local runtime/restart evidence are present on `main`. All
-fourteen mandatory synthetic scenarios have
-complete working-tree evidence; scenario 8's synthetic fixture does not claim real
-Trading 212 opening-history coverage. Final release-SHA validation, pushed-SHA security
-jobs, and owner review remain pending. Real Trading 212 Demo and deployed ChatGPT
-validation remain explicitly external.
+Implementation is complete on `main`, all 24 locally executable acceptance rows passed,
+and all fourteen mandatory synthetic scenarios have evidence at immutable commit
+`bba71749096cecbe8732d60e2b5bb1e44c394b7c`. The final evidence includes 84% Python
+coverage, 335 isolated Python tests, 64 migration/integration tests, 22 web unit tests,
+32 synthetic Playwright tests, 6 API-backed Playwright tests, Alembic head
+`20260901_0007`, and exactly nine MCP tools. Release readiness remains
+`blocked_external` for the Demo smoke, production host/identity/secret-manager selection,
+and public HTTPS/OAuth MCP plus ChatGPT registration. Real-provider opening-history
+coverage remains `unavailable_explicit` with limitation reporting complete. Trading 212
+Live is disabled and untested, not another Phase 1 gate.
 
 ### [0.2.0] — Phase 2: Portfolio Intelligence
 
 Virtual Pies/targets, contribution optimization, full performance/benchmarks, X-ray, reports, alerts, and premium analytical interfaces.
 
+Status: `not_started`.
+
 ### [1.0.0] — Phase 3: Premium Intelligence and Productization
 
 Advanced risk/scenarios/goals, research cockpit, rich ChatGPT UI, PWA polish, premium providers, and production hardening.
+
+Status: `not_started`.

@@ -1,8 +1,8 @@
 # Requirements Traceability
 
-**Status:** Accepted baseline
+**Status:** Phase 1 validated at `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
 
-This matrix links product requirements to implementation phases and verification evidence. Detailed acceptance criteria remain authoritative in the phase specifications and acceptance matrix.
+This matrix links product requirements to implementation phases and verification evidence. Detailed acceptance criteria remain authoritative in the phase specifications and acceptance matrix. Phase 2 and Phase 3 rows remain roadmap traceability only and are not started.
 
 | Requirement | Phase | Primary authority | Verification class |
 |---|---:|---|---|
@@ -69,7 +69,11 @@ This matrix links product requirements to implementation phases and verification
 - `P1-E2E-001`: all fourteen mandatory synthetic scenarios pass, with scenario 14
   independently proving API commit-before-publication recovery, worker restart after
   confirmed publication, and full-stack state retention.
-- `P1-EXT-001`: Trading 212 Demo smoke passes or remains explicitly `blocked_external`.
-- `P1-EXT-002`: deployed ChatGPT app registration passes or remains explicitly `blocked_external`.
+- `P1-EXT-001`: Demo validation is `blocked_external` without owner credentials.
+- `P1-EXT-002`: deployment validation is `blocked_external` without deployment authority.
+- `P1-EXT-003`: public HTTPS/OAuth MCP and ChatGPT registration are `blocked_external`
+  without a supplied public endpoint.
+- `P1-EXT-004`: real-provider opening-history quantity/cash validation is
+  `unavailable_explicit`; synthetic evidence is not a replacement.
 
 `docs/implementation/PHASE_1_ACCEPTANCE_MATRIX.md` maps these identifiers to concrete evidence.

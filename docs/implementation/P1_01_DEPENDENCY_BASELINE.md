@@ -1,10 +1,14 @@
 # P1-01 Dependency Baseline and Registry Evidence
 
-**Status:** Implemented, acceptance in progress
-**Reviewed:** 2026-08-31
+**Status:** `complete` at the validated implementation SHA
+**Reviewed:** 2026-09-01
 **Authority:** Exact P1-01 dependency selection under `PHASE_1_TECHNICAL_BASELINE.md`
+**Validated implementation SHA:** `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
 
-This note records the primary registry evidence used to create `uv.lock` and `pnpm-lock.yaml`. It does not mark P1-01 complete: clean-environment CI and the remaining Phase 1 work must still supply acceptance evidence.
+This note records the primary registry evidence used to create `uv.lock` and
+`pnpm-lock.yaml`. P1-01 and its locally executable acceptance are complete at the
+validated implementation SHA. Phase 2 and Phase 3 remain `not_started`; external
+environment conditions are tracked separately from this dependency baseline.
 
 ## Runtime and container pins
 
@@ -40,9 +44,10 @@ release; public distribution requires a fresh obligations review.
 
 All GitHub Actions dependencies are pinned to immutable commit SHAs. Every external
 Docker `FROM` reference is pinned by both readable version tag and immutable digest. The
-working-tree scan used Trivy image digest
+validated implementation scan used Trivy image digest
 `sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969`;
-release evidence still requires the same gates at the immutable `main` SHA.
+the complete gate evidence for that immutable `main` baseline is recorded in the Phase 1
+acceptance and validation documents.
 
 ## Python direct pins
 

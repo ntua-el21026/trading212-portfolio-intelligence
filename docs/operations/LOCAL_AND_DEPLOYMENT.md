@@ -100,7 +100,7 @@ must be supplied by the deployment platform, not baked into an image.
 | Authentication | explicitly enabled loopback synthetic mode | composed bearer/session verifier with issuer, audience, key references, exact origins and hosts |
 | Sessions | insecure cookie permitted only on loopback local HTTP | `Secure`, `HttpOnly`, `SameSite=Strict` or approved `Lax` over TLS |
 | Secrets | allowlisted environment adapter for a private Demo validation shell | external secret-manager adapter and opaque references |
-| Broker | synthetic by default; opt-in Demo smoke | Demo in staging; any Live read-only use needs the separate explicit Live gate and owner review |
+| Broker | synthetic by default; opt-in Demo smoke | Demo in staging; Live is disabled and untested, outside Phase 1 acceptance, and not an additional gate |
 | Database | hardened derivative of pinned PostgreSQL `18.6`, running unprivileged | managed PostgreSQL, encrypted transport/storage, monitored backups |
 | Redis | hardened derivative of pinned Redis `8.10.1`, unprivileged and non-authoritative | private managed service where required; loss must not lose canonical facts/checkpoints |
 | Dispatcher | required Compose service, fixed `portfolio.refresh` task, local heartbeat/metrics | independently supervised service with shared broker, bounded claims/backoff, and monitored heartbeat |
@@ -111,6 +111,11 @@ Production startup is expected to fail closed until the authentication and
 external secret-provider adapters are composed and a dispatcher is explicitly
 configured. API readiness also fails until PostgreSQL contains a recent healthy
 dispatcher cycle. Do not weaken these gates to make an image start.
+
+Production host, identity, and secret-manager selection and the public HTTPS/OAuth MCP
+deployment with ChatGPT registration remain `blocked_external`. They do not change the
+complete local Phase 1 implementation state. Real-provider opening-history coverage is
+`unavailable_explicit` with limitation reporting complete.
 
 The dispatcher claims rows in bounded batches with `FOR UPDATE SKIP LOCKED`,
 publishes only `portfolio.refresh`, and uses the ingestion run ID as Celery task

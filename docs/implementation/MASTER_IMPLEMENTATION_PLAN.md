@@ -119,7 +119,9 @@ A package becomes `complete` only with linked/recorded evidence in the phase che
 
 ## 8. Codex usage
 
-The phase prompt is a complete execution instruction but not a substitute for repository inspection. Codex must:
+An active phase prompt is a complete execution instruction but not a substitute for
+repository inspection. A completed phase prompt is retained only as a historical audit
+record and must not be replayed. For the active phase, Codex must:
 
 - treat current `main` as source of truth;
 - inspect before coding;

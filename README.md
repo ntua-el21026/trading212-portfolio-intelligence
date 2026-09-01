@@ -2,7 +2,7 @@
 
 A private, premium, strictly read-only portfolio intelligence platform for Trading 212. It combines auditable brokerage-data ingestion, deterministic financial accounting, reconciliation, historical snapshots, portfolio analytics, a responsive web/PWA application, and a ChatGPT-native MCP app.
 
-> **Current state:** Architecture Design Freeze v0.1 is approved. The complete Phase 1 implementation and isolated local runtime/restart evidence exist on `main`. All fourteen mandatory synthetic scenarios have complete working-tree evidence; final release-SHA validation, pushed-SHA security jobs, Trading 212 Demo, and deployed ChatGPT gates remain pending. Real Trading 212 opening-history coverage is still unavailable and is not inferred from the synthetic scenario 8 acceptance fixture.
+> **Current state:** Architecture Design Freeze v0.1 is approved. Phase 1 implementation is complete on `main`, and all 24 locally executable acceptance rows passed at immutable evidence SHA `bba71749096cecbe8732d60e2b5bb1e44c394b7c`. Release readiness is `blocked_external` only by the documented owner/deployment conditions. Real Trading 212 opening-history coverage remains `unavailable_explicit` and is not inferred from the synthetic scenario 8 acceptance fixture. Phase 2 and Phase 3 are `not_started`.
 
 ## Product objective
 
@@ -44,7 +44,7 @@ API, web, workers, reports, and MCP tools share the same canonical domain, autho
 
 | Phase | Release | Outcome | Status |
 |---|---:|---|---|
-| 1. Trusted Foundation | `0.1.0` | Monorepo, domain/persistence, GET-only Trading 212 ingestion, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, CI and operations | Local runtime evidence recorded; final SHA/CI pending |
+| 1. Trusted Foundation | `0.1.0` | Monorepo, domain/persistence, GET-only Trading 212 ingestion, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, CI and operations | Implementation complete; 24 local acceptance rows complete; external gates remain |
 | 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | Not started |
 | 3. Premium Intelligence & Productization | `1.0.0` | Advanced risk/scenarios/projections/goals, research cockpit, rich ChatGPT UI, PWA polish, premium providers and production hardening | Not started |
 
@@ -116,41 +116,49 @@ historical records cannot authorize work away from `main`; governance must be ch
 
 ## Phase 1 status
 
-The complete execution authority remains recorded in:
+The completed Phase 1 execution prompt is retained as a historical audit record in:
 
 ```text
 docs/implementation/prompts/PHASE_1_CODEX_PROMPT.md
 ```
 
-P1-01 through P1-12 are implemented in the working tree. An isolated Compose runtime
-validated authenticated API-backed web rendering, exact API/MCP canonical parity,
-durable queued-run worker recovery, full-stack state retention, non-root containers,
-latency smoke measurements, and runtime secret-canary containment. See the
+P1-01 through P1-12 are complete. The immutable implementation/evidence commit is
+`bba71749096cecbe8732d60e2b5bb1e44c394b7c`; `main` is the authority, and later
+governance/evidence reconciliation commits may be descendants of that commit. The release evidence records
+84% Python coverage, 335 isolated Python tests, 64 migration/integration tests, 22 web
+unit tests, 32 synthetic Playwright tests, and 6 API-backed Playwright tests. It also
+validates authenticated API-backed web rendering, exact API/MCP canonical parity, the
+durable refresh outbox crash/recovery path, full-stack state retention, non-root
+containers, latency smoke measurements, and runtime secret-canary containment. See the
 [validation report](VALIDATION_REPORT.md) and
 [mandatory scenario evidence](docs/implementation/PHASE_1_SCENARIO_EVIDENCE.md).
 
-Phase 1 is not release-approved. Scenario 8 now passes through one retained
+All 24 locally executable Phase 1 acceptance rows are complete. Release readiness remains
+`blocked_external`; this does not reopen local implementation. Scenario 8 passes through one retained
 synthetic immutable quantity/cash mismatch fixture across PostgreSQL, API/MCP, and the
 actual API-backed desktop/mobile web experience. This synthetic acceptance path does not
 erase the real-provider limitation: quantity and cash movement bridges remain
 unavailable when Trading 212 opening-history coverage is insufficient. The complete
 matrix and the pinned no-upload Semgrep, dependency, secret, Trivy filesystem, and
-hardened-image gates must pass at the exact final `main` SHA before the release state changes.
+hardened-image gates passed for the immutable evidence commit.
 
-The complete working-tree Semgrep, Gitleaks, Trivy filesystem/config/license, and
-six-image high/critical vulnerability/secret matrix returned clean results. Every
-workflow action and external Docker base is immutable SHA/digest pinned. These results
-must still be repeated by CI at the exact final `main` SHA.
+The complete Semgrep, Gitleaks, Trivy filesystem/config/license, and six-image
+high/critical vulnerability/secret matrix returned clean results. Every workflow action
+and external Docker base is immutable SHA/digest pinned.
 
 ## External gates
 
-Local Phase 1 implementation does not require real credentials. These remain explicit later verification gates:
+Local Phase 1 implementation does not require real credentials. These are the only
+remaining external conditions:
 
-- user-provided Trading 212 Demo read-only credentials and Demo smoke;
-- remote hosting/domain/production authentication/secret-manager selection;
-- live ChatGPT app registration against the deployed authenticated MCP endpoint.
+- user-provided Trading 212 Demo read-only credentials and Demo smoke (`blocked_external`);
+- production host, identity, and secret-manager selection (`blocked_external`);
+- public HTTPS/OAuth MCP deployment and ChatGPT registration (`blocked_external`);
+- real-provider opening-history coverage (`unavailable_explicit`, with limitation
+  reporting complete).
 
-No real connectivity or deployment claim is made until the corresponding gate passes.
+Trading 212 Live remains disabled and untested; it is not an additional Phase 1 gate. No
+real connectivity or deployment claim is made until the corresponding gate passes.
 The owner procedure for the Demo-only probe is documented in [Credentials and Demo Validation](docs/operations/CREDENTIALS_AND_DEMO_VALIDATION.md); MCP Inspector and ChatGPT Developer Mode are documented separately in [MCP and ChatGPT Validation](docs/operations/MCP_CHATGPT_VALIDATION.md).
 
 ## License

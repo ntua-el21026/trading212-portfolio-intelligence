@@ -1,13 +1,19 @@
 # Phase 1 Execution Manifest
 
-**Status:** Accepted  
+**Status:** `complete` for locally executable Phase 1 acceptance
 **Release target:** `0.1.0`  
 **Execution:** Direct fast-forward commits to `main`
+**Validated implementation SHA:** `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+**Later phases:** Phase 2 and Phase 3 are `not_started`
 
 This manifest converts the Phase 1 specification into an ordered implementation program. It does not reduce any acceptance criterion in `PHASE_1_TRUSTED_FOUNDATION.md`.
 
 Every implementation increment and correction lands directly on `main`; release labels,
 examples, and task-local prose do not create an alternate Git workflow.
+
+P1-01 through P1-12 and all locally executable acceptance rows are complete at the
+validated implementation SHA. The four conditions in [External gates](#external-gates)
+remain external; they do not authorize later-phase work or Trading 212 write access.
 
 ## Work packages
 
@@ -146,11 +152,15 @@ three independently:
 
 ## External gates
 
-The following may remain explicitly `blocked_external` without blocking local Phase 1 completion:
+The following may remain in their explicit external state without blocking local Phase 1
+completion:
 
-- Trading 212 Demo smoke requiring user-provided read-only credentials.
-- Remote hosting/domain/production authentication and secret-manager selection.
-- Live ChatGPT app registration against a deployed authenticated MCP endpoint.
+- Owner-run Trading 212 read-only Demo smoke requiring user-provided credentials —
+  `blocked_external`.
+- Production host, identity, and secret-manager selection — `blocked_external`.
+- Public HTTPS/OAuth MCP deployment and ChatGPT registration — `blocked_external`.
+- Real-provider opening-history limitations — `unavailable_explicit`, with the limitation
+  reported rather than inferred from synthetic fixtures.
 
 Nothing else may be silently skipped as “external.”
 

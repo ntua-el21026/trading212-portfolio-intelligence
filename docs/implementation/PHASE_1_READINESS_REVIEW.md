@@ -1,14 +1,28 @@
 # Phase 1 Readiness Review
 
 **Review date:** 2026-08-31  
-**Result:** Approved to begin implementation  
-**Scope of approval:** Documentation and execution readiness, not application completion
+**Status:** Historical point-in-time readiness record
+**Result at review time:** Approved to begin implementation
+**Current implementation evidence:** Locally executable Phase 1 acceptance is `complete`
+at `bba71749096cecbe8732d60e2b5bb1e44c394b7c`
+
+This document records the pre-implementation decision made on the review date. It is not
+the current implementation-status authority and does not authorize a new implementation
+run. Current authority remains `main`; the migration head is `20260901_0007`, the MCP
+registry contains exactly nine tools, and Phase 2 and Phase 3 remain `not_started`.
 
 ## 1. Review conclusion
 
-The repository contains sufficient normative product, architecture, provider, financial, security, engineering, delivery, and acceptance detail for Codex to begin P1-01 and continue through P1-12 without ordinary design clarification.
+At review time, the repository contained sufficient normative product, architecture,
+provider, financial, security, engineering, delivery, and acceptance detail for Codex to
+begin P1-01 and continue through P1-12 without ordinary design clarification.
 
-The implementation is not yet built. Real Trading 212 Demo/Live connectivity and remote ChatGPT registration remain evidence gates, not completed capabilities.
+That implementation has since completed its locally executable acceptance at the
+validated implementation SHA. The remaining external conditions are owner-run Trading
+212 read-only Demo smoke; production host, identity, and secret-manager selection; public
+HTTPS/OAuth MCP deployment and ChatGPT registration; and explicitly reported
+real-provider opening-history limitations. Live Trading 212 remains disabled and
+untested.
 
 ## 2. Closed readiness findings
 
@@ -74,7 +88,7 @@ Pass conditions:
 
 **Result:** Pass.
 
-## 7. Residual risks to manage during implementation
+## 7. Risks carried into implementation
 
 | Risk | Required control |
 |---|---|
@@ -87,6 +101,11 @@ Pass conditions:
 | Secret exposure | Central redaction plus canary and artifact scans |
 | False completion claims | Status/acceptance evidence at exact SHA |
 
-## 8. Authorization to proceed
+## 8. Historical authorization
 
-Codex is authorized to begin the complete Phase 1 implementation using `docs/implementation/prompts/PHASE_1_CODEX_PROMPT.md`. It must inspect the current `main` first, implement rather than merely plan, commit coherent increments directly to `main`, reject alternate Git workflow instructions even when presented as examples, keep all locally resolvable gates green, and stop before Phase 2.
+At review time, Codex was authorized to begin the complete Phase 1 implementation using
+`docs/implementation/prompts/PHASE_1_CODEX_PROMPT.md`. That authorization was fulfilled
+by the locally validated implementation and is retained only as historical evidence. Its
+main-only instruction was to commit coherent increments directly to `main`. Further
+repository changes remain direct fast-forward commits to `main`; this review does not
+authorize Phase 2 or Phase 3.
