@@ -68,7 +68,7 @@ class BrokerConnectionModel(UUIDPrimaryKeyMixin, UpdatedAtMixin, Base):
     )
     provider: Mapped[str] = mapped_column(String(40), nullable=False)
     environment: Mapped[str] = mapped_column(String(20), nullable=False)
-    credential_reference: Mapped[str] = mapped_column(String(500), nullable=False)
+    credential_reference: Mapped[str | None] = mapped_column(String(500))
     status: Mapped[str] = mapped_column(String(20), nullable=False)
 
 
@@ -147,6 +147,19 @@ class IngestionRunModel(UUIDPrimaryKeyMixin, Base):
             "broker_account_id", "idempotency_key", name="uq_ingestion_runs_account_idempotency"
         ),
         CheckConstraint("mode IN ('full','incremental','refresh')", name="mode_allowed"),
+        CheckConstraint("requested_mode IN ('full','incremental')", name="requested_mode_allowed"),
+        CheckConstraint("request_schema_version = 1", name="request_schema_version_supported"),
+        CheckConstraint(
+            "request_fingerprint ~ '^[0-9a-f]{64}$'", name="request_fingerprint_format"
+        ),
+        CheckConstraint(
+            "jsonb_typeof(requested_capabilities) = 'array'",
+            name="requested_capabilities_array",
+        ),
+        CheckConstraint(
+            "jsonb_typeof(effective_capabilities) = 'array'",
+            name="effective_capabilities_array",
+        ),
         CheckConstraint(
             "status IN ('queued','running','succeeded','partial','failed','cancelled')",
             name="status_allowed",
@@ -168,6 +181,17 @@ class IngestionRunModel(UUIDPrimaryKeyMixin, Base):
     mode: Mapped[str] = mapped_column(String(20), nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False)
     idempotency_key: Mapped[str] = mapped_column(String(180), nullable=False)
+    request_schema_version: Mapped[int] = mapped_column(Integer, nullable=False)
+    requested_mode: Mapped[str] = mapped_column(String(20), nullable=False)
+    requested_create_snapshot: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        default=True,
+        server_default=text("true"),
+    )
+    requested_capabilities: Mapped[list[str]] = mapped_column(JSONB, nullable=False)
+    effective_capabilities: Mapped[list[str]] = mapped_column(JSONB, nullable=False)
+    request_fingerprint: Mapped[str] = mapped_column(String(64), nullable=False)
     correlation_id: Mapped[str] = mapped_column(String(120), nullable=False)
     started_at: Mapped[datetime] = mapped_column(UTCDateTime(), nullable=False)
     heartbeat_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
@@ -183,6 +207,228 @@ class IngestionRunModel(UUIDPrimaryKeyMixin, Base):
         JSONB, nullable=False, server_default=text("'[]'::jsonb")
     )
     error_code: Mapped[str | None] = mapped_column(String(100))
+
+
+class RefreshDispatchOutboxModel(UUIDPrimaryKeyMixin, UpdatedAtMixin, Base):
+    __tablename__ = "refresh_dispatch_outbox"
+    __table_args__ = (
+        UniqueConstraint("ingestion_run_id", name="uq_refresh_dispatch_outbox_run"),
+        CheckConstraint("task_name = 'portfolio.refresh'", name="task_name_fixed"),
+        CheckConstraint("task_version = 1", name="task_version_supported"),
+        CheckConstraint(
+            "status IN ('pending','publishing','published','dead')", name="status_allowed"
+        ),
+        CheckConstraint("attempt_count >= 0", name="attempt_count_nonnegative"),
+        CheckConstraint(
+            "consumer_attempt_count BETWEEN 0 AND 4",
+            name="consumer_attempt_count_bounded",
+        ),
+        CheckConstraint(
+            "consecutive_failure_count >= 0",
+            name="consecutive_failures_nonnegative",
+        ),
+        CheckConstraint(
+            "consecutive_failure_count <= attempt_count",
+            name="consecutive_failures_within_attempts",
+        ),
+        CheckConstraint(
+            "jsonb_typeof(payload) = 'object' AND "
+            "payload ?& ARRAY['run_id','account_id','request_fingerprint',"
+            "'request_schema_version'] AND "
+            "payload - ARRAY['run_id','account_id','request_fingerprint',"
+            "'request_schema_version'] = '{}'::jsonb AND "
+            "(payload->>'run_id')::uuid = ingestion_run_id AND "
+            "(payload->>'account_id') ~ "
+            "'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' AND "
+            "(payload->>'request_fingerprint') ~ '^[0-9a-f]{64}$' AND "
+            "payload->>'request_schema_version' = '1'",
+            name="payload_contract",
+        ),
+        CheckConstraint(
+            "(status = 'publishing' AND claim_token IS NOT NULL "
+            "AND claim_owner IS NOT NULL AND claimed_at IS NOT NULL "
+            "AND claim_expires_at IS NOT NULL) OR "
+            "(status != 'publishing' AND claim_token IS NULL AND claim_owner IS NULL "
+            "AND claimed_at IS NULL AND claim_expires_at IS NULL)",
+            name="publishing_claim_present",
+        ),
+        CheckConstraint(
+            "(status = 'pending' AND published_at IS NULL) OR "
+            "(status = 'publishing' AND published_at IS NULL) OR "
+            "(status = 'published' AND published_at IS NOT NULL) OR "
+            "(status = 'dead' AND published_at IS NULL)",
+            name="publication_state_match",
+        ),
+        CheckConstraint(
+            "claim_owner IS NULL OR claim_owner ~ '^[A-Za-z0-9._:-]{1,120}$'",
+            name="claim_owner_format",
+        ),
+        CheckConstraint(
+            "claim_expires_at IS NULL OR "
+            "(claimed_at IS NOT NULL AND claim_expires_at > claimed_at)",
+            name="claim_expiry_order",
+        ),
+        Index(
+            "ix_refresh_dispatch_outbox_ready",
+            "status",
+            "available_at",
+            postgresql_where=text("status = 'pending'"),
+        ),
+        Index(
+            "ix_refresh_dispatch_outbox_claim_expiry",
+            "claim_expires_at",
+            postgresql_where=text("status = 'publishing'"),
+        ),
+    )
+
+    ingestion_run_id: Mapped[UUID] = mapped_column(
+        ForeignKey("ingestion_runs.id", ondelete="CASCADE"), nullable=False
+    )
+    task_name: Mapped[str] = mapped_column(String(80), nullable=False)
+    task_version: Mapped[int] = mapped_column(Integer, nullable=False)
+    payload: Mapped[JSON] = mapped_column(JSONB, nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False)
+    attempt_count: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    consumer_attempt_count: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+    consecutive_failure_count: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default="0"
+    )
+    available_at: Mapped[datetime] = mapped_column(UTCDateTime(), nullable=False)
+    claim_token: Mapped[UUID | None] = mapped_column()
+    claim_owner: Mapped[str | None] = mapped_column(String(120))
+    claimed_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    claim_expires_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    published_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    last_error_code: Mapped[str | None] = mapped_column(String(100))
+
+
+class RefreshDispatcherHeartbeatModel(UUIDPrimaryKeyMixin, Base):
+    __tablename__ = "refresh_dispatcher_heartbeats"
+    __table_args__ = (
+        UniqueConstraint("dispatcher_id", name="uq_refresh_dispatcher_heartbeats_identity"),
+        CheckConstraint(
+            "dispatcher_id ~ '^[A-Za-z0-9._:-]{1,120}$'",
+            name="identity_format",
+        ),
+        CheckConstraint("state IN ('healthy','degraded')", name="state_allowed"),
+        CheckConstraint("heartbeat_at >= started_at", name="heartbeat_order"),
+        CheckConstraint(
+            "last_successful_cycle_at IS NULL OR "
+            "(last_successful_cycle_at >= started_at "
+            "AND last_successful_cycle_at <= heartbeat_at)",
+            name="success_order",
+        ),
+        Index("ix_refresh_dispatcher_heartbeats_state_heartbeat", "state", "heartbeat_at"),
+    )
+
+    dispatcher_id: Mapped[str] = mapped_column(String(120), nullable=False)
+    started_at: Mapped[datetime] = mapped_column(UTCDateTime(), nullable=False)
+    heartbeat_at: Mapped[datetime] = mapped_column(UTCDateTime(), nullable=False)
+    last_successful_cycle_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    state: Mapped[str] = mapped_column(String(20), nullable=False)
+    last_error_code: Mapped[str | None] = mapped_column(String(100))
+
+
+class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
+    """Short-lived immutable identity set for one mutable collection traversal."""
+
+    __tablename__ = "collection_query_snapshots"
+    __table_args__ = (
+        CheckConstraint("schema_version = 1", name="schema_version_supported"),
+        CheckConstraint(
+            "resource IN ('activity','dividends','instruments','positions_market_value',"
+            "'positions_weight','positions_ticker')",
+            name="resource_allowed",
+        ),
+        CheckConstraint(
+            "(resource = 'activity' AND "
+            "sort_specification = 'occurred_at_desc_id_desc') OR "
+            "(resource = 'dividends' AND "
+            "sort_specification = 'paid_on_desc_id_desc') OR "
+            "(resource = 'instruments' AND "
+            "sort_specification = "
+            "'provider_asc_environment_asc_ticker_asc_name_asc_listing_id_asc') OR "
+            "(resource = 'positions_market_value' AND "
+            "sort_specification = 'market_value_desc_ticker_asc_listing_id_asc') OR "
+            "(resource = 'positions_weight' AND "
+            "sort_specification = 'direct_weight_desc_ticker_asc_listing_id_asc') OR "
+            "(resource = 'positions_ticker' AND "
+            "sort_specification = 'ticker_asc_listing_id_asc')",
+            name="resource_sort_match",
+        ),
+        CheckConstraint(
+            "((resource IN ('activity','dividends','positions_market_value',"
+            "'positions_weight','positions_ticker') AND broker_account_id IS NOT NULL) OR "
+            "(resource = 'instruments' AND broker_account_id IS NULL))",
+            name="account_scope_match",
+        ),
+        CheckConstraint(
+            "((resource IN ('positions_market_value','positions_weight','positions_ticker') "
+            "AND source_snapshot_id IS NOT NULL) OR "
+            "(resource NOT IN ('positions_market_value','positions_weight','positions_ticker') "
+            "AND source_snapshot_id IS NULL))",
+            name="source_snapshot_scope_match",
+        ),
+        CheckConstraint(
+            "filter_fingerprint ~ '^[0-9a-f]{64}$'",
+            name="filter_fingerprint_format",
+        ),
+        CheckConstraint("exact_total >= 0", name="exact_total_nonnegative"),
+        CheckConstraint("expires_at > created_at", name="expiry_after_creation"),
+        Index("ix_collection_query_snapshots_expiry", "expires_at", "id"),
+        Index("ix_collection_query_snapshots_owner_expiry", "owner_id", "expires_at", "id"),
+        Index("ix_collection_query_snapshots_broker_account", "broker_account_id"),
+        Index("ix_collection_query_snapshots_source_snapshot", "source_snapshot_id"),
+        Index(
+            "ix_collection_query_snapshots_scope",
+            "owner_id",
+            "broker_account_id",
+            "resource",
+            "filter_fingerprint",
+            "expires_at",
+        ),
+    )
+
+    schema_version: Mapped[int] = mapped_column(Integer, nullable=False)
+    resource: Mapped[str] = mapped_column(String(24), nullable=False)
+    owner_id: Mapped[UUID] = mapped_column(
+        ForeignKey("owners.id", ondelete="CASCADE"), nullable=False
+    )
+    broker_account_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("broker_accounts.id", ondelete="CASCADE")
+    )
+    source_snapshot_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("portfolio_snapshots.id", ondelete="CASCADE")
+    )
+    sort_specification: Mapped[str] = mapped_column(String(100), nullable=False)
+    filter_fingerprint: Mapped[str] = mapped_column(String(64), nullable=False)
+    exact_total: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(UTCDateTime(), nullable=False)
+
+
+class CollectionQuerySnapshotMemberModel(Base):
+    """One record identity at its deterministic 1-based result ordinal."""
+
+    __tablename__ = "collection_query_snapshot_members"
+    __table_args__ = (
+        CheckConstraint("ordinal >= 1", name="ordinal_positive"),
+        UniqueConstraint(
+            "snapshot_id",
+            "record_id",
+            name="uq_collection_snapshot_member_record",
+        ),
+    )
+
+    snapshot_id: Mapped[UUID] = mapped_column(
+        ForeignKey(
+            "collection_query_snapshots.id",
+            name="fk_collection_snapshot_member_snapshot",
+            ondelete="CASCADE",
+        ),
+        primary_key=True,
+    )
+    ordinal: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    record_id: Mapped[UUID] = mapped_column(nullable=False)
 
 
 class IngestionCheckpointModel(UUIDPrimaryKeyMixin, UpdatedAtMixin, Base):
@@ -218,6 +464,7 @@ class IngestionLeaseModel(UUIDPrimaryKeyMixin, Base):
         UniqueConstraint(
             "broker_account_id", "lease_type", name="uq_ingestion_leases_account_type"
         ),
+        UniqueConstraint("fencing_token", name="uq_ingestion_leases_fencing_token"),
         CheckConstraint("expires_at > acquired_at", name="expiry_after_acquisition"),
         Index("ix_ingestion_leases_expiry", "expires_at"),
     )
@@ -227,6 +474,7 @@ class IngestionLeaseModel(UUIDPrimaryKeyMixin, Base):
     )
     lease_type: Mapped[str] = mapped_column(String(100), nullable=False)
     lease_owner: Mapped[str] = mapped_column(String(200), nullable=False)
+    fencing_token: Mapped[UUID] = mapped_column(nullable=False)
     acquired_at: Mapped[datetime] = mapped_column(UTCDateTime(), nullable=False)
     heartbeat_at: Mapped[datetime] = mapped_column(UTCDateTime(), nullable=False)
     expires_at: Mapped[datetime] = mapped_column(UTCDateTime(), nullable=False)
@@ -357,6 +605,7 @@ class CashFlowModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     currency: Mapped[str] = mapped_column(String(3), nullable=False)
     occurred_at: Mapped[datetime] = mapped_column(UTCDateTime(), nullable=False)
     quality: Mapped[str] = mapped_column(String(30), nullable=False)
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="true")
     idempotency_key: Mapped[str] = mapped_column(String(180), nullable=False)
     source_record_id: Mapped[UUID] = mapped_column(
         ForeignKey("source_records.id", ondelete="RESTRICT"), nullable=False
@@ -763,6 +1012,10 @@ ALL_MODELS = (
     InstrumentModel,
     ListingModel,
     IngestionRunModel,
+    RefreshDispatchOutboxModel,
+    RefreshDispatcherHeartbeatModel,
+    CollectionQuerySnapshotModel,
+    CollectionQuerySnapshotMemberModel,
     IngestionCheckpointModel,
     IngestionLeaseModel,
     SourceRecordModel,

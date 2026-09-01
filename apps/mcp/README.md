@@ -4,7 +4,19 @@ This service exposes the nine frozen read-only portfolio tools from
 `docs/integrations/CHATGPT_MCP_APP.md` over Streamable HTTP at `/mcp`. It uses the
 same `PortfolioService`, `Principal`, scopes, and account-ownership policy as the
 HTTP API. It contains no Trading 212 transport, SQL, generic HTTP/URL,
-filesystem, or broker-path tool.
+filesystem, broker-path, or refresh tool.
+
+All nine tools invoke typed application-service queries. Position search/sort,
+transaction date/type filters, and cursor pagination are applied before rows reach
+the gateway. Dividend totals cover the full filtered period while the recent
+sample remains bounded. Explicit snapshot IDs use direct owner/account-scoped
+lookup. The gateway never collects a fixed prefix and presents it as complete.
+
+Collection cursors are opaque signed tokens bound to resource, owner/account,
+filter/sort, immutable result membership or read cutoff, and last ordering key.
+Invalid, expired, tampered, or mismatched cursors fail safely. Tool cursor inputs
+permit the bounded token size required by this contract; callers must treat them
+as opaque.
 
 ## Local seeded inspection
 
@@ -34,6 +46,11 @@ verify that exactly nine tools are listed. Exercise each tool with the opaque
 seeded account ID printed above, including invalid cursors, limits, identifiers,
 date ranges, extra input keys, and repeated identical calls. Health endpoints are
 `GET /health/live` and `GET /health/ready`.
+
+Use more than one page when inspecting positions or transactions and verify that
+the returned exact total remains stable. `get_dividend_summary` returns a bounded
+recent sample plus full-period database totals; it is not a substitute collection
+listing.
 
 ### Containerized local synthetic mode
 
@@ -65,6 +82,8 @@ Production must construct `create_runtime(...)` with:
 The MCP SDK then protects `/mcp`, publishes OAuth protected-resource metadata, and
 maps the validated token to the shared `Principal`. Application services enforce
 the exact `portfolio:read` and `activity:read` scopes plus account ownership.
+`get_data_quality_summary` requires both scopes because it reports portfolio and
+activity coverage.
 Starting the CLI without `DATABASE_URL`, or without either deployment bearer
 authentication or explicit local/test synthetic authentication, fails closed.
 

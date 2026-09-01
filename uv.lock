@@ -1165,12 +1165,14 @@ name = "trading212-application"
 version = "0.1.0"
 source = { editable = "packages/application" }
 dependencies = [
+    { name = "trading212-analytics" },
     { name = "trading212-domain" },
     { name = "trading212-security" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "trading212-analytics", editable = "packages/analytics" },
     { name = "trading212-domain", editable = "packages/domain" },
     { name = "trading212-security", editable = "packages/security" },
 ]

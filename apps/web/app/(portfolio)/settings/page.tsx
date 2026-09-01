@@ -9,14 +9,14 @@ import {
 import { Notice, StatusPill, Surface } from "@trading212/ui";
 
 import { PageHeader } from "../../../components/page-header";
-import { loadPortfolioBundle } from "../../../lib/api-adapter";
+import { loadSettings } from "../../../lib/api-adapter";
 import { requireWebAccess } from "../../../lib/auth";
 import { formatDateTime, titleCase } from "../../../lib/format";
 
 export default async function SettingsPage() {
   const [access, bundle] = await Promise.all([
     requireWebAccess(),
-    loadPortfolioBundle(),
+    loadSettings(),
   ]);
   const account = bundle.summary.account;
   return (
@@ -76,15 +76,57 @@ export default async function SettingsPage() {
           <h2>
             <Server aria-hidden="true" size={19} /> Connection posture
           </h2>
-          <div className="connection-status">
-            <StatusPill tone="positive">
-              {titleCase(account.connection_state)}
-            </StatusPill>
-            <p>
-              The browser receives canonical portfolio responses only. Provider
-              credentials remain behind the server-side adapter boundary.
-            </p>
-          </div>
+          {bundle.connections.length === 0 ? (
+            <p className="settings-copy">No broker connection is configured.</p>
+          ) : (
+            bundle.connections.map((connection) => (
+              <div className="connection-status" key={connection.id}>
+                <StatusPill
+                  tone={
+                    ["active", "connected", "connected_read_only"].includes(
+                      connection.state,
+                    )
+                      ? "positive"
+                      : "warning"
+                  }
+                >
+                  {titleCase(connection.state)}
+                </StatusPill>
+                <dl className="settings-list">
+                  <div>
+                    <dt>Provider</dt>
+                    <dd>{titleCase(connection.provider)}</dd>
+                  </div>
+                  <div>
+                    <dt>Environment</dt>
+                    <dd>{titleCase(connection.environment)}</dd>
+                  </div>
+                  <div>
+                    <dt>Access</dt>
+                    <dd>
+                      {connection.read_only ? "Read-only" : "Unavailable"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Credential state</dt>
+                    <dd>{titleCase(connection.credential_state)}</dd>
+                  </div>
+                  <div>
+                    <dt>Last successful refresh</dt>
+                    <dd>
+                      {connection.last_successful_refresh_at
+                        ? formatDateTime(connection.last_successful_refresh_at)
+                        : "Never"}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            ))
+          )}
+          <p className="settings-copy">
+            The browser receives canonical portfolio responses only. Provider
+            credentials remain behind the server-side adapter boundary.
+          </p>
         </Surface>
         <Surface className="settings-card" compact>
           <h2>

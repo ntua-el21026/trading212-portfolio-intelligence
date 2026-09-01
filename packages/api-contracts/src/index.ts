@@ -140,6 +140,14 @@ export const allocationSchema = z.strictObject({
   weight_availability: z.enum(["available", "partial", "unavailable"]),
 });
 
+export const directAllocationSchema = z.strictObject({
+  items: z.array(allocationSchema),
+  returned_count: z.number().int().nonnegative(),
+  total: z.number().int().nonnegative(),
+  limit: z.number().int().positive().max(50),
+  truncated: z.boolean(),
+});
+
 export const snapshotSchema = z.strictObject({
   id: z.string(),
   valuation_at: dateTimeSchema,
@@ -150,6 +158,12 @@ export const snapshotSchema = z.strictObject({
   invested_value: metricSchema,
   net_contributions: metricSchema,
   data_quality: qualitySchema,
+});
+
+export const snapshotDetailSchema = snapshotSchema.extend({
+  dividends_received: metricSchema,
+  realized_profit_loss: metricSchema,
+  unrealized_profit_loss: metricSchema,
 });
 
 export const snapshotComparisonSchema = z.strictObject({
@@ -181,6 +195,7 @@ export const reconciliationSchema = z.strictObject({
   algorithm_version: z.string(),
   tolerance_version: z.string(),
   issues: z.array(reconciliationIssueSchema),
+  discrepancy_count: z.number().int().nonnegative(),
   data_quality: qualitySchema,
 });
 
@@ -200,23 +215,45 @@ export const brokerConnectionSchema = z.strictObject({
   provider: z.string(),
   environment: z.string(),
   status: z.string(),
+  state: z.string(),
   credential_state: z.enum(["configured", "not_configured"]),
+  last_successful_refresh_at: dateTimeSchema.nullable(),
   read_only: z.literal(true),
 });
 
 export const instrumentSchema = z.strictObject({
   id: z.string(),
+  instrument_id: z.string(),
+  listing_id: z.string(),
   ticker: z.string(),
   name: z.string(),
+  canonical_name: z.string(),
   instrument_type: z.string(),
+  isin: z.string().nullable(),
+  exchange_mic: z.string().nullable(),
+  exchange_id: z.string().nullable(),
   trading_currency: z.string().regex(/^[A-Z]{3}$/),
+  provider: z.string(),
+  environment: z.string(),
+  listing_status: z.string(),
 });
 
 export const returnMetricSchema = z.strictObject({
+  method_id: z.string(),
+  value_kind: z.string(),
+  period_start: dateTimeSchema.nullable(),
+  period_end: dateTimeSchema,
   value: decimalStringSchema.nullable(),
+  annualized_value: decimalStringSchema.nullable(),
   availability: z.string(),
   calculation_version: z.string(),
   methodology: z.string(),
+  converged: z.boolean().nullable(),
+  iterations: z.number().int().nonnegative().nullable(),
+  missing_inputs: z.array(z.string()),
+  assumptions: z.array(z.string()),
+  warnings: z.array(z.string()),
+  quality_state: z.string(),
   unavailable_reason: z.string().nullable(),
 });
 
@@ -227,6 +264,51 @@ export const performanceSummarySchema = z.strictObject({
   time_weighted_return: returnMetricSchema,
   modified_dietz_return: returnMetricSchema,
   data_quality: qualitySchema,
+});
+
+export const capabilityQualitySchema = z.strictObject({
+  capability: z.string(),
+  data_quality: qualitySchema,
+});
+
+export const refreshStepQualitySchema = z.strictObject({
+  capability: z.string(),
+  status: z.string(),
+  warnings: z.array(z.string()),
+});
+
+export const refreshRunQualitySchema = z.strictObject({
+  id: z.string(),
+  status: z.string(),
+  started_at: dateTimeSchema,
+  completed_at: dateTimeSchema.nullable(),
+  steps: z.array(refreshStepQualitySchema),
+});
+
+export const checkpointQualitySchema = z.strictObject({
+  capability: z.string(),
+  version: z.number().int().positive(),
+  coverage_start_at: dateTimeSchema.nullable(),
+  coverage_end_at: dateTimeSchema.nullable(),
+  coverage_complete: z.boolean(),
+});
+
+export const dataQualitySummarySchema = z.strictObject({
+  as_of: dateTimeSchema,
+  reporting_currency: z.string().regex(/^[A-Z]{3}$/),
+  data_quality: qualitySchema,
+  capabilities: z.array(capabilityQualitySchema),
+  failed_or_partial_runs: z.array(z.string()),
+  latest_refresh_run: refreshRunQualitySchema.nullable(),
+  latest_runs_by_status: z.array(refreshRunQualitySchema).max(3),
+  checkpoints: z.array(checkpointQualitySchema),
+  latest_snapshot_id: z.string().nullable(),
+  latest_snapshot_source_cutoff_at: dateTimeSchema.nullable(),
+  materialization_state: z.enum(["available", "partial", "missing"]),
+  reconciliation_status: z.string(),
+  missing_fx_record_count: z.number().int().nonnegative(),
+  unknown_mapping_record_count: z.number().int().nonnegative(),
+  read_only: z.literal(true),
 });
 
 export const pageSchema = <ItemSchema extends z.ZodType>(item: ItemSchema) =>
@@ -249,13 +331,17 @@ export type Activity = z.infer<typeof activitySchema>;
 export type Dividend = z.infer<typeof dividendSchema>;
 export type Order = z.infer<typeof orderSchema>;
 export type Allocation = z.infer<typeof allocationSchema>;
+export type DirectAllocation = z.infer<typeof directAllocationSchema>;
 export type Snapshot = z.infer<typeof snapshotSchema>;
+export type SnapshotDetail = z.infer<typeof snapshotDetailSchema>;
 export type SnapshotComparison = z.infer<typeof snapshotComparisonSchema>;
 export type Reconciliation = z.infer<typeof reconciliationSchema>;
+export type ReconciliationIssue = z.infer<typeof reconciliationIssueSchema>;
 export type RefreshRun = z.infer<typeof refreshRunSchema>;
 export type BrokerConnection = z.infer<typeof brokerConnectionSchema>;
 export type Instrument = z.infer<typeof instrumentSchema>;
 export type PerformanceSummary = z.infer<typeof performanceSummarySchema>;
+export type DataQualitySummary = z.infer<typeof dataQualitySummarySchema>;
 export type Page<Item> = {
   items: Item[];
   next_cursor: string | null;
@@ -292,6 +378,33 @@ export interface PortfolioApiClientOptions {
 export interface PageOptions {
   cursor?: string | null;
   limit?: number;
+}
+
+export interface PositionPageOptions extends PageOptions {
+  sort?: "market_value_desc" | "ticker_asc" | "weight_desc";
+  search?: string;
+}
+
+export interface ActivityPageOptions extends PageOptions {
+  startDate?: string;
+  endDate?: string;
+  activityType?:
+    | "all"
+    | "buy"
+    | "sell"
+    | "deposit"
+    | "withdrawal"
+    | "dividend"
+    | "interest"
+    | "fee"
+    | "tax"
+    | "fx_conversion"
+    | "unknown";
+}
+
+export interface DividendPageOptions extends PageOptions {
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface RefreshOptions {
@@ -360,10 +473,13 @@ export class PortfolioApiClient {
 
   listPositions(
     accountId: string,
-    options: PageOptions = {},
+    options: PositionPageOptions = {},
   ): Promise<Page<Position>> {
+    const parameters = this.#pageParameters(options);
+    if (options.sort) parameters.set("sort", options.sort);
+    if (options.search) parameters.set("search", options.search);
     return this.#request(
-      `${this.#accountPath(accountId)}/positions${this.#pageQuery(options)}`,
+      `${this.#accountPath(accountId)}/positions${this.#query(parameters)}`,
       pageSchema(positionSchema),
     );
   }
@@ -377,20 +493,28 @@ export class PortfolioApiClient {
 
   listTransactions(
     accountId: string,
-    options: PageOptions = {},
+    options: ActivityPageOptions = {},
   ): Promise<Page<Activity>> {
+    const parameters = this.#pageParameters(options);
+    if (options.startDate) parameters.set("start_date", options.startDate);
+    if (options.endDate) parameters.set("end_date", options.endDate);
+    if (options.activityType)
+      parameters.set("activity_type", options.activityType);
     return this.#request(
-      `${this.#accountPath(accountId)}/transactions${this.#pageQuery(options)}`,
+      `${this.#accountPath(accountId)}/transactions${this.#query(parameters)}`,
       pageSchema(activitySchema),
     );
   }
 
   listDividends(
     accountId: string,
-    options: PageOptions = {},
+    options: DividendPageOptions = {},
   ): Promise<Page<Dividend>> {
+    const parameters = this.#pageParameters(options);
+    if (options.startDate) parameters.set("start_date", options.startDate);
+    if (options.endDate) parameters.set("end_date", options.endDate);
     return this.#request(
-      `${this.#accountPath(accountId)}/dividends${this.#pageQuery(options)}`,
+      `${this.#accountPath(accountId)}/dividends${this.#query(parameters)}`,
       pageSchema(dividendSchema),
     );
   }
@@ -405,10 +529,16 @@ export class PortfolioApiClient {
     );
   }
 
-  getAllocation(accountId: string): Promise<Allocation[]> {
+  getAllocation(
+    accountId: string,
+    options: { limit?: number } = {},
+  ): Promise<DirectAllocation> {
+    const parameters = new URLSearchParams();
+    if (options.limit !== undefined)
+      parameters.set("limit", String(options.limit));
     return this.#request(
-      `${this.#accountPath(accountId)}/allocation`,
-      z.array(allocationSchema),
+      `${this.#accountPath(accountId)}/allocation${this.#query(parameters)}`,
+      directAllocationSchema,
     );
   }
 
@@ -429,10 +559,17 @@ export class PortfolioApiClient {
     );
   }
 
-  getLatestSnapshot(accountId: string): Promise<Snapshot> {
+  getLatestSnapshot(accountId: string): Promise<SnapshotDetail> {
     return this.#request(
       `${this.#accountPath(accountId)}/snapshots/latest`,
-      snapshotSchema,
+      snapshotDetailSchema,
+    );
+  }
+
+  getSnapshot(accountId: string, snapshotId: string): Promise<SnapshotDetail> {
+    return this.#request(
+      `${this.#accountPath(accountId)}/snapshots/${encodeURIComponent(snapshotId)}`,
+      snapshotDetailSchema,
     );
   }
 
@@ -455,10 +592,20 @@ export class PortfolioApiClient {
     );
   }
 
-  getQuality(accountId: string): Promise<Quality> {
+  listReconciliationDiscrepancies(
+    accountId: string,
+    options: PageOptions = {},
+  ): Promise<Page<ReconciliationIssue>> {
+    return this.#request(
+      `${this.#accountPath(accountId)}/reconciliation/discrepancies${this.#pageQuery(options)}`,
+      pageSchema(reconciliationIssueSchema),
+    );
+  }
+
+  getQuality(accountId: string): Promise<DataQualitySummary> {
     return this.#request(
       `${this.#accountPath(accountId)}/data-quality`,
-      qualitySchema,
+      dataQualitySummarySchema,
     );
   }
 
@@ -517,10 +664,18 @@ export class PortfolioApiClient {
   }
 
   #pageQuery(options: PageOptions): string {
+    return this.#query(this.#pageParameters(options));
+  }
+
+  #pageParameters(options: PageOptions): URLSearchParams {
     const parameters = new URLSearchParams();
     if (options.cursor) parameters.set("cursor", options.cursor);
     if (options.limit !== undefined)
       parameters.set("limit", String(options.limit));
+    return parameters;
+  }
+
+  #query(parameters: URLSearchParams): string {
     return parameters.size > 0 ? `?${parameters}` : "";
   }
 

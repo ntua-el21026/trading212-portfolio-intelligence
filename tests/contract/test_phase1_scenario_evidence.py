@@ -65,7 +65,7 @@ SCENARIOS = (
             "tests/integration/test_phase1_synthetic_acceptance.py::"
             "test_transient_failure_reuses_durable_run_and_recovers_within_retry_budget",
             "tests/unit/worker/test_worker_configuration.py::"
-            "test_celery_refresh_retries_once_after_retryable_refresh_error",
+            "test_retryable_economic_failure_defers_durably_without_celery_retry_publication",
             "tests/unit/trading212/test_client.py::test_retry_exhaustion_sanitizes_provider_body",
         ),
     ),
@@ -190,6 +190,12 @@ SCENARIOS = (
         (
             "tests/integration/test_worker_ingestion_store.py::"
             "test_api_queue_persists_before_publish_and_worker_resumes_same_run",
+            "tests/integration/test_worker_ingestion_store.py::"
+            "test_scenario_14_outbox_dispatcher_restart_executes_committed_run_once",
+            "tests/integration/test_worker_ingestion_store.py::"
+            "test_dispatcher_restart_reconciles_consumer_observed_terminal_delivery_without_redelivery",
+            "tests/integration/test_worker_ingestion_store.py::"
+            "test_expired_ambiguous_dispatch_republishes_same_task_before_both_copies_are_consumed",
         ),
     ),
 )

@@ -15,7 +15,10 @@ from alembic.config import Config
 from psycopg import sql
 from sqlalchemy import DateTime, Engine, Numeric, delete, inspect, select, text
 from sqlalchemy.engine import make_url
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from trading212_application.ingestion import IngestionCapability, RunMode
+from trading212_application.refresh_semantics import RefreshRequestSemantics
 from trading212_persistence import (
     AccountRepository,
     Base,
@@ -28,13 +31,17 @@ from trading212_persistence import (
 from trading212_persistence.models import (
     BrokerAccountModel,
     BrokerConnectionModel,
+    CashFlowModel,
     IngestionCheckpointModel,
     IngestionRunModel,
     InstrumentModel,
     ListingModel,
     OwnerModel,
     PositionObservationModel,
+    RefreshDispatcherHeartbeatModel,
+    RefreshDispatchOutboxModel,
     SourceRecordModel,
+    TransactionModel,
 )
 
 pytestmark = [pytest.mark.integration, pytest.mark.migrations]
@@ -146,6 +153,12 @@ def _add_identity_graph(session: Session) -> tuple[UUID, UUID, UUID, UUID, UUID,
         )
     )
     session.flush()
+    semantics = RefreshRequestSemantics.create(
+        owner_id=owner_id,
+        account_id=account_id,
+        mode=RunMode.FULL,
+        capabilities=(IngestionCapability.POSITIONS,),
+    )
     session.add(
         IngestionRunModel(
             id=run_id,
@@ -154,6 +167,12 @@ def _add_identity_graph(session: Session) -> tuple[UUID, UUID, UUID, UUID, UUID,
             mode="full",
             status="running",
             idempotency_key=f"run-{run_id}",
+            request_schema_version=semantics.schema_version,
+            requested_mode=semantics.mode.value,
+            requested_create_snapshot=semantics.create_snapshot,
+            requested_capabilities=semantics.capability_values,
+            effective_capabilities=semantics.capability_values,
+            request_fingerprint=semantics.fingerprint,
             correlation_id=f"correlation-{run_id}",
             started_at=now,
         )
@@ -168,7 +187,229 @@ def test_empty_to_head_is_idempotent_and_matches_metadata(database_engine: Engin
     expected = set(Base.metadata.tables)
     assert actual == expected
     with database_engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260831_0003"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260901_0007"
+
+
+def test_external_cash_flow_active_state_is_durable(database_engine: Engine) -> None:
+    active_column = next(
+        column
+        for column in inspect(database_engine).get_columns(CashFlowModel.__tablename__)
+        if column["name"] == "active"
+    )
+    assert active_column["nullable"] is False
+    assert "true" in str(active_column["default"]).casefold()
+
+
+def test_external_cash_flow_upgrade_backfills_reversed_source_transactions(
+    database_engine: Engine,
+) -> None:
+    now = datetime(2026, 8, 31, 12, 0, tzinfo=UTC)
+    with Session(database_engine) as session, session.begin():
+        owner_id, _, account_id, instrument_id, listing_id, run_id = _add_identity_graph(session)
+        source_id = uuid4()
+        transaction_id = uuid4()
+        cash_flow_id = uuid4()
+        session.add(
+            SourceRecordModel(
+                id=source_id,
+                ingestion_run_id=run_id,
+                broker_account_id=account_id,
+                provider="synthetic",
+                capability="historical_transactions",
+                provider_record_type="transaction",
+                provider_record_id="reversed-before-active-migration",
+                payload_fingerprint="f" * 64,
+                observed_at=now,
+                schema_version="1.0.0",
+            )
+        )
+        session.flush()
+        session.add(
+            TransactionModel(
+                id=transaction_id,
+                broker_account_id=account_id,
+                provider_transaction_id="reversed-before-active-migration",
+                transaction_type="deposit",
+                status="reversed",
+                instrument_listing_id=None,
+                quantity=None,
+                unit_price=None,
+                gross_amount=None,
+                fees=None,
+                taxes=None,
+                net_cash_amount=Decimal("100"),
+                currency="EUR",
+                occurred_at=now,
+                settlement_date=None,
+                source_record_id=source_id,
+                mapping_version="migration-fixture/1",
+            )
+        )
+        session.flush()
+        session.add(
+            CashFlowModel(
+                id=cash_flow_id,
+                broker_account_id=account_id,
+                source_transaction_id=transaction_id,
+                classification="external",
+                flow_type="deposit",
+                amount=Decimal("100"),
+                currency="EUR",
+                occurred_at=now,
+                quality="fresh",
+                active=True,
+                idempotency_key="reversed-before-active-migration",
+                source_record_id=source_id,
+            )
+        )
+
+    config = Config("alembic.ini")
+    config.set_main_option(
+        "sqlalchemy.url",
+        database_engine.url.render_as_string(hide_password=False),
+    )
+    try:
+        command.downgrade(config, "20260901_0006")
+        command.upgrade(config, "head")
+        with Session(database_engine) as session:
+            migrated = session.get(CashFlowModel, cash_flow_id)
+            assert migrated is not None
+            assert migrated.active is False
+    finally:
+        command.upgrade(config, "head")
+        with Session(database_engine) as cleanup, cleanup.begin():
+            cleanup.execute(delete(OwnerModel).where(OwnerModel.id == owner_id))
+            cleanup.execute(delete(ListingModel).where(ListingModel.id == listing_id))
+            cleanup.execute(delete(InstrumentModel).where(InstrumentModel.id == instrument_id))
+
+
+def test_refresh_outbox_and_request_fingerprint_constraints_are_present(
+    database_engine: Engine,
+) -> None:
+    inspector = inspect(database_engine)
+    assert RefreshDispatchOutboxModel.__tablename__ in inspector.get_table_names()
+    assert RefreshDispatcherHeartbeatModel.__tablename__ in inspector.get_table_names()
+    inspected_run_columns = inspector.get_columns("ingestion_runs")
+    run_columns = {column["name"] for column in inspected_run_columns}
+    assert {
+        "request_schema_version",
+        "requested_mode",
+        "requested_create_snapshot",
+        "requested_capabilities",
+        "effective_capabilities",
+        "request_fingerprint",
+    }.issubset(run_columns)
+    create_snapshot_column = next(
+        column for column in inspected_run_columns if column["name"] == "requested_create_snapshot"
+    )
+    assert create_snapshot_column["nullable"] is False
+    assert "true" in str(create_snapshot_column["default"]).casefold()
+    outbox_columns = {
+        column["name"]: column for column in inspector.get_columns("refresh_dispatch_outbox")
+    }
+    assert outbox_columns["attempt_count"]["nullable"] is False
+    assert outbox_columns["consumer_attempt_count"]["nullable"] is False
+    assert "0" in str(outbox_columns["consumer_attempt_count"]["default"])
+    assert outbox_columns["consecutive_failure_count"]["nullable"] is False
+    assert "0" in str(outbox_columns["consecutive_failure_count"]["default"])
+    outbox_uniques = {
+        constraint["name"]
+        for constraint in inspector.get_unique_constraints("refresh_dispatch_outbox")
+    }
+    assert "uq_refresh_dispatch_outbox_run" in outbox_uniques
+    outbox_checks = {
+        constraint["name"]
+        for constraint in inspector.get_check_constraints("refresh_dispatch_outbox")
+    }
+    assert {
+        "ck_refresh_dispatch_outbox_task_name_fixed",
+        "ck_refresh_dispatch_outbox_task_version_supported",
+        "ck_refresh_dispatch_outbox_status_allowed",
+        "ck_refresh_dispatch_outbox_payload_contract",
+        "ck_refresh_dispatch_outbox_claim_owner_format",
+        "ck_refresh_dispatch_outbox_publishing_claim_present",
+        "ck_refresh_dispatch_outbox_attempt_count_nonnegative",
+        "ck_refresh_dispatch_outbox_consumer_attempt_count_bounded",
+        "ck_refresh_dispatch_outbox_consecutive_failures_nonnegative",
+        "ck_refresh_dispatch_outbox_consecutive_failures_within_attempts",
+        "ck_refresh_dispatch_outbox_publication_state_match",
+    }.issubset(outbox_checks)
+    heartbeat_uniques = {
+        constraint["name"]
+        for constraint in inspector.get_unique_constraints("refresh_dispatcher_heartbeats")
+    }
+    assert "uq_refresh_dispatcher_heartbeats_identity" in heartbeat_uniques
+    lease_columns = {column["name"]: column for column in inspector.get_columns("ingestion_leases")}
+    assert lease_columns["fencing_token"]["nullable"] is False
+    lease_uniques = {
+        constraint["name"] for constraint in inspector.get_unique_constraints("ingestion_leases")
+    }
+    assert "uq_ingestion_leases_fencing_token" in lease_uniques
+
+
+def test_refresh_outbox_enforces_consumer_budget_and_publication_marker_state(
+    database_engine: Engine,
+) -> None:
+    now = datetime(2026, 8, 31, 12, 0, tzinfo=UTC)
+    with Session(database_engine) as session, session.begin():
+        owner_id, connection_id, account_id, instrument_id, listing_id, run_id = (
+            _add_identity_graph(session)
+        )
+        run = session.get(IngestionRunModel, run_id)
+        assert run is not None
+        dispatch_id = uuid4()
+        session.add(
+            RefreshDispatchOutboxModel(
+                id=dispatch_id,
+                ingestion_run_id=run_id,
+                task_name="portfolio.refresh",
+                task_version=1,
+                payload={
+                    "run_id": str(run_id),
+                    "account_id": str(account_id),
+                    "request_fingerprint": run.request_fingerprint,
+                    "request_schema_version": 1,
+                },
+                status="pending",
+                available_at=now,
+            )
+        )
+
+    with pytest.raises(IntegrityError), database_engine.begin() as connection:
+        connection.execute(
+            text(
+                "UPDATE refresh_dispatch_outbox SET consumer_attempt_count = 5 "
+                "WHERE id = :dispatch_id"
+            ),
+            {"dispatch_id": dispatch_id},
+        )
+    with pytest.raises(IntegrityError), database_engine.begin() as connection:
+        connection.execute(
+            text(
+                "UPDATE refresh_dispatch_outbox SET status = 'publishing', "
+                "attempt_count = 1, claim_token = :claim_token, "
+                "claim_owner = 'migration-invariant-test', claimed_at = :claimed_at, "
+                "claim_expires_at = :claim_expires_at, published_at = :published_at "
+                "WHERE id = :dispatch_id"
+            ),
+            {
+                "dispatch_id": dispatch_id,
+                "claim_token": uuid4(),
+                "claimed_at": now,
+                "claim_expires_at": now.replace(minute=1),
+                "published_at": now,
+            },
+        )
+
+    with Session(database_engine) as cleanup, cleanup.begin():
+        cleanup.execute(delete(IngestionRunModel).where(IngestionRunModel.id == run_id))
+        cleanup.execute(delete(BrokerAccountModel).where(BrokerAccountModel.id == account_id))
+        cleanup.execute(
+            delete(BrokerConnectionModel).where(BrokerConnectionModel.id == connection_id)
+        )
+        cleanup.execute(delete(OwnerModel).where(OwnerModel.id == owner_id))
+        cleanup.execute(delete(ListingModel).where(ListingModel.id == listing_id))
+        cleanup.execute(delete(InstrumentModel).where(InstrumentModel.id == instrument_id))
 
 
 def test_schema_uses_exact_numeric_and_timezone_aware_columns(database_engine: Engine) -> None:
@@ -325,17 +566,45 @@ def test_migration_is_current_and_downgrade_policy_is_explicit(database_engine: 
     occurrence_revision = Path(
         "migrations/versions/20260831_0003_source_record_occurrences.py"
     ).read_text(encoding="utf-8")
+    outbox_revision = Path(
+        "migrations/versions/20260901_0004_refresh_dispatch_outbox.py"
+    ).read_text(encoding="utf-8")
+    collection_snapshot_revision = Path(
+        "migrations/versions/20260901_0006_immutable_collection_snapshots.py"
+    ).read_text(encoding="utf-8")
+    active_cash_flow_revision = Path(
+        "migrations/versions/20260901_0007_active_external_cash_flows.py"
+    ).read_text(encoding="utf-8")
     policy = Path("migrations/README.md").read_text(encoding="utf-8")
     assert "down_revision" in revision
     assert "def downgrade()" in revision
     assert revision.count("op.drop_table(") + metadata_revision.count(
         "op.drop_table("
-    ) + occurrence_revision.count("op.drop_table(") == len(Base.metadata.tables)
+    ) + occurrence_revision.count("op.drop_table(") + outbox_revision.count(
+        "op.drop_table("
+    ) + collection_snapshot_revision.count("op.drop_table(") == len(Base.metadata.tables)
     assert 'revision: str = "20260831_0002"' in metadata_revision
     assert 'down_revision: str | None = "20260831_0001"' in metadata_revision
     assert 'revision: str = "20260831_0003"' in occurrence_revision
     assert 'down_revision: str | None = "20260831_0002"' in occurrence_revision
     assert 'op.drop_table("source_record_occurrences")' in occurrence_revision
+    assert 'revision: str = "20260901_0004"' in outbox_revision
+    assert 'down_revision: str | None = "20260831_0003"' in outbox_revision
+    assert 'op.drop_table("refresh_dispatch_outbox")' in outbox_revision
+    assert 'op.drop_table("refresh_dispatcher_heartbeats")' in outbox_revision
+    assert "requested_create_snapshot = TRUE" in outbox_revision
+    assert 'op.drop_column("ingestion_runs", "requested_create_snapshot")' in outbox_revision
+    assert '"ingestion_leases",\n        sa.Column("fencing_token"' in outbox_revision
+    assert 'op.drop_column("ingestion_leases", "fencing_token")' in outbox_revision
+    assert 'revision: str = "20260901_0006"' in collection_snapshot_revision
+    assert 'down_revision: str | None = "20260901_0005"' in collection_snapshot_revision
+    assert 'op.drop_table("collection_query_snapshot_members")' in collection_snapshot_revision
+    assert 'op.drop_table("collection_query_snapshots")' in collection_snapshot_revision
+    assert 'revision: str = "20260901_0007"' in active_cash_flow_revision
+    assert 'down_revision: str | None = "20260901_0006"' in active_cash_flow_revision
+    assert "UPDATE cash_flows AS cash_flow" in active_cash_flow_revision
+    assert "lower(source_transaction.status) = 'reversed'" in active_cash_flow_revision
+    assert 'op.drop_column("cash_flows", "active")' in active_cash_flow_revision
     expected_metadata_drops = {
         'op.drop_column("calculation_runs", "input_ids")',
         'op.drop_column("reconciliation_runs", "quality_state")',

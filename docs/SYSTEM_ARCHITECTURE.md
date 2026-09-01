@@ -40,11 +40,12 @@ Trading 212 Portfolio Intelligence ingests read-only brokerage data, converts it
                     │ system record  │          │ Demo / Live        │
                     └────────────────┘          └────────────────────┘
                              ▲
-                             │
-                    ┌────────┴─────────┐
-                    │ Worker/scheduler │
-                    │ ingest/reconcile │
-                    └──────────────────┘
+              ┌──────────────┴──────────────┐
+              │                             │
+     ┌────────┴─────────┐  fixed task   ┌─────────┴────────┐
+     │ Worker/scheduler │◀────────────│ Outbox dispatcher │
+     │ ingest/reconcile │              │ claim/publish/retry│
+     └──────────────────┘              └──────────────────┘
 ```
 
 ## 2. Repository topology
@@ -111,6 +112,8 @@ Responsibilities:
 - map provider DTOs into canonical records;
 - execute atomically/idempotently;
 - record run status, counts, warnings, latency, and source coverage.
+- persist each requested refresh run and its dispatch event atomically;
+- preserve requested semantics separately from promoted/effective execution semantics.
 
 ### 3.3 Canonical domain
 
@@ -123,7 +126,6 @@ Owns:
 - transactions, cash flows, dividends, and order observations;
 - snapshots and valuation records;
 - provenance, coverage, quality, warning, and reconciliation models;
-- later virtual Pies, targets, constraints, scenarios, goals, and research records.
 
 Provider-specific field names must not leak into application/API contracts.
 
@@ -133,11 +135,12 @@ PostgreSQL stores:
 
 - normalized canonical entities;
 - ingestion runs and checkpoints;
+- fixed-task refresh-dispatch outbox rows and dispatcher heartbeats;
+- immutable collection-query snapshots and ordered member identities;
 - source payload metadata/fingerprints;
 - historical snapshots;
 - calculation runs/results or reproducible inputs, depending on metric class;
 - audit/security events;
-- later targets, reports, alerts, scenarios, and research data.
 
 Requirements:
 
@@ -146,6 +149,9 @@ Requirements:
 - transactions protect atomic ingestion units;
 - repositories return domain objects, not unbounded ORM entities to interfaces;
 - sensitive payload fields are minimized and protected.
+- the Phase 1 migration head is `20260901_0007`; migrations `0004` through `0007`
+  add durable dispatch/idempotency state, explicit unconfigured credential state,
+  immutable collection traversal snapshots, and active external-cash-flow revisions.
 
 ### 3.5 Analytics
 
@@ -159,15 +165,22 @@ Application services implement use cases such as:
 
 - refresh account data;
 - get account summary;
-- list/search positions and instruments;
+- list owner-scoped broker connections without revealing credential references;
+- list/search positions and canonical instrument/listing metadata;
 - get canonical portfolio snapshot;
 - compare recorded snapshots;
 - list transactions/dividends/order observations;
 - calculate direct allocation and core accounting;
+- calculate coverage-gated XIRR, TWR, and Modified Dietz summaries;
 - expose reconciliation/data-quality state;
-- later manage targets, optimize contributions, generate reports, and run analyses.
 
 They enforce authorization, pagination, bounded response sizes, and consistent error mapping.
+
+Collection queries are typed. Positions, activity, dividends, and instruments use
+short-lived immutable result-membership snapshots with exact filtered totals.
+Orders, portfolio snapshots, and reconciliation discrepancies use signed
+read-cutoff keysets. All cursors are versioned, HMAC-protected, resource-bound,
+owner/account-bound, filter/sort-bound, and use deterministic tie-breakers.
 
 ### 3.7 Interfaces
 
@@ -188,8 +201,17 @@ The MCP application invokes application services through typed ports. Tool outpu
 
 - scheduled/full/incremental ingestion;
 - reconciliation and snapshot jobs;
-- later report/alert/analytics jobs;
 - idempotency, leases/locks, heartbeats, retries, dead-letter/failure recording.
+
+### Outbox dispatcher process
+
+- independently polls PostgreSQL; API correctness never depends on a broker call;
+- claims `pending` rows and expired `publishing` claims with
+  `FOR UPDATE SKIP LOCKED`;
+- publishes only `portfolio.refresh`, with task ID equal to the durable run ID;
+- applies bounded publication attempts and exponential backoff;
+- records sanitized errors and a heartbeat consumed by API readiness;
+- recovers expired claims and cleans expired collection-query snapshots in bounded batches.
 
 ### MCP process
 
@@ -197,7 +219,9 @@ The MCP application invokes application services through typed ports. Tool outpu
 - authenticated and rate-limited;
 - explicit tool registry;
 - no arbitrary query/path tools;
-- output-size bounds and pagination/aggregation;
+- exactly nine read-only tools; no MCP refresh tool;
+- output-size bounds, server-side filtering, cursor pagination, and full-period
+  dividend aggregation with a bounded recent sample;
 - data timestamp and quality metadata in every financial response.
 
 ### Web process
@@ -205,6 +229,9 @@ The MCP application invokes application services through typed ports. Tool outpu
 - Next.js server/client boundaries chosen to keep secrets server-side;
 - typed generated API client;
 - accessible responsive financial UI;
+- route-specific server loaders and URL cursor state for holdings, activity,
+  dividends, snapshots, quality, synchronization, and connections;
+- bounded overview previews that display returned and exact total counts;
 - no direct broker access.
 
 ## 5. Data flow
@@ -212,8 +239,14 @@ The MCP application invokes application services through typed ports. Tool outpu
 ### Ingestion
 
 ```text
-schedule/manual refresh
-  → acquire account-scoped lease
+authorized refresh command
+  → canonicalize owner/account/mode/capabilities/snapshot behavior/schema version
+  → lock account and compare account-scoped idempotency fingerprint
+  → commit queued ingestion run + fixed-task outbox event atomically
+  → dispatcher claims event under a renewable timeout
+  → publish portfolio.refresh with deterministic run-derived task ID
+  → worker validates task metadata against run and outbox
+  → acquire fenced account-scoped lease and durable consumer attempt
   → check rate budget
   → call exact GET capability
   → validate provider DTO
@@ -223,7 +256,7 @@ schedule/manual refresh
   → advance checkpoint only after durable success
   → reconcile affected account
   → optionally create snapshot
-  → publish run metrics/status
+  → confirm terminal consumer delivery and publish run metrics/status
 ```
 
 ### Query
@@ -233,13 +266,20 @@ web or MCP request
   → authenticate
   → authorize account/scope
   → application service
-  → canonical repository and analytics
+  → SQL filtering/sorting/aggregation and immutable traversal state
+  → canonical repository and deterministic analytics
   → response schema with timestamps, method, quality, warnings
 ```
 
 ### Explicit refresh
 
-A user-requested refresh invokes a bounded refresh use case, never allows arbitrary endpoint selection, and reports pending/rate-limited/failed state. Interfaces should normally query persisted canonical data for reliability and speed.
+A user-requested refresh invokes a bounded refresh use case, never allows arbitrary
+endpoint selection, and reports pending/rate-limited/failed state. Once the
+PostgreSQL transaction succeeds, the API returns the durable queued run even when
+the broker is unavailable; the outbox remains retryable. A repeated matching
+idempotency key returns the same run. Reusing the key for different requested
+semantics returns `IDEMPOTENCY_KEY_REUSED` without another event. Correlation IDs
+are operational metadata and are not part of semantic identity.
 
 ## 6. Failure model
 
@@ -257,6 +297,9 @@ Errors use stable categories:
 - `CALCULATION_UNAVAILABLE`
 - `INVALID_REQUEST`
 - `CONFLICT`
+- `IDEMPOTENCY_KEY_REUSED`
+- `CURSOR_INVALID`
+- `COLLECTION_SNAPSHOT_CAPACITY_EXCEEDED`
 - `INTERNAL_ERROR`
 
 Raw provider responses, stack traces, secrets, and internal SQL are not returned to clients. Correlation IDs link sanitized client errors to internal telemetry.
@@ -269,22 +312,19 @@ Raw provider responses, stack traces, secrets, and internal SQL are not returned
 - Stale cache must not be mislabeled fresh.
 - Provider responses containing secrets are never cached in client-visible stores.
 
-## 8. Extension strategy
+## 8. Deployment baseline
 
-External providers implement explicit ports:
+Local Phase 1 uses Docker Compose for PostgreSQL, non-authoritative Redis,
+API, worker, dispatcher, MCP, and web processes. Production uses independently
+deployable containers, managed PostgreSQL, a shared task broker, TLS, secret
+management, monitoring, and backups. Deployed configuration must explicitly
+enable a dispatcher, and API readiness requires a recent healthy dispatcher cycle.
 
-- broker account data;
-- market price history;
-- FX/reference data;
-- ETF constituents;
-- research/document sources.
+## 9. Architectural acceptance
 
-A new broker maps into the same canonical domain and cannot alter calculation semantics. Broker-specific capabilities are isolated and declared; unsupported concepts yield explicit coverage state.
-
-## 9. Deployment baseline
-
-Local Phase 1 uses Docker Compose for PostgreSQL and optional Redis, with applications runnable through documented make targets. Production uses independently deployable containers, managed PostgreSQL, TLS, secret management, private storage, monitoring, and backups. Deployment configuration remains provider-neutral until an external hosting decision is recorded.
-
-## 10. Architectural acceptance
-
-The architecture is realized when dependency tests prove provider code cannot be imported by domain analytics, the broker client cannot dispatch writes or unknown paths, interfaces share canonical services, migrations and ingestion are idempotent, and all financial responses expose methodology/provenance/quality metadata.
+The architecture is realized when dependency tests prove provider code cannot be
+imported by domain analytics, the broker client cannot dispatch writes or unknown
+paths, interfaces share canonical services, run/outbox persistence is atomic,
+duplicate delivery remains economically idempotent, collection traversal is
+stable, migrations and ingestion are repeatable, and all financial responses
+expose methodology/provenance/quality metadata.

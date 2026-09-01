@@ -33,7 +33,7 @@ class ActivityTypeFilter(StrEnum):
     INTEREST = "interest"
     FEE = "fee"
     TAX = "tax"
-    TRANSFER = "transfer"
+    FX_CONVERSION = "fx_conversion"
     UNKNOWN = "unknown"
 
 
@@ -47,6 +47,8 @@ class ErrorDetail(StrictSchema):
         "DATA_INCOMPLETE",
         "CALCULATION_UNAVAILABLE",
         "VALIDATION_FAILED",
+        "CURSOR_INVALID",
+        "COLLECTION_SNAPSHOT_CAPACITY_EXCEEDED",
         "NOT_FOUND",
         "INTERNAL_ERROR",
     ]
@@ -72,7 +74,7 @@ class Calculation(StrictSchema):
 
 
 class Pagination(StrictSchema):
-    next_cursor: Annotated[str, Field(max_length=32)] | None
+    next_cursor: Annotated[str, Field(max_length=2048)] | None
     limit: Annotated[int, Field(ge=1, le=100)]
     total: Annotated[int, Field(ge=0)]
     truncated: bool
@@ -203,6 +205,8 @@ class DividendSummaryData(StrictSchema):
     totals_by_currency: Annotated[list[DividendCurrencyTotal], Field(max_length=20)]
     recent_dividends: Annotated[list[DividendRow], Field(max_length=25)]
     covered_record_count: Annotated[int, Field(ge=0)]
+    totals_truncated: bool
+    omitted_currency_count: Annotated[int, Field(ge=0)]
     read_only: Literal[True] = True
 
 
@@ -217,6 +221,7 @@ class AllocationRow(StrictSchema):
 
 class DirectAllocationData(StrictSchema):
     allocations: Annotated[list[AllocationRow], Field(max_length=51)]
+    returned_count: Annotated[int, Field(ge=0, le=51)]
     includes_cash: bool
     etf_look_through: Literal[False] = False
     methodology: Literal["direct_provider_observed_positions_and_cash"]
@@ -282,9 +287,40 @@ class CapabilityQuality(StrictSchema):
     data_quality: DataQuality
 
 
+class RefreshStepQuality(StrictSchema):
+    capability: Annotated[str, Field(min_length=1, max_length=100)]
+    status: Annotated[str, Field(min_length=1, max_length=40)]
+    warnings: Annotated[list[Annotated[str, Field(max_length=500)]], Field(max_length=20)]
+
+
+class RefreshRunQuality(StrictSchema):
+    id: OpaqueId
+    status: Annotated[str, Field(min_length=1, max_length=40)]
+    started_at: datetime
+    completed_at: datetime | None
+    steps: Annotated[list[RefreshStepQuality], Field(max_length=20)]
+
+
+class CheckpointQuality(StrictSchema):
+    capability: Annotated[str, Field(min_length=1, max_length=100)]
+    version: Annotated[int, Field(ge=1)]
+    coverage_start_at: datetime | None
+    coverage_end_at: datetime | None
+    coverage_complete: bool
+
+
 class DataQualitySummaryData(StrictSchema):
     capabilities: Annotated[list[CapabilityQuality], Field(min_length=6, max_length=6)]
     failed_or_partial_runs: Annotated[list[OpaqueId], Field(max_length=20)]
+    latest_refresh_run: RefreshRunQuality | None
+    latest_runs_by_status: Annotated[list[RefreshRunQuality], Field(max_length=3)]
+    checkpoints: Annotated[list[CheckpointQuality], Field(max_length=20)]
+    latest_snapshot_id: OpaqueId | None
+    latest_snapshot_source_cutoff_at: datetime | None
+    materialization_state: Literal["available", "partial", "missing"]
+    reconciliation_status: Annotated[str, Field(min_length=1, max_length=40)]
+    missing_fx_record_count: Annotated[int, Field(ge=0)]
+    unknown_mapping_record_count: Annotated[int, Field(ge=0)]
     read_only: Literal[True] = True
 
 

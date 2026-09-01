@@ -2,19 +2,62 @@ import { ListTree } from "lucide-react";
 
 import { EmptyState, Surface } from "@trading212/ui";
 
+import { CollectionPagination } from "../../../components/collection-pagination";
 import { PageHeader } from "../../../components/page-header";
 import { ActivityTable } from "../../../components/portfolio-tables";
 import { QualityBanner } from "../../../components/quality";
+import { loadActivityPage, readDemoViewState } from "../../../lib/api-adapter";
 import {
-  loadPortfolioBundle,
-  readDemoViewState,
-} from "../../../lib/api-adapter";
+  firstSearchParam,
+  readDateParam,
+  readEnumParam,
+  readOpaqueCursor,
+  validateDateRange,
+} from "../../../lib/collection-query";
+
+const ACTIVITY_TYPES = new Set([
+  "all",
+  "buy",
+  "sell",
+  "deposit",
+  "withdrawal",
+  "dividend",
+  "interest",
+  "fee",
+  "tax",
+  "fx_conversion",
+  "unknown",
+] as const);
 
 export default async function ActivityPage({
   searchParams,
-}: Readonly<{ searchParams: Promise<{ state?: string | string[] }> }>) {
-  const bundle = await loadPortfolioBundle(
-    readDemoViewState((await searchParams).state),
+}: Readonly<{
+  searchParams: Promise<{
+    activity_type?: string | string[];
+    cursor?: string | string[];
+    end_date?: string | string[];
+    start_date?: string | string[];
+    state?: string | string[];
+  }>;
+}>) {
+  const params = await searchParams;
+  const state = readDemoViewState(params.state);
+  const startDate = readDateParam(params.start_date);
+  const endDate = readDateParam(params.end_date);
+  validateDateRange(startDate, endDate);
+  const activityType = readEnumParam(
+    params.activity_type,
+    ACTIVITY_TYPES,
+    "all",
+  );
+  const bundle = await loadActivityPage(
+    {
+      activityType,
+      cursor: readOpaqueCursor(params.cursor),
+      endDate,
+      startDate,
+    },
+    state,
   );
   return (
     <div className="page-stack">
@@ -24,6 +67,34 @@ export default async function ActivityPage({
       />
       <QualityBanner quality={bundle.quality} />
       <Surface>
+        <form className="collection-filters" method="get">
+          <label>
+            <span>From</span>
+            <input defaultValue={startDate} name="start_date" type="date" />
+          </label>
+          <label>
+            <span>To</span>
+            <input defaultValue={endDate} name="end_date" type="date" />
+          </label>
+          <label>
+            <span>Activity type</span>
+            <select defaultValue={activityType} name="activity_type">
+              {Array.from(ACTIVITY_TYPES).map((value) => (
+                <option key={value} value={value}>
+                  {value.replaceAll("_", " ")}
+                </option>
+              ))}
+            </select>
+          </label>
+          {firstSearchParam(params.state) ? (
+            <input
+              name="state"
+              type="hidden"
+              value={firstSearchParam(params.state)}
+            />
+          ) : null}
+          <button type="submit">Apply</button>
+        </form>
         {bundle.activity.items.length === 0 ? (
           <EmptyState
             description="Transactions and cash flows will appear after covered history is synchronized."
@@ -33,6 +104,18 @@ export default async function ActivityPage({
         ) : (
           <ActivityTable activity={bundle.activity.items} />
         )}
+        <CollectionPagination
+          nextCursor={bundle.activity.next_cursor}
+          pathname="/activity"
+          preservedQuery={{
+            activity_type: activityType,
+            end_date: endDate,
+            start_date: startDate,
+            state: firstSearchParam(params.state),
+          }}
+          returnedCount={bundle.activity.items.length}
+          total={bundle.activity.total}
+        />
       </Surface>
     </div>
   );

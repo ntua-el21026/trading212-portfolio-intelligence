@@ -16,10 +16,11 @@ Environment selection is explicit. Production fails closed when authentication, 
 Docker Compose provides:
 
 - PostgreSQL 18;
-- optional Redis 8, strictly non-authoritative coordination/cache/job infrastructure;
-- optional local object-storage substitute when reports are introduced.
+- Redis 8, strictly non-authoritative coordination/rate/task-broker infrastructure.
 
-Applications run through documented make targets or containers. A single command should bootstrap dependencies, migrate the database, seed a synthetic portfolio, and start API/worker/MCP/web for development.
+Applications run through documented make targets or containers. A single command
+bootstraps dependencies, migrates through Alembic head `20260901_0007`, seeds a
+synthetic portfolio, and starts API, worker, outbox dispatcher, MCP, and web.
 
 ## 3. Production topology
 
@@ -29,15 +30,16 @@ Provider-neutral containers:
 - API;
 - MCP;
 - worker/scheduler;
+- independent refresh-outbox dispatcher;
 - managed PostgreSQL;
-- optional managed Redis;
-- private object storage;
+- shared Celery broker/result backend (Redis in the Phase 1 baseline);
 - TLS ingress/reverse proxy;
 - secret manager;
 - logs, metrics, traces, alerts;
 - encrypted backups.
 
-API/MCP/worker may share a code image with separate commands, but scale/failure domains remain explicit.
+API/MCP/worker/dispatcher may share build inputs, but run as separate commands and
+failure domains. The dispatcher is required wherever refresh commands are enabled.
 
 ## 4. Configuration
 
@@ -52,7 +54,10 @@ Typed settings validate at startup:
 - allowed origins/hosts;
 - logging/telemetry endpoints;
 - feature flags;
-- worker schedules/concurrency.
+- worker schedules/concurrency;
+- dispatcher identity, poll/batch/claim timeout, publication-attempt/backoff
+  bounds, collection-snapshot cleanup batch, heartbeat age, and metrics bind;
+- cursor signing-key reference and TTL.
 
 Unknown or unsafe production configuration fails startup. `.env.example` contains names/descriptions and blank synthetic placeholders only.
 
@@ -64,7 +69,11 @@ Process event loop/runtime is responsive. No dependency details or secrets.
 
 ### Readiness
 
-Required configuration valid, database reachable/migrated, and service can safely serve its role. Broker availability is reported as a component/degraded state and should not necessarily make cached read APIs unready.
+Required configuration valid, database reachable/migrated, and service can safely
+serve its role. API readiness requires a recently healthy dispatcher heartbeat
+(30 seconds by default); staging/production startup rejects a configuration that
+does not explicitly declare the dispatcher. Broker availability is reported as a
+component/degraded state and does not make persisted read APIs falsely unavailable.
 
 ### Dependency status
 
@@ -80,12 +89,14 @@ Structured JSON in deployed environments with correlation/request/run IDs, servi
 
 - HTTP/MCP latency, status, active requests;
 - job queue/lease/attempt/duration/results;
+- pending refresh-outbox events and oldest pending age;
+- outbox publication attempts/failures, recovered expired claims, dispatcher
+  readiness, and queued runs without a deliverable event;
 - provider capability calls, latency, errors, retries, rate observations;
 - ingestion records/pages/checkpoint lag;
 - dataset freshness/quality and reconciliation discrepancies;
 - database pool/query/migration health;
 - cache hit/staleness;
-- report/analytics job duration;
 - security/auth denials and redaction-test health where appropriate.
 
 Labels remain bounded; instrument IDs/tickers are not high-cardinality metric labels.
@@ -104,6 +115,9 @@ Initial operational alerts:
 - stale account beyond threshold;
 - provider authentication failure/rate exhaustion;
 - worker lease/queue backlog;
+- missing/stale/degraded dispatcher heartbeat;
+- old pending refresh-dispatch event, repeated publication failure, dead event, or
+  queued run without a deliverable event;
 - reconciliation discrepancy escalation;
 - backup failure;
 - elevated auth denials/error rate/latency;
@@ -121,12 +135,24 @@ Alerts include run/correlation references and safe remediation links.
 - Roll back application image when compatible; database rollback follows explicit migration plan, never ad hoc.
 - Record deployed commit, image digest, migration head, and config version.
 
+The Phase 1 migration chain ends at `20260901_0007`:
+
+1. `20260901_0004` adds refresh request identity, fenced leases, atomic
+   refresh-dispatch outbox, durable consumer attempt bound, and dispatcher
+   heartbeat;
+2. `20260901_0005` permits an explicit unconfigured broker credential;
+3. `20260901_0006` adds immutable collection-query snapshots and ordered members;
+4. `20260901_0007` adds active/reversed external-cash-flow state.
+
+Deploy the migration before processes that require these columns/tables. Verify a
+healthy dispatcher cycle before treating API readiness as green. Migration
+downgrade is test evidence, not the normal operational rollback path.
+
 ## 9. Backups and disaster recovery
 
 Before production readiness:
 
 - automated encrypted PostgreSQL backups with monitored success;
-- object/report storage versioning/retention as appropriate;
 - documented RPO/RTO targets selected for the private deployment;
 - periodic restore into isolated environment;
 - restore validation of migrations, ownership, snapshots, provenance, and audit data;
@@ -160,6 +186,7 @@ Any indication of a broker write request is critical even if rejected upstream; 
 - logs/traces verified redacted;
 - allowlist negative test in deployed environment;
 - smoke tests for API, worker, MCP, and web;
+- dispatcher health/readiness, crash recovery, and pending-outbox drain;
 - rollback/restore procedures documented;
 - monitoring/alerts receiving expected signals.
 

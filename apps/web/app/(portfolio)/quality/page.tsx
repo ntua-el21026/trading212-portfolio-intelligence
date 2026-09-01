@@ -7,20 +7,29 @@ import {
 
 import { EmptyState, Surface } from "@trading212/ui";
 
+import { CollectionPagination } from "../../../components/collection-pagination";
 import { MoneyValue, QualityStatus } from "../../../components/financial";
 import { PageHeader } from "../../../components/page-header";
 import { QualityBanner } from "../../../components/quality";
+import { loadQualityView, readDemoViewState } from "../../../lib/api-adapter";
 import {
-  loadPortfolioBundle,
-  readDemoViewState,
-} from "../../../lib/api-adapter";
+  firstSearchParam,
+  readOpaqueCursor,
+} from "../../../lib/collection-query";
 import { formatDateTime, formatMoney, titleCase } from "../../../lib/format";
 
 export default async function QualityPage({
   searchParams,
-}: Readonly<{ searchParams: Promise<{ state?: string | string[] }> }>) {
-  const bundle = await loadPortfolioBundle(
-    readDemoViewState((await searchParams).state),
+}: Readonly<{
+  searchParams: Promise<{
+    cursor?: string | string[];
+    state?: string | string[];
+  }>;
+}>) {
+  const params = await searchParams;
+  const bundle = await loadQualityView(
+    readOpaqueCursor(params.cursor),
+    readDemoViewState(params.state),
   );
   const quality = bundle.quality;
   const reconciliation = bundle.reconciliation;
@@ -122,7 +131,7 @@ export default async function QualityPage({
             <p>Open records remain versioned and auditable.</p>
           </div>
         </div>
-        {reconciliation.issues.length === 0 ? (
+        {bundle.discrepancies.items.length === 0 ? (
           <EmptyState
             description="All covered position and cash records are within the active tolerance policy."
             icon={<CheckCircle2 aria-hidden="true" size={22} />}
@@ -146,7 +155,7 @@ export default async function QualityPage({
                 </tr>
               </thead>
               <tbody>
-                {reconciliation.issues.map((issue) => (
+                {bundle.discrepancies.items.map((issue) => (
                   <tr key={issue.id}>
                     <th scope="row">
                       <strong>{issue.summary}</strong>
@@ -172,6 +181,13 @@ export default async function QualityPage({
             </table>
           </div>
         )}
+        <CollectionPagination
+          nextCursor={bundle.discrepancies.next_cursor}
+          pathname="/quality"
+          preservedQuery={{ state: firstSearchParam(params.state) }}
+          returnedCount={bundle.discrepancies.items.length}
+          total={bundle.discrepancies.total}
+        />
       </Surface>
       <Surface className="availability-panel" compact>
         <div>

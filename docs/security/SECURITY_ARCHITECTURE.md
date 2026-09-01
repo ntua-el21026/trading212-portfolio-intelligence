@@ -16,10 +16,9 @@
 - Trading 212 API key and secret.
 - Application authentication credentials/tokens.
 - Portfolio/account records and historical activity.
-- Reports/exports/research notes.
 - Calculation and reconciliation integrity.
-- Provider mapping/configuration and target portfolios.
-- Database backups and object storage.
+- Provider mapping/configuration.
+- Database backups.
 - Deployment and CI credentials.
 
 ## 3. Trust boundaries
@@ -54,7 +53,7 @@ Controls:
 
 ### Secret leakage
 
-Threat: credentials appear in source, logs, traces, errors, browser bundles, MCP output, reports, or backups.
+Threat: credentials appear in source, logs, traces, errors, browser bundles, MCP output, or backups.
 
 Controls:
 
@@ -98,9 +97,9 @@ Controls:
 
 - MCP tools have fixed policy independent of user/research text;
 - no arbitrary HTTP/database/filesystem tool;
-- research source content cannot define tool calls or change authorization;
+- untrusted text cannot define tool calls or change authorization;
 - model never receives broker secrets;
-- high-level read-refresh command accepts only enums;
+- exactly nine read-only MCP tools; no refresh tool;
 - tool descriptions and server enforcement both state read-only scope.
 
 ### SSRF and provider abuse
@@ -120,10 +119,16 @@ Controls:
 
 - immutable source/provenance/fingerprints;
 - database constraints and transactional ingestion;
+- atomic insertion of an ingestion run and its fixed-task outbox event;
+- worker validation of dispatch/run/account/request fingerprint and schema version
+  before credential resolution or economic execution;
+- deterministic task identity, fenced account lease, global durable consumer
+  attempt bound, and idempotent materialization for at-least-once publication;
+- HMAC-authenticated, resource/owner/account/filter/sort-bound cursors with
+  expiration and deterministic tie-breakers;
 - calculation versions and input references;
-- audit trail for mappings/targets/config changes;
+- audit trail for mappings/config changes;
 - deterministic reference/property tests;
-- signed/checksummed exports when introduced where useful;
 - backups and restore validation.
 
 ### Denial of service / cost exhaustion
@@ -132,11 +137,16 @@ Controls:
 
 - authentication, rate limits, quotas, pagination, top-N/bounded ranges;
 - job queue and coalesced refreshes;
+- immutable collection traversal capacity bounded per owner (default 64 active
+  snapshots and 250,000 members) with explicit HTTP 429/MCP failure rather than
+  silent truncation;
+- outbox claims use bounded batches, `SKIP LOCKED`, expiry, publication backoff,
+  and non-secret bounded-cardinality telemetry;
 - provider rate coordination;
 - query timeouts/indexes;
 - asynchronous long tasks;
 - cache with correct scope/freshness;
-- maximum simulations/report ranges in later phases.
+- bounded query snapshots and deterministic cleanup of expired traversal state.
 
 ### Supply chain
 
@@ -175,10 +185,7 @@ Suggested scopes:
 - `portfolio:read`
 - `activity:read`
 - `portfolio:refresh`
-- `reports:read`
-- `reports:create` (internal report generation only)
 - `configuration:read`
-- `configuration:write` for application targets/settings in later phases
 
 No `trade:*` scope exists.
 
@@ -186,7 +193,6 @@ No `trade:*` scope exists.
 
 - TLS for all external/internal network paths where applicable.
 - Managed database/storage encryption at rest in production.
-- Private buckets/objects with short-lived access.
 - Database backups encrypted and access-controlled.
 - Minimize raw payload retention; document fields/reasons/period.
 - No production data in development fixtures.
@@ -199,9 +205,9 @@ Record at least:
 - authentication success/failure and token/session revocation in privacy-preserving form;
 - broker connection creation/status/credential-reference rotation (never secret value);
 - refresh/ingestion/reconciliation/snapshot runs;
+- refresh dispatcher publication/recovery/dead-event state with sanitized codes;
 - authorization denials;
-- configuration/target/mapping changes;
-- report/export creation/access/deletion;
+- configuration/mapping changes;
 - security policy/allowlist changes;
 - administrative retention/deletion actions.
 
@@ -221,7 +227,7 @@ Deny:
 
 - authorization headers, keys, secrets, cookies/tokens;
 - full upstream payloads;
-- private reports/notes/position lists by default;
+- private position/activity lists by default;
 - raw SQL with private values;
 - stack traces returned to clients.
 
@@ -239,4 +245,7 @@ Phase 1 requires:
 - sanitized error tests;
 - no critical/high unresolved security finding for phase completion.
 
-Phase 3 production readiness additionally requires penetration testing or a documented structured security review, backup restoration, incident exercise, SBOM/container hardening, and operational alert validation.
+Production readiness additionally requires the external deployment decisions and
+evidence recorded by the Phase 1 acceptance documents, including a structured
+security review, backup restoration, incident exercise, SBOM/container hardening,
+and operational alert validation.

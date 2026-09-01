@@ -3,7 +3,7 @@
 **Status:** Phase 1 operational contract
 **Release:** `0.1.0`
 
-This runbook applies to the API, worker, MCP gateway, web application,
+This runbook applies to the API, worker, durable refresh-outbox dispatcher, MCP gateway, web application,
 PostgreSQL system of record, and non-authoritative Redis coordination service.
 It does not authorize Trading 212 Live access or public exposure of local
 synthetic authentication.
@@ -27,7 +27,7 @@ make run-local
 
 `make run-local` builds and starts the repository's hardened PostgreSQL and Redis
 derivatives, the one-shot migration and
-synthetic seed jobs, API, worker, MCP, and web services. The seed is deterministic
+synthetic seed jobs, API, worker, dispatcher, MCP, and web services. The seed is deterministic
 and idempotent. It is restricted to `local`/`test` and contains no provider
 credentials.
 
@@ -48,6 +48,7 @@ Never use a volume-removing Compose command as a routine restart procedure.
 | Web | `http://127.0.0.1:3000` | authenticated local portfolio shell |
 | API liveness | `http://127.0.0.1:8000/health/live` | HTTP 200, bounded status |
 | API readiness | `http://127.0.0.1:8000/health/ready` | HTTP 200 only after required dependencies are ready |
+| Dispatcher metrics | internal `:9464/metrics` | pending/age/attempt/failure/recovery/readiness series; not host-published by default |
 | MCP liveness | `http://127.0.0.1:8001/health/live` | HTTP 200, bounded status |
 | MCP readiness | `http://127.0.0.1:8001/health/ready` | HTTP 200 only when an authentication mode is configured |
 | PostgreSQL | `127.0.0.1:5432` | `pg_isready` through the container health check |
@@ -58,7 +59,7 @@ available on the host:
 
 ```bash
 docker compose ps
-docker compose logs --since=10m api worker mcp web
+docker compose logs --since=10m api worker dispatcher mcp web
 ```
 
 Do not use `docker compose config` or environment-dump commands in shared logs
@@ -75,11 +76,19 @@ make migrate
 make seed-demo
 ```
 
-`make migrate` upgrades to the Alembic head. Re-running the upgrade and synthetic
+`make migrate` upgrades to Alembic head `20260901_0007`. Re-running the upgrade and synthetic
 seed is safe. Migration downgrades are not an operational rollback mechanism.
 For a deployment, run the migration image as a controlled one-shot job with an
 advisory deployment lock, record the previous and new Alembic revisions, and
 then roll out compatible services.
+
+The correction migrations are:
+
+- `20260901_0004`: atomic run/outbox persistence, requested/effective refresh
+  semantics, fenced leases, dispatch heartbeat, and bounded consumer attempts;
+- `20260901_0005`: explicit `not_configured` credential state;
+- `20260901_0006`: immutable collection-query snapshots and members;
+- `20260901_0007`: active external-cash-flow revisions.
 
 ## 4. Deployment configuration boundary
 
@@ -94,12 +103,21 @@ must be supplied by the deployment platform, not baked into an image.
 | Broker | synthetic by default; opt-in Demo smoke | Demo in staging; any Live read-only use needs the separate explicit Live gate and owner review |
 | Database | hardened derivative of pinned PostgreSQL `18.6`, running unprivileged | managed PostgreSQL, encrypted transport/storage, monitored backups |
 | Redis | hardened derivative of pinned Redis `8.10.1`, unprivileged and non-authoritative | private managed service where required; loss must not lose canonical facts/checkpoints |
+| Dispatcher | required Compose service, fixed `portfolio.refresh` task, local heartbeat/metrics | independently supervised service with shared broker, bounded claims/backoff, and monitored heartbeat |
 | Ingress | loopback only | TLS, exact host/origin allowlists, rate controls, no direct database/Redis exposure |
 | Telemetry | local structured output | redacted logs, bounded metrics, sampled traces, configured error reporter |
 
 Production startup is expected to fail closed until the authentication and
-external secret-provider adapters are composed. Do not weaken this gate to make
-an image start.
+external secret-provider adapters are composed and a dispatcher is explicitly
+configured. API readiness also fails until PostgreSQL contains a recent healthy
+dispatcher cycle. Do not weaken these gates to make an image start.
+
+The dispatcher claims rows in bounded batches with `FOR UPDATE SKIP LOCKED`,
+publishes only `portfolio.refresh`, and uses the ingestion run ID as Celery task
+identity. Broker failure leaves a retryable PostgreSQL event with bounded
+exponential backoff. Expired claims are recovered; exhausted publication attempts
+or a queued run without a deliverable event become explicit terminal/degraded
+state.
 
 ## 5. Release deployment sequence
 
@@ -109,14 +127,15 @@ an image start.
    dependency/secret/static analysis, and container scans.
 3. Verify an encrypted backup and a recent isolated restore exercise.
 4. Deploy the migration one-shot job; stop on any schema mismatch.
-5. Deploy API, worker, MCP, and web images by immutable digest.
+5. Deploy API, worker, dispatcher, MCP, and web images by immutable digest.
 6. Require liveness and readiness checks to pass. Confirm structured logs contain
    correlation/run IDs and no headers, payloads, tokens, or credentials.
 7. Run authenticated synthetic API/web/MCP smoke checks. Use Trading 212 Demo only
    through the separate opt-in procedure in
    [Credentials and Demo Validation](CREDENTIALS_AND_DEMO_VALIDATION.md).
 8. Verify metrics, traces, error reporting, backup alerts, worker queue/lease
-   health, and stale-data/reconciliation alerts.
+   health, dispatcher heartbeat, pending-outbox count/age and delivery failures,
+   and stale-data/reconciliation alerts.
 9. Record the completed deployment evidence. Do not claim ChatGPT registration
    until the external procedure actually passes.
 

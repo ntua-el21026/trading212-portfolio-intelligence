@@ -5,7 +5,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : 2,
+  // The insertion-stability scenario mutates one deterministic account fixture;
+  // serialize projects so desktop and mobile each begin from the same baseline.
+  workers: 1,
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: "http://127.0.0.1:3001",
@@ -30,7 +32,9 @@ export default defineConfig({
       command: "uv run python ../../scripts/run_api_backed_e2e.py",
       reuseExistingServer: false,
       timeout: 120_000,
-      url: "http://127.0.0.1:18000/health/ready",
+      // Readiness intentionally stays fail-closed without a live dispatcher;
+      // this browser suite needs only the API process liveness probe.
+      url: "http://127.0.0.1:18000/health/live",
     },
     {
       command: "corepack pnpm dev --hostname 127.0.0.1 --port 3001",

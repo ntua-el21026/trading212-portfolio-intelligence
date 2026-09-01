@@ -3,6 +3,7 @@ import type {
   ActivityResponse,
   AllocationResponse,
   DemoViewState,
+  DirectAllocationResponse,
   DividendResponse,
   MetricResponse,
   PortfolioBundle,
@@ -232,7 +233,7 @@ const snapshots: SnapshotResponse[] = [
   },
 ];
 
-const allocation: AllocationResponse[] = [
+const allocationItems: AllocationResponse[] = [
   ...positions.map((position) => ({
     id: position.id,
     label: position.name,
@@ -250,6 +251,14 @@ const allocation: AllocationResponse[] = [
     weight_availability: "available",
   },
 ];
+
+const allocation: DirectAllocationResponse = {
+  items: allocationItems,
+  returned_count: allocationItems.length,
+  total: allocationItems.length,
+  limit: 50,
+  truncated: false,
+};
 
 const summary: AccountSummaryResponse = {
   account: {
@@ -289,6 +298,7 @@ const reconciliation: ReconciliationResponse = {
   algorithm_version: "phase1-reconciliation/1.0.0",
   tolerance_version: "phase1-tolerance/1.0.0",
   issues: [],
+  discrepancy_count: 0,
   data_quality: freshQuality,
 };
 
@@ -322,6 +332,179 @@ const defaultBundle: PortfolioBundle = {
   reconciliation,
   quality: freshQuality,
 };
+
+function largeCollectionFixture(bundle: PortfolioBundle): PortfolioBundle {
+  if (process.env.PORTFOLIO_E2E_LARGE_COLLECTIONS !== "1") {
+    return bundle;
+  }
+
+  const extraPositions = Array.from({ length: 60 }, (_, index) => {
+    const sequence = String(index + 1).padStart(3, "0");
+    const marketValue = String(9_000 - index * 100);
+    return {
+      id: `fixture-position-${sequence}`,
+      ticker: `FX${sequence}`,
+      name: `Deterministic fixture holding ${sequence}`,
+      instrument_type: "equity",
+      quantity: "1",
+      trading_currency: "EUR",
+      current_price: marketValue,
+      market_value: metric(marketValue, "deterministic browser fixture"),
+      provider_cost_basis: metric(marketValue, "deterministic browser fixture"),
+      provider_unrealized_profit_loss: metric(
+        "0",
+        "deterministic browser fixture",
+      ),
+      direct_weight: `0.0${String(39 - Math.floor(index / 2)).padStart(2, "0")}`,
+      data_quality: freshQuality,
+    } satisfies PositionResponse;
+  });
+  const extraActivity = Array.from({ length: 60 }, (_, index) => {
+    const sequence = String(index + 1).padStart(3, "0");
+    const occurredAt = new Date(
+      Date.UTC(2026, 5, 30, 12) - index * 86_400_000,
+    ).toISOString();
+    return {
+      id: `fixture-activity-${sequence}`,
+      occurred_at: occurredAt,
+      activity_type: index % 2 === 0 ? "buy" : "sell",
+      direction: "internal_exchange",
+      amount: metric(
+        index % 2 === 0 ? "-100.00" : "100.00",
+        "deterministic browser fixture",
+      ),
+      ticker: `FX${String((index % 60) + 1).padStart(3, "0")}`,
+      quantity: "1",
+      description: `Deterministic activity fixture ${sequence}`,
+      data_quality: freshQuality,
+    } satisfies ActivityResponse;
+  });
+  const extraDividends = Array.from({ length: 60 }, (_, index) => {
+    const sequence = String(index + 1).padStart(3, "0");
+    const paidOn = new Date(Date.UTC(2026, 5, 30) - index * 86_400_000)
+      .toISOString()
+      .slice(0, 10);
+    return {
+      id: `fixture-dividend-${sequence}`,
+      paid_on: paidOn,
+      ticker: `FX${String((index % 60) + 1).padStart(3, "0")}`,
+      net_amount: metric("1.00", "deterministic browser fixture"),
+      gross_amount: metric("1.20", "deterministic browser fixture"),
+      withholding_tax: metric("-0.20", "deterministic browser fixture"),
+      quantity: "1",
+      data_quality: freshQuality,
+    } satisfies DividendResponse;
+  });
+  const extraSnapshots = Array.from({ length: 63 }, (_, index) => {
+    const sequence = String(index + 1).padStart(3, "0");
+    const valuationAt = new Date(
+      Date.UTC(2026, 5, 30, 16, 30) - index * 86_400_000,
+    ).toISOString();
+    const sourceAt = new Date(Date.parse(valuationAt) - 120_000).toISOString();
+    return {
+      id: `fixture-snapshot-${sequence}`,
+      valuation_at: valuationAt,
+      source_cutoff_at: sourceAt,
+      reporting_currency: "EUR",
+      total_value: metric(
+        String(240_000 - index * 100),
+        "deterministic browser fixture",
+      ),
+      cash_value: metric("10000", "deterministic browser fixture"),
+      invested_value: metric(
+        String(230_000 - index * 100),
+        "deterministic browser fixture",
+      ),
+      net_contributions: metric("230000", "deterministic browser fixture"),
+      data_quality: freshQuality,
+    } satisfies SnapshotResponse;
+  });
+  const extraDiscrepancies: ReconciliationResponse["issues"] =
+    bundle.reconciliation.issues.length === 0
+      ? []
+      : Array.from({ length: 60 }, (_, index) => {
+          const sequence = String(index + 1).padStart(3, "0");
+          return {
+            id: `fixture-discrepancy-${sequence}`,
+            issue_type: "quantity_mismatch",
+            severity: "warning",
+            status: "open",
+            summary: `Deterministic discrepancy fixture ${sequence}.`,
+            expected_value: "10",
+            observed_value: "9",
+            residual: "-1",
+            tolerance: "0.000001",
+            currency: null,
+          };
+        });
+
+  const allAllocationItems = [
+    ...bundle.allocation.items.filter((item) => item.asset_type !== "cash"),
+    ...extraPositions.map(
+      (position) =>
+        ({
+          id: position.id,
+          label: position.name,
+          asset_type: position.instrument_type,
+          market_value: position.market_value,
+          weight: position.direct_weight,
+          weight_availability: "available",
+        }) satisfies AllocationResponse,
+    ),
+  ].sort(
+    (left, right) =>
+      Number(right.weight ?? "-1") - Number(left.weight ?? "-1") ||
+      left.id.localeCompare(right.id),
+  );
+  const cash = bundle.allocation.items.find(
+    (item) => item.asset_type === "cash",
+  );
+  const boundedAllocationItems = [
+    ...allAllocationItems.slice(0, 50),
+    ...(cash === undefined ? [] : [cash]),
+  ];
+
+  return {
+    ...bundle,
+    summary: {
+      ...bundle.summary,
+      position_count: bundle.positions.items.length + extraPositions.length,
+    },
+    positions: {
+      ...bundle.positions,
+      items: [...bundle.positions.items, ...extraPositions],
+      total: bundle.positions.items.length + extraPositions.length,
+    },
+    activity: {
+      ...bundle.activity,
+      items: [...bundle.activity.items, ...extraActivity],
+      total: bundle.activity.items.length + extraActivity.length,
+    },
+    dividends: {
+      ...bundle.dividends,
+      items: [...bundle.dividends.items, ...extraDividends],
+      total: bundle.dividends.items.length + extraDividends.length,
+    },
+    allocation: {
+      items: boundedAllocationItems,
+      returned_count: boundedAllocationItems.length,
+      total: allAllocationItems.length + (cash === undefined ? 0 : 1),
+      limit: 50,
+      truncated: allAllocationItems.length > 50,
+    },
+    snapshots: {
+      ...bundle.snapshots,
+      items: [...bundle.snapshots.items, ...extraSnapshots],
+      total: bundle.snapshots.items.length + extraSnapshots.length,
+    },
+    reconciliation: {
+      ...bundle.reconciliation,
+      issues: [...bundle.reconciliation.issues, ...extraDiscrepancies],
+      discrepancy_count:
+        bundle.reconciliation.issues.length + extraDiscrepancies.length,
+    },
+  };
+}
 
 function withQuality(
   bundle: PortfolioBundle,
@@ -385,7 +568,13 @@ export function getDemoPortfolio(
       positions: { items: [], next_cursor: null, limit: 50, total: 0 },
       activity: { items: [], next_cursor: null, limit: 50, total: 0 },
       dividends: { items: [], next_cursor: null, limit: 50, total: 0 },
-      allocation: [],
+      allocation: {
+        items: [],
+        returned_count: 0,
+        total: 0,
+        limit: 50,
+        truncated: false,
+      },
       snapshots: { items: [], next_cursor: null, limit: 50, total: 0 },
     };
   }
@@ -411,7 +600,7 @@ export function getDemoPortfolio(
     const next = quality("unreconciled", [
       "One cash observation is outside the active reconciliation tolerance.",
     ]);
-    return {
+    return largeCollectionFixture({
       ...withQuality(defaultBundle, next),
       reconciliation: {
         status: "unreconciled",
@@ -432,11 +621,12 @@ export function getDemoPortfolio(
             currency: "EUR",
           },
         ],
+        discrepancy_count: 1,
         data_quality: next,
       },
-    };
+    });
   }
-  return defaultBundle;
+  return largeCollectionFixture(defaultBundle);
 }
 
 export const demoRefreshRun = {

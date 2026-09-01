@@ -114,7 +114,9 @@ These are hard constraints:
 11. Every internal instant is timezone-aware UTC; reject naive datetimes at boundaries.
 12. Missing, zero, partial, stale, estimated, unreconciled, unavailable, and failed are distinct states.
 13. Provider DTOs remain isolated from canonical domain/application/interface contracts.
-14. Ingestion, pagination, replay, checkpoints, jobs, migrations, and retries are idempotent and crash-safe.
+14. Ingestion, pagination, replay, checkpoints, durable refresh dispatch, jobs,
+    migrations, and retries are idempotent and crash-safe. No committed refresh may
+    depend on an in-request best-effort broker publication.
 15. Every material result includes method/version, valuation/source times, reporting currency, provenance/coverage, assumptions, quality, and warnings.
 16. Deterministic code performs authoritative financial calculations. The model invokes/explains typed tools only.
 17. API, web, MCP, workers, and reports use the same canonical application services and calculation engine.
@@ -218,6 +220,32 @@ Preserve provider-reported versus derived values. PostgreSQL is authoritative. U
 
 Implement full/incremental ingestion with exact typed capabilities, capability-specific pagination, safe overlap, deterministic deduplication, durable checkpoints after atomic success, leases/heartbeats/coalescing, bounded retries/backoff/jitter, account/environment rate coordination, partial aggregate quality, repeated-page/loop/max-bound detection, crash/restart/replay safety, strict schema-drift handling, and a deterministic synthetic/replay provider.
 
+Persist every refresh run and exactly one bounded, non-secret, fixed
+`portfolio.refresh` outbox event in the same PostgreSQL transaction. The API returns the
+durable queued run after commit and does not call Celery for correctness. Add an
+independently scheduled dispatcher that claims with `FOR UPDATE SKIP LOCKED`, leased
+claims and expiry, publishes with a deterministic run-derived task ID, retries with
+bounded backoff and sanitized errors, recovers expired ambiguous claims, and never
+publishes an arbitrary task/payload. The worker must validate event/run/account/request
+metadata before execution. At-least-once delivery, including a crash after broker
+acceptance but before outbox acknowledgement, must retain one logical run and idempotent
+source/canonical/economic/snapshot state. Deployed readiness requires a live dispatcher;
+expose pending count, oldest pending age, attempts/failures, recovered claims, and queued
+runs without a deliverable event.
+
+Bind each account-scoped idempotency key to a canonical requested fingerprint containing
+owner/account, requested mode, normalized requested capabilities, create-snapshot
+behavior, and request-schema version; exclude correlation ID. Store requested semantics
+separately from promoted effective semantics. An identical retry in any lifecycle state
+returns the same run. Different requested semantics on the same account/key fail with
+sanitized `IDEMPOTENCY_KEY_REUSED` and HTTP `409`, publish nothing, and reveal no prior
+request detail. Enforce PostgreSQL/synthetic and concurrent-request parity.
+
+The correction migration sequence is linear through `20260901_0007`: transactional
+outbox/request identity (`0004`), explicit unconfigured credential state (`0005`),
+immutable collection-query snapshots (`0006`), and active external-cash-flow revisions
+(`0007`). Verify empty-to-head, repeated migration, downgrade policy, and ORM drift.
+
 Use synthetic source-controlled fixtures only.
 
 ============================================================
@@ -249,11 +277,30 @@ Use hand-calculated reference fixtures and property-based tests.
 API:
 
 - implement documented `/api/v1` resources/use cases;
+- implement typed authorized `ListBrokerConnections`, `SearchInstruments`,
+  `GetInstrument`, `GetPortfolioSnapshot`, `GetCorePerformanceSummary`,
+  `ListReconciliationDiscrepancies`, and `GetDataQualitySummary` use cases plus typed
+  collection queries in both PostgreSQL and deterministic synthetic services;
 - enforce authorization in routes and application services;
 - serialize decimals as exact strings and datetimes as RFC 3339 UTC;
-- use bounded cursor pagination/filters, stable sanitized errors, correlation IDs;
+- use bounded versioned integrity-protected cursors bound to resource, authorized scope,
+  deterministic sort, filter fingerprint, immutable result membership/read cutoff,
+  last key/tie-breaker, and schema version; reject invalid/mismatched/tampered/expired
+  cursors with stable sanitized 400-class errors;
+- apply search/date/type predicates and deterministic ordering in PostgreSQL before
+  `limit + 1` pagination over the complete eligible dataset; remove offset pagination,
+  pre-pagination collection caps, in-memory collect-then-filter behavior, and confidently
+  incorrect totals;
 - high-level refresh accepts closed enums only and cannot inject provider paths;
 - generate, validate, and compile the TypeScript client from OpenAPI/contracts.
+
+Positions bind to one immutable portfolio snapshot and support market-value, direct-
+weight, and ticker sorts plus bounded ticker/name search. Activity uses
+`(occurred_at DESC, id DESC)` with bound date/type filters and immutable result
+membership/read-cutoff behavior. Dividends use `(paid_on DESC, id DESC)` and full-period
+database aggregation. Orders return latest observations at the bound cutoff. Snapshots
+use `(valuation_at DESC, id DESC)`. Instruments search canonical metadata, include unheld
+listings, and disambiguate canonical instrument from provider/environment listing.
 
 Web:
 
@@ -263,17 +310,28 @@ Web:
 - render loading, empty, stale, partial, estimated, unreconciled, unavailable, and failed states;
 - display source timestamp, calculation method/version, reporting currency, quality, and warnings;
 - perform no authoritative financial arithmetic in the browser;
+- use route-specific typed server loaders for overview, holdings, activity, dividends,
+  snapshots, quality/reconciliation, synchronization, and settings/connections;
+- preserve cursor/filter state in safe URL query state and expose accessible page/load-
+  more navigation for holdings, activity, dividends, snapshots, and discrepancies so
+  browser back/forward works;
+- label overview collections as bounded previews with returned/full counts and links to
+  complete views; request largest holdings using market-value/direct-weight sorting;
 - do not add Phase 2 optimizer/Pie/X-ray or Phase 3 risk/research UI.
 
 MCP/ChatGPT:
 
 - use the current official remote MCP approach verified from primary docs;
 - require authentication outside local test mode;
-- expose only the Phase 1 tool registry documented in the repository;
+- expose exactly the nine-tool Phase 1 registry documented in the repository;
 - invoke canonical application services and return bounded structured outputs with common metadata;
+- perform position search/sort, transaction date/type filtering, dividend full-period
+  aggregation, direct snapshot-by-ID lookup, and data-quality evaluation in dedicated
+  application services before bounding the returned tool payload;
+- mark an incomplete aggregate `partial`; a warning cannot leave it `fresh`;
 - add schema, auth, authorization, negative, bounds, and API-parity tests;
 - expose no arbitrary query/HTTP/SQL/filesystem/shell/broker-path tool;
-- any optional refresh tool accepts a high-level closed enum and can be disabled;
+- do not add a refresh tool to the fixed nine-tool Phase 1 registry;
 - provide a minimal accessible Apps SDK summary resource only if it does not compromise core completion.
 
 Remote ChatGPT registration/domain may remain an explicit external gate. Local MCP server, schemas, inspector/contract tests, and synthetic end-to-end flow must be complete.
@@ -282,7 +340,7 @@ Remote ChatGPT registration/domain may remain an explicit external gate. Local M
 10. SECURITY, PRIVACY, OBSERVABILITY, AND OPERATIONS
 ============================================================
 
-Implement local-only synthetic auth that cannot run in production; a fail-closed production auth adapter boundary; owner/account authorization and cross-account denial tests; secret-provider interface; centralized redaction; canary-secret tests; suitable CSRF/CORS/host/session/token protections; API/MCP request bounds and rate limits; structured logs/metrics/tracing hooks; liveness/readiness; job/provider/reconciliation telemetry without high-cardinality private labels; Dockerfiles/Compose; provider-neutral deployment examples; migration deployment process; backup/restore, incident, and credential-rotation runbooks; dependency/secret/static/container scans; least-privilege workflows; and non-root/minimal containers where practical.
+Implement local-only synthetic auth that cannot run in production; a fail-closed production auth adapter boundary; owner/account authorization and cross-account denial tests; secret-provider interface; centralized redaction; canary-secret tests; suitable CSRF/CORS/host/session/token protections; API/MCP request bounds and rate limits; structured logs/metrics/tracing hooks; liveness/readiness including independent refresh-dispatcher readiness; bounded outbox backlog/age/attempt/failure/recovery/orphan telemetry; job/provider/reconciliation telemetry without high-cardinality private labels; Dockerfiles/Compose; provider-neutral deployment examples; migration deployment process; backup/restore, incident, and credential-rotation runbooks; dependency/secret/static/container scans; least-privilege workflows; and non-root/minimal containers where practical.
 
 Never claim compliance, privacy validation, Demo/Live connectivity, remote deployment, backup restoration, or security completion without exact evidence.
 
@@ -298,11 +356,19 @@ The final local/CI state must pass:
 - property-based domain/financial tests;
 - exact Trading 212 contract and pre-transport negative tests;
 - ingestion restart/pagination/rate-limit/duplicate/partial/schema-drift tests;
+- API commit-before-publication outbox restart, ambiguous broker-accepted duplicate
+  delivery, expired-claim, concurrent dispatcher, bounded publication/consumer failure,
+  semantic idempotency equality/conflict/concurrency, and dispatcher-readiness tests;
 - PostgreSQL repository/integration/migration tests;
 - ledger/reconciliation/snapshot/reference-calculation tests;
 - API/OpenAPI/generated-client/auth/pagination/error tests;
+- more-than-50, more-than-100, and more-than-10,000-row collection reachability; exact
+  filtered totals; cursor scope/filter/sort/tamper/expiry; mutation-stability; unheld
+  instrument; full-period MCP aggregation tests;
 - MCP schema/auth/security/API-parity tests;
 - web component/Playwright/accessibility/responsive tests;
+- desktop/mobile URL cursor, page/load-more, browser-back, inserted-row stability,
+  preview-count/largest-ordering, and horizontal-overflow tests;
 - secret/dependency/static/container scans;
 - documentation/link/JSON/allowlist/progress validation;
 - clean build/container smoke;
@@ -330,10 +396,13 @@ At P1-12 produce a final Phase 1 acceptance report containing:
 - CI links/status at final SHA;
 - runtime/dependency versions and lockfiles;
 - migration head and clean/upgrade test evidence;
+- migration head `20260901_0007`, repeat/upgrade/downgrade-policy/ORM-drift evidence;
 - OpenAPI/generated client/MCP schemas;
 - exact ten-capability GET-only/default-deny proof;
 - reference/property financial test results;
 - API/web/MCP synthetic E2E and parity results;
+- separate scenario 14 evidence for API commit-before-publication recovery, worker restart
+  after confirmed publication, and full-stack retained state;
 - security/redaction/scan results;
 - known limitations and data coverage;
 - explicit external-gate state;

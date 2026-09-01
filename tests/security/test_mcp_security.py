@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from datetime import UTC, datetime
 from pathlib import Path
@@ -43,6 +44,15 @@ class StaticBearerAuthenticator:
 
     accepted_token = "test-valid-oauth-token"
 
+    def __init__(self, scopes: frozenset[Scope] | None = None) -> None:
+        self.scopes = scopes or frozenset(
+            {
+                Scope.PORTFOLIO_READ,
+                Scope.ACTIVITY_READ,
+                Scope.CONFIGURATION_READ,
+            }
+        )
+
     async def authenticate(self, token: str) -> Principal:
         if token != self.accepted_token:
             raise AuthenticationError("invalid bearer credential")
@@ -51,13 +61,7 @@ class StaticBearerAuthenticator:
             owner_id=SyntheticPortfolioService.OWNER_ID,
             issuer="issuer.example",
             subject="test-subject",
-            scopes=frozenset(
-                {
-                    Scope.PORTFOLIO_READ,
-                    Scope.ACTIVITY_READ,
-                    Scope.CONFIGURATION_READ,
-                }
-            ),
+            scopes=self.scopes,
             authenticated_at=datetime(2026, 1, 1, tzinfo=UTC),
             expires_at=datetime(2099, 1, 1, tzinfo=UTC),
         )
@@ -139,7 +143,9 @@ def test_deployed_runtime_requires_explicit_portfolio_store_composition() -> Non
         audience="portfolio-mcp",
         jwt_public_key_reference="vault://jwt-public-key",
         session_signing_key_reference="vault://session-key",
+        cursor_signing_key_reference="vault://cursor-signing-key",
         credential_backend=CredentialBackend.EXTERNAL,
+        outbox_dispatcher_configured=True,
         allowed_origins=("https://portfolio.example.test",),
         allowed_hosts=("portfolio.example.test",),
     )
@@ -233,6 +239,54 @@ def test_shared_oauth_boundary_rejects_invalid_tokens_and_never_echoes_valid_tok
     assert "invalid-oauth-token" not in rendered
     assert SyntheticPortfolioService.ACCOUNT_ID not in caplog.text
     assert SyntheticPortfolioService.OWNER_ID not in caplog.text
+
+
+@pytest.mark.security
+@pytest.mark.parametrize(
+    "scopes",
+    [
+        frozenset({Scope.PORTFOLIO_READ}),
+        frozenset({Scope.ACTIVITY_READ}),
+    ],
+)
+def test_data_quality_tool_metadata_matches_runtime_scope_enforcement(
+    scopes: frozenset[Scope],
+) -> None:
+    authenticator = StaticBearerAuthenticator(scopes)
+    security = SecuritySettings(
+        environment=RuntimeEnvironment.TEST,
+        issuer="https://issuer.example",
+        allowed_hosts=("localhost",),
+    )
+    runtime = create_runtime(
+        security_settings=security,
+        mcp_settings=McpSettings.model_validate({"public_base_url": "https://portfolio.example"}),
+        bearer_authenticator=authenticator,
+    )
+    tools = asyncio.run(runtime.server.list_tools())
+    descriptor = next(tool for tool in tools if tool.name == "get_data_quality_summary")
+
+    with TestClient(runtime.asgi_app(), base_url="http://localhost") as client:
+        response = client.post(
+            "/mcp",
+            headers={
+                **MCP_HEADERS,
+                "Authorization": f"Bearer {authenticator.accepted_token}",
+            },
+            json=_tool_call(tool_name="get_data_quality_summary"),
+        )
+
+    result = response.json()["result"]
+    assert descriptor.meta is not None
+    assert descriptor.meta["securitySchemes"] == [
+        {
+            "type": "oauth2",
+            "scopes": [Scope.PORTFOLIO_READ.value, Scope.ACTIVITY_READ.value],
+        }
+    ]
+    assert response.status_code == 200
+    assert result["isError"] is True
+    assert result["structuredContent"]["error"]["code"] == "ACCESS_DENIED"
 
 
 class ExplodingService(SyntheticPortfolioService):

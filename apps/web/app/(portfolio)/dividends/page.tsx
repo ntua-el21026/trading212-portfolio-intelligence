@@ -2,20 +2,41 @@ import { CircleDollarSign } from "lucide-react";
 
 import { EmptyState, Surface } from "@trading212/ui";
 
+import { CollectionPagination } from "../../../components/collection-pagination";
 import { MetricCard } from "../../../components/financial";
 import { PageHeader } from "../../../components/page-header";
 import { DividendsTable } from "../../../components/portfolio-tables";
 import { MethodologyDetails, QualityBanner } from "../../../components/quality";
+import { loadDividendsPage, readDemoViewState } from "../../../lib/api-adapter";
 import {
-  loadPortfolioBundle,
-  readDemoViewState,
-} from "../../../lib/api-adapter";
+  firstSearchParam,
+  readDateParam,
+  readOpaqueCursor,
+  validateDateRange,
+} from "../../../lib/collection-query";
 
 export default async function DividendsPage({
   searchParams,
-}: Readonly<{ searchParams: Promise<{ state?: string | string[] }> }>) {
-  const bundle = await loadPortfolioBundle(
-    readDemoViewState((await searchParams).state),
+}: Readonly<{
+  searchParams: Promise<{
+    cursor?: string | string[];
+    end_date?: string | string[];
+    start_date?: string | string[];
+    state?: string | string[];
+  }>;
+}>) {
+  const params = await searchParams;
+  const state = readDemoViewState(params.state);
+  const startDate = readDateParam(params.start_date);
+  const endDate = readDateParam(params.end_date);
+  validateDateRange(startDate, endDate);
+  const bundle = await loadDividendsPage(
+    {
+      cursor: readOpaqueCursor(params.cursor),
+      endDate,
+      startDate,
+    },
+    state,
   );
   return (
     <div className="page-stack">
@@ -34,6 +55,24 @@ export default async function DividendsPage({
         <MethodologyDetails metric={bundle.summary.dividends_received} />
       </Surface>
       <Surface>
+        <form className="collection-filters" method="get">
+          <label>
+            <span>From</span>
+            <input defaultValue={startDate} name="start_date" type="date" />
+          </label>
+          <label>
+            <span>To</span>
+            <input defaultValue={endDate} name="end_date" type="date" />
+          </label>
+          {firstSearchParam(params.state) ? (
+            <input
+              name="state"
+              type="hidden"
+              value={firstSearchParam(params.state)}
+            />
+          ) : null}
+          <button type="submit">Apply</button>
+        </form>
         {bundle.dividends.items.length === 0 ? (
           <EmptyState
             description="No dividend records are available for the covered history. Missing history is not presented as zero."
@@ -43,6 +82,17 @@ export default async function DividendsPage({
         ) : (
           <DividendsTable dividends={bundle.dividends.items} />
         )}
+        <CollectionPagination
+          nextCursor={bundle.dividends.next_cursor}
+          pathname="/dividends"
+          preservedQuery={{
+            end_date: endDate,
+            start_date: startDate,
+            state: firstSearchParam(params.state),
+          }}
+          returnedCount={bundle.dividends.items.length}
+          total={bundle.dividends.total}
+        />
       </Surface>
     </div>
   );

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Callable
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
@@ -15,16 +16,22 @@ from trading212_application.ingestion import (
     IngestionCapability,
     IngestionCoordinator,
     IngestionFailure,
+    IngestionRun,
     InMemoryIngestionStore,
     InMemoryRateCoordinator,
     RateObservation,
     RefreshScope,
+    RunLease,
     RunMode,
     RunStatus,
     SourcePage,
     SourceRecord,
     capabilities_for_scope,
     validate_refresh_capabilities,
+)
+from trading212_application.refresh_semantics import (
+    RefreshIdempotencyConflictError,
+    RefreshRequestSemantics,
 )
 
 NOW = datetime(2026, 8, 31, 12, 0, tzinfo=UTC)
@@ -106,6 +113,30 @@ def _coordinator(
             max_pages_per_capability=max_pages,
         ),
         selected_store,
+    )
+
+
+async def _begin_memory_run(
+    store: InMemoryIngestionStore,
+    *,
+    owner_id: str = "owner-1",
+    account_id: str = "account-1",
+    mode: RunMode = RunMode.FULL,
+    capabilities: tuple[IngestionCapability, ...] = (IngestionCapability.ACCOUNT,),
+    idempotency_key: str = "semantic-refresh",
+    correlation_id: str = "semantic-refresh-correlation",
+    now: datetime = NOW,
+    lease_duration: timedelta = timedelta(minutes=5),
+) -> tuple[IngestionRun, RunLease | None]:
+    return await store.begin_run(
+        owner_id=owner_id,
+        account_id=account_id,
+        mode=mode,
+        capabilities=capabilities,
+        idempotency_key=idempotency_key,
+        correlation_id=correlation_id,
+        now=now,
+        lease_duration=lease_duration,
     )
 
 
@@ -408,6 +439,301 @@ async def test_concurrent_identical_refreshes_coalesce() -> None:
     completed = await first_task
     assert completed.id == coalesced.id
     assert completed.status is RunStatus.SUCCEEDED
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("owner_id", "mode", "capabilities"),
+    [
+        ("owner-2", RunMode.FULL, (IngestionCapability.ACCOUNT,)),
+        ("owner-1", RunMode.INCREMENTAL, (IngestionCapability.ACCOUNT,)),
+        ("owner-1", RunMode.FULL, (IngestionCapability.POSITIONS,)),
+    ],
+)
+async def test_active_idempotency_key_rejects_mismatched_requested_semantics(
+    owner_id: str,
+    mode: RunMode,
+    capabilities: tuple[IngestionCapability, ...],
+) -> None:
+    store = InMemoryIngestionStore()
+    first, first_lease = await _begin_memory_run(store)
+    expected = RefreshRequestSemantics.create(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        capabilities=(IngestionCapability.ACCOUNT,),
+    )
+
+    with pytest.raises(RefreshIdempotencyConflictError):
+        await _begin_memory_run(
+            store,
+            owner_id=owner_id,
+            mode=mode,
+            capabilities=capabilities,
+        )
+
+    coalesced, retry_lease = await _begin_memory_run(store)
+    assert first_lease is not None
+    assert coalesced.id == first.id
+    assert retry_lease is None
+    assert len(store.runs) == 1
+    assert store._idempotency[("account-1", "semantic-refresh")] == (
+        first.id,
+        expected.fingerprint,
+    )
+
+
+@pytest.mark.asyncio
+async def test_terminal_identical_retry_returns_same_logical_run_without_provider_read() -> None:
+    capability = IngestionCapability.ACCOUNT
+    provider = ScriptedProvider(
+        {capability: lambda _: SourcePage((_record("account"),), None, True)}
+    )
+    coordinator, store = _coordinator(provider)
+
+    first = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="terminal-semantic-refresh",
+        capabilities=(capability,),
+    )
+    retry = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="terminal-semantic-refresh",
+        capabilities=(capability,),
+        correlation_id="terminal-retry-correlation",
+    )
+
+    assert retry == first
+    assert len(store.runs) == 1
+    assert len(provider.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_terminal_idempotency_key_rejects_mismatch_without_mutation() -> None:
+    capability = IngestionCapability.ACCOUNT
+    provider = ScriptedProvider(
+        {capability: lambda _: SourcePage((_record("account"),), None, True)}
+    )
+    coordinator, store = _coordinator(provider)
+    first = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="terminal-conflict",
+        capabilities=(capability,),
+    )
+
+    with pytest.raises(RefreshIdempotencyConflictError):
+        await coordinator.refresh(
+            owner_id="owner-1",
+            account_id="account-1",
+            mode=RunMode.INCREMENTAL,
+            idempotency_key="terminal-conflict",
+            capabilities=(capability,),
+        )
+
+    assert store.runs == {first.id: first}
+    assert len(provider.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_same_textual_idempotency_key_is_isolated_by_account() -> None:
+    capability = IngestionCapability.ACCOUNT
+    provider = ScriptedProvider(
+        {capability: lambda _: SourcePage((_record("account"),), None, True)}
+    )
+    coordinator, store = _coordinator(provider)
+
+    first = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="shared-textual-key",
+        capabilities=(capability,),
+    )
+    second = await coordinator.refresh(
+        owner_id="owner-1",
+        account_id="account-2",
+        mode=RunMode.FULL,
+        idempotency_key="shared-textual-key",
+        capabilities=(capability,),
+    )
+
+    assert first.id != second.id
+    assert len(store.runs) == 2
+    assert len(provider.calls) == 2
+
+
+@pytest.mark.asyncio
+async def test_concurrent_mismatched_refresh_conflicts_without_second_run() -> None:
+    capability = IngestionCapability.ACCOUNT
+    entered = asyncio.Event()
+    release = asyncio.Event()
+
+    class BlockingProvider(ScriptedProvider):
+        async def read_page(self, **kwargs: object) -> SourcePage:
+            del kwargs
+            entered.set()
+            await release.wait()
+            return SourcePage((_record("account"),), None, True)
+
+    provider = BlockingProvider({})
+    coordinator, store = _coordinator(provider)
+    first_task = asyncio.create_task(
+        coordinator.refresh(
+            owner_id="owner-1",
+            account_id="account-1",
+            mode=RunMode.FULL,
+            idempotency_key="concurrent-semantic-conflict",
+            capabilities=(capability,),
+        )
+    )
+    await entered.wait()
+    try:
+        with pytest.raises(RefreshIdempotencyConflictError):
+            await coordinator.refresh(
+                owner_id="owner-1",
+                account_id="account-1",
+                mode=RunMode.INCREMENTAL,
+                idempotency_key="concurrent-semantic-conflict",
+                capabilities=(capability,),
+            )
+    finally:
+        release.set()
+
+    completed = await first_task
+    assert completed.status is RunStatus.SUCCEEDED
+    assert len(store.runs) == 1
+
+
+@pytest.mark.asyncio
+async def test_expired_lease_takeover_retains_logical_run_and_terminal_binding() -> None:
+    store = InMemoryIngestionStore()
+    first, first_lease = await _begin_memory_run(
+        store,
+        lease_duration=timedelta(seconds=5),
+    )
+    before_expiry, before_expiry_lease = await _begin_memory_run(
+        store,
+        now=NOW + timedelta(seconds=4),
+        lease_duration=timedelta(seconds=5),
+    )
+    takeover, takeover_lease = await _begin_memory_run(
+        store,
+        correlation_id="takeover-correlation",
+        now=NOW + timedelta(seconds=6),
+        lease_duration=timedelta(seconds=5),
+    )
+
+    assert first_lease is not None
+    assert before_expiry.id == first.id
+    assert before_expiry_lease is None
+    assert takeover.id == first.id
+    assert takeover_lease is not None
+    assert takeover_lease.token != first_lease.token
+    assert len(store.runs) == 1
+    with pytest.raises(IngestionFailure, match="lease"):
+        await store.heartbeat(
+            run_id=first.id,
+            lease_token=first_lease.token,
+            now=NOW + timedelta(seconds=7),
+        )
+
+    finished = await store.finish_run(
+        run_id=takeover.id,
+        status=RunStatus.SUCCEEDED,
+        steps=(),
+        lease_token=takeover_lease.token,
+        now=NOW + timedelta(seconds=7),
+    )
+    terminal_retry, terminal_lease = await _begin_memory_run(
+        store,
+        now=NOW + timedelta(seconds=8),
+    )
+    assert terminal_retry == finished
+    assert terminal_lease is None
+
+
+@pytest.mark.asyncio
+async def test_requested_fingerprint_is_not_rebuilt_from_promoted_execution_mode() -> None:
+    store = InMemoryIngestionStore()
+    requested, lease = await _begin_memory_run(store, mode=RunMode.INCREMENTAL)
+    assert lease is not None
+    store.runs[requested.id] = replace(requested, mode=RunMode.FULL)
+
+    same_request, same_request_lease = await _begin_memory_run(
+        store,
+        mode=RunMode.INCREMENTAL,
+    )
+    assert same_request.id == requested.id
+    assert same_request.mode is RunMode.FULL
+    assert same_request_lease is None
+    with pytest.raises(RefreshIdempotencyConflictError):
+        await _begin_memory_run(store, mode=RunMode.FULL)
+
+
+@pytest.mark.asyncio
+async def test_long_rate_and_provider_waits_renew_the_fenced_run_lease() -> None:
+    capability = IngestionCapability.ACCOUNT
+    stage = {"current": "idle"}
+
+    class CountingStore(InMemoryIngestionStore):
+        def __init__(self) -> None:
+            super().__init__()
+            self.renewals = {"rate": 0, "provider": 0}
+
+        async def heartbeat(self, *, run_id: str, lease_token: str, now: datetime) -> None:
+            current = stage["current"]
+            if current in self.renewals:
+                self.renewals[current] += 1
+            await super().heartbeat(run_id=run_id, lease_token=lease_token, now=now)
+
+    class SlowRateCoordinator:
+        async def before_read(self, *, account_id: str, capability: IngestionCapability) -> None:
+            del account_id, capability
+            stage["current"] = "rate"
+            await asyncio.sleep(0.7)
+            stage["current"] = "idle"
+
+        async def observe(
+            self,
+            *,
+            account_id: str,
+            capability: IngestionCapability,
+            observation: RateObservation | None,
+        ) -> None:
+            del account_id, capability, observation
+
+    class SlowProvider(ScriptedProvider):
+        async def read_page(self, **kwargs: object) -> SourcePage:
+            del kwargs
+            stage["current"] = "provider"
+            await asyncio.sleep(0.7)
+            stage["current"] = "idle"
+            return SourcePage((_record("slow-account"),), None, True)
+
+    store = CountingStore()
+    run = await IngestionCoordinator(
+        provider=SlowProvider({}),
+        store=store,
+        rate_coordinator=SlowRateCoordinator(),
+        clock=lambda: datetime.now(UTC),
+        lease_duration=timedelta(milliseconds=300),
+    ).refresh(
+        owner_id="owner-1",
+        account_id="account-1",
+        mode=RunMode.FULL,
+        idempotency_key="slow-provider-lease-renewal",
+        capabilities=(capability,),
+    )
+
+    assert run.status is RunStatus.SUCCEEDED
+    assert store.renewals["rate"] >= 3
+    assert store.renewals["provider"] >= 3
 
 
 @pytest.mark.asyncio

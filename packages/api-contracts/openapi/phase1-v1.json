@@ -176,6 +176,23 @@
         "title": "ActivityResponse",
         "type": "object"
       },
+      "ActivityTypeFilter": {
+        "enum": [
+          "all",
+          "buy",
+          "sell",
+          "deposit",
+          "withdrawal",
+          "dividend",
+          "interest",
+          "fee",
+          "tax",
+          "fx_conversion",
+          "unknown"
+        ],
+        "title": "ActivityTypeFilter",
+        "type": "string"
+      },
       "AllocationResponse": {
         "additionalProperties": false,
         "properties": {
@@ -241,6 +258,18 @@
             "title": "Id",
             "type": "string"
           },
+          "last_successful_refresh_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Successful Refresh At"
+          },
           "provider": {
             "title": "Provider",
             "type": "string"
@@ -250,6 +279,10 @@
             "default": true,
             "title": "Read Only",
             "type": "boolean"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
           },
           "status": {
             "title": "Status",
@@ -261,9 +294,239 @@
           "provider",
           "environment",
           "status",
-          "credential_state"
+          "state",
+          "credential_state",
+          "last_successful_refresh_at"
         ],
         "title": "BrokerConnectionResponse",
+        "type": "object"
+      },
+      "CapabilityQualityResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "capability": {
+            "title": "Capability",
+            "type": "string"
+          },
+          "data_quality": {
+            "$ref": "#/components/schemas/QualityResponse"
+          }
+        },
+        "required": [
+          "capability",
+          "data_quality"
+        ],
+        "title": "CapabilityQualityResponse",
+        "type": "object"
+      },
+      "CheckpointQualityResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "capability": {
+            "title": "Capability",
+            "type": "string"
+          },
+          "coverage_complete": {
+            "title": "Coverage Complete",
+            "type": "boolean"
+          },
+          "coverage_end_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage End At"
+          },
+          "coverage_start_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Start At"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "capability",
+          "version",
+          "coverage_start_at",
+          "coverage_end_at",
+          "coverage_complete"
+        ],
+        "title": "CheckpointQualityResponse",
+        "type": "object"
+      },
+      "DataQualitySummaryResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "as_of": {
+            "format": "date-time",
+            "title": "As Of",
+            "type": "string"
+          },
+          "capabilities": {
+            "items": {
+              "$ref": "#/components/schemas/CapabilityQualityResponse"
+            },
+            "title": "Capabilities",
+            "type": "array"
+          },
+          "checkpoints": {
+            "items": {
+              "$ref": "#/components/schemas/CheckpointQualityResponse"
+            },
+            "title": "Checkpoints",
+            "type": "array"
+          },
+          "data_quality": {
+            "$ref": "#/components/schemas/QualityResponse"
+          },
+          "failed_or_partial_runs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Failed Or Partial Runs",
+            "type": "array"
+          },
+          "latest_refresh_run": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RefreshRunQualityResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latest_runs_by_status": {
+            "items": {
+              "$ref": "#/components/schemas/RefreshRunQualityResponse"
+            },
+            "title": "Latest Runs By Status",
+            "type": "array"
+          },
+          "latest_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Snapshot Id"
+          },
+          "latest_snapshot_source_cutoff_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Snapshot Source Cutoff At"
+          },
+          "materialization_state": {
+            "enum": [
+              "available",
+              "partial",
+              "missing"
+            ],
+            "title": "Materialization State",
+            "type": "string"
+          },
+          "missing_fx_record_count": {
+            "title": "Missing Fx Record Count",
+            "type": "integer"
+          },
+          "read_only": {
+            "const": true,
+            "default": true,
+            "title": "Read Only",
+            "type": "boolean"
+          },
+          "reconciliation_status": {
+            "title": "Reconciliation Status",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "unknown_mapping_record_count": {
+            "title": "Unknown Mapping Record Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "as_of",
+          "reporting_currency",
+          "data_quality",
+          "capabilities",
+          "failed_or_partial_runs",
+          "latest_refresh_run",
+          "latest_runs_by_status",
+          "checkpoints",
+          "latest_snapshot_id",
+          "latest_snapshot_source_cutoff_at",
+          "materialization_state",
+          "reconciliation_status",
+          "missing_fx_record_count",
+          "unknown_mapping_record_count"
+        ],
+        "title": "DataQualitySummaryResponse",
+        "type": "object"
+      },
+      "DirectAllocationResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AllocationResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "returned_count": {
+            "title": "Returned Count",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "truncated": {
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "items",
+          "returned_count",
+          "total",
+          "limit",
+          "truncated"
+        ],
+        "title": "DirectAllocationResponse",
         "type": "object"
       },
       "DividendResponse": {
@@ -336,16 +599,73 @@
       "InstrumentResponse": {
         "additionalProperties": false,
         "properties": {
+          "canonical_name": {
+            "title": "Canonical Name",
+            "type": "string"
+          },
+          "environment": {
+            "title": "Environment",
+            "type": "string"
+          },
+          "exchange_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange Id"
+          },
+          "exchange_mic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange Mic"
+          },
           "id": {
             "title": "Id",
+            "type": "string"
+          },
+          "instrument_id": {
+            "title": "Instrument Id",
             "type": "string"
           },
           "instrument_type": {
             "title": "Instrument Type",
             "type": "string"
           },
+          "isin": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isin"
+          },
+          "listing_id": {
+            "title": "Listing Id",
+            "type": "string"
+          },
+          "listing_status": {
+            "title": "Listing Status",
+            "type": "string"
+          },
           "name": {
             "title": "Name",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
             "type": "string"
           },
           "ticker": {
@@ -359,10 +679,19 @@
         },
         "required": [
           "id",
+          "instrument_id",
+          "listing_id",
           "ticker",
           "name",
+          "canonical_name",
           "instrument_type",
-          "trading_currency"
+          "isin",
+          "exchange_mic",
+          "exchange_id",
+          "trading_currency",
+          "provider",
+          "environment",
+          "listing_status"
         ],
         "title": "InstrumentResponse",
         "type": "object"
@@ -743,6 +1072,45 @@
         "title": "PageResponse[PositionResponse]",
         "type": "object"
       },
+      "PageResponse_ReconciliationIssueResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReconciliationIssueResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "PageResponse[ReconciliationIssueResponse]",
+        "type": "object"
+      },
       "PageResponse_SnapshotResponse_": {
         "additionalProperties": false,
         "properties": {
@@ -907,6 +1275,15 @@
         ],
         "title": "PositionResponse",
         "type": "object"
+      },
+      "PositionSort": {
+        "enum": [
+          "market_value_desc",
+          "ticker_asc",
+          "weight_desc"
+        ],
+        "title": "PositionSort",
+        "type": "string"
       },
       "PrincipalResponse": {
         "additionalProperties": false,
@@ -1090,6 +1467,10 @@
           "data_quality": {
             "$ref": "#/components/schemas/QualityResponse"
           },
+          "discrepancy_count": {
+            "title": "Discrepancy Count",
+            "type": "integer"
+          },
           "evaluated_at": {
             "format": "date-time",
             "title": "Evaluated At",
@@ -1117,6 +1498,7 @@
           "algorithm_version",
           "tolerance_version",
           "issues",
+          "discrepancy_count",
           "data_quality"
         ],
         "title": "ReconciliationResponse",
@@ -1152,6 +1534,52 @@
           }
         },
         "title": "RefreshRequest",
+        "type": "object"
+      },
+      "RefreshRunQualityResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/RefreshStepQualityResponse"
+            },
+            "title": "Steps",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "started_at",
+          "completed_at",
+          "steps"
+        ],
+        "title": "RefreshRunQualityResponse",
         "type": "object"
       },
       "RefreshRunResponse": {
@@ -1218,9 +1646,55 @@
         "title": "RefreshRunResponse",
         "type": "object"
       },
+      "RefreshStepQualityResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "capability": {
+            "title": "Capability",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "capability",
+          "status",
+          "warnings"
+        ],
+        "title": "RefreshStepQualityResponse",
+        "type": "object"
+      },
       "ReturnMetricResponse": {
         "additionalProperties": false,
         "properties": {
+          "annualized_value": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annualized Value"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Assumptions",
+            "type": "array"
+          },
           "availability": {
             "title": "Availability",
             "type": "string"
@@ -1229,8 +1703,62 @@
             "title": "Calculation Version",
             "type": "string"
           },
+          "converged": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Converged"
+          },
+          "iterations": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Iterations"
+          },
+          "method_id": {
+            "title": "Method Id",
+            "type": "string"
+          },
           "methodology": {
             "title": "Methodology",
+            "type": "string"
+          },
+          "missing_inputs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Inputs",
+            "type": "array"
+          },
+          "period_end": {
+            "format": "date-time",
+            "title": "Period End",
+            "type": "string"
+          },
+          "period_start": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Period Start"
+          },
+          "quality_state": {
+            "title": "Quality State",
             "type": "string"
           },
           "unavailable_reason": {
@@ -1255,13 +1783,35 @@
               }
             ],
             "title": "Value"
+          },
+          "value_kind": {
+            "title": "Value Kind",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
           }
         },
         "required": [
+          "method_id",
+          "value_kind",
+          "period_start",
+          "period_end",
           "value",
+          "annualized_value",
           "availability",
           "calculation_version",
           "methodology",
+          "converged",
+          "iterations",
+          "missing_inputs",
+          "assumptions",
+          "warnings",
+          "quality_state",
           "unavailable_reason"
         ],
         "title": "ReturnMetricResponse",
@@ -1302,6 +1852,69 @@
           "data_quality"
         ],
         "title": "SnapshotComparisonResponse",
+        "type": "object"
+      },
+      "SnapshotDetailResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "cash_value": {
+            "$ref": "#/components/schemas/MetricResponse"
+          },
+          "data_quality": {
+            "$ref": "#/components/schemas/QualityResponse"
+          },
+          "dividends_received": {
+            "$ref": "#/components/schemas/MetricResponse"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "invested_value": {
+            "$ref": "#/components/schemas/MetricResponse"
+          },
+          "net_contributions": {
+            "$ref": "#/components/schemas/MetricResponse"
+          },
+          "realized_profit_loss": {
+            "$ref": "#/components/schemas/MetricResponse"
+          },
+          "reporting_currency": {
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "total_value": {
+            "$ref": "#/components/schemas/MetricResponse"
+          },
+          "unrealized_profit_loss": {
+            "$ref": "#/components/schemas/MetricResponse"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "valuation_at",
+          "source_cutoff_at",
+          "reporting_currency",
+          "total_value",
+          "cash_value",
+          "invested_value",
+          "net_contributions",
+          "data_quality",
+          "dividends_received",
+          "realized_profit_loss",
+          "unrealized_profit_loss"
+        ],
+        "title": "SnapshotDetailResponse",
         "type": "object"
       },
       "SnapshotResponse": {
@@ -1513,6 +2126,18 @@
               "title": "Account Id",
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
           }
         ],
         "responses": {
@@ -1520,11 +2145,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/AllocationResponse"
-                  },
-                  "title": "Response Allocation Api V1 Accounts  Account Id  Allocation Get",
-                  "type": "array"
+                  "$ref": "#/components/schemas/DirectAllocationResponse"
                 }
               }
             },
@@ -1574,7 +2195,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/QualityResponse"
+                  "$ref": "#/components/schemas/DataQualitySummaryResponse"
                 }
               }
             },
@@ -1625,6 +2246,8 @@
             "schema": {
               "anyOf": [
                 {
+                  "maxLength": 2048,
+                  "pattern": "^[A-Za-z0-9_-]+$",
                   "type": "string"
                 },
                 {
@@ -1644,6 +2267,40 @@
               "minimum": 1,
               "title": "Limit",
               "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Date"
             }
           }
         ],
@@ -1703,6 +2360,8 @@
             "schema": {
               "anyOf": [
                 {
+                  "maxLength": 2048,
+                  "pattern": "^[A-Za-z0-9_-]+$",
                   "type": "string"
                 },
                 {
@@ -1831,6 +2490,8 @@
             "schema": {
               "anyOf": [
                 {
+                  "maxLength": 2048,
+                  "pattern": "^[A-Za-z0-9_-]+$",
                   "type": "string"
                 },
                 {
@@ -1850,6 +2511,33 @@
               "minimum": 1,
               "title": "Limit",
               "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/PositionSort",
+              "default": "market_value_desc"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
             }
           }
         ],
@@ -2010,6 +2698,36 @@
               "title": "Account Id",
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
           }
         ],
         "responses": {
@@ -2017,11 +2735,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/ReconciliationIssueResponse"
-                  },
-                  "title": "Response Discrepancies Api V1 Accounts  Account Id  Reconciliation Discrepancies Get",
-                  "type": "array"
+                  "$ref": "#/components/schemas/PageResponse_ReconciliationIssueResponse_"
                 }
               }
             },
@@ -2175,6 +2889,8 @@
             "schema": {
               "anyOf": [
                 {
+                  "maxLength": 2048,
+                  "pattern": "^[A-Za-z0-9_-]+$",
                   "type": "string"
                 },
                 {
@@ -2324,7 +3040,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SnapshotResponse"
+                  "$ref": "#/components/schemas/SnapshotDetailResponse"
                 }
               }
             },
@@ -2350,6 +3066,65 @@
           }
         ],
         "summary": "Latest Snapshot",
+        "tags": [
+          "snapshots"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/snapshots/{snapshot_id}": {
+      "get": {
+        "operationId": "snapshot_api_v1_accounts__account_id__snapshots__snapshot_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotDetailResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Snapshot",
         "tags": [
           "snapshots"
         ]
@@ -2425,6 +3200,8 @@
             "schema": {
               "anyOf": [
                 {
+                  "maxLength": 2048,
+                  "pattern": "^[A-Za-z0-9_-]+$",
                   "type": "string"
                 },
                 {
@@ -2444,6 +3221,49 @@
               "minimum": 1,
               "title": "Limit",
               "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "activity_type",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ActivityTypeFilter",
+              "default": "all"
             }
           }
         ],
@@ -2629,6 +3449,8 @@
             "schema": {
               "anyOf": [
                 {
+                  "maxLength": 2048,
+                  "pattern": "^[A-Za-z0-9_-]+$",
                   "type": "string"
                 },
                 {

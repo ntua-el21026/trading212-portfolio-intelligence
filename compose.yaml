@@ -73,8 +73,8 @@ services:
       dockerfile: infrastructure/docker/api.Dockerfile
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-portfolio}:${POSTGRES_PASSWORD:-portfolio}@postgres:5432/${POSTGRES_DB:-portfolio}
-      CELERY_BROKER_URL: redis://redis:6379/0
       T212PI_ENVIRONMENT: local
+      T212PI_OUTBOX_DISPATCHER_CONFIGURED: "true"
       T212PI_LOCAL_SYNTHETIC_AUTH_ENABLED: "true"
       T212PI_COOKIE_SECURE: "false"
       T212PI_ALLOWED_ORIGINS: '["http://localhost:${WEB_PORT:-3000}"]'
@@ -84,8 +84,6 @@ services:
     depends_on:
       seed:
         condition: service_completed_successfully
-      redis:
-        condition: service_healthy
     restart: unless-stopped
     read_only: true
     tmpfs:
@@ -112,6 +110,52 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  dispatcher:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/worker.Dockerfile
+    command: ["python", "-m", "trading212_worker.outbox_dispatcher"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-portfolio}:${POSTGRES_PASSWORD:-portfolio}@postgres:5432/${POSTGRES_DB:-portfolio}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      T212PI_OUTBOX_DISPATCHER_ID: local-compose-dispatcher
+      T212PI_OUTBOX_POLL_SECONDS: "1"
+      T212PI_OUTBOX_BATCH_SIZE: "20"
+      T212PI_OUTBOX_CLAIM_TIMEOUT_SECONDS: "30"
+      T212PI_OUTBOX_MAX_ATTEMPTS: "8"
+      T212PI_OUTBOX_BACKOFF_BASE_SECONDS: "1"
+      T212PI_OUTBOX_BACKOFF_MAX_SECONDS: "60"
+      T212PI_OUTBOX_METRICS_HOST: 0.0.0.0
+      T212PI_OUTBOX_METRICS_PORT: "9464"
+    expose:
+      - "9464"
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-m",
+          "trading212_worker.outbox_dispatcher",
+          "--healthcheck",
+        ]
+      interval: 10s
+      timeout: 8s
+      retries: 3
+      start_period: 10s
     restart: unless-stopped
     read_only: true
     tmpfs:

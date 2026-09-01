@@ -1,0 +1,492 @@
+"""Durable immutable identity sets for stable mutable-collection traversal."""
+
+from __future__ import annotations
+
+import hashlib
+import re
+from collections.abc import Callable, Iterable
+from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
+from enum import StrEnum
+from itertools import islice
+from typing import cast
+from uuid import UUID, uuid4
+
+from sqlalchemy import delete, func, insert, select
+from sqlalchemy.orm import Session
+from trading212_application.queries import (
+    CollectionSnapshotCapacityError,
+    CursorCodec,
+    CursorValidationError,
+    cursor_binding,
+)
+
+from .models import (
+    BrokerAccountModel,
+    BrokerConnectionModel,
+    CollectionQuerySnapshotMemberModel,
+    CollectionQuerySnapshotModel,
+    OwnerModel,
+    PortfolioSnapshotModel,
+)
+
+COLLECTION_SNAPSHOT_SCHEMA_VERSION = 1
+DEFAULT_MAX_ACTIVE_COLLECTION_SNAPSHOTS_PER_OWNER = 64
+DEFAULT_MAX_ACTIVE_COLLECTION_MEMBERS_PER_OWNER = 250_000
+_FILTER_FINGERPRINT = re.compile(r"^[0-9a-f]{64}$")
+_INSERT_BATCH_SIZE = 1_000
+
+
+class CollectionSnapshotResource(StrEnum):
+    ACTIVITY = "activity"
+    DIVIDENDS = "dividends"
+    INSTRUMENTS = "instruments"
+    POSITIONS_MARKET_VALUE = "positions_market_value"
+    POSITIONS_WEIGHT = "positions_weight"
+    POSITIONS_TICKER = "positions_ticker"
+
+
+_SORT_SPECIFICATIONS = {
+    CollectionSnapshotResource.ACTIVITY: "occurred_at_desc_id_desc",
+    CollectionSnapshotResource.DIVIDENDS: "paid_on_desc_id_desc",
+    CollectionSnapshotResource.INSTRUMENTS: (
+        "provider_asc_environment_asc_ticker_asc_name_asc_listing_id_asc"
+    ),
+    CollectionSnapshotResource.POSITIONS_MARKET_VALUE: (
+        "market_value_desc_ticker_asc_listing_id_asc"
+    ),
+    CollectionSnapshotResource.POSITIONS_WEIGHT: ("direct_weight_desc_ticker_asc_listing_id_asc"),
+    CollectionSnapshotResource.POSITIONS_TICKER: "ticker_asc_listing_id_asc",
+}
+_ACCOUNT_RESOURCES = frozenset(
+    {
+        CollectionSnapshotResource.ACTIVITY,
+        CollectionSnapshotResource.DIVIDENDS,
+        CollectionSnapshotResource.POSITIONS_MARKET_VALUE,
+        CollectionSnapshotResource.POSITIONS_WEIGHT,
+        CollectionSnapshotResource.POSITIONS_TICKER,
+    }
+)
+_POSITION_RESOURCES = frozenset(
+    {
+        CollectionSnapshotResource.POSITIONS_MARKET_VALUE,
+        CollectionSnapshotResource.POSITIONS_WEIGHT,
+        CollectionSnapshotResource.POSITIONS_TICKER,
+    }
+)
+
+
+class CollectionSnapshotScopeError(ValueError):
+    """The requested owner/account scope is unavailable or structurally invalid."""
+
+
+@dataclass(frozen=True, slots=True)
+class CollectionSnapshotDefinition:
+    resource: CollectionSnapshotResource
+    owner_id: UUID
+    broker_account_id: UUID | None
+    filter_fingerprint: str
+    source_snapshot_id: UUID | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.resource, CollectionSnapshotResource):
+            raise ValueError("unsupported collection snapshot resource")
+        if not isinstance(self.owner_id, UUID):
+            raise ValueError("owner_id must be a UUID")
+        if self.broker_account_id is not None and not isinstance(self.broker_account_id, UUID):
+            raise ValueError("broker_account_id must be a UUID")
+        requires_account = self.resource in _ACCOUNT_RESOURCES
+        if requires_account != (self.broker_account_id is not None):
+            raise ValueError("collection snapshot account scope does not match resource")
+        if _FILTER_FINGERPRINT.fullmatch(self.filter_fingerprint) is None:
+            raise ValueError("filter_fingerprint must be a lowercase SHA-256 digest")
+        if self.source_snapshot_id is not None and self.resource not in _POSITION_RESOURCES:
+            raise ValueError("only position collection snapshots may bind a portfolio snapshot")
+        if self.source_snapshot_id is not None and not isinstance(self.source_snapshot_id, UUID):
+            raise ValueError("source_snapshot_id must be a UUID")
+
+    @property
+    def sort_specification(self) -> str:
+        return _SORT_SPECIFICATIONS[self.resource]
+
+
+@dataclass(frozen=True, slots=True)
+class CollectionSnapshot:
+    id: UUID
+    definition: CollectionSnapshotDefinition
+    exact_total: int
+    created_at: datetime
+    expires_at: datetime
+
+
+@dataclass(frozen=True, slots=True)
+class CollectionSnapshotPage:
+    snapshot_id: UUID
+    record_ids: tuple[UUID, ...]
+    next_cursor: str | None
+    limit: int
+    exact_total: int
+    expires_at: datetime
+    source_snapshot_id: UUID | None
+
+
+def collection_filter_fingerprint(*parts: object) -> str:
+    """Hash normalized filter inputs without persisting their plaintext values."""
+
+    return hashlib.sha256(cursor_binding(*parts).encode("utf-8")).hexdigest()
+
+
+class CollectionSnapshotStore:
+    """Materialize and page a fixed, scope-bound ordered record identity set.
+
+    The caller owns the surrounding transaction. Creating the snapshot row and
+    all member rows is therefore atomic with respect to the first response.
+    """
+
+    def __init__(
+        self,
+        session: Session,
+        cursor_codec: CursorCodec,
+        *,
+        ttl_seconds: int = 3_600,
+        cleanup_batch_size: int = 100,
+        max_active_snapshots_per_owner: int = (DEFAULT_MAX_ACTIVE_COLLECTION_SNAPSHOTS_PER_OWNER),
+        max_active_members_per_owner: int = DEFAULT_MAX_ACTIVE_COLLECTION_MEMBERS_PER_OWNER,
+    ) -> None:
+        if isinstance(ttl_seconds, bool) or not 60 <= ttl_seconds <= 86_400:
+            raise ValueError("snapshot TTL must be between 60 and 86400 seconds")
+        if isinstance(cleanup_batch_size, bool) or not 1 <= cleanup_batch_size <= 1_000:
+            raise ValueError("cleanup batch size must be between 1 and 1000")
+        if (
+            isinstance(max_active_snapshots_per_owner, bool)
+            or not 1 <= max_active_snapshots_per_owner <= 10_000
+        ):
+            raise ValueError("active snapshot quota must be between 1 and 10000")
+        if (
+            isinstance(max_active_members_per_owner, bool)
+            or not 1 <= max_active_members_per_owner <= 100_000_000
+        ):
+            raise ValueError("active member quota must be between 1 and 100000000")
+        self._session = session
+        self._cursors = cursor_codec
+        self._ttl = timedelta(seconds=ttl_seconds)
+        self._cleanup_batch_size = cleanup_batch_size
+        self._max_active_snapshots = max_active_snapshots_per_owner
+        self._max_active_members = max_active_members_per_owner
+
+    def materialize(
+        self,
+        definition: CollectionSnapshotDefinition,
+        ordered_record_ids: Iterable[UUID] | Callable[[], Iterable[UUID]],
+        *,
+        limit: int,
+    ) -> CollectionSnapshotPage:
+        """Persist one immutable ordered membership set and return its first page."""
+
+        page_limit = _page_limit(limit)
+        self._require_materialization_scope(definition)
+        _acquire_owner_capacity_lock(self._session, definition.owner_id)
+        self.cleanup_expired()
+        created_at = _database_now(self._session)
+        active_snapshot_count, active_member_count = self._active_capacity(
+            definition.owner_id,
+            now=created_at,
+        )
+        if (
+            active_snapshot_count >= self._max_active_snapshots
+            or active_member_count >= self._max_active_members
+        ):
+            raise CollectionSnapshotCapacityError()
+        allow_first_oversized_snapshot = active_snapshot_count == 0
+        available_member_capacity = self._max_active_members - active_member_count
+        snapshot = CollectionQuerySnapshotModel(
+            id=uuid4(),
+            schema_version=COLLECTION_SNAPSHOT_SCHEMA_VERSION,
+            resource=definition.resource.value,
+            owner_id=definition.owner_id,
+            broker_account_id=definition.broker_account_id,
+            source_snapshot_id=definition.source_snapshot_id,
+            sort_specification=definition.sort_specification,
+            filter_fingerprint=definition.filter_fingerprint,
+            # The row and members are uncommitted while the streaming result is
+            # consumed. exact_total is sealed before the surrounding transaction
+            # can expose the snapshot.
+            exact_total=0,
+            created_at=created_at,
+            expires_at=created_at + self._ttl,
+        )
+        self._session.add(snapshot)
+        self._session.flush()
+        source = ordered_record_ids() if callable(ordered_record_ids) else ordered_record_ids
+        iterator = iter(source)
+        exact_total = 0
+        while True:
+            batch_size = _INSERT_BATCH_SIZE
+            if not allow_first_oversized_snapshot:
+                batch_size = min(
+                    batch_size,
+                    available_member_capacity - exact_total + 1,
+                )
+            batch = tuple(islice(iterator, batch_size))
+            if not batch:
+                break
+            if any(not isinstance(record_id, UUID) for record_id in batch):
+                raise ValueError("collection snapshot record IDs must be UUIDs")
+            if (
+                not allow_first_oversized_snapshot
+                and exact_total + len(batch) > available_member_capacity
+            ):
+                raise CollectionSnapshotCapacityError()
+            self._session.execute(
+                insert(CollectionQuerySnapshotMemberModel),
+                [
+                    {
+                        "snapshot_id": snapshot.id,
+                        "ordinal": exact_total + offset + 1,
+                        "record_id": record_id,
+                    }
+                    for offset, record_id in enumerate(batch)
+                ],
+            )
+            exact_total += len(batch)
+        snapshot.exact_total = exact_total
+        self._session.flush()
+        value = _snapshot_value(snapshot)
+        return self._read_page(value, after_ordinal=0, limit=page_limit)
+
+    def resume(
+        self,
+        definition: CollectionSnapshotDefinition,
+        cursor: str,
+        *,
+        limit: int,
+    ) -> CollectionSnapshotPage:
+        """Validate a signed snapshot/ordinal cursor and return the next stable page."""
+
+        page_limit = _page_limit(limit)
+        try:
+            created_at, key = self._cursors.decode(
+                cursor,
+                resource=_cursor_resource(definition.resource),
+                binding=_cursor_binding(definition),
+                key_size=2,
+            )
+            snapshot_id = UUID(key[0])
+            after_ordinal = int(key[1])
+            if after_ordinal < 1:
+                raise CursorValidationError("invalid cursor")
+        except CursorValidationError:
+            raise
+        except (ValueError, TypeError) as exc:
+            raise CursorValidationError("invalid cursor") from exc
+
+        conditions = (
+            CollectionQuerySnapshotModel.id == snapshot_id,
+            CollectionQuerySnapshotModel.schema_version == COLLECTION_SNAPSHOT_SCHEMA_VERSION,
+            CollectionQuerySnapshotModel.resource == definition.resource.value,
+            CollectionQuerySnapshotModel.owner_id == definition.owner_id,
+            CollectionQuerySnapshotModel.sort_specification == definition.sort_specification,
+            CollectionQuerySnapshotModel.filter_fingerprint == definition.filter_fingerprint,
+            CollectionQuerySnapshotModel.created_at == created_at,
+        )
+        account_condition = (
+            CollectionQuerySnapshotModel.broker_account_id.is_(None)
+            if definition.broker_account_id is None
+            else CollectionQuerySnapshotModel.broker_account_id == definition.broker_account_id
+        )
+        model = self._session.scalar(
+            select(CollectionQuerySnapshotModel).where(*conditions, account_condition)
+        )
+        if model is None:
+            raise CursorValidationError("invalid cursor")
+        snapshot = _snapshot_value(model)
+        if snapshot.expires_at <= _database_now(self._session):
+            raise CursorValidationError("invalid cursor")
+        if after_ordinal >= snapshot.exact_total:
+            raise CursorValidationError("invalid cursor")
+        return self._read_page(snapshot, after_ordinal=after_ordinal, limit=page_limit)
+
+    def cleanup_expired(self) -> int:
+        """Delete at most one non-blocking batch of expired snapshots."""
+
+        return cleanup_expired_collection_snapshots(
+            self._session,
+            batch_size=self._cleanup_batch_size,
+        )
+
+    def _active_capacity(self, owner_id: UUID, *, now: datetime) -> tuple[int, int]:
+        snapshot_count, member_count = self._session.execute(
+            select(
+                func.count(CollectionQuerySnapshotModel.id),
+                func.coalesce(func.sum(CollectionQuerySnapshotModel.exact_total), 0),
+            ).where(
+                CollectionQuerySnapshotModel.owner_id == owner_id,
+                CollectionQuerySnapshotModel.expires_at > now,
+            )
+        ).one()
+        return int(snapshot_count), int(member_count)
+
+    def _require_materialization_scope(self, definition: CollectionSnapshotDefinition) -> None:
+        if definition.resource in _POSITION_RESOURCES and definition.source_snapshot_id is None:
+            raise CollectionSnapshotScopeError(
+                "position collection snapshot requires an immutable portfolio snapshot"
+            )
+        if definition.broker_account_id is None:
+            available = self._session.scalar(
+                select(OwnerModel.id).where(OwnerModel.id == definition.owner_id)
+            )
+        else:
+            available = self._session.scalar(
+                select(BrokerAccountModel.id)
+                .join(
+                    BrokerConnectionModel,
+                    BrokerConnectionModel.id == BrokerAccountModel.connection_id,
+                )
+                .where(
+                    BrokerAccountModel.id == definition.broker_account_id,
+                    BrokerConnectionModel.owner_id == definition.owner_id,
+                )
+            )
+        if available is None:
+            raise CollectionSnapshotScopeError("collection snapshot scope is unavailable")
+        if definition.source_snapshot_id is not None:
+            source_available = self._session.scalar(
+                select(PortfolioSnapshotModel.id).where(
+                    PortfolioSnapshotModel.id == definition.source_snapshot_id,
+                    PortfolioSnapshotModel.broker_account_id == definition.broker_account_id,
+                )
+            )
+            if source_available is None:
+                raise CollectionSnapshotScopeError(
+                    "position collection source snapshot is unavailable"
+                )
+
+    def _read_page(
+        self,
+        snapshot: CollectionSnapshot,
+        *,
+        after_ordinal: int,
+        limit: int,
+    ) -> CollectionSnapshotPage:
+        rows = tuple(
+            self._session.scalars(
+                select(CollectionQuerySnapshotMemberModel)
+                .where(
+                    CollectionQuerySnapshotMemberModel.snapshot_id == snapshot.id,
+                    CollectionQuerySnapshotMemberModel.ordinal > after_ordinal,
+                )
+                .order_by(CollectionQuerySnapshotMemberModel.ordinal)
+                .limit(limit + 1)
+            )
+        )
+        expected_count = min(snapshot.exact_total - after_ordinal, limit + 1)
+        if expected_count < 0 or len(rows) != expected_count:
+            raise CursorValidationError("invalid cursor")
+        for expected_ordinal, member in enumerate(rows, start=after_ordinal + 1):
+            if member.ordinal != expected_ordinal:
+                raise CursorValidationError("invalid cursor")
+
+        selected = rows[:limit]
+        next_cursor = None
+        if len(rows) > limit and selected:
+            next_cursor = self._cursors.encode(
+                resource=_cursor_resource(snapshot.definition.resource),
+                binding=_cursor_binding(snapshot.definition),
+                read_cutoff=snapshot.created_at,
+                key=(str(snapshot.id), str(selected[-1].ordinal)),
+            )
+        return CollectionSnapshotPage(
+            snapshot_id=snapshot.id,
+            record_ids=tuple(member.record_id for member in selected),
+            next_cursor=next_cursor,
+            limit=limit,
+            exact_total=snapshot.exact_total,
+            expires_at=snapshot.expires_at,
+            source_snapshot_id=snapshot.definition.source_snapshot_id,
+        )
+
+
+def _snapshot_value(model: CollectionQuerySnapshotModel) -> CollectionSnapshot:
+    return CollectionSnapshot(
+        id=model.id,
+        definition=CollectionSnapshotDefinition(
+            resource=CollectionSnapshotResource(model.resource),
+            owner_id=model.owner_id,
+            broker_account_id=model.broker_account_id,
+            filter_fingerprint=model.filter_fingerprint,
+            source_snapshot_id=model.source_snapshot_id,
+        ),
+        exact_total=model.exact_total,
+        created_at=_utc(model.created_at),
+        expires_at=_utc(model.expires_at),
+    )
+
+
+def cleanup_expired_collection_snapshots(session: Session, *, batch_size: int = 100) -> int:
+    """Delete one deterministic non-blocking batch of expired traversal snapshots."""
+
+    if isinstance(batch_size, bool) or not 1 <= batch_size <= 1_000:
+        raise ValueError("cleanup batch size must be between 1 and 1000")
+    expired_ids = tuple(
+        session.scalars(
+            select(CollectionQuerySnapshotModel.id)
+            .where(CollectionQuerySnapshotModel.expires_at <= func.now())
+            .order_by(
+                CollectionQuerySnapshotModel.expires_at,
+                CollectionQuerySnapshotModel.id,
+            )
+            .limit(batch_size)
+            .with_for_update(skip_locked=True)
+        )
+    )
+    if not expired_ids:
+        return 0
+    session.execute(
+        delete(CollectionQuerySnapshotModel).where(CollectionQuerySnapshotModel.id.in_(expired_ids))
+    )
+    return len(expired_ids)
+
+
+def _cursor_binding(definition: CollectionSnapshotDefinition) -> str:
+    return cursor_binding(
+        "collection-query-snapshot",
+        COLLECTION_SNAPSHOT_SCHEMA_VERSION,
+        definition.owner_id,
+        definition.broker_account_id,
+        definition.resource,
+        definition.sort_specification,
+        definition.filter_fingerprint,
+    )
+
+
+def _cursor_resource(resource: CollectionSnapshotResource) -> str:
+    return f"collection_snapshot.{resource.value}"
+
+
+def _page_limit(limit: int) -> int:
+    if isinstance(limit, bool) or not 1 <= limit <= 100:
+        raise ValueError("limit must be between 1 and 100")
+    return limit
+
+
+def _acquire_owner_capacity_lock(session: Session, owner_id: UUID) -> None:
+    """Serialize active-capacity accounting for one owner until transaction end."""
+
+    high = owner_id.int >> 64
+    low = owner_id.int & ((1 << 64) - 1)
+    unsigned_key = high ^ low
+    signed_key = unsigned_key if unsigned_key < (1 << 63) else unsigned_key - (1 << 64)
+    session.execute(select(func.pg_advisory_xact_lock(signed_key)))
+
+
+def _database_now(session: Session) -> datetime:
+    value = cast(datetime | None, session.scalar(select(func.now())))
+    if value is None:
+        raise RuntimeError("database clock is unavailable")
+    return _utc(value)
+
+
+def _utc(value: datetime) -> datetime:
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise ValueError("collection snapshot timestamps must be timezone-aware")
+    return value.astimezone(UTC)

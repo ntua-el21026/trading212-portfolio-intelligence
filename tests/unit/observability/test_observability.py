@@ -4,8 +4,14 @@ import io
 import json
 import logging
 from contextlib import redirect_stderr, redirect_stdout
+from http.client import HTTPConnection
 
-from trading212_observability import OperationalMetrics, configure_logging, logger
+from trading212_observability import (
+    MetricsHttpServer,
+    OperationalMetrics,
+    configure_logging,
+    logger,
+)
 
 CANARY = "OBSERVABILITY-CANARY-SECRET"
 
@@ -39,6 +45,33 @@ def test_metrics_have_only_bounded_operational_labels() -> None:
     assert 'category="contract"' in rendered
     assert "account_id" not in rendered
     assert "ticker" not in rendered
+
+
+def test_private_registry_metrics_http_server_has_a_clean_lifecycle() -> None:
+    metrics = OperationalMetrics(service="dispatcher-http-test")
+    metrics.queue_pending_items.labels(queue="refresh_dispatch").set(2)
+
+    server = MetricsHttpServer.start(metrics=metrics, host="127.0.0.1", port=0)
+    connection = HTTPConnection("127.0.0.1", server.bound_port, timeout=5)
+    try:
+        assert server.is_running
+        connection.request("GET", "/metrics")
+        response = connection.getresponse()
+        rendered = response.read().decode()
+        assert response.status == 200
+        assert (
+            't212pi_dispatcher_http_test_queue_pending_items{queue="refresh_dispatch"} 2.0'
+            in rendered
+        )
+        assert "python_gc_objects_collected_total" not in rendered
+        assert "process_virtual_memory_bytes" not in rendered
+        assert "postgresql://private-user:private-password" not in rendered
+    finally:
+        connection.close()
+        server.close()
+        server.close()
+
+    assert not server.is_running
 
 
 def test_standard_library_logs_share_the_structured_redaction_boundary() -> None:

@@ -5,12 +5,12 @@ import { Surface } from "@trading212/ui";
 import { PageHeader } from "../../../components/page-header";
 import { QualityStatus } from "../../../components/financial";
 import { RefreshControl } from "../../../components/refresh-control";
-import { loadPortfolioBundle } from "../../../lib/api-adapter";
+import { loadSynchronization } from "../../../lib/api-adapter";
 import { formatDateTime } from "../../../lib/format";
 import { isExplicitDemoMode } from "../../../lib/runtime";
 
 export default async function SynchronizationPage() {
-  const bundle = await loadPortfolioBundle();
+  const bundle = await loadSynchronization();
   const lastRefresh = bundle.summary.account.last_refresh_at;
   return (
     <div className="page-stack">

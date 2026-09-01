@@ -10,6 +10,11 @@ from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import CallToolResult, TextContent
 from pydantic import BaseModel
+from trading212_application.queries import (
+    CollectionSnapshotCapacityError,
+    PageQuery,
+    PositionQuery,
+)
 from trading212_application.services import SyntheticPortfolioService
 from trading212_application.views import Page, SnapshotView, ViewQuality
 from trading212_mcp.schemas import RESULT_MODELS
@@ -110,12 +115,12 @@ async def test_repeated_read_is_idempotent_and_deterministic() -> None:
     second = await _call_tool(server, "list_positions", arguments)
 
     assert first.structured_content == second.structured_content
-    assert first.structured_content["pagination"] == {
-        "next_cursor": "p1:2",
-        "limit": 2,
-        "total": 5,
-        "truncated": False,
-    }
+    pagination = first.structured_content["pagination"]
+    assert pagination["next_cursor"]
+    assert ":" not in pagination["next_cursor"]
+    assert pagination["limit"] == 2
+    assert pagination["total"] == 5
+    assert pagination["truncated"] is True
 
 
 @pytest.mark.unit
@@ -171,11 +176,10 @@ class EmptySnapshotsService(SyntheticPortfolioService):
         principal: Any,
         account_id: str,
         *,
-        cursor: str | None,
-        limit: int,
+        query: PageQuery,
     ) -> Page[SnapshotView]:
-        await super().list_snapshots(principal, account_id, cursor=cursor, limit=limit)
-        return Page(items=(), next_cursor=None, limit=limit, total=0)
+        await super().list_snapshots(principal, account_id, query=query)
+        return Page(items=(), next_cursor=None, limit=query.limit, total=0)
 
 
 @pytest.mark.unit
@@ -246,11 +250,42 @@ class PositionSpyService(SyntheticPortfolioService):
         principal: Any,
         account_id: str,
         *,
-        cursor: str | None,
-        limit: int,
+        query: PositionQuery,
     ) -> Any:
         self.calls += 1
-        return await super().list_positions(principal, account_id, cursor=cursor, limit=limit)
+        return await super().list_positions(principal, account_id, query=query)
+
+
+class CapacityExhaustedService(SyntheticPortfolioService):
+    async def list_positions(
+        self,
+        principal: Any,
+        account_id: str,
+        *,
+        query: PositionQuery,
+    ) -> Any:
+        del principal, account_id, query
+        raise CollectionSnapshotCapacityError()
+
+
+@pytest.mark.unit
+async def test_collection_snapshot_capacity_is_retryable_and_sanitized() -> None:
+    result = await _call_tool(
+        _runtime(CapacityExhaustedService()),
+        "list_positions",
+        {"account_id": SyntheticPortfolioService.ACCOUNT_ID, "limit": 1},
+    )
+
+    rendered = str(result.model_dump(mode="json"))
+    assert result.is_error is True
+    assert result.structured_content["error"] == {
+        "code": "COLLECTION_SNAPSHOT_CAPACITY_EXCEEDED",
+        "message": "Active pagination capacity is temporarily exhausted.",
+        "correlation_id": result.structured_content["error"]["correlation_id"],
+        "retryable": True,
+        "remediation": "Resume an existing cursor or retry after active cursors expire.",
+    }
+    assert "active collection snapshot capacity exhausted" not in rendered
 
 
 @pytest.mark.unit

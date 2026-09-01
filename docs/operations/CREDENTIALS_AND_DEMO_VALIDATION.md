@@ -8,7 +8,7 @@ supplies a dedicated read-only Demo credential and executes the probe.
 
 - Use a dedicated, revocable Trading 212 Demo credential for validation.
 - Never paste a key/secret into source, a command argument, a URL, browser
-  storage, ChatGPT, MCP input/output, logs, traces, screenshots, or a pull request.
+  storage, ChatGPT, MCP input/output, logs, traces, screenshots, or a review artifact.
 - Browser, API responses, MCP results, Redis/Celery messages, and canonical
   database records never contain the credential value.
 - Local/test resolution accepts one allowlisted environment variable containing
@@ -43,12 +43,31 @@ or invalid/missing configuration.
 
 ## 3. Exact owner procedure
 
-Use a private local shell. The steps below disable interactive history, read the
-secret without echo, create the strict JSON bundle without placing either value
+Use a private local shell only after `PROJECT_STATUS.json` records the designated
+corrected release SHA and the owner-run Demo gate is ready. The steps below fetch and
+prune the remote, switch to authoritative `main`, update it by fast-forward only, verify
+that the checkout is exactly the designated release SHA, disable interactive history,
+read the secret without echo, create the strict JSON bundle without placing either value
 in an argument, run the probe, and remove all shell variables afterward:
 
 ```bash
 cd /home/peppaspan/trading212-portfolio-intelligence
+git fetch origin --prune
+git switch main
+git pull --ff-only origin main
+designated_release_sha="$(
+  python3 - <<'PY'
+import json
+from pathlib import Path
+
+status = json.loads(Path("PROJECT_STATUS.json").read_text(encoding="utf-8"))
+value = status.get("release_candidate_sha")
+if not isinstance(value, str) or len(value) != 40:
+    raise SystemExit("PROJECT_STATUS.json does not contain a designated release SHA")
+print(value)
+PY
+)"
+test "$(git rev-parse HEAD)" = "${designated_release_sha}"
 set +o history
 read -r -s -p 'Trading 212 Demo API key: ' demo_api_key
 printf '\n'
@@ -75,6 +94,7 @@ unset T212PI_TRADING212_CREDENTIAL_BUNDLE
 unset T212PI_TRADING212_ENVIRONMENT
 unset T212PI_TRADING212_LIVE_ENABLED
 unset T212PI_RUN_TRADING212_DEMO_SMOKE
+unset designated_release_sha
 set -o history
 test "${smoke_exit}" -eq 0
 ```

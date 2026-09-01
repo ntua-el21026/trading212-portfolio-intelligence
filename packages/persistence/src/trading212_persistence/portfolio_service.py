@@ -3,14 +3,35 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable, Sequence
-from datetime import UTC, datetime, timedelta
-from decimal import Decimal
+from collections.abc import Callable, Iterable, Sequence
+from datetime import UTC, date, datetime, time, timedelta
+from decimal import Decimal, InvalidOperation
+from typing import Any
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import and_, func, literal, or_, select, tuple_
 from sqlalchemy.orm import Session, sessionmaker
 from trading212_application.ingestion import IngestionCapability, RunMode
+from trading212_application.performance import (
+    CorePerformanceInput,
+    PerformanceFlowInput,
+    PerformanceSnapshotInput,
+    calculate_core_performance,
+)
+from trading212_application.queries import (
+    ActivityQuery,
+    CursorCodec,
+    CursorValidationError,
+    DirectAllocationQuery,
+    DividendQuery,
+    DividendSummaryQuery,
+    InstrumentQuery,
+    PageQuery,
+    PositionQuery,
+    PositionSort,
+    canonical_activity_type_membership,
+    cursor_binding,
+)
 from trading212_application.services import (
     PortfolioService,
     RefreshQueue,
@@ -22,26 +43,44 @@ from trading212_application.views import (
     ActivityView,
     AllocationView,
     Availability,
+    BrokerConnectionView,
+    CapabilityQualityView,
+    CheckpointQualityView,
+    DataQualitySummaryView,
+    DirectAllocationView,
+    DividendCurrencyTotalView,
+    DividendSummaryView,
     DividendView,
+    InstrumentView,
     MetricView,
     OrderView,
     Page,
+    PerformanceSummaryView,
     PositionView,
     QualityView,
     ReconciliationIssueView,
     ReconciliationView,
+    RefreshRunQualityView,
     RefreshRunView,
+    RefreshStepQualityView,
     SnapshotComparisonView,
+    SnapshotDetailView,
     SnapshotView,
     ViewQuality,
-    paginate,
 )
 from trading212_domain import quantize_boundary
 from trading212_security.principals import Authorizer, Principal, Scope
 
+from .collection_snapshots import (
+    CollectionSnapshotDefinition,
+    CollectionSnapshotResource,
+    CollectionSnapshotStore,
+    collection_filter_fingerprint,
+)
 from .models import (
     BrokerAccountModel,
     BrokerConnectionModel,
+    CashFlowModel,
     DividendModel,
     IngestionCheckpointModel,
     IngestionRunModel,
@@ -59,8 +98,18 @@ from .models import (
 _ACCOUNTING_VERSION = "phase1-core-accounting/1.0.0"
 _COMPARISON_VERSION = "phase1-snapshot-change/1.0.0"
 _FRESHNESS_SECONDS = 900
-_MAX_COLLECTION_ROWS = 10_000
 _RATIO_QUANTUM = Decimal("0.000000000000000001")
+_COLLECTION_SNAPSHOT_STREAM_BATCH = 1_000
+_PERFORMANCE_SUPPORTED_TRANSACTION_TYPES = (
+    "buy",
+    "sell",
+    "deposit",
+    "withdrawal",
+    "dividend",
+    "fee",
+    "tax_withholding",
+    "interest",
+)
 
 
 class PostgresPortfolioService(PortfolioService):
@@ -70,13 +119,25 @@ class PostgresPortfolioService(PortfolioService):
         self,
         *,
         sessions: sessionmaker[Session],
+        cursor_signing_key: bytes,
         clock: Callable[[], datetime] | None = None,
         refresh_queue: RefreshQueue | None = None,
+        cursor_ttl_seconds: int = 3_600,
+        max_active_collection_snapshots_per_owner: int = 64,
+        max_active_collection_members_per_owner: int = 250_000,
     ) -> None:
         self._sessions = sessions
         self._clock = clock or (lambda: datetime.now(UTC))
         self._refresh_queue = refresh_queue
         self._authorizer = Authorizer()
+        self._cursor_ttl_seconds = cursor_ttl_seconds
+        self._max_active_collection_snapshots_per_owner = max_active_collection_snapshots_per_owner
+        self._max_active_collection_members_per_owner = max_active_collection_members_per_owner
+        self._cursors = CursorCodec(
+            cursor_signing_key,
+            clock=self._clock,
+            ttl_seconds=cursor_ttl_seconds,
+        )
 
     async def owner_for_account(self, account_id: str) -> str | None:
         try:
@@ -111,9 +172,49 @@ class PostgresPortfolioService(PortfolioService):
                     .join(BrokerConnectionModel)
                     .where(BrokerConnectionModel.owner_id == owner_id)
                     .order_by(BrokerAccountModel.id)
-                    .limit(100)
                 ).all()
                 return tuple(_account_view(account, connection) for account, connection in rows)
+
+        return await asyncio.to_thread(read)
+
+    async def list_broker_connections(
+        self, principal: Principal
+    ) -> tuple[BrokerConnectionView, ...]:
+        self._authorizer.require_scope(
+            principal,
+            Scope.CONFIGURATION_READ,
+            now=_utc(self._clock()),
+        )
+        owner_id = _uuid(principal.owner_id, "owner_id")
+
+        def read() -> tuple[BrokerConnectionView, ...]:
+            with self._sessions() as session:
+                rows = session.scalars(
+                    select(BrokerConnectionModel)
+                    .where(BrokerConnectionModel.owner_id == owner_id)
+                    .order_by(BrokerConnectionModel.provider, BrokerConnectionModel.environment)
+                )
+                return tuple(
+                    BrokerConnectionView(
+                        id=str(item.id),
+                        provider=item.provider,
+                        environment=item.environment,
+                        status=item.status,
+                        credential_configured=bool(item.credential_reference),
+                        last_successful_refresh_at=session.scalar(
+                            select(func.max(IngestionRunModel.completed_at))
+                            .join(
+                                BrokerAccountModel,
+                                BrokerAccountModel.id == IngestionRunModel.broker_account_id,
+                            )
+                            .where(
+                                BrokerAccountModel.connection_id == item.id,
+                                IngestionRunModel.status == "succeeded",
+                            )
+                        ),
+                    )
+                    for item in rows
+                )
 
         return await asyncio.to_thread(read)
 
@@ -302,14 +403,108 @@ class PostgresPortfolioService(PortfolioService):
         principal: Principal,
         account_id: str,
         *,
-        cursor: str | None,
-        limit: int,
+        query: PositionQuery,
     ) -> Page[PositionView]:
         account_uuid = await self._read_access(principal, account_id, Scope.PORTFOLIO_READ)
+        owner_uuid = _uuid(principal.owner_id, "owner_id")
 
         def read() -> Page[PositionView]:
-            with self._sessions() as session:
-                snapshot = _require_snapshot(session, account_uuid)
+            with self._sessions.begin() as session:
+                search = query.search.strip().casefold() if query.search is not None else None
+                resource = _position_collection_resource(query.sort)
+                definition = CollectionSnapshotDefinition(
+                    resource=resource,
+                    owner_id=owner_uuid,
+                    broker_account_id=account_uuid,
+                    filter_fingerprint=collection_filter_fingerprint(search),
+                )
+                collection_snapshots = CollectionSnapshotStore(
+                    session,
+                    self._cursors,
+                    ttl_seconds=self._cursor_ttl_seconds,
+                    max_active_snapshots_per_owner=(
+                        self._max_active_collection_snapshots_per_owner
+                    ),
+                    max_active_members_per_owner=self._max_active_collection_members_per_owner,
+                )
+                if query.cursor is None:
+                    snapshot = _require_snapshot(session, account_uuid)
+                    definition = CollectionSnapshotDefinition(
+                        resource=resource,
+                        owner_id=owner_uuid,
+                        broker_account_id=account_uuid,
+                        filter_fingerprint=definition.filter_fingerprint,
+                        source_snapshot_id=snapshot.id,
+                    )
+                    identity_statement = (
+                        select(SnapshotPositionModel.id)
+                        .join(
+                            ListingModel,
+                            ListingModel.id == SnapshotPositionModel.listing_id,
+                        )
+                        .join(
+                            InstrumentModel,
+                            InstrumentModel.id == ListingModel.instrument_id,
+                        )
+                        .where(SnapshotPositionModel.snapshot_id == snapshot.id)
+                    )
+                    if query.search is not None:
+                        pattern = f"%{_escape_like(query.search.strip())}%"
+                        identity_statement = identity_statement.where(
+                            or_(
+                                ListingModel.ticker.ilike(pattern, escape="\\"),
+                                InstrumentModel.canonical_name.ilike(pattern, escape="\\"),
+                            )
+                        )
+                    if query.sort is PositionSort.TICKER_ASC:
+                        identity_statement = identity_statement.order_by(
+                            func.lower(ListingModel.ticker),
+                            ListingModel.id,
+                        )
+                    else:
+                        metric = (
+                            func.coalesce(
+                                SnapshotPositionModel.market_value,
+                                Decimal("-1E30"),
+                            )
+                            if query.sort is not PositionSort.WEIGHT_DESC
+                            or (
+                                snapshot.portfolio_total is not None
+                                and snapshot.portfolio_total > 0
+                            )
+                            else literal(Decimal("-1E30"))
+                        )
+                        identity_statement = identity_statement.order_by(
+                            metric.desc(),
+                            func.lower(ListingModel.ticker),
+                            ListingModel.id,
+                        )
+                    page = collection_snapshots.materialize(
+                        definition,
+                        lambda: session.scalars(
+                            identity_statement.execution_options(
+                                yield_per=_COLLECTION_SNAPSHOT_STREAM_BATCH
+                            )
+                        ),
+                        limit=query.limit,
+                    )
+                else:
+                    page = collection_snapshots.resume(
+                        definition,
+                        query.cursor,
+                        limit=query.limit,
+                    )
+                    if page.source_snapshot_id is None:
+                        raise CursorValidationError("invalid cursor")
+                    resumed_snapshot = session.scalar(
+                        select(PortfolioSnapshotModel).where(
+                            PortfolioSnapshotModel.id == page.source_snapshot_id,
+                            PortfolioSnapshotModel.broker_account_id == account_uuid,
+                        )
+                    )
+                    if resumed_snapshot is None:
+                        raise CursorValidationError("invalid cursor")
+                    snapshot = resumed_snapshot
                 quality = _effective_snapshot_quality(
                     session,
                     snapshot,
@@ -318,23 +513,29 @@ class PostgresPortfolioService(PortfolioService):
                 )
                 rows = session.execute(
                     select(SnapshotPositionModel, ListingModel, InstrumentModel)
-                    .join(
-                        ListingModel,
-                        ListingModel.id == SnapshotPositionModel.listing_id,
+                    .join(ListingModel, ListingModel.id == SnapshotPositionModel.listing_id)
+                    .join(InstrumentModel, InstrumentModel.id == ListingModel.instrument_id)
+                    .where(
+                        SnapshotPositionModel.id.in_(page.record_ids),
+                        SnapshotPositionModel.snapshot_id == snapshot.id,
                     )
-                    .join(
-                        InstrumentModel,
-                        InstrumentModel.id == ListingModel.instrument_id,
-                    )
-                    .where(SnapshotPositionModel.snapshot_id == snapshot.id)
-                    .order_by(ListingModel.ticker, ListingModel.id)
-                    .limit(_MAX_COLLECTION_ROWS)
-                ).all()
-                values = tuple(
-                    _position_view(item, listing, instrument, snapshot, quality)
-                    for item, listing, instrument in rows
                 )
-                return paginate(values, cursor=cursor, limit=limit)
+                indexed = {
+                    item.id: (item, listing, instrument) for item, listing, instrument in rows
+                }
+                try:
+                    selected = tuple(indexed[record_id] for record_id in page.record_ids)
+                except KeyError as exc:
+                    raise CursorValidationError("invalid cursor") from exc
+                return Page(
+                    tuple(
+                        _position_view(item, listing, instrument, snapshot, quality)
+                        for item, listing, instrument in selected
+                    ),
+                    page.next_cursor,
+                    query.limit,
+                    page.exact_total,
+                )
 
         return await asyncio.to_thread(read)
 
@@ -385,13 +586,53 @@ class PostgresPortfolioService(PortfolioService):
         principal: Principal,
         account_id: str,
         *,
-        cursor: str | None,
-        limit: int,
+        query: ActivityQuery,
     ) -> Page[ActivityView]:
         account_uuid = await self._read_access(principal, account_id, Scope.ACTIVITY_READ)
+        owner_uuid = _uuid(principal.owner_id, "owner_id")
 
         def read() -> Page[ActivityView]:
-            with self._sessions() as session:
+            with self._sessions.begin() as session:
+                definition = CollectionSnapshotDefinition(
+                    resource=CollectionSnapshotResource.ACTIVITY,
+                    owner_id=owner_uuid,
+                    broker_account_id=account_uuid,
+                    filter_fingerprint=collection_filter_fingerprint(
+                        query.start_date,
+                        query.end_date,
+                        query.activity_type,
+                    ),
+                )
+                snapshots = CollectionSnapshotStore(
+                    session,
+                    self._cursors,
+                    ttl_seconds=self._cursor_ttl_seconds,
+                    max_active_snapshots_per_owner=(
+                        self._max_active_collection_snapshots_per_owner
+                    ),
+                    max_active_members_per_owner=self._max_active_collection_members_per_owner,
+                )
+                if query.cursor is None:
+                    identity_statement = _transaction_filters(
+                        select(TransactionModel.id).where(
+                            TransactionModel.broker_account_id == account_uuid
+                        ),
+                        query,
+                    ).order_by(
+                        TransactionModel.occurred_at.desc(),
+                        TransactionModel.id.desc(),
+                    )
+                    page = snapshots.materialize(
+                        definition,
+                        lambda: session.scalars(
+                            identity_statement.execution_options(
+                                yield_per=_COLLECTION_SNAPSHOT_STREAM_BATCH
+                            )
+                        ),
+                        limit=query.limit,
+                    )
+                else:
+                    page = snapshots.resume(definition, query.cursor, limit=query.limit)
                 quality = _fallback_quality(
                     session,
                     account_uuid,
@@ -399,17 +640,21 @@ class PostgresPortfolioService(PortfolioService):
                     _latest_run_time(session, account_uuid),
                     now=_utc(self._clock()),
                 )
-                rows = session.execute(
+                statement = (
                     select(TransactionModel, ListingModel)
                     .outerjoin(ListingModel)
-                    .where(TransactionModel.broker_account_id == account_uuid)
-                    .order_by(TransactionModel.occurred_at.desc(), TransactionModel.id)
-                    .limit(_MAX_COLLECTION_ROWS)
-                ).all()
-                return paginate(
-                    tuple(_activity_view(item, listing, quality) for item, listing in rows),
-                    cursor=cursor,
-                    limit=limit,
+                    .where(TransactionModel.id.in_(page.record_ids))
+                )
+                indexed = {item.id: (item, listing) for item, listing in session.execute(statement)}
+                try:
+                    selected = tuple(indexed[record_id] for record_id in page.record_ids)
+                except KeyError as exc:
+                    raise CursorValidationError("invalid cursor") from exc
+                return Page(
+                    tuple(_activity_view(item, listing, quality) for item, listing in selected),
+                    page.next_cursor,
+                    query.limit,
+                    page.exact_total,
                 )
 
         return await asyncio.to_thread(read)
@@ -419,12 +664,89 @@ class PostgresPortfolioService(PortfolioService):
         principal: Principal,
         account_id: str,
         *,
-        cursor: str | None,
-        limit: int,
+        query: DividendQuery,
     ) -> Page[DividendView]:
         account_uuid = await self._read_access(principal, account_id, Scope.ACTIVITY_READ)
+        owner_uuid = _uuid(principal.owner_id, "owner_id")
 
         def read() -> Page[DividendView]:
+            with self._sessions.begin() as session:
+                definition = CollectionSnapshotDefinition(
+                    resource=CollectionSnapshotResource.DIVIDENDS,
+                    owner_id=owner_uuid,
+                    broker_account_id=account_uuid,
+                    filter_fingerprint=collection_filter_fingerprint(
+                        query.start_date,
+                        query.end_date,
+                    ),
+                )
+                snapshots = CollectionSnapshotStore(
+                    session,
+                    self._cursors,
+                    ttl_seconds=self._cursor_ttl_seconds,
+                    max_active_snapshots_per_owner=(
+                        self._max_active_collection_snapshots_per_owner
+                    ),
+                    max_active_members_per_owner=self._max_active_collection_members_per_owner,
+                )
+                if query.cursor is None:
+                    identity_statement = _dividend_filters(
+                        select(DividendModel.id).where(
+                            DividendModel.broker_account_id == account_uuid
+                        ),
+                        query.start_date,
+                        query.end_date,
+                    ).order_by(
+                        DividendModel.paid_on.desc(),
+                        DividendModel.id.desc(),
+                    )
+                    page = snapshots.materialize(
+                        definition,
+                        lambda: session.scalars(
+                            identity_statement.execution_options(
+                                yield_per=_COLLECTION_SNAPSHOT_STREAM_BATCH
+                            )
+                        ),
+                        limit=query.limit,
+                    )
+                else:
+                    page = snapshots.resume(definition, query.cursor, limit=query.limit)
+                quality = _fallback_quality(
+                    session,
+                    account_uuid,
+                    _latest_snapshot(session, account_uuid),
+                    _latest_run_time(session, account_uuid),
+                    now=_utc(self._clock()),
+                )
+                statement = (
+                    select(DividendModel, ListingModel)
+                    .outerjoin(ListingModel)
+                    .where(DividendModel.id.in_(page.record_ids))
+                )
+                indexed = {item.id: (item, listing) for item, listing in session.execute(statement)}
+                try:
+                    selected = tuple(indexed[record_id] for record_id in page.record_ids)
+                except KeyError as exc:
+                    raise CursorValidationError("invalid cursor") from exc
+                return Page(
+                    tuple(_dividend_view(item, listing, quality) for item, listing in selected),
+                    page.next_cursor,
+                    query.limit,
+                    page.exact_total,
+                )
+
+        return await asyncio.to_thread(read)
+
+    async def get_dividend_summary(
+        self,
+        principal: Principal,
+        account_id: str,
+        *,
+        query: DividendSummaryQuery,
+    ) -> DividendSummaryView:
+        account_uuid = await self._read_access(principal, account_id, Scope.ACTIVITY_READ)
+
+        def read() -> DividendSummaryView:
             with self._sessions() as session:
                 quality = _fallback_quality(
                     session,
@@ -433,17 +755,114 @@ class PostgresPortfolioService(PortfolioService):
                     _latest_run_time(session, account_uuid),
                     now=_utc(self._clock()),
                 )
-                rows = session.execute(
+                filtered = _dividend_filters(
+                    select(DividendModel).where(DividendModel.broker_account_id == account_uuid),
+                    query.start_date,
+                    query.end_date,
+                )
+                count = (
+                    session.scalar(
+                        select(func.count()).select_from(filtered.order_by(None).subquery())
+                    )
+                    or 0
+                )
+                currency_count = (
+                    session.scalar(
+                        select(func.count(func.distinct(DividendModel.currency))).where(
+                            DividendModel.broker_account_id == account_uuid,
+                            DividendModel.paid_on >= query.start_date,
+                            DividendModel.paid_on <= query.end_date,
+                        )
+                    )
+                    or 0
+                )
+                aggregate_rows = session.execute(
+                    select(
+                        DividendModel.currency,
+                        func.count(),
+                        func.sum(DividendModel.net_amount),
+                        func.count(DividendModel.gross_amount),
+                        func.sum(DividendModel.gross_amount),
+                        func.count(DividendModel.withholding_tax),
+                        func.sum(DividendModel.withholding_tax),
+                    )
+                    .where(
+                        DividendModel.broker_account_id == account_uuid,
+                        DividendModel.paid_on >= query.start_date,
+                        DividendModel.paid_on <= query.end_date,
+                    )
+                    .group_by(DividendModel.currency)
+                    .order_by(DividendModel.currency)
+                    .limit(20)
+                ).all()
+                recent_rows = session.execute(
                     select(DividendModel, ListingModel)
                     .outerjoin(ListingModel)
-                    .where(DividendModel.broker_account_id == account_uuid)
-                    .order_by(DividendModel.paid_on.desc(), DividendModel.id)
-                    .limit(_MAX_COLLECTION_ROWS)
+                    .where(
+                        DividendModel.broker_account_id == account_uuid,
+                        DividendModel.paid_on >= query.start_date,
+                        DividendModel.paid_on <= query.end_date,
+                    )
+                    .order_by(DividendModel.paid_on.desc(), DividendModel.id.desc())
+                    .limit(query.recent_limit)
                 ).all()
-                return paginate(
-                    tuple(_dividend_view(item, listing, quality) for item, listing in rows),
-                    cursor=cursor,
-                    limit=limit,
+                missing_gross = any(
+                    gross_count != row_count
+                    for _, row_count, _, gross_count, _, _, _ in aggregate_rows
+                )
+                missing_withholding = any(
+                    withholding_count != row_count
+                    for _, row_count, _, _, _, withholding_count, _ in aggregate_rows
+                )
+                missing_inputs = tuple(
+                    name
+                    for missing, name in (
+                        (missing_gross, "dividend_gross_amount"),
+                        (missing_withholding, "dividend_withholding_tax"),
+                        (currency_count > len(aggregate_rows), "dividend_currency_groups"),
+                    )
+                    if missing
+                )
+                if missing_inputs:
+                    quality = _quality(
+                        ViewQuality.PARTIAL,
+                        as_of=quality.as_of,
+                        source_at=quality.source_timestamp,
+                        warnings=(
+                            *quality.warnings,
+                            "Dividend component aggregates are incomplete for the selected period.",
+                        ),
+                        missing=tuple(dict.fromkeys((*quality.missing_inputs, *missing_inputs))),
+                    )
+                return DividendSummaryView(
+                    start_date=query.start_date,
+                    end_date=query.end_date,
+                    totals=tuple(
+                        DividendCurrencyTotalView(
+                            currency=currency,
+                            net_amount=net_amount or Decimal(0),
+                            gross_amount=(gross_amount if gross_count == row_count else None),
+                            withholding_tax=(
+                                withholding_tax if withholding_count == row_count else None
+                            ),
+                        )
+                        for (
+                            currency,
+                            row_count,
+                            net_amount,
+                            gross_count,
+                            gross_amount,
+                            withholding_count,
+                            withholding_tax,
+                        ) in aggregate_rows
+                    ),
+                    recent=tuple(
+                        _dividend_view(item, listing, quality) for item, listing in recent_rows
+                    ),
+                    covered_record_count=count,
+                    totals_truncated=currency_count > len(aggregate_rows),
+                    omitted_currency_count=max(currency_count - len(aggregate_rows), 0),
+                    quality=quality,
                 )
 
         return await asyncio.to_thread(read)
@@ -453,13 +872,22 @@ class PostgresPortfolioService(PortfolioService):
         principal: Principal,
         account_id: str,
         *,
-        cursor: str | None,
-        limit: int,
+        query: PageQuery,
     ) -> Page[OrderView]:
         account_uuid = await self._read_access(principal, account_id, Scope.ACTIVITY_READ)
 
         def read() -> Page[OrderView]:
             with self._sessions() as session:
+                binding = cursor_binding(account_id)
+                cutoff = _database_now(session)
+                cursor_key: tuple[str, ...] | None = None
+                if query.cursor is not None:
+                    cutoff, cursor_key = self._cursors.decode(
+                        query.cursor,
+                        resource="orders",
+                        binding=binding,
+                        key_size=2,
+                    )
                 quality = _fallback_quality(
                     session,
                     account_uuid,
@@ -467,139 +895,302 @@ class PostgresPortfolioService(PortfolioService):
                     _latest_run_time(session, account_uuid),
                     now=_utc(self._clock()),
                 )
-                rows = session.execute(
-                    select(OrderObservationModel, ListingModel)
-                    .join(ListingModel)
-                    .where(OrderObservationModel.broker_account_id == account_uuid)
+                latest_ids = (
+                    select(OrderObservationModel.id)
+                    .where(
+                        OrderObservationModel.broker_account_id == account_uuid,
+                        OrderObservationModel.observed_at <= cutoff,
+                        OrderObservationModel.created_at <= cutoff,
+                    )
                     .distinct(OrderObservationModel.provider_order_id)
                     .order_by(
                         OrderObservationModel.provider_order_id,
                         OrderObservationModel.observed_at.desc(),
+                        OrderObservationModel.id.desc(),
                     )
-                    .limit(_MAX_COLLECTION_ROWS)
-                ).all()
-                values = sorted(
-                    (_order_view(item, listing, quality) for item, listing in rows),
-                    key=lambda item: item.created_at,
-                    reverse=True,
                 )
-                return paginate(values, cursor=cursor, limit=limit)
+                statement = (
+                    select(OrderObservationModel, ListingModel)
+                    .join(ListingModel)
+                    .where(OrderObservationModel.id.in_(latest_ids))
+                )
+                total = (
+                    session.scalar(
+                        select(func.count()).select_from(statement.order_by(None).subquery())
+                    )
+                    or 0
+                )
+                created_at = func.coalesce(
+                    OrderObservationModel.submitted_at, OrderObservationModel.observed_at
+                )
+                if cursor_key is not None:
+                    last_time = _cursor_datetime(cursor_key[0])
+                    last_id = _cursor_uuid(cursor_key[1])
+                    statement = statement.where(
+                        tuple_(created_at, OrderObservationModel.id) < (last_time, last_id)
+                    )
+                rows = session.execute(
+                    statement.order_by(created_at.desc(), OrderObservationModel.id.desc()).limit(
+                        query.limit + 1
+                    )
+                ).all()
+                selected = rows[: query.limit]
+                next_cursor = None
+                if len(rows) > query.limit and selected:
+                    item = selected[-1][0]
+                    next_cursor = self._cursors.encode(
+                        resource="orders",
+                        binding=binding,
+                        read_cutoff=cutoff,
+                        key=((item.submitted_at or item.observed_at).isoformat(), str(item.id)),
+                    )
+                return Page(
+                    tuple(_order_view(item, listing, quality) for item, listing in selected),
+                    next_cursor,
+                    query.limit,
+                    total,
+                )
 
         return await asyncio.to_thread(read)
 
-    async def get_allocation(
-        self, principal: Principal, account_id: str
-    ) -> tuple[AllocationView, ...]:
-        positions = await self.list_positions(
-            principal,
-            account_id,
-            cursor=None,
-            limit=100,
-        )
-        if positions.next_cursor is not None:
-            raise ValueError("direct allocation exceeds the Phase 1 bounded position set")
-        account_uuid = _uuid(account_id, "account_id")
+    async def get_direct_allocation(
+        self,
+        principal: Principal,
+        account_id: str,
+        *,
+        query: DirectAllocationQuery,
+    ) -> DirectAllocationView:
+        account_uuid = await self._read_access(principal, account_id, Scope.PORTFOLIO_READ)
 
-        def read_cash() -> tuple[AllocationView, ...]:
+        def read() -> DirectAllocationView:
             with self._sessions() as session:
                 snapshot = _require_snapshot(session, account_uuid)
-                rows = tuple(
-                    session.scalars(
-                        select(SnapshotCashModel)
-                        .where(SnapshotCashModel.snapshot_id == snapshot.id)
-                        .order_by(SnapshotCashModel.currency)
-                    )
+                quality = _effective_snapshot_quality(
+                    session, snapshot, account_uuid, now=_utc(self._clock())
                 )
-                return tuple(
+                position_count = (
+                    session.scalar(
+                        select(func.count())
+                        .select_from(SnapshotPositionModel)
+                        .where(SnapshotPositionModel.snapshot_id == snapshot.id)
+                    )
+                    or 0
+                )
+                cash_count = (
+                    session.scalar(
+                        select(func.count())
+                        .select_from(SnapshotCashModel)
+                        .where(SnapshotCashModel.snapshot_id == snapshot.id)
+                    )
+                    or 0
+                )
+                position_rows = session.execute(
+                    select(SnapshotPositionModel, ListingModel, InstrumentModel)
+                    .join(ListingModel, ListingModel.id == SnapshotPositionModel.listing_id)
+                    .join(InstrumentModel, InstrumentModel.id == ListingModel.instrument_id)
+                    .where(SnapshotPositionModel.snapshot_id == snapshot.id)
+                    .order_by(
+                        SnapshotPositionModel.market_value.desc().nullslast(),
+                        func.lower(ListingModel.ticker),
+                        ListingModel.id,
+                    )
+                    .limit(query.top_n)
+                ).all()
+                cash_row = session.scalar(
+                    select(SnapshotCashModel)
+                    .where(SnapshotCashModel.snapshot_id == snapshot.id)
+                    .order_by(
+                        (SnapshotCashModel.currency != snapshot.reporting_currency).asc(),
+                        SnapshotCashModel.currency,
+                    )
+                    .limit(1)
+                )
+                positions = tuple(
                     AllocationView(
-                        id=f"cash:{item.currency}",
-                        label=f"Cash ({item.currency})",
-                        asset_type="cash",
-                        market_value=_snapshot_metric(
-                            item.amount,
-                            item.currency,
-                            "canonical snapshot cash component",
-                            version=snapshot.calculation_version,
-                            provenance=_stored_provenance(
-                                item.provenance, fallback="snapshot_cash"
-                            ),
-                        ),
-                        weight=_weight(item.amount, snapshot.portfolio_total),
+                        id=str(listing.id),
+                        label=instrument.canonical_name,
+                        asset_type=instrument.instrument_type,
+                        market_value=_position_view(
+                            item, listing, instrument, snapshot, quality
+                        ).market_value,
+                        weight=_weight(item.market_value, snapshot.portfolio_total),
                         weight_availability=(
                             Availability.AVAILABLE
-                            if _weight(item.amount, snapshot.portfolio_total) is not None
+                            if _weight(item.market_value, snapshot.portfolio_total) is not None
                             else Availability.UNAVAILABLE
                         ),
                     )
-                    for item in rows
+                    for item, listing, instrument in position_rows
+                )
+                cash = (
+                    ()
+                    if cash_row is None
+                    else (
+                        AllocationView(
+                            id=f"cash:{cash_row.currency}",
+                            label=f"Cash ({cash_row.currency})",
+                            asset_type="cash",
+                            market_value=_snapshot_metric(
+                                cash_row.amount,
+                                cash_row.currency,
+                                "canonical snapshot cash component",
+                                version=snapshot.calculation_version,
+                                provenance=_stored_provenance(
+                                    cash_row.provenance, fallback="snapshot_cash"
+                                ),
+                            ),
+                            weight=_weight(cash_row.amount, snapshot.portfolio_total),
+                            weight_availability=(
+                                Availability.AVAILABLE
+                                if _weight(cash_row.amount, snapshot.portfolio_total) is not None
+                                else Availability.UNAVAILABLE
+                            ),
+                        ),
+                    )
+                )
+                return DirectAllocationView(
+                    items=positions + cash,
+                    total=position_count + cash_count,
+                    truncated=position_count > query.top_n or cash_count > len(cash),
                 )
 
-        cash = await asyncio.to_thread(read_cash)
-        position_rows = tuple(
-            AllocationView(
-                id=item.id,
-                label=item.name,
-                asset_type=item.instrument_type,
-                market_value=item.market_value,
-                weight=item.direct_weight,
-                weight_availability=(
-                    Availability.AVAILABLE
-                    if item.direct_weight is not None
-                    else Availability.UNAVAILABLE
-                ),
-            )
-            for item in positions.items
-        )
-        return position_rows + cash
+        return await asyncio.to_thread(read)
 
     async def list_snapshots(
         self,
         principal: Principal,
         account_id: str,
         *,
-        cursor: str | None,
-        limit: int,
+        query: PageQuery,
     ) -> Page[SnapshotView]:
         account_uuid = await self._read_access(principal, account_id, Scope.PORTFOLIO_READ)
 
         def read() -> Page[SnapshotView]:
             with self._sessions() as session:
-                rows = tuple(
-                    session.scalars(
-                        select(PortfolioSnapshotModel)
-                        .where(PortfolioSnapshotModel.broker_account_id == account_uuid)
-                        .order_by(
-                            PortfolioSnapshotModel.valuation_at.desc(),
+                binding = cursor_binding(account_id)
+                cutoff = _database_now(session)
+                cursor_key: tuple[str, ...] | None = None
+                if query.cursor is not None:
+                    cutoff, cursor_key = self._cursors.decode(
+                        query.cursor,
+                        resource="snapshots",
+                        binding=binding,
+                        key_size=2,
+                    )
+                statement = select(PortfolioSnapshotModel).where(
+                    PortfolioSnapshotModel.broker_account_id == account_uuid,
+                    PortfolioSnapshotModel.created_at <= cutoff,
+                )
+                total = (
+                    session.scalar(
+                        select(func.count()).select_from(statement.order_by(None).subquery())
+                    )
+                    or 0
+                )
+                if cursor_key is not None:
+                    last_time = _cursor_datetime(cursor_key[0])
+                    last_id = _cursor_uuid(cursor_key[1])
+                    statement = statement.where(
+                        tuple_(
+                            PortfolioSnapshotModel.valuation_at,
                             PortfolioSnapshotModel.id,
                         )
-                        .limit(_MAX_COLLECTION_ROWS)
+                        < (last_time, last_id)
+                    )
+                rows = tuple(
+                    session.scalars(
+                        statement.order_by(
+                            PortfolioSnapshotModel.valuation_at.desc(),
+                            PortfolioSnapshotModel.id.desc(),
+                        ).limit(query.limit + 1)
                     )
                 )
+                selected = rows[: query.limit]
                 now = _utc(self._clock())
-                latest_id = rows[0].id if rows else None
-                return paginate(
-                    tuple(
-                        _snapshot_view(
-                            item,
-                            now=now,
-                            quality=(
-                                _effective_snapshot_quality(
-                                    session,
-                                    item,
-                                    account_uuid,
-                                    now=now,
-                                )
-                                if item.id == latest_id
-                                else None
-                            ),
-                        )
-                        for item in rows
-                    ),
-                    cursor=cursor,
-                    limit=limit,
+                latest = _latest_snapshot(session, account_uuid)
+                values = tuple(
+                    _snapshot_view(
+                        item,
+                        now=now,
+                        quality=(
+                            _effective_snapshot_quality(
+                                session,
+                                item,
+                                account_uuid,
+                                now=now,
+                            )
+                            if latest is not None and item.id == latest.id
+                            else None
+                        ),
+                    )
+                    for item in selected
                 )
+                next_cursor = None
+                if len(rows) > query.limit and selected:
+                    item = selected[-1]
+                    next_cursor = self._cursors.encode(
+                        resource="snapshots",
+                        binding=binding,
+                        read_cutoff=cutoff,
+                        key=(item.valuation_at.isoformat(), str(item.id)),
+                    )
+                return Page(values, next_cursor, query.limit, total)
 
         return await asyncio.to_thread(read)
+
+    async def get_snapshot(
+        self, principal: Principal, account_id: str, snapshot_id: str
+    ) -> SnapshotView:
+        account_uuid = await self._read_access(principal, account_id, Scope.PORTFOLIO_READ)
+        snapshot_uuid = _uuid(snapshot_id, "snapshot_id")
+
+        def read() -> SnapshotView:
+            with self._sessions() as session:
+                snapshot = session.scalar(
+                    select(PortfolioSnapshotModel).where(
+                        PortfolioSnapshotModel.id == snapshot_uuid,
+                        PortfolioSnapshotModel.broker_account_id == account_uuid,
+                    )
+                )
+                if snapshot is None:
+                    raise LookupError("snapshot not found")
+                latest = _latest_snapshot(session, account_uuid)
+                now = _utc(self._clock())
+                quality = (
+                    _effective_snapshot_quality(session, snapshot, account_uuid, now=now)
+                    if latest is not None and latest.id == snapshot.id
+                    else _snapshot_quality(snapshot, now=now)
+                )
+                return _snapshot_view(snapshot, now=now, quality=quality)
+
+        return await asyncio.to_thread(read)
+
+    async def get_snapshot_detail(
+        self, principal: Principal, account_id: str, snapshot_id: str
+    ) -> SnapshotDetailView:
+        snapshot = await self.get_snapshot(principal, account_id, snapshot_id)
+        reason = (
+            "This metric is not persisted with the immutable portfolio snapshot and "
+            "cannot be reconstructed at that historical cutoff."
+        )
+
+        def unavailable(methodology: str) -> MetricView:
+            return _metric(
+                None,
+                snapshot.reporting_currency,
+                methodology,
+                provenance=("portfolio_snapshots", "coverage_gate"),
+                unavailable_reason=reason,
+            )
+
+        return SnapshotDetailView(
+            snapshot=snapshot,
+            dividends_received=unavailable("snapshot-cutoff dividend coverage gate"),
+            realized_profit_loss=unavailable("snapshot-cutoff realized profit/loss coverage gate"),
+            unrealized_profit_loss=unavailable(
+                "snapshot-cutoff unrealized profit/loss coverage gate"
+            ),
+        )
 
     async def compare_snapshots(
         self,
@@ -694,7 +1285,10 @@ class PostgresPortfolioService(PortfolioService):
                 run = session.scalar(
                     select(ReconciliationRunModel)
                     .where(ReconciliationRunModel.broker_account_id == account_uuid)
-                    .order_by(ReconciliationRunModel.as_of.desc(), ReconciliationRunModel.id)
+                    .order_by(
+                        ReconciliationRunModel.as_of.desc(),
+                        ReconciliationRunModel.id.desc(),
+                    )
                     .limit(1)
                 )
                 if run is None:
@@ -705,6 +1299,7 @@ class PostgresPortfolioService(PortfolioService):
                         algorithm_version="phase1-reconciliation/1.0.0",
                         tolerance_version="phase1-tolerance/1.0.0",
                         issues=(),
+                        discrepancy_count=0,
                         quality=_quality(
                             ViewQuality.PARTIAL,
                             as_of=observed,
@@ -713,33 +1308,715 @@ class PostgresPortfolioService(PortfolioService):
                             missing=("reconciliation_run",),
                         ),
                     )
-                issues = tuple(
-                    _reconciliation_issue(item)
-                    for item in session.scalars(
-                        select(ReconciliationDiscrepancyModel)
-                        .where(ReconciliationDiscrepancyModel.reconciliation_run_id == run.id)
-                        .order_by(
-                            ReconciliationDiscrepancyModel.severity.desc(),
-                            ReconciliationDiscrepancyModel.id,
-                        )
-                    )
+                latest_snapshot = _latest_snapshot(session, account_uuid)
+                gate_missing = _reconciliation_gate_missing(
+                    run,
+                    period_start=(
+                        None if latest_snapshot is None else latest_snapshot.valuation_at
+                    ),
+                    period_end=(None if latest_snapshot is None else latest_snapshot.valuation_at),
+                )
+                stored_state = _view_quality(run.quality_state)
+                effective_state = (
+                    _worst_quality_state((stored_state, ViewQuality.PARTIAL))
+                    if gate_missing
+                    else stored_state
                 )
                 return ReconciliationView(
-                    status=run.status,
+                    status=(
+                        "partial" if run.status == "reconciled" and gate_missing else run.status
+                    ),
                     evaluated_at=run.as_of,
                     algorithm_version=run.algorithm_version,
                     tolerance_version=run.tolerance_version,
-                    issues=issues,
+                    issues=(),
+                    discrepancy_count=run.discrepancy_count,
                     quality=_quality(
-                        _view_quality(run.quality_state),
+                        effective_state,
                         as_of=run.as_of,
                         source_at=run.coverage_end_at,
-                        warnings=_warning_text(run.warnings),
-                        missing=tuple(run.coverage_gaps),
+                        warnings=tuple(
+                            dict.fromkeys(
+                                (
+                                    *_warning_text(run.warnings),
+                                    *(
+                                        (
+                                            "Reconciliation does not satisfy the current "
+                                            "snapshot gate.",
+                                        )
+                                        if gate_missing
+                                        else ()
+                                    ),
+                                )
+                            )
+                        ),
+                        missing=tuple(dict.fromkeys((*run.coverage_gaps, *gate_missing))),
                     ),
                 )
 
         return await asyncio.to_thread(read)
+
+    async def list_reconciliation_discrepancies(
+        self,
+        principal: Principal,
+        account_id: str,
+        *,
+        query: PageQuery,
+    ) -> Page[ReconciliationIssueView]:
+        account_uuid = await self._read_access(principal, account_id, Scope.PORTFOLIO_READ)
+
+        def read() -> Page[ReconciliationIssueView]:
+            with self._sessions() as session:
+                binding = cursor_binding(account_id)
+                cutoff = _database_now(session)
+                cursor_key: tuple[str, ...] | None = None
+                if query.cursor is not None:
+                    cutoff, cursor_key = self._cursors.decode(
+                        query.cursor,
+                        resource="reconciliation_discrepancies",
+                        binding=binding,
+                        key_size=3,
+                    )
+                    run_id = _cursor_uuid(cursor_key[0])
+                    run = session.scalar(
+                        select(ReconciliationRunModel).where(
+                            ReconciliationRunModel.id == run_id,
+                            ReconciliationRunModel.broker_account_id == account_uuid,
+                        )
+                    )
+                else:
+                    run = session.scalar(
+                        select(ReconciliationRunModel)
+                        .where(ReconciliationRunModel.broker_account_id == account_uuid)
+                        .order_by(
+                            ReconciliationRunModel.as_of.desc(),
+                            ReconciliationRunModel.id.desc(),
+                        )
+                        .limit(1)
+                    )
+                if run is None:
+                    return Page((), None, query.limit, 0)
+                statement = select(ReconciliationDiscrepancyModel).where(
+                    ReconciliationDiscrepancyModel.reconciliation_run_id == run.id,
+                    ReconciliationDiscrepancyModel.created_at <= cutoff,
+                )
+                total = (
+                    session.scalar(
+                        select(func.count()).select_from(statement.order_by(None).subquery())
+                    )
+                    or 0
+                )
+                if cursor_key is not None:
+                    last_seen = _cursor_datetime(cursor_key[1])
+                    last_id = _cursor_uuid(cursor_key[2])
+                    statement = statement.where(
+                        tuple_(
+                            ReconciliationDiscrepancyModel.last_seen_at,
+                            ReconciliationDiscrepancyModel.id,
+                        )
+                        < (last_seen, last_id)
+                    )
+                rows = tuple(
+                    session.scalars(
+                        statement.order_by(
+                            ReconciliationDiscrepancyModel.last_seen_at.desc(),
+                            ReconciliationDiscrepancyModel.id.desc(),
+                        ).limit(query.limit + 1)
+                    )
+                )
+                selected = rows[: query.limit]
+                next_cursor = None
+                if len(rows) > query.limit and selected:
+                    item = selected[-1]
+                    next_cursor = self._cursors.encode(
+                        resource="reconciliation_discrepancies",
+                        binding=binding,
+                        read_cutoff=cutoff,
+                        key=(str(run.id), item.last_seen_at.isoformat(), str(item.id)),
+                    )
+                return Page(
+                    tuple(_reconciliation_issue(item) for item in selected),
+                    next_cursor,
+                    query.limit,
+                    total,
+                )
+
+        return await asyncio.to_thread(read)
+
+    async def search_instruments(
+        self, principal: Principal, *, query: InstrumentQuery
+    ) -> Page[InstrumentView]:
+        self._authorizer.require_scope(principal, Scope.PORTFOLIO_READ, now=_utc(self._clock()))
+        owner_uuid = _uuid(principal.owner_id, "owner_id")
+
+        def read() -> Page[InstrumentView]:
+            with self._sessions.begin() as session:
+                scopes = tuple(
+                    session.execute(
+                        select(
+                            BrokerConnectionModel.provider,
+                            BrokerConnectionModel.environment,
+                        )
+                        .where(BrokerConnectionModel.owner_id == owner_uuid)
+                        .distinct()
+                        .order_by(
+                            BrokerConnectionModel.provider,
+                            BrokerConnectionModel.environment,
+                        )
+                    ).all()
+                )
+                search = query.search.strip().casefold() if query.search is not None else None
+                definition = CollectionSnapshotDefinition(
+                    resource=CollectionSnapshotResource.INSTRUMENTS,
+                    owner_id=owner_uuid,
+                    broker_account_id=None,
+                    filter_fingerprint=collection_filter_fingerprint(
+                        search,
+                        *(f"{provider}/{environment}" for provider, environment in scopes),
+                    ),
+                )
+                snapshots = CollectionSnapshotStore(
+                    session,
+                    self._cursors,
+                    ttl_seconds=self._cursor_ttl_seconds,
+                    max_active_snapshots_per_owner=(
+                        self._max_active_collection_snapshots_per_owner
+                    ),
+                    max_active_members_per_owner=self._max_active_collection_members_per_owner,
+                )
+                if query.cursor is None:
+                    record_ids: Iterable[UUID] | Callable[[], Iterable[UUID]]
+                    if scopes:
+                        scope_filter = or_(
+                            *(
+                                and_(
+                                    ListingModel.provider == provider,
+                                    ListingModel.environment == environment,
+                                )
+                                for provider, environment in scopes
+                            )
+                        )
+                        identity_statement = (
+                            select(ListingModel.id)
+                            .join(
+                                InstrumentModel,
+                                InstrumentModel.id == ListingModel.instrument_id,
+                            )
+                            .where(scope_filter)
+                        )
+                        if query.search is not None:
+                            pattern = f"%{_escape_like(query.search.strip())}%"
+                            identity_statement = identity_statement.where(
+                                or_(
+                                    ListingModel.ticker.ilike(pattern, escape="\\"),
+                                    InstrumentModel.canonical_name.ilike(pattern, escape="\\"),
+                                )
+                            )
+                        identity_statement = identity_statement.order_by(
+                            ListingModel.provider,
+                            ListingModel.environment,
+                            func.lower(ListingModel.ticker),
+                            func.lower(InstrumentModel.canonical_name),
+                            ListingModel.id,
+                        )
+
+                        def load_record_ids() -> Iterable[UUID]:
+                            return session.scalars(
+                                identity_statement.execution_options(
+                                    yield_per=_COLLECTION_SNAPSHOT_STREAM_BATCH
+                                )
+                            )
+
+                        record_ids = load_record_ids
+                    else:
+                        record_ids = ()
+                    page = snapshots.materialize(
+                        definition,
+                        record_ids,
+                        limit=query.limit,
+                    )
+                else:
+                    page = snapshots.resume(definition, query.cursor, limit=query.limit)
+                rows = session.execute(
+                    select(ListingModel, InstrumentModel)
+                    .join(InstrumentModel, InstrumentModel.id == ListingModel.instrument_id)
+                    .where(ListingModel.id.in_(page.record_ids))
+                )
+                indexed = {listing.id: (listing, instrument) for listing, instrument in rows}
+                try:
+                    selected = tuple(indexed[record_id] for record_id in page.record_ids)
+                except KeyError as exc:
+                    raise CursorValidationError("invalid cursor") from exc
+                return Page(
+                    tuple(
+                        _instrument_view(listing, instrument) for listing, instrument in selected
+                    ),
+                    page.next_cursor,
+                    query.limit,
+                    page.exact_total,
+                )
+
+        return await asyncio.to_thread(read)
+
+    async def get_instrument(self, principal: Principal, instrument_id: str) -> InstrumentView:
+        self._authorizer.require_scope(principal, Scope.PORTFOLIO_READ, now=_utc(self._clock()))
+        owner_uuid = _uuid(principal.owner_id, "owner_id")
+        instrument_uuid = _uuid(instrument_id, "instrument_id")
+
+        def read() -> InstrumentView:
+            with self._sessions() as session:
+                row = session.execute(
+                    select(ListingModel, InstrumentModel)
+                    .join(InstrumentModel, InstrumentModel.id == ListingModel.instrument_id)
+                    .where(
+                        InstrumentModel.id == instrument_uuid,
+                        select(BrokerConnectionModel.id)
+                        .where(
+                            BrokerConnectionModel.owner_id == owner_uuid,
+                            BrokerConnectionModel.provider == ListingModel.provider,
+                            BrokerConnectionModel.environment == ListingModel.environment,
+                        )
+                        .exists(),
+                    )
+                    .order_by(
+                        ListingModel.provider,
+                        ListingModel.environment,
+                        func.lower(ListingModel.ticker),
+                        ListingModel.id,
+                    )
+                    .limit(1)
+                ).one_or_none()
+                if row is None:
+                    raise LookupError("instrument not found")
+                return _instrument_view(*row)
+
+        return await asyncio.to_thread(read)
+
+    async def get_core_performance_summary(
+        self, principal: Principal, account_id: str
+    ) -> PerformanceSummaryView:
+        account_uuid = await self._read_access(principal, account_id, Scope.PORTFOLIO_READ)
+
+        def read() -> PerformanceSummaryView:
+            with self._sessions() as session:
+                account = session.scalar(
+                    select(BrokerAccountModel).where(BrokerAccountModel.id == account_uuid)
+                )
+                if account is None:
+                    raise LookupError("account not found")
+                rows = tuple(
+                    session.scalars(
+                        select(PortfolioSnapshotModel)
+                        .where(PortfolioSnapshotModel.broker_account_id == account_uuid)
+                        .order_by(
+                            PortfolioSnapshotModel.valuation_at,
+                            PortfolioSnapshotModel.id,
+                        )
+                    )
+                )
+                now = _utc(self._clock())
+                start_at = rows[0].valuation_at if rows else None
+                end_at = rows[-1].valuation_at if rows else None
+                flows = tuple(
+                    session.scalars(
+                        select(CashFlowModel)
+                        .where(
+                            CashFlowModel.broker_account_id == account_uuid,
+                            CashFlowModel.classification == "external",
+                            CashFlowModel.active.is_(True),
+                            *(
+                                (CashFlowModel.occurred_at >= start_at,)
+                                if start_at is not None
+                                else ()
+                            ),
+                            *((CashFlowModel.occurred_at <= end_at,) if end_at is not None else ()),
+                        )
+                        .order_by(CashFlowModel.occurred_at, CashFlowModel.id)
+                    )
+                )
+                ambiguous_activity_count = (
+                    session.scalar(
+                        select(func.count())
+                        .select_from(TransactionModel)
+                        .where(
+                            TransactionModel.broker_account_id == account_uuid,
+                            func.lower(TransactionModel.status) != "reversed",
+                            or_(
+                                func.lower(TransactionModel.status) == "unknown",
+                                func.lower(TransactionModel.transaction_type).not_in(
+                                    _PERFORMANCE_SUPPORTED_TRANSACTION_TYPES
+                                ),
+                            ),
+                            *(
+                                (TransactionModel.occurred_at >= start_at,)
+                                if start_at is not None
+                                else ()
+                            ),
+                            *(
+                                (TransactionModel.occurred_at <= end_at,)
+                                if end_at is not None
+                                else ()
+                            ),
+                        )
+                    )
+                    or 0
+                )
+                checkpoint = session.scalar(
+                    select(IngestionCheckpointModel).where(
+                        IngestionCheckpointModel.broker_account_id == account_uuid,
+                        IngestionCheckpointModel.capability
+                        == IngestionCapability.TRANSACTIONS.value,
+                    )
+                )
+                reconciliation = session.scalar(
+                    select(ReconciliationRunModel)
+                    .where(ReconciliationRunModel.broker_account_id == account_uuid)
+                    .order_by(ReconciliationRunModel.as_of.desc(), ReconciliationRunModel.id.desc())
+                    .limit(1)
+                )
+                gaps: list[str] = []
+                if checkpoint is None:
+                    gaps.append("historical_transaction_checkpoint")
+                if any(item.portfolio_total is None for item in rows):
+                    gaps.append("complete_snapshot_values")
+                if ambiguous_activity_count:
+                    gaps.append("unambiguous_external_flow_classification")
+                reconciliation_missing = _reconciliation_gate_missing(
+                    reconciliation,
+                    period_start=start_at,
+                    period_end=end_at,
+                )
+                return calculate_core_performance(
+                    CorePerformanceInput(
+                        snapshots=tuple(
+                            PerformanceSnapshotInput(
+                                snapshot_id=str(item.id),
+                                valuation_at=item.valuation_at,
+                                value=item.portfolio_total,
+                                currency=item.reporting_currency,
+                                quality=_snapshot_quality(item, now=now).state,
+                            )
+                            for item in rows
+                        ),
+                        external_flows=tuple(
+                            PerformanceFlowInput(
+                                occurred_at=item.occurred_at,
+                                amount=item.amount,
+                                currency=item.currency,
+                                quality=_view_quality(item.quality),
+                            )
+                            for item in flows
+                        ),
+                        reporting_currency=account.base_currency,
+                        evaluated_at=now,
+                        coverage_start_at=(
+                            None if checkpoint is None else checkpoint.coverage_start_at
+                        ),
+                        coverage_end_at=(
+                            None if checkpoint is None else checkpoint.coverage_end_at
+                        ),
+                        coverage_complete=bool(
+                            checkpoint is not None and checkpoint.coverage_complete
+                        ),
+                        coverage_gaps=tuple(gaps),
+                        gate_missing_inputs=tuple((*gaps, *reconciliation_missing)),
+                        reconciled=not reconciliation_missing,
+                    )
+                )
+
+        return await asyncio.to_thread(read)
+
+    async def get_data_quality_summary(
+        self, principal: Principal, account_id: str
+    ) -> DataQualitySummaryView:
+        authorization_time = _utc(self._clock())
+        self._authorizer.require_scope(
+            principal,
+            Scope.PORTFOLIO_READ,
+            now=authorization_time,
+        )
+        self._authorizer.require_scope(
+            principal,
+            Scope.ACTIVITY_READ,
+            now=authorization_time,
+        )
+        summary = await self.get_summary(principal, account_id)
+        reconciliation = await self.get_reconciliation(principal, account_id)
+        account_uuid = _uuid(account_id, "account_id")
+
+        def read() -> tuple[
+            tuple[str, ...],
+            RefreshRunQualityView | None,
+            tuple[RefreshRunQualityView, ...],
+            tuple[CheckpointQualityView, ...],
+            str | None,
+            datetime | None,
+            int,
+            int,
+        ]:
+            with self._sessions() as session:
+                failed = tuple(
+                    str(value)
+                    for value in session.scalars(
+                        select(IngestionRunModel.id)
+                        .where(
+                            IngestionRunModel.broker_account_id == account_uuid,
+                            IngestionRunModel.status.in_(("partial", "failed", "cancelled")),
+                        )
+                        .order_by(IngestionRunModel.started_at.desc(), IngestionRunModel.id.desc())
+                        .limit(20)
+                    )
+                )
+                latest_run = session.scalar(
+                    select(IngestionRunModel)
+                    .where(IngestionRunModel.broker_account_id == account_uuid)
+                    .order_by(IngestionRunModel.started_at.desc(), IngestionRunModel.id.desc())
+                    .limit(1)
+                )
+                run_view = None if latest_run is None else _refresh_run_quality(latest_run)
+                latest_by_status = tuple(
+                    _refresh_run_quality(item)
+                    for status in ("succeeded", "partial", "failed")
+                    if (
+                        item := session.scalar(
+                            select(IngestionRunModel)
+                            .where(
+                                IngestionRunModel.broker_account_id == account_uuid,
+                                IngestionRunModel.status == status,
+                            )
+                            .order_by(
+                                IngestionRunModel.started_at.desc(),
+                                IngestionRunModel.id.desc(),
+                            )
+                            .limit(1)
+                        )
+                    )
+                    is not None
+                )
+                checkpoints = tuple(
+                    CheckpointQualityView(
+                        capability=item.capability,
+                        version=item.version,
+                        coverage_start_at=item.coverage_start_at,
+                        coverage_end_at=item.coverage_end_at,
+                        coverage_complete=item.coverage_complete,
+                    )
+                    for item in session.scalars(
+                        select(IngestionCheckpointModel)
+                        .where(IngestionCheckpointModel.broker_account_id == account_uuid)
+                        .order_by(IngestionCheckpointModel.capability)
+                    )
+                )
+                snapshot = _latest_snapshot(session, account_uuid)
+                latest_reconciliation = session.scalar(
+                    select(ReconciliationRunModel)
+                    .where(ReconciliationRunModel.broker_account_id == account_uuid)
+                    .order_by(
+                        ReconciliationRunModel.as_of.desc(),
+                        ReconciliationRunModel.id.desc(),
+                    )
+                    .limit(1)
+                )
+                foreign_flow_missing_fx = (
+                    session.scalar(
+                        select(func.count())
+                        .select_from(CashFlowModel)
+                        .where(
+                            CashFlowModel.broker_account_id == account_uuid,
+                            CashFlowModel.classification == "external",
+                            CashFlowModel.active.is_(True),
+                            CashFlowModel.currency != summary.account.reporting_currency,
+                        )
+                    )
+                    or 0
+                )
+                # One unresolved latest-run FX gap represents one missing economic
+                # component. Repeated discrepancy rows for the same listing are
+                # deduplicated; account-level gaps without a listing remain distinct.
+                reconciliation_missing_fx = (
+                    0
+                    if latest_reconciliation is None
+                    else session.scalar(
+                        select(
+                            func.count(
+                                func.distinct(
+                                    func.coalesce(
+                                        ReconciliationDiscrepancyModel.listing_id,
+                                        ReconciliationDiscrepancyModel.id,
+                                    )
+                                )
+                            )
+                        ).where(
+                            ReconciliationDiscrepancyModel.reconciliation_run_id
+                            == latest_reconciliation.id,
+                            ReconciliationDiscrepancyModel.discrepancy_type == "currency_fx_gap",
+                            ReconciliationDiscrepancyModel.resolution_state != "resolved",
+                        )
+                    )
+                    or 0
+                )
+                missing_fx = foreign_flow_missing_fx + reconciliation_missing_fx
+                unknown_mapping = (
+                    session.scalar(
+                        select(func.count())
+                        .select_from(TransactionModel)
+                        .where(
+                            TransactionModel.broker_account_id == account_uuid,
+                            func.lower(TransactionModel.status) != "reversed",
+                            or_(
+                                func.lower(TransactionModel.status) == "unknown",
+                                func.lower(TransactionModel.transaction_type).not_in(
+                                    _PERFORMANCE_SUPPORTED_TRANSACTION_TYPES
+                                ),
+                            ),
+                        )
+                    )
+                    or 0
+                )
+                return (
+                    failed,
+                    run_view,
+                    latest_by_status,
+                    checkpoints,
+                    None if snapshot is None else str(snapshot.id),
+                    None if snapshot is None else snapshot.source_cutoff_at,
+                    missing_fx,
+                    unknown_mapping,
+                )
+
+        (
+            failed_runs,
+            latest_run,
+            latest_runs_by_status,
+            checkpoints,
+            snapshot_id,
+            snapshot_cutoff,
+            missing_fx,
+            unknown_mapping,
+        ) = await asyncio.to_thread(read)
+        checkpoint_index = {item.capability: item for item in checkpoints}
+
+        def capability_quality(name: str, capability: IngestionCapability | None) -> QualityView:
+            if name == "reconciliation":
+                return reconciliation.quality
+            if capability is None:
+                return summary.quality
+            checkpoint = checkpoint_index.get(capability.value)
+            if checkpoint is None or not checkpoint.coverage_complete:
+                return _quality(
+                    ViewQuality.PARTIAL,
+                    as_of=summary.quality.as_of,
+                    source_at=checkpoint.coverage_end_at
+                    if checkpoint is not None and checkpoint.coverage_end_at is not None
+                    else summary.quality.source_timestamp,
+                    warnings=(f"{capability.value} coverage is incomplete.",),
+                    missing=(capability.value,),
+                )
+            return summary.quality
+
+        capability_specs = (
+            ("account_summary", IngestionCapability.ACCOUNT),
+            ("portfolio_snapshots", None),
+            ("positions", IngestionCapability.POSITIONS),
+            ("activity", IngestionCapability.TRANSACTIONS),
+            ("dividends", IngestionCapability.DIVIDENDS),
+            ("reconciliation", None),
+        )
+        capabilities = tuple(
+            CapabilityQualityView(capability=name, quality=capability_quality(name, capability))
+            for name, capability in capability_specs
+        )
+        extra_missing = tuple(
+            name
+            for count, name in (
+                (missing_fx, "external_flow_fx_conversion"),
+                (unknown_mapping, "unknown_transaction_mapping"),
+            )
+            if count
+        )
+        materialization_state = (
+            "missing"
+            if snapshot_id is None
+            else "available"
+            if reconciliation.status == "reconciled"
+            else "partial"
+        )
+        run_state = {
+            "failed": ViewQuality.FAILED,
+            "partial": ViewQuality.PARTIAL,
+            "cancelled": ViewQuality.PARTIAL,
+            "queued": ViewQuality.PARTIAL,
+            "running": ViewQuality.PARTIAL,
+        }.get(latest_run.status if latest_run is not None else "", ViewQuality.FRESH)
+        overall_state = _worst_quality_state(
+            (
+                summary.quality.state,
+                reconciliation.quality.state,
+                run_state,
+                ViewQuality.FRESH if materialization_state == "available" else ViewQuality.PARTIAL,
+                *(item.quality.state for item in capabilities),
+                *(ViewQuality.PARTIAL for _ in extra_missing),
+            )
+        )
+        overall = _quality(
+            overall_state,
+            as_of=max(summary.quality.as_of, reconciliation.quality.as_of),
+            source_at=min(
+                summary.quality.source_timestamp,
+                reconciliation.quality.source_timestamp,
+            ),
+            warnings=tuple(
+                dict.fromkeys(
+                    (
+                        *summary.quality.warnings,
+                        *reconciliation.quality.warnings,
+                        *(warning for item in capabilities for warning in item.quality.warnings),
+                        *(
+                            (f"Latest refresh ended {latest_run.status}.",)
+                            if latest_run is not None and latest_run.status != "succeeded"
+                            else ()
+                        ),
+                        *(
+                            ("Canonical materialization is incomplete.",)
+                            if materialization_state != "available"
+                            else ()
+                        ),
+                        *(("Material quality gates remain incomplete.",) if extra_missing else ()),
+                    )
+                )
+            ),
+            missing=tuple(
+                dict.fromkeys(
+                    (
+                        *summary.quality.missing_inputs,
+                        *reconciliation.quality.missing_inputs,
+                        *(item for value in capabilities for item in value.quality.missing_inputs),
+                        *extra_missing,
+                        *(
+                            ("canonical_materialization",)
+                            if materialization_state == "missing"
+                            else ()
+                        ),
+                    )
+                )
+            ),
+        )
+        return DataQualitySummaryView(
+            as_of=overall.as_of,
+            reporting_currency=summary.account.reporting_currency,
+            quality=overall,
+            capabilities=capabilities,
+            failed_or_partial_runs=failed_runs,
+            latest_refresh_run=latest_run,
+            latest_runs_by_status=latest_runs_by_status,
+            checkpoints=checkpoints,
+            latest_snapshot_id=snapshot_id,
+            latest_snapshot_source_cutoff_at=snapshot_cutoff,
+            materialization_state=materialization_state,
+            reconciliation_status=reconciliation.status,
+            missing_fx_record_count=missing_fx,
+            unknown_mapping_record_count=unknown_mapping,
+        )
 
     async def refresh(
         self,
@@ -809,6 +2086,134 @@ def _uuid(value: str, name: str) -> UUID:
         raise ValueError(f"{name} must be a UUID") from exc
 
 
+def _database_now(session: Session) -> datetime:
+    value = session.scalar(select(func.now()))
+    if value is None:
+        raise RuntimeError("database clock is unavailable")
+    return _utc(value)
+
+
+def _cursor_uuid(value: str) -> UUID:
+    try:
+        return UUID(value)
+    except (TypeError, ValueError, AttributeError) as exc:
+        raise CursorValidationError("invalid cursor") from exc
+
+
+def _cursor_datetime(value: str) -> datetime:
+    try:
+        return _parse_datetime(value)
+    except (TypeError, ValueError) as exc:
+        raise CursorValidationError("invalid cursor") from exc
+
+
+def _cursor_date(value: str) -> date:
+    try:
+        return date.fromisoformat(value)
+    except (TypeError, ValueError) as exc:
+        raise CursorValidationError("invalid cursor") from exc
+
+
+def _cursor_text(value: str) -> str:
+    if not value or len(value) > 500 or any(ord(character) < 32 for character in value):
+        raise CursorValidationError("invalid cursor")
+    return value
+
+
+def _cursor_metric(value: str) -> Decimal:
+    try:
+        parsed = Decimal(value)
+    except (InvalidOperation, TypeError, ValueError) as exc:
+        raise CursorValidationError("invalid cursor") from exc
+    sentinel = Decimal("-1E30")
+    if not parsed.is_finite() or (parsed != sentinel and parsed < 0):
+        raise CursorValidationError("invalid cursor")
+    return parsed
+
+
+def _refresh_run_quality(run: IngestionRunModel) -> RefreshRunQualityView:
+    steps: list[RefreshStepQualityView] = []
+    for item in run.warnings or []:
+        if not isinstance(item, dict):
+            continue
+        capability = item.get("capability")
+        if not isinstance(capability, str) or not capability:
+            continue
+        status = item.get("status")
+        raw_warnings = item.get("warnings")
+        warnings = (
+            tuple(str(value)[:500] for value in raw_warnings[:20])
+            if isinstance(raw_warnings, list)
+            else ()
+        )
+        steps.append(
+            RefreshStepQualityView(
+                capability=capability,
+                status=status if isinstance(status, str) and status else run.status,
+                warnings=warnings,
+            )
+        )
+    return RefreshRunQualityView(
+        id=str(run.id),
+        status=run.status,
+        started_at=run.started_at,
+        completed_at=run.completed_at,
+        steps=tuple(steps),
+    )
+
+
+def _parse_datetime(value: str) -> datetime:
+    try:
+        return _utc(datetime.fromisoformat(value.replace("Z", "+00:00")))
+    except ValueError as exc:
+        raise CursorValidationError("invalid cursor") from exc
+
+
+def _escape_like(value: str) -> str:
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+def _transaction_filters(statement: Any, query: ActivityQuery) -> Any:
+    if query.start_date is not None:
+        statement = statement.where(
+            TransactionModel.occurred_at >= datetime.combine(query.start_date, time.min, tzinfo=UTC)
+        )
+    if query.end_date is not None:
+        statement = statement.where(
+            TransactionModel.occurred_at
+            < datetime.combine(query.end_date + timedelta(days=1), time.min, tzinfo=UTC)
+        )
+    membership = canonical_activity_type_membership(query.activity_type)
+    if membership is not None:
+        if not membership:
+            statement = statement.where(literal(False))
+        elif len(membership) == 1:
+            statement = statement.where(
+                func.lower(TransactionModel.transaction_type) == next(iter(membership))
+            )
+        else:
+            statement = statement.where(
+                func.lower(TransactionModel.transaction_type).in_(tuple(sorted(membership)))
+            )
+    return statement
+
+
+def _position_collection_resource(sort: PositionSort) -> CollectionSnapshotResource:
+    return {
+        PositionSort.MARKET_VALUE_DESC: CollectionSnapshotResource.POSITIONS_MARKET_VALUE,
+        PositionSort.WEIGHT_DESC: CollectionSnapshotResource.POSITIONS_WEIGHT,
+        PositionSort.TICKER_ASC: CollectionSnapshotResource.POSITIONS_TICKER,
+    }[sort]
+
+
+def _dividend_filters(statement: Any, start: date | None, end: date | None) -> Any:
+    if start is not None:
+        statement = statement.where(DividendModel.paid_on >= start)
+    if end is not None:
+        statement = statement.where(DividendModel.paid_on <= end)
+    return statement
+
+
 def _utc(value: datetime) -> datetime:
     if value.tzinfo is None or value.utcoffset() is None:
         raise ValueError("timestamp must be timezone-aware")
@@ -830,11 +2235,33 @@ def _account_view(account: BrokerAccountModel, connection: BrokerConnectionModel
     )
 
 
+def _instrument_view(listing: ListingModel, instrument: InstrumentModel) -> InstrumentView:
+    return InstrumentView(
+        id=str(instrument.id),
+        instrument_id=str(instrument.id),
+        listing_id=str(listing.id),
+        ticker=listing.ticker,
+        name=instrument.canonical_name,
+        canonical_name=instrument.canonical_name,
+        instrument_type=instrument.instrument_type,
+        isin=instrument.isin,
+        exchange_mic=listing.exchange_mic,
+        exchange_id=listing.exchange_id,
+        trading_currency=listing.trading_currency,
+        provider=listing.provider,
+        environment=listing.environment,
+        listing_status=listing.status,
+    )
+
+
 def _latest_snapshot(session: Session, account_id: UUID) -> PortfolioSnapshotModel | None:
     return session.scalar(
         select(PortfolioSnapshotModel)
         .where(PortfolioSnapshotModel.broker_account_id == account_id)
-        .order_by(PortfolioSnapshotModel.valuation_at.desc(), PortfolioSnapshotModel.id)
+        .order_by(
+            PortfolioSnapshotModel.valuation_at.desc(),
+            PortfolioSnapshotModel.id.desc(),
+        )
         .limit(1)
     )
 
@@ -873,6 +2300,35 @@ def _view_quality(value: str) -> ViewQuality:
         return ViewQuality(value)
     except ValueError:
         return ViewQuality.FAILED
+
+
+def _reconciliation_gate_missing(
+    run: ReconciliationRunModel | None,
+    *,
+    period_start: datetime | None,
+    period_end: datetime | None,
+) -> tuple[str, ...]:
+    """Return stable fail-closed reasons for an economic reconciliation gate."""
+
+    if run is None:
+        return ("reconciliation_run",)
+    missing: list[str] = []
+    if run.status != "reconciled":
+        missing.append("reconciled_material_inputs")
+    if not run.coverage_complete or run.coverage_gaps:
+        missing.append("complete_reconciliation_coverage")
+    if _view_quality(run.quality_state) is not ViewQuality.FRESH:
+        missing.append("fresh_reconciliation_inputs")
+    if run.discrepancy_count:
+        missing.append("zero_reconciliation_discrepancies")
+    if period_start is not None and run.coverage_start_at > period_start:
+        missing.append("reconciliation_coverage_at_period_start")
+    if period_end is not None:
+        if run.coverage_end_at < period_end:
+            missing.append("reconciliation_coverage_at_period_end")
+        if run.as_of < period_end:
+            missing.append("reconciliation_at_period_end")
+    return tuple(dict.fromkeys(missing))
 
 
 def _quality(
@@ -997,37 +2453,50 @@ def _overlay_reconciliation_quality(
         .order_by(ReconciliationRunModel.as_of.desc(), ReconciliationRunModel.id.desc())
         .limit(1)
     )
-    if run is None or run.as_of < snapshot.valuation_at:
-        return base
-    severity = {
-        ViewQuality.FRESH: 0,
-        ViewQuality.STALE: 1,
-        ViewQuality.ESTIMATED: 2,
-        ViewQuality.PARTIAL: 3,
-        ViewQuality.UNRECONCILED: 4,
-        ViewQuality.FAILED: 5,
-    }
-    reconciliation_state = _view_quality(run.quality_state)
-    state = max((base.state, reconciliation_state), key=severity.__getitem__)
+    gate_missing = _reconciliation_gate_missing(
+        run,
+        period_start=snapshot.valuation_at,
+        period_end=snapshot.valuation_at,
+    )
+    reconciliation_state = ViewQuality.PARTIAL if run is None else _view_quality(run.quality_state)
+    state = _worst_quality_state((base.state, reconciliation_state))
+    if gate_missing:
+        state = _worst_quality_state((state, ViewQuality.PARTIAL))
     warning = (
         f"Latest reconciliation has {run.discrepancy_count} open discrepancy records."
-        if run.discrepancy_count
+        if run is not None and run.discrepancy_count
         else None
+    )
+    gate_warning = (
+        "Reconciliation does not satisfy the current snapshot gate." if gate_missing else None
     )
     return _quality(
         state,
-        as_of=max(base.as_of, run.as_of),
-        source_at=max(base.source_timestamp, run.coverage_end_at),
+        as_of=max(base.as_of, run.as_of) if run is not None else base.as_of,
+        source_at=(
+            min(base.source_timestamp, run.coverage_end_at)
+            if run is not None
+            else base.source_timestamp
+        ),
         warnings=tuple(
             dict.fromkeys(
                 (
                     *base.warnings,
-                    *_warning_text(run.warnings),
+                    *((_warning_text(run.warnings)) if run is not None else ()),
                     *((warning,) if warning is not None else ()),
+                    *((gate_warning,) if gate_warning is not None else ()),
                 )
             )
         ),
-        missing=tuple(dict.fromkeys((*base.missing_inputs, *run.coverage_gaps))),
+        missing=tuple(
+            dict.fromkeys(
+                (
+                    *base.missing_inputs,
+                    *((run.coverage_gaps) if run is not None else ()),
+                    *gate_missing,
+                )
+            )
+        ),
     )
 
 
@@ -1331,6 +2800,17 @@ def _reconciliation_issue(item: ReconciliationDiscrepancyModel) -> Reconciliatio
 
 
 def _comparison_quality(start: QualityView, end: QualityView) -> QualityView:
+    state = _worst_quality_state((start.state, end.state))
+    return _quality(
+        state,
+        as_of=end.as_of,
+        source_at=end.source_timestamp,
+        warnings=tuple(dict.fromkeys((*start.warnings, *end.warnings))),
+        missing=tuple(dict.fromkeys((*start.missing_inputs, *end.missing_inputs))),
+    )
+
+
+def _worst_quality_state(values: Sequence[ViewQuality]) -> ViewQuality:
     severity = {
         ViewQuality.FRESH: 0,
         ViewQuality.STALE: 1,
@@ -1339,20 +2819,7 @@ def _comparison_quality(start: QualityView, end: QualityView) -> QualityView:
         ViewQuality.UNRECONCILED: 4,
         ViewQuality.FAILED: 5,
     }
-    state = max(
-        (
-            start.state,
-            end.state,
-        ),
-        key=severity.__getitem__,
-    )
-    return _quality(
-        state,
-        as_of=end.as_of,
-        source_at=end.source_timestamp,
-        warnings=tuple(dict.fromkeys((*start.warnings, *end.warnings))),
-        missing=tuple(dict.fromkeys((*start.missing_inputs, *end.missing_inputs))),
-    )
+    return max(values or (ViewQuality.PARTIAL,), key=severity.__getitem__)
 
 
 def _weight(value: Decimal | None, total: Decimal | None) -> Decimal | None:

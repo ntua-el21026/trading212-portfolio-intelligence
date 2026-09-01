@@ -2,7 +2,19 @@
 
 from __future__ import annotations
 
-from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, generate_latest
+from ipaddress import ip_address
+from threading import Lock, Thread
+from types import TracebackType
+from wsgiref.simple_server import WSGIServer
+
+from prometheus_client import (
+    CollectorRegistry,
+    Counter,
+    Gauge,
+    Histogram,
+    generate_latest,
+    start_http_server,
+)
 
 
 class OperationalMetrics:
@@ -43,6 +55,117 @@ class OperationalMetrics:
             subsystem=subsystem,
             registry=self.registry,
         )
+        self.queue_pending_items = Gauge(
+            "queue_pending_items",
+            "Durable events currently pending publication.",
+            labelnames=("queue",),
+            namespace=namespace,
+            subsystem=subsystem,
+            registry=self.registry,
+        )
+        self.queue_oldest_pending_age_seconds = Gauge(
+            "queue_oldest_pending_age_seconds",
+            "Age in seconds of the oldest pending durable event.",
+            labelnames=("queue",),
+            namespace=namespace,
+            subsystem=subsystem,
+            registry=self.registry,
+        )
+        self.queue_recoveries = Counter(
+            "queue_recoveries_total",
+            "Recovered durable queue claims by bounded reason.",
+            labelnames=("queue", "reason"),
+            namespace=namespace,
+            subsystem=subsystem,
+            registry=self.registry,
+        )
+        self.queue_delivery_failures = Counter(
+            "queue_delivery_failures_total",
+            "Failed durable queue delivery attempts.",
+            labelnames=("queue",),
+            namespace=namespace,
+            subsystem=subsystem,
+            registry=self.registry,
+        )
+        self.queue_delivery_attempts = Counter(
+            "queue_delivery_attempts_total",
+            "Durable queue delivery attempts by bounded outcome.",
+            labelnames=("queue", "outcome"),
+            namespace=namespace,
+            subsystem=subsystem,
+            registry=self.registry,
+        )
+        self.queue_runs_without_deliverable_event = Gauge(
+            "queue_runs_without_deliverable_event",
+            "Queued runs found without a deliverable event in the latest dispatcher cycle.",
+            labelnames=("queue",),
+            namespace=namespace,
+            subsystem=subsystem,
+            registry=self.registry,
+        )
 
     def render(self) -> bytes:
         return generate_latest(self.registry)
+
+
+class MetricsHttpServer:
+    """Own a private-registry Prometheus listener and its complete lifecycle."""
+
+    def __init__(self, *, server: WSGIServer, thread: Thread) -> None:
+        self._server = server
+        self._thread = thread
+        self._close_lock = Lock()
+        self._closed = False
+
+    @classmethod
+    def start(
+        cls,
+        *,
+        metrics: OperationalMetrics,
+        host: str,
+        port: int,
+    ) -> MetricsHttpServer:
+        if not host or len(host) > 45:
+            raise ValueError("metrics host must be a bounded IP address")
+        try:
+            normalized_host = str(ip_address(host))
+        except ValueError as exc:
+            raise ValueError("metrics host must be a bounded IP address") from exc
+        if type(port) is not int or not 0 <= port <= 65_535:
+            raise ValueError("metrics port is out of bounds")
+        server, thread = start_http_server(
+            port=port,
+            addr=normalized_host,
+            registry=metrics.registry,
+        )
+        return cls(server=server, thread=thread)
+
+    @property
+    def bound_port(self) -> int:
+        return int(self._server.server_port)
+
+    @property
+    def is_running(self) -> bool:
+        return self._thread.is_alive()
+
+    def close(self) -> None:
+        with self._close_lock:
+            if self._closed:
+                return
+            self._server.shutdown()
+            self._server.server_close()
+            self._thread.join(timeout=5)
+            if self._thread.is_alive():
+                raise RuntimeError("metrics HTTP server did not stop")
+            self._closed = True
+
+    def __enter__(self) -> MetricsHttpServer:
+        return self
+
+    def __exit__(
+        self,
+        _exc_type: type[BaseException] | None,
+        _exc_value: BaseException | None,
+        _traceback: TracebackType | None,
+    ) -> None:
+        self.close()

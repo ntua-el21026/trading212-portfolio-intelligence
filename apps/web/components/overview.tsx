@@ -8,7 +8,7 @@ import Link from "next/link";
 
 import { EmptyState, Surface } from "@trading212/ui";
 
-import type { PortfolioBundle } from "../lib/contracts";
+import type { OverviewBundle } from "../lib/contracts";
 import {
   formatDateTime,
   formatDecimal,
@@ -19,7 +19,7 @@ import { AllocationChart } from "./charts";
 import { MetricCard, MoneyValue } from "./financial";
 import { QualityBanner, TrustRail } from "./quality";
 
-export function Overview({ bundle }: Readonly<{ bundle: PortfolioBundle }>) {
+export function Overview({ bundle }: Readonly<{ bundle: OverviewBundle }>) {
   const { allocation, positions, reconciliation, summary } = bundle;
   return (
     <>
@@ -87,14 +87,17 @@ export function Overview({ bundle }: Readonly<{ bundle: PortfolioBundle }>) {
             <section className="overview-section">
               <div className="section-heading-row">
                 <div>
-                  <h2>Direct allocation</h2>
-                  <p>Canonical position weights, including cash.</p>
+                  <h2>Direct allocation preview</h2>
+                  <p className="allocation-preview-count">
+                    Showing {allocation.returned_count} of {allocation.total}{" "}
+                    canonical rows, including cash when available.
+                  </p>
                 </div>
                 <Link className="text-link" href="/allocation">
                   Explore allocation <ArrowRight aria-hidden="true" size={15} />
                 </Link>
               </div>
-              {allocation.length === 0 ? (
+              {allocation.returned_count === 0 ? (
                 <EmptyState
                   description="Allocation will appear after the first successful portfolio snapshot."
                   icon={<BriefcaseBusiness aria-hidden="true" size={21} />}
@@ -103,7 +106,7 @@ export function Overview({ bundle }: Readonly<{ bundle: PortfolioBundle }>) {
               ) : (
                 <div className="allocation-overview">
                   <div className="allocation-chart-wrap">
-                    <AllocationChart data={allocation} />
+                    <AllocationChart data={allocation.items} />
                     <div className="allocation-chart-center" aria-hidden="true">
                       <MoneyValue metric={summary.total_value} />
                       <small>{summary.account.reporting_currency} total</small>
@@ -124,7 +127,7 @@ export function Overview({ bundle }: Readonly<{ bundle: PortfolioBundle }>) {
                         </tr>
                       </thead>
                       <tbody>
-                        {allocation.map((item, index) => (
+                        {allocation.items.map((item, index) => (
                           <tr key={item.id}>
                             <th scope="row">
                               <span
@@ -146,8 +149,11 @@ export function Overview({ bundle }: Readonly<{ bundle: PortfolioBundle }>) {
             <section className="overview-section holdings-preview">
               <div className="section-heading-row">
                 <div>
-                  <h2>Holdings</h2>
-                  <p>{positions.total} direct positions in this portfolio.</p>
+                  <h2>Largest direct holdings preview</h2>
+                  <p>
+                    Showing {positions.items.length} of {positions.total} direct
+                    positions, ordered by market value.
+                  </p>
                 </div>
                 <Link className="text-link" href="/holdings">
                   View all <ArrowRight aria-hidden="true" size={15} />

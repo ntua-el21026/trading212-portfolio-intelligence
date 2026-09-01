@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from decimal import Decimal
@@ -72,6 +71,34 @@ class AccountView:
     reporting_currency: str
     connection_state: str
     last_refresh_at: datetime | None
+
+
+@dataclass(frozen=True, slots=True)
+class BrokerConnectionView:
+    id: str
+    provider: str
+    environment: str
+    status: str
+    credential_configured: bool
+    last_successful_refresh_at: datetime | None
+
+
+@dataclass(frozen=True, slots=True)
+class InstrumentView:
+    id: str
+    instrument_id: str
+    listing_id: str
+    ticker: str
+    name: str
+    canonical_name: str
+    instrument_type: str
+    isin: str | None
+    exchange_mic: str | None
+    exchange_id: str | None
+    trading_currency: str
+    provider: str
+    environment: str
+    listing_status: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -161,6 +188,13 @@ class AllocationView:
 
 
 @dataclass(frozen=True, slots=True)
+class DirectAllocationView:
+    items: tuple[AllocationView, ...]
+    total: int
+    truncated: bool
+
+
+@dataclass(frozen=True, slots=True)
 class SnapshotView:
     id: str
     valuation_at: datetime
@@ -171,6 +205,16 @@ class SnapshotView:
     invested_value: MetricView
     net_contributions: MetricView
     quality: QualityView
+
+
+@dataclass(frozen=True, slots=True)
+class SnapshotDetailView:
+    """One immutable snapshot plus metrics that are valid at that snapshot only."""
+
+    snapshot: SnapshotView
+    dividends_received: MetricView
+    realized_profit_loss: MetricView
+    unrealized_profit_loss: MetricView
 
 
 @dataclass(frozen=True, slots=True)
@@ -205,7 +249,107 @@ class ReconciliationView:
     algorithm_version: str
     tolerance_version: str
     issues: tuple[ReconciliationIssueView, ...]
+    discrepancy_count: int
     quality: QualityView
+
+
+@dataclass(frozen=True, slots=True)
+class DividendCurrencyTotalView:
+    currency: str
+    net_amount: Decimal
+    gross_amount: Decimal | None
+    withholding_tax: Decimal | None
+
+
+@dataclass(frozen=True, slots=True)
+class DividendSummaryView:
+    start_date: date
+    end_date: date
+    totals: tuple[DividendCurrencyTotalView, ...]
+    recent: tuple[DividendView, ...]
+    covered_record_count: int
+    totals_truncated: bool
+    omitted_currency_count: int
+    quality: QualityView
+
+
+@dataclass(frozen=True, slots=True)
+class ReturnMetricView:
+    method_id: str
+    value_kind: str
+    period_start: datetime | None
+    period_end: datetime
+    value: Decimal | None
+    annualized_value: Decimal | None
+    availability: Availability
+    calculation_version: str
+    methodology: str
+    converged: bool | None
+    iterations: int | None
+    missing_inputs: tuple[str, ...]
+    assumptions: tuple[str, ...]
+    warnings: tuple[str, ...]
+    quality_state: ViewQuality
+    unavailable_reason: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class PerformanceSummaryView:
+    period_start: date | None
+    period_end: date
+    money_weighted_return: ReturnMetricView
+    time_weighted_return: ReturnMetricView
+    modified_dietz_return: ReturnMetricView
+    quality: QualityView
+
+
+@dataclass(frozen=True, slots=True)
+class CapabilityQualityView:
+    capability: str
+    quality: QualityView
+
+
+@dataclass(frozen=True, slots=True)
+class RefreshStepQualityView:
+    capability: str
+    status: str
+    warnings: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class RefreshRunQualityView:
+    id: str
+    status: str
+    started_at: datetime
+    completed_at: datetime | None
+    steps: tuple[RefreshStepQualityView, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class CheckpointQualityView:
+    capability: str
+    version: int
+    coverage_start_at: datetime | None
+    coverage_end_at: datetime | None
+    coverage_complete: bool
+
+
+@dataclass(frozen=True, slots=True)
+class DataQualitySummaryView:
+    as_of: datetime
+    reporting_currency: str
+    quality: QualityView
+    capabilities: tuple[CapabilityQualityView, ...]
+    failed_or_partial_runs: tuple[str, ...]
+    latest_refresh_run: RefreshRunQualityView | None
+    latest_runs_by_status: tuple[RefreshRunQualityView, ...]
+    checkpoints: tuple[CheckpointQualityView, ...]
+    latest_snapshot_id: str | None
+    latest_snapshot_source_cutoff_at: datetime | None
+    materialization_state: str
+    reconciliation_status: str
+    missing_fx_record_count: int
+    unknown_mapping_record_count: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -226,23 +370,6 @@ class Page[PageItem]:
     next_cursor: str | None
     limit: int
     total: int
-
-
-def paginate[ItemT](items: Sequence[ItemT], *, cursor: str | None, limit: int) -> Page[ItemT]:
-    if isinstance(limit, bool) or not 1 <= limit <= 100:
-        raise ValueError("limit must be between 1 and 100")
-    offset = 0
-    if cursor is not None:
-        match = re.fullmatch(r"p1:([0-9]{1,9})", cursor)
-        if match is None:
-            raise ValueError("invalid cursor")
-        offset = int(match.group(1))
-    if offset > len(items):
-        raise ValueError("cursor is outside the result set")
-    selected = tuple(items[offset : offset + limit])
-    next_offset = offset + len(selected)
-    next_cursor = f"p1:{next_offset}" if next_offset < len(items) else None
-    return Page(selected, next_cursor, limit, len(items))
 
 
 def utc(value: datetime) -> datetime:

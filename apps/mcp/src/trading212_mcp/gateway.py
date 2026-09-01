@@ -8,15 +8,28 @@ import logging
 import re
 import uuid
 from collections.abc import Awaitable, Callable, Iterable
-from datetime import UTC, date
-from decimal import Decimal
-from typing import Any, TypeVar
+from datetime import date
+from typing import Any, TypeVar, cast
 
 from mcp.server.mcpserver import Context
 from mcp.types import CallToolResult, TextContent
 from pydantic import BaseModel
+from trading212_application.queries import (
+    ActivityQuery,
+    CollectionSnapshotCapacityError,
+    CursorValidationError,
+    DirectAllocationQuery,
+    DividendSummaryQuery,
+    PageQuery,
+    PositionQuery,
+)
+from trading212_application.queries import (
+    ActivityTypeFilter as ApplicationActivityTypeFilter,
+)
+from trading212_application.queries import (
+    PositionSort as ApplicationPositionSort,
+)
 from trading212_application.services import PortfolioService
-from trading212_application.views import Page, QualityView, paginate
 from trading212_domain.values import decimal_string
 from trading212_security.principals import (
     AuthenticationError,
@@ -32,6 +45,7 @@ from .schemas import (
     ActivityTypeFilter,
     Calculation,
     CapabilityQuality,
+    CheckpointQuality,
     DataQualitySummaryData,
     DataQualitySummaryResult,
     DirectAllocationData,
@@ -48,6 +62,8 @@ from .schemas import (
     ReconciliationData,
     ReconciliationResult,
     ReconciliationSummary,
+    RefreshRunQuality,
+    RefreshStepQuality,
     SnapshotComparisonResult,
     SnapshotData,
     TransactionsData,
@@ -67,13 +83,6 @@ from .serialization import (
 )
 
 _CORRELATION_PATTERN = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
-_COLLECTION_PAGE_SIZE = 100
-_COLLECTION_PAGE_COUNT = 5
-_COLLECTION_CAP = _COLLECTION_PAGE_SIZE * _COLLECTION_PAGE_COUNT
-_KNOWN_ACTIVITY_TYPES = frozenset(
-    {"buy", "sell", "dividend", "deposit", "withdrawal", "interest", "fee", "tax", "transfer"}
-)
-
 ResultT = TypeVar("ResultT", bound=BaseModel)
 
 
@@ -115,7 +124,7 @@ class PortfolioMcpGateway:
                 reconciliation=ReconciliationSummary(
                     status=safe_text(reconciliation.status, maximum=40),
                     evaluated_at=reconciliation.evaluated_at,
-                    discrepancy_count=len(reconciliation.issues),
+                    discrepancy_count=reconciliation.discrepancy_count,
                 ),
             )
             result = AccountSummaryResult(
@@ -155,34 +164,26 @@ class PortfolioMcpGateway:
         async def operation(
             principal: Principal,
         ) -> tuple[PortfolioSnapshotResult, str, dict[str, Any]]:
-            async def fetch(cursor: str | None, limit: int) -> Page[Any]:
-                return await self._service.list_snapshots(
-                    principal, account_id, cursor=cursor, limit=limit
+            if snapshot_id is not None:
+                detail, account = await asyncio.gather(
+                    self._service.get_snapshot_detail(principal, account_id, snapshot_id),
+                    self._service.get_account(principal, account_id),
                 )
-
-            (snapshots, collection_truncated), summary = await asyncio.gather(
-                _collect_pages(fetch),
-                self._service.get_summary(principal, account_id),
-            )
-            if not snapshots:
-                raise LookupError("snapshot not found")
-            selected = (
-                next((item for item in snapshots if item.id == snapshot_id), None)
-                if snapshot_id is not None
-                else max(snapshots, key=lambda item: item.valuation_at)
-            )
-            if selected is None:
-                raise LookupError("snapshot not found")
-            synthetic = (
-                summary.account.provider == "synthetic"
-                or summary.account.environment == "synthetic"
-            )
-            extra = (
-                [f"Snapshot search was capped at {_COLLECTION_CAP} records."]
-                if collection_truncated
-                else []
-            )
-            snapshot_quality = quality(selected.quality, extra_warnings=extra)
+            else:
+                snapshots, account = await asyncio.gather(
+                    self._service.list_snapshots(principal, account_id, query=PageQuery(limit=1)),
+                    self._service.get_account(principal, account_id),
+                )
+                if not snapshots.items:
+                    raise LookupError("snapshot not found")
+                detail = await self._service.get_snapshot_detail(
+                    principal,
+                    account_id,
+                    snapshots.items[0].id,
+                )
+            selected = detail.snapshot
+            synthetic = account.provider == "synthetic" or account.environment == "synthetic"
+            snapshot_quality = quality(selected.quality)
             data = SnapshotData(
                 id=safe_text(selected.id, maximum=255),
                 valuation_at=selected.valuation_at,
@@ -192,9 +193,9 @@ class PortfolioMcpGateway:
                 cash_value=metric(selected.cash_value),
                 invested_value=metric(selected.invested_value),
                 net_contributions=metric(selected.net_contributions),
-                dividends_received=metric(summary.dividends_received),
-                realized_profit_loss=metric(summary.realized_profit_loss),
-                unrealized_profit_loss=metric(summary.unrealized_profit_loss),
+                dividends_received=metric(detail.dividends_received),
+                realized_profit_loss=metric(detail.realized_profit_loss),
+                unrealized_profit_loss=metric(detail.unrealized_profit_loss),
                 synthetic_data=synthetic,
                 quality_disclosure=(
                     f"Quality is {selected.quality.state.value}; source cutoff is "
@@ -252,29 +253,18 @@ class PortfolioMcpGateway:
             normalized_search = search.strip() if search is not None else None
             if normalized_search == "":
                 raise ValueError("search must contain visible characters")
-
-            async def fetch(page_cursor: str | None, page_limit: int) -> Page[Any]:
-                return await self._service.list_positions(
-                    principal, account_id, cursor=page_cursor, limit=page_limit
-                )
-
-            (values, collection_truncated), summary = await asyncio.gather(
-                _collect_pages(fetch),
+            selected, summary = await asyncio.gather(
+                self._service.list_positions(
+                    principal,
+                    account_id,
+                    query=PositionQuery(
+                        cursor=cursor,
+                        limit=limit,
+                        sort=ApplicationPositionSort(sort.value),
+                        search=normalized_search,
+                    ),
+                ),
                 self._service.get_summary(principal, account_id),
-            )
-            if normalized_search is not None:
-                needle = normalized_search.casefold()
-                values = [
-                    item
-                    for item in values
-                    if needle in item.ticker.casefold() or needle in item.name.casefold()
-                ]
-            _sort_positions(values, sort)
-            selected = paginate(values, cursor=cursor, limit=limit)
-            extra = (
-                [f"Position collection was capped at {_COLLECTION_CAP} records."]
-                if collection_truncated
-                else []
             )
             result = PositionsResult(
                 data=PositionsData(
@@ -284,7 +274,7 @@ class PortfolioMcpGateway:
                 ),
                 as_of=summary.quality.as_of,
                 reporting_currency=summary.account.reporting_currency,
-                data_quality=quality(summary.quality, extra_warnings=extra),
+                data_quality=quality(summary.quality),
                 calculation=_calculation(
                     "canonical_positions",
                     summary.total_value.calculation_version,
@@ -294,7 +284,7 @@ class PortfolioMcpGateway:
                     next_cursor=selected.next_cursor,
                     limit=selected.limit,
                     total=selected.total,
-                    truncated=collection_truncated,
+                    truncated=selected.next_cursor is not None,
                 ),
                 error=None,
             )
@@ -321,33 +311,21 @@ class PortfolioMcpGateway:
     ) -> CallToolResult:
         async def operation(principal: Principal) -> tuple[TransactionsResult, str, dict[str, Any]]:
             _validate_date_range(start_date, end_date, maximum_days=366)
-
-            async def fetch(page_cursor: str | None, page_limit: int) -> Page[Any]:
-                return await self._service.list_activity(
-                    principal, account_id, cursor=page_cursor, limit=page_limit
-                )
-
-            (values, collection_truncated), account_value = await asyncio.gather(
-                _collect_pages(fetch),
-                self._service.get_account(principal, account_id),
+            selected, summary = await asyncio.gather(
+                self._service.list_activity(
+                    principal,
+                    account_id,
+                    query=ActivityQuery(
+                        cursor=cursor,
+                        limit=limit,
+                        start_date=start_date,
+                        end_date=end_date,
+                        activity_type=ApplicationActivityTypeFilter(type_filter.value),
+                    ),
+                ),
+                self._service.get_summary(principal, account_id),
             )
-            values = [
-                item
-                for item in values
-                if start_date <= item.occurred_at.astimezone(UTC).date() <= end_date
-                and _activity_matches(item.activity_type, type_filter)
-            ]
-            values.sort(key=lambda item: (item.occurred_at, item.id), reverse=True)
-            selected = paginate(values, cursor=cursor, limit=limit)
-            base_quality = _first_quality(values)
-            if base_quality is None:
-                summary = await self._service.get_summary(principal, account_id)
-                base_quality = summary.quality
-            extra = (
-                [f"Activity collection was capped at {_COLLECTION_CAP} records."]
-                if collection_truncated
-                else []
-            )
+            base_quality = selected.items[0].quality if selected.items else summary.quality
             result = TransactionsResult(
                 data=TransactionsData(
                     transactions=[activity(item) for item in selected.items],
@@ -356,8 +334,8 @@ class PortfolioMcpGateway:
                     type_filter=type_filter,
                 ),
                 as_of=base_quality.as_of,
-                reporting_currency=account_value.reporting_currency,
-                data_quality=quality(base_quality, extra_warnings=extra),
+                reporting_currency=summary.account.reporting_currency,
+                data_quality=quality(base_quality),
                 calculation=_calculation(
                     "normalized_activity",
                     "phase1-ledger/1.0.0",
@@ -367,7 +345,7 @@ class PortfolioMcpGateway:
                     next_cursor=selected.next_cursor,
                     limit=selected.limit,
                     total=selected.total,
-                    truncated=collection_truncated,
+                    truncated=selected.next_cursor is not None,
                 ),
                 error=None,
             )
@@ -398,43 +376,51 @@ class PortfolioMcpGateway:
             principal: Principal,
         ) -> tuple[DividendSummaryResult, str, dict[str, Any]]:
             _validate_date_range(start_date, end_date, maximum_days=3_660)
-
-            async def fetch(page_cursor: str | None, page_limit: int) -> Page[Any]:
-                return await self._service.list_dividends(
-                    principal, account_id, cursor=page_cursor, limit=page_limit
-                )
-
-            (values, collection_truncated), account_value = await asyncio.gather(
-                _collect_pages(fetch),
+            summary, account_value = await asyncio.gather(
+                self._service.get_dividend_summary(
+                    principal,
+                    account_id,
+                    query=DividendSummaryQuery(
+                        start_date=start_date,
+                        end_date=end_date,
+                        recent_limit=recent_limit,
+                    ),
+                ),
                 self._service.get_account(principal, account_id),
-            )
-            values = [item for item in values if start_date <= item.paid_on <= end_date]
-            values.sort(key=lambda item: (item.paid_on, item.id), reverse=True)
-            base_quality = _first_quality(values)
-            if base_quality is None:
-                summary = await self._service.get_summary(principal, account_id)
-                base_quality = summary.quality
-            totals = _dividend_totals(values)
-            extra = (
-                [f"Dividend collection was capped at {_COLLECTION_CAP} records."]
-                if collection_truncated
-                else []
             )
             result = DividendSummaryResult(
                 data=DividendSummaryData(
                     period_start=start_date,
                     period_end=end_date,
-                    totals_by_currency=totals,
-                    recent_dividends=[dividend(item) for item in values[:recent_limit]],
-                    covered_record_count=len(values),
+                    totals_by_currency=[
+                        DividendCurrencyTotal(
+                            currency=item.currency,
+                            net_amount=decimal_string(item.net_amount),
+                            gross_amount=(
+                                decimal_string(item.gross_amount)
+                                if item.gross_amount is not None
+                                else None
+                            ),
+                            withholding_tax=(
+                                decimal_string(item.withholding_tax)
+                                if item.withholding_tax is not None
+                                else None
+                            ),
+                        )
+                        for item in summary.totals
+                    ],
+                    recent_dividends=[dividend(item) for item in summary.recent],
+                    covered_record_count=summary.covered_record_count,
+                    totals_truncated=summary.totals_truncated,
+                    omitted_currency_count=summary.omitted_currency_count,
                 ),
-                as_of=base_quality.as_of,
+                as_of=summary.quality.as_of,
                 reporting_currency=account_value.reporting_currency,
-                data_quality=quality(base_quality, extra_warnings=extra),
+                data_quality=quality(summary.quality),
                 calculation=_calculation(
                     "dividend_summary",
                     "phase1-ledger/1.0.0",
-                    base_quality.as_of,
+                    summary.quality.as_of,
                     assumptions=(
                         "Totals are grouped by currency; no unsourced FX conversion is performed.",
                     ),
@@ -442,12 +428,16 @@ class PortfolioMcpGateway:
                 pagination=Pagination(
                     next_cursor=None,
                     limit=recent_limit,
-                    total=len(values),
-                    truncated=collection_truncated or len(values) > recent_limit,
+                    total=summary.covered_record_count,
+                    truncated=summary.covered_record_count > recent_limit,
                 ),
                 error=None,
             )
-            return result, f"Summarized {len(values)} covered dividend observations.", {}
+            return (
+                result,
+                f"Summarized {summary.covered_record_count} covered dividend observations.",
+                {},
+            )
 
         return await self._execute(
             tool_name="get_dividend_summary",
@@ -467,27 +457,19 @@ class PortfolioMcpGateway:
         async def operation(
             principal: Principal,
         ) -> tuple[DirectAllocationResult, str, dict[str, Any]]:
-            values, summary = await asyncio.gather(
-                self._service.get_allocation(principal, account_id),
+            allocation_view, summary = await asyncio.gather(
+                self._service.get_direct_allocation(
+                    principal, account_id, query=DirectAllocationQuery(top_n=top_n)
+                ),
                 self._service.get_summary(principal, account_id),
             )
-            cash = [
-                item for item in values if item.asset_type.casefold() == "cash" or item.id == "cash"
-            ]
-            positions = [item for item in values if item not in cash]
-            positions.sort(
-                key=lambda item: (
-                    item.weight if item.weight is not None else Decimal("-1"),
-                    item.id,
-                ),
-                reverse=True,
-            )
-            selected = [*positions[:top_n], *cash[:1]]
-            truncated = len(positions) > top_n or len(cash) > 1
+            selected = allocation_view.items
+            includes_cash = any(item.asset_type.casefold() == "cash" for item in selected)
             result = DirectAllocationResult(
                 data=DirectAllocationData(
                     allocations=[allocation(item) for item in selected],
-                    includes_cash=bool(cash),
+                    returned_count=len(selected),
+                    includes_cash=includes_cash,
                     methodology="direct_provider_observed_positions_and_cash",
                 ),
                 as_of=summary.quality.as_of,
@@ -502,8 +484,8 @@ class PortfolioMcpGateway:
                 pagination=Pagination(
                     next_cursor=None,
                     limit=top_n,
-                    total=len(values),
-                    truncated=truncated,
+                    total=allocation_view.total,
+                    truncated=allocation_view.truncated,
                 ),
                 error=None,
             )
@@ -569,11 +551,13 @@ class PortfolioMcpGateway:
         async def operation(
             principal: Principal,
         ) -> tuple[ReconciliationResult, str, dict[str, Any]]:
-            reconciliation, account_value = await asyncio.gather(
+            reconciliation, issue_page, account_value = await asyncio.gather(
                 self._service.get_reconciliation(principal, account_id),
+                self._service.list_reconciliation_discrepancies(
+                    principal, account_id, query=PageQuery(limit=issue_limit)
+                ),
                 self._service.get_account(principal, account_id),
             )
-            issues = list(reconciliation.issues)
             remediation = (
                 "No remediation is required for the current reconciled observation."
                 if reconciliation.status == "reconciled"
@@ -588,8 +572,8 @@ class PortfolioMcpGateway:
                     evaluated_at=reconciliation.evaluated_at,
                     algorithm_version=safe_text(reconciliation.algorithm_version, maximum=120),
                     tolerance_version=safe_text(reconciliation.tolerance_version, maximum=120),
-                    discrepancy_count=len(issues),
-                    issues=[reconciliation_issue(item) for item in issues[:issue_limit]],
+                    discrepancy_count=reconciliation.discrepancy_count,
+                    issues=[reconciliation_issue(item) for item in issue_page.items],
                     remediation_guidance=remediation,
                 ),
                 as_of=reconciliation.quality.as_of,
@@ -604,15 +588,15 @@ class PortfolioMcpGateway:
                 pagination=Pagination(
                     next_cursor=None,
                     limit=issue_limit,
-                    total=len(issues),
-                    truncated=len(issues) > issue_limit,
+                    total=issue_page.total,
+                    truncated=issue_page.next_cursor is not None,
                 ),
                 error=None,
             )
             return (
                 result,
                 f"Reconciliation state is {reconciliation.status} "
-                f"with {len(issues)} discrepancies.",
+                f"with {reconciliation.discrepancy_count} discrepancies.",
                 {},
             )
 
@@ -630,76 +614,72 @@ class PortfolioMcpGateway:
         async def operation(
             principal: Principal,
         ) -> tuple[DataQualitySummaryResult, str, dict[str, Any]]:
-            (
-                summary,
-                snapshots,
-                positions,
-                activity_page,
-                dividends,
-                reconciliation,
-            ) = await asyncio.gather(
-                self._service.get_summary(principal, account_id),
-                self._service.list_snapshots(principal, account_id, cursor=None, limit=1),
-                self._service.list_positions(principal, account_id, cursor=None, limit=1),
-                self._service.list_activity(principal, account_id, cursor=None, limit=1),
-                self._service.list_dividends(principal, account_id, cursor=None, limit=1),
-                self._service.get_reconciliation(principal, account_id),
-            )
-            capability_values = (
-                ("account_summary", summary.quality),
-                ("portfolio_snapshots", _page_quality(snapshots, summary.quality)),
-                ("positions", _page_quality(positions, summary.quality)),
-                ("activity", _page_quality(activity_page, summary.quality)),
-                ("dividends", _page_quality(dividends, summary.quality)),
-                ("reconciliation", reconciliation.quality),
-            )
+            summary = await self._service.get_data_quality_summary(principal, account_id)
+
+            def run_quality(value: Any) -> RefreshRunQuality:
+                return RefreshRunQuality(
+                    id=value.id,
+                    status=safe_text(value.status, maximum=40),
+                    started_at=value.started_at,
+                    completed_at=value.completed_at,
+                    steps=[
+                        RefreshStepQuality(
+                            capability=safe_text(step.capability, maximum=100),
+                            status=safe_text(step.status, maximum=40),
+                            warnings=[safe_text(item, maximum=500) for item in step.warnings],
+                        )
+                        for step in value.steps
+                    ],
+                )
+
             data = DataQualitySummaryData(
                 capabilities=[
                     CapabilityQuality(
-                        capability="account_summary", data_quality=quality(capability_values[0][1])
-                    ),
-                    CapabilityQuality(
-                        capability="portfolio_snapshots",
-                        data_quality=quality(capability_values[1][1]),
-                    ),
-                    CapabilityQuality(
-                        capability="positions", data_quality=quality(capability_values[2][1])
-                    ),
-                    CapabilityQuality(
-                        capability="activity", data_quality=quality(capability_values[3][1])
-                    ),
-                    CapabilityQuality(
-                        capability="dividends", data_quality=quality(capability_values[4][1])
-                    ),
-                    CapabilityQuality(
-                        capability="reconciliation",
-                        data_quality=quality(capability_values[5][1]),
-                    ),
+                        capability=cast(Any, item.capability),
+                        data_quality=quality(item.quality),
+                    )
+                    for item in summary.capabilities
                 ],
-                failed_or_partial_runs=[],
+                failed_or_partial_runs=list(summary.failed_or_partial_runs),
+                latest_refresh_run=(
+                    None
+                    if summary.latest_refresh_run is None
+                    else run_quality(summary.latest_refresh_run)
+                ),
+                latest_runs_by_status=[run_quality(item) for item in summary.latest_runs_by_status],
+                checkpoints=[
+                    CheckpointQuality(
+                        capability=safe_text(item.capability, maximum=100),
+                        version=item.version,
+                        coverage_start_at=item.coverage_start_at,
+                        coverage_end_at=item.coverage_end_at,
+                        coverage_complete=item.coverage_complete,
+                    )
+                    for item in summary.checkpoints
+                ],
+                latest_snapshot_id=summary.latest_snapshot_id,
+                latest_snapshot_source_cutoff_at=summary.latest_snapshot_source_cutoff_at,
+                materialization_state=cast(Any, summary.materialization_state),
+                reconciliation_status=safe_text(summary.reconciliation_status, maximum=40),
+                missing_fx_record_count=summary.missing_fx_record_count,
+                unknown_mapping_record_count=summary.unknown_mapping_record_count,
             )
             result = DataQualitySummaryResult(
                 data=data,
-                as_of=summary.quality.as_of,
-                reporting_currency=summary.account.reporting_currency,
-                data_quality=quality(
-                    summary.quality,
-                    extra_warnings=(
-                        "Refresh-run history is not exposed by the current Phase 1 "
-                        "application service.",
-                    ),
-                ),
+                as_of=summary.as_of,
+                reporting_currency=summary.reporting_currency,
+                data_quality=quality(summary.quality),
                 calculation=_calculation(
                     "data_quality_summary",
                     "phase1-data-quality/1.0.0",
-                    summary.quality.as_of,
+                    summary.as_of,
                 ),
                 pagination=None,
                 error=None,
             )
             return (
                 result,
-                f"Retrieved quality states for {len(capability_values)} bounded capabilities.",
+                f"Retrieved quality states for {len(summary.capabilities)} bounded capabilities.",
                 {},
             )
 
@@ -798,95 +778,9 @@ def _call_result(
     )
 
 
-async def _collect_pages[ItemT](
-    fetch: Callable[[str | None, int], Awaitable[Page[ItemT]]],
-) -> tuple[list[ItemT], bool]:
-    items: list[ItemT] = []
-    cursor: str | None = None
-    seen: set[str] = set()
-    for _ in range(_COLLECTION_PAGE_COUNT):
-        page = await fetch(cursor, _COLLECTION_PAGE_SIZE)
-        items.extend(page.items)
-        if page.next_cursor is None:
-            return items, False
-        if page.next_cursor in seen:
-            raise ValueError("application pagination cursor did not advance")
-        seen.add(page.next_cursor)
-        cursor = page.next_cursor
-    return items, cursor is not None
-
-
-def _sort_positions(values: list[Any], sort: PositionSort) -> None:
-    if sort is PositionSort.TICKER_ASC:
-        values.sort(key=lambda item: (item.ticker.casefold(), item.id))
-    elif sort is PositionSort.WEIGHT_DESC:
-        values.sort(
-            key=lambda item: (
-                item.direct_weight if item.direct_weight is not None else Decimal("-1"),
-                item.ticker.casefold(),
-            ),
-            reverse=True,
-        )
-    else:
-        values.sort(
-            key=lambda item: (
-                item.market_value.value if item.market_value.value is not None else Decimal("-1"),
-                item.ticker.casefold(),
-            ),
-            reverse=True,
-        )
-
-
 def _validate_date_range(start_date: date, end_date: date, *, maximum_days: int) -> None:
     if end_date < start_date or (end_date - start_date).days > maximum_days:
         raise ValueError("date range is outside the bounded window")
-
-
-def _activity_matches(activity_type: str, requested: ActivityTypeFilter) -> bool:
-    normalized = activity_type.casefold()
-    if requested is ActivityTypeFilter.ALL:
-        return True
-    if requested is ActivityTypeFilter.UNKNOWN:
-        return normalized not in _KNOWN_ACTIVITY_TYPES
-    return normalized == requested.value
-
-
-def _first_quality(values: list[Any]) -> QualityView | None:
-    return values[0].quality if values else None
-
-
-def _page_quality(page: Page[Any], fallback: QualityView) -> QualityView:
-    return page.items[0].quality if page.items else fallback
-
-
-def _dividend_totals(values: list[Any]) -> list[DividendCurrencyTotal]:
-    totals: dict[str, dict[str, Decimal | None]] = {}
-    for value in values:
-        for field_name, metric_value in (
-            ("net_amount", value.net_amount),
-            ("gross_amount", value.gross_amount),
-            ("withholding_tax", value.withholding_tax),
-        ):
-            currency_totals = totals.setdefault(
-                metric_value.currency,
-                {"net_amount": None, "gross_amount": None, "withholding_tax": None},
-            )
-            if metric_value.value is not None:
-                current = currency_totals[field_name]
-                currency_totals[field_name] = (current or Decimal("0")) + metric_value.value
-    return [
-        DividendCurrencyTotal(
-            currency=currency,
-            net_amount=_optional_decimal(amounts["net_amount"]),
-            gross_amount=_optional_decimal(amounts["gross_amount"]),
-            withholding_tax=_optional_decimal(amounts["withholding_tax"]),
-        )
-        for currency, amounts in sorted(totals.items())
-    ]
-
-
-def _optional_decimal(value: Decimal | None) -> str | None:
-    return decimal_string(value) if value is not None else None
 
 
 def _correlation_id(context: Context[Any, Any]) -> str:
@@ -927,6 +821,22 @@ def _safe_error(exc: Exception, correlation_id: str) -> ErrorDetail:
             correlation_id=correlation_id,
             retryable=False,
             remediation="Check the opaque identifier returned by an earlier authorized tool call.",
+        )
+    if isinstance(exc, CursorValidationError):
+        return ErrorDetail(
+            code="CURSOR_INVALID",
+            message="The pagination cursor is invalid.",
+            correlation_id=correlation_id,
+            retryable=False,
+            remediation="Restart pagination from the first page with the same filters.",
+        )
+    if isinstance(exc, CollectionSnapshotCapacityError):
+        return ErrorDetail(
+            code="COLLECTION_SNAPSHOT_CAPACITY_EXCEEDED",
+            message="Active pagination capacity is temporarily exhausted.",
+            correlation_id=correlation_id,
+            retryable=True,
+            remediation="Resume an existing cursor or retry after active cursors expire.",
         )
     if isinstance(exc, ValueError):
         return ErrorDetail(

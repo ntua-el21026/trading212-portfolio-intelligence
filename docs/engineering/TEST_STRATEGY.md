@@ -10,7 +10,9 @@ Tests must demonstrate financial correctness, read-only security, data integrity
 
 ### Unit tests
 
-Pure value objects, mapping helpers, calculations, policy decisions, error mapping, pagination state, and authorization rules.
+Pure value objects, mapping helpers, calculations, policy decisions, error mapping,
+signed cursor binding, semantic refresh fingerprints, outbox state transitions,
+pagination state, and authorization rules.
 
 ### Property-based tests
 
@@ -20,7 +22,7 @@ Use Hypothesis or equivalent for:
 - allocation weights and conservation;
 - cash-flow/accounting identities;
 - idempotent deduplication;
-- rounding/contribution conservation;
+- rounding and decimal conservation;
 - timestamp/order boundaries;
 - reconciliation tolerance behavior.
 
@@ -30,18 +32,25 @@ Use Hypothesis or equivalent for:
 - provider error and rate-limit mapping;
 - OpenAPI schemas/examples and generated client;
 - MCP tool input/output schemas;
+- exactly nine MCP tools and explicit absence of a refresh/generic query tool;
 - database repository contracts;
 - mock-provider parity.
 
 ### Integration tests
 
-Run against real PostgreSQL and, where used, Redis/object storage substitutes. Cover migrations, transactions, concurrency/locks, ingestion, repositories, API and worker composition.
+Run against real PostgreSQL and Redis. Cover migrations, atomic run/outbox
+transactions, concurrent dispatch claims, crash recovery, durable consumer attempt
+bounds, semantic idempotency, collection traversal, ingestion, repositories, and
+API/worker/dispatcher composition.
 
 ### End-to-end tests
 
 - synthetic user/account setup;
 - mock broker ingestion through dashboard/MCP result;
 - refresh/reconciliation/data-quality flow;
+- API crash before publication followed by dispatcher restart;
+- broker acceptance before dispatcher acknowledgment and duplicate delivery;
+- API/MCP canonical value, quality, filtering, aggregation, and error parity;
 - web navigation and responsive/accessibility behavior;
 - deployed-container smoke path.
 
@@ -54,6 +63,9 @@ Run against real PostgreSQL and, where used, Redis/object storage substitutes. C
 - secrets/canary strings absent from logs/errors/API/MCP/client bundles;
 - auth/authz and cross-account denial;
 - SSRF/open redirect/input limits;
+- cursor tampering, expiry, resource/scope/filter/sort mismatch, and per-owner
+  collection-snapshot capacity exhaustion;
+- outbox payload excludes credentials/raw broker data and task name is fixed;
 - production configuration fails closed.
 
 ### Migration tests
@@ -62,7 +74,8 @@ Run against real PostgreSQL and, where used, Redis/object storage substitutes. C
 - upgrade from previous release fixture;
 - downgrade only where supported/declared;
 - data-preservation assertions;
-- schema model and migration consistency.
+- schema model and migration consistency;
+- repeated upgrade idempotency through head `20260901_0007`.
 
 ### Performance tests
 
@@ -70,8 +83,7 @@ Introduced with corresponding paths:
 
 - dashboard/API query p95 and query count;
 - ingestion throughput/rate coordination;
-- large history pagination;
-- report/risk/projection workloads;
+- large-history exact totals and stable pagination beyond 10,000 rows;
 - web bundle/runtime performance.
 
 ## 3. Fixture policy
@@ -99,6 +111,12 @@ Introduced with corresponding paths:
 12. Stale sources.
 13. Provider rate limit/transient outage/schema drift.
 14. Cross-owner authorization attempt.
+15. More than 50 positions, transactions, dividends, and snapshots.
+16. More than 10,000 transactions with newer/backfilled insertion during traversal.
+17. Unheld canonical instrument outside the first ordinary page.
+18. Available core return with hand-calculated expectation.
+19. Incomplete history, missing FX, failed reconciliation, and invalid/non-convergent XIRR.
+20. Queued run committed without publication and duplicate task delivery.
 
 ## 5. Quality gates
 
@@ -120,7 +138,9 @@ make test-migrations
 make docs-check
 make security-check
 make build
+make container-build
 make test
+make validate
 ```
 
 `make test` runs all locally executable required suites or clearly documents intentionally separate expensive/credentialed markers.
@@ -135,8 +155,9 @@ Recommended pipeline:
 4. PostgreSQL migration/integration;
 5. provider/API/MCP contracts and security negatives;
 6. web end-to-end/accessibility smoke;
-7. dependency/static/container scans;
-8. package/container build.
+7. outbox crash/recovery, keyset/immutable-membership stability, and API/MCP parity;
+8. dependency/static/container scans;
+9. package/container build.
 
 GitHub Actions validates pushes to `main`. The direct-main policy makes local full gates and
 small coherent commits mandatory. Failures are corrected with new forward commits without
@@ -155,8 +176,7 @@ Marked separately and never run with secrets on untrusted contexts:
 
 - Trading 212 Demo smoke/contract tests;
 - deployed remote MCP registration/invocation;
-- production backup restoration;
-- paid market/ETF provider tests.
+- production backup restoration.
 
 A missing credential skips only the explicit external marker and remains a recorded acceptance gate. It does not skip mock/contract/security coverage.
 

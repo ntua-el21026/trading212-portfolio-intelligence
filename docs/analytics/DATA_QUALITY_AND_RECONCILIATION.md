@@ -47,7 +47,7 @@ Quality is evaluated separately for:
 - canonical ledger;
 - reconciliation;
 - portfolio snapshots;
-- each calculation/report.
+- each calculation and canonical response;
 
 An aggregate portfolio state reports the most material limitations, not a simplistic maximum severity without context.
 
@@ -68,7 +68,18 @@ Historical datasets record:
 - gaps and unsupported activity types;
 - mapping coverage by value/count.
 
-Performance reports cannot begin before adequate external-flow/valuation coverage without an explicit partial-period label.
+Collection `total` is an exact full filtered count. A page boundary or MCP output
+bound is not a coverage gap. If a defensive aggregate group bound is reached, the
+result records explicit truncation/omission counts, includes the missing input,
+and is at least `PARTIAL`; a warning attached to `FRESH` is not sufficient.
+
+Core performance is available only when at least two usable snapshot values,
+complete transaction checkpoint coverage, active and unambiguous external-flow
+classification, reporting-currency/FX coverage, unique valuation-revision
+selection, and current reconciliation gates are satisfied. Otherwise XIRR, TWR,
+and Modified Dietz expose explicit unavailable/missing-input state. Deposits and
+withdrawals are external flows; buys and sells are internal exchanges and are not
+investment gain.
 
 ## 6. Reconciliation layers
 
@@ -146,8 +157,10 @@ Examples:
 - missing dividends: total value available, income/return decomposition partial;
 - quantity mismatch: affected position and portfolio accounting unreconciled; direct observed allocation may still be displayed as provider-observed with warning;
 - missing FX: local-currency rows available; reporting-currency aggregate partial/failed;
-- unmapped instrument: value included as unclassified; sector/X-ray partial;
-- failed reconciliation: optimizer blocked or requires explicit safe policy in Phase 2.
+- unmapped instrument: known value remains visible as unclassified and affected
+  calculations are partial;
+- failed reconciliation: coverage-gated performance is unavailable or
+  unreconciled.
 
 Each calculation defines its gate and quality propagation.
 
@@ -164,7 +177,36 @@ Every portfolio surface provides:
 - refresh/status action where authorized;
 - no green/success presentation for unreconciled data.
 
-## 11. Acceptance tests
+## 11. Application summary contract
+
+`GetDataQualitySummary` is the canonical source for the HTTP and MCP quality
+surfaces. It requires both `portfolio:read` and `activity:read` and combines:
+
+- the latest ingestion run with capability-step status;
+- latest succeeded, partial, and failed run records;
+- up to 20 most recent failed/partial/cancelled run IDs;
+- checkpoint version, coverage interval, and completeness per capability;
+- source cutoff, latest canonical snapshot, and materialization state;
+- latest reconciliation state;
+- active foreign external flows and unresolved FX-gap counts;
+- unknown/unsupported transaction-mapping counts;
+- per-capability and aggregate freshness/quality/missing-input state.
+
+No adapter fabricates an empty failed-run list because it lacks a query. The
+deterministic synthetic service implements the same typed contract.
+
+Reconciliation summary and discrepancy listing are separate. The summary reports
+the exact discrepancy count from the selected run without pretending an embedded
+prefix is complete. Discrepancies use a signed read-cutoff keyset ordered by
+`(last_seen_at DESC, id DESC)`, bound to account and reconciliation run, with an
+exact filtered total.
+
+Dividend summary aggregation is also coverage-aware: SQL aggregates all records
+in the selected date period by currency, while only a bounded recent-row sample is
+returned. Missing gross/withholding components or omitted currency groups make the
+summary `PARTIAL` and identify the missing inputs.
+
+## 12. Acceptance tests
 
 - missing is distinct from zero;
 - freshness uses source timestamp;
@@ -173,6 +215,11 @@ Every portfolio surface provides:
 - quantity/cash residual detection around tolerance boundaries;
 - unsupported activity persists and blocks relevant accounting;
 - unmapped value remains in totals;
-- quality metadata parity across API/MCP/web/report;
+- quality metadata parity across API/MCP/web;
+- real latest/failed/partial run state appears identically in API and MCP;
+- performance available, incomplete-history, missing-FX, reconciliation-failure,
+  and non-convergent/invalid XIRR fixtures fail or pass their exact gates;
+- discrepancy and dividend totals cover the full filtered set rather than a page
+  prefix;
 - reconciliation rerun is deterministic and does not erase history;
 - resolution audit trail is immutable/attributable.

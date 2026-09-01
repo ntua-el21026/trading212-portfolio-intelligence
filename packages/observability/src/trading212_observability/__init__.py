@@ -11,7 +11,7 @@ from .audit import (
 )
 from .errors import ErrorReporter, NullErrorReporter
 from .logging import bind_correlation_id, clear_request_context, configure_logging, logger
-from .metrics import OperationalMetrics
+from .metrics import MetricsHttpServer, OperationalMetrics
 from .tracing import configure_tracing
 
 __version__ = "0.1.0"
@@ -19,6 +19,7 @@ __version__ = "0.1.0"
 __all__ = [
     "AuthenticationMethod",
     "ErrorReporter",
+    "MetricsHttpServer",
     "NullErrorReporter",
     "OperationalMetrics",
     "SecurityAuditAction",

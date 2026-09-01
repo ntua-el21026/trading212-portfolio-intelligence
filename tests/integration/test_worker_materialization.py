@@ -18,6 +18,7 @@ from redis.asyncio import Redis
 from sqlalchemy import Engine, func, select
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
+from trading212_analytics import project_ledger
 from trading212_application.ingestion import (
     FULL_REFRESH_ORDER,
     BrokerAccountDataProvider,
@@ -32,11 +33,25 @@ from trading212_application.ingestion import (
     SourcePage,
     SourceRecord,
 )
-from trading212_domain import build_synthetic_identity
+from trading212_domain import (
+    BrokerAccountId,
+    CurrencyCode,
+    Instant,
+    Money,
+    ProvenanceReference,
+    SourceRecordId,
+    Transaction,
+    TransactionId,
+    TransactionStatus,
+    TransactionType,
+    ValueOrigin,
+    build_synthetic_identity,
+)
 from trading212_persistence import create_database_engine, create_session_factory
 from trading212_persistence.models import (
     CalculationRunModel,
     CashBalanceObservationModel,
+    CashFlowModel,
     DividendModel,
     IngestionRunModel,
     LedgerEntryModel,
@@ -412,6 +427,147 @@ async def test_seed_and_refreshes_materialize_changed_and_empty_current_state(
         empty_run = session.get(IngestionRunModel, UUID(empty_run_id))
         assert empty_run is not None
         assert empty_run.records_normalized > 0
+
+
+def test_posted_external_flow_revision_is_retained_but_deactivated(
+    materialized_database: tuple[str, Engine],
+) -> None:
+    _, engine = materialized_database
+    identity = build_synthetic_identity()
+    with Session(engine) as session:
+        persisted = session.scalar(
+            select(TransactionModel).where(
+                TransactionModel.broker_account_id == identity.account.id,
+                TransactionModel.provider_transaction_id == "synthetic-deposit-1",
+            )
+        )
+        assert persisted is not None
+        source = session.get(SourceRecordModel, persisted.source_record_id)
+        assert source is not None
+        flow = session.scalar(
+            select(CashFlowModel).where(
+                CashFlowModel.broker_account_id == identity.account.id,
+                CashFlowModel.source_transaction_id == persisted.id,
+            )
+        )
+        assert flow is not None
+        assert flow.active is True
+
+        reversed_transaction = Transaction(
+            id=TransactionId(persisted.id),
+            broker_account_id=BrokerAccountId(identity.account.id),
+            provider_transaction_id=persisted.provider_transaction_id,
+            transaction_type=TransactionType.DEPOSIT,
+            status=TransactionStatus.REVERSED,
+            net_cash_amount=Money(persisted.net_cash_amount, CurrencyCode(persisted.currency)),
+            occurred_at=Instant(persisted.occurred_at),
+            provenance=ProvenanceReference(
+                (SourceRecordId(source.id),),
+                persisted.mapping_version,
+                ValueOrigin.NORMALIZED_PROVIDER,
+            ),
+        )
+        projection = project_ledger(
+            (reversed_transaction,),
+            account_id=BrokerAccountId(identity.account.id),
+            history_complete=True,
+        )
+        assert projection.entries[0].active is False
+        PostgresCanonicalMaterializer()._materialize_transaction_ledger(
+            session,
+            account_id=identity.account.id,
+            projection=projection,
+            source_ids={persisted.provider_transaction_id: source},
+        )
+        session.flush()
+        session.expire_all()
+
+        retained = session.scalar(
+            select(CashFlowModel).where(
+                CashFlowModel.broker_account_id == identity.account.id,
+                CashFlowModel.source_transaction_id == persisted.id,
+            )
+        )
+        assert retained is not None
+        assert retained.id == flow.id
+        assert retained.active is False
+        session.rollback()
+
+
+def test_external_flow_reclassified_as_internal_is_retained_but_deactivated(
+    materialized_database: tuple[str, Engine],
+) -> None:
+    _, engine = materialized_database
+    identity = build_synthetic_identity()
+    with Session(engine) as session:
+        persisted = session.scalar(
+            select(TransactionModel).where(
+                TransactionModel.broker_account_id == identity.account.id,
+                TransactionModel.provider_transaction_id == "synthetic-deposit-1",
+            )
+        )
+        assert persisted is not None
+        source = session.get(SourceRecordModel, persisted.source_record_id)
+        assert source is not None
+        flow = session.scalar(
+            select(CashFlowModel).where(
+                CashFlowModel.broker_account_id == identity.account.id,
+                CashFlowModel.source_transaction_id == persisted.id,
+            )
+        )
+        assert flow is not None
+        assert flow.active is True
+
+        reclassified_transaction = Transaction(
+            id=TransactionId(persisted.id),
+            broker_account_id=BrokerAccountId(identity.account.id),
+            provider_transaction_id=persisted.provider_transaction_id,
+            transaction_type=TransactionType.BUY,
+            status=TransactionStatus.POSTED,
+            net_cash_amount=Money(
+                -abs(persisted.net_cash_amount),
+                CurrencyCode(persisted.currency),
+            ),
+            occurred_at=Instant(persisted.occurred_at),
+            provenance=ProvenanceReference(
+                (SourceRecordId(source.id),),
+                persisted.mapping_version,
+                ValueOrigin.NORMALIZED_PROVIDER,
+            ),
+        )
+        projection = project_ledger(
+            (reclassified_transaction,),
+            account_id=BrokerAccountId(identity.account.id),
+            history_complete=True,
+        )
+        PostgresCanonicalMaterializer()._materialize_transaction_ledger(
+            session,
+            account_id=identity.account.id,
+            projection=projection,
+            source_ids={persisted.provider_transaction_id: source},
+        )
+        session.flush()
+        session.expire_all()
+
+        retained = session.scalar(
+            select(CashFlowModel).where(
+                CashFlowModel.broker_account_id == identity.account.id,
+                CashFlowModel.source_transaction_id == persisted.id,
+            )
+        )
+        assert retained is not None
+        assert retained.id == flow.id
+        assert retained.active is False
+        active_external_flow_ids = tuple(
+            session.scalars(
+                select(CashFlowModel.id).where(
+                    CashFlowModel.broker_account_id == identity.account.id,
+                    CashFlowModel.active.is_(True),
+                )
+            )
+        )
+        assert retained.id not in active_external_flow_ids
+        session.rollback()
 
 
 @pytest.mark.asyncio

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
 import re
@@ -10,10 +11,9 @@ import time
 import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime, timedelta
 from typing import Annotated, Any, Literal, cast
 
-from celery import Celery  # type: ignore[import-untyped]
 from fastapi import (
     Cookie,
     Depends,
@@ -36,6 +36,19 @@ from trading212_application.ingestion import (
     RunMode,
     capabilities_for_scope,
 )
+from trading212_application.queries import (
+    ActivityQuery,
+    ActivityTypeFilter,
+    CollectionSnapshotCapacityError,
+    CursorValidationError,
+    DirectAllocationQuery,
+    DividendQuery,
+    InstrumentQuery,
+    PageQuery,
+    PositionQuery,
+    PositionSort,
+)
+from trading212_application.refresh_semantics import RefreshIdempotencyConflictError
 from trading212_application.services import (
     PortfolioService,
     RefreshUnavailableError,
@@ -59,6 +72,7 @@ from trading212_persistence import (
     PostgresPortfolioService,
     create_database_engine,
     create_session_factory,
+    refresh_dispatcher_is_ready,
 )
 from trading212_security.principals import (
     AuthenticationError,
@@ -76,8 +90,9 @@ from .schemas import (
     AccountResponse,
     AccountSummaryResponse,
     ActivityResponse,
-    AllocationResponse,
     BrokerConnectionResponse,
+    DataQualitySummaryResponse,
+    DirectAllocationResponse,
     DividendResponse,
     ErrorBody,
     ErrorEnvelope,
@@ -89,13 +104,12 @@ from .schemas import (
     PerformanceSummaryResponse,
     PositionResponse,
     PrincipalResponse,
-    QualityResponse,
     ReconciliationIssueResponse,
     ReconciliationResponse,
     RefreshRequest,
     RefreshRunResponse,
-    ReturnMetricResponse,
     SnapshotComparisonResponse,
+    SnapshotDetailResponse,
     SnapshotResponse,
 )
 
@@ -103,7 +117,13 @@ SESSION_COOKIE = "t212pi_session"
 CORRELATION_HEADER = "X-Correlation-ID"
 _CORRELATION_PATTERN = re.compile(r"^[A-Za-z0-9._:-]{1,120}$")
 _LOCAL_DATABASE_URL = "postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio"
-_LOCAL_CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+_LOCAL_CURSOR_SIGNING_KEY = hashlib.sha256(
+    b"trading212-portfolio-intelligence/local-cursor-signing-key/v1"
+).digest()
+CursorParameter = Annotated[
+    str | None,
+    Query(max_length=2048, pattern=r"^[A-Za-z0-9_-]+$"),
+]
 
 
 async def _ready() -> bool:
@@ -132,6 +152,7 @@ def create_app(
     clock: Callable[[], datetime] | None = None,
     readiness_probe: Callable[[], Awaitable[bool]] | None = None,
     audit_sink: SecurityAuditSink | None = None,
+    cursor_signing_key: bytes | None = None,
 ) -> FastAPI:
     runtime_clock = clock or (lambda: datetime.now(UTC))
     security_settings = settings or SecuritySettings()
@@ -139,15 +160,21 @@ def create_app(
         RuntimeEnvironment.STAGING,
         RuntimeEnvironment.PRODUCTION,
     }
-    if deployed and (service is None or session_manager is None or bearer_authenticator is None):
+    if deployed and (
+        service is None
+        or session_manager is None
+        or bearer_authenticator is None
+        or readiness_probe is None
+    ):
         raise ValueError(
             "deployed API requires explicit service, durable session manager, "
-            "and bearer authenticator"
+            "bearer authenticator, and dispatcher-aware readiness probe"
         )
     if service is None:
         portfolio_service, default_readiness = _local_runtime_defaults(
             security_settings,
             runtime_clock,
+            cursor_signing_key=cursor_signing_key,
         )
     else:
         portfolio_service = service
@@ -210,31 +237,42 @@ def create_app(
 def _local_runtime_defaults(
     settings: SecuritySettings,
     clock: Callable[[], datetime],
+    *,
+    cursor_signing_key: bytes | None,
 ) -> tuple[PortfolioService, Callable[[], Awaitable[bool]]]:
     database_url = os.environ.get("DATABASE_URL")
-    broker_url = os.environ.get("CELERY_BROKER_URL")
-    if database_url is None and broker_url is None:
+    if database_url is None:
         database_url = _LOCAL_DATABASE_URL
-        broker_url = _LOCAL_CELERY_BROKER_URL
-    if not database_url or not broker_url:
-        raise ValueError("DATABASE_URL and CELERY_BROKER_URL must be configured together")
+    if not database_url:
+        raise ValueError("DATABASE_URL must be configured")
     if settings.environment not in {RuntimeEnvironment.LOCAL, RuntimeEnvironment.TEST}:
         raise ValueError("implicit PostgreSQL runtime is restricted to local/test")
     engine = create_database_engine(database_url)
     sessions = create_session_factory(engine)
-    celery = Celery("trading212_api_refresh", broker=broker_url)
-    queue = PostgresRefreshQueue(sessions=sessions, celery=celery, clock=clock)
+    queue = PostgresRefreshQueue(sessions=sessions, clock=clock)
 
     async def database_readiness() -> bool:
         try:
             with engine.connect() as connection:
                 value = cast(int | None, connection.scalar(sql_text("SELECT 1")))
-                return value == 1
+                if value != 1 or not settings.outbox_dispatcher_configured:
+                    return False
+            return refresh_dispatcher_is_ready(
+                sessions,
+                now=clock(),
+                max_age=timedelta(seconds=settings.dispatcher_heartbeat_max_age_seconds),
+            )
         except Exception:
             return False
 
     return (
-        PostgresPortfolioService(sessions=sessions, clock=clock, refresh_queue=queue),
+        PostgresPortfolioService(
+            sessions=sessions,
+            clock=clock,
+            refresh_queue=queue,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=settings.cursor_ttl_seconds,
+        ),
         database_readiness,
     )
 
@@ -448,6 +486,40 @@ def _register_error_handlers(application: FastAPI) -> None:
             content=envelope(request, "NOT_FOUND", "The requested resource was not found."),
         )
 
+    @application.exception_handler(CursorValidationError)
+    async def invalid_cursor(request: Request, _: CursorValidationError) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=envelope(request, "CURSOR_INVALID", "The pagination cursor is invalid."),
+        )
+
+    @application.exception_handler(CollectionSnapshotCapacityError)
+    async def collection_snapshot_capacity(
+        request: Request, _: CollectionSnapshotCapacityError
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            content=envelope(
+                request,
+                CollectionSnapshotCapacityError.code,
+                "Active pagination capacity is temporarily exhausted.",
+                retryable=True,
+            ),
+        )
+
+    @application.exception_handler(RefreshIdempotencyConflictError)
+    async def refresh_conflict(
+        request: Request, _: RefreshIdempotencyConflictError
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=envelope(
+                request,
+                "IDEMPOTENCY_KEY_REUSED",
+                "The idempotency key is already bound to a different refresh request.",
+            ),
+        )
+
     @application.exception_handler(ValueError)
     async def validation_error(request: Request, _: ValueError) -> JSONResponse:
         return JSONResponse(
@@ -456,7 +528,14 @@ def _register_error_handlers(application: FastAPI) -> None:
         )
 
     @application.exception_handler(RequestValidationError)
-    async def request_validation_error(request: Request, _: RequestValidationError) -> JSONResponse:
+    async def request_validation_error(
+        request: Request, exc: RequestValidationError
+    ) -> JSONResponse:
+        if any(tuple(error.get("loc", ())) == ("query", "cursor") for error in exc.errors()):
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content=envelope(request, "CURSOR_INVALID", "The pagination cursor is invalid."),
+            )
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             content=envelope(request, "VALIDATION_FAILED", "The request is invalid."),
@@ -602,17 +681,8 @@ def _register_routes(application: FastAPI) -> None:
     async def list_connections(
         request: Request, principal: PrincipalDependency
     ) -> list[BrokerConnectionResponse]:
-        accounts = await _context(request).service.list_accounts(principal)
-        return [
-            BrokerConnectionResponse(
-                id=f"{account.provider}-{account.environment}",
-                provider=account.provider,
-                environment=account.environment,
-                status=account.connection_state,
-                credential_state="not_configured",
-            )
-            for account in accounts
-        ]
+        values = await _context(request).service.list_broker_connections(principal)
+        return [BrokerConnectionResponse.from_view(value) for value in values]
 
     @application.get(
         "/api/v1/accounts",
@@ -701,11 +771,15 @@ def _register_routes(application: FastAPI) -> None:
         account_id: str,
         request: Request,
         principal: PrincipalDependency,
-        cursor: str | None = None,
+        cursor: CursorParameter = None,
         limit: Annotated[int, Query(ge=1, le=100)] = 50,
+        sort: PositionSort = PositionSort.MARKET_VALUE_DESC,
+        search: Annotated[str | None, Query(min_length=1, max_length=80)] = None,
     ) -> PageResponse[PositionResponse]:
         page = await _context(request).service.list_positions(
-            principal, account_id, cursor=cursor, limit=limit
+            principal,
+            account_id,
+            query=PositionQuery(cursor=cursor, limit=limit, sort=sort, search=search),
         )
         return _page(page, PositionResponse.from_view)
 
@@ -733,11 +807,22 @@ def _register_routes(application: FastAPI) -> None:
         account_id: str,
         request: Request,
         principal: PrincipalDependency,
-        cursor: str | None = None,
+        cursor: CursorParameter = None,
         limit: Annotated[int, Query(ge=1, le=100)] = 50,
+        start_date: date | None = None,
+        end_date: date | None = None,
+        activity_type: ActivityTypeFilter = ActivityTypeFilter.ALL,
     ) -> PageResponse[ActivityResponse]:
         page = await _context(request).service.list_activity(
-            principal, account_id, cursor=cursor, limit=limit
+            principal,
+            account_id,
+            query=ActivityQuery(
+                cursor=cursor,
+                limit=limit,
+                start_date=start_date,
+                end_date=end_date,
+                activity_type=activity_type,
+            ),
         )
         return _page(page, ActivityResponse.from_view)
 
@@ -750,11 +835,20 @@ def _register_routes(application: FastAPI) -> None:
         account_id: str,
         request: Request,
         principal: PrincipalDependency,
-        cursor: str | None = None,
+        cursor: CursorParameter = None,
         limit: Annotated[int, Query(ge=1, le=100)] = 50,
+        start_date: date | None = None,
+        end_date: date | None = None,
     ) -> PageResponse[DividendResponse]:
         page = await _context(request).service.list_dividends(
-            principal, account_id, cursor=cursor, limit=limit
+            principal,
+            account_id,
+            query=DividendQuery(
+                cursor=cursor,
+                limit=limit,
+                start_date=start_date,
+                end_date=end_date,
+            ),
         )
         return _page(page, DividendResponse.from_view)
 
@@ -767,11 +861,11 @@ def _register_routes(application: FastAPI) -> None:
         account_id: str,
         request: Request,
         principal: PrincipalDependency,
-        cursor: str | None = None,
+        cursor: CursorParameter = None,
         limit: Annotated[int, Query(ge=1, le=100)] = 50,
     ) -> PageResponse[OrderResponse]:
         page = await _context(request).service.list_orders(
-            principal, account_id, cursor=cursor, limit=limit
+            principal, account_id, query=PageQuery(cursor=cursor, limit=limit)
         )
         return _page(page, OrderResponse.from_view)
 
@@ -784,28 +878,31 @@ def _register_routes(application: FastAPI) -> None:
         account_id: str,
         request: Request,
         principal: PrincipalDependency,
-        cursor: str | None = None,
+        cursor: CursorParameter = None,
         limit: Annotated[int, Query(ge=1, le=100)] = 50,
     ) -> PageResponse[SnapshotResponse]:
         page = await _context(request).service.list_snapshots(
-            principal, account_id, cursor=cursor, limit=limit
+            principal, account_id, query=PageQuery(cursor=cursor, limit=limit)
         )
         return _page(page, SnapshotResponse.from_view)
 
     @application.get(
         "/api/v1/accounts/{account_id}/snapshots/latest",
-        response_model=SnapshotResponse,
+        response_model=SnapshotDetailResponse,
         tags=["snapshots"],
     )
     async def latest_snapshot(
         account_id: str, request: Request, principal: PrincipalDependency
-    ) -> SnapshotResponse:
+    ) -> SnapshotDetailResponse:
         page = await _context(request).service.list_snapshots(
-            principal, account_id, cursor=None, limit=1
+            principal, account_id, query=PageQuery(limit=1)
         )
         if not page.items:
             raise LookupError("snapshot not found")
-        return SnapshotResponse.from_view(page.items[0])
+        detail = await _context(request).service.get_snapshot_detail(
+            principal, account_id, page.items[0].id
+        )
+        return SnapshotDetailResponse.from_detail(detail)
 
     @application.get(
         "/api/v1/accounts/{account_id}/snapshots/compare",
@@ -825,15 +922,37 @@ def _register_routes(application: FastAPI) -> None:
         return SnapshotComparisonResponse.from_view(comparison)
 
     @application.get(
+        "/api/v1/accounts/{account_id}/snapshots/{snapshot_id}",
+        response_model=SnapshotDetailResponse,
+        tags=["snapshots"],
+    )
+    async def snapshot(
+        account_id: str,
+        snapshot_id: str,
+        request: Request,
+        principal: PrincipalDependency,
+    ) -> SnapshotDetailResponse:
+        return SnapshotDetailResponse.from_detail(
+            await _context(request).service.get_snapshot_detail(principal, account_id, snapshot_id)
+        )
+
+    @application.get(
         "/api/v1/accounts/{account_id}/allocation",
-        response_model=list[AllocationResponse],
+        response_model=DirectAllocationResponse,
         tags=["portfolio"],
     )
     async def allocation(
-        account_id: str, request: Request, principal: PrincipalDependency
-    ) -> list[AllocationResponse]:
-        values = await _context(request).service.get_allocation(principal, account_id)
-        return [AllocationResponse.from_view(value) for value in values]
+        account_id: str,
+        request: Request,
+        principal: PrincipalDependency,
+        limit: Annotated[int, Query(ge=1, le=50)] = 50,
+    ) -> DirectAllocationResponse:
+        value = await _context(request).service.get_direct_allocation(
+            principal,
+            account_id,
+            query=DirectAllocationQuery(top_n=limit),
+        )
+        return DirectAllocationResponse.from_view(value, limit=limit)
 
     @application.get(
         "/api/v1/accounts/{account_id}/performance/summary",
@@ -843,21 +962,8 @@ def _register_routes(application: FastAPI) -> None:
     async def performance_summary(
         account_id: str, request: Request, principal: PrincipalDependency
     ) -> PerformanceSummaryResponse:
-        summary = await _context(request).service.get_summary(principal, account_id)
-        unavailable = ReturnMetricResponse(
-            value=None,
-            availability="unavailable",
-            calculation_version="phase1-performance/1.0.0",
-            methodology="coverage-gated conservative performance policy",
-            unavailable_reason="Full external-flow and valuation coverage is not established.",
-        )
-        return PerformanceSummaryResponse(
-            period_start=None,
-            period_end=summary.quality.as_of.date(),
-            money_weighted_return=unavailable,
-            time_weighted_return=unavailable,
-            modified_dietz_return=unavailable,
-            data_quality=QualityResponse.from_view(summary.quality),
+        return PerformanceSummaryResponse.from_view(
+            await _context(request).service.get_core_performance_summary(principal, account_id)
         )
 
     @application.get(
@@ -873,25 +979,31 @@ def _register_routes(application: FastAPI) -> None:
 
     @application.get(
         "/api/v1/accounts/{account_id}/reconciliation/discrepancies",
-        response_model=list[ReconciliationIssueResponse],
+        response_model=PageResponse[ReconciliationIssueResponse],
         tags=["quality"],
     )
     async def discrepancies(
-        account_id: str, request: Request, principal: PrincipalDependency
-    ) -> list[ReconciliationIssueResponse]:
-        value = await _context(request).service.get_reconciliation(principal, account_id)
-        return [ReconciliationIssueResponse.from_view(item) for item in value.issues]
+        account_id: str,
+        request: Request,
+        principal: PrincipalDependency,
+        cursor: CursorParameter = None,
+        limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    ) -> PageResponse[ReconciliationIssueResponse]:
+        page = await _context(request).service.list_reconciliation_discrepancies(
+            principal, account_id, query=PageQuery(cursor=cursor, limit=limit)
+        )
+        return _page(page, ReconciliationIssueResponse.from_view)
 
     @application.get(
         "/api/v1/accounts/{account_id}/data-quality",
-        response_model=QualityResponse,
+        response_model=DataQualitySummaryResponse,
         tags=["quality"],
     )
     async def data_quality(
         account_id: str, request: Request, principal: PrincipalDependency
-    ) -> QualityResponse:
-        summary = await _context(request).service.get_summary(principal, account_id)
-        return QualityResponse.from_view(summary.quality)
+    ) -> DataQualitySummaryResponse:
+        value = await _context(request).service.get_data_quality_summary(principal, account_id)
+        return DataQualitySummaryResponse.from_view(value)
 
     @application.get(
         "/api/v1/instruments",
@@ -902,36 +1014,14 @@ def _register_routes(application: FastAPI) -> None:
         request: Request,
         principal: PrincipalDependency,
         query: Annotated[str | None, Query(min_length=1, max_length=80)] = None,
-        cursor: str | None = None,
+        cursor: CursorParameter = None,
         limit: Annotated[int, Query(ge=1, le=100)] = 50,
     ) -> PageResponse[InstrumentResponse]:
-        service = _context(request).service
-        account_id = await _single_authorized_account_id(service, principal)
-        page = await service.list_positions(
+        page = await _context(request).service.search_instruments(
             principal,
-            account_id,
-            cursor=cursor,
-            limit=limit,
+            query=InstrumentQuery(cursor=cursor, limit=limit, search=query),
         )
-        values = [
-            InstrumentResponse(
-                id=item.id,
-                ticker=item.ticker,
-                name=item.name,
-                instrument_type=item.instrument_type,
-                trading_currency=item.trading_currency,
-            )
-            for item in page.items
-            if query is None
-            or query.casefold() in item.ticker.casefold()
-            or query.casefold() in item.name.casefold()
-        ]
-        return PageResponse(
-            items=values,
-            next_cursor=page.next_cursor,
-            limit=page.limit,
-            total=len(values) if query is not None else page.total,
-        )
+        return _page(page, InstrumentResponse.from_view)
 
     @application.get(
         "/api/v1/instruments/{instrument_id}",
@@ -941,19 +1031,8 @@ def _register_routes(application: FastAPI) -> None:
     async def instrument(
         instrument_id: str, request: Request, principal: PrincipalDependency
     ) -> InstrumentResponse:
-        service = _context(request).service
-        account_id = await _single_authorized_account_id(service, principal)
-        value = await service.get_position(
-            principal,
-            account_id,
-            instrument_id,
-        )
-        return InstrumentResponse(
-            id=value.id,
-            ticker=value.ticker,
-            name=value.name,
-            instrument_type=value.instrument_type,
-            trading_currency=value.trading_currency,
+        return InstrumentResponse.from_view(
+            await _context(request).service.get_instrument(principal, instrument_id)
         )
 
 

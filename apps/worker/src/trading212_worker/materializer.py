@@ -10,7 +10,7 @@ from decimal import Decimal, localcontext
 from typing import cast
 from uuid import NAMESPACE_URL, UUID, uuid5
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from trading212_analytics import (
@@ -613,6 +613,7 @@ class PostgresCanonicalMaterializer:
                     "currency": line.amount.currency.value,
                     "occurred_at": line.occurred_at.value,
                     "quality": quality,
+                    "active": line.active,
                     "idempotency_key": _idempotency_key("cash-flow", line.provider_transaction_id),
                     "source_record_id": record.id,
                 }
@@ -623,6 +624,19 @@ class PostgresCanonicalMaterializer:
                         constraint="uq_cash_flows_account_key",
                         set_={key: value for key, value in flow_values.items() if key != "id"},
                     )
+                )
+            else:
+                # A provider may revise an activity while preserving its stable
+                # transaction identity. Retain the prior external-flow evidence,
+                # but remove it from performance inputs when the canonical
+                # classification is no longer external.
+                session.execute(
+                    update(CashFlowModel)
+                    .where(
+                        CashFlowModel.broker_account_id == account_id,
+                        CashFlowModel.source_transaction_id == cast(UUID, line.transaction_id),
+                    )
+                    .values(active=False)
                 )
             count += 1
         return count

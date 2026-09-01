@@ -12,17 +12,25 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from psycopg import sql
-from sqlalchemy import Engine
+from sqlalchemy import Engine, select
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
 from starlette.testclient import TestClient
 from trading212_api.main import create_app as create_api_app
 from trading212_application.ingestion import (
     FULL_REFRESH_ORDER,
+    IngestionCapability,
     IngestionCoordinator,
     RunMode,
     RunStatus,
 )
+from trading212_application.queries import (
+    ActivityQuery,
+    DividendQuery,
+    PageQuery,
+    PositionQuery,
+)
+from trading212_application.refresh_semantics import RefreshRequestSemantics
 from trading212_domain import build_synthetic_identity
 from trading212_mcp.server import create_runtime
 from trading212_persistence import (
@@ -30,7 +38,16 @@ from trading212_persistence import (
     create_database_engine,
     create_session_factory,
 )
-from trading212_persistence.models import IngestionRunModel
+from trading212_persistence.models import (
+    CashFlowModel,
+    IngestionCheckpointModel,
+    IngestionRunModel,
+    PortfolioSnapshotModel,
+    ReconciliationDiscrepancyModel,
+    ReconciliationRunModel,
+    SourceRecordModel,
+    TransactionModel,
+)
 from trading212_persistence.seed import seed_synthetic
 from trading212_security.principals import Principal, Scope
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
@@ -108,7 +125,7 @@ async def test_postgres_backed_api_and_mcp_return_identical_canonical_values(
         capabilities=FULL_REFRESH_ORDER,
     )
     assert completed.status is RunStatus.SUCCEEDED
-    later = NOW + timedelta(minutes=5)
+    later = NOW + timedelta(days=365)
     updated = await IngestionCoordinator(
         provider=SyntheticIngestionProvider(
             clock=lambda: later,
@@ -129,14 +146,36 @@ async def test_postgres_backed_api_and_mcp_return_identical_canonical_values(
         capabilities=FULL_REFRESH_ORDER,
     )
     assert updated.status is RunStatus.SUCCEEDED
-    mismatch_at = later + timedelta(seconds=1)
+
+    # This controlled fixture supplies the complete opening-history assertion that
+    # the real provider cannot infer. It makes the latest deterministic material
+    # inputs explicitly reconciled so the application coverage gate may open.
     with Session(engine) as session, session.begin():
-        persist_quantity_cash_mismatch_scenario(
-            session,
-            account_id=identity.account.id,
-            listing_id=identity.listing.id,
-            as_of=mismatch_at,
+        complete_reconciliation = session.scalar(
+            select(ReconciliationRunModel)
+            .where(ReconciliationRunModel.broker_account_id == identity.account.id)
+            .order_by(ReconciliationRunModel.as_of.desc(), ReconciliationRunModel.id.desc())
+            .limit(1)
         )
+        assert complete_reconciliation is not None
+        complete_reconciliation.status = "reconciled"
+        complete_reconciliation.quality_state = "fresh"
+        complete_reconciliation.coverage_complete = True
+        complete_reconciliation.coverage_gaps = []
+        complete_reconciliation.discrepancy_count = 0
+        complete_reconciliation.warnings = []
+        reconciliation_id = complete_reconciliation.id
+        reconciliation_coverage_start = complete_reconciliation.coverage_start_at
+        transaction_checkpoint = session.scalar(
+            select(IngestionCheckpointModel).where(
+                IngestionCheckpointModel.broker_account_id == identity.account.id,
+                IngestionCheckpointModel.capability == IngestionCapability.TRANSACTIONS.value,
+            )
+        )
+        assert transaction_checkpoint is not None
+        transaction_checkpoint.coverage_start_at = NOW
+        transaction_checkpoint.coverage_end_at = later
+        transaction_checkpoint.coverage_complete = True
 
     monkeypatch.setenv("DATABASE_URL", database_url)
     monkeypatch.setenv("CELERY_BROKER_URL", "memory://")
@@ -145,6 +184,288 @@ async def test_postgres_backed_api_and_mcp_return_identical_canonical_values(
         local_synthetic_auth_enabled=True,
         allowed_hosts=("localhost", "testserver"),
     )
+    available_performance_api = create_api_app(settings=settings, clock=lambda: later)
+    with TestClient(available_performance_api, base_url="https://testserver") as api_client:
+        assert api_client.post("/api/v1/auth/local-session").status_code == 201
+        available_performance = api_client.get(f"/api/v1/accounts/{account_id}/performance/summary")
+    assert available_performance.status_code == 200
+    performance_data = available_performance.json()
+    assert performance_data["time_weighted_return"]["availability"] == "available", performance_data
+    assert performance_data["time_weighted_return"]["value"] == "0.016101032692060062"
+    assert performance_data["modified_dietz_return"]["availability"] == "available"
+    assert performance_data["modified_dietz_return"]["value"] == "0.016101032692060062"
+    assert performance_data["money_weighted_return"]["availability"] == "available"
+    assert performance_data["money_weighted_return"]["value"] == "0.016101032692060062"
+    assert performance_data["time_weighted_return"]["method_id"] == "snapshot_subperiod_twr"
+    assert performance_data["data_quality"]["state"] == "stale"
+
+    with Session(engine) as session, session.begin():
+        stale_reconciliation = session.get(ReconciliationRunModel, reconciliation_id)
+        assert stale_reconciliation is not None
+        stale_reconciliation.quality_state = "stale"
+    with TestClient(available_performance_api, base_url="https://testserver") as api_client:
+        assert api_client.post("/api/v1/auth/local-session").status_code == 201
+        stale_performance = api_client.get(f"/api/v1/accounts/{account_id}/performance/summary")
+        stale_quality = api_client.get(f"/api/v1/accounts/{account_id}/data-quality")
+    assert stale_performance.status_code == 200
+    assert stale_performance.json()["money_weighted_return"]["availability"] == "unavailable"
+    assert (
+        "fresh_reconciliation_inputs"
+        in stale_performance.json()["money_weighted_return"]["missing_inputs"]
+    )
+    assert stale_quality.status_code == 200
+    assert stale_quality.json()["materialization_state"] == "partial"
+    assert stale_quality.json()["reconciliation_status"] == "partial"
+
+    with Session(engine) as session, session.begin():
+        incomplete_reconciliation = session.get(ReconciliationRunModel, reconciliation_id)
+        assert incomplete_reconciliation is not None
+        incomplete_reconciliation.quality_state = "fresh"
+        incomplete_reconciliation.coverage_complete = False
+        incomplete_reconciliation.coverage_gaps = ["opening_history"]
+    with TestClient(available_performance_api, base_url="https://testserver") as api_client:
+        assert api_client.post("/api/v1/auth/local-session").status_code == 201
+        incomplete_performance = api_client.get(
+            f"/api/v1/accounts/{account_id}/performance/summary"
+        )
+        incomplete_quality = api_client.get(f"/api/v1/accounts/{account_id}/data-quality")
+    assert incomplete_performance.status_code == 200
+    assert (
+        "complete_reconciliation_coverage"
+        in incomplete_performance.json()["money_weighted_return"]["missing_inputs"]
+    )
+    assert incomplete_quality.status_code == 200
+    assert incomplete_quality.json()["materialization_state"] == "partial"
+    assert incomplete_quality.json()["reconciliation_status"] == "partial"
+
+    with Session(engine) as session, session.begin():
+        narrow_reconciliation = session.get(ReconciliationRunModel, reconciliation_id)
+        assert narrow_reconciliation is not None
+        narrow_reconciliation.coverage_complete = True
+        narrow_reconciliation.coverage_gaps = []
+        narrow_reconciliation.coverage_start_at = NOW + timedelta(seconds=1)
+    with TestClient(available_performance_api, base_url="https://testserver") as api_client:
+        assert api_client.post("/api/v1/auth/local-session").status_code == 201
+        narrow_performance = api_client.get(f"/api/v1/accounts/{account_id}/performance/summary")
+    assert narrow_performance.status_code == 200
+    assert (
+        "reconciliation_coverage_at_period_start"
+        in narrow_performance.json()["money_weighted_return"]["missing_inputs"]
+    )
+
+    with Session(engine) as session, session.begin():
+        old_reconciliation = session.get(ReconciliationRunModel, reconciliation_id)
+        assert old_reconciliation is not None
+        old_reconciliation.coverage_start_at = reconciliation_coverage_start
+        old_reconciliation.coverage_end_at = later - timedelta(seconds=1)
+        old_reconciliation.as_of = later - timedelta(seconds=1)
+    with TestClient(available_performance_api, base_url="https://testserver") as api_client:
+        assert api_client.post("/api/v1/auth/local-session").status_code == 201
+        old_performance = api_client.get(f"/api/v1/accounts/{account_id}/performance/summary")
+    assert old_performance.status_code == 200
+    assert (
+        "reconciliation_coverage_at_period_end"
+        in old_performance.json()["money_weighted_return"]["missing_inputs"]
+    )
+    assert (
+        "reconciliation_at_period_end"
+        in old_performance.json()["money_weighted_return"]["missing_inputs"]
+    )
+    with Session(engine) as session, session.begin():
+        restored_reconciliation = session.get(ReconciliationRunModel, reconciliation_id)
+        assert restored_reconciliation is not None
+        restored_reconciliation.coverage_end_at = later
+        restored_reconciliation.as_of = later
+
+    reversed_transaction_id = uuid4()
+    reversed_flow_id = uuid4()
+    ambiguous_transaction_id = uuid4()
+    with Session(engine) as session, session.begin():
+        fixture_source = session.scalar(
+            select(SourceRecordModel)
+            .where(SourceRecordModel.broker_account_id == identity.account.id)
+            .order_by(SourceRecordModel.id)
+            .limit(1)
+        )
+        assert fixture_source is not None
+        session.add(
+            TransactionModel(
+                id=reversed_transaction_id,
+                broker_account_id=identity.account.id,
+                provider_transaction_id="performance-reversed-deposit",
+                transaction_type="deposit",
+                status="reversed",
+                instrument_listing_id=None,
+                quantity=None,
+                unit_price=None,
+                gross_amount=None,
+                fees=None,
+                taxes=None,
+                net_cash_amount=Decimal("100000"),
+                currency="EUR",
+                occurred_at=NOW + timedelta(days=180),
+                settlement_date=None,
+                source_record_id=fixture_source.id,
+                mapping_version="performance-reversal-fixture/1",
+            )
+        )
+        session.flush()
+        session.add(
+            CashFlowModel(
+                id=reversed_flow_id,
+                broker_account_id=identity.account.id,
+                source_transaction_id=reversed_transaction_id,
+                classification="external",
+                flow_type="deposit",
+                amount=Decimal("100000"),
+                currency="EUR",
+                occurred_at=NOW + timedelta(days=180),
+                quality="fresh",
+                active=False,
+                idempotency_key="performance-reversed-deposit",
+                source_record_id=fixture_source.id,
+            )
+        )
+    with TestClient(available_performance_api, base_url="https://testserver") as api_client:
+        assert api_client.post("/api/v1/auth/local-session").status_code == 201
+        after_reversal = api_client.get(f"/api/v1/accounts/{account_id}/performance/summary")
+    assert after_reversal.status_code == 200
+    assert (
+        after_reversal.json()["money_weighted_return"]["value"]
+        == performance_data["money_weighted_return"]["value"]
+    )
+
+    with Session(engine) as session, session.begin():
+        fixture_source = session.scalar(
+            select(SourceRecordModel)
+            .where(SourceRecordModel.broker_account_id == identity.account.id)
+            .order_by(SourceRecordModel.id)
+            .limit(1)
+        )
+        assert fixture_source is not None
+        session.add(
+            TransactionModel(
+                id=ambiguous_transaction_id,
+                broker_account_id=identity.account.id,
+                provider_transaction_id="performance-ambiguous-cash-activity",
+                transaction_type="adjustment",
+                status="posted",
+                instrument_listing_id=None,
+                quantity=None,
+                unit_price=None,
+                gross_amount=None,
+                fees=None,
+                taxes=None,
+                net_cash_amount=Decimal("1000"),
+                currency="EUR",
+                occurred_at=NOW + timedelta(days=180),
+                settlement_date=None,
+                source_record_id=fixture_source.id,
+                mapping_version="performance-ambiguous-fixture/1",
+            )
+        )
+    with TestClient(available_performance_api, base_url="https://testserver") as api_client:
+        assert api_client.post("/api/v1/auth/local-session").status_code == 201
+        ambiguous_performance = api_client.get(f"/api/v1/accounts/{account_id}/performance/summary")
+    assert ambiguous_performance.status_code == 200
+    assert ambiguous_performance.json()["money_weighted_return"]["availability"] == "unavailable"
+    assert (
+        "unambiguous_external_flow_classification"
+        in ambiguous_performance.json()["money_weighted_return"]["missing_inputs"]
+    )
+    with Session(engine) as session, session.begin():
+        ambiguous = session.get(TransactionModel, ambiguous_transaction_id)
+        assert ambiguous is not None
+        session.delete(ambiguous)
+
+    duplicate_snapshot_id = uuid4()
+    with Session(engine) as session, session.begin():
+        latest_snapshot = session.scalar(
+            select(PortfolioSnapshotModel)
+            .where(PortfolioSnapshotModel.broker_account_id == identity.account.id)
+            .order_by(
+                PortfolioSnapshotModel.valuation_at.desc(),
+                PortfolioSnapshotModel.id.desc(),
+            )
+            .limit(1)
+        )
+        assert latest_snapshot is not None
+        session.add(
+            PortfolioSnapshotModel(
+                id=duplicate_snapshot_id,
+                broker_account_id=latest_snapshot.broker_account_id,
+                calculation_run_id=latest_snapshot.calculation_run_id,
+                valuation_at=latest_snapshot.valuation_at,
+                source_cutoff_at=latest_snapshot.source_cutoff_at,
+                reporting_currency=latest_snapshot.reporting_currency,
+                cash_total=latest_snapshot.cash_total,
+                invested_total=latest_snapshot.invested_total,
+                portfolio_total=latest_snapshot.portfolio_total,
+                net_contributions=latest_snapshot.net_contributions,
+                calculation_version="duplicate-revision-fixture",
+                quality_state=latest_snapshot.quality_state,
+                coverage=latest_snapshot.coverage,
+                warnings=latest_snapshot.warnings,
+            )
+        )
+    with TestClient(available_performance_api, base_url="https://testserver") as api_client:
+        assert api_client.post("/api/v1/auth/local-session").status_code == 201
+        duplicate_performance = api_client.get(f"/api/v1/accounts/{account_id}/performance/summary")
+    assert duplicate_performance.status_code == 200
+    assert duplicate_performance.json()["money_weighted_return"]["availability"] == ("unavailable")
+    assert (
+        "unique_snapshot_valuation_revisions"
+        in duplicate_performance.json()["money_weighted_return"]["missing_inputs"]
+    )
+    with Session(engine) as session, session.begin():
+        duplicate_snapshot = session.get(PortfolioSnapshotModel, duplicate_snapshot_id)
+        assert duplicate_snapshot is not None
+        session.delete(duplicate_snapshot)
+
+    mismatch_at = later + timedelta(seconds=1)
+    with Session(engine) as session, session.begin():
+        persist_quantity_cash_mismatch_scenario(
+            session,
+            account_id=identity.account.id,
+            listing_id=identity.listing.id,
+            as_of=mismatch_at,
+        )
+        fx_reconciliation = session.scalar(
+            select(ReconciliationRunModel)
+            .where(
+                ReconciliationRunModel.broker_account_id == identity.account.id,
+                ReconciliationRunModel.as_of == mismatch_at,
+            )
+            .limit(1)
+        )
+        assert fx_reconciliation is not None
+        for sequence in range(2):
+            session.add(
+                ReconciliationDiscrepancyModel(
+                    id=uuid4(),
+                    reconciliation_run_id=fx_reconciliation.id,
+                    broker_account_id=identity.account.id,
+                    listing_id=identity.listing.id,
+                    discrepancy_type="currency_fx_gap",
+                    severity="warning",
+                    resolution_state="open",
+                    expected_value=None,
+                    observed_value=None,
+                    residual=None,
+                    tolerance=None,
+                    currency="USD",
+                    first_seen_at=mismatch_at,
+                    last_seen_at=mismatch_at + timedelta(microseconds=sequence),
+                    likely_cause="missing explicit FX fixture",
+                    downstream_effect="Reporting-currency valuation remains unavailable.",
+                    resolution_reason=None,
+                    resolved_at=None,
+                    resolved_by_principal_id=None,
+                    provenance={"fixture": "deduplicated-latest-reconciliation-fx-gap"},
+                )
+            )
+        fx_reconciliation.discrepancy_count += 2
+
     api = create_api_app(settings=settings, clock=lambda: mismatch_at)
     mcp = create_runtime(
         security_settings=settings,
@@ -167,12 +488,33 @@ async def test_postgres_backed_api_and_mcp_return_identical_canonical_values(
         assert len(snapshot_rows) == 2
         end_snapshot_id = snapshot_rows[0]["id"]
         start_snapshot_id = snapshot_rows[1]["id"]
+        api_old_snapshot = api_client.get(
+            f"/api/v1/accounts/{account_id}/snapshots/{start_snapshot_id}"
+        )
         api_allocation = api_client.get(f"/api/v1/accounts/{account_id}/allocation")
         api_comparison = api_client.get(
             f"/api/v1/accounts/{account_id}/snapshots/compare",
             params={"start_id": start_snapshot_id, "end_id": end_snapshot_id},
         )
         api_reconciliation = api_client.get(f"/api/v1/accounts/{account_id}/reconciliation")
+        api_discrepancies = api_client.get(
+            f"/api/v1/accounts/{account_id}/reconciliation/discrepancies",
+            params={"limit": 25},
+        )
+        api_connections = api_client.get("/api/v1/broker-connections")
+        api_positions = api_client.get(
+            f"/api/v1/accounts/{account_id}/positions",
+            params={"limit": 50, "sort": "market_value_desc", "search": "SYNEQ"},
+        )
+        api_transactions = api_client.get(
+            f"/api/v1/accounts/{account_id}/transactions",
+            params={
+                "limit": 50,
+                "start_date": "2026-01-01",
+                "end_date": "2026-12-31",
+                "activity_type": "all",
+            },
+        )
 
     headers = {
         "Accept": "application/json, text/event-stream",
@@ -192,6 +534,13 @@ async def test_postgres_backed_api_and_mcp_return_identical_canonical_values(
             request_id=2,
             name="get_portfolio_snapshot",
             arguments={"account_id": account_id},
+        )
+        mcp_old_snapshot = _call_tool(
+            mcp_client,
+            headers,
+            request_id=9,
+            name="get_portfolio_snapshot",
+            arguments={"account_id": account_id, "snapshot_id": start_snapshot_id},
         )
         mcp_allocation = _call_tool(
             mcp_client,
@@ -218,17 +567,109 @@ async def test_postgres_backed_api_and_mcp_return_identical_canonical_values(
             name="get_reconciliation_status",
             arguments={"account_id": account_id, "issue_limit": 25},
         )
+        mcp_positions = _call_tool(
+            mcp_client,
+            headers,
+            request_id=7,
+            name="list_positions",
+            arguments={
+                "account_id": account_id,
+                "limit": 50,
+                "sort": "market_value_desc",
+                "search": "SYNEQ",
+            },
+        )
+        mcp_transactions = _call_tool(
+            mcp_client,
+            headers,
+            request_id=8,
+            name="list_recent_transactions",
+            arguments={
+                "account_id": account_id,
+                "start_date": "2026-01-01",
+                "end_date": "2026-12-31",
+                "type_filter": "all",
+                "limit": 50,
+            },
+        )
 
     assert api_summary.status_code == 200
     assert api_snapshot.status_code == 200
+    assert api_old_snapshot.status_code == 200
     assert mcp_summary.status_code == 200
     assert mcp_snapshot.status_code == 200
+    assert mcp_old_snapshot.status_code == 200
     assert api_allocation.status_code == 200
     assert api_comparison.status_code == 200
     assert mcp_allocation.status_code == 200
     assert mcp_comparison.status_code == 200
     assert api_reconciliation.status_code == 200
+    assert api_discrepancies.status_code == 200
     assert mcp_reconciliation.status_code == 200
+    assert api_connections.status_code == 200
+    assert api_positions.status_code == 200
+    assert api_transactions.status_code == 200
+    assert mcp_positions.status_code == 200
+    assert mcp_transactions.status_code == 200
+
+    connections = api_connections.json()
+    assert connections == [
+        {
+            "id": str(identity.connection.id),
+            "provider": "synthetic",
+            "environment": "synthetic",
+            "status": "active",
+            "state": "active",
+            "credential_state": "configured",
+            "last_successful_refresh_at": later.isoformat().replace("+00:00", "Z"),
+            "read_only": True,
+        }
+    ]
+    assert "credential_reference" not in connections[0]
+    assert "synthetic://" not in str(connections)
+
+    api_position_page = api_positions.json()
+    mcp_position_envelope = mcp_positions.json()["result"]["structuredContent"]
+    assert mcp_position_envelope["pagination"]["total"] == api_position_page["total"] == 1
+    assert mcp_position_envelope["pagination"]["next_cursor"] == api_position_page["next_cursor"]
+    api_position = api_position_page["items"][0]
+    mcp_position = mcp_position_envelope["data"]["positions"][0]
+    for field in (
+        "id",
+        "ticker",
+        "name",
+        "instrument_type",
+        "quantity",
+        "trading_currency",
+        "current_price",
+        "market_value",
+        "provider_cost_basis",
+        "provider_unrealized_profit_loss",
+        "direct_weight",
+    ):
+        assert mcp_position[field] == api_position[field]
+
+    api_transaction_page = api_transactions.json()
+    mcp_transaction_envelope = mcp_transactions.json()["result"]["structuredContent"]
+    assert mcp_transaction_envelope["pagination"]["total"] == api_transaction_page["total"]
+    assert [row["id"] for row in mcp_transaction_envelope["data"]["transactions"]] == [
+        row["id"] for row in api_transaction_page["items"]
+    ]
+    for api_row, mcp_row in zip(
+        api_transaction_page["items"],
+        mcp_transaction_envelope["data"]["transactions"],
+        strict=True,
+    ):
+        for field in (
+            "occurred_at",
+            "activity_type",
+            "direction",
+            "amount",
+            "ticker",
+            "quantity",
+            "description",
+        ):
+            assert mcp_row[field] == api_row[field]
     api_data = api_summary.json()
     mcp_data = mcp_summary.json()["result"]["structuredContent"]["data"]
     for field in (
@@ -244,11 +685,33 @@ async def test_postgres_backed_api_and_mcp_return_identical_canonical_values(
     mcp_snapshot_data = mcp_snapshot.json()["result"]["structuredContent"]["data"]
     assert mcp_snapshot_data["id"] == api_snapshot.json()["id"]
     assert mcp_snapshot_data["total_value"] == api_snapshot.json()["total_value"]
+    api_old_snapshot_data = api_old_snapshot.json()
+    mcp_old_snapshot_data = mcp_old_snapshot.json()["result"]["structuredContent"]["data"]
+    assert api_old_snapshot_data["id"] == start_snapshot_id
+    assert mcp_old_snapshot_data["id"] == start_snapshot_id
+    assert api_old_snapshot_data["total_value"] != api_snapshot.json()["total_value"]
+    for field in (
+        "dividends_received",
+        "realized_profit_loss",
+        "unrealized_profit_loss",
+    ):
+        assert api_old_snapshot_data[field]["availability"] == "unavailable"
+        assert mcp_old_snapshot_data[field] == api_old_snapshot_data[field]
+        assert mcp_snapshot_data[field] == api_snapshot.json()[field]
+    assert api_summary.json()["dividends_received"]["availability"] == "available"
+    assert api_old_snapshot_data["dividends_received"] != api_summary.json()["dividends_received"]
 
     mcp_allocation_data = mcp_allocation.json()["result"]["structuredContent"]["data"]
-    assert mcp_allocation_data["allocations"] == api_allocation.json()
+    api_allocation_data = api_allocation.json()
+    mcp_allocation_pagination = mcp_allocation.json()["result"]["structuredContent"]["pagination"]
+    assert mcp_allocation_data["allocations"] == api_allocation_data["items"]
+    assert mcp_allocation_data["returned_count"] == api_allocation_data["returned_count"]
+    assert mcp_allocation_pagination["total"] == api_allocation_data["total"]
+    assert mcp_allocation_pagination["limit"] == 25
+    assert api_allocation_data["limit"] == 50
+    assert mcp_allocation_pagination["truncated"] == api_allocation_data["truncated"]
     assert mcp_allocation_data["includes_cash"] is True
-    assert sum(Decimal(row["weight"]) for row in api_allocation.json()) == Decimal("1")
+    assert sum(Decimal(row["weight"]) for row in api_allocation_data["items"]) == Decimal("1")
 
     api_comparison_data = api_comparison.json()
     mcp_comparison_data = mcp_comparison.json()["result"]["structuredContent"]["data"]
@@ -278,10 +741,11 @@ async def test_postgres_backed_api_and_mcp_return_identical_canonical_values(
     assert (
         mcp_reconciliation_data["tolerance_version"] == api_reconciliation_data["tolerance_version"]
     )
-    assert mcp_reconciliation_data["discrepancy_count"] == 2
-    assert mcp_reconciliation_data["issues"] == api_reconciliation_data["issues"]
-    assert {issue["issue_type"] for issue in api_reconciliation_data["issues"]} == {
+    assert mcp_reconciliation_data["discrepancy_count"] == 4
+    assert mcp_reconciliation_data["issues"] == api_discrepancies.json()["items"]
+    assert {issue["issue_type"] for issue in api_discrepancies.json()["items"]} == {
         "cash_mismatch",
+        "currency_fx_gap",
         "quantity_mismatch",
     }
     api_reconciliation_quality = api_reconciliation_data["data_quality"]
@@ -302,6 +766,12 @@ async def test_postgres_backed_api_and_mcp_return_identical_canonical_values(
         mcp_reconciliation_quality["missing_inputs"] == api_reconciliation_quality["missing_inputs"]
     )
 
+    overlay_semantics = RefreshRequestSemantics.create(
+        owner_id=identity.owner.id,
+        account_id=identity.account.id,
+        mode=RunMode.INCREMENTAL,
+        capabilities=FULL_REFRESH_ORDER,
+    )
     with Session(engine) as session, session.begin():
         session.add(
             IngestionRunModel(
@@ -311,6 +781,12 @@ async def test_postgres_backed_api_and_mcp_return_identical_canonical_values(
                 mode="incremental",
                 status="partial",
                 idempotency_key="postgres-api-mcp-partial-overlay",
+                request_schema_version=overlay_semantics.schema_version,
+                requested_mode=overlay_semantics.mode.value,
+                requested_create_snapshot=overlay_semantics.create_snapshot,
+                requested_capabilities=overlay_semantics.capability_values,
+                effective_capabilities=overlay_semantics.capability_values,
+                request_fingerprint=overlay_semantics.fingerprint,
                 correlation_id="postgres-api-mcp-partial-overlay",
                 started_at=later + timedelta(minutes=1),
                 heartbeat_at=later + timedelta(minutes=1),
@@ -347,14 +823,14 @@ async def test_postgres_backed_api_and_mcp_return_identical_canonical_values(
         issuer="local.synthetic",
         subject="synthetic-owner",
         scopes=frozenset({Scope.PORTFOLIO_READ, Scope.ACTIVITY_READ}),
-        authenticated_at=NOW,
-        expires_at=NOW + timedelta(hours=1),
+        authenticated_at=mismatch_at,
+        expires_at=mismatch_at + timedelta(hours=1),
     )
     await mcp.service.get_summary(principal, account_id)
-    await mcp.service.list_snapshots(principal, account_id, cursor=None, limit=1)
-    await mcp.service.list_positions(principal, account_id, cursor=None, limit=1)
-    await mcp.service.list_activity(principal, account_id, cursor=None, limit=1)
-    await mcp.service.list_dividends(principal, account_id, cursor=None, limit=1)
+    await mcp.service.list_snapshots(principal, account_id, query=PageQuery(limit=1))
+    await mcp.service.list_positions(principal, account_id, query=PositionQuery(limit=1))
+    await mcp.service.list_activity(principal, account_id, query=ActivityQuery(limit=1))
+    await mcp.service.list_dividends(principal, account_id, query=DividendQuery(limit=1))
     await mcp.service.get_reconciliation(principal, account_id)
     with TestClient(mcp.asgi_app(), base_url="http://localhost") as mcp_client:
         mcp_quality = _call_tool(
@@ -368,15 +844,46 @@ async def test_postgres_backed_api_and_mcp_return_identical_canonical_values(
     assert degraded_summary.status_code == 200
     assert degraded_quality.status_code == 200
     assert degraded_summary.json()["total_value"] == api_data["total_value"]
-    assert degraded_quality.json()["state"] == "unreconciled"
-    assert degraded_quality.json()["missing_inputs"] == ["portfolio_positions"]
-    assert "retained prior canonical snapshot" in " ".join(degraded_quality.json()["warnings"])
+    api_quality_data = degraded_quality.json()
+    assert api_quality_data["data_quality"]["state"] == "unreconciled"
+    assert {
+        "external_flow_fx_conversion",
+        "portfolio_positions",
+    }.issubset(api_quality_data["data_quality"]["missing_inputs"])
+    assert api_quality_data["missing_fx_record_count"] == 1
+    assert "retained prior canonical snapshot" in " ".join(
+        api_quality_data["data_quality"]["warnings"]
+    )
+    assert api_quality_data["latest_refresh_run"]["status"] == "partial"
+    assert api_quality_data["latest_refresh_run"]["steps"][0]["capability"] == (
+        "portfolio_positions"
+    )
+    assert any(item["status"] == "partial" for item in api_quality_data["latest_runs_by_status"])
+    assert api_quality_data["materialization_state"] == "partial"
     assert mcp_quality.status_code == 200
     mcp_quality_data = mcp_quality.json()["result"]["structuredContent"]
     assert mcp_quality_data["error"] is None, mcp_quality_data
     assert mcp_quality_data["data_quality"]["state"] == "unreconciled"
-    assert mcp_quality_data["data_quality"]["missing_inputs"] == ["portfolio_positions"]
+    assert (
+        mcp_quality_data["data_quality"]["missing_inputs"]
+        == api_quality_data["data_quality"]["missing_inputs"]
+    )
     assert mcp_quality_data["data"]["capabilities"][0]["data_quality"]["state"] == "unreconciled"
+    assert mcp_quality_data["data"]["latest_refresh_run"] == api_quality_data["latest_refresh_run"]
+    assert (
+        mcp_quality_data["data"]["latest_runs_by_status"]
+        == api_quality_data["latest_runs_by_status"]
+    )
+    assert mcp_quality_data["data"]["checkpoints"] == api_quality_data["checkpoints"]
+    for field in (
+        "latest_snapshot_id",
+        "latest_snapshot_source_cutoff_at",
+        "materialization_state",
+        "reconciliation_status",
+        "missing_fx_record_count",
+        "unknown_mapping_record_count",
+    ):
+        assert mcp_quality_data["data"][field] == api_quality_data[field]
 
 
 def _call_tool(

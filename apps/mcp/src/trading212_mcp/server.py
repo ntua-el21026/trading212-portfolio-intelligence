@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import ipaddress
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
@@ -71,7 +72,10 @@ SnapshotId = Annotated[
     str,
     Field(min_length=1, max_length=255, pattern=r"^[A-Za-z0-9._:-]+$"),
 ]
-Cursor = Annotated[str, Field(max_length=32, pattern=r"^p1:[0-9]{1,9}$")]
+Cursor = Annotated[str, Field(min_length=1, max_length=2048, pattern=r"^[A-Za-z0-9_-]+$")]
+_LOCAL_CURSOR_SIGNING_KEY = hashlib.sha256(
+    b"trading212-portfolio-intelligence/local-cursor-signing-key/v1"
+).digest()
 
 
 @dataclass(frozen=True, slots=True)
@@ -109,6 +113,7 @@ def create_runtime(
     database_url: str | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
+    cursor_signing_key: bytes | None = None,
 ) -> McpRuntime:
     """Create an injectable MCP composition without resolving secrets itself."""
     runtime_clock = clock or (lambda: datetime.now(UTC))
@@ -132,10 +137,16 @@ def create_runtime(
     if service is not None:
         portfolio_service = service
     elif database_url:
+        if deployed and cursor_signing_key is None:
+            raise ValueError(
+                "deployed MCP database service requires an explicit cursor signing key"
+            )
         engine = create_database_engine(database_url)
         portfolio_service = PostgresPortfolioService(
             sessions=create_session_factory(engine),
             clock=runtime_clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=security.cursor_ttl_seconds,
         )
 
         async def database_readiness() -> bool:
@@ -153,7 +164,11 @@ def create_runtime(
     elif deployed:
         raise ValueError("deployed MCP requires an explicit service or DATABASE_URL")
     else:
-        portfolio_service = SyntheticPortfolioService(clock=runtime_clock)
+        portfolio_service = SyntheticPortfolioService(
+            clock=runtime_clock if clock is not None else None,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=security.cursor_ttl_seconds,
+        )
     principal_resolver = PrincipalResolver.from_settings(security, clock=runtime_clock)
 
     auth_settings: AuthSettings | None = None

@@ -30,6 +30,7 @@ export default defineConfig({
   webServer: {
     command: "corepack pnpm dev --hostname 127.0.0.1",
     env: {
+      PORTFOLIO_E2E_LARGE_COLLECTIONS: "1",
       PORTFOLIO_DEMO_MODE: "1",
     },
     reuseExistingServer: !process.env.CI,

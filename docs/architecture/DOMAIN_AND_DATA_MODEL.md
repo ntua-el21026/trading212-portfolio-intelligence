@@ -71,12 +71,15 @@ BrokerConnection
 - owner_id
 - provider (`trading212`)
 - environment (`demo` | `live`)
-- credential_reference (opaque server-side reference)
+- credential_reference (nullable opaque server-side reference)
 - status
 - created_at / updated_at
 ```
 
-Secrets are not stored in domain records.
+Secrets are not stored in domain records. `NULL` means `not_configured`;
+application views expose only that safe credential state, never the reference.
+Connection queries are owner-scoped and include the last successful refresh when
+one exists.
 
 ### Broker account
 
@@ -108,6 +111,7 @@ Listing
 - id
 - instrument_id
 - provider
+- environment
 - provider_instrument_id
 - ticker
 - exchange_mic / exchange_id
@@ -116,7 +120,10 @@ Listing
 - valid_from / valid_to
 ```
 
-A listing, not a ticker, is the normal position reference. Multiple listings may map to one instrument.
+A listing, not a ticker, is the normal position reference. Multiple listings may
+map to one canonical instrument. Phase 1 instrument search reads the canonical
+instrument/listing tables independently of current positions, so an authorized
+provider/environment listing can be returned even when it is not held.
 
 ## 4. Provider provenance
 
@@ -127,7 +134,14 @@ IngestionRun
 - id
 - broker_account_id
 - capability
-- mode (`full` | `incremental` | `refresh`)
+- mode (`full` | `incremental`) -- effective execution mode
+- request_schema_version (`1`)
+- requested_mode (`full` | `incremental`)
+- requested_capabilities[]
+- requested_create_snapshot
+- effective_capabilities[]
+- request_fingerprint (SHA-256 canonical semantic identity)
+- idempotency_key (unique within the broker account)
 - started_at / completed_at
 - status
 - request_count
@@ -137,6 +151,36 @@ IngestionRun
 - warning/error summaries
 - correlation_id
 ```
+
+Requested semantics remain immutable even when an initial incremental/current
+request is promoted to a full/all execution. The fingerprint binds owner,
+account, requested mode, normalized capability order, create-snapshot behavior,
+and request-schema version. It deliberately excludes the correlation ID.
+
+### Refresh dispatch outbox
+
+```text
+RefreshDispatchOutbox
+- id
+- ingestion_run_id (unique)
+- task_name (`portfolio.refresh` only)
+- task_version (`1`)
+- payload {run_id, account_id, request_fingerprint, request_schema_version}
+- status (`pending` | `publishing` | `published` | `dead`)
+- attempt_count / consecutive_failure_count
+- consumer_attempt_count (durably bounded to 0..4)
+- available_at
+- claim_token / claim_owner / claimed_at / claim_expires_at
+- published_at
+- last_error_code (sanitized)
+- created_at / updated_at
+```
+
+The ingestion run and one bounded, non-secret outbox event are inserted in the
+same transaction. Dispatcher heartbeats separately record bounded identity,
+start/heartbeat/last-success timestamps, `healthy` or `degraded` state, and a
+sanitized error code. Neither record accepts arbitrary task names or broker
+payloads.
 
 ### Source record
 
@@ -290,7 +334,9 @@ Normalized external cash flows form a ledger used for performance and reconcilia
 - external versus internal portfolio flow classification;
 - link to source transaction/dividend/order where applicable;
 - confidence/quality;
-- FX conversion used for reporting-currency calculations.
+- FX conversion used for reporting-currency calculations;
+- active revision state; a reversed source transaction deactivates its economic
+  cash flow rather than leaving it in performance inputs.
 
 Deposits and withdrawals are external flows. Buys/sells are normally internal exchanges between cash and securities and must not be counted as contributions.
 
@@ -350,33 +396,44 @@ CalculationMetadata
 - data_quality
 ```
 
-## 10. Phase 2 domain extensions
+## 10. Immutable collection traversal
 
-- `PortfolioDefinition`
-- `PortfolioGroup` / virtual Pie
-- `TargetVersion`
-- `TargetAllocation`
-- `AllocationConstraint`
-- `DriftResult`
-- `ContributionPlan` and line items
-- `BenchmarkDefinition`
-- `PerformanceSeries`
-- `AttributionResult`
-- `ETFConstituentSnapshot`
-- `ExposureMapping` with confidence
-- `Report`, `Export`, `AlertRule`, `AlertEvent`
+Mutable collection traversal uses one of two persisted/query-bound forms:
 
-These are not Phase 1 functional requirements, though migration namespaces/interfaces may be reserved without creating behavior.
+```text
+CollectionQuerySnapshot
+- id / schema_version (`1`)
+- resource and deterministic sort specification
+- owner_id / optional broker_account_id
+- source_snapshot_id for positions
+- filter_fingerprint
+- exact_total
+- created_at / expires_at
 
-## 11. Phase 3 domain extensions
+CollectionQuerySnapshotMember
+- snapshot_id
+- ordinal
+- record_id
+```
 
-- `RiskModelRun`
-- `ScenarioDefinition` / `ScenarioRun`
-- `ProjectionAssumptionSet` / `ProjectionRun`
-- `Goal`
-- `ResearchEntity`, `ResearchNote`, `InvestmentThesis`, `ThesisCondition`, and `SourceCitation`
+Positions, activity, dividends, and instruments materialize the complete ordered
+eligible identity set and then read `limit + 1` members. Positions additionally
+bind to one immutable portfolio snapshot. Orders, portfolio snapshots, and
+reconciliation discrepancies instead bind a signed keyset to a database read
+cutoff and deterministic last key. New or backfilled rows cannot change an active
+traversal.
 
-## 12. Persistence constraints
+Cursor payloads are versioned and HMAC-authenticated. Their binding covers
+resource, authorized owner/account scope, deterministic sort, filter fingerprint,
+read cutoff or immutable result snapshot, last ordering key, and tie-breaker.
+Malformed, expired, tampered, or cross-binding cursors are invalid.
+
+Active materialized traversal state is bounded per owner (defaults: 64 snapshots
+and 250,000 members), expires after the configured cursor TTL, and is cleaned in
+bounded non-blocking batches. Capacity exhaustion is explicit; it does not return
+a silently truncated result.
+
+## 11. Persistence constraints
 
 At minimum, Phase 1 enforces:
 
@@ -385,18 +442,33 @@ At minimum, Phase 1 enforces:
 - unique listing identity within provider/environment;
 - non-null currency for money;
 - UTC timestamps;
-- idempotency keys/checkpoints;
+- account-scoped idempotency keys plus canonical request fingerprints;
+- one outbox event per ingestion run and a fixed task/payload contract;
+- bounded durable publication and consumer attempt counters;
+- fenced ingestion leases and expiring dispatcher claims;
 - foreign-key ownership boundaries;
 - immutable completed ingestion-run metadata except appended resolution/audit fields;
 - numeric precision appropriate for fractional shares, FX, prices, and money;
-- no secrets in tables designed for domain data.
+- no secrets in tables designed for domain data;
+- immutable collection snapshot membership, exact totals, ownership, expiry, and
+  source-snapshot constraints.
 
-## 13. API serialization
+The Phase 1 Alembic head is `20260901_0007`. The correction sequence is:
+
+- `20260901_0004`: semantic refresh identity, fenced leases, transactional
+  refresh-dispatch outbox, and dispatcher heartbeat;
+- `20260901_0005`: nullable broker credential reference for explicit
+  `not_configured` state;
+- `20260901_0006`: immutable collection-query snapshots and members;
+- `20260901_0007`: active external-cash-flow revisions.
+
+## 12. API serialization
 
 - UUIDs as canonical strings.
 - decimals as strings in authoritative financial fields, with generated clients providing decimal-safe parsing;
 - timestamps as RFC 3339 UTC;
 - enums as stable lowercase strings unless schema specifies otherwise;
 - nullable/unknown distinguished from zero and empty collection;
-- pagination envelopes include cursor and bounded page metadata;
+- pagination envelopes include an opaque cursor, bounded limit, and exact full
+  filtered `total`;
 - every analytical result includes `calculation` and `data_quality` blocks.

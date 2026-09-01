@@ -45,12 +45,28 @@ def test_valid_production_configuration_requires_external_secret_provider() -> N
         audience="portfolio-api",
         jwt_public_key_reference="vault://auth/jwt-public-key",
         session_signing_key_reference="vault://auth/session-signing-key",
+        cursor_signing_key_reference="vault://auth/cursor-signing-key",
         credential_backend=CredentialBackend.EXTERNAL,
+        outbox_dispatcher_configured=True,
         allowed_origins=("https://portfolio.example",),
         allowed_hosts=("portfolio.example",),
     )
     assert settings.environment is RuntimeEnvironment.PRODUCTION
     assert settings.cookie_secure is True
+
+
+def test_deployed_configuration_requires_refresh_dispatcher() -> None:
+    with pytest.raises(ValidationError, match="dispatcher"):
+        SecuritySettings(
+            environment=RuntimeEnvironment.STAGING,
+            issuer="https://identity.example",
+            audience="portfolio-api",
+            jwt_public_key_reference="vault://auth/jwt-public-key",
+            session_signing_key_reference="vault://auth/session-signing-key",
+            cursor_signing_key_reference="vault://auth/cursor-signing-key",
+            allowed_origins=("https://portfolio.example",),
+            allowed_hosts=("portfolio.example",),
+        )
 
 
 def test_scope_registry_contains_no_execution_capability() -> None:

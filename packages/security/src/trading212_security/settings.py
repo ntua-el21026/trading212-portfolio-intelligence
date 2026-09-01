@@ -33,6 +33,7 @@ class SecuritySettings(BaseSettings):
     audience: str | None = None
     jwt_public_key_reference: str | None = None
     session_signing_key_reference: str | None = None
+    cursor_signing_key_reference: str | None = None
     credential_backend: CredentialBackend = CredentialBackend.ENVIRONMENT
     cookie_secure: bool = True
     cookie_http_only: bool = True
@@ -41,6 +42,9 @@ class SecuritySettings(BaseSettings):
     allowed_hosts: tuple[str, ...] = ("localhost", "127.0.0.1")
     session_ttl_seconds: int = Field(default=3_600, ge=300, le=86_400)
     access_token_clock_skew_seconds: int = Field(default=30, ge=0, le=300)
+    cursor_ttl_seconds: int = Field(default=3_600, ge=60, le=86_400)
+    outbox_dispatcher_configured: bool = False
+    dispatcher_heartbeat_max_age_seconds: int = Field(default=30, ge=5, le=300)
 
     @model_validator(mode="after")
     def validate_security_posture(self) -> SecuritySettings:
@@ -56,6 +60,7 @@ class SecuritySettings(BaseSettings):
                 "audience": self.audience,
                 "jwt_public_key_reference": self.jwt_public_key_reference,
                 "session_signing_key_reference": self.session_signing_key_reference,
+                "cursor_signing_key_reference": self.cursor_signing_key_reference,
             }
             missing = [name for name, value in required.items() if not value]
             if missing:
@@ -70,6 +75,8 @@ class SecuritySettings(BaseSettings):
                 raise ValueError("deployed origin and host allowlists must be explicit")
             if any(origin == "*" for origin in self.allowed_origins):
                 raise ValueError("wildcard origins are forbidden")
+            if not self.outbox_dispatcher_configured:
+                raise ValueError("deployed refresh dispatcher must be explicitly configured")
         if (
             self.credential_backend is CredentialBackend.ENVIRONMENT
             and self.environment is RuntimeEnvironment.PRODUCTION

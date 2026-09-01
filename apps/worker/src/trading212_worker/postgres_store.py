@@ -21,10 +21,15 @@ from trading212_application.ingestion import (
     IngestionFailure,
     IngestionRun,
     PageCommitResult,
+    RunLease,
     RunMode,
     RunStatus,
     SourcePage,
     StepResult,
+)
+from trading212_application.refresh_semantics import (
+    RefreshIdempotencyConflictError,
+    RefreshRequestSemantics,
 )
 from trading212_persistence.models import (
     BrokerAccountModel,
@@ -32,9 +37,11 @@ from trading212_persistence.models import (
     IngestionCheckpointModel,
     IngestionLeaseModel,
     IngestionRunModel,
+    RefreshDispatchOutboxModel,
     SourceRecordModel,
     SourceRecordOccurrenceModel,
 )
+from trading212_persistence.refresh_semantics import MAX_REFRESH_CONSUMER_EXECUTION_ATTEMPTS
 
 from .materializer import PostgresCanonicalMaterializer
 
@@ -44,6 +51,18 @@ _RETRYABLE_TERMINAL_FAILURES = {
     FailureCategory.PERSISTENCE.value,
     FailureCategory.INTERRUPTED.value,
 }
+
+
+class RunLeaseBusyError(RuntimeError):
+    """The requested durable run cannot claim its account lease yet."""
+
+    def __init__(self, *, available_at: datetime) -> None:
+        super().__init__("refresh account lease is busy")
+        self.available_at = available_at
+
+
+class ConsumerExecutionBudgetExhaustedError(RuntimeError):
+    """The durable run has consumed its bounded economic execution budget."""
 
 
 class PostgresIngestionStore:
@@ -56,6 +75,7 @@ class PostgresIngestionStore:
         provider: str,
         lease_duration: timedelta = timedelta(minutes=5),
         materializer: PostgresCanonicalMaterializer | None = None,
+        expected_run_id: str | None = None,
     ) -> None:
         if provider not in {"trading212", "synthetic"}:
             raise ValueError("unsupported source-record provider")
@@ -65,6 +85,9 @@ class PostgresIngestionStore:
         self._provider = provider
         self._lease_duration = lease_duration
         self._materializer = materializer
+        self._expected_run_id = (
+            _uuid(expected_run_id, "expected_run_id") if expected_run_id is not None else None
+        )
 
     async def begin_run(
         self,
@@ -72,14 +95,21 @@ class PostgresIngestionStore:
         owner_id: str,
         account_id: str,
         mode: RunMode,
+        capabilities: tuple[IngestionCapability, ...],
         idempotency_key: str,
         correlation_id: str,
         now: datetime,
         lease_duration: timedelta,
-    ) -> tuple[IngestionRun, bool]:
+    ) -> tuple[IngestionRun, RunLease | None]:
         owner_uuid = _uuid(owner_id, "owner_id")
         account_uuid = _uuid(account_id, "account_id")
         timestamp = _utc(now)
+        semantics = RefreshRequestSemantics.create(
+            owner_id=owner_uuid,
+            account_id=account_uuid,
+            mode=mode,
+            capabilities=capabilities,
+        )
         effective_lease = min(lease_duration, self._lease_duration)
         if effective_lease <= timedelta(0):
             raise ValueError("lease duration must be positive")
@@ -89,19 +119,48 @@ class PostgresIngestionStore:
                 raise IngestionFailure(FailureCategory.AUTHORIZATION, "account access denied")
 
             existing = session.scalar(
-                select(IngestionRunModel).where(
+                select(IngestionRunModel)
+                .where(
                     IngestionRunModel.broker_account_id == account_uuid,
                     IngestionRunModel.idempotency_key == idempotency_key,
                 )
+                .with_for_update()
             )
+            if self._expected_run_id is not None and (
+                existing is None or existing.id != self._expected_run_id
+            ):
+                raise IngestionFailure(
+                    FailureCategory.PERSISTENCE,
+                    "durable dispatch does not match the requested run",
+                )
+            if (
+                self._expected_run_id is None
+                and existing is not None
+                and existing.request_fingerprint != semantics.fingerprint
+            ):
+                raise RefreshIdempotencyConflictError(
+                    "idempotency key is already bound to different refresh semantics"
+                )
+            dispatch = None
+            if self._expected_run_id is not None:
+                dispatch = session.scalar(
+                    select(RefreshDispatchOutboxModel)
+                    .where(RefreshDispatchOutboxModel.ingestion_run_id == self._expected_run_id)
+                    .with_for_update()
+                )
+                if dispatch is None:
+                    raise IngestionFailure(
+                        FailureCategory.PERSISTENCE,
+                        "durable dispatch does not exist",
+                    )
+            retryable_terminal = False
             if existing is not None and existing.status not in {
                 RunStatus.QUEUED.value,
                 RunStatus.RUNNING.value,
             }:
                 if existing.error_code not in _RETRYABLE_TERMINAL_FAILURES:
-                    return _domain_run(session, existing, owner_uuid), False
-                existing.status = RunStatus.QUEUED.value
-                existing.completed_at = None
+                    return _domain_run(session, existing, owner_uuid), None
+                retryable_terminal = True
 
             lease = session.scalar(
                 select(IngestionLeaseModel)
@@ -111,10 +170,33 @@ class PostgresIngestionStore:
                 )
                 .with_for_update()
             )
-            if lease is not None and lease.expires_at > timestamp and lease.run_id is not None:
-                active = session.get(IngestionRunModel, lease.run_id)
-                if active is not None:
-                    return _domain_run(session, active, owner_uuid), False
+            if lease is not None and lease.expires_at > timestamp:
+                if self._expected_run_id is not None:
+                    raise RunLeaseBusyError(available_at=lease.expires_at)
+                if (
+                    lease.run_id is not None
+                    and existing is not None
+                    and lease.run_id == existing.id
+                ):
+                    return _domain_run(session, existing, owner_uuid), None
+                if lease.run_id is not None:
+                    active = session.get(IngestionRunModel, lease.run_id)
+                    if active is not None:
+                        return _domain_run(session, active, owner_uuid), None
+                raise IngestionFailure(
+                    FailureCategory.PERSISTENCE,
+                    "refresh account lease is busy",
+                )
+            if (
+                dispatch is not None
+                and dispatch.consumer_attempt_count >= MAX_REFRESH_CONSUMER_EXECUTION_ATTEMPTS
+            ):
+                raise ConsumerExecutionBudgetExhaustedError(
+                    "durable refresh consumer execution budget is exhausted"
+                )
+            if retryable_terminal and existing is not None:
+                existing.status = RunStatus.QUEUED.value
+                existing.completed_at = None
 
             if existing is None:
                 existing = IngestionRunModel(
@@ -124,6 +206,12 @@ class PostgresIngestionStore:
                     mode=mode.value,
                     status=RunStatus.RUNNING.value,
                     idempotency_key=idempotency_key,
+                    request_schema_version=semantics.schema_version,
+                    requested_mode=semantics.mode.value,
+                    requested_create_snapshot=semantics.create_snapshot,
+                    requested_capabilities=semantics.capability_values,
+                    effective_capabilities=semantics.capability_values,
+                    request_fingerprint=semantics.fingerprint,
                     correlation_id=correlation_id,
                     started_at=timestamp,
                     heartbeat_at=timestamp,
@@ -134,12 +222,16 @@ class PostgresIngestionStore:
                 existing.status = RunStatus.RUNNING.value
                 existing.heartbeat_at = timestamp
                 existing.correlation_id = correlation_id
+            if dispatch is not None:
+                dispatch.consumer_attempt_count += 1
 
+            fencing_token = uuid4()
             if lease is None:
                 lease = IngestionLeaseModel(
                     broker_account_id=account_uuid,
                     lease_type="refresh",
                     lease_owner=correlation_id,
+                    fencing_token=fencing_token,
                     acquired_at=timestamp,
                     heartbeat_at=timestamp,
                     expires_at=timestamp + effective_lease,
@@ -148,12 +240,16 @@ class PostgresIngestionStore:
                 session.add(lease)
             else:
                 lease.lease_owner = correlation_id
+                lease.fencing_token = fencing_token
                 lease.acquired_at = timestamp
                 lease.heartbeat_at = timestamp
                 lease.expires_at = timestamp + effective_lease
                 lease.run_id = existing.id
             session.flush()
-            return _domain_run(session, existing, owner_uuid), True
+            return _domain_run(session, existing, owner_uuid), RunLease(
+                token=str(fencing_token),
+                duration=effective_lease,
+            )
 
     async def get_checkpoint(
         self,
@@ -198,6 +294,7 @@ class PostgresIngestionStore:
         account_id: str,
         capability: IngestionCapability,
         page: SourcePage,
+        lease_token: str,
         now: datetime,
     ) -> PageCommitResult:
         run_uuid = _uuid(run_id, "run_id")
@@ -213,6 +310,12 @@ class PostgresIngestionStore:
                 or run.status != RunStatus.RUNNING.value
             ):
                 raise IngestionFailure(FailureCategory.PERSISTENCE, "run is not active")
+            lease = _require_active_lease(
+                session,
+                run=run,
+                lease_token=lease_token,
+                now=timestamp,
+            )
             inserted_count = updated_count = unchanged_count = 0
             for record in page.records:
                 prior = _latest_source_record(
@@ -332,23 +435,27 @@ class PostgresIngestionStore:
             run.request_count += 1
             run.records_received += len(page.records)
             run.heartbeat_at = timestamp
+            _renew_lease(lease, now=timestamp)
             session.flush()
             return PageCommitResult(inserted_count, updated_count, unchanged_count)
 
-    async def heartbeat(self, *, run_id: str, now: datetime) -> None:
+    async def heartbeat(self, *, run_id: str, lease_token: str, now: datetime) -> None:
         run_uuid = _uuid(run_id, "run_id")
         timestamp = _utc(now)
         with self._sessions.begin() as session:
-            run = session.get(IngestionRunModel, run_uuid)
+            run = session.scalar(
+                select(IngestionRunModel).where(IngestionRunModel.id == run_uuid).with_for_update()
+            )
             if run is None or run.status != RunStatus.RUNNING.value:
                 raise IngestionFailure(FailureCategory.PERSISTENCE, "run is not active")
-            run.heartbeat_at = timestamp
-            lease = session.scalar(
-                select(IngestionLeaseModel).where(IngestionLeaseModel.run_id == run_uuid)
+            lease = _require_active_lease(
+                session,
+                run=run,
+                lease_token=lease_token,
+                now=timestamp,
             )
-            if lease is not None:
-                lease.heartbeat_at = timestamp
-                lease.expires_at = timestamp + self._lease_duration
+            run.heartbeat_at = timestamp
+            _renew_lease(lease, now=timestamp)
 
     async def finish_run(
         self,
@@ -356,6 +463,7 @@ class PostgresIngestionStore:
         run_id: str,
         status: RunStatus,
         steps: Sequence[StepResult],
+        lease_token: str,
         now: datetime,
     ) -> IngestionRun:
         run_uuid = _uuid(run_id, "run_id")
@@ -363,12 +471,25 @@ class PostgresIngestionStore:
         if status in {RunStatus.QUEUED, RunStatus.RUNNING}:
             raise ValueError("finish status must be terminal")
         with self._sessions.begin() as session:
+            account_id = session.scalar(
+                select(IngestionRunModel.broker_account_id).where(IngestionRunModel.id == run_uuid)
+            )
+            if account_id is None:
+                raise IngestionFailure(FailureCategory.PERSISTENCE, "run does not exist")
+            _lock_account(session, account_id)
             run = session.scalar(
                 select(IngestionRunModel).where(IngestionRunModel.id == run_uuid).with_for_update()
             )
             if run is None:
                 raise IngestionFailure(FailureCategory.PERSISTENCE, "run does not exist")
-            _lock_account(session, run.broker_account_id)
+            if run.status != RunStatus.RUNNING.value:
+                raise IngestionFailure(FailureCategory.PERSISTENCE, "run is not active")
+            _require_active_lease(
+                session,
+                run=run,
+                lease_token=lease_token,
+                now=timestamp,
+            )
             effective_status = status
             effective_steps = tuple(steps)
             selected_capabilities = tuple(step.capability for step in effective_steps)
@@ -446,7 +567,10 @@ class PostgresIngestionStore:
             ]
             run.error_code = failed_categories[0] if failed_categories else None
             session.execute(
-                delete(IngestionLeaseModel).where(IngestionLeaseModel.run_id == run_uuid)
+                delete(IngestionLeaseModel).where(
+                    IngestionLeaseModel.run_id == run_uuid,
+                    IngestionLeaseModel.fencing_token == _uuid(lease_token, "lease_token"),
+                )
             )
             session.flush()
             owner_id = session.scalar(
@@ -485,6 +609,40 @@ def _lock_account(session: Session, account_id: UUID) -> None:
         text("SELECT pg_advisory_xact_lock(:account_lock)"),
         {"account_lock": _advisory_key(account_id)},
     )
+
+
+def _require_active_lease(
+    session: Session,
+    *,
+    run: IngestionRunModel,
+    lease_token: str,
+    now: datetime,
+) -> IngestionLeaseModel:
+    token = _uuid(lease_token, "lease_token")
+    lease = session.scalar(
+        select(IngestionLeaseModel)
+        .where(
+            IngestionLeaseModel.broker_account_id == run.broker_account_id,
+            IngestionLeaseModel.lease_type == "refresh",
+        )
+        .with_for_update()
+    )
+    if (
+        lease is None
+        or lease.run_id != run.id
+        or lease.fencing_token != token
+        or lease.expires_at <= now
+    ):
+        raise IngestionFailure(FailureCategory.PERSISTENCE, "run lease is no longer active")
+    return lease
+
+
+def _renew_lease(lease: IngestionLeaseModel, *, now: datetime) -> None:
+    duration = lease.expires_at - lease.heartbeat_at
+    if duration <= timedelta(0):
+        raise IngestionFailure(FailureCategory.PERSISTENCE, "run lease duration is invalid")
+    lease.heartbeat_at = now
+    lease.expires_at = now + duration
 
 
 def _account_is_owned(session: Session, owner_id: UUID, account_id: UUID) -> bool:

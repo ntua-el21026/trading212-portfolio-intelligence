@@ -1,4 +1,4 @@
-"""Durable PostgreSQL refresh queue with a non-authoritative Celery notification."""
+"""Transactional PostgreSQL refresh queue producer."""
 
 from __future__ import annotations
 
@@ -7,7 +7,6 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
-from celery import Celery  # type: ignore[import-untyped]
 from sqlalchemy import select, text
 from sqlalchemy.orm import Session, sessionmaker
 from trading212_application.ingestion import (
@@ -17,7 +16,11 @@ from trading212_application.ingestion import (
     RunStatus,
     validate_refresh_capabilities,
 )
-from trading212_application.services import RefreshQueue, RefreshUnavailableError
+from trading212_application.refresh_semantics import (
+    RefreshIdempotencyConflictError,
+    RefreshRequestSemantics,
+)
+from trading212_application.services import RefreshQueue
 from trading212_application.views import RefreshRunView
 from trading212_persistence.models import (
     BrokerAccountModel,
@@ -25,22 +28,27 @@ from trading212_persistence.models import (
     IngestionCheckpointModel,
     IngestionRunModel,
     PortfolioSnapshotModel,
+    RefreshDispatchOutboxModel,
+)
+from trading212_persistence.refresh_semantics import (
+    REFRESH_TASK_NAME,
+    REFRESH_TASK_VERSION,
 )
 from trading212_security.principals import AuthorizationError
 
+IdempotencyConflictError = RefreshIdempotencyConflictError
+
 
 class PostgresRefreshQueue(RefreshQueue):
-    """Persist canonical queue state before publishing an ephemeral worker message."""
+    """Atomically persist a refresh run and its fixed-task outbox event."""
 
     def __init__(
         self,
         *,
         sessions: sessionmaker[Session],
-        celery: Celery,
         clock: Callable[[], datetime],
     ) -> None:
         self._sessions = sessions
-        self._celery = celery
         self._clock = clock
 
     async def enqueue(
@@ -63,10 +71,12 @@ class PostgresRefreshQueue(RefreshQueue):
         if not correlation_id or len(correlation_id) > 120:
             raise ValueError("invalid correlation ID")
         now = _utc(self._clock())
-        should_publish = False
-        publish_mode = mode
-        publish_capabilities = requested_capabilities
-        publish_correlation_id = correlation_id
+        semantics = RefreshRequestSemantics.create(
+            owner_id=owner_uuid,
+            account_id=account_uuid,
+            mode=mode,
+            capabilities=requested_capabilities,
+        )
         with self._sessions.begin() as session:
             _lock_account(session, account_uuid)
             if not _account_is_owned(session, owner_uuid, account_uuid):
@@ -80,7 +90,7 @@ class PostgresRefreshQueue(RefreshQueue):
                 .with_for_update()
             )
             if run is None:
-                publish_mode, publish_capabilities, promotion_warning = _effective_selection(
+                effective_mode, effective_capabilities, promotion_warning = _effective_selection(
                     session,
                     account_id=account_uuid,
                     requested_mode=mode,
@@ -90,9 +100,17 @@ class PostgresRefreshQueue(RefreshQueue):
                     id=uuid4(),
                     broker_account_id=account_uuid,
                     capability="multi_capability_refresh",
-                    mode=publish_mode.value,
+                    mode=effective_mode.value,
                     status=RunStatus.QUEUED.value,
                     idempotency_key=idempotency_key,
+                    request_schema_version=semantics.schema_version,
+                    requested_mode=semantics.mode.value,
+                    requested_create_snapshot=semantics.create_snapshot,
+                    requested_capabilities=semantics.capability_values,
+                    effective_capabilities=[
+                        capability.value for capability in effective_capabilities
+                    ],
+                    request_fingerprint=semantics.fingerprint,
                     correlation_id=correlation_id,
                     started_at=now,
                     heartbeat_at=now,
@@ -100,42 +118,36 @@ class PostgresRefreshQueue(RefreshQueue):
                         _selection_state(
                             requested_mode=mode,
                             requested_capabilities=requested_capabilities,
-                            actual_mode=publish_mode,
-                            actual_capabilities=publish_capabilities,
+                            actual_mode=effective_mode,
+                            actual_capabilities=effective_capabilities,
                             warning=promotion_warning,
                         )
                     ],
                 )
                 session.add(run)
                 session.flush()
-                should_publish = True
-            elif run.status == RunStatus.FAILED.value and run.error_code == "queue_unavailable":
-                run.status = RunStatus.QUEUED.value
-                run.error_code = None
-                run.completed_at = None
-                run.heartbeat_at = now
-                should_publish = True
-            publish_mode = RunMode(run.mode)
-            publish_capabilities = _persisted_capabilities(run)
-            publish_correlation_id = run.correlation_id
-            view = _view(run)
-
-        if should_publish:
-            try:
-                self._celery.send_task(
-                    "portfolio.refresh",
-                    kwargs={
-                        "owner_id": owner_id,
-                        "account_id": account_id,
-                        "mode": publish_mode.value,
-                        "capabilities": [capability.value for capability in publish_capabilities],
-                        "idempotency_key": idempotency_key,
-                        "correlation_id": publish_correlation_id,
-                    },
+                session.add(
+                    RefreshDispatchOutboxModel(
+                        id=uuid4(),
+                        ingestion_run_id=run.id,
+                        task_name=REFRESH_TASK_NAME,
+                        task_version=REFRESH_TASK_VERSION,
+                        payload={
+                            "run_id": str(run.id),
+                            "account_id": str(account_uuid),
+                            "request_fingerprint": semantics.fingerprint,
+                            "request_schema_version": semantics.schema_version,
+                        },
+                        status="pending",
+                        attempt_count=0,
+                        available_at=now,
+                    )
                 )
-            except Exception as exc:
-                self._mark_publish_failed(view.id)
-                raise RefreshUnavailableError("refresh queue is unavailable") from exc
+            elif run.request_fingerprint != semantics.fingerprint:
+                raise RefreshIdempotencyConflictError(
+                    "idempotency key is already bound to different refresh semantics"
+                )
+            view = _view(run)
         return view
 
     async def get(self, *, owner_id: str, run_id: str) -> RefreshRunView:
@@ -160,16 +172,6 @@ class PostgresRefreshQueue(RefreshQueue):
             if run is None:
                 raise LookupError("refresh run not found")
             return _view(run)
-
-    def _mark_publish_failed(self, run_id: str) -> None:
-        now = _utc(self._clock())
-        with self._sessions.begin() as session:
-            run = session.get(IngestionRunModel, UUID(run_id))
-            if run is not None and run.status == RunStatus.QUEUED.value:
-                run.status = RunStatus.FAILED.value
-                run.error_code = "queue_unavailable"
-                run.completed_at = now
-                run.heartbeat_at = now
 
 
 def _view(run: IngestionRunModel) -> RefreshRunView:
@@ -241,24 +243,12 @@ def _selection_state(
     }
 
 
-def _persisted_capabilities(
-    run: IngestionRunModel,
-) -> tuple[IngestionCapability, ...]:
-    for item in run.warnings or []:
-        if item.get("kind") != "refresh_selection":
-            continue
-        raw = item.get("capabilities")
-        if not isinstance(raw, list):
-            break
-        try:
-            parsed = tuple(IngestionCapability(str(value)) for value in raw)
-        except ValueError as exc:
-            raise ValueError("persisted refresh selection is invalid") from exc
-        return validate_refresh_capabilities(parsed)
-    return FULL_REFRESH_ORDER
-
-
 def _view_capabilities(run: IngestionRunModel) -> tuple[IngestionCapability, ...]:
+    try:
+        parsed = tuple(IngestionCapability(str(value)) for value in run.effective_capabilities)
+        return validate_refresh_capabilities(parsed)
+    except (TypeError, ValueError):
+        pass
     for item in run.warnings or []:
         raw = item.get("capabilities")
         if item.get("kind") != "refresh_selection" or not isinstance(raw, list):

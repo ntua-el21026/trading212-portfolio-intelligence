@@ -174,6 +174,8 @@ Commands may become progressively complete as packages are added, but may not fa
 - SQLAlchemy 2 persistence models/mappers and repositories.
 - Alembic baseline and documented migration workflow.
 - Tables for owners/principals, broker connections/accounts, instruments/listings, ingestion runs/checkpoints/source records, canonical transactions/cash flows/dividends/order observations/current observations, snapshots/components, reconciliation runs/discrepancies, calculation metadata, and audit events.
+- A refresh-dispatch outbox that is written atomically with each durable ingestion run.
+- Immutable collection-query snapshot storage for stable traversal of mutable filtered results.
 - Exact numeric/UTC/ownership/idempotency constraints.
 - Repository transaction/unit-of-work boundaries.
 - Test database fixtures and migration tests.
@@ -186,6 +188,13 @@ Commands may become progressively complete as packages are added, but may not fa
 - Completed snapshots and completed run metadata are append-oriented/immutable by service policy.
 - Indexes support account/date/cursor/activity and latest-snapshot queries.
 - JSON fields are bounded to metadata where relational fields are semantically important.
+- Refresh request identity persists the requested schema version, mode, capability set,
+  snapshot behavior, owner/account scope, and canonical fingerprint separately from
+  promoted/effective execution capabilities.
+- The Phase 1 correction migration chain is linear through `20260901_0007`:
+  `0004` adds durable refresh dispatch and semantic request identity, `0005` represents
+  unconfigured broker credentials without a fabricated reference, `0006` adds immutable
+  collection-query snapshots, and `0007` records active external-cash-flow revisions.
 
 ### Acceptance
 
@@ -251,11 +260,55 @@ The production adapter must not contain:
 - Capability-specific paginators/checkpoints/overlap.
 - Central provider/account rate coordinator.
 - Leases/locks, heartbeats, job/run records, coalescing.
+- A dedicated transactional-outbox dispatcher with concurrent claiming, claim expiry,
+  bounded publication retry/backoff, and deterministic task identity.
 - Bounded retry and partial-failure behavior.
 - Source fingerprint/deduplication and canonical upsert transactions.
 - Reference-data refresh strategy.
 - Mock failure, pagination loop, late update, duplicate, restart/replay tests.
 - Worker commands/schedules and manual high-level refresh use case.
+
+### Durable refresh publication contract
+
+- The API persists the ingestion run and exactly one bounded, non-secret
+  `portfolio.refresh` outbox event in the same PostgreSQL transaction. A successful
+  commit returns the durable queued run without depending on broker publication in the
+  request process.
+- The dispatcher claims eligible rows with `FOR UPDATE SKIP LOCKED`, a unique claim
+  token/owner, and a lease expiry. An expired `publishing` claim is recoverable after a
+  process death.
+- The event contains only the run/account/request metadata required to validate the
+  fixed task. It contains no credential, credential reference, provider response, raw
+  broker record, arbitrary task name, or arbitrary broker path.
+- Publication is at least once with a deterministic task ID derived from the durable run
+  ID. The worker validates the task metadata against the run before acquiring its fenced
+  account lease, and its canonical writes remain idempotent under duplicate delivery.
+- Confirmed publication is terminal for the dispatcher. An ambiguous crash after broker
+  acceptance may republish the same task ID after claim expiry; consumer evidence and
+  terminal run state reconcile the event without creating another logical run.
+- A consumer that cannot proceed because another run owns the account lease durably
+  returns the event to `pending` at the lease expiry. Bounded execution failures become a
+  sanitized terminal run/outbox state before the delivery is acknowledged.
+- Deployed readiness requires an independently running dispatcher heartbeat. Queue
+  telemetry exposes pending count, oldest pending age, delivery attempts, failed
+  attempts, recovered claims, and queued runs without a deliverable event using bounded
+  labels.
+
+### Semantic refresh idempotency contract
+
+- An idempotency key is scoped by account and binds to one canonical requested command:
+  owner/account, requested mode, normalized requested capabilities, create-snapshot
+  behavior, and request-schema version. Correlation IDs are excluded.
+- Identical retries before publication, during execution, after success, or after a
+  retryable publication failure return the same durable logical run.
+- Reuse of the same account/key for different requested semantics fails with HTTP `409`
+  and sanitized code `IDEMPOTENCY_KEY_REUSED`; it does not publish another event or
+  reveal the earlier command.
+- Requested semantics remain distinct from effective semantics. Promotion of an initial
+  incremental/current request to full/all does not alter the fingerprint a retry must
+  match.
+- PostgreSQL and deterministic synthetic services enforce the same behavior under
+  concurrent identical and mismatched requests.
 
 ### Acceptance
 
@@ -373,11 +426,36 @@ The production adapter must not contain:
 - Typed settings/dependency wiring.
 - Stable error envelope/correlation IDs.
 - Cursor pagination/filtering/limits.
+- Typed, authorized `ListBrokerConnections`, `SearchInstruments`, `GetInstrument`,
+  `GetPortfolioSnapshot`, `GetCorePerformanceSummary`,
+  `ListReconciliationDiscrepancies`, and `GetDataQualitySummary` application use cases,
+  plus collection-specific query objects, in both PostgreSQL and deterministic synthetic
+  services.
 - Refresh command and status.
 - OpenAPI export/validation.
 - Generated TypeScript client/types consumed by web.
 - Health/live/readiness endpoints.
 - API contract/integration/security tests.
+
+### Stable collection contract
+
+- Mutable PostgreSQL collections use versioned, integrity-protected opaque cursors, not
+  offsets. A cursor is bound to the collection/resource, authorized owner/account,
+  deterministic sort, normalized filter fingerprint, read cutoff or immutable result
+  snapshot, last ordering key/tie-breaker, and cursor schema version.
+- Positions bind to one immutable portfolio snapshot and support
+  `market_value_desc`, `weight_desc`, and `ticker_asc` plus bounded ticker/name search.
+  Activity uses stable `(occurred_at DESC, id DESC)` ordering with SQL date/type filters;
+  dividends use `(paid_on DESC, id DESC)` with SQL date filters and full-period database
+  aggregates; snapshots use `(valuation_at DESC, id DESC)`; current orders select one
+  latest observation per provider order at the bound read cutoff.
+- Instrument search reads canonical instrument/listing metadata, includes unheld
+  listings, and orders deterministically by provider/environment/ticker/name/listing ID.
+- PostgreSQL applies predicates before pagination and reads `limit + 1` over the complete
+  eligible result. There is no pre-pagination 10,000-row truncation or collect-then-filter
+  prefix, and `Page.total` is the exact full filtered result.
+- Malformed, expired, tampered, cross-account, cross-resource, cross-sort, or cross-filter
+  cursor reuse fails with a stable sanitized 400-class validation error.
 
 ### Acceptance
 
@@ -403,6 +481,8 @@ The production adapter must not contain:
 - Authenticated shell, responsive navigation, accessible design tokens/components.
 - Portfolio overview with synthetic/real canonical data.
 - Positions, activity/transactions, dividends, snapshots/history, reconciliation/data-quality pages.
+- Route-specific typed server loaders for overview, holdings, activity, dividends,
+  snapshots, quality/reconciliation, synchronization, and settings/connections.
 - Loading, empty, stale, partial, unreconciled, and failed states.
 - Source timestamp/methodology/quality details.
 - Basic portfolio value/deposit history and direct allocation visualization using only Phase 1 data.
@@ -423,6 +503,15 @@ No virtual Pie editor, contribution optimizer, X-ray, benchmark attribution, adv
 - API errors safely actionable.
 - Synthetic end-to-end flow passes.
 - Visual design is coherent/premium without compromising information clarity.
+- Holdings, activity, dividends, snapshots, and reconciliation discrepancies preserve
+  opaque cursor/filter state in the URL and expose accessible previous/load-more
+  navigation so browser back/forward restores the traversal.
+- Overview is an explicitly labelled bounded preview with returned/full counts and a
+  link to the paginated collection; its largest-holdings request uses market-value
+  ordering rather than an alphabetical first page.
+- Desktop and mobile browser evidence covers more than 50 rows, subsequent-page and
+  back navigation, mutation between requests, no duplicate/skip behavior, semantic
+  tables, keyboard access, and horizontal-overflow checks.
 
 ### Suggested commits
 
@@ -454,6 +543,15 @@ No virtual Pie editor, contribution optimizer, X-ray, benchmark attribution, adv
 - No broker mutation reachable.
 - Mock-data end-to-end invocation works.
 - Live ChatGPT registration is passed or recorded as external deployment gate, not fabricated.
+- Exactly nine tools remain registered: `get_account_summary`,
+  `get_portfolio_snapshot`, `list_positions`, `list_recent_transactions`,
+  `get_dividend_summary`, `get_direct_allocation`, `compare_portfolio_snapshots`,
+  `get_reconciliation_status`, and `get_data_quality_summary`.
+- MCP collection/search/date/sort work is delegated to bounded application-service
+  queries before pagination. Dividend totals cover the full filtered period while only
+  the recent-row sample is bounded, and snapshot-by-ID uses direct authorized lookup.
+- An intentionally incomplete aggregate reports `partial`; a warning cannot upgrade an
+  incomplete result to `fresh`.
 
 ### Suggested commits
 
@@ -468,6 +566,7 @@ No virtual Pie editor, contribution optimizer, X-ray, benchmark attribution, adv
 - Complete Dockerfiles/Compose and production-neutral deployment examples.
 - Database migration startup/deploy job.
 - Structured logs, metrics, traces hooks, health, worker telemetry.
+- Refresh-dispatcher heartbeat/readiness and outbox backlog/recovery/failure telemetry.
 - Backup/restore and incident/credential rotation runbooks.
 - Dependency/secret/static/container scans.
 - Performance smoke benchmarks.
@@ -509,6 +608,21 @@ No virtual Pie editor, contribution optimizer, X-ray, benchmark attribution, adv
 12. Attempted non-GET/unknown broker path rejected before transport.
 13. Snapshot comparison and direct allocation consistent across API/web/MCP.
 14. Container restart preserves canonical state and resumes jobs safely.
+
+Scenario 14 has three separate acceptance planes; evidence for one must not be reused as
+proof of another:
+
+- **14a — API commit-before-publication crash:** commit the run and outbox event, stop
+  before Celery publication, restart the dispatcher/API environment, publish and execute
+  the original run, prove one logical run/economic result, and return the pending-outbox
+  metric to zero. Also exercise the ambiguous broker-accepted/before-outbox-ack duplicate
+  path with the deterministic task ID.
+- **14b — worker/broker-queue restart after confirmed publication:** leave the published
+  message queued while the worker is unavailable, restart the worker, and execute the
+  same durable run without dispatcher redelivery or duplicate economics.
+- **14c — full-stack state retention:** restart API, MCP, web, worker, PostgreSQL, and
+  Redis without deleting volumes and verify canonical counts, summary values, and
+  quality remain unchanged.
 
 ## 17. Global Phase 1 exit checklist
 
