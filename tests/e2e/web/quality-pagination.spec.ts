@@ -46,13 +46,11 @@ test("quality discrepancies remain bounded and cursor-paginated", async ({
 
   await page.goBack();
   await expect(page).toHaveURL(/\/quality\?state=unreconciled$/u);
-  expect(
-    await rowText(
-      page.getByRole("table", {
-        name: "Reconciliation discrepancy records",
-      }),
-    ),
-  ).toEqual(firstRows);
+  const restoredTable = page.getByRole("table", {
+    name: "Reconciliation discrepancy records",
+  });
+  await expect(restoredTable.locator("tbody tr")).toHaveCount(50);
+  expect(await rowText(restoredTable)).toEqual(firstRows);
 
   const overflow = await page.evaluate(
     () =>

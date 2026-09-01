@@ -4,7 +4,8 @@ export default defineConfig({
   testDir: "../../tests/e2e/web",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
-  retries: process.env.CI ? 1 : 0,
+  // A flaky browser assertion is a failed Phase 1 evidence gate, including in CI.
+  retries: 0,
   // Bound route-compilation concurrency so Next dev HMR cannot replace a page
   // between an interaction and its same-origin request on smaller CI runners.
   workers: process.env.CI ? 2 : 4,

@@ -4,7 +4,8 @@ export default defineConfig({
   testDir: "../../tests/e2e/api-web",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
-  retries: process.env.CI ? 1 : 0,
+  // A flaky browser assertion is a failed Phase 1 evidence gate, including in CI.
+  retries: 0,
   // The insertion-stability scenario mutates one deterministic account fixture;
   // serialize projects so desktop and mobile each begin from the same baseline.
   workers: 1,
