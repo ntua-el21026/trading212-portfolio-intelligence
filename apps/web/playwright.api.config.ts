@@ -33,6 +33,8 @@ export default defineConfig({
     {
       command: "uv run python ../../scripts/run_api_backed_e2e.py",
       reuseExistingServer: false,
+      // Allow the fixture to drop only its own disposable database at shutdown.
+      gracefulShutdown: { signal: "SIGTERM", timeout: 10_000 },
       timeout: 120_000,
       // Readiness intentionally stays fail-closed without a live dispatcher;
       // this browser suite needs only the API process liveness probe.

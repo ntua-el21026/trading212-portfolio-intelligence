@@ -5,7 +5,8 @@ The [execution manifest](PHASE_2_EXECUTION_MANIFEST.md),
 [optimizer ADR](../adr/ADR-0011-DETERMINISTIC-CONTRIBUTION-OPTIMIZER.md),
 [methods](../analytics/PHASE_2_METHODS.md) and
 [API contract](../architecture/PHASE_2_API_SERVICE_CONTRACTS.md) define its scope.
-No package acceptance or exact implementation SHA is claimed yet.
+Implementation candidate `5fa43b2fe1f671b9e2734c70fd0c13480ae08555` is
+committed. Package acceptance remains pending.
 
 ## Calculation and identity
 
@@ -91,5 +92,19 @@ migration/service/worker tests. The evolving focused counts are recorded in the
 working status rather than treated as immutable release evidence. Full local
 gates, source/history/image scans, API-backed desktop/mobile behavior, fresh
 Compose recovery and pushed-SHA CI must all pass before this package is accepted.
+
+The first exact candidate passed `make validate`: 790 isolated Python tests,
+124 PostgreSQL/migration tests, 87% combined coverage with branch measurement,
+111 web unit tests and 36 synthetic plus 16 API-backed browser tests. A separate
+Hypothesis statistics run observed 175 passing examples across the three
+planning properties. Documentation and security CI passed, but quality run
+`34144309940` failed in the mobile browser phase. With `TEST_DATABASE_URL` set,
+the browser fixture reused the configured database across viewport launches and
+hit the unchanged 64-snapshot owner quota. Local validation used the resettable
+default database, so it did not exercise that failing configuration. The fixture
+runner now uses a newly created disposable database for each launch, retaining
+the configured URL only for connection settings and preserving its base database.
+The correction requires a new exact-SHA acceptance run; the failed candidate is
+retained as history and is not accepted.
 
 P2-03 through P2-10 remain required; Phase 3 remains not started.

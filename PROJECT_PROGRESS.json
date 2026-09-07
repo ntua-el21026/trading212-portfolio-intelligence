@@ -132,6 +132,22 @@
       "status": "in_progress",
       "progress_percent": 10,
       "design_closure": "accepted",
+      "candidate_validation": {
+        "work_package": "P2-02",
+        "source_sha": "5fa43b2fe1f671b9e2734c70fd0c13480ae08555",
+        "acceptance": "pending",
+        "make_validate": "passed",
+        "isolated_python_tests_passed": 790,
+        "service_backed_python_tests_passed": 124,
+        "combined_python_coverage_with_branch_measurement_percent": 87,
+        "web_unit_tests_passed": 111,
+        "browser_tests_passed_locally": 52,
+        "github_quality_run": 34144309940,
+        "github_quality_result": "failed",
+        "github_documentation_result": "passed",
+        "github_security_result": "passed",
+        "correction": "Isolate configured browser fixture databases per launch; rerun exact-SHA acceptance."
+      },
       "work_packages": {
         "P2-01": "complete",
         "P2-02": "in_progress",

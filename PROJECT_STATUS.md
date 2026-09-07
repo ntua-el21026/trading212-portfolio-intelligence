@@ -28,17 +28,17 @@ historical fingerprint exceptions in the accepted SHA and all gates rerun.
 See [the P2-01 evidence](docs/implementation/evidence/phase-2-p2-01-ecc7515.json).
 P2-02 contribution planning is `in_progress`. Its four-mode Decimal solver,
 normalized requests/results, fixed durable job, six API operations, four MCP
-tools and drift/planner web routes are implemented in the working tree and under
-verification. Focused web verification passes 111 unit tests; the canonical
-browser gate passes 36 fixture/widget tests plus eight API-backed tests per
-desktop/mobile viewport, without retries and with isolated normal-quota fixtures.
-Focused PostgreSQL migration, service, worker and API checks also pass, including
-immutable polling retention, fenced recovery and a real broker-transport spy
-proving zero planning dispatch. Independent rational optimizer references cover
-the frozen objectives and hard constraints; final proof-explanation regressions
-are being checked before immutable acceptance.
-These focused results do not constitute package acceptance: full gates, fresh
-Compose runtime evidence and exact pushed-SHA CI remain pending.
+tools and drift/planner web routes are committed at
+`5fa43b2fe1f671b9e2734c70fd0c13480ae08555`. Exact local validation passed 790
+isolated and 124 service-backed Python tests, 87% combined coverage with branch
+measurement, 111 web unit tests and 52 browser tests without retries. Seventeen
+rational optimizer reference cases and 175 observed property examples passed.
+Documentation and security CI passed; quality run `34144309940` failed because
+the configured CI browser database was reused across desktop/mobile launches,
+exhausting the unchanged owner snapshot quota. The fixture-isolation correction
+creates a disposable database for each launch and requires a new exact-SHA run.
+The failed candidate is not accepted. Fresh Compose runtime evidence and all
+exact pushed-SHA gates remain pending.
 P2-02 through P2-10 remain required.
 Phase 3 remains `not_started`.
 

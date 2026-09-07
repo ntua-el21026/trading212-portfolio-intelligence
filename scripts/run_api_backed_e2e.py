@@ -5,18 +5,23 @@ from __future__ import annotations
 
 import asyncio
 import os
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager, suppress
+import signal
+from collections.abc import AsyncIterator, Iterator
+from contextlib import asynccontextmanager, contextmanager, suppress
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 from queue import Empty, Queue
-from uuid import NAMESPACE_URL, UUID, uuid5
+from types import FrameType
+from typing import NoReturn
+from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 
+import psycopg
 import uvicorn
 from alembic import command
 from alembic.config import Config
 from fastapi import FastAPI
+from psycopg import sql
 from sqlalchemy import func, select
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
@@ -36,10 +41,7 @@ from trading212_worker.scenarios import persist_quantity_cash_mismatch_scenario
 from trading212_worker.seed import SEED_TIME, seed_materialized_synthetic
 
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-_DEFAULT_DATABASE_NAME = "portfolio_web_e2e"
-_DEFAULT_DATABASE_URL = (
-    f"postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/{_DEFAULT_DATABASE_NAME}"
-)
+_DEFAULT_DATABASE_URL = "postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio"
 _FIXTURE_NAMESPACE = uuid5(
     NAMESPACE_URL,
     "trading212-portfolio-intelligence/api-backed-browser-e2e",
@@ -51,20 +53,37 @@ def _fixture_uuid(name: str) -> UUID:
     return uuid5(_FIXTURE_NAMESPACE, name)
 
 
-def _reset_default_database(database_url: str) -> None:
-    """Recreate only the dedicated local browser-E2E database."""
-    parsed = make_url(database_url)
-    if parsed.database != _DEFAULT_DATABASE_NAME:
-        raise RuntimeError("refusing to reset a non-E2E database")
-    admin_engine = create_database_engine(parsed.set(database="postgres"))
+@contextmanager
+def _disposable_database(server_url: str) -> Iterator[str]:
+    """Use configured server credentials without mutating its supplied database."""
+    parsed = make_url(server_url.replace("postgresql://", "postgresql+psycopg://", 1))
+    if parsed.drivername != "postgresql+psycopg":
+        raise RuntimeError("API-backed browser fixtures require PostgreSQL")
+    name = "t212pi_web_e2e_" + uuid4().hex
+    admin_dsn = (
+        parsed.set(database="postgres")
+        .render_as_string(hide_password=False)
+        .replace("postgresql+psycopg://", "postgresql://", 1)
+    )
+    with psycopg.connect(admin_dsn, autocommit=True) as connection:
+        connection.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))
+    # Each viewport process needs a fresh owner capacity budget, including in CI.
+    # Pin Alembic's environment override before migration or seed code executes.
+    database_url = parsed.set(database=name).render_as_string(hide_password=False)
+    previous_database_url = os.environ.get("DATABASE_URL")
+    os.environ["DATABASE_URL"] = database_url
     try:
-        with admin_engine.connect().execution_options(isolation_level="AUTOCOMMIT") as connection:
-            connection.exec_driver_sql(
-                f'DROP DATABASE IF EXISTS "{_DEFAULT_DATABASE_NAME}" WITH (FORCE)'
-            )
-            connection.exec_driver_sql(f'CREATE DATABASE "{_DEFAULT_DATABASE_NAME}"')
+        yield database_url
     finally:
-        admin_engine.dispose()
+        if previous_database_url is None:
+            os.environ.pop("DATABASE_URL", None)
+        else:
+            os.environ["DATABASE_URL"] = previous_database_url
+        # Creation must have succeeded above; never drop a caller-supplied database.
+        with psycopg.connect(admin_dsn, autocommit=True) as connection:
+            connection.execute(
+                sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(name))
+            )
 
 
 def _persist_large_activity_fixture(
@@ -199,12 +218,22 @@ async def _deliver_fixture_plans(service: PostgresPlanningService, stopped: asyn
 
 
 def main() -> None:
-    configured_database_url = os.environ.get("TEST_DATABASE_URL")
-    database_url = (configured_database_url or _DEFAULT_DATABASE_URL).replace(
-        "postgresql://", "postgresql+psycopg://", 1
-    )
-    if not configured_database_url:
-        _reset_default_database(database_url)
+    server_url = os.environ.get("TEST_DATABASE_URL") or _DEFAULT_DATABASE_URL
+    # Uvicorn restores and re-raises SIGTERM after its lifespan exits. Raising
+    # SystemExit here lets the database context clean up before this process ends.
+    previous_handler = signal.signal(signal.SIGTERM, _exit_fixture)
+    try:
+        with _disposable_database(server_url) as database_url:
+            _serve_fixture(database_url)
+    finally:
+        signal.signal(signal.SIGTERM, previous_handler)
+
+
+def _exit_fixture(signum: int, frame: FrameType | None) -> NoReturn:
+    raise SystemExit(128 + signum)
+
+
+def _serve_fixture(database_url: str) -> None:
     migration_config = Config(str(_REPOSITORY_ROOT / "alembic.ini"))
     migration_config.set_main_option("script_location", str(_REPOSITORY_ROOT / "migrations"))
     migration_config.set_main_option("sqlalchemy.url", database_url)

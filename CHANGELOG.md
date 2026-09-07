@@ -13,6 +13,9 @@ All notable project changes are recorded here. The project follows semantic vers
 - Add six bounded API operations, four MCP tools and authenticated drift/planner
   pages with preserved edits, revision history and canonical server results.
 - Keep P2-02 in progress while full package acceptance is being verified.
+- Isolate each browser fixture launch in its own disposable PostgreSQL database,
+  including when CI supplies a database URL, so independent desktop/mobile runs
+  retain the production owner quota without sharing earlier test reservations.
 
 ### Phase 2 virtual targets
 
