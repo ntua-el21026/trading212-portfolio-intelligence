@@ -733,3 +733,12 @@ export type {
   TargetCommandOptions,
   TargetReadOptions,
 } from "./target-transport";
+
+export * from "./planning.generated";
+export { PlanningApiError } from "./planning-transport";
+export type {
+  PlanningApiResponse,
+  PlanningClientOptions,
+  PlanningCommandOptions,
+  PlanningReadOptions,
+} from "./planning-transport";

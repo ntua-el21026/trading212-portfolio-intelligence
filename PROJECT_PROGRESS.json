@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-07T14:56:54.093457Z",
+  "updated_at": "2026-09-07T15:07:25.965425Z",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -134,7 +134,7 @@
       "design_closure": "accepted",
       "work_packages": {
         "P2-01": "complete",
-        "P2-02": "not_started",
+        "P2-02": "in_progress",
         "P2-03": "not_started",
         "P2-04": "not_started",
         "P2-05": "not_started",

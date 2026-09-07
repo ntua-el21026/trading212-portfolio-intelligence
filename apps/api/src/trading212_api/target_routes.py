@@ -8,7 +8,7 @@ from typing import Annotated, Any, Protocol
 
 from fastapi import APIRouter, Depends, FastAPI, Query, Request, Response
 from fastapi.routing import APIRoute
-from pydantic import TypeAdapter, ValidationError
+from pydantic import BaseModel, TypeAdapter, ValidationError
 from starlette.responses import JSONResponse
 from trading212_api_contracts.targets import (
     CreateTargetVersionRequest,
@@ -22,7 +22,6 @@ from trading212_api_contracts.targets import (
     TargetHierarchyQuery,
     TargetPageQuery,
     TargetPageResponse,
-    TargetSchema,
     TargetValidationResponse,
     TargetVersionComparisonResponse,
     TargetVersionEventResponse,
@@ -118,7 +117,7 @@ class BoundedTargetRoute(APIRoute):
         return bounded
 
 
-def target_response[T: TargetSchema](
+def target_response[T: BaseModel](
     request: Request,
     value: object,
     schema: type[T],

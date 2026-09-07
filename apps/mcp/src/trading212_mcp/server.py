@@ -1,4 +1,4 @@
-"""Streamable HTTP MCP server with the frozen Phase 1 portfolio tool registry."""
+"""Streamable HTTP with fixed portfolio reads and bounded internal manual planning."""
 
 from __future__ import annotations
 
@@ -19,6 +19,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from trading212_api_contracts.targets import UUIDString
+from trading212_application.planning import PlanningService
 from trading212_application.services import PortfolioService, SyntheticPortfolioService
 from trading212_application.targets import TargetService
 from trading212_persistence import (
@@ -33,6 +34,8 @@ from trading212_security.tokens import BearerAuthenticator
 
 from .auth import PrincipalResolver, SharedTokenVerifier
 from .gateway import PortfolioMcpGateway
+from .planning_gateway import PlanningMcpGateway
+from .planning_tools import PLANNING_TOOL_NAMES, register_planning_tools
 from .schemas import (
     AccountSummaryResult,
     ActivityTypeFilter,
@@ -64,6 +67,7 @@ FROZEN_TOOL_NAMES = (
     "get_data_quality_summary",
     "list_virtual_pies",
     "get_virtual_pie",
+    *PLANNING_TOOL_NAMES,
 )
 
 AccountId = Annotated[
@@ -93,6 +97,7 @@ class McpRuntime:
     mcp_settings: McpSettings
     access_control_configured: bool
     target_service: TargetService | None = None
+    planning_service: PlanningService | None = None
 
     def asgi_app(self) -> ASGIApp:
         transport_security = TransportSecuritySettings(
@@ -119,6 +124,7 @@ def create_runtime(
     mcp_settings: McpSettings | None = None,
     service: PortfolioService | None = None,
     target_service: TargetService | None = None,
+    planning_service: PlanningService | None = None,
     database_url: str | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -159,6 +165,16 @@ def create_runtime(
         )
         if target_service is None:
             target_service = PostgresTargetService(
+                sessions=create_session_factory(engine),
+                clock=runtime_clock,
+                cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+                cursor_ttl_seconds=security.cursor_ttl_seconds,
+            )
+
+        if planning_service is None:
+            from trading212_persistence.planning_service import PostgresPlanningService
+
+            planning_service = PostgresPlanningService(
                 sessions=create_session_factory(engine),
                 clock=runtime_clock,
                 cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
@@ -213,7 +229,8 @@ def create_runtime(
         title="Trading 212 Portfolio Intelligence",
         description="Private portfolio observations, canonical analytics, and virtual targets.",
         instructions=(
-            "Use these tools only to read the authenticated user's canonical portfolio. "
+            "Read the authenticated user's canonical portfolio and create only authorized "
+            "internal manual contribution-planning requests with an idempotency identity. "
             "Values are observations or deterministic analytics, never trade instructions; "
             "preserve quality warnings, timestamps, unavailable fields, and reporting currency."
         ),
@@ -238,6 +255,13 @@ def create_runtime(
             clock=runtime_clock,
         ),
     )
+    register_planning_tools(
+        server,
+        PlanningMcpGateway(
+            service=planning_service, principals=principal_resolver, clock=runtime_clock
+        ),
+        widget_domain=transport.widget_domain,
+    )
     return McpRuntime(
         server=server,
         service=portfolio_service,
@@ -245,6 +269,7 @@ def create_runtime(
         mcp_settings=transport,
         access_control_configured=access_control_configured,
         target_service=target_service,
+        planning_service=planning_service,
     )
 
 

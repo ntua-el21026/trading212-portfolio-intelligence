@@ -24,6 +24,8 @@ const primaryItems = [
   { href: "/synchronization", icon: RefreshCw, label: "Synchronization" },
   { href: "/quality", icon: ShieldCheck, label: "Data quality" },
   { href: "/pies", icon: ChartPie, label: "Pies" },
+  { href: "/drift", icon: ChartPie, label: "Drift" },
+  { href: "/planner", icon: CircleDollarSign, label: "Planner" },
 ] as const;
 
 const secondaryItems = [

@@ -1,4 +1,4 @@
-"""Generate or verify the committed deterministic Phase 1 OpenAPI document."""
+"""Generate the additive OpenAPI contract and bounded fixed-purpose web clients."""
 
 from __future__ import annotations
 
@@ -9,20 +9,23 @@ import subprocess
 from pathlib import Path
 
 from trading212_api.main import create_app
-from trading212_api_contracts.typescript import render_target_client
+from trading212_api_contracts.typescript import render_planning_client, render_target_client
+from trading212_application.services import SyntheticPortfolioService
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/openapi/phase1-v1.json"
 TARGET_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/targets.generated.ts"
+PLANNING_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/planning.generated.ts"
 
 
 def render_contract() -> str:
     application = create_app(
+        service=SyntheticPortfolioService(),
         settings=SecuritySettings(
             environment=RuntimeEnvironment.TEST,
             allowed_hosts=("localhost",),
-        )
+        ),
     )
     return json.dumps(application.openapi(), indent=2, sort_keys=True) + "\n"
 
@@ -41,25 +44,33 @@ def main() -> int:
         package_manager = [corepack, "pnpm"]
     else:
         parser.error("pnpm or Corepack is required for the generated client; run bootstrap")
-    client = subprocess.run(  # noqa: S603
-        [*package_manager, "exec", "prettier", "--stdin-filepath", str(TARGET_OUTPUT)],
-        cwd=REPOSITORY_ROOT,
-        input=render_target_client(json.loads(rendered)),
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout
+    clients: dict[Path, str] = {}
+    contract = json.loads(rendered)
+    for output, render in (
+        (TARGET_OUTPUT, render_target_client),
+        (PLANNING_OUTPUT, render_planning_client),
+    ):
+        clients[output] = subprocess.run(  # noqa: S603
+            [*package_manager, "exec", "prettier", "--stdin-filepath", str(output)],
+            cwd=REPOSITORY_ROOT,
+            input=render(contract),
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
     if arguments.check:
         if not arguments.output.is_file():
             parser.error(f"contract artifact is missing: {arguments.output}")
         if arguments.output.read_text(encoding="utf-8") != rendered:
             parser.error("committed OpenAPI artifact is stale; regenerate it")
-        if not TARGET_OUTPUT.is_file() or TARGET_OUTPUT.read_text(encoding="utf-8") != client:
-            parser.error("committed target client is stale; regenerate it")
+        for output, client in clients.items():
+            if not output.is_file() or output.read_text(encoding="utf-8") != client:
+                parser.error(f"committed {output.name} is stale; regenerate it")
         return 0
     arguments.output.parent.mkdir(parents=True, exist_ok=True)
     arguments.output.write_text(rendered, encoding="utf-8")
-    TARGET_OUTPUT.write_text(client, encoding="utf-8")
+    for output, client in clients.items():
+        output.write_text(client, encoding="utf-8")
     return 0
 
 

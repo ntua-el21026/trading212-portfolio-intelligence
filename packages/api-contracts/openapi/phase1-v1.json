@@ -193,6 +193,61 @@
         "title": "ActivityTypeFilter",
         "type": "string"
       },
+      "ActualVsTargetResult": {
+        "additionalProperties": false,
+        "properties": {
+          "calculated_at": {
+            "format": "date-time",
+            "title": "Calculated At",
+            "type": "string"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "context": {
+            "$ref": "#/components/schemas/PlanningResultContext"
+          },
+          "node_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Id"
+          },
+          "rows": {
+            "$ref": "#/components/schemas/PlanningPage_PlanningDriftRow_"
+          },
+          "target_identities": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningNodeIdentity"
+            },
+            "maxItems": 256,
+            "title": "Target Identities",
+            "type": "array"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/PlanningDriftTotals"
+          }
+        },
+        "required": [
+          "context",
+          "calculated_at",
+          "totals",
+          "rows",
+          "target_identities",
+          "content_digest"
+        ],
+        "title": "ActualVsTargetResult",
+        "type": "object"
+      },
       "AllocationResponse": {
         "additionalProperties": false,
         "properties": {
@@ -367,6 +422,847 @@
           "coverage_complete"
         ],
         "title": "CheckpointQualityResponse",
+        "type": "object"
+      },
+      "ContributionMoney": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "pattern": "^(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Amount",
+            "type": "string"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "title": "ContributionMoney",
+        "type": "object"
+      },
+      "ContributionPlanDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "calculated_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Calculated At"
+          },
+          "content_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Digest"
+          },
+          "execution_allowed": {
+            "const": false,
+            "default": false,
+            "title": "Execution Allowed",
+            "type": "boolean"
+          },
+          "job": {
+            "$ref": "#/components/schemas/ContributionPlanJob"
+          },
+          "lines": {
+            "$ref": "#/components/schemas/PlanningPage_ContributionPlanLine_"
+          },
+          "request": {
+            "$ref": "#/components/schemas/PersistedPlanningRequest"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ContributionPlanResultSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "revision_etag": {
+            "maxLength": 80,
+            "minLength": 40,
+            "title": "Revision Etag",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job",
+          "request",
+          "result",
+          "lines",
+          "calculated_at",
+          "content_digest",
+          "revision_etag"
+        ],
+        "title": "ContributionPlanDetail",
+        "type": "object"
+      },
+      "ContributionPlanJob": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "execution_allowed": {
+            "const": false,
+            "default": false,
+            "title": "Execution Allowed",
+            "type": "boolean"
+          },
+          "failure_code": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9._:-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Code"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "job_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "enum": [
+                  "optimal",
+                  "feasible_nonoptimal",
+                  "infeasible",
+                  "unavailable",
+                  "failed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "plan_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "plan_revision_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Revision Id"
+          },
+          "request_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "request_revision": {
+            "minimum": 1.0,
+            "title": "Request Revision",
+            "type": "integer"
+          },
+          "requested_at": {
+            "format": "date-time",
+            "title": "Requested At",
+            "type": "string"
+          },
+          "revision_etag": {
+            "maxLength": 80,
+            "minLength": 40,
+            "pattern": "^\"[0-9a-f-]{36}:[1-9][0-9]*\"$",
+            "title": "Revision Etag",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "expired",
+              "cancelled"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "target_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Target Version Id",
+            "type": "string"
+          },
+          "virtual_portfolio_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Virtual Portfolio Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan_id",
+          "account_id",
+          "virtual_portfolio_id",
+          "target_version_id",
+          "snapshot_id",
+          "request_id",
+          "request_revision",
+          "job_id",
+          "state",
+          "outcome",
+          "requested_at",
+          "input_digest",
+          "revision_etag"
+        ],
+        "title": "ContributionPlanJob",
+        "type": "object"
+      },
+      "ContributionPlanLine": {
+        "additionalProperties": false,
+        "properties": {
+          "binding_constraint_keys": {
+            "items": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 1280,
+            "title": "Binding Constraint Keys",
+            "type": "array"
+          },
+          "current_value": {
+            "$ref": "#/components/schemas/PlanningMoney"
+          },
+          "current_weight": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Weight"
+          },
+          "excluded": {
+            "title": "Excluded",
+            "type": "boolean"
+          },
+          "holding_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Holding Id",
+            "type": "string"
+          },
+          "instrument_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Id"
+          },
+          "listing_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Listing Id"
+          },
+          "minimum_funded_amount": {
+            "$ref": "#/components/schemas/PlanningMoney"
+          },
+          "node_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Node Id",
+            "type": "string"
+          },
+          "node_key": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Node Key",
+            "type": "string"
+          },
+          "ordinal": {
+            "maximum": 255.0,
+            "minimum": 0.0,
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "post_value": {
+            "$ref": "#/components/schemas/PlanningMoney"
+          },
+          "post_weight": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Post Weight",
+            "type": "string"
+          },
+          "recommended_amount": {
+            "$ref": "#/components/schemas/PlanningMoney"
+          },
+          "target_weight": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Target Weight",
+            "type": "string"
+          },
+          "value_increment": {
+            "$ref": "#/components/schemas/PlanningMoney"
+          }
+        },
+        "required": [
+          "ordinal",
+          "node_id",
+          "node_key",
+          "holding_id",
+          "instrument_id",
+          "listing_id",
+          "current_value",
+          "target_weight",
+          "current_weight",
+          "recommended_amount",
+          "post_value",
+          "post_weight",
+          "minimum_funded_amount",
+          "value_increment",
+          "excluded",
+          "binding_constraint_keys"
+        ],
+        "title": "ContributionPlanLine",
+        "type": "object"
+      },
+      "ContributionPlanPage": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ContributionPlanSummary"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "ContributionPlanPage",
+        "type": "object"
+      },
+      "ContributionPlanResultSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "after_drift": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningDriftTotals"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "attempted_assignments": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Attempted Assignments",
+            "type": "integer"
+          },
+          "before_drift": {
+            "$ref": "#/components/schemas/PlanningDriftTotals"
+          },
+          "bound_kind": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9._:-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bound Kind"
+          },
+          "constraints": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningEffectiveConstraint"
+            },
+            "maxItems": 1280,
+            "title": "Constraints",
+            "type": "array"
+          },
+          "context": {
+            "$ref": "#/components/schemas/PlanningResultContext"
+          },
+          "contribution": {
+            "$ref": "#/components/schemas/PlanningMoney"
+          },
+          "currency_policy_version": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9._:-]+$",
+            "title": "Currency Policy Version",
+            "type": "string"
+          },
+          "current_cash": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "examined_moves": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Examined Moves",
+            "type": "integer"
+          },
+          "excluded_node_keys": {
+            "items": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 256,
+            "title": "Excluded Node Keys",
+            "type": "array"
+          },
+          "execution_allowed": {
+            "const": false,
+            "default": false,
+            "title": "Execution Allowed",
+            "type": "boolean"
+          },
+          "exhaustive": {
+            "title": "Exhaustive",
+            "type": "boolean"
+          },
+          "explanations": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningExplanation"
+            },
+            "maxItems": 1280,
+            "title": "Explanations",
+            "type": "array"
+          },
+          "lower_bound": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningObjective"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mode": {
+            "enum": [
+              "global",
+              "hierarchical",
+              "restricted",
+              "cash_only"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "monetary_quantum": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monetary Quantum"
+          },
+          "objective_after": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningObjective"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "objective_before": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningObjective"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "objective_gap": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningObjective"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "outcome": {
+            "enum": [
+              "optimal",
+              "feasible_nonoptimal",
+              "infeasible",
+              "unavailable",
+              "failed"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          },
+          "post_cash": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "post_total": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "residual_cash": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "unresolved_node_keys": {
+            "items": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 256,
+            "title": "Unresolved Node Keys",
+            "type": "array"
+          }
+        },
+        "required": [
+          "context",
+          "outcome",
+          "mode",
+          "contribution",
+          "monetary_quantum",
+          "currency_policy_version",
+          "residual_cash",
+          "current_cash",
+          "post_cash",
+          "post_total",
+          "objective_before",
+          "objective_after",
+          "lower_bound",
+          "objective_gap",
+          "bound_kind",
+          "examined_moves",
+          "attempted_assignments",
+          "exhaustive",
+          "constraints",
+          "explanations",
+          "excluded_node_keys",
+          "unresolved_node_keys",
+          "before_drift",
+          "after_drift"
+        ],
+        "title": "ContributionPlanResultSummary",
+        "type": "object"
+      },
+      "ContributionPlanSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "job": {
+            "$ref": "#/components/schemas/ContributionPlanJob"
+          },
+          "options": {
+            "$ref": "#/components/schemas/PersistedPlanningOptions"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "target_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Target Version Id",
+            "type": "string"
+          },
+          "virtual_portfolio_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Virtual Portfolio Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job",
+          "virtual_portfolio_id",
+          "target_version_id",
+          "snapshot_id",
+          "options"
+        ],
+        "title": "ContributionPlanSummary",
+        "type": "object"
+      },
+      "CreateContributionPlanRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "allocation_constraints": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningConstraint"
+            },
+            "maxItems": 256,
+            "title": "Allocation Constraints",
+            "type": "array"
+          },
+          "cash_reserve": {
+            "anyOf": [
+              {
+                "pattern": "^(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cash Reserve"
+          },
+          "contribution": {
+            "$ref": "#/components/schemas/ContributionMoney"
+          },
+          "coverage_policy": {
+            "default": "require_complete",
+            "enum": [
+              "require_complete",
+              "allow_degraded"
+            ],
+            "title": "Coverage Policy",
+            "type": "string"
+          },
+          "eligible_holding_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "maxItems": 256,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eligible Holding Ids"
+          },
+          "excluded_holding_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 256,
+            "title": "Excluded Holding Ids",
+            "type": "array"
+          },
+          "holding_constraints": {
+            "items": {
+              "$ref": "#/components/schemas/McpPlanAllocationConstraint"
+            },
+            "maxItems": 256,
+            "title": "Holding Constraints",
+            "type": "array"
+          },
+          "listing_preferences": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningListingPreference"
+            },
+            "maxItems": 256,
+            "title": "Listing Preferences",
+            "type": "array"
+          },
+          "mode": {
+            "enum": [
+              "global",
+              "hierarchical",
+              "restricted",
+              "cash_only"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "monetary_quantum": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monetary Quantum"
+          },
+          "restricted_group_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 256,
+            "title": "Restricted Group Ids",
+            "type": "array"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "target_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Target Version Id",
+            "type": "string"
+          },
+          "virtual_portfolio_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Virtual Portfolio Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "virtual_portfolio_id",
+          "target_version_id",
+          "snapshot_id",
+          "contribution",
+          "mode"
+        ],
+        "title": "CreateContributionPlanRequest",
         "type": "object"
       },
       "CreateTargetVersionRequest": {
@@ -662,6 +1558,92 @@
         "title": "DividendResponse",
         "type": "object"
       },
+      "DriftAnalysisResult": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "enum": [
+              "direct",
+              "effective"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "calculated_at": {
+            "format": "date-time",
+            "title": "Calculated At",
+            "type": "string"
+          },
+          "cash_and_unclassified": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningDriftRow"
+            },
+            "maxItems": 50,
+            "title": "Cash And Unclassified",
+            "type": "array"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "context": {
+            "$ref": "#/components/schemas/PlanningResultContext"
+          },
+          "eligible_rows": {
+            "maximum": 4353.0,
+            "minimum": 0.0,
+            "title": "Eligible Rows",
+            "type": "integer"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningDriftRow"
+            },
+            "maxItems": 50,
+            "title": "Groups",
+            "type": "array"
+          },
+          "leaves": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningDriftRow"
+            },
+            "maxItems": 50,
+            "title": "Leaves",
+            "type": "array"
+          },
+          "omitted_rows": {
+            "maximum": 4353.0,
+            "minimum": 0.0,
+            "title": "Omitted Rows",
+            "type": "integer"
+          },
+          "top_n": {
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Top N",
+            "type": "integer"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/PlanningDriftTotals"
+          }
+        },
+        "required": [
+          "context",
+          "calculated_at",
+          "totals",
+          "groups",
+          "leaves",
+          "cash_and_unclassified",
+          "basis",
+          "top_n",
+          "eligible_rows",
+          "omitted_rows",
+          "content_digest"
+        ],
+        "title": "DriftAnalysisResult",
+        "type": "object"
+      },
       "EmptyTargetRequest": {
         "additionalProperties": false,
         "properties": {},
@@ -859,6 +1841,46 @@
           "expires_at"
         ],
         "title": "LocalSessionResponse",
+        "type": "object"
+      },
+      "McpPlanAllocationConstraint": {
+        "additionalProperties": false,
+        "properties": {
+          "holding_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Holding Id",
+            "type": "string"
+          },
+          "maximum_post_weight": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maximum Post Weight"
+          },
+          "minimum_amount": {
+            "pattern": "^(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Minimum Amount",
+            "type": "string"
+          },
+          "value_increment": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Value Increment",
+            "type": "string"
+          }
+        },
+        "required": [
+          "holding_id",
+          "minimum_amount",
+          "value_increment"
+        ],
+        "title": "McpPlanAllocationConstraint",
         "type": "object"
       },
       "MetricResponse": {
@@ -1333,6 +2355,1397 @@
           "data_quality"
         ],
         "title": "PerformanceSummaryResponse",
+        "type": "object"
+      },
+      "PersistedPlanningOptions": {
+        "additionalProperties": false,
+        "properties": {
+          "allocation_constraints": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningConstraint"
+            },
+            "maxItems": 256,
+            "title": "Allocation Constraints",
+            "type": "array"
+          },
+          "cash_reserve": {
+            "anyOf": [
+              {
+                "pattern": "^(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cash Reserve"
+          },
+          "contribution": {
+            "$ref": "#/components/schemas/ContributionMoney"
+          },
+          "coverage_policy": {
+            "enum": [
+              "require_complete",
+              "allow_degraded"
+            ],
+            "title": "Coverage Policy",
+            "type": "string"
+          },
+          "eligible_holding_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "maxItems": 256,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eligible Holding Ids"
+          },
+          "excluded_holding_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 256,
+            "title": "Excluded Holding Ids",
+            "type": "array"
+          },
+          "holding_constraints": {
+            "items": {
+              "$ref": "#/components/schemas/McpPlanAllocationConstraint"
+            },
+            "maxItems": 256,
+            "title": "Holding Constraints",
+            "type": "array"
+          },
+          "listing_preferences": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningListingPreference"
+            },
+            "maxItems": 256,
+            "title": "Listing Preferences",
+            "type": "array"
+          },
+          "mode": {
+            "enum": [
+              "global",
+              "hierarchical",
+              "restricted",
+              "cash_only"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "monetary_quantum": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Monetary Quantum"
+          },
+          "restricted_group_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 256,
+            "title": "Restricted Group Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "contribution",
+          "mode",
+          "coverage_policy",
+          "eligible_holding_ids",
+          "excluded_holding_ids",
+          "restricted_group_ids",
+          "listing_preferences",
+          "allocation_constraints",
+          "holding_constraints",
+          "cash_reserve",
+          "monetary_quantum"
+        ],
+        "title": "PersistedPlanningOptions",
+        "type": "object"
+      },
+      "PersistedPlanningRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "options": {
+            "$ref": "#/components/schemas/PersistedPlanningOptions"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "target_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Target Version Id",
+            "type": "string"
+          },
+          "virtual_portfolio_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Virtual Portfolio Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "virtual_portfolio_id",
+          "target_version_id",
+          "snapshot_id",
+          "options"
+        ],
+        "title": "PersistedPlanningRequest",
+        "type": "object"
+      },
+      "PlanningConstraint": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "coefficient": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coefficient"
+          },
+          "count": {
+            "anyOf": [
+              {
+                "maximum": 256.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "key": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "minimum_funded_amount",
+              "amount_increment",
+              "minimum_post_weight",
+              "maximum_post_weight",
+              "minimum_group_funding",
+              "maximum_group_funding",
+              "cash_reserve",
+              "eligible",
+              "maximum_funded_lines",
+              "priority"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "node_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Id"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight"
+          }
+        },
+        "required": [
+          "key",
+          "kind"
+        ],
+        "title": "PlanningConstraint",
+        "type": "object"
+      },
+      "PlanningCoverage": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "const": "full_reporting_currency_valuation",
+            "default": "full_reporting_currency_valuation",
+            "title": "Basis",
+            "type": "string"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "denominator": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "matched_total": {
+            "$ref": "#/components/schemas/PlanningMoney"
+          },
+          "matched_weight": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Matched Weight"
+          },
+          "unclassified_total": {
+            "$ref": "#/components/schemas/PlanningMoney"
+          },
+          "unclassified_weight": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unclassified Weight"
+          },
+          "unresolved_target_weight": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Unresolved Target Weight",
+            "type": "string"
+          },
+          "valued_total": {
+            "$ref": "#/components/schemas/PlanningMoney"
+          }
+        },
+        "required": [
+          "complete",
+          "denominator",
+          "valued_total",
+          "matched_total",
+          "unclassified_total",
+          "matched_weight",
+          "unclassified_weight",
+          "unresolved_target_weight"
+        ],
+        "title": "PlanningCoverage",
+        "type": "object"
+      },
+      "PlanningDataQuality": {
+        "additionalProperties": false,
+        "properties": {
+          "coverage_end_at": {
+            "format": "date-time",
+            "title": "Coverage End At",
+            "type": "string"
+          },
+          "coverage_start_at": {
+            "format": "date-time",
+            "title": "Coverage Start At",
+            "type": "string"
+          },
+          "evaluated_at": {
+            "format": "date-time",
+            "title": "Evaluated At",
+            "type": "string"
+          },
+          "missing_inputs": {
+            "items": {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            },
+            "maxItems": 128,
+            "title": "Missing Inputs",
+            "type": "array"
+          },
+          "reconciled": {
+            "title": "Reconciled",
+            "type": "boolean"
+          },
+          "state": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "unavailable",
+              "failed"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningExplanation"
+            },
+            "maxItems": 1280,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "state",
+          "coverage_start_at",
+          "coverage_end_at",
+          "missing_inputs",
+          "evaluated_at",
+          "reconciled",
+          "warnings"
+        ],
+        "title": "PlanningDataQuality",
+        "type": "object"
+      },
+      "PlanningDriftRow": {
+        "additionalProperties": false,
+        "properties": {
+          "absolute_drift": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Absolute Drift"
+          },
+          "actual_direct_weight": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Direct Weight"
+          },
+          "actual_value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "classification": {
+            "anyOf": [
+              {
+                "enum": [
+                  "underweight",
+                  "on_target",
+                  "overweight"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Classification"
+          },
+          "depth": {
+            "maximum": 8.0,
+            "minimum": 0.0,
+            "title": "Depth",
+            "type": "integer"
+          },
+          "effective_weight": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective Weight"
+          },
+          "effective_weight_reason": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9._:-]+$",
+            "title": "Effective Weight Reason",
+            "type": "string"
+          },
+          "holding_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Holding Id"
+          },
+          "instrument_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Id"
+          },
+          "key": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "group",
+              "holding",
+              "cash",
+              "unclassified"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "listing_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Listing Id"
+          },
+          "monetary_gap": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "node_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Id"
+          },
+          "parent_key": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Key"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "unavailable",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "relative_drift": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relative Drift"
+          },
+          "relative_drift_reason": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9._:-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relative Drift Reason"
+          },
+          "signed_drift": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signed Drift"
+          },
+          "target_weight": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Target Weight",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "node_id",
+          "holding_id",
+          "kind",
+          "parent_key",
+          "name",
+          "depth",
+          "listing_id",
+          "instrument_id",
+          "target_weight",
+          "actual_value",
+          "actual_direct_weight",
+          "effective_weight",
+          "effective_weight_reason",
+          "signed_drift",
+          "absolute_drift",
+          "relative_drift",
+          "relative_drift_reason",
+          "classification",
+          "monetary_gap",
+          "quality"
+        ],
+        "title": "PlanningDriftRow",
+        "type": "object"
+      },
+      "PlanningDriftTotals": {
+        "additionalProperties": false,
+        "properties": {
+          "cash": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "effective_weight_rounding_residual": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective Weight Rounding Residual"
+          },
+          "frontier_keys": {
+            "items": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 4353,
+            "title": "Frontier Keys",
+            "type": "array"
+          },
+          "group_count": {
+            "maximum": 256.0,
+            "minimum": 0.0,
+            "title": "Group Count",
+            "type": "integer"
+          },
+          "holding_count": {
+            "maximum": 256.0,
+            "minimum": 0.0,
+            "title": "Holding Count",
+            "type": "integer"
+          },
+          "l1_drift": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "L1 Drift"
+          },
+          "unclassified": {
+            "$ref": "#/components/schemas/PlanningMoney"
+          },
+          "unclassified_count": {
+            "maximum": 4096.0,
+            "minimum": 0.0,
+            "title": "Unclassified Count",
+            "type": "integer"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "weighted_squared_drift": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weighted Squared Drift"
+          }
+        },
+        "required": [
+          "value",
+          "cash",
+          "unclassified",
+          "l1_drift",
+          "weighted_squared_drift",
+          "effective_weight_rounding_residual",
+          "frontier_keys",
+          "group_count",
+          "holding_count",
+          "unclassified_count"
+        ],
+        "title": "PlanningDriftTotals",
+        "type": "object"
+      },
+      "PlanningEffectiveConstraint": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "coefficient": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coefficient"
+          },
+          "count": {
+            "anyOf": [
+              {
+                "maximum": 256.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "key": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "minimum_funded_amount",
+              "amount_increment",
+              "minimum_post_weight",
+              "maximum_post_weight",
+              "minimum_group_funding",
+              "maximum_group_funding",
+              "cash_reserve",
+              "eligible",
+              "maximum_funded_lines",
+              "priority"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "node_key": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node Key"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight"
+          }
+        },
+        "required": [
+          "key",
+          "kind"
+        ],
+        "title": "PlanningEffectiveConstraint",
+        "type": "object"
+      },
+      "PlanningExplanation": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9._:-]+$",
+            "title": "Code",
+            "type": "string"
+          },
+          "constraint_keys": {
+            "items": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 1280,
+            "title": "Constraint Keys",
+            "type": "array"
+          },
+          "message": {
+            "maxLength": 240,
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          },
+          "node_keys": {
+            "items": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 256,
+            "title": "Node Keys",
+            "type": "array"
+          },
+          "severity": {
+            "default": "warning",
+            "enum": [
+              "info",
+              "warning",
+              "error"
+            ],
+            "title": "Severity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "PlanningExplanation",
+        "type": "object"
+      },
+      "PlanningListingPreference": {
+        "additionalProperties": false,
+        "properties": {
+          "holding_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Holding Id",
+            "type": "string"
+          },
+          "listing_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Listing Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "holding_id",
+          "listing_id"
+        ],
+        "title": "PlanningListingPreference",
+        "type": "object"
+      },
+      "PlanningMethod": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "enum": [
+              "drift_v1",
+              "contribution_weighted_drift_v1"
+            ],
+            "title": "Name",
+            "type": "string"
+          },
+          "version": {
+            "const": "1.0.0",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ],
+        "title": "PlanningMethod",
+        "type": "object"
+      },
+      "PlanningMoney": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Amount",
+            "type": "string"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "title": "PlanningMoney",
+        "type": "object"
+      },
+      "PlanningNodeIdentity": {
+        "additionalProperties": false,
+        "properties": {
+          "holding_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Holding Id"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "key": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "key"
+        ],
+        "title": "PlanningNodeIdentity",
+        "type": "object"
+      },
+      "PlanningObjective": {
+        "additionalProperties": false,
+        "properties": {
+          "quantum": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Quantum",
+            "type": "string"
+          },
+          "rounding": {
+            "const": "ROUND_HALF_EVEN",
+            "title": "Rounding",
+            "type": "string"
+          },
+          "rounding_error_bound": {
+            "const": "half_quantum",
+            "title": "Rounding Error Bound",
+            "type": "string"
+          },
+          "scores": {
+            "items": {
+              "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+              "type": "string"
+            },
+            "maxItems": 9,
+            "minItems": 1,
+            "title": "Scores",
+            "type": "array"
+          }
+        },
+        "required": [
+          "scores",
+          "quantum",
+          "rounding",
+          "rounding_error_bound"
+        ],
+        "title": "PlanningObjective",
+        "type": "object"
+      },
+      "PlanningPage_ContributionPlanLine_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ContributionPlanLine"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "PlanningPage[ContributionPlanLine]",
+        "type": "object"
+      },
+      "PlanningPage_PlanningDriftRow_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningDriftRow"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "PlanningPage[PlanningDriftRow]",
+        "type": "object"
+      },
+      "PlanningResultContext": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "as_of": {
+            "format": "date-time",
+            "title": "As Of",
+            "type": "string"
+          },
+          "assumptions": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningExplanation"
+            },
+            "maxItems": 256,
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "availability": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "calculated_at": {
+            "format": "date-time",
+            "title": "Calculated At",
+            "type": "string"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/PlanningCoverage"
+          },
+          "data_quality": {
+            "$ref": "#/components/schemas/PlanningDataQuality"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "method": {
+            "$ref": "#/components/schemas/PlanningMethod"
+          },
+          "reason_code": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9._:-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Code"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningSource"
+            },
+            "maxItems": 8192,
+            "title": "Sources",
+            "type": "array"
+          },
+          "target_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Target Version Id",
+            "type": "string"
+          },
+          "virtual_portfolio_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Virtual Portfolio Id",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningExplanation"
+            },
+            "maxItems": 1280,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "account_id",
+          "virtual_portfolio_id",
+          "target_version_id",
+          "snapshot_id",
+          "reporting_currency",
+          "as_of",
+          "source_cutoff_at",
+          "calculated_at",
+          "method",
+          "schema_version",
+          "input_digest",
+          "sources",
+          "availability",
+          "reason_code",
+          "data_quality",
+          "coverage",
+          "warnings",
+          "assumptions"
+        ],
+        "title": "PlanningResultContext",
+        "type": "object"
+      },
+      "PlanningSource": {
+        "additionalProperties": false,
+        "properties": {
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "effective_at": {
+            "format": "date-time",
+            "title": "Effective At",
+            "type": "string"
+          },
+          "first_observed_at": {
+            "format": "date-time",
+            "title": "First Observed At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "portfolio_snapshot",
+              "target_version",
+              "mapping_revision",
+              "fx_snapshot",
+              "provider_fx_observation",
+              "provider_observation",
+              "calculation_run"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "version": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9._:-]+$",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "id",
+          "content_digest",
+          "version",
+          "effective_at",
+          "first_observed_at"
+        ],
+        "title": "PlanningSource",
         "type": "object"
       },
       "PositionResponse": {
@@ -3580,7 +5993,7 @@
     }
   },
   "info": {
-    "description": "Private, authenticated, strictly read-only portfolio intelligence API.",
+    "description": "Private portfolio analytics and internal planning; Trading 212 access is read-only.",
     "title": "Trading 212 Portfolio Intelligence API",
     "version": "0.1.0"
   },
@@ -3666,6 +6079,150 @@
         "summary": "Get Account",
         "tags": [
           "accounts"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/actual-vs-target": {
+      "get": {
+        "operationId": "get_actual_vs_target",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "virtual_portfolio_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Virtual Portfolio Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "target_version_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Target Version Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "reporting_currency",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "title": "Reporting Currency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "node_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Node Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActualVsTargetResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Actual Vs Target",
+        "tags": [
+          "planning"
         ]
       }
     },
@@ -3892,6 +6449,127 @@
         "summary": "Dividends",
         "tags": [
           "activity"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/drift": {
+      "get": {
+        "operationId": "get_drift_analysis",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "virtual_portfolio_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Virtual Portfolio Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "target_version_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Target Version Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "reporting_currency",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "title": "Reporting Currency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "basis",
+            "required": false,
+            "schema": {
+              "default": "direct",
+              "enum": [
+                "direct",
+                "effective"
+              ],
+              "title": "Basis",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "top_n",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Top N",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriftAnalysisResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Drift Analysis",
+        "tags": [
+          "planning"
         ]
       }
     },
@@ -4972,6 +7650,455 @@
         "summary": "List Connections",
         "tags": [
           "connections"
+        ]
+      }
+    },
+    "/api/v1/contribution-plans": {
+      "get": {
+        "operationId": "list_contribution_plans",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "plan_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Plan Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_revisions",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Revisions",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "virtual_portfolio_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Virtual Portfolio Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "queued",
+                    "running",
+                    "succeeded",
+                    "failed",
+                    "expired",
+                    "cancelled"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "in": "query",
+            "name": "outcome",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "optimal",
+                    "feasible_nonoptimal",
+                    "infeasible",
+                    "unavailable",
+                    "failed"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Outcome"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContributionPlanPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Contribution Plans",
+        "tags": [
+          "planning"
+        ]
+      },
+      "post": {
+        "operationId": "create_contribution_plan",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Required with a session cookie and configured trusted Origin.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContributionPlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContributionPlanJob"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Contribution Plan",
+        "tags": [
+          "planning"
+        ]
+      }
+    },
+    "/api/v1/contribution-plans/{plan_id}": {
+      "get": {
+        "operationId": "get_contribution_plan",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Plan Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "plan_revision_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Plan Revision Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContributionPlanDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Contribution Plan",
+        "tags": [
+          "planning"
+        ]
+      }
+    },
+    "/api/v1/contribution-plans/{plan_id}/revisions": {
+      "post": {
+        "operationId": "create_contribution_plan_revision",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Plan Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Required with a session cookie and configured trusted Origin.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          {
+            "description": "Strong plan revision ETag required for a new command; an authorized exact replay resolves first.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContributionPlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContributionPlanJob"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Contribution Plan Revision",
+        "tags": [
+          "planning"
         ]
       }
     },

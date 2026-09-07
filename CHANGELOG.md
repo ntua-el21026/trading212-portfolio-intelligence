@@ -4,6 +4,16 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Phase 2 contribution planning
+
+- Add exact direct drift and four contribution planning modes over pinned
+  snapshots and published targets, with explicit quality, constraints and bounds.
+- Store durable internal planning requests, fenced delivery/consumer attempts and
+  immutable result revisions through migration `20260907_0010`.
+- Add six bounded API operations, four MCP tools and authenticated drift/planner
+  pages with preserved edits, revision history and canonical server results.
+- Keep P2-02 in progress while full package acceptance is being verified.
+
 ### Phase 2 virtual targets
 
 - Accept P2-01 at `ecc75154397c8f9d7532fa2df8576846b60bae7c` with full local/CI

@@ -1,4 +1,4 @@
-"""PostgreSQL-backed refresh relay and scheduled target activation."""
+"""PostgreSQL-backed fixed refresh/plan relays and scheduled target activation."""
 
 from __future__ import annotations
 
@@ -50,6 +50,8 @@ from trading212_persistence.refresh_semantics import (
 )
 from trading212_persistence.target_service import PostgresTargetService
 from trading212_security.settings import RuntimeEnvironment
+
+from .plan_tasks import CeleryPlanPublisher, dispatch_plans_once
 
 _LOGGER = logging.getLogger("trading212_worker.outbox_dispatcher")
 _PUBLISH_ERROR_CODE = "broker_publish_failed"
@@ -1355,6 +1357,31 @@ def main(argv: Sequence[str] | None = None) -> int:
             # Activation does not issue cursors; this process never exposes its local key.
             cursor_signing_key=secrets.token_bytes(32),
         )
+        from trading212_persistence.planning_service import PostgresPlanningService
+
+        plan_service = PostgresPlanningService(
+            sessions=create_session_factory(engine), cursor_signing_key=secrets.token_bytes(32)
+        )
+        plan_publisher = CeleryPlanPublisher(celery)
+
+        async def dispatch_plans() -> None:
+            with metrics.duration.labels(operation="plan_dispatch").time():
+                result = await dispatch_plans_once(
+                    plan_service,
+                    plan_publisher,
+                    dispatcher_id=settings.dispatcher_id,
+                    limit=settings.batch_size,
+                )
+            for outcome, count in (
+                ("success", result.published),
+                ("failure", result.deferred),
+                ("fenced", result.fenced),
+            ):
+                metrics.queue_delivery_attempts.labels(queue="plan_dispatch", outcome=outcome).inc(
+                    count
+                )
+            metrics.queue_delivery_failures.labels(queue="plan_dispatch").inc(result.deferred)
+
         dispatcher = PostgresOutboxDispatcher(
             sessions=create_session_factory(engine),
             celery=celery,
@@ -1364,6 +1391,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.once:
             dispatcher.dispatch_once()
             asyncio.run(target_service.activate_due_versions(limit=settings.batch_size))
+            asyncio.run(dispatch_plans())
             return 0
         stopped = Event()
 
@@ -1388,6 +1416,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                     asyncio.run(target_service.activate_due_versions(limit=settings.batch_size))
                 except Exception:
                     _LOGGER.error("refresh_outbox_cycle_failed")
+                try:
+                    asyncio.run(dispatch_plans())
+                except Exception:
+                    _LOGGER.error("plan_outbox_cycle_failed")
                 stopped.wait(settings.poll_interval_seconds)
         return 0
     finally:

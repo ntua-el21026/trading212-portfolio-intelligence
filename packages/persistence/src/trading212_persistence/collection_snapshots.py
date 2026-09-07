@@ -43,6 +43,10 @@ class CollectionSnapshotResource(StrEnum):
     TARGET_VERSIONS = "target_versions"
     TARGET_EVENTS = "target_events"
     TARGET_NODES = "target_nodes"
+    CONTRIBUTION_PLANS = "contribution_plans"
+    PLAN_REVISIONS = "plan_revisions"
+    PLAN_LINES = "plan_lines"
+    ACTUAL_TARGET_ROWS = "actual_target_rows"
     ACTIVITY = "activity"
     DIVIDENDS = "dividends"
     INSTRUMENTS = "instruments"
@@ -57,6 +61,10 @@ _SORT_SPECIFICATIONS = {
     CollectionSnapshotResource.TARGET_VERSIONS: "version_number_desc_id_desc",
     CollectionSnapshotResource.TARGET_EVENTS: "created_at_desc_id_desc",
     CollectionSnapshotResource.TARGET_NODES: "depth_first_order_key",
+    CollectionSnapshotResource.CONTRIBUTION_PLANS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.PLAN_REVISIONS: "revision_number_desc_id_desc",
+    CollectionSnapshotResource.PLAN_LINES: "ordinal_asc",
+    CollectionSnapshotResource.ACTUAL_TARGET_ROWS: "ordinal_asc",
     CollectionSnapshotResource.ACTIVITY: "occurred_at_desc_id_desc",
     CollectionSnapshotResource.DIVIDENDS: "paid_on_desc_id_desc",
     CollectionSnapshotResource.INSTRUMENTS: (
@@ -79,6 +87,10 @@ _OPTIONAL_ACCOUNT_RESOURCES = frozenset(
 )
 _ACCOUNT_RESOURCES = frozenset(
     {
+        CollectionSnapshotResource.CONTRIBUTION_PLANS,
+        CollectionSnapshotResource.PLAN_REVISIONS,
+        CollectionSnapshotResource.PLAN_LINES,
+        CollectionSnapshotResource.ACTUAL_TARGET_ROWS,
         CollectionSnapshotResource.ACTIVITY,
         CollectionSnapshotResource.DIVIDENDS,
         CollectionSnapshotResource.POSITIONS_MARKET_VALUE,

@@ -17,6 +17,7 @@ from .collection_snapshots import (
 from .database import UnitOfWork, create_database_engine, create_session_factory
 from .dispatcher_readiness import refresh_dispatcher_is_ready
 from .models import ALL_MODELS
+from .planning_service import PostgresPlanningService
 from .portfolio_service import PostgresPortfolioService
 from .repositories import (
     AccountRepository,
@@ -47,6 +48,7 @@ __all__ = [
     "CollectionSnapshotScopeError",
     "CollectionSnapshotStore",
     "ExactNumeric",
+    "PostgresPlanningService",
     "PostgresPortfolioService",
     "PostgresTargetService",
     "ReconciliationDiscrepancyWrite",

@@ -7,7 +7,7 @@ interface CollectionPaginationProps {
   preservedQuery?: Readonly<Record<string, string | undefined>>;
   returnedCount: number;
   total: number;
-  cursorParameter?: "cursor" | "events_cursor";
+  cursorParameter?: "cursor" | "events_cursor" | "history_cursor";
 }
 
 function nextPageHref(

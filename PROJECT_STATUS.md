@@ -26,7 +26,20 @@ tests and 12 API-backed browser tests, with no browser retries. Migration head i
 implementation's two Gitleaks test-code false positives were corrected with exact
 historical fingerprint exceptions in the accepted SHA and all gates rerun.
 See [the P2-01 evidence](docs/implementation/evidence/phase-2-p2-01-ecc7515.json).
-P2-02 contribution planning is next; P2-02 through P2-10 remain required.
+P2-02 contribution planning is `in_progress`. Its four-mode Decimal solver,
+normalized requests/results, fixed durable job, six API operations, four MCP
+tools and drift/planner web routes are implemented in the working tree and under
+verification. Focused web verification passes 111 unit tests; the canonical
+browser gate passes 36 fixture/widget tests plus eight API-backed tests per
+desktop/mobile viewport, without retries and with isolated normal-quota fixtures.
+Focused PostgreSQL migration, service, worker and API checks also pass, including
+immutable polling retention, fenced recovery and a real broker-transport spy
+proving zero planning dispatch. Independent rational optimizer references cover
+the frozen objectives and hard constraints; final proof-explanation regressions
+are being checked before immutable acceptance.
+These focused results do not constitute package acceptance: full gates, fresh
+Compose runtime evidence and exact pushed-SHA CI remain pending.
+P2-02 through P2-10 remain required.
 Phase 3 remains `not_started`.
 
 ## Previously accepted baseline
@@ -65,7 +78,7 @@ than fabricated.
 
 ## Next action
 
-Implement P2-01 through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+Complete and accept P2-02, then implement P2-03 through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo

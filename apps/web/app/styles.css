@@ -1815,6 +1815,83 @@ a {
   }
 }
 
+/* Planning views keep numerical comparisons and provenance readable on small screens. */
+.planning-page .ui-surface {
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+.planning-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+.planning-facts dt {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+}
+.planning-facts dd {
+  margin: 0.4rem 0 0;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.planning-identities {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+.planning-identities dt {
+  color: var(--color-muted);
+}
+.planning-identities dd {
+  margin: 0 0 0.5rem;
+  overflow-wrap: anywhere;
+}
+.planning-table {
+  min-width: 65rem;
+}
+.planning-table caption {
+  text-align: left;
+  padding: 1rem;
+  color: var(--color-muted);
+}
+.planning-constraint,
+.planning-holding,
+.planning-checks {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+.planning-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.planning-check,
+.planning-checks label {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.8rem 0;
+}
+.planning-check input,
+.planning-checks input {
+  width: 1.1rem !important;
+  min-height: 1.1rem !important;
+}
+.planning-submit {
+  margin-top: 1.5rem;
+}
+.planning-metric-reason {
+  display: block;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+.planning-selectors > .target-form + .target-form {
+  border-top: 1px solid var(--color-border);
+  padding-top: 1rem;
+}
+
 /* Target editing uses the same financial typography and responsive surfaces. */
 .target-form {
   display: grid;

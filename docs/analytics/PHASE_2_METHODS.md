@@ -129,6 +129,21 @@ this contribution-only method. Holding recommendations `x_i >= 0` and new cash
 `x_cash >= 0` obey exact `sum(x_i) + x_cash = C`. Cash is a component in the
 objective and all post-plan totals, including when its target is zero.
 
+`objective_before` evaluates the no-purchase baseline with all of the new
+contribution retained as cash, using the same `D` as `objective_after`.
+`before_drift` separately describes the actual pre-contribution snapshot with
+denominator `V`; `after_drift` describes the proposed portfolio with denominator
+`D`. The interface distinguishes these baselines rather than comparing scores
+whose denominators differ.
+
+The financial source cutoff belongs to the pinned valuation and FX observations.
+An explicitly chosen target definition is a configuration reference: retain its
+actual publication/effective times even when comparing it with an earlier
+valuation, and disclose that comparison when the target postdates the cutoff or
+valuation. Do not imply that it was the target known or active then. Automatic
+historical target selection still excludes later-known definitions; this
+explicit comparison never admits later financial observations.
+
 The global objective is the versioned discrete score
 `Q(sum(alpha_i * ((V_i + x_i)/D - t_i)^2))`, over holding leaves, cash,
 and unclassified actual exposure in ascending stable component-key order.
@@ -271,8 +286,11 @@ values are broker orders, expected returns, or execution instructions.
 
 ### 3.4 Hand-calculable optimizer references
 
-Unless stated otherwise, currency is EUR, `q=1`, priorities are one, and cash
-target is zero. Values below are exact before final `Q` output.
+Unless stated otherwise, currency is EUR, `q=0.01`, holding increments are
+explicitly `1`, priorities are one, and cash target is zero. The quantum follows
+the currency-minor-unit rule in section 3.2; the larger holding increments keep
+these reference domains hand-calculable. Values below are exact before final
+`Q` output.
 
 | Input | Required result or invariant |
 |---|---|

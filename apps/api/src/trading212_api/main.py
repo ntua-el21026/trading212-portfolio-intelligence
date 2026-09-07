@@ -36,6 +36,7 @@ from trading212_application.ingestion import (
     RunMode,
     capabilities_for_scope,
 )
+from trading212_application.planning import PlanningService, PlanningServiceError
 from trading212_application.queries import (
     ActivityQuery,
     ActivityTypeFilter,
@@ -88,6 +89,7 @@ from trading212_security.sessions import InMemorySessionStore, SessionManager
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 from trading212_security.tokens import BearerAuthenticator, LocalSyntheticAuthenticator
 
+from .planning_routes import register_planning_routes
 from .refresh_queue import PostgresRefreshQueue
 from .schemas import (
     AccountResponse,
@@ -139,6 +141,7 @@ class ApiContext:
     settings: SecuritySettings
     service: PortfolioService
     target_service: TargetService | None
+    planning_service: PlanningService | None
     sessions: SessionManager
     local_authenticator: LocalSyntheticAuthenticator | None
     bearer_authenticator: BearerAuthenticator | None
@@ -153,6 +156,7 @@ def create_app(
     settings: SecuritySettings | None = None,
     service: PortfolioService | None = None,
     target_service: TargetService | None = None,
+    planning_service: PlanningService | None = None,
     session_manager: SessionManager | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -177,12 +181,15 @@ def create_app(
             "bearer authenticator, and dispatcher-aware readiness probe"
         )
     if service is None:
-        portfolio_service, default_targets, default_readiness = _local_runtime_defaults(
-            security_settings,
-            runtime_clock,
-            cursor_signing_key=cursor_signing_key,
+        portfolio_service, default_targets, default_planning, default_readiness = (
+            _local_runtime_defaults(
+                security_settings,
+                runtime_clock,
+                cursor_signing_key=cursor_signing_key,
+            )
         )
         target_service = target_service or default_targets
+        planning_service = planning_service or default_planning
     else:
         portfolio_service = service
         default_readiness = _ready
@@ -200,6 +207,7 @@ def create_app(
         settings=security_settings,
         service=portfolio_service,
         target_service=target_service,
+        planning_service=planning_service,
         sessions=sessions,
         local_authenticator=local_authenticator,
         bearer_authenticator=bearer_authenticator,
@@ -210,7 +218,9 @@ def create_app(
     )
     application = FastAPI(
         title="Trading 212 Portfolio Intelligence API",
-        description="Private, authenticated, strictly read-only portfolio intelligence API.",
+        description=(
+            "Private portfolio analytics and internal planning; Trading 212 access is read-only."
+        ),
         version="0.1.0",
         docs_url=None,
         redoc_url=None,
@@ -242,6 +252,7 @@ def create_app(
     _register_middleware(application)
     _register_routes(application)
     register_target_routes(application, _principal, _context)
+    register_planning_routes(application, _principal, _context)
     _install_openapi_contract(application)
     return application
 
@@ -251,7 +262,9 @@ def _local_runtime_defaults(
     clock: Callable[[], datetime],
     *,
     cursor_signing_key: bytes | None,
-) -> tuple[PortfolioService, TargetService, Callable[[], Awaitable[bool]]]:
+) -> tuple[PortfolioService, TargetService, PlanningService, Callable[[], Awaitable[bool]]]:
+    from trading212_persistence.planning_service import PostgresPlanningService
+
     database_url = os.environ.get("DATABASE_URL")
     if database_url is None:
         database_url = _LOCAL_DATABASE_URL
@@ -286,6 +299,12 @@ def _local_runtime_defaults(
             cursor_ttl_seconds=settings.cursor_ttl_seconds,
         ),
         PostgresTargetService(
+            sessions=sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=settings.cursor_ttl_seconds,
+        ),
+        PostgresPlanningService(
             sessions=sessions,
             clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
@@ -569,6 +588,34 @@ def _register_error_handlers(application: FastAPI) -> None:
         }
         code = exc.code.value
         response_status, message = errors.get(code, (500, "The target command could not complete."))
+        return JSONResponse(
+            status_code=response_status,
+            content=envelope(request, code, message, retryable=response_status == 503),
+            headers={"Cache-Control": "private, no-store"},
+        )
+
+    @application.exception_handler(PlanningServiceError)
+    async def planning_service_error(request: Request, exc: PlanningServiceError) -> JSONResponse:
+        errors = {
+            "NOT_FOUND": (404, "The requested planning resource was not found."),
+            "ACCESS_DENIED": (403, "Access denied."),
+            "IDEMPOTENCY_KEY_REUSED": (409, "The idempotency key belongs to a different command."),
+            "IMMUTABLE_VERSION": (
+                409,
+                "Finalized plans are immutable; recalculate a new revision.",
+            ),
+            "INVALID_STATE_TRANSITION": (409, "This planning lifecycle transition is unavailable."),
+            "REVISION_MISMATCH": (412, "The revision changed. Reload before submitting again."),
+            "REVISION_REQUIRED": (428, "The current plan revision is required."),
+            "VALIDATION_FAILED": (422, "The planning request is invalid."),
+            "CURRENCY_MISMATCH": (422, "The contribution currency does not match its inputs."),
+            "RESULT_TOO_LARGE": (422, "The planning result exceeds its permitted size."),
+            "PLANNING_UNAVAILABLE": (503, "The planning service is unavailable."),
+        }
+        code = exc.code.value
+        response_status, message = errors.get(
+            code, (500, "The planning operation could not complete.")
+        )
         return JSONResponse(
             status_code=response_status,
             content=envelope(request, code, message, retryable=response_status == 503),

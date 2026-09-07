@@ -26,7 +26,7 @@ Inspect and record the migration/image/source version before starting services.
 
 ## Durable work and readiness
 
-Fixed internal job kinds cover report generation, alert evaluation/delivery and
+Fixed internal job kinds cover contribution planning, report generation, alert evaluation/delivery and
 artifact expiry. Claim bounded batches with fenced leases, record attempt counts,
 retry only classified transient failures, and retain safe dead-letter reasons.
 Requests atomically persist input references and outbox intent. Acknowledgment
@@ -38,6 +38,41 @@ lease expiry, artifact expiry and source freshness are observable. No metric lab
 contains raw owner/account IDs, URLs, instruments, report names, email addresses,
 user text or secret values. Use bounded operation/outcome/quality categories and
 opaque audit references.
+
+### Contribution calculation
+
+`plans.calculate.v1` is the only planning task. Its transport message contains
+five canonical strings: job, request, owner and account UUIDs plus the pinned
+input digest. It carries no contribution, holding list, solver expression or
+broker instruction. The existing Celery worker consumes it on the default
+queue; the existing outbox dispatcher publishes it after the request transaction
+commits. PostgreSQL stores the request, source/constraint copies, job, outbox,
+attempt events and one immutable finalized result.
+
+The fixed bounds are eight publication attempts and four consumer attempts per
+logical job, a 30-second publication claim, a 60-second consumer lease and a
+15-second heartbeat. Dispatch batches default to 20 and cannot exceed 100;
+classified transient failures use exponential delays from one to 60 seconds.
+The dispatcher recovers expired claims and unconsumed published messages using
+the same job identity. An active consumer lease suppresses republication. Claim
+tokens fence acknowledgments, heartbeats, failures and completion; successful
+publication does not mark the financial calculation complete. The solver runs
+outside the heartbeat event loop and finalized outputs undergo independent
+constraint/conservation verification before persistence.
+
+Observe bounded `plan_dispatch` attempt/outcome metrics and safe planning failure
+categories. A failed, unavailable or infeasible calculation never creates broker
+orders or drops constraints. Existing snapshots and FX values are copied before
+the queued request is committed; recovery cannot substitute a later valuation.
+
+Polling immutable plan-line or actual/target membership reuses an unexpired
+collection snapshot only when its owner, account, query, source and ordered
+membership match. Reuse retains the original expiry and quota reservation.
+A different request, finalized result, analytics run or expired membership
+requires a fresh reservation under the shared 64-snapshot/250,000-member limits.
+Ordinary history and mutable source catalogs retain their existing pagination
+behavior. Browser acceptance gives each viewport its own disposable fixture
+database so independent suites do not consume one another's owner reservations.
 
 ## Recovery procedures
 

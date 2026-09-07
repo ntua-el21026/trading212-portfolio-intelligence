@@ -1,0 +1,446 @@
+{
+  "schema_version": "1.0.0",
+  "authority_sha": "6dde264e865dd5fdfc8e3116a35b1661a48a68fd",
+  "method": "contribution_weighted_drift_v1",
+  "method_version": "1.0.0",
+  "case_count": 17,
+  "component_key_order": "A, B, C as present; cash follows holding leaves",
+  "cases": [
+    {
+      "id": "balance",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["60", "40"],
+      "targets": ["0.5", "0.5"],
+      "contribution": "20",
+      "increments": ["1", "1"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {},
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["0", "20"],
+        "residual_cash": "0",
+        "scores": ["0.000000000000000000"],
+        "feasible_candidates": 231
+      }
+    },
+    {
+      "id": "funded_minimum_exceeds_contribution",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["60", "40"],
+      "targets": ["0.5", "0.5"],
+      "contribution": "15",
+      "increments": ["1", "1"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {
+        "excluded_indices": [0],
+        "minimum_funded": [
+          {
+            "index": 1,
+            "amount": "20"
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["0", "0"],
+        "residual_cash": "15",
+        "scores": ["0.040642722117202268"],
+        "feasible_candidates": 1
+      }
+    },
+    {
+      "id": "holding_post_cap",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["60", "40"],
+      "targets": ["0.5", "0.5"],
+      "contribution": "20",
+      "increments": ["1", "1"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {
+        "excluded_indices": [0],
+        "maximum_post_weight": [
+          {
+            "index": 1,
+            "weight": "0.4"
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["0", "8"],
+        "residual_cash": "12",
+        "scores": ["0.020000000000000000"],
+        "feasible_candidates": 9
+      }
+    },
+    {
+      "id": "holding_post_cap_with_increment",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["60", "40"],
+      "targets": ["0.5", "0.5"],
+      "contribution": "20",
+      "increments": ["1", "3"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {
+        "excluded_indices": [0],
+        "maximum_post_weight": [
+          {
+            "index": 1,
+            "weight": "0.4"
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["0", "6"],
+        "residual_cash": "14",
+        "scores": ["0.027222222222222222"],
+        "feasible_candidates": 3
+      }
+    },
+    {
+      "id": "ascending_vector_tie",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["0", "0"],
+      "targets": ["0.5", "0.5"],
+      "contribution": "1",
+      "increments": ["1", "1"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {},
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["0", "1"],
+        "residual_cash": "0",
+        "scores": ["0.500000000000000000"],
+        "feasible_candidates": 3
+      }
+    },
+    {
+      "id": "contribution_not_multiple_of_holding_increment",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["0", "0"],
+      "targets": ["0.5", "0.5"],
+      "contribution": "1.03",
+      "increments": ["0.25", "0.25"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {},
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["0.5", "0.5"],
+        "residual_cash": "0.03",
+        "scores": ["0.001272504477330568"],
+        "feasible_candidates": 15
+      }
+    },
+    {
+      "id": "funded_minimum_ceil_to_increment_domain",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["0"],
+      "targets": ["1"],
+      "contribution": "0.74",
+      "increments": ["0.25"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {
+        "minimum_funded": [
+          {
+            "index": 0,
+            "amount": "0.26"
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["0.5"],
+        "residual_cash": "0.24",
+        "scores": ["0.210372534696859021"],
+        "feasible_candidates": 2
+      }
+    },
+    {
+      "id": "activation_block_unaffordable",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["0"],
+      "targets": ["1"],
+      "contribution": "0.49",
+      "increments": ["0.25"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {
+        "minimum_funded": [
+          {
+            "index": 0,
+            "amount": "0.26"
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["0"],
+        "residual_cash": "0.49",
+        "scores": ["2.000000000000000000"],
+        "feasible_candidates": 1
+      }
+    },
+    {
+      "id": "cash_reserve_amount_and_weight",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["90"],
+      "targets": ["1"],
+      "contribution": "20",
+      "increments": ["1"],
+      "current_cash": "10",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {
+        "cash_reserve_amount": "15",
+        "cash_reserve_weight": "0.15"
+      },
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["12"],
+        "residual_cash": "8",
+        "scores": ["0.045000000000000000"],
+        "feasible_candidates": 13
+      }
+    },
+    {
+      "id": "existing_cash_already_satisfies_reserve",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["90"],
+      "targets": ["1"],
+      "contribution": "20",
+      "increments": ["1"],
+      "current_cash": "10",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {
+        "cash_reserve_amount": "8"
+      },
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["20"],
+        "residual_cash": "0",
+        "scores": ["0.013888888888888889"],
+        "feasible_candidates": 21
+      }
+    },
+    {
+      "id": "explicit_cash_target",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["90"],
+      "targets": ["0.8"],
+      "contribution": "20",
+      "increments": ["1"],
+      "current_cash": "10",
+      "cash_target": "0.2",
+      "mode": "global",
+      "constraints": {},
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["6"],
+        "residual_cash": "14",
+        "scores": ["0.000000000000000000"],
+        "feasible_candidates": 21
+      }
+    },
+    {
+      "id": "impossible_cash_reserve",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["90"],
+      "targets": ["1"],
+      "contribution": "20",
+      "increments": ["1"],
+      "current_cash": "10",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {
+        "cash_reserve_amount": "31"
+      },
+      "expected": {
+        "outcome": "infeasible",
+        "allocations": null,
+        "residual_cash": null,
+        "scores": null,
+        "feasible_candidates": 0
+      }
+    },
+    {
+      "id": "restricted_only_A_full_denominator",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["60", "40"],
+      "targets": ["0.5", "0.5"],
+      "contribution": "20",
+      "increments": ["1", "1"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "restricted",
+      "constraints": {
+        "excluded_indices": [1]
+      },
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["10", "0"],
+        "residual_cash": "10",
+        "scores": ["0.041666666666666667"],
+        "feasible_candidates": 21
+      }
+    },
+    {
+      "id": "explicit_cash_only",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["60", "40"],
+      "targets": ["0.5", "0.5"],
+      "contribution": "20",
+      "increments": ["1", "1"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "cash_only",
+      "constraints": {},
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["0", "0"],
+        "residual_cash": "20",
+        "scores": ["0.055555555555555556"],
+        "feasible_candidates": 1
+      }
+    },
+    {
+      "id": "unavoidable_current_postweight_breach",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["60", "40"],
+      "targets": ["0.5", "0.5"],
+      "contribution": "20",
+      "increments": ["1", "1"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {
+        "maximum_post_weight": [
+          {
+            "index": 0,
+            "weight": "0.49"
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "infeasible",
+        "allocations": null,
+        "residual_cash": null,
+        "scores": null,
+        "feasible_candidates": 0
+      }
+    },
+    {
+      "id": "global_on_hierarchical_targets",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["60", "0", "40"],
+      "targets": ["0.15", "0.45", "0.4"],
+      "contribution": "20",
+      "increments": ["1", "1", "1"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "global",
+      "constraints": {},
+      "hierarchy": {
+        "groups": [
+          {
+            "key": "G",
+            "indices": [0, 1],
+            "target": "0.6",
+            "sibling_weights": ["0.25", "0.75"]
+          },
+          {
+            "key": "H",
+            "indices": [2],
+            "target": "0.4",
+            "sibling_weights": ["1"]
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["0", "20", "0"],
+        "residual_cash": "0",
+        "scores": ["0.207222222222222222"],
+        "feasible_candidates": 1771
+      }
+    },
+    {
+      "id": "hierarchical_frontier_precedence",
+      "currency": "EUR",
+      "monetary_quantum": "0.01",
+      "values": ["60", "0", "40"],
+      "targets": ["0.15", "0.45", "0.4"],
+      "contribution": "20",
+      "increments": ["1", "1", "1"],
+      "current_cash": "0",
+      "cash_target": "0",
+      "mode": "hierarchical",
+      "constraints": {},
+      "hierarchy": {
+        "groups": [
+          {
+            "key": "G",
+            "indices": [0, 1],
+            "target": "0.6",
+            "sibling_weights": ["0.25", "0.75"]
+          },
+          {
+            "key": "H",
+            "indices": [2],
+            "target": "0.4",
+            "sibling_weights": ["1"]
+          }
+        ]
+      },
+      "expected": {
+        "outcome": "optimal",
+        "allocations": ["0", "12", "8"],
+        "residual_cash": "0",
+        "scores": [
+          "0.000000000000000000",
+          "0.245000000000000000",
+          "0.245000000000000000",
+          "0.245000000000000000",
+          "0.245000000000000000",
+          "0.245000000000000000",
+          "0.245000000000000000",
+          "0.245000000000000000",
+          "0.245000000000000000"
+        ],
+        "feasible_candidates": 1771
+      }
+    }
+  ]
+}

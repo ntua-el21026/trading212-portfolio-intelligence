@@ -21,7 +21,10 @@ def _quoted(value: object) -> str:
 class TargetClientGenerator:
     """Deliberately bounded JSON Schema subset; unsupported shapes fail generation."""
 
-    def __init__(self, contract: dict[str, Any]) -> None:
+    def __init__(self, contract: dict[str, Any], *, tag: str = "targets") -> None:
+        if tag not in {"targets", "planning"}:
+            raise ValueError("Only fixed target and planning operations are supported")
+        self.tag = tag
         self.contract = contract
         self.definitions: dict[str, Any] = contract["components"]["schemas"]
         self.rendered: dict[str, str] = {}
@@ -190,7 +193,7 @@ class TargetClientGenerator:
         operations = []
         for path, methods in sorted(self.contract["paths"].items()):
             for method, operation in sorted(methods.items()):
-                if "targets" in operation.get("tags", []):
+                if self.tag in operation.get("tags", []):
                     if method not in {"get", "post", "patch"}:
                         raise ValueError("Unreviewed target HTTP method")
                     operations.append(self.operation(path, method, operation))
@@ -222,3 +225,18 @@ class TargetClientGenerator:
 
 def render_target_client(contract: dict[str, Any]) -> str:
     return TargetClientGenerator(contract).render()
+
+
+def render_planning_client(contract: dict[str, Any]) -> str:
+    """Use the same fail-closed schema subset for six fixed planning operations."""
+    rendered = TargetClientGenerator(contract, tag="planning").render()
+    for name in (
+        "Transport",
+        "ApiClient",
+        "ApiResponse",
+        "ReadOptions",
+        "CommandOptions",
+        "ClientOptions",
+    ):
+        rendered = rendered.replace(f"Target{name}", f"Planning{name}")
+    return rendered.replace("./target-transport", "./planning-transport")

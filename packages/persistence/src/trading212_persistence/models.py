@@ -24,6 +24,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base, CreatedAtMixin, UpdatedAtMixin, UUIDPrimaryKeyMixin
+from .planning_models import PLANNING_MODELS
 from .target_models import TARGET_MODELS
 from .types import ExactNumeric, UTCDateTime
 
@@ -339,7 +340,9 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         CheckConstraint("schema_version = 1", name="schema_version_supported"),
         CheckConstraint(
             "resource IN ('activity','dividends','instruments','positions_market_value',"
-            "'positions_weight','positions_ticker','portfolios_name','portfolios_updated','target_versions','target_events','target_nodes')",
+            "'positions_weight','positions_ticker','portfolios_name','portfolios_updated',"
+            "'target_versions','target_events','target_nodes','contribution_plans',"
+            "'plan_lines','actual_target_rows','plan_revisions')",
             name="resource_allowed",
         ),
         CheckConstraint(
@@ -362,12 +365,19 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "(resource = 'target_versions' AND "
             "sort_specification = 'version_number_desc_id_desc') OR "
             "(resource = 'target_events' AND sort_specification = 'created_at_desc_id_desc') OR "
-            "(resource = 'target_nodes' AND sort_specification = 'depth_first_order_key')",
+            "(resource = 'target_nodes' AND sort_specification = 'depth_first_order_key') OR "
+            "(resource = 'plan_revisions' AND "
+            "sort_specification = 'revision_number_desc_id_desc') OR "
+            "(resource = 'contribution_plans' AND "
+            "sort_specification = 'created_at_desc_id_desc') OR "
+            "(resource IN ('plan_lines','actual_target_rows','plan_revisions') AND "
+            "sort_specification = 'ordinal_asc')",
             name="resource_sort_match",
         ),
         CheckConstraint(
             "((resource IN ('activity','dividends','positions_market_value',"
-            "'positions_weight','positions_ticker') AND broker_account_id IS NOT NULL) OR "
+            "'positions_weight','positions_ticker','contribution_plans','plan_lines',"
+            "'actual_target_rows','plan_revisions') AND broker_account_id IS NOT NULL) OR "
             "(resource = 'instruments' AND broker_account_id IS NULL) OR "
             "resource IN ('portfolios_name','portfolios_updated','target_versions',"
             "'target_events','target_nodes'))",
@@ -1046,4 +1056,5 @@ ALL_MODELS = (
     AuditEventModel,
     CalculationRegistryModel,
     *TARGET_MODELS,
+    *PLANNING_MODELS,
 )

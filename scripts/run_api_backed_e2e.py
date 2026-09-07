@@ -5,22 +5,33 @@ from __future__ import annotations
 
 import asyncio
 import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager, suppress
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
+from queue import Empty, Queue
 from uuid import NAMESPACE_URL, UUID, uuid5
 
 import uvicorn
 from alembic import command
 from alembic.config import Config
+from fastapi import FastAPI
 from sqlalchemy import func, select
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
+from trading212_analytics.planning import calculate_contribution_plan
 from trading212_api.main import create_app
+from trading212_application.planning_jobs import PlanTaskMessage
 from trading212_domain import build_synthetic_identity
-from trading212_persistence import create_database_engine
+from trading212_persistence import (
+    PostgresPlanningService,
+    create_database_engine,
+    create_session_factory,
+)
 from trading212_persistence.models import SourceRecordModel, TransactionModel
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
+from trading212_worker.plan_tasks import dispatch_plans_once, execute_plan_message
 from trading212_worker.scenarios import persist_quantity_cash_mismatch_scenario
 from trading212_worker.seed import SEED_TIME, seed_materialized_synthetic
 
@@ -158,6 +169,35 @@ def _persist_newer_activity(
     return transaction_id
 
 
+class _FixturePlanPublisher:
+    """Test transport only; canonical outbox, leases and consumer remain production code."""
+
+    def __init__(self) -> None:
+        self.messages: Queue[PlanTaskMessage] = Queue(maxsize=100)
+
+    def publish(self, message: PlanTaskMessage) -> None:
+        self.messages.put_nowait(message)
+
+
+async def _deliver_fixture_plans(service: PostgresPlanningService, stopped: asyncio.Event) -> None:
+    publisher = _FixturePlanPublisher()
+    while not stopped.is_set():
+        await dispatch_plans_once(service, publisher, dispatcher_id="browser-fixture")
+        while not publisher.messages.empty():
+            try:
+                message = publisher.messages.get_nowait()
+            except Empty:
+                break
+            await execute_plan_message(
+                service,
+                message,
+                consumer_id="browser-fixture",
+                calculate=calculate_contribution_plan,
+            )
+        with suppress(TimeoutError):
+            await asyncio.wait_for(stopped.wait(), timeout=0.25)
+
+
 def main() -> None:
     configured_database_url = os.environ.get("TEST_DATABASE_URL")
     database_url = (configured_database_url or _DEFAULT_DATABASE_URL).replace(
@@ -208,6 +248,25 @@ def main() -> None:
     )
 
     control_engine = create_database_engine(database_url)
+    fixture_plans = PostgresPlanningService(
+        sessions=create_session_factory(control_engine),
+        cursor_signing_key=b"browser-fixture-planning-cursor-key",
+    )
+    original_lifespan = app.router.lifespan_context
+
+    @asynccontextmanager
+    async def fixture_lifespan(application: FastAPI) -> AsyncIterator[None]:
+        async with original_lifespan(application):
+            stopped = asyncio.Event()
+            delivery = asyncio.create_task(_deliver_fixture_plans(fixture_plans, stopped))
+            try:
+                yield
+            finally:
+                stopped.set()
+                await delivery
+                control_engine.dispose()
+
+    app.router.lifespan_context = fixture_lifespan
 
     @app.post("/__e2e__/insert-newer-activity", include_in_schema=False)
     def insert_newer_activity() -> dict[str, str]:

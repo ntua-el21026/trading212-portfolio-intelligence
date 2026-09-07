@@ -187,7 +187,7 @@ def test_empty_to_head_is_idempotent_and_matches_metadata(database_engine: Engin
     expected = set(Base.metadata.tables)
     assert actual == expected
     with database_engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260907_0009"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260907_0010"
 
 
 def test_export_url_cleanup_is_scoped_null_safe_and_repeatable(database_engine: Engine) -> None:
@@ -657,6 +657,9 @@ def test_migration_is_current_and_downgrade_policy_is_explicit(database_engine: 
     target_revision = Path("migrations/versions/20260907_0009_virtual_targets.py").read_text(
         encoding="utf-8"
     )
+    planning_revision = Path(
+        "migrations/versions/20260907_0010_contribution_planning.py"
+    ).read_text(encoding="utf-8")
     policy = Path("migrations/README.md").read_text(encoding="utf-8")
     assert "down_revision" in revision
     assert "def downgrade()" in revision
@@ -666,7 +669,7 @@ def test_migration_is_current_and_downgrade_policy_is_explicit(database_engine: 
         "op.drop_table("
     ) + collection_snapshot_revision.count("op.drop_table(") + target_revision.count(
         "op.drop_table("
-    ) == len(Base.metadata.tables)
+    ) + planning_revision.count("op.drop_table(") == len(Base.metadata.tables)
     assert 'revision: str = "20260831_0002"' in metadata_revision
     assert 'down_revision: str | None = "20260831_0001"' in metadata_revision
     assert 'revision: str = "20260831_0003"' in occurrence_revision

@@ -1,4 +1,4 @@
-"""Celery composition and the single bounded Phase 1 refresh task."""
+"""Celery composition for fixed refresh and internal planning tasks."""
 
 from __future__ import annotations
 
@@ -55,6 +55,7 @@ from .outbox_dispatcher import (
     recover_invalid_refresh_dispatch,
     terminalize_refresh_dispatch,
 )
+from .plan_tasks import register_planning_task
 from .postgres_store import (
     ConsumerExecutionBudgetExhaustedError,
     PostgresIngestionStore,
@@ -230,6 +231,7 @@ def create_celery_app(settings: WorkerSettings) -> Celery:
         worker_prefetch_multiplier=1,
     )
     _register_tasks(application, settings)
+    register_planning_task(application, database_url=settings.database_url)
     return application
 
 

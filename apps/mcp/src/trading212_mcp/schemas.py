@@ -8,6 +8,12 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from .planning_schemas import (
+    ActualVsTargetToolResult,
+    ContributionPlanToolResult,
+    CreateContributionPlanToolResult,
+    DriftAnalysisToolResult,
+)
 from .target_schemas import VirtualPieResult, VirtualPiesResult
 
 DecimalString = Annotated[str, Field(pattern=r"^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$")]
@@ -397,4 +403,8 @@ RESULT_MODELS = {
     "get_data_quality_summary": DataQualitySummaryResult,
     "list_virtual_pies": VirtualPiesResult,
     "get_virtual_pie": VirtualPieResult,
+    "get_actual_vs_target": ActualVsTargetToolResult,
+    "get_drift_analysis": DriftAnalysisToolResult,
+    "get_contribution_plan": ContributionPlanToolResult,
+    "create_contribution_plan": CreateContributionPlanToolResult,
 }

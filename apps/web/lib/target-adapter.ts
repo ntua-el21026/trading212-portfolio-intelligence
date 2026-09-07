@@ -52,6 +52,7 @@ export async function targetClients(mutating = false) {
       }),
   };
   return {
+    options,
     targets: new TargetApiClient(options),
     portfolio: new PortfolioApiClient(options),
     access,

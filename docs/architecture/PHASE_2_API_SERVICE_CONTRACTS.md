@@ -237,7 +237,10 @@ dispatch provider requests.
 Actual/target and drift rows contain node/listing identity, depth, target weight,
 actual direct weight, effective weight availability, signed/absolute/relative
 drift, `underweight`/`on_target`/`overweight` classification, monetary gap, and
-quality. Relative drift is unavailable for target zero. Cash and unclassified
+quality. Node UUIDs and holding UUIDs are distinct: each holding row exposes both,
+and actual-versus-target includes a same-input `target_identities` index of at
+most 256 `{id, key, holding_id}` records for bounded selection without draining
+unclassified rows. Relative drift is unavailable for target zero. Cash and unclassified
 valued positions are explicit rows. Unknown valuation prevents a full-quality
 denominator. Summaries retain unmapped value and the disclosed rounding residual.
 The drift response has its own total, group and leaf aggregates; it is not an
@@ -256,6 +259,12 @@ unique and bounded to 256. These identities do not refer to broker positions.
 subset `{holding_id, minimum_amount, value_increment, maximum_post_weight}` maps
 respectively to a holding scope, `minimum_funded_amount`, `amount_increment`, and
 `maximum_post_weight`; no minimum is silently treated as mandatory funding.
+The full API also accepts this composite representation as `holding_constraints`,
+bounded to 256 unique holdings, so a revision can preserve every MCP override
+without lossy expansion into the separate 256 full-variant constraint limit.
+Persisted requests retain both forms. Expansion occurs only inside the canonical
+solver; the maximum combined effective constraint count is 1280 (256 published,
+256 full overrides, and at most 768 composite expansions).
 `cash_reserve` is a nonnegative reporting-currency minimum total post-plan cash
 amount, including existing cash. Insufficient existing cash plus contribution
 is explicit infeasibility, not an input silently clamped to contribution.
@@ -283,6 +292,30 @@ have an infeasible or unavailable analytical outcome. No feasible-looking lines
 are fabricated for those outcomes. A queued/failed job cannot claim a finalized
 successful plan. Repeated identical inputs produce byte-equivalent canonical
 result content; job IDs and calculation clock time are outside that digest.
+
+Plan detail includes current durable job state and a selected allocation page,
+so its HTTP ETag is the SHA-256 of the complete authorized wire representation.
+The immutable financial `content_digest` is separate. The detail exposes
+`revision_etag`, the strong `"<plan UUID>:<request revision>"` token used by
+recalculation's `If-Match`. A result digest cannot validate a changed job state
+or a different page. Authorization precedes every conditional response, and
+reads do not introduce a new calculation clock time.
+
+The existing plan collection supports history through `plan_id` together with
+`include_revisions=true`; these selectors must be supplied together. Its normal
+view returns the latest request for each plan. Its history view returns bounded
+request revisions in descending revision order, with stable cursor membership
+and the same owner/account authorization and collection quotas. A finalized
+revision links to detail using its `plan_revision_id`; unfinished requests do not
+invent a finalized revision identity.
+
+An explicitly selected published target may be compared with an earlier
+valuation snapshot. Its publication and effective times remain separate source
+metadata; when they postdate the financial cutoff or valuation, the result
+discloses that deliberate comparison as an assumption. This does not claim the
+target was known or active at that historical instant. The financial cutoff
+continues to bound every valuation/FX observation. Automatic historical target
+selection cannot use a later-known definition.
 
 ## 5. Reference sources and analytical resources
 
