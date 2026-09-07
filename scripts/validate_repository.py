@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the documentation-first Phase 1 implementation baseline.
+"""Validate repository authorities and evidence for the Phase 1/2 contracts.
 
 The validator intentionally uses only the Python standard library so it can run
 before application dependency manifests exist.
@@ -7,6 +7,7 @@ before application dependency manifests exist.
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 import shlex
@@ -16,6 +17,31 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+PHASE2_REQUIRED_FILES = (
+    "docs/DESIGN_FREEZE_V0_2.md",
+    "docs/implementation/PHASE_2_TECHNICAL_BASELINE.md",
+    "docs/implementation/PHASE_2_EXECUTION_MANIFEST.md",
+    "docs/implementation/PHASE_2_ACCEPTANCE_MATRIX.md",
+    "docs/implementation/PHASE_2_SCENARIO_EVIDENCE.md",
+    "docs/architecture/PHASE_2_DATA_MODEL.md",
+    "docs/architecture/PHASE_2_API_SERVICE_CONTRACTS.md",
+    "docs/architecture/PHASE_2_WEB_INFORMATION_ARCHITECTURE.md",
+    "docs/integrations/PHASE_2_PROVIDER_CONTRACTS.md",
+    "docs/integrations/PHASE_2_MCP_TOOL_REGISTRY.md",
+    "docs/security/PHASE_2_SECURITY_PRIVACY.md",
+    "docs/engineering/PHASE_2_TEST_STRATEGY.md",
+    "docs/operations/PHASE_2_OPERATIONS.md",
+    "docs/analytics/PHASE_2_METHODS.md",
+    "docs/adr/ADR-0009-PROVIDER-TRANSPORT-ISOLATION.md",
+    "docs/adr/ADR-0010-IMMUTABLE-VIRTUAL-TARGETS.md",
+    "docs/adr/ADR-0011-DETERMINISTIC-CONTRIBUTION-OPTIMIZER.md",
+    "docs/adr/ADR-0012-MARKET-SOURCE-SNAPSHOTS.md",
+    "docs/adr/ADR-0013-ECONOMIC-ENTITY-NORMALIZATION.md",
+    "docs/adr/ADR-0014-PRIVATE-REPRODUCIBLE-REPORTS.md",
+    "docs/adr/ADR-0015-VERSIONED-ALERT-EVALUATION.md",
+    "docs/adr/ADR-0016-INTERNAL-MCP-COMMANDS.md",
+)
 
 REQUIRED_FILES = (
     "README.md",
@@ -80,7 +106,76 @@ REQUIRED_FILES = (
     "package.json",
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",
+    *PHASE2_REQUIRED_FILES,
 )
+
+PHASE2_PACKAGES = tuple(f"P2-{number:02d}" for number in range(1, 11))
+PHASE2_ACCEPTANCE_IDS = (
+    "P2-TGT-001",
+    "P2-TGT-002",
+    "P2-TGT-003",
+    "P2-OPT-001",
+    "P2-OPT-002",
+    "P2-OPT-003",
+    "P2-SRC-001",
+    "P2-SRC-002",
+    "P2-PERF-001",
+    "P2-PERF-002",
+    "P2-INC-001",
+    "P2-XRAY-001",
+    "P2-XRAY-002",
+    "P2-RPT-001",
+    "P2-RPT-002",
+    "P2-RPT-003",
+    "P2-ALT-001",
+    "P2-ALT-002",
+    "P2-ALT-003",
+    "P2-WEB-001",
+    "P2-WEB-002",
+    "P2-MCP-001",
+    "P2-MCP-002",
+    "P2-API-001",
+    "P2-DATA-001",
+    "P2-SEC-001",
+    "P2-REG-001",
+    "P2-OPS-001",
+    "P2-REL-001",
+)
+PHASE2_SCENARIOS = tuple(f"P2-S{number:02d}" for number in range(1, 41))
+PHASE2_MCP_TOOLS = (
+    "get_account_summary",
+    "get_portfolio_snapshot",
+    "list_positions",
+    "list_recent_transactions",
+    "get_dividend_summary",
+    "get_direct_allocation",
+    "compare_portfolio_snapshots",
+    "get_reconciliation_status",
+    "get_data_quality_summary",
+    "list_virtual_pies",
+    "get_virtual_pie",
+    "get_actual_vs_target",
+    "get_drift_analysis",
+    "get_contribution_plan",
+    "get_performance_summary",
+    "get_benchmark_comparison",
+    "get_dividend_intelligence",
+    "get_attribution_summary",
+    "get_effective_exposure",
+    "get_etf_overlap",
+    "get_report_status",
+    "list_reports",
+    "get_alert_summary",
+    "create_contribution_plan",
+    "generate_portfolio_report",
+)
+PHASE2_MATRIX = "docs/implementation/PHASE_2_ACCEPTANCE_MATRIX.md"
+PHASE2_LEDGER = "docs/implementation/PHASE_2_SCENARIO_EVIDENCE.md"
+PHASE2_MANIFEST = "docs/implementation/PHASE_2_EXECUTION_MANIFEST.md"
+PHASE2_REGISTRY = "docs/integrations/PHASE_2_MCP_TOOL_REGISTRY.md"
+PHASE2_ROW_STATES = {"pending", "in_progress", "implemented_unverified", "complete"}
+SHA_RE = re.compile(r"[0-9a-f]{40}")
+
 
 EXPECTED_ACCEPTANCE_IDS = {
     "P1-API-001",
@@ -241,12 +336,17 @@ DIRECT_MAIN_REQUIREMENTS = {
 
 RETIRED_GOVERNANCE_PATHS = ("docs/adr/ADR-0009-PHASE-1-REVIEW-BRANCH-EXCEPTION.md",)
 FORBIDDEN_GOVERNANCE_TOKENS = (
-    "ADR-0009",
+    "ADR-0009-PHASE-1-REVIEW-BRANCH-EXCEPTION",
     "codex/phase-1-trusted-foundation",
     "candidate branch",
     "review-branch exception",
     "review branch exception",
     "review-only pull request",
+)
+RETIRED_ADR_WORKFLOW_RE = re.compile(
+    r"\bADR-0009\b[^\n]{0,120}\b(?:active\s+workflow|branch\s+(?:exception|workflow)|"
+    r"review\s+(?:branch|workflow)|delivery\s+workflow)\b",
+    re.IGNORECASE,
 )
 GOVERNANCE_TEXT_SUFFIXES = {".md", ".txt", ".json", ".yaml", ".yml", ".toml", ".sh"}
 GOVERNANCE_EXCLUDED_PARTS = {
@@ -284,11 +384,11 @@ def read_text(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
-def validate_required_files() -> list[Failure]:
+def validate_required_files(root: Path = ROOT) -> list[Failure]:
     return [
         Failure("required-files", f"missing {relative}")
         for relative in REQUIRED_FILES
-        if not (ROOT / relative).is_file()
+        if not (root / relative).is_file()
     ]
 
 
@@ -586,6 +686,9 @@ def validate_governance_text(relative: Path, text: str) -> list[Failure]:
         for match in re.finditer(re.escape(token), text, re.IGNORECASE):
             add(_line_number(text, match.start()), f"retired workflow token {token!r}")
 
+    for match in RETIRED_ADR_WORKFLOW_RE.finditer(text):
+        add(_line_number(text, match.start()), "retired ADR-0009 branch-governance reference")
+
     for match in BRANCH_METADATA_RE.finditer(text):
         value = match.group("value").rstrip(".,;:")
         if value not in {"main", "refs/heads/main"}:
@@ -868,6 +971,357 @@ def validate_acceptance_traceability(root: Path = ROOT) -> list[Failure]:
     return failures
 
 
+def _object(value: object) -> dict[str, object]:
+    return {str(key): item for key, item in value.items()} if isinstance(value, dict) else {}
+
+
+def _positive_integer(value: object) -> bool:
+    return type(value) is int and value > 0
+
+
+def _phase2_rows(text: str, id_pattern: str) -> list[list[str]]:
+    rows = []
+    for line in text.splitlines():
+        cells = [cell.strip().strip("`") for cell in line.strip().strip("|").split("|")]
+        if cells and re.fullmatch(id_pattern, cells[0]):
+            rows.append(cells)
+    return rows
+
+
+def _evidence_file(root: Path, value: object) -> Path | None:
+    """Accept existing repository files only, including through symlinks."""
+    if not isinstance(value, str) or not value or Path(value).is_absolute():
+        return None
+    path = (root / value).resolve()
+    return path if path.is_relative_to(root.resolve()) and path.is_file() else None
+
+
+def _test_node_exists(root: Path, node: object) -> bool:
+    if not isinstance(node, str) or "::" not in node:
+        return False
+    relative, *selectors = node.split("::")
+    path = _evidence_file(root, relative)
+    if path is None or not Path(relative).parts or Path(relative).parts[0] != "tests":
+        return False
+    try:
+        text = path.read_text(encoding="utf-8")
+        if path.suffix == ".py":
+            body = ast.parse(text).body
+            for selector in selectors:
+                name = selector.split("[", 1)[0]
+                found = next(
+                    (
+                        item
+                        for item in body
+                        if isinstance(item, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
+                        and item.name == name
+                    ),
+                    None,
+                )
+                if found is None:
+                    return False
+                body = found.body
+            return isinstance(found, (ast.FunctionDef, ast.AsyncFunctionDef))
+        if path.suffix in {".ts", ".tsx"} and len(selectors) == 1:
+            return bool(
+                re.search(
+                    r"\b(?:test|it)(?:\.[a-zA-Z]+)?\(\s*([\"'])" + re.escape(selectors[0]) + r"\1",
+                    text,
+                )
+            )
+    except (OSError, UnicodeError, SyntaxError):
+        return False
+    return False
+
+
+def _phase2_evidence_errors(root: Path, identifier: str, value: object) -> list[str]:
+    record = _object(value)
+    sha = record.get("sha")
+    errors = []
+    if not isinstance(sha, str) or not SHA_RE.fullmatch(sha) or sha == "0" * 40:
+        errors.append(f"{identifier} requires an immutable evidence SHA")
+    nodes = record.get("test_nodes")
+    if (
+        not isinstance(nodes, list)
+        or not nodes
+        or not all(_test_node_exists(root, node) for node in nodes)
+    ):
+        errors.append(f"{identifier} requires existing exact test nodes")
+    commands = record.get("commands")
+    if (
+        not isinstance(commands, list)
+        or not commands
+        or not all(
+            isinstance(_object(command).get("command"), str)
+            and bool(str(_object(command).get("command")).strip())
+            and type(_object(command).get("exit_code")) is int
+            and _object(command).get("exit_code") == 0
+            for command in commands
+        )
+    ):
+        errors.append(f"{identifier} requires recorded successful commands")
+    artifacts = record.get("artifacts")
+    if (
+        not isinstance(artifacts, list)
+        or not artifacts
+        or not all(
+            isinstance(artifact, str)
+            and artifact.startswith("docs/implementation/evidence/")
+            and _evidence_file(root, artifact) is not None
+            for artifact in artifacts
+        )
+    ):
+        errors.append(f"{identifier} requires existing repository evidence artifacts")
+    manifests = []
+    for artifact in artifacts if isinstance(artifacts, list) else []:
+        path = _evidence_file(root, artifact)
+        if path is None or path.suffix != ".json":
+            continue
+        try:
+            if path.stat().st_size <= 2 * 1024 * 1024:
+                manifests.append(_object(json.loads(path.read_text(encoding="utf-8"))))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            continue
+    if not any(
+        manifest.get("source_sha") == sha
+        and manifest.get("result") == "passed"
+        and isinstance(requirements := manifest.get("requirements"), list)
+        and identifier in requirements
+        for manifest in manifests
+    ):
+        errors.append(f"{identifier} requires a passing artifact manifest bound to its SHA and ID")
+    return errors
+
+
+def validate_phase2_design(root: Path = ROOT) -> list[Failure]:
+    """Check declared evidence consistency, not independently attest execution.
+
+    Completed package/row/scenario IDs require acceptance.evidence[ID] with sha,
+    exact test_nodes, successful commands and retained artifact paths. A JSON
+    artifact binds source_sha, requirements and result=passed to that record. This
+    fail-closed contract supports incremental acceptance after design closure.
+    """
+    failures: list[Failure] = []
+
+    def add(detail: str) -> None:
+        failures.append(Failure("phase2-design", detail))
+
+    def load(relative: str) -> str:
+        try:
+            return (root / relative).read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            add(f"missing or unreadable Phase 2 authority: {relative}")
+            return ""
+
+    documents = []
+    for relative in ("PROJECT_STATUS.json", "PROJECT_PROGRESS.json"):
+        try:
+            value = json.loads(load(relative))
+        except json.JSONDecodeError:
+            value = None
+        if not isinstance(value, dict):
+            add(f"{relative} must be a JSON object")
+        documents.append(_object(value))
+    status, progress = documents
+    phases = _object(progress.get("phases"))
+    phase2 = _object(phases.get("phase_2"))
+    phase3 = _object(phases.get("phase_3"))
+    audit_shas = []
+    for document in documents:
+        audit = _object(document.get("audit_remediation"))
+        sha = audit.get("corrected_evidence_sha")
+        if (
+            audit.get("stage") != "A"
+            or audit.get("status") != "complete"
+            or audit.get("stage_b_allowed") is not True
+            or audit.get("all_phase_1_gates_at_corrected_sha") != "passed"
+            or audit.get("findings") != {"F-01": "complete", "F-02": "complete"}
+            or not isinstance(sha, str)
+            or not SHA_RE.fullmatch(sha)
+            or sha == "0" * 40
+        ):
+            add("Phase 2 requires complete Stage A findings and corrected-SHA gates")
+        audit_shas.append(sha)
+        runs = _object(audit.get("github_actions"))
+        if set(runs) != {"quality", "security", "documentation"} or any(
+            _object(run).get("conclusion") != "success"
+            or not _positive_integer(_object(run).get("run_id"))
+            or not _positive_integer(_object(run).get("attempt"))
+            for run in runs.values()
+        ):
+            add("Stage A requires all three recorded successful exact-SHA workflows")
+        audit_file = _evidence_file(root, audit.get("evidence"))
+        if audit_file is None:
+            add("Stage A evidence reference must exist within the repository")
+        elif isinstance(sha, str) and sha not in load(
+            audit_file.relative_to(root.resolve()).as_posix()
+        ):
+            add("Stage A evidence document must identify the corrected SHA")
+    if audit_shas[0] != audit_shas[1]:
+        add("Stage A corrected evidence SHA must agree across status documents")
+    phase1 = _object(phases.get("phase_1"))
+    phase1_acceptance = _object(phase1.get("acceptance"))
+    if (
+        phase1.get("status") != "complete"
+        or type(phase1.get("progress_percent")) is not int
+        or phase1.get("progress_percent") != 100
+        or phase1_acceptance.get("status") != "complete"
+        or phase1_acceptance.get("release_evidence_sha") != audit_shas[0]
+        or _object(status.get("validated_evidence")).get("sha") != audit_shas[0]
+    ):
+        add("completed Phase 1 acceptance and current validated evidence must bind Stage A SHA")
+    if (
+        phase3.get("status") != "not_started"
+        or type(phase3.get("progress_percent")) is not int
+        or phase3.get("progress_percent") != 0
+    ):
+        add("Phase 3 must remain not_started with zero progress")
+    if any(state != "not_started" for state in _object(phase3.get("work_packages")).values()):
+        add("Phase 3 work packages must remain untouched")
+    if status.get("current_phase") != "phase_2" or status.get("current_release_target") != "0.2.0":
+        add("current status must identify Phase 2 release 0.2.0")
+
+    packages = _object(phase2.get("work_packages"))
+    if tuple(packages) != PHASE2_PACKAGES:
+        add("work packages must be exactly ordered P2-01 through P2-10")
+    unfinished = False
+    for identifier, state in packages.items():
+        if not isinstance(state, str) or state not in {
+            "not_started",
+            "in_progress",
+            "implemented_unverified",
+            "complete",
+            "blocked",
+        }:
+            add(f"{identifier} has an invalid work-package state")
+        if unfinished and state != "not_started":
+            add(f"{identifier} cannot advance before its predecessor is complete")
+        unfinished = unfinished or state != "complete"
+    complete_packages = sum(state == "complete" for state in packages.values())
+    if (
+        type(phase2.get("progress_percent")) is not int
+        or phase2.get("progress_percent") != complete_packages * 10
+    ):
+        add("Phase 2 progress must equal completed work packages out of ten")
+    manifest_rows = _phase2_rows(load(PHASE2_MANIFEST), r"P2-\d{2}")
+    if tuple(row[0] for row in manifest_rows) != PHASE2_PACKAGES:
+        add("execution manifest must contain exactly ordered P2-01 through P2-10")
+
+    matrix = load(PHASE2_MATRIX)
+    ledger = load(PHASE2_LEDGER)
+    matrix_rows = _phase2_rows(matrix, r"P2-(?!EXT-)[A-Z]+-\d{3}")
+    scenario_rows = _phase2_rows(ledger, r"P2-S\d{2}")
+    if any(len(row) != 5 for row in matrix_rows) or any(len(row) != 6 for row in scenario_rows):
+        add("Phase 2 acceptance and scenario rows must preserve all required evidence columns")
+    if tuple(row[0] for row in matrix_rows) != PHASE2_ACCEPTANCE_IDS:
+        add("acceptance matrix must contain the exact 29 local acceptance IDs")
+    if tuple(row[0] for row in scenario_rows) != PHASE2_SCENARIOS:
+        add("scenario ledger must contain exactly ordered P2-S01 through P2-S40")
+    completed = [identifier for identifier, state in packages.items() if state == "complete"]
+    for row in matrix_rows + scenario_rows:
+        if row[-1] not in PHASE2_ROW_STATES:
+            add(f"{row[0]} has an invalid local acceptance state")
+        if row[-1] == "complete":
+            completed.append(row[0])
+    for identifier, state in packages.items():
+        # Shared scenarios close at release; each package still needs scoped evidence.
+        if state == "complete" and (
+            any(
+                len(row) == 5 and row[1] == identifier and row[-1] != "complete"
+                for row in matrix_rows
+            )
+            or any(
+                len(row) == 6 and row[2] == identifier and row[-1] != "complete"
+                for row in scenario_rows
+            )
+        ):
+            add(
+                f"{identifier} cannot complete while its assigned acceptance predicates are pending"
+            )
+    acceptance = _object(phase2.get("acceptance"))
+    expected_counts = {
+        "locally_executable_rows_total": 29,
+        "locally_executable_rows_complete": sum(row[-1] == "complete" for row in matrix_rows),
+        "mandatory_scenarios_total": 40,
+        "mandatory_scenarios_complete": sum(row[-1] == "complete" for row in scenario_rows),
+    }
+    for field, count in expected_counts.items():
+        if type(acceptance.get(field)) is not int or acceptance.get(field) != count:
+            add(f"Phase 2 acceptance.{field} must match the structured inventory ({count})")
+    evidence = _object(acceptance.get("evidence"))
+    for identifier in completed:
+        for error in _phase2_evidence_errors(root, identifier, evidence.get(identifier)):
+            add(error)
+    for identifier, record in evidence.items():
+        if identifier not in (*PHASE2_PACKAGES, *PHASE2_ACCEPTANCE_IDS, *PHASE2_SCENARIOS):
+            add(f"unknown evidence requirement {identifier}")
+        for error in _phase2_evidence_errors(root, identifier, record):
+            add(error)
+    for reference in re.findall(
+        r"`(tests/[^`]+|docs/implementation/evidence/[^`]+)`", matrix + ledger
+    ):
+        valid = (
+            _test_node_exists(root, reference)
+            if "::" in reference
+            else _evidence_file(root, reference) is not None
+        )
+        if not valid:
+            add("acceptance documents reference nonexistent or out-of-repository evidence")
+
+    release_complete = complete_packages == 10 and len(completed) == 79
+    for field, claim in (
+        ("phase status", phase2.get("status")),
+        ("acceptance status", acceptance.get("status")),
+        ("implementation status", status.get("implementation_status")),
+        ("runtime acceptance", _object(status.get("phase_2_design")).get("runtime_acceptance")),
+    ):
+        if claim == "complete" and not release_complete:
+            add(f"{field} cannot claim completion before all packages, rows and scenarios")
+    if phase2.get("status") not in ("not_started", "in_progress", "complete", "blocked"):
+        add("Phase 2 status must use a supported implementation state")
+    if acceptance.get("status") not in ("pending", "in_progress", "complete"):
+        add("Phase 2 acceptance status must be pending, in_progress or complete")
+    release_sha = acceptance.get("release_evidence_sha")
+    if release_complete:
+        if (
+            not isinstance(release_sha, str)
+            or not SHA_RE.fullmatch(release_sha)
+            or any(
+                _object(evidence.get(identifier)).get("sha") != release_sha
+                for identifier in completed
+            )
+        ):
+            add("complete Phase 2 acceptance requires one immutable release evidence SHA")
+    elif release_sha is not None:
+        add("pending Phase 2 release cannot claim an accepted release evidence SHA")
+
+    for text in (matrix, ledger):
+        for claim in re.findall(r"\*\*Implementation acceptance:\*\*\s*([^\n]+)", text):
+            if (
+                re.match(r"(?:complete|passed|accepted)\b", claim, re.IGNORECASE)
+                and not release_complete
+            ):
+                add("acceptance document cannot claim runtime completion before release gates")
+
+    registry = load(PHASE2_REGISTRY)
+    registry_rows = _phase2_rows(registry, r"\d+")
+    if (
+        tuple(row[0] for row in registry_rows) != tuple(str(number) for number in range(1, 26))
+        or tuple(row[1] for row in registry_rows if len(row) > 1) != PHASE2_MCP_TOOLS
+    ):
+        add("MCP registry must contain exactly the 25 frozen names in order")
+    for index, row in enumerate(registry_rows):
+        if len(row) != 6 or row[4] != ("READ" if index < 23 else "COMMAND"):
+            add("MCP registry must preserve 23 reads and exactly two internal commands")
+    annotations = _phase2_rows(registry, r"READ|COMMAND")
+    if annotations != [
+        ["READ", "true", "false", "true", "false"],
+        ["COMMAND", "false", "false", "true", "false"],
+    ]:
+        add("MCP annotation profiles must preserve bounded read and internal-command semantics")
+    return failures
+
+
 def validate_case_collisions() -> list[Failure]:
     seen: dict[str, Path] = {}
     failures: list[Failure] = []
@@ -895,6 +1349,7 @@ def main() -> int:
         validate_env_example,
         validate_governance_and_prompt,
         validate_acceptance_traceability,
+        validate_phase2_design,
         validate_case_collisions,
     )
     failures: list[Failure] = []
@@ -907,7 +1362,7 @@ def main() -> int:
             print(f"- [{failure.check}] {failure.detail}", file=sys.stderr)
         return 1
 
-    print("Repository documentation and Phase 1 handoff validation passed.")
+    print("Repository documentation, Phase 1 handoff and Phase 2 design validation passed.")
     print(
         f"Validated {len(REQUIRED_FILES)} required files and "
         f"{len(EXPECTED_CAPABILITIES)} exact GET capabilities."

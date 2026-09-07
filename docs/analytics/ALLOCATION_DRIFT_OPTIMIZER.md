@@ -4,6 +4,11 @@
 **Phase 1:** Direct observed allocation only  
 **Phase 2:** Targets, drift, and optimizer
 
+The accepted [Phase 2 methods](PHASE_2_METHODS.md) and
+[optimizer ADR](../adr/ADR-0011-DETERMINISTIC-CONTRIBUTION-OPTIMIZER.md) select the
+exact objective, bounded search and status rules for release 0.2.0. They refine
+the general formulations below; alternative objectives are not release options.
+
 ## 1. Direct allocation
 
 For portfolio value \(V > 0\), direct component weight is:
@@ -23,11 +28,12 @@ where components include positions and cash according to the selected view. Requ
 
 ## 2. Canonical target model — Phase 2
 
-A target version is immutable after activation and contains:
+A target version is immutable after publication and contains:
 
 - effective timestamp;
 - hierarchy of groups/virtual Pies;
-- target weights at each sibling level summing to one within tolerance;
+- target weights at each sibling level summing to exactly one after any explicit,
+  bounded normalization under [ADR-0010](../adr/ADR-0010-IMMUTABLE-VIRTUAL-TARGETS.md);
 - listing/instrument mapping;
 - optional cash target;
 - maximum/minimum weights;
@@ -113,7 +119,7 @@ The mode is explicit. Hierarchical targets must not be multiplied/flattened inco
 Supported Phase 2 constraints:
 
 - no sales (mandatory default);
-- contribution amount fixed or maximum;
+- contribution amount fixed, with unspent amounts retained as residual cash;
 - preserve/add target cash reserve;
 - component eligible/ineligible;
 - minimum amount when funded;
@@ -130,7 +136,7 @@ Constraints are validated before solve and assigned stable IDs for explanation.
 
 The continuous solution is not the final plan when amount increments/minimums apply.
 
-Required process:
+The general continuous-relaxation approach is:
 
 1. Solve continuous problem.
 2. Generate feasible rounded candidate.
@@ -140,6 +146,10 @@ Required process:
 6. Verify exact contribution conservation in monetary minor/increment units.
 
 No floating-point rounding heuristics may violate conservation.
+The accepted Phase 2 solver may use exact bounded enumeration or its documented
+deterministic discrete search instead; every returned result still verifies all
+hard constraints, recomputes the objective, and discloses residual cash and
+whether global optimality was established.
 
 ## 8. Infeasibility
 

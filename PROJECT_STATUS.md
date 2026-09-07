@@ -15,8 +15,8 @@ all 24 locally executable acceptance rows and 14 mandatory synthetic scenarios,
 all three workflows, all local gates, and the fresh Compose acceptance passed.
 Python verification: 371 isolated plus 73 service-backed tests and 85% coverage.
 Migration head: `20260907_0008`; MCP: nine tools; Trading 212: ten GET capabilities.
-Phase 2 design closure is next. Phase 2 and Phase 3 remain `not_started` in this
-evidence commit. See [the audit record](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
+Phase 2 design closure is accepted; implementation is `in_progress` with zero
+completed packages. P2-01 is next. Phase 3 remains `not_started`. See [the audit record](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
 
 ## Previously accepted baseline
 
@@ -54,7 +54,7 @@ than fabricated.
 
 ## Next action
 
-Continue the authorized Phase 2 design closure and P2-01 through P2-10 implementation. Preserve these separate external
+Implement P2-01 through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo

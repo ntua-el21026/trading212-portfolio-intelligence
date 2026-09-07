@@ -1,6 +1,7 @@
 # Phase 2 — Portfolio Intelligence
 
-**Status:** Accepted roadmap; implementation begins only after Phase 1 acceptance  
+**Status:** Accepted roadmap with executable v0.2 design closure; implementation in progress
+
 **Target release:** `0.2.0`
 
 ## Objective
@@ -119,3 +120,12 @@ No broker write or generic research/execution tool.
 - Alerts deduplicate and never present stale/partial input as fresh.
 - All security/accessibility/quality gates pass.
 - Provider/license limitations and external gates are explicit.
+
+## Executable authority
+
+The owner-authorized design closure is [Design Delta v0.2](../DESIGN_FREEZE_V0_2.md).
+Use the [technical baseline](PHASE_2_TECHNICAL_BASELINE.md),
+[execution manifest](PHASE_2_EXECUTION_MANIFEST.md),
+[acceptance matrix](PHASE_2_ACCEPTANCE_MATRIX.md), and
+[scenario ledger](PHASE_2_SCENARIO_EVIDENCE.md). The roadmap remains scope;
+concrete contracts and evidence determine whether a capability is implemented.

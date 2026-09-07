@@ -1,8 +1,8 @@
 # Requirements Traceability
 
-**Status:** Phase 1 validated at `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`
+**Status:** Corrected Phase 1 validated at `99df47b6633791c3900a52f46f56d48be922a436`; Phase 2 design accepted
 
-This matrix links product requirements to implementation phases and verification evidence. Detailed acceptance criteria remain authoritative in the phase specifications and acceptance matrix. Phase 2 and Phase 3 rows remain roadmap traceability only and are not started.
+This matrix links product requirements to implementation phases and verification evidence. Detailed acceptance criteria remain authoritative in the phase specifications and acceptance matrix. Phase 2 now has an accepted [execution manifest](implementation/PHASE_2_EXECUTION_MANIFEST.md), [acceptance matrix](implementation/PHASE_2_ACCEPTANCE_MATRIX.md) and [40-scenario ledger](implementation/PHASE_2_SCENARIO_EVIDENCE.md); implementation evidence remains pending. Phase 3 remains roadmap scope and is not started.
 
 | Requirement | Phase | Primary authority | Verification class |
 |---|---:|---|---|

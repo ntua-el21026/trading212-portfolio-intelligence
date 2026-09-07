@@ -1,8 +1,8 @@
 # Trading 212 Portfolio Intelligence
 
 **Stage A accepted (2026-09-07):** Both audit findings and all local/CI gates passed
-at `99df47b6633791c3900a52f46f56d48be922a436`. Phase 2 design closure is next; Phase 3 is
-`not_started`. See [the corrected evidence](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
+at `99df47b6633791c3900a52f46f56d48be922a436`. Phase 2 design closure is accepted and implementation is in progress; Phase 3
+is `not_started`. See [the corrected evidence](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
 
 A private, premium, strictly read-only portfolio intelligence platform for Trading 212. It combines auditable brokerage-data ingestion, deterministic financial accounting, reconciliation, historical snapshots, portfolio analytics, a responsive web/PWA application, and a ChatGPT-native MCP app.
 
@@ -127,13 +127,13 @@ docs/implementation/prompts/PHASE_1_CODEX_PROMPT.md
 ```
 
 P1-01 through P1-12 are complete. The immutable implementation/evidence commit is
-`e13916eca34d8e3be1ed130248d6c3d1ed7e3869`; `main` is the authority, and later
+`99df47b6633791c3900a52f46f56d48be922a436`; `main` is the authority, and later
 governance/evidence reconciliation commits may be descendants of that commit. The release evidence records
-84% Python coverage, 338 isolated Python tests, 64 migration/integration tests, 22 web
+85% Python coverage, 371 isolated Python tests, 73 migration/integration tests, 22 web
 unit tests, 32 synthetic Playwright tests, and 6 API-backed Playwright tests. It also
 validates authenticated API-backed web rendering, exact API/MCP canonical parity, the
 durable refresh outbox crash/recovery path, full-stack state retention, non-root
-containers, latency smoke measurements, and runtime secret-canary containment. See the
+containers and runtime secret/export-URL canary containment. See the
 [validation report](VALIDATION_REPORT.md) and
 [mandatory scenario evidence](docs/implementation/PHASE_1_SCENARIO_EVIDENCE.md).
 

@@ -1,7 +1,8 @@
 # Design Index and Authority Order
 
 **Status:** Accepted  
-**Design freeze:** v0.1  
+**Design freeze:** v0.1 foundation plus accepted v0.2 Phase 2 delta
+
 **Implementation branch:** `main`
 
 This file is the entry point for architecture, implementation, and review.
@@ -12,13 +13,17 @@ When documents conflict, apply this order from highest to lowest authority:
 
 1. Explicit owner instruction in the current task.
 2. `AGENTS.md` repository operating and safety policy.
-3. `docs/DESIGN_FREEZE_V0_1.md`.
+3. `docs/DESIGN_FREEZE_V0_1.md` and its additive Phase 2 delta `docs/DESIGN_FREEZE_V0_2.md`.
 4. Accepted ADRs under `docs/adr/`.
 5. Security and external-provider contracts:
    - `docs/security/SECURITY_ARCHITECTURE.md`
    - `docs/integrations/TRADING212_API_CONTRACT.md`
    - `config/contracts/trading212-read-allowlist.yaml`
 6. Active phase authorities:
+   - `docs/implementation/PHASE_2_TECHNICAL_BASELINE.md`
+   - `docs/implementation/PHASE_2_EXECUTION_MANIFEST.md`
+   - `docs/implementation/PHASE_2_ACCEPTANCE_MATRIX.md`
+   - `docs/implementation/PHASE_2_SCENARIO_EVIDENCE.md`
    - `docs/implementation/PHASE_1_TECHNICAL_BASELINE.md`
    - `docs/implementation/PHASE_1_TRUSTED_FOUNDATION.md`
    - `docs/implementation/PHASE_1_EXECUTION_MANIFEST.md`
@@ -128,3 +133,22 @@ The last three are primarily Phase 2/3 authorities and must not be represented a
 ## 9. Change control
 
 A change to a frozen invariant requires an accepted superseding ADR and synchronized updates to every affected authority, test contract, status file, and prompt. External beta API drift must be verified against primary provider documentation and changed deliberately; automatic endpoint probing is prohibited.
+
+## Phase 2 accepted execution contracts
+
+Phase 1 is accepted at `99df47b6633791c3900a52f46f56d48be922a436`. Phase 2 design
+acceptance authorizes implementation, not runtime completion. Read the v0.2 delta,
+ADRs 0009–0016, technical baseline and manifest before depending on the new choices.
+
+- [Data model](architecture/PHASE_2_DATA_MODEL.md)
+- [API and service contracts](architecture/PHASE_2_API_SERVICE_CONTRACTS.md)
+- [Provider contracts](integrations/PHASE_2_PROVIDER_CONTRACTS.md)
+- [Financial, reporting and alert methods](analytics/PHASE_2_METHODS.md)
+- [MCP registry](integrations/PHASE_2_MCP_TOOL_REGISTRY.md)
+- [Web information architecture](architecture/PHASE_2_WEB_INFORMATION_ARCHITECTURE.md)
+- [Security and privacy](security/PHASE_2_SECURITY_PRIVACY.md)
+- [Test strategy](engineering/PHASE_2_TEST_STRATEGY.md)
+- [Operations](operations/PHASE_2_OPERATIONS.md)
+
+Phase 1's sealed broker boundary and immutable audit evidence remain authoritative.
+Phase 3 remains not_started.

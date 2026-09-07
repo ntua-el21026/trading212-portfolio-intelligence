@@ -17,6 +17,11 @@ External systems change independently, use incompatible identifiers, have incomp
 
 ### Phase 2
 
+The concrete capability, transport, bounds and licensing contract is
+[Phase 2 Provider Contracts](PHASE_2_PROVIDER_CONTRACTS.md). The accepted
+[transport ADR](../adr/ADR-0009-PROVIDER-TRANSPORT-ISOLATION.md) preserves the
+separate Trading 212 origin seal.
+
 - `MarketPriceHistoryProvider`
 - `FxReferenceProvider`
 - `BenchmarkProvider`

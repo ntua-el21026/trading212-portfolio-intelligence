@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-07T12:30:00Z",
+  "updated_at": "2026-09-07T13:08:09Z",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -129,8 +129,29 @@
     "phase_2": {
       "name": "Portfolio Intelligence",
       "release": "0.2.0",
-      "status": "not_started",
-      "progress_percent": 0
+      "status": "in_progress",
+      "progress_percent": 0,
+      "design_closure": "accepted",
+      "work_packages": {
+        "P2-01": "not_started",
+        "P2-02": "not_started",
+        "P2-03": "not_started",
+        "P2-04": "not_started",
+        "P2-05": "not_started",
+        "P2-06": "not_started",
+        "P2-07": "not_started",
+        "P2-08": "not_started",
+        "P2-09": "not_started",
+        "P2-10": "not_started"
+      },
+      "acceptance": {
+        "status": "pending",
+        "locally_executable_rows_total": 29,
+        "locally_executable_rows_complete": 0,
+        "mandatory_scenarios_total": 40,
+        "mandatory_scenarios_complete": 0,
+        "release_evidence_sha": null
+      }
     },
     "phase_3": {
       "name": "Premium Intelligence and Productization",

@@ -10,7 +10,7 @@ Documentation is part of the executable contract. It defines product scope, fina
 
 | Class | Examples | Change rule |
 |---|---|---|
-| Design freeze | `DESIGN_FREEZE_V0_1.md` | Superseding ADR and synchronized updates required |
+| Design freeze | `DESIGN_FREEZE_V0_1.md`, additive `DESIGN_FREEZE_V0_2.md` | Superseding ADR and synchronized updates required |
 | ADR | `docs/adr/*` | Immutable after acceptance except typo/metadata corrections; supersede rather than rewrite decisions |
 | Security/provider contract | Trading 212 contract, security architecture, allowlist | Review exact boundary and negative tests in same commit |
 | Phase authority | Phase specification, technical baseline, acceptance matrix | Update before or with implementation that resolves a detail |

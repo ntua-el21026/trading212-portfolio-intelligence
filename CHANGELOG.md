@@ -4,6 +4,16 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Phase 2 design closure
+
+- Accept the v0.2 design delta and eight ADRs for targets, provider isolation,
+  deterministic optimization, source snapshots, entity normalization, reports,
+  alert scheduling and internal MCP commands.
+- Freeze the normalized data/API/provider/method/security/web/operations contracts,
+  25-tool MCP registry, 29 local acceptance rows and 40 mandatory scenarios.
+- Begin Phase 2 implementation with no completed packages; retain corrected
+  Phase 1 evidence and Phase 3 `not_started`.
+
 ### Independent Phase 1 audit corrections
 
 - Enforce hard collection membership quotas from the first traversal, bound source
@@ -103,10 +113,10 @@ Monorepo, provider ingestion, canonical history, reconciliation, snapshots, core
 
 Implementation is complete on `main`, all 24 locally executable acceptance rows passed,
 and all fourteen mandatory synthetic scenarios have evidence at immutable commit
-`e13916eca34d8e3be1ed130248d6c3d1ed7e3869`. The final evidence includes 84% Python
-coverage, 338 isolated Python tests, 64 migration/integration tests, 22 web unit tests,
+`99df47b6633791c3900a52f46f56d48be922a436`. The final evidence includes 85% Python
+coverage, 371 isolated Python tests, 73 migration/integration tests, 22 web unit tests,
 32 synthetic Playwright tests, 6 API-backed Playwright tests, Alembic head
-`20260901_0007`, and exactly nine MCP tools. Release readiness remains
+`20260907_0008`, and exactly nine MCP tools. Release readiness remains
 `blocked_external` for the Demo smoke, production host/identity/secret-manager selection,
 and public HTTPS/OAuth MCP plus ChatGPT registration. Real-provider opening-history
 coverage remains `unavailable_explicit` with limitation reporting complete. Trading 212

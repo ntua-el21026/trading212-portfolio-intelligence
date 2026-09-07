@@ -115,3 +115,22 @@ def test_non_main_workflow_instructions_are_rejected(instruction: str) -> None:
     failures = validate_governance_text(Path("DEMO_WORKFLOW.md"), instruction)
     assert failures
     assert {failure.check for failure in failures} == {"direct-main-governance"}
+
+
+@pytest.mark.contract
+@pytest.mark.parametrize(
+    "text",
+    (
+        "ADR-0009-PROVIDER-TRANSPORT-ISOLATION defines sealed provider transports.",
+        "[Provider isolation](docs/adr/ADR-0009-PROVIDER-TRANSPORT-ISOLATION.md)",
+        "ADR-0009 governs fixed origins; commit directly to main.",
+    ),
+)
+def test_phase2_provider_adr_does_not_restore_retired_branch_governance(text: str) -> None:
+    assert validate_governance_text(Path("PROVIDER_CONTRACT.md"), text) == []
+
+
+@pytest.mark.contract
+def test_retired_branch_adr_path_remains_forbidden() -> None:
+    text = "Read docs/adr/ADR-0009-PHASE-1-REVIEW-BRANCH-EXCEPTION.md for delivery."
+    assert validate_governance_text(Path("RETIRED_WORKFLOW.md"), text)

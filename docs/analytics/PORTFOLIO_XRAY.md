@@ -2,6 +2,11 @@
 
 **Status:** Accepted Phase 2 design; not Phase 1 implementation scope
 
+The executable release 0.2.0 contract is the
+[Phase 2 methodology](PHASE_2_METHODS.md), with immutable source selection under
+[ADR-0012](../adr/ADR-0012-MARKET-SOURCE-SNAPSHOTS.md) and economic identity under
+[ADR-0013](../adr/ADR-0013-ECONOMIC-ENTITY-NORMALIZATION.md).
+
 ## Objective
 
 Calculate true direct and indirect economic exposure by combining direct positions with ETF constituent data and normalized instrument/entity mappings while making coverage, date, source, and mapping confidence visible.
@@ -73,7 +78,12 @@ A result includes:
 
 ## Caching and history
 
-ETF constituent snapshots are immutable by provider/fund/effective date/version. Historical portfolio X-ray uses the constituent snapshot valid for the valuation date when available; using the latest snapshot for historical dates is labeled estimated.
+ETF constituent snapshots are immutable by provider/fund/effective date/version.
+Historical portfolio X-ray uses a snapshot effective for the valuation date and
+known by the explicit source cutoff. Release 0.2.0 does not use future
+constituents to fill earlier history; missing eligible inputs remain unavailable
+or partial. An older eligible snapshot may be stale, with its age and quality
+disclosed under the versioned method.
 
 ## Safety/licensing
 
