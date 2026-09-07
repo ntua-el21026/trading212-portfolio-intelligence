@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-07T18:52:12.329183+00:00",
+  "updated_at": "2026-09-07T19:42:12.729007+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -83,7 +83,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "P2-03_market_fx_benchmark_sources",
+  "next_gate": "Implement P2-04 historical performance, benchmark, attribution, income and cash-flow intelligence, then P2-05 through P2-10; preserve external gates and Phase 3 not_started.",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -154,6 +154,11 @@
       "sha": "f78c9d2917c3ce8c93f9ae5631390c59616abc82",
       "status": "complete",
       "artifact": "docs/implementation/evidence/phase-2-p2-02-f78c9d2.json"
+    },
+    "P2-03": {
+      "sha": "e258f54bb03a958f7847b310ee882b7f4a54686f",
+      "status": "complete",
+      "artifact": "docs/implementation/evidence/phase-2-p2-03-e258f54.json"
     }
   }
 }

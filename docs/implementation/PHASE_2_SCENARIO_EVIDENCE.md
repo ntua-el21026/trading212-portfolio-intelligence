@@ -2,17 +2,19 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 and P2-02 complete; 11/40 complete
+**Implementation acceptance:** In progress; P2-01 through P2-03 complete; 12/40 complete
 
 **P2-01 evidence SHA:** `ecc75154397c8f9d7532fa2df8576846b60bae7c`
 
-**P2-02 evidence SHA:** `f78c9d2917c3ce8c93f9ae5631390c59616abc82`; final Phase 2 release SHA pending
+**P2-02 evidence SHA:** `f78c9d2917c3ce8c93f9ae5631390c59616abc82`
+
+**P2-03 evidence SHA:** `e258f54bb03a958f7847b310ee882b7f4a54686f`; final Phase 2 release SHA pending
 
 **Authority:** Owner assignment, Phase 2 execution manifest and acceptance matrix
 
 All forty owner-required scenarios are preserved below. Each row defines the
 required executable predicate; pending rows remain requirements without claimed
-execution. P2-S01 through P2-S11 have exact tests and retained evidence. Phase 1 acceptance at
+execution. P2-S01 through P2-S11 and P2-S13 have exact tests and retained evidence. Phase 1 acceptance at
 `99df47b6633791c3900a52f46f56d48be922a436` is prerequisite evidence only.
 
 ## Mandatory predicates
@@ -31,7 +33,7 @@ execution. P2-S01 through P2-S11 have exact tests and retained evidence. Phase 1
 | P2-S10 | Return a structured infeasibility explanation for impossible constraints. | P2-02 | Impossible hard constraints produce stable conflict codes/explanations without a fabricated feasible plan or hidden relaxation. | `tests/unit/analytics/test_planning.py::test_infeasibility_proof_names_only_supporting_constraints`; [full assertion map and exact-SHA results](evidence/phase-2-p2-02-f78c9d2.json) | `complete` |
 | P2-S11 | Produce identical plan output for identical canonical inputs. | P2-02 | Repeated and concurrent canonical requests preserve byte-equivalent plan data and semantic identity; operational timestamps/IDs are tested separately. | `tests/integration/test_planning_api_postgres.py::test_actual_drift_and_saved_plan_match_mcp_with_real_worker_and_revision_history`; [full assertion map and exact-SHA results](evidence/phase-2-p2-02-f78c9d2.json) | `complete` |
 | P2-S12 | Prevent a contribution plan from calling any Trading 212 transport method. | P2-02/P2-09 | Broker transport spy raises on every invocation; successful/invalid/retried plan creation invokes it zero times and creates no order payload. | Not recorded / none | `pending` |
-| P2-S13 | Ingest synthetic price, FX, and benchmark data with provenance and gaps. | P2-03 | Deterministic replay providers persist prices, FX and benchmark revisions with provenance, source/retrieval times, licenses and explicit gaps. | Not recorded / none | `pending` |
+| P2-S13 | Ingest synthetic price, FX, and benchmark data with provenance and gaps. | P2-03 | Deterministic replay providers persist prices, FX and benchmark revisions with provenance, source/retrieval times, licenses and explicit gaps. | `tests/integration/test_sources_postgres.py::test_real_seed_idempotent_and_restarted_public_reads`; [exact-SHA assertion map](evidence/phase-2-p2-03-e258f54.json) | `complete` |
 | P2-S14 | Reject look-ahead FX or post-cutoff market observations. | P2-03/P2-04 | Boundary fixtures reject naive/post-cutoff observations and prevent look-ahead in direct/inverse/triangulated FX and valuation/benchmark selection. | Not recorded / none | `pending` |
 | P2-S15 | Align portfolio and benchmark periods/currencies. | P2-04 | Hand-computed portfolio/benchmark calendars, total-return basis and sourced reporting-currency conversion align or return explicit unavailable coverage. | Not recorded / none | `pending` |
 | P2-S16 | Keep deposits separate from investment gain. | P2-04 | Deposit/withdrawal fixtures change external flows without fabricating gain; internal buys/sells and transfer legs do not become external flows. | Not recorded / none | `pending` |
@@ -131,3 +133,16 @@ binds source/history and six image scans to that clean build. The [earlier faile
 CI candidate](evidence/phase-2-p2-02-5fa43b2-failed-quality.json) remains unaccepted.
 P2-S12 has a passing broker-transport spy for the planning path; its shared P2-09
 predicate remains pending. Later packages and full-release acceptance remain required.
+
+## P2-03 observed evidence
+
+P2-03, P2-SRC-001, P2-SRC-002 and P2-S13 passed at
+`e258f54bb03a958f7847b310ee882b7f4a54686f`. The [assertion map](evidence/phase-2-p2-03-e258f54.json),
+[fresh runtime record](evidence/phase-2-p2-03-e258f54-runtime.json),
+[security scans](evidence/phase-2-p2-03-e258f54-security.json) and
+[compatibility comparison](evidence/phase-2-p2-03-e258f54-compatibility.json) retain actual
+local/CI results, exact synthetic observations, immutable history, cursor reuse
+and seven-service restart. The two failed harness attempts (cursor issue-time comparison and aggregate
+pagination capacity) are retained separately from the corrected fresh runtime. Three packages, eight
+local rows and twelve scenarios are complete; P2-S14/P2-S36 and later/shared
+predicates remain pending. Phase 3 remains `not_started`.

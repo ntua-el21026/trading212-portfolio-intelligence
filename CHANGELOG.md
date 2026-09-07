@@ -14,8 +14,14 @@ All notable project changes are recorded here. The project follows semantic vers
   provenance and observation pages, and an immutable benchmark version editor.
 - Enforce cutoff, calendar-gap, revision-ambiguity, freshness and separate
   storage/display/report/export permission policies. External providers remain
-  explicitly unconfigured. P2-03 acceptance is pending the complete gate and
-  exact-SHA runtime/CI evidence.
+  explicitly unconfigured. Accept P2-03 at
+  `e258f54bb03a958f7847b310ee882b7f4a54686f` with full local/CI validation, eight
+  source/history/image scans and fresh retained-volume restart evidence.
+- Preserve the first runtime harness failure: regenerated cursor issue timestamps
+  changed signed bytes. A second attempt exhausted the unchanged 64-view quota.
+  Correct cursor comparisons and scope repeated planning regression to one durable
+  global plan with actual Redis-loss recovery; every new source check remains.
+  Three packages, eight local rows and twelve scenarios are now complete.
 
 ### Phase 2 contribution planning
 
@@ -173,7 +179,7 @@ Live is disabled and untested, not another Phase 1 gate.
 
 Virtual Pies/targets, contribution optimization, full performance/benchmarks, X-ray, reports, alerts, and premium analytical interfaces.
 
-Status: `in_progress`; P2-01 and P2-02 complete (2/10 packages).
+Status: `in_progress`; P2-01 through P2-03 complete (3/10 packages).
 
 ### [1.0.0] — Phase 3: Premium Intelligence and Productization
 

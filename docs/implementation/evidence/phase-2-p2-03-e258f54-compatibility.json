@@ -1,0 +1,459 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "compatibility_review",
+  "baseline_sha": "c9adba4f427cdbee1ebce7fbbb9425d1061c8146",
+  "source_sha": "e258f54bb03a958f7847b310ee882b7f4a54686f",
+  "source_binding": "immutable_git_commit",
+  "working_tree_base_sha": "e258f54bb03a958f7847b310ee882b7f4a54686f",
+  "result": "passed",
+  "acceptance_result": "passed",
+  "findings": [],
+  "retained_openapi_operations_equal": 46,
+  "retained_openapi_schemas_equal": 98,
+  "added_openapi_operations": [
+    {
+      "method": "GET",
+      "path": "/api/v1/accounts/{account_id}/benchmark-sources",
+      "operation_id": "get_benchmark_source_status"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/accounts/{account_id}/fx-sources",
+      "operation_id": "get_fx_source_status"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/accounts/{account_id}/market-sources",
+      "operation_id": "get_market_source_status"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/benchmark-definitions",
+      "operation_id": "list_benchmark_definitions"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/benchmark-definitions",
+      "operation_id": "create_benchmark_definition"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/benchmark-definitions/{definition_id}",
+      "operation_id": "get_benchmark_definition"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/benchmark-definitions/{definition_id}/archive",
+      "operation_id": "archive_benchmark_definition"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/benchmark-definitions/{definition_id}/versions",
+      "operation_id": "create_benchmark_version"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/benchmark-snapshots/{snapshot_id}",
+      "operation_id": "get_benchmark_snapshot"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/benchmark-snapshots/{snapshot_id}/observations",
+      "operation_id": "list_benchmark_observations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/fx-snapshots/{snapshot_id}",
+      "operation_id": "get_fx_snapshot"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/fx-snapshots/{snapshot_id}/observations",
+      "operation_id": "list_fx_observations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/price-snapshots/{snapshot_id}",
+      "operation_id": "get_price_snapshot"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/price-snapshots/{snapshot_id}/observations",
+      "operation_id": "list_price_observations"
+    }
+  ],
+  "openapi_sha256": "62245a093da97e1168d6705d96593b82396c18dd1706adb24f9845935cf08575",
+  "unchanged_boundary_files": [
+    {
+      "file": "apps/api/src/trading212_api/planning_routes.py",
+      "baseline_sha256": "51bfc9b1d7507a948fb7fb5c22b763633a11ec275c6ab223a78d1510abe6bc32",
+      "source_sha256": "51bfc9b1d7507a948fb7fb5c22b763633a11ec275c6ab223a78d1510abe6bc32",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/api/src/trading212_api/planning_schemas.py",
+      "baseline_sha256": "4fc9b672541146d3862dc9b31cdad4629d327c0db090d91ad39fda12d055adea",
+      "source_sha256": "4fc9b672541146d3862dc9b31cdad4629d327c0db090d91ad39fda12d055adea",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/api/src/trading212_api/schemas.py",
+      "baseline_sha256": "8446492206864442f25c507091e90b755bf425d58e1d2998c42b33bee9aaca5d",
+      "source_sha256": "8446492206864442f25c507091e90b755bf425d58e1d2998c42b33bee9aaca5d",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/api/src/trading212_api/target_routes.py",
+      "baseline_sha256": "6a83d61d3fa05b872bb4f4a686d3c33b0a13fa72195e6cf70b01b195842322da",
+      "source_sha256": "6a83d61d3fa05b872bb4f4a686d3c33b0a13fa72195e6cf70b01b195842322da",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/api/src/trading212_api/target_schemas.py",
+      "baseline_sha256": "d6e191691fcdfba4b3bf145c9e22859a206b46a290b8541ec7aca7b356a6e8b5",
+      "source_sha256": "d6e191691fcdfba4b3bf145c9e22859a206b46a290b8541ec7aca7b356a6e8b5",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/README.md",
+      "baseline_sha256": "50efba5e048a90221f81492fa0d6e0e66ed183f8ed5978d2dfe66eae91e1dac4",
+      "source_sha256": "50efba5e048a90221f81492fa0d6e0e66ed183f8ed5978d2dfe66eae91e1dac4",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/pyproject.toml",
+      "baseline_sha256": "8877e44f360eb9b4e7bd9493c21dfb03b28896d02a600c5304b0ca88e6937068",
+      "source_sha256": "8877e44f360eb9b4e7bd9493c21dfb03b28896d02a600c5304b0ca88e6937068",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/__init__.py",
+      "baseline_sha256": "4dd9ba02ad95bab7540e17fa7548bb44aa67f6f98429fb66f1ab1b2c1872e554",
+      "source_sha256": "4dd9ba02ad95bab7540e17fa7548bb44aa67f6f98429fb66f1ab1b2c1872e554",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/auth.py",
+      "baseline_sha256": "c4b2a9f88f465ef5027067a1676a3d8e044a013db4ab335921b64bb24100a140",
+      "source_sha256": "c4b2a9f88f465ef5027067a1676a3d8e044a013db4ab335921b64bb24100a140",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/gateway.py",
+      "baseline_sha256": "0d6b8f24f0613e5dae803de8d015fa7283d58786af722f3e23a522a1c156af5f",
+      "source_sha256": "0d6b8f24f0613e5dae803de8d015fa7283d58786af722f3e23a522a1c156af5f",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/main.py",
+      "baseline_sha256": "249454288798ea6c9a1aad26fffe579a106d91c33d455a4ba865288c444c144a",
+      "source_sha256": "249454288798ea6c9a1aad26fffe579a106d91c33d455a4ba865288c444c144a",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/planning_gateway.py",
+      "baseline_sha256": "31c47d91d186ad909f7413b52219ec1efe42f96e60bd9cdad5d0193e10611e95",
+      "source_sha256": "31c47d91d186ad909f7413b52219ec1efe42f96e60bd9cdad5d0193e10611e95",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/planning_schemas.py",
+      "baseline_sha256": "68a0e5050f71a0a4b3f3136e08649da00bd3fc218c28438f8ce96599266dfab1",
+      "source_sha256": "68a0e5050f71a0a4b3f3136e08649da00bd3fc218c28438f8ce96599266dfab1",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/planning_tools.py",
+      "baseline_sha256": "6287fccad70b090cfa75991f87b656f6be4cdf1de8421cf088bab113d33f31b3",
+      "source_sha256": "6287fccad70b090cfa75991f87b656f6be4cdf1de8421cf088bab113d33f31b3",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/planning_widget.py",
+      "baseline_sha256": "262dba252eda1395970321d627027a0739762b945db5f1579d98891d11d719cb",
+      "source_sha256": "262dba252eda1395970321d627027a0739762b945db5f1579d98891d11d719cb",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/schemas.py",
+      "baseline_sha256": "79269e48dfd64fa3725c6ce8d6dd22aa5808cc7a0bb65b9a5882f320751d9982",
+      "source_sha256": "79269e48dfd64fa3725c6ce8d6dd22aa5808cc7a0bb65b9a5882f320751d9982",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/sdk_compat.py",
+      "baseline_sha256": "b915371f9b4d25a453a31b391bfc811b03020c056e0f146f253202d30c90b2e4",
+      "source_sha256": "b915371f9b4d25a453a31b391bfc811b03020c056e0f146f253202d30c90b2e4",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/serialization.py",
+      "baseline_sha256": "f093c396babc9a69e84a4413c8d41674614a8477887832250ec241b4c3474fe3",
+      "source_sha256": "f093c396babc9a69e84a4413c8d41674614a8477887832250ec241b4c3474fe3",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/server.py",
+      "baseline_sha256": "0d4d1ae1a5a9db90c86fceef15013dd61540c614dc32ac78caa4d3942a702207",
+      "source_sha256": "0d4d1ae1a5a9db90c86fceef15013dd61540c614dc32ac78caa4d3942a702207",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/settings.py",
+      "baseline_sha256": "e9827aab17061bdd702271ce1cf9c979bfa0503ad91672fd82fce6ade77f2332",
+      "source_sha256": "e9827aab17061bdd702271ce1cf9c979bfa0503ad91672fd82fce6ade77f2332",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/target_gateway.py",
+      "baseline_sha256": "628876b349ab32dec3764d07728ae22d2e9a931ccabb70c0fc0dd70b5416d208",
+      "source_sha256": "628876b349ab32dec3764d07728ae22d2e9a931ccabb70c0fc0dd70b5416d208",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/target_schemas.py",
+      "baseline_sha256": "a1dc17118381fcfc3272b37da3491742dd5be327718038d8b47c5151091c6da7",
+      "source_sha256": "a1dc17118381fcfc3272b37da3491742dd5be327718038d8b47c5151091c6da7",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/mcp/src/trading212_mcp/widget.py",
+      "baseline_sha256": "19838c2e5555a0eda5399ab99bd66d7c4b503ae5632e2e930328b17fa42ea8fd",
+      "source_sha256": "19838c2e5555a0eda5399ab99bd66d7c4b503ae5632e2e930328b17fa42ea8fd",
+      "byte_identical": true
+    },
+    {
+      "file": "config/contracts/trading212-openapi-verification.json",
+      "baseline_sha256": "b61f867a93da49d7b80d26679f619a747346e5b8b609ba69ea4ba09cdcf37a5e",
+      "source_sha256": "b61f867a93da49d7b80d26679f619a747346e5b8b609ba69ea4ba09cdcf37a5e",
+      "byte_identical": true
+    },
+    {
+      "file": "config/contracts/trading212-read-allowlist.yaml",
+      "baseline_sha256": "36aa7afbbeb416bfeaca4efda31bc52983bcbeaab93aea906fa43204cf12a284",
+      "source_sha256": "36aa7afbbeb416bfeaca4efda31bc52983bcbeaab93aea906fa43204cf12a284",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/api-contracts/src/bounded-transport.ts",
+      "baseline_sha256": "9b51e1b2497e17be1f6300502dfa4a9f6a64d41497e35463b876f03cf45129a3",
+      "source_sha256": "9b51e1b2497e17be1f6300502dfa4a9f6a64d41497e35463b876f03cf45129a3",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/api-contracts/src/planning-transport.ts",
+      "baseline_sha256": "b40dd8d200a1edbd0f65531e84127b8e8c38050770460cf385967f51e298ce90",
+      "source_sha256": "b40dd8d200a1edbd0f65531e84127b8e8c38050770460cf385967f51e298ce90",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/api-contracts/src/planning.generated.ts",
+      "baseline_sha256": "cb39e4ec17d3957e8e6053ee1ab8954b6e62b8455994dc16bf3d037d4e436ca5",
+      "source_sha256": "cb39e4ec17d3957e8e6053ee1ab8954b6e62b8455994dc16bf3d037d4e436ca5",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/api-contracts/src/target-transport.ts",
+      "baseline_sha256": "a1da480f158c0ea64dcc56b576d228100c92c213d26607ac767f22f192fc22e6",
+      "source_sha256": "a1da480f158c0ea64dcc56b576d228100c92c213d26607ac767f22f192fc22e6",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/api-contracts/src/targets.generated.ts",
+      "baseline_sha256": "909ec494fd6dfbced3502fcb81e80c0a64ffaec7023695c077dae3ec2ec5924b",
+      "source_sha256": "909ec494fd6dfbced3502fcb81e80c0a64ffaec7023695c077dae3ec2ec5924b",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/api-contracts/src/trading212_api_contracts/planning.py",
+      "baseline_sha256": "058d8b8245a83fb4d70c345606db7577994dfb77595273e3ec7f02c89bb3a65d",
+      "source_sha256": "058d8b8245a83fb4d70c345606db7577994dfb77595273e3ec7f02c89bb3a65d",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/api-contracts/src/trading212_api_contracts/targets.py",
+      "baseline_sha256": "e91b912e6c0780aedee9d9eb605dfec1ed317327e228a7ed32f9df1c5e55f6f3",
+      "source_sha256": "e91b912e6c0780aedee9d9eb605dfec1ed317327e228a7ed32f9df1c5e55f6f3",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/security/src/trading212_security/principals.py",
+      "baseline_sha256": "30d232c0541307b087c68f591540217f348f9a1d3861e4f66e4de74e8cf056ab",
+      "source_sha256": "30d232c0541307b087c68f591540217f348f9a1d3861e4f66e4de74e8cf056ab",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/security/src/trading212_security/settings.py",
+      "baseline_sha256": "8436b97d8732686673b5411cc092aa5d2f16308431d88df40891a41de5a7c503",
+      "source_sha256": "8436b97d8732686673b5411cc092aa5d2f16308431d88df40891a41de5a7c503",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/security/src/trading212_security/tokens.py",
+      "baseline_sha256": "3867ab857fe439c62c2c8cbaae2914f452f7e453a64a64a23b19353961c9edd0",
+      "source_sha256": "3867ab857fe439c62c2c8cbaae2914f452f7e453a64a64a23b19353961c9edd0",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/pyproject.toml",
+      "baseline_sha256": "8986333293755c7f863f3a160be0bf166f21ace814699d23a50d032ce5d3af8c",
+      "source_sha256": "8986333293755c7f863f3a160be0bf166f21ace814699d23a50d032ce5d3af8c",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/__init__.py",
+      "baseline_sha256": "47a4bcca3d74467a825c6ee7f5f920e57d0e139a76304ad905131464d5f4e1a7",
+      "source_sha256": "47a4bcca3d74467a825c6ee7f5f920e57d0e139a76304ad905131464d5f4e1a7",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/allowlist.py",
+      "baseline_sha256": "225f005792349178875ee3715141a26a0f43ea05f9b2d083428a689475f798ea",
+      "source_sha256": "225f005792349178875ee3715141a26a0f43ea05f9b2d083428a689475f798ea",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/client.py",
+      "baseline_sha256": "5b163ee73c4caceb4ef5349f94b2d73d209b8acea5447dcc5855bf1c159c2157",
+      "source_sha256": "5b163ee73c4caceb4ef5349f94b2d73d209b8acea5447dcc5855bf1c159c2157",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/configuration.py",
+      "baseline_sha256": "3478c7e6cfe57ccee6f505762419241c2fe4ea20e1a1bd8a1c7ca16da7181d82",
+      "source_sha256": "3478c7e6cfe57ccee6f505762419241c2fe4ea20e1a1bd8a1c7ca16da7181d82",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/contracts/trading212-read-allowlist.yaml",
+      "baseline_sha256": "36aa7afbbeb416bfeaca4efda31bc52983bcbeaab93aea906fa43204cf12a284",
+      "source_sha256": "36aa7afbbeb416bfeaca4efda31bc52983bcbeaab93aea906fa43204cf12a284",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/credentials.py",
+      "baseline_sha256": "6bb36ba5fa5dcf4ff0e4b53b2a63f1ccbfe99cfc8dc17ac566b06523f3a12d7f",
+      "source_sha256": "6bb36ba5fa5dcf4ff0e4b53b2a63f1ccbfe99cfc8dc17ac566b06523f3a12d7f",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/errors.py",
+      "baseline_sha256": "470f6ad88c94a5a02fd8293c4b41629655256b25965db539cdd6cfa5309eda16",
+      "source_sha256": "470f6ad88c94a5a02fd8293c4b41629655256b25965db539cdd6cfa5309eda16",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/ingestion_adapter.py",
+      "baseline_sha256": "d22cdb7853596965fca55833f806781012c9c8819c13ec9fa1453ce0a9ea86b9",
+      "source_sha256": "d22cdb7853596965fca55833f806781012c9c8819c13ec9fa1453ce0a9ea86b9",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/models.py",
+      "baseline_sha256": "d56cfd0d430dfbb1518e0b2c65ca2842d0d696b82e172aa1d0da55fe01deb192",
+      "source_sha256": "d56cfd0d430dfbb1518e0b2c65ca2842d0d696b82e172aa1d0da55fe01deb192",
+      "byte_identical": true
+    },
+    {
+      "file": "scripts/run_api_backed_e2e.py",
+      "baseline_sha256": "dcc6fc44e2d3e62d321e541c103117795fe8683466581b71fe2e9c2340d3a2fe",
+      "source_sha256": "dcc6fc44e2d3e62d321e541c103117795fe8683466581b71fe2e9c2340d3a2fe",
+      "byte_identical": true
+    }
+  ],
+  "legacy_typescript_index_preserved_as_exact_prefix": true,
+  "mcp_tool_count": 15,
+  "preserved_mcp_descriptors": [
+    "get_account_summary",
+    "get_portfolio_snapshot",
+    "list_positions",
+    "list_recent_transactions",
+    "get_dividend_summary",
+    "get_direct_allocation",
+    "compare_portfolio_snapshots",
+    "get_reconciliation_status",
+    "get_data_quality_summary",
+    "list_virtual_pies",
+    "get_virtual_pie",
+    "get_actual_vs_target",
+    "get_drift_analysis",
+    "get_contribution_plan",
+    "create_contribution_plan"
+  ],
+  "mcp_descriptor_sha256": "944b75aaf379a4438442e24cdc3fc2d38044ebaca6a069e9748d558502dc4384",
+  "mcp_comparison_method": "Both reviewed server blobs were registered using the current pinned dependencies and unchanged MCP modules; no tool invocation or provider/database dispatch occurred.",
+  "broker_allowlist_capabilities": [
+    {
+      "capability": "account_summary",
+      "method": "GET",
+      "path": "/equity/account/summary"
+    },
+    {
+      "capability": "metadata_instruments",
+      "method": "GET",
+      "path": "/equity/metadata/instruments"
+    },
+    {
+      "capability": "metadata_exchanges",
+      "method": "GET",
+      "path": "/equity/metadata/exchanges"
+    },
+    {
+      "capability": "portfolio_positions",
+      "method": "GET",
+      "path": "/equity/positions"
+    },
+    {
+      "capability": "pending_orders",
+      "method": "GET",
+      "path": "/equity/orders"
+    },
+    {
+      "capability": "order_detail",
+      "method": "GET",
+      "path": "/equity/orders/{order_id}",
+      "path_parameters": {
+        "order_id": {
+          "type": "provider_identifier",
+          "required": true
+        }
+      }
+    },
+    {
+      "capability": "historical_orders",
+      "method": "GET",
+      "path": "/equity/history/orders"
+    },
+    {
+      "capability": "historical_transactions",
+      "method": "GET",
+      "path": "/equity/history/transactions"
+    },
+    {
+      "capability": "historical_dividends",
+      "method": "GET",
+      "path": "/equity/history/dividends"
+    },
+    {
+      "capability": "historical_exports",
+      "method": "GET",
+      "path": "/equity/history/exports"
+    }
+  ],
+  "broker_methods": [
+    "GET"
+  ],
+  "collection_quota_implementation_ast_unchanged": true,
+  "browser_isolation": {
+    "configuration_code_unchanged_except_comment": true,
+    "package_changes_only_test_e2e_command": true,
+    "runner_file": "scripts/run_api_browser_suites.mjs",
+    "runner_sha256": "78a41886c9315ce8dfc6990603d92ebb4f71e9a4c3b9b87fffef5ca88cceb902",
+    "scope": "Each discovered spec and viewport runs in a separate process using the unchanged disposable-database fixture; retries, quotas and TTL are unchanged."
+  },
+  "collection_registry_note": "Only additive resource/sort/optional-account registry entries are excluded from the shared collection AST comparison. All quota, expiry, cursor and membership implementation remains equal.",
+  "limitations": [
+    "A source compatibility comparison is not runtime, test execution, CI or external-provider acceptance.",
+    "Current dependency environment is shared by both in-process descriptor registrations; this is not a separate historical dependency installation."
+  ]
+}

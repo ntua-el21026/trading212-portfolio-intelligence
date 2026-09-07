@@ -41,14 +41,22 @@ restarting all seven services. Migration head is `20260907_0010`; MCP has 15 too
 Trading 212 remains ten GET capabilities. The initial candidate's failed quality
 run `34144309940` is retained separately; the browser database isolation fix is
 included in the accepted SHA. See [the P2-02 evidence](docs/implementation/evidence/phase-2-p2-02-f78c9d2.json).
-Phase 2 now has two of ten packages, six of 29 local rows and eleven of 40
-scenarios complete (20%). P2-03 is `implemented_unverified` from synchronized starting SHA
-`c9adba4f427cdbee1ebce7fbbb9425d1061c8146`; all three CI workflows for that
-P2-02 evidence commit passed. Its isolated adapters, 26 normalized source tables
-under migration `20260907_0011`, fourteen fixed HTTP operations, source browser
-and benchmark editor are implemented.
-P2-03 still requires exact committed-SHA validation, CI and fresh-runtime acceptance;
-no acceptance claim is made yet. P2-04 through P2-10 remain required.
+P2-03 reference sources are **complete** at
+`e258f54bb03a958f7847b310ee882b7f4a54686f`. Exact validation passed 1,004 isolated and
+156 PostgreSQL/migration Python tests, 145 web unit tests, 56 browser tests and
+88% combined coverage with branch measurement. All three CI workflows and eight
+source/history/image security scans passed. The fresh Compose runtime exercised
+all fourteen source HTTP operations, exact observation/database parity, immutable
+benchmark history, old cursor continuation and a full seven-service restart.
+The retained evidence distinguishes two unsuccessful harness attempts from the
+corrected fresh acceptance: reissued cursor timestamps, then shared pagination
+capacity exhausted by repeated earlier-package checks. The production source
+and 64-view quota did not change.
+Migration head is `20260907_0011`; MCP remains 15 tools and Trading 212 ten GET
+capabilities. See [the P2-03 evidence](docs/implementation/evidence/phase-2-p2-03-e258f54.json).
+Phase 2 now has three of ten packages, eight of 29 local rows and twelve of 40
+scenarios complete (30%). P2-04 through P2-10 and shared release predicates remain
+required. Real reference provider configuration/licensing remain unavailable.
 Phase 3 remains `not_started`.
 
 ## Previously accepted baseline
@@ -87,7 +95,7 @@ than fabricated.
 
 ## Next action
 
-Implement P2-03 market, FX and benchmark sources, then P2-04 through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+Implement P2-04 historical performance and income intelligence, then P2-05 through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo

@@ -1,9 +1,10 @@
 # P2-03 Market, FX and Benchmark Sources
 
-P2-03 is `implemented_unverified` from synchronized `main` starting SHA
-`c9adba4f427cdbee1ebce7fbbb9425d1061c8146`. Its preceding P2-02 evidence commit
-passed documentation, security and quality CI. This document records the current
-implementation and verification scope, not an acceptance or release claim.
+P2-03 is **complete** at `e258f54bb03a958f7847b310ee882b7f4a54686f`, from
+synchronized `main` starting SHA `c9adba4f427cdbee1ebce7fbbb9425d1061c8146`.
+The [assertion map](evidence/phase-2-p2-03-e258f54.json) binds P2-03,
+P2-SRC-001, P2-SRC-002 and P2-S13 to observed exact-commit acceptance. The complete
+Phase 2 release and shared predicates remain pending.
 
 The [execution manifest](PHASE_2_EXECUTION_MANIFEST.md),
 [source ADR](../adr/ADR-0012-MARKET-SOURCE-SNAPSHOTS.md),
@@ -110,11 +111,36 @@ time and request identities make repeated seeding reproducible. No broker econom
 are rewritten by source ingestion. The external reference provider is explicitly
 unconfigured, while local replay data remains usable.
 
-## Acceptance still required
+## Observed acceptance
 
-Focused domain, policy, parser/replay, API/client, browser-form and PostgreSQL
-checks are being run during implementation. Package acceptance still requires
-the complete gate, independent review, exact pushed implementation SHA, successful
-CI, fresh container runtime and restart evidence, security/privacy checks and
-portable assertion records. P2-03 is not complete until those records are retained.
-P2-04 through P2-10 remain required. Phase 3 remains not started.
+`COMPOSE_PROJECT_NAME=t212pi_stage_a_20260907 make validate` passed from a clean
+checkout at the accepted SHA and left it clean: 1,004 isolated Python tests,
+156 PostgreSQL/migration tests, 145 web unit tests, 36 synthetic and 20 API-backed
+browser tests, and 88% combined coverage with branch measurement. A separate
+observed Hypothesis run passed 140 generated cases with no failing/invalid cases.
+All three exact-SHA CI workflows passed on attempt one.
+
+The [runtime record](evidence/phase-2-p2-03-e258f54-runtime.json) retains the
+fresh stack, repeated idempotent seed, activation, one global plan with Redis-loss recovery,
+all fourteen source HTTP operations, exact price/FX/benchmark observation parity,
+immutable benchmark history and original-cursor continuation through a full
+seven-service stop/restart. The first runtime harness attempt stopped before
+shutdown because it compared newly issued signed cursor bytes. The second attempt
+passed cursor checks but exceeded the 64-view quota while repeating the full
+earlier-package journeys. Both failed logs are retained. The accepted fresh
+journey authenticates stable cursor payloads, submits original opaque tokens and
+retains all new source checks while limiting the planning regression to one
+immutable global plan. Comprehensive four-mode coverage remains in the accepted
+P2-02 evidence and full exact suite. No production code, quota or expiry policy changed.
+
+The [security record](evidence/phase-2-p2-03-e258f54-security.json) binds complete-history
+Gitleaks, Trivy source and six immutable-image scans to the clean build. All eight
+passed. Post-build canary scanning passed across twelve contract/web/test/screenshot
+paths. Desktop/mobile source and benchmark views were visually inspected.
+The [compatibility record](evidence/phase-2-p2-03-e258f54-compatibility.json) proves
+all 46 previously accepted HTTP operations, 98 schemas, 15 MCP descriptors and
+ten fixed GET broker capabilities remain unchanged.
+
+Acceptance is synthetic/local. Real licensed providers, Demo credentials and
+deployment/OAuth remain separately unavailable. P2-04 through P2-10 and shared
+P2-S14/P2-S36 predicates remain required. Phase 3 remains not started.

@@ -2,18 +2,20 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 and P2-02 complete
+**Implementation acceptance:** In progress; P2-01 through P2-03 complete
 
 **Target release:** `0.2.0`
 
 **P2-01 evidence SHA:** `ecc75154397c8f9d7532fa2df8576846b60bae7c`
 
-**P2-02 evidence SHA:** `f78c9d2917c3ce8c93f9ae5631390c59616abc82`; final Phase 2 release SHA pending
+**P2-02 evidence SHA:** `f78c9d2917c3ce8c93f9ae5631390c59616abc82`
+
+**P2-03 evidence SHA:** `e258f54bb03a958f7847b310ee882b7f4a54686f`; final Phase 2 release SHA pending
 
 The owner assignment authorizes P2-01 through P2-10 after corrected Phase 1
 acceptance at `99df47b6633791c3900a52f46f56d48be922a436`. That SHA proves Stage A;
 it does not prove any Phase 2 behavior. The design contract is accepted while
-P2-01 and P2-02 have passed their scoped acceptance; later and shared predicates remain `pending`.
+P2-01 through P2-03 have passed their scoped acceptance; later and shared predicates remain `pending`.
 
 ## Evidence and state rules
 
@@ -41,8 +43,8 @@ gates, and final release evidence. A design commit cannot close a runtime row.
 | P2-OPT-001 | P2-02 | Actual-versus-target and drift use immutable target/portfolio references and disclose cash, hierarchy, unmatched exposure, currency, methodology and coverage. | 6, 34, 38 | `complete` |
 | P2-OPT-002 | P2-02 | Global, hierarchical, restricted and explicit cash-only planning conserve the contribution, prohibit sales, obey hard constraints and produce deterministic residual cash. | 7, 8, 9, 11 | `complete` |
 | P2-OPT-003 | P2-02 | Hand-calculated and exhaustive bounded reference cases validate objective/tie-breaks; infeasibility and degraded inputs remain structured; immutable plans and concurrent safe retries never call a broker. | 10, 11, 12, 37 | `complete` |
-| P2-SRC-001 | P2-03 | Typed price/FX/benchmark/metadata adapters provide fixed trusted origins, bounded parsing/retries and isolated egress; deterministic replay works without external credentials. | 13, 14, 36, 37 | `pending` |
-| P2-SRC-002 | P2-03 | Immutable sources preserve time, currency, revisions, gaps, corporate-action basis, provenance/license/export policy and cutoff-safe FX precedence. | 13, 14, 18, 38 | `pending` |
+| P2-SRC-001 | P2-03 | Typed price/FX/benchmark/metadata adapters provide fixed trusted origins, bounded parsing/retries and isolated egress; deterministic replay works without external credentials. | 13, 14, 36, 37 | `complete` |
+| P2-SRC-002 | P2-03 | Immutable sources preserve time, currency, revisions, gaps, corporate-action basis, provenance/license/export policy and cutoff-safe FX precedence. | 13, 14, 18, 38 | `complete` |
 | P2-PERF-001 | P2-04 | TWR, MWR and Modified Dietz follow frozen methods, correct external-flow treatment, explicit unavailable roots/coverage and no browser/model financial computation. | 15, 16, 18 | `pending` |
 | P2-PERF-002 | P2-04 | Benchmark composition, calendars/currency alignment, excess/rolling metrics and attribution reconcile to total plus disclosed residual without invented precision. | 15, 17, 18, 34 | `pending` |
 | P2-INC-001 | P2-04 | Dividend/income, fees/taxes and cash-flow views retain original currencies and sourced conversion; purchases/sales are not investment gain. | 16, 19, 34 | `pending` |
@@ -107,3 +109,16 @@ binds source/history and six image scans to that clean build. The [earlier faile
 CI candidate](evidence/phase-2-p2-02-5fa43b2-failed-quality.json) remains unaccepted.
 P2-S12 has a passing broker-transport spy for the planning path; its shared P2-09
 predicate remains pending. Later packages and full-release acceptance remain required.
+
+## P2-03 observed evidence
+
+P2-03, P2-SRC-001, P2-SRC-002 and P2-S13 passed at
+`e258f54bb03a958f7847b310ee882b7f4a54686f`. The [assertion map](evidence/phase-2-p2-03-e258f54.json),
+[fresh runtime record](evidence/phase-2-p2-03-e258f54-runtime.json),
+[security scans](evidence/phase-2-p2-03-e258f54-security.json) and
+[compatibility comparison](evidence/phase-2-p2-03-e258f54-compatibility.json) retain actual
+local/CI results, exact synthetic observations, immutable history, cursor reuse
+and seven-service restart. The two failed harness attempts (cursor issue-time comparison and aggregate
+pagination capacity) are retained separately from the corrected fresh runtime. Three packages, eight
+local rows and twelve scenarios are complete; P2-S14/P2-S36 and later/shared
+predicates remain pending. Phase 3 remains `not_started`.

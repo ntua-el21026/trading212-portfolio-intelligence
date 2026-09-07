@@ -49,7 +49,7 @@ API, web, workers, reports, and MCP tools share the same canonical domain, autho
 | Phase | Release | Outcome | Status |
 |---|---:|---|---|
 | 1. Trusted Foundation | `0.1.0` | Monorepo, domain/persistence, GET-only Trading 212 ingestion, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, CI and operations | Implementation complete; 24 local acceptance rows complete; external gates remain |
-| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 and P2-02 complete, 2/10 packages |
+| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 through P2-03 complete, 3/10 packages |
 | 3. Premium Intelligence & Productization | `1.0.0` | Advanced risk/scenarios/projections/goals, research cockpit, rich ChatGPT UI, PWA polish, premium providers and production hardening | Not started |
 
 ## Phase 1 technical baseline
@@ -90,7 +90,7 @@ durable manual contribution plans with immutable revision history. See the
 The same synthetic seed also registers market, FX and benchmark sources through
 their typed ingestion service. The connected `/sources` area exposes observations,
 coverage, licensing and immutable benchmark definitions. Real reference providers
-remain unconfigured. [P2-03 implementation and pending acceptance](docs/implementation/P2_03_REFERENCE_SOURCES.md)
+remain unconfigured. [P2-03 implementation and exact-SHA acceptance](docs/implementation/P2_03_REFERENCE_SOURCES.md)
 records this increment's evidence boundary.
 
 ## Documentation entry point
