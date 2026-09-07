@@ -10,6 +10,7 @@ from pathlib import Path
 
 from trading212_api.main import create_app
 from trading212_api_contracts.typescript import (
+    render_historical_client,
     render_planning_client,
     render_source_client,
     render_target_client,
@@ -21,6 +22,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/openapi/phase1-v1.json"
 TARGET_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/targets.generated.ts"
 PLANNING_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/planning.generated.ts"
+HISTORICAL_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/historical.generated.ts"
 SOURCE_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/sources.generated.ts"
 
 
@@ -55,6 +57,7 @@ def main() -> int:
         (TARGET_OUTPUT, render_target_client),
         (PLANNING_OUTPUT, render_planning_client),
         (SOURCE_OUTPUT, render_source_client),
+        (HISTORICAL_OUTPUT, render_historical_client),
     ):
         clients[output] = subprocess.run(  # noqa: S603
             [*package_manager, "exec", "prettier", "--stdin-filepath", str(output)],

@@ -24,6 +24,7 @@ export interface BoundedTransportPolicy {
   errors: Readonly<Record<string, string>>;
   fallbackCode: string;
   error: (code: string, status: number, message: string) => Error;
+  readTimeoutMs?: number;
 }
 
 const errorSchema = z.object({
@@ -87,7 +88,18 @@ export class BoundedTransport {
   constructor(
     private readonly options: BoundedClientOptions,
     private readonly policy: BoundedTransportPolicy,
-  ) {}
+  ) {
+    if (
+      policy.readTimeoutMs !== undefined &&
+      (!Number.isInteger(policy.readTimeoutMs) ||
+        policy.readTimeoutMs < 1 ||
+        policy.readTimeoutMs > 30_000)
+    ) {
+      throw new RangeError(
+        "Read timeout must be an integer between 1 and 30000 ms.",
+      );
+    }
+  }
 
   async request<T>(
     method: string,
@@ -135,7 +147,9 @@ export class BoundedTransport {
       body: serialized,
       cache: "no-store",
       redirect: "error",
-      signal: AbortSignal.timeout(8_000),
+      signal: AbortSignal.timeout(
+        method === "GET" ? (policy.readTimeoutMs ?? 8_000) : 8_000,
+      ),
     });
     const etag = response.headers.get("etag");
     if (response.status === 304) return { data: null, etag, notModified: true };

@@ -24,6 +24,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base, CreatedAtMixin, UpdatedAtMixin, UUIDPrimaryKeyMixin
+from .historical_models import HISTORICAL_MODELS
 from .planning_models import PLANNING_MODELS
 from .source_models import SOURCE_MODELS
 from .target_models import TARGET_MODELS
@@ -344,10 +345,13 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "'positions_weight','positions_ticker','portfolios_name','portfolios_updated',"
             "'target_versions','target_events','target_nodes','contribution_plans',"
             "'plan_lines','actual_target_rows','plan_revisions',"
-            "'market_source_status','benchmark_source_status','fx_source_status','price_observations','fx_observations','benchmark_observations','benchmark_defs_name','benchmark_defs_created','benchmark_versions')",
+            "'market_source_status','benchmark_source_status','fx_source_status','price_observations','fx_observations','benchmark_observations','benchmark_defs_name','benchmark_defs_created','benchmark_versions','historical_performance','historical_cash_flows','composite_benchmark_points')",
             name="resource_allowed",
         ),
         CheckConstraint(
+            "(resource IN "
+            "('historical_performance','historical_cash_flows','composite_benchmark_points') "
+            "AND sort_specification = 'ordinal_asc') OR "
             "(resource = 'activity' AND "
             "sort_specification = 'occurred_at_desc_id_desc') OR "
             "(resource = 'dividends' AND "
@@ -392,11 +396,13 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         CheckConstraint(
             "((resource IN ('activity','dividends','positions_market_value',"
             "'positions_weight','positions_ticker','contribution_plans','plan_lines',"
-            "'actual_target_rows','plan_revisions') AND broker_account_id IS NOT NULL) OR "
+            "'actual_target_rows','plan_revisions','historical_performance',"
+            "'historical_cash_flows') "
+            "AND broker_account_id IS NOT NULL) OR "
             "(resource = 'instruments' AND broker_account_id IS NULL) OR "
             "resource IN ('portfolios_name','portfolios_updated','target_versions',"
             "'target_events','target_nodes',"
-            "'market_source_status','benchmark_source_status','fx_source_status','price_observations','fx_observations','benchmark_observations','benchmark_defs_name','benchmark_defs_created','benchmark_versions'))",
+            "'market_source_status','benchmark_source_status','fx_source_status','price_observations','fx_observations','benchmark_observations','benchmark_defs_name','benchmark_defs_created','benchmark_versions','composite_benchmark_points'))",
             name="account_scope_match",
         ),
         CheckConstraint(
@@ -427,7 +433,7 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     )
 
     schema_version: Mapped[int] = mapped_column(Integer, nullable=False)
-    resource: Mapped[str] = mapped_column(String(24), nullable=False)
+    resource: Mapped[str] = mapped_column(String(40), nullable=False)
     owner_id: Mapped[UUID] = mapped_column(
         ForeignKey("owners.id", ondelete="CASCADE"), nullable=False
     )
@@ -1074,4 +1080,5 @@ ALL_MODELS = (
     *TARGET_MODELS,
     *PLANNING_MODELS,
     *SOURCE_MODELS,
+    *HISTORICAL_MODELS,
 )

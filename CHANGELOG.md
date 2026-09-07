@@ -4,6 +4,17 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Phase 2 historical intelligence
+
+- Add immutable historical captures, dated activity/opening evidence and five
+  exact calculation families for performance, benchmarks, attribution, income
+  and cash flows, with restated and point-in-time source selection.
+- Expose six additive HTTP reads, four bounded MCP reads and connected performance
+  and income pages with capture replay, filters, charts and accessible tables.
+- Add separate annual and timely synthetic histories, normalized calculation
+  provenance, composite benchmark views and bounded licensed-payload cleanup.
+  P2-04 acceptance remains pending its exact-source validation and runtime gates.
+
 ### Phase 2 reference sources
 
 - Add isolated typed synthetic reference adapters for raw, split-adjusted and

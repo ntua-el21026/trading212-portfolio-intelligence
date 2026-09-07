@@ -216,6 +216,31 @@ from job execution state. A feasible result must prove exact
 must satisfy every hard constraint. No plan line is an order, executable broker
 instruction, or predicted return.
 
+Historical intelligence extends the existing analytical run and source tables.
+An immutable input capture retains normalized opening positions/cash, independent
+reconciliation and bridge evidence, candidate economic revisions, exact per-source
+calendar/mapping/license versions and selected observation uses. Candidate broker
+facts come from minimized immutable source records and occurrences; current
+transaction/dividend/ledger projections may change and cannot serve as replay
+inputs. An individual execution has the economic identity `(order.id, fill.id)`;
+an order without a proven fill is not an execution.
+
+Historical policy and evidence registration are fixed internal owner-authorized
+operations, not public arbitrary-data commands. They retain actual receipt time
+separately from economic validity. A narrow sector/asset-class evidence projection
+may support historical attribution before the full entity/look-through catalog;
+it carries taxonomy/version, validity, first knowledge, license and source links.
+It never infers classification from an instrument name or wrapper type.
+
+Publication seals the full capture/result bytes and normalized child rows in one
+transaction. Canonical financial digests exclude generated row/run IDs and actual
+capture/calculation clocks, while including input-affecting source identities,
+knowledge times and policies. Repeated equivalent requests reuse that immutable
+identity. Every dependent source is owner-bound and reauthorized on replay;
+permitted retained hashes do not establish that deleted licensed data remains
+reproducible. Composite benchmark wealth uses the explicit composite branch and
+normalized component/FX/license dependencies, with no invented provider/license.
+
 ## 4. Market, FX, benchmark, and classification sources
 
 | Table | Required content and relational constraints |

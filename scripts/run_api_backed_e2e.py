@@ -38,7 +38,7 @@ from trading212_persistence.models import SourceRecordModel, TransactionModel
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 from trading212_worker.plan_tasks import dispatch_plans_once, execute_plan_message
 from trading212_worker.scenarios import persist_quantity_cash_mismatch_scenario
-from trading212_worker.seed import SEED_TIME, seed_materialized_synthetic
+from trading212_worker.seed import SEED_TIME, seed_complete_synthetic, seed_materialized_synthetic
 
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 _DEFAULT_DATABASE_URL = "postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio"
@@ -234,11 +234,15 @@ def _exit_fixture(signum: int, frame: FrameType | None) -> NoReturn:
 
 
 def _serve_fixture(database_url: str) -> None:
+    historical = os.environ.get("T212PI_E2E_HISTORICAL", "0")
+    if historical not in {"0", "1"}:
+        raise RuntimeError("The historical browser fixture selector must be 0 or 1.")
     migration_config = Config(str(_REPOSITORY_ROOT / "alembic.ini"))
     migration_config.set_main_option("script_location", str(_REPOSITORY_ROOT / "migrations"))
     migration_config.set_main_option("sqlalchemy.url", database_url)
     command.upgrade(migration_config, "head")
-    asyncio.run(seed_materialized_synthetic(database_url, app_environment="test"))
+    seed = seed_complete_synthetic if historical == "1" else seed_materialized_synthetic
+    asyncio.run(seed(database_url, app_environment="test"))
 
     engine = create_database_engine(database_url)
     identity = build_synthetic_identity()

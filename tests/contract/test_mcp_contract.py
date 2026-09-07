@@ -33,7 +33,7 @@ async def test_tool_discovery_is_exact_typed_bounded_and_annotated() -> None:
     tools = await runtime.server.list_tools()
 
     assert tuple(tool.name for tool in tools) == FROZEN_TOOL_NAMES
-    assert len(tools) == 15
+    assert len(tools) == 19
     for tool in tools:
         descriptor = tool.model_dump(mode="json", by_alias=True, exclude_none=True)
         assert descriptor["inputSchema"]["type"] == "object"
@@ -69,7 +69,7 @@ async def test_python_sdk_security_scheme_upstream_gate_is_explicit() -> None:
 
 
 @pytest.mark.contract
-async def test_snapshot_widget_is_preserved_and_only_declared_plan_tools_add_resources() -> None:
+async def test_snapshot_widget_is_preserved_and_only_declared_tools_add_resources() -> None:
     runtime = create_runtime(security_settings=_test_settings())
     descriptors = {
         tool.name: tool.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -87,6 +87,8 @@ async def test_snapshot_widget_is_preserved_and_only_declared_plan_tools_add_res
             "get_portfolio_snapshot",
             "get_contribution_plan",
             "create_contribution_plan",
+            "get_performance_summary",
+            "get_benchmark_comparison",
         }:
             assert "ui" not in descriptor["_meta"]
             assert "openai/outputTemplate" not in descriptor["_meta"]

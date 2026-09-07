@@ -35,9 +35,9 @@ async def test_four_tools_have_exact_scopes_annotations_and_no_future_registry_p
         )
     ).server
     tools = await server.list_tools()
-    assert len(tools) == 15 and tuple(tool.name for tool in tools[-4:]) == NAMES
+    assert len(tools) == 19 and tuple(tool.name for tool in tools[11:15]) == NAMES
     assert "generate_portfolio_report" not in {tool.name for tool in tools}
-    for tool in tools[-4:]:
+    for tool in tools[11:15]:
         descriptor = tool.model_dump(mode="json", by_alias=True, exclude_none=True)
         assert descriptor["annotations"] == {
             "readOnlyHint": tool.name != "create_contribution_plan",

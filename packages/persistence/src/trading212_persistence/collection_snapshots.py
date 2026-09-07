@@ -56,6 +56,9 @@ class CollectionSnapshotResource(StrEnum):
     BENCHMARK_DEFINITIONS_NAME = "benchmark_defs_name"
     BENCHMARK_DEFINITIONS_CREATED = "benchmark_defs_created"
     BENCHMARK_VERSIONS = "benchmark_versions"
+    HISTORICAL_PERFORMANCE = "historical_performance"
+    HISTORICAL_CASH_FLOWS = "historical_cash_flows"
+    COMPOSITE_BENCHMARK_POINTS = "composite_benchmark_points"
     ACTIVITY = "activity"
     DIVIDENDS = "dividends"
     INSTRUMENTS = "instruments"
@@ -65,6 +68,9 @@ class CollectionSnapshotResource(StrEnum):
 
 
 _SORT_SPECIFICATIONS = {
+    CollectionSnapshotResource.HISTORICAL_PERFORMANCE: "ordinal_asc",
+    CollectionSnapshotResource.HISTORICAL_CASH_FLOWS: "ordinal_asc",
+    CollectionSnapshotResource.COMPOSITE_BENCHMARK_POINTS: "ordinal_asc",
     CollectionSnapshotResource.MARKET_SOURCE_STATUS: "source_key_asc_id_asc",
     CollectionSnapshotResource.BENCHMARK_SOURCE_STATUS: "source_key_asc_id_asc",
     CollectionSnapshotResource.FX_SOURCE_STATUS: "base_quote_provider_asc",
@@ -96,6 +102,7 @@ _SORT_SPECIFICATIONS = {
 }
 _OPTIONAL_ACCOUNT_RESOURCES = frozenset(
     {
+        CollectionSnapshotResource.COMPOSITE_BENCHMARK_POINTS,
         CollectionSnapshotResource.MARKET_SOURCE_STATUS,
         CollectionSnapshotResource.BENCHMARK_SOURCE_STATUS,
         CollectionSnapshotResource.FX_SOURCE_STATUS,
@@ -114,6 +121,8 @@ _OPTIONAL_ACCOUNT_RESOURCES = frozenset(
 )
 _ACCOUNT_RESOURCES = frozenset(
     {
+        CollectionSnapshotResource.HISTORICAL_PERFORMANCE,
+        CollectionSnapshotResource.HISTORICAL_CASH_FLOWS,
         CollectionSnapshotResource.CONTRIBUTION_PLANS,
         CollectionSnapshotResource.PLAN_REVISIONS,
         CollectionSnapshotResource.PLAN_LINES,

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
+  SourceApiError,
   type PriceSnapshotHeader,
   type FxSnapshotHeader,
   type BenchmarkSnapshotHeader,
@@ -8,6 +9,7 @@ import {
 } from "@trading212/api-contracts";
 import { Notice, Surface } from "@trading212/ui";
 import { PageHeader } from "../../../../../../components/page-header";
+import { CompositeSourceDetails } from "../../../../../../components/composite-source-details";
 import { CollectionPagination } from "../../../../../../components/collection-pagination";
 import {
   SourceLicenseDetails,
@@ -59,6 +61,19 @@ export default async function SourceSnapshotPage({
       const result = sourceData(
         await sources.get_benchmark_snapshot(snapshotId, details),
       );
+      if ("inputs" in result) {
+        const observations = sourceData(
+          await sources.list_benchmark_observations(snapshotId, pageQuery),
+        );
+        if (!("kind" in observations) || observations.kind !== "composite") {
+          throw new SourceApiError(
+            "INVALID_RESPONSE",
+            502,
+            "The composite observations do not match their header.",
+          );
+        }
+        return { type: "composite" as const, header: result, observations };
+      }
       header = result;
       series = result.series;
     } else {
@@ -76,11 +91,27 @@ export default async function SourceSnapshotPage({
           : sourceData(
               await sources.list_benchmark_observations(snapshotId, pageQuery),
             );
-    return { header, series, observations };
+    if ("kind" in observations) {
+      throw new SourceApiError(
+        "INVALID_RESPONSE",
+        502,
+        "The source observations do not match their header.",
+      );
+    }
+    return { type: "provider" as const, header, series, observations };
   });
   if (!result.ok) {
     if (result.code === "NOT_FOUND") notFound();
     return <Notice title="Source data is unavailable">{result.message}</Notice>;
+  }
+  if (result.data.type === "composite") {
+    return (
+      <CompositeSourceDetails
+        header={result.data.header}
+        observations={result.data.observations}
+        accountId={accountId}
+      />
+    );
   }
   const { header, series, observations } = result.data;
   return (
@@ -135,27 +166,35 @@ export default async function SourceSnapshotPage({
               </tr>
             </thead>
             <tbody>
-              {observations.items.map((row, index) => (
-                <tr key={index}>
-                  <td>{row.session_date}</td>
-                  <td>{formatDateTime(row.effective_at)}</td>
-                  <td className="numeric">
-                    {"rate" in row
-                      ? (row.rate ?? "Unavailable")
-                      : "value" in row
-                        ? (row.value ?? "Unavailable")
-                        : (row.level ?? "Unavailable")}
-                  </td>
-                  <td>
-                    {"base" in row
-                      ? `${row.base}/${row.quote}`
-                      : series
-                        ? series.currency
-                        : "Unavailable"}
-                  </td>
-                  <td>{titleCase(row.state ?? "unavailable")}</td>
-                </tr>
-              ))}
+              {observations.items.map((row, index) => {
+                if ("wealth" in row)
+                  throw new SourceApiError(
+                    "INVALID_RESPONSE",
+                    502,
+                    "The source observation kind differs from its header.",
+                  );
+                return (
+                  <tr key={index}>
+                    <td>{row.session_date}</td>
+                    <td>{formatDateTime(row.effective_at)}</td>
+                    <td className="numeric">
+                      {"rate" in row
+                        ? (row.rate ?? "Unavailable")
+                        : "value" in row
+                          ? (row.value ?? "Unavailable")
+                          : (row.level ?? "Unavailable")}
+                    </td>
+                    <td>
+                      {"base" in row
+                        ? `${row.base}/${row.quote}`
+                        : series
+                          ? series.currency
+                          : "Unavailable"}
+                    </td>
+                    <td>{titleCase(row.state ?? "unavailable")}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

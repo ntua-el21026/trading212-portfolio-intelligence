@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from decimal import ROUND_HALF_EVEN, Context, Decimal, DecimalException, localcontext
@@ -39,6 +42,38 @@ from trading212_domain.sources import (
     source_tuple,
 )
 
+# Historical reconstruction selects many observations from the same immutable
+# snapshot. Keep its independently computed digest only for one calculation;
+# never retain licensed payloads in a process-global memoization cache.
+_DIGEST_SCOPE: ContextVar[dict[int, tuple[SourceSnapshot, str]] | None] = ContextVar(
+    "source_selection_digest_scope", default=None
+)
+
+
+@contextmanager
+def _source_digest_scope() -> Iterator[None]:
+    if _DIGEST_SCOPE.get() is not None:
+        yield
+        return
+    token = _DIGEST_SCOPE.set({})
+    try:
+        yield
+    finally:
+        _DIGEST_SCOPE.reset(token)
+
+
+def _snapshot_digest(snapshot: SourceSnapshot) -> str:
+    cache = _DIGEST_SCOPE.get()
+    if cache is None:
+        return source_snapshot_digest(snapshot)
+    cached = cache.get(id(snapshot))
+    if cached is not None and cached[0] is snapshot:
+        return cached[1]
+    result = source_snapshot_digest(snapshot)
+    if len(cache) < 256:
+        cache[id(snapshot)] = (snapshot, result)
+    return result
+
 
 @dataclass(frozen=True, slots=True)
 class _Candidate:
@@ -57,7 +92,7 @@ class _Candidate:
     def reference(self) -> SelectedSource:
         return SelectedSource(
             snapshot_id=self.snapshot.id,
-            content_digest=source_snapshot_digest(self.snapshot),
+            content_digest=_snapshot_digest(self.snapshot),
             provider_id=self.snapshot.provenance.provider_id,
             license_version_id=self.snapshot.provenance.license_version_id,
             observation_index=self.index,

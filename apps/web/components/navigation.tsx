@@ -10,6 +10,7 @@ import {
   RefreshCw,
   Settings,
   ShieldCheck,
+  TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -27,6 +28,8 @@ const primaryItems = [
   { href: "/drift", icon: ChartPie, label: "Drift" },
   { href: "/planner", icon: CircleDollarSign, label: "Planner" },
   { href: "/sources", icon: ShieldCheck, label: "Sources" },
+  { href: "/performance", icon: TrendingUp, label: "Performance" },
+  { href: "/income", icon: CircleDollarSign, label: "Income" },
 ] as const;
 
 const secondaryItems = [

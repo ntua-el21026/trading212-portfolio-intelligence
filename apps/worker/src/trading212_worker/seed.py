@@ -11,6 +11,7 @@ from trading212_domain import build_synthetic_identity
 from trading212_persistence import create_database_engine, create_session_factory
 from trading212_persistence.seed import seed_synthetic
 
+from .historical_seed import seed_historical_scenarios
 from .materializer import PostgresCanonicalMaterializer
 from .postgres_store import PostgresIngestionStore
 from .source_seed import seed_source_scenarios
@@ -52,13 +53,25 @@ async def seed_materialized_synthetic(database_url: str, *, app_environment: str
         engine.dispose()
 
 
+async def seed_complete_synthetic(database_url: str, *, app_environment: str) -> None:
+    """Seed the original regression portfolio and separate historical scenarios."""
+    await seed_materialized_synthetic(database_url, app_environment=app_environment)
+    engine = create_database_engine(database_url)
+    try:
+        await seed_historical_scenarios(
+            create_session_factory(engine), app_environment=app_environment
+        )
+    finally:
+        engine.dispose()
+
+
 def main() -> None:
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:
         raise RuntimeError("DATABASE_URL is required")
     app_environment = os.environ.get("T212PI_ENVIRONMENT", "local")
     asyncio.run(
-        seed_materialized_synthetic(
+        seed_complete_synthetic(
             database_url,
             app_environment=app_environment,
         )

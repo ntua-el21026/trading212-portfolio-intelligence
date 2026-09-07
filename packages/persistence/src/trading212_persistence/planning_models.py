@@ -552,7 +552,11 @@ class AnalyticsRunModel(PlanningOwned):
             "input_digest",
             name="uq_analytics_runs_semantic_input",
         ),
-        CheckConstraint("kind IN ('actual_vs_target','drift')", name="kind_allowed"),
+        CheckConstraint(
+            "kind IN "
+            "('actual_vs_target','drift','performance','benchmark','income','attribution','cash_flow')",
+            name="kind_allowed",
+        ),
     )
     broker_account_id: Mapped[UUID] = mapped_column(
         ForeignKey("broker_accounts.id", ondelete="RESTRICT")
@@ -573,12 +577,18 @@ class AnalyticsSourceModel(PlanningOwned):
     __table_args__ = (
         _owned(),
         ForeignKeyConstraint(
+            ["owner_id", "historical_input_id"],
+            ["historical_input_snapshots.owner_id", "historical_input_snapshots.id"],
+            ondelete="RESTRICT",
+        ),
+        ForeignKeyConstraint(
             ["owner_id", "run_id"],
             ["analytics_runs.owner_id", "analytics_runs.id"],
             ondelete="RESTRICT",
         ),
         CheckConstraint(
-            "num_nonnulls(snapshot_id,target_version_id,source_record_id) = 1", name="one_source"
+            "num_nonnulls(snapshot_id,target_version_id,source_record_id,historical_input_id) = 1",
+            name="one_source",
         ),
         ForeignKeyConstraint(
             ["owner_id", "target_version_id"],
@@ -586,6 +596,7 @@ class AnalyticsSourceModel(PlanningOwned):
             ondelete="RESTRICT",
         ),
     )
+    historical_input_id: Mapped[UUID | None] = mapped_column()
     run_id: Mapped[UUID] = mapped_column()
     snapshot_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("portfolio_snapshots.id", ondelete="RESTRICT")
@@ -722,5 +733,14 @@ for _bounded_model, _document in (
     (AnalyticsRunModel, "canonical_result"),
 ):
     cast(Table, _bounded_model.__table__).append_constraint(
-        CheckConstraint(f"octet_length({_document}) <= 8388608", name=f"bound_{_document}")
+        CheckConstraint(
+            f"octet_length({_document}) <= "
+            + (
+                "CASE WHEN kind IN ('performance','benchmark','income','attribution','cash_flow') "
+                "THEN 33554432 ELSE 8388608 END"
+                if _bounded_model is AnalyticsRunModel
+                else "8388608"
+            ),
+            name=f"bound_{_document}",
+        )
     )

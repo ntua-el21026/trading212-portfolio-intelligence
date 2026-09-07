@@ -99,10 +99,16 @@ class SourceReads(SourceStore):
 
     async def get_benchmark_snapshot(
         self, principal: Principal, snapshot_id: str, *, account_id: str | None = None
-    ) -> app.BenchmarkSnapshotHeaderView:
-        def operation(session: Session, owner: UUID) -> app.BenchmarkSnapshotHeaderView:
+    ) -> app.BenchmarkSnapshotHeaderView | app.CompositeBenchmarkSnapshotHeaderView:
+        def operation(
+            session: Session, owner: UUID
+        ) -> app.BenchmarkSnapshotHeaderView | app.CompositeBenchmarkSnapshotHeaderView:
             self._account(session, principal, account_id)
             row = self._owned(session, owner, BenchmarkSnapshotModel, snapshot_id)
+            if row.snapshot_kind == "composite":
+                from .historical_source_reads import authorized_composite
+
+                return authorized_composite(self, session, principal, owner, row, account_id)
             license = self._snapshot_permit(session, row)
             if row.snapshot_kind != "provider_series" or row.series_id is None:
                 raise error(app.SourceServiceErrorCode.PROVIDER_UNAVAILABLE)
@@ -196,10 +202,16 @@ class SourceReads(SourceStore):
 
     async def list_benchmark_observations(
         self, principal: Principal, snapshot_id: str, *, query: app.SourceObservationQuery
-    ) -> Page[BenchmarkObservation]:
-        def operation(session: Session, owner: UUID) -> Page[BenchmarkObservation]:
+    ) -> Page[BenchmarkObservation] | app.CompositeBenchmarkObservationPageView:
+        def operation(
+            session: Session, owner: UUID
+        ) -> Page[BenchmarkObservation] | app.CompositeBenchmarkObservationPageView:
             account = self._account(session, principal, query.account_id)
             snapshot = self._owned(session, owner, BenchmarkSnapshotModel, snapshot_id)
+            if snapshot.snapshot_kind == "composite":
+                from .historical_source_reads import composite_page
+
+                return composite_page(self, session, principal, owner, snapshot, query)
             self._snapshot_permit(session, snapshot)
             definition = CollectionSnapshotDefinition(
                 CollectionSnapshotResource.BENCHMARK_OBSERVATIONS,

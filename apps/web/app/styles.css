@@ -2250,6 +2250,107 @@ a {
   min-width: 0;
   overflow-x: auto;
 }
+/* Historical results preserve exact values in tables; charts are presentation. */
+.historical-page .ui-surface {
+  padding: clamp(1rem, 2vw, 1.5rem);
+  min-width: 0;
+}
+.historical-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.historical-tabs a {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+.historical-tabs a[aria-current="page"] {
+  color: var(--color-emerald-dark);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+}
+.historical-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 1rem;
+}
+.historical-value {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.historical-metrics .metric-card {
+  min-width: 0;
+}
+.historical-metrics .metric-card__value {
+  white-space: normal;
+}
+.historical-metrics .historical-value {
+  max-width: 100%;
+}
+.historical-metrics .historical-value .numeric {
+  overflow-wrap: anywhere;
+}
+.historical-value small {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  white-space: normal;
+  max-width: 24rem;
+}
+.historical-figure {
+  margin: 1.5rem 0;
+  min-width: 0;
+}
+.historical-chart {
+  height: 20rem;
+  width: 100%;
+  min-width: 0;
+}
+.historical-figure figcaption {
+  font-weight: 650;
+  margin-bottom: 0.75rem;
+}
+.historical-page .table-scroll {
+  min-width: 0;
+  overflow-x: auto;
+}
+.historical-page .data-table caption {
+  text-align: left;
+  padding-block: 1rem;
+  font-weight: 650;
+}
+.historical-page .data-table th {
+  white-space: nowrap;
+}
+.historical-page details {
+  margin-block: 1rem;
+}
+.historical-page summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.historical-identities {
+  display: grid;
+  grid-template-columns: minmax(7rem, 1fr) minmax(0, 3fr);
+  gap: 0.6rem;
+}
+.historical-identities dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.historical-source-list {
+  display: grid;
+  gap: 0.65rem;
+  padding-left: 1.3rem;
+  overflow-wrap: anywhere;
+}
+.historical-filters input,
+.historical-filters select {
+  min-width: 0;
+  width: 100%;
+}
 @media (max-width: 720px) {
   .benchmark-component {
     grid-template-columns: minmax(0, 1fr);

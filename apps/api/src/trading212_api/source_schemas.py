@@ -7,6 +7,7 @@ from decimal import Decimal
 from typing import Any
 
 from fastapi import Request, Response
+from pydantic import BaseModel
 from trading212_api_contracts import sources as wire
 from trading212_application import sources as application_sources
 from trading212_application.views import Page
@@ -75,7 +76,7 @@ def _payload(value: object) -> Any:
     return payload
 
 
-def source_response[T: wire.SourceSchema](
+def source_response[T: BaseModel](
     request: Request,
     value: object,
     schema: type[T],

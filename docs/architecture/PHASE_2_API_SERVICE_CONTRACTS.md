@@ -369,6 +369,84 @@ observation routes serve both variants. P2-03 implements provider observations
 and definition commands; composite calculation is P2-04. No empty composite is
 created to make a newly published definition appear calculated.
 
+### Historical capture and representation
+
+The six historical performance, comparison, attribution, income and cash-flow
+reads accept API-only `knowledge_policy=as_of_cutoff|point_in_time` (default
+`as_of_cutoff`) and optional `input_snapshot_id`. Existing frozen MCP inputs map
+to the default policy; they do not gain additional fields. A cutoff cannot exceed
+the service's trusted clock. UTC accounting uses the start date at midnight
+through the exclusive midnight following the end date. Daily public output has
+at most 3661 closing points; the internal opening boundary is separate.
+
+An input capture pins owner/account, requested and support windows, reporting
+currency, cutoff, knowledge mode, benchmark/target/grouping references and all
+accounting, mapping, source and calendar versions. An explicit capture is loaded
+and checked against the complete requested scope; an authorized mismatch is a
+validation error and never triggers silent recapture. Foreign captures remain
+concealed. Page, top and presentation frequency may vary only when the retained
+capture already contains every required input. Mutable current activity or
+holdings are not historical evidence. Restated selection uses a coherent set of
+eligible immutable economic revisions; point-in-time selection chooses the
+revision known at each actual use instant. A material correction between points
+requires a reconciled bridge or makes the affected return unavailable.
+
+Attribution and income accept API-only `grouping_policy=historical_assignment|explicit_comparison`
+when a target version is supplied. An explicit selected target defaults to comparison;
+an absent target has no grouping policy. Historical assignment requires the account
+assignment and version to have been effective and known at the economic use time.
+Private templates remain explicit comparisons. Frozen MCP target inputs map to the
+comparison policy without adding input fields.
+For these historical resources, the explicitly selected target and benchmark
+configuration must already have been published by the requested source cutoff.
+Comparison permits a configuration later than the economic period; it does not
+assert that configuration was known or assigned during that period. A request
+using an earlier cutoff cannot borrow a subsequently published configuration.
+
+Complete activity coverage is a dated immutable observation bound to a successful
+full ingestion run and each of its order, transaction and dividend capabilities.
+Registration records its actual trusted receipt and independently checks the run's
+retained economic-through evidence. Opening reconciliation does not imply later
+absence of activity. Point-in-time uses require eligible coverage through the actual
+valuation boundary, including when the covered activity count is zero.
+Corporate-action coverage is independently pinned to the declared reference
+series and source snapshots. Complete dated empty action snapshots establish
+observed absence; broker activity coverage alone does not establish no splits.
+
+Attribution accepts `method=twr|modified_dietz` (default `twr`) and an optional
+`benchmark_version_id` for a sourced cash-drag counterfactual. MCP attribution
+retains its frozen subset and default `twr`, with no implicit benchmark. Direct
+sector/asset-class partitions require pinned classification and knowledge
+evidence; absent classifications remain unresolved. Income and cash-flow detail
+require Activity. Performance summaries do not disclose economic event identities
+under portfolio/analytics scopes alone.
+
+Every persisted result retains its actual, once-recorded `calculated_at` and
+immutable financial `content_digest`. Current legal access and reproducibility
+are separately labeled metadata. The HTTP ETag hashes the complete authorized
+wire representation, including its page and current metadata, rather than only
+the financial digest. Ownership and every source entitlement are rechecked before
+cached reads, cursor continuation or 304 responses. A revoked or expired source
+cannot be silently replaced by newer inputs in a retained calculation.
+
+Public provenance previews contain at most 64 ordered source references and 64
+warnings, with exact total and omitted counts and the immutable capture ID/digest.
+Summary event previews contain at most 16 references; compact points contain at
+most four. Complete normalized source uses remain retained. Performance and
+comparison summaries carry compact full-window series; detailed performance and
+cash-flow pages use the fixed resources above. There is no silent sampling or
+unusable MCP continuation token. The 2 MiB response bound remains an explicit
+capacity failure even when each individual query dimension is valid.
+
+Capture bounds are independent: 256 listings, 32 currencies, 256 source snapshots,
+100,000 observations, 10,000 economic events, 8,192 provenance references,
+256 calendar versions and 100,000 aggregate calendar sessions. Calculation allows
+at most 100,000 combined holding/cash/benchmark valuation cells, 10,000 split
+instants and 400,000 selected-source uses. Complete input and result envelopes are
+each at most 32 MiB. Queries and calculation check remaining capacity before
+materialization, never accept a successful prefix. These limits do not change
+the shared 64-traversal/250,000-member collection quota or cursor expiry.
+
 ## 6. Reports and exports
 
 All report/export operations require account `portfolio:read`. `R-R` means

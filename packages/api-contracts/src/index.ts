@@ -751,3 +751,11 @@ export type {
   SourceCommandOptions,
   SourceReadOptions,
 } from "./source-transport";
+
+export * from "./historical.generated";
+export { HistoricalApiError } from "./historical-transport";
+export type {
+  HistoricalApiResponse,
+  HistoricalClientOptions,
+  HistoricalReadOptions,
+} from "./historical-transport";

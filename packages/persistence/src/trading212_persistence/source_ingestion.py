@@ -8,7 +8,7 @@ from datetime import timedelta
 from typing import TypedDict, cast
 from uuid import UUID, uuid4
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, select, text
 from sqlalchemy.orm import Session
 from trading212_application import sources as app
 from trading212_application.source_ingestion import (
@@ -986,6 +986,9 @@ class SourceIngestion(SourceStore):
             raise ValueError("A bounded source expiry batch is required.")
 
         def expire() -> int:
+            from .historical_retention import HistoricalPurgeBudget, purge_source_copies
+
+            budget = HistoricalPurgeBudget()
             count = 0
             with self._sessions() as session, session.begin():
                 for model, child in (
@@ -1008,6 +1011,12 @@ class SourceIngestion(SourceStore):
                         .with_for_update(skip_locked=True)
                     )
                     for row in rows:
+                        session.execute(
+                            text("SELECT pg_advisory_xact_lock(hashtextextended(:key,0))"),
+                            {"key": f"sources:{row.owner_id}"},
+                        )
+                        if not purge_source_copies(session, row, at=self._now(), budget=budget):
+                            continue
                         observation_count = len(
                             tuple(
                                 session.scalars(select(child.id).where(child.snapshot_id == row.id))

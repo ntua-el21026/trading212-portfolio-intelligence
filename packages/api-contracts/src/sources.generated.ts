@@ -911,6 +911,204 @@ export const BenchmarkSnapshotHeaderSchema = z.strictObject({
 export type BenchmarkSnapshotHeader = z.infer<
   typeof BenchmarkSnapshotHeaderSchema
 >;
+export const HistoricalAccessSchema = z.strictObject({
+  reproducibility: z.enum([
+    "reproducible",
+    "inputs_expired",
+    "license_restricted",
+  ]),
+  status_reference_at: z.union([
+    z.string().datetime({ offset: true }),
+    z.null(),
+  ]),
+});
+export type HistoricalAccess = z.infer<typeof HistoricalAccessSchema>;
+export const HistoricalCoverageMeasureSchema = z.strictObject({
+  available_count: z.number().int().min(0.0).max(400000.0),
+  complete: z.boolean(),
+  expected_count: z.number().int().min(0.0).max(400000.0),
+  key: z.enum([
+    "opening",
+    "quantity",
+    "cash",
+    "cost",
+    "events",
+    "valuation_cells",
+    "actions",
+    "fx_cells",
+    "benchmark_sessions",
+    "prior_income",
+  ]),
+  reasons: z
+    .array(
+      z.enum([
+        "unavailable_opening_evidence",
+        "unavailable_opening_reconciliation",
+        "unavailable_event_coverage",
+        "unavailable_unknown_economic_effect",
+        "unavailable_ambiguous_economic_revision",
+        "unavailable_unreconciled_knowledge_transition",
+        "unavailable_valuation",
+        "unavailable_price",
+        "unavailable_fx",
+        "unavailable_corporate_action_coverage",
+        "unavailable_corporate_action_accounting",
+        "unavailable_mapping",
+        "unavailable_classification",
+        "unavailable_cost_basis",
+        "unavailable_gross_income",
+        "unavailable_withholding",
+        "unavailable_fee",
+        "unavailable_positive_denominator",
+        "unavailable_exact_flow_valuation",
+        "unavailable_numeric_result",
+        "unavailable_conventional_xirr_root",
+        "unavailable_xirr_root",
+        "unavailable_xirr_bracket",
+        "unavailable_xirr_convergence",
+        "unavailable_annualization_period",
+        "unavailable_rolling_boundary",
+        "unavailable_complete_calendar_period",
+        "unavailable_benchmark_inputs",
+        "unavailable_benchmark_alignment",
+        "benchmark_price_only_comparison",
+        "unavailable_reporting_currency_alignment",
+        "unavailable_tracking_error_observations",
+        "unavailable_positive_income",
+        "unavailable_comparable_calendar_period",
+        "unavailable_cash_counterfactual_inputs",
+        "unavailable_price_quantity_basis",
+        "partial_covered_subtotal",
+        "historical_reconstruction_restated",
+        "explicit_target_comparison_grouping",
+        "output_quantization_residual",
+        "unavailable_source_license",
+        "unavailable_source_retention",
+        "historical_source_stale",
+        "unavailable_resource_capacity",
+        "unavailable_income_assignment",
+        "unavailable_benchmark_constituent_attribution",
+      ]),
+    )
+    .max(64)
+    .optional(),
+});
+export type HistoricalCoverageMeasure = z.infer<
+  typeof HistoricalCoverageMeasureSchema
+>;
+export const HistoricalCoverageSchema = z.strictObject({
+  measures: z.array(HistoricalCoverageMeasureSchema).max(10),
+});
+export type HistoricalCoverage = z.infer<typeof HistoricalCoverageSchema>;
+export const HistoricalCalendarRefSchema = z.strictObject({
+  id: z.string().regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$")),
+  version: z.string().regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$")),
+});
+export type HistoricalCalendarRef = z.infer<typeof HistoricalCalendarRefSchema>;
+export const CompositeBenchmarkComponentRefSchema = z.strictObject({
+  calendar_ref: HistoricalCalendarRefSchema,
+  license_version_ids: z
+    .array(
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+    )
+    .max(256),
+  snapshot_ids: z
+    .array(
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+    )
+    .max(256),
+  source_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  weight: z
+    .string()
+    .regex(new RegExp("^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$")),
+});
+export type CompositeBenchmarkComponentRef = z.infer<
+  typeof CompositeBenchmarkComponentRefSchema
+>;
+export const HistoricalMethodMetadataSchema = z.strictObject({
+  name: z.string().regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$")),
+  version: z.string().regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$")),
+});
+export type HistoricalMethodMetadata = z.infer<
+  typeof HistoricalMethodMetadataSchema
+>;
+export const HistoricalWindowSchema = z.strictObject({
+  coverage_policy: z.enum(["require_complete", "allow_degraded"]),
+  end_date: z.string().date(),
+  knowledge_policy: z.enum(["as_of_cutoff", "point_in_time"]),
+  reporting_currency: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  source_cutoff_at: z.string().datetime({ offset: true }),
+  start_date: z.string().date(),
+});
+export type HistoricalWindow = z.infer<typeof HistoricalWindowSchema>;
+export const CompositeBenchmarkSnapshotHeaderSchema = z.strictObject({
+  access: HistoricalAccessSchema,
+  benchmark_version_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  calculated_at: z.string().datetime({ offset: true }),
+  calendar_id: z
+    .string()
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$")),
+  calendar_version: z
+    .string()
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$")),
+  content_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  coverage: HistoricalCoverageSchema,
+  id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  input_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  inputs: z.array(CompositeBenchmarkComponentRefSchema).max(256),
+  kind: z.literal("composite"),
+  method: HistoricalMethodMetadataSchema,
+  observation_count: z.number().int().min(0.0).max(3661.0),
+  rebalance_rule: z.enum(["buy_and_hold", "daily_rebalanced"]),
+  reporting_currency: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  return_basis: z.enum(["raw_close", "split_adjusted", "total_return"]),
+  window: HistoricalWindowSchema,
+});
+export type CompositeBenchmarkSnapshotHeader = z.infer<
+  typeof CompositeBenchmarkSnapshotHeaderSchema
+>;
+export const get_benchmark_snapshotResponseSchema = z.union([
+  BenchmarkSnapshotHeaderSchema,
+  CompositeBenchmarkSnapshotHeaderSchema,
+]);
+export type get_benchmark_snapshotResponse = z.infer<
+  typeof get_benchmark_snapshotResponseSchema
+>;
 export const list_benchmark_observationsQuerySchema = z.strictObject({
   account_id: z
     .union([
@@ -959,6 +1157,126 @@ export const SourcePage_BenchmarkObservation_Schema = z.strictObject({
 });
 export type SourcePage_BenchmarkObservation_ = z.infer<
   typeof SourcePage_BenchmarkObservation_Schema
+>;
+export const HistoricalRatioMetricSchema = z.strictObject({
+  availability: z.enum(["available", "partial", "unavailable"]),
+  coverage_key: z.enum([
+    "opening",
+    "quantity",
+    "cash",
+    "cost",
+    "events",
+    "valuation_cells",
+    "actions",
+    "fx_cells",
+    "benchmark_sessions",
+    "prior_income",
+  ]),
+  origin: z.enum(["provider", "derived"]).optional(),
+  quality: z.enum([
+    "fresh",
+    "stale",
+    "partial",
+    "estimated",
+    "unreconciled",
+    "failed",
+  ]),
+  reason_code: z.union([
+    z.enum([
+      "unavailable_opening_evidence",
+      "unavailable_opening_reconciliation",
+      "unavailable_event_coverage",
+      "unavailable_unknown_economic_effect",
+      "unavailable_ambiguous_economic_revision",
+      "unavailable_unreconciled_knowledge_transition",
+      "unavailable_valuation",
+      "unavailable_price",
+      "unavailable_fx",
+      "unavailable_corporate_action_coverage",
+      "unavailable_corporate_action_accounting",
+      "unavailable_mapping",
+      "unavailable_classification",
+      "unavailable_cost_basis",
+      "unavailable_gross_income",
+      "unavailable_withholding",
+      "unavailable_fee",
+      "unavailable_positive_denominator",
+      "unavailable_exact_flow_valuation",
+      "unavailable_numeric_result",
+      "unavailable_conventional_xirr_root",
+      "unavailable_xirr_root",
+      "unavailable_xirr_bracket",
+      "unavailable_xirr_convergence",
+      "unavailable_annualization_period",
+      "unavailable_rolling_boundary",
+      "unavailable_complete_calendar_period",
+      "unavailable_benchmark_inputs",
+      "unavailable_benchmark_alignment",
+      "benchmark_price_only_comparison",
+      "unavailable_reporting_currency_alignment",
+      "unavailable_tracking_error_observations",
+      "unavailable_positive_income",
+      "unavailable_comparable_calendar_period",
+      "unavailable_cash_counterfactual_inputs",
+      "unavailable_price_quantity_basis",
+      "partial_covered_subtotal",
+      "historical_reconstruction_restated",
+      "explicit_target_comparison_grouping",
+      "output_quantization_residual",
+      "unavailable_source_license",
+      "unavailable_source_retention",
+      "historical_source_stale",
+      "unavailable_resource_capacity",
+      "unavailable_income_assignment",
+      "unavailable_benchmark_constituent_attribution",
+    ]),
+    z.null(),
+  ]),
+  value: z.union([
+    z
+      .string()
+      .regex(new RegExp("^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$")),
+    z.null(),
+  ]),
+});
+export type HistoricalRatioMetric = z.infer<typeof HistoricalRatioMetricSchema>;
+export const CompositeBenchmarkPointSchema = z.strictObject({
+  effective_at: z.string().datetime({ offset: true }),
+  interval_return: HistoricalRatioMetricSchema,
+  ordinal: z.number().int().min(0.0).max(3660.0),
+  session_date: z.string().date(),
+  wealth: HistoricalRatioMetricSchema,
+});
+export type CompositeBenchmarkPoint = z.infer<
+  typeof CompositeBenchmarkPointSchema
+>;
+export const CompositeBenchmarkObservationPageSchema = z.strictObject({
+  items: z.array(CompositeBenchmarkPointSchema).max(100),
+  kind: z.literal("composite"),
+  limit: z.number().int().min(1.0).max(100.0),
+  next_cursor: z.union([
+    z.string().min(1).max(2048).regex(new RegExp("^[A-Za-z0-9_-]+$")),
+    z.null(),
+  ]),
+  snapshot_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  total: z.number().int().min(0.0).max(10000.0),
+});
+export type CompositeBenchmarkObservationPage = z.infer<
+  typeof CompositeBenchmarkObservationPageSchema
+>;
+export const list_benchmark_observationsResponseSchema = z.union([
+  SourcePage_BenchmarkObservation_Schema,
+  CompositeBenchmarkObservationPageSchema,
+]);
+export type list_benchmark_observationsResponse = z.infer<
+  typeof list_benchmark_observationsResponseSchema
 >;
 export const get_fx_snapshotQuerySchema = z.strictObject({
   account_id: z
@@ -1368,13 +1686,13 @@ export class SourceApiClient {
     query: z.input<typeof get_benchmark_snapshotQuerySchema>,
     options: SourceReadOptions = {},
   ): Promise<
-    SourceApiResponse<z.output<typeof BenchmarkSnapshotHeaderSchema>>
+    SourceApiResponse<z.output<typeof get_benchmark_snapshotResponseSchema>>
   > {
     try {
       return await this.#request(
         "GET",
         `/api/v1/benchmark-snapshots/${encodeURIComponent(z.string().regex(new RegExp("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")).uuid().parse(snapshot_id))}`,
-        BenchmarkSnapshotHeaderSchema,
+        get_benchmark_snapshotResponseSchema,
         get_benchmark_snapshotQuerySchema.parse(query),
         undefined,
         options,
@@ -1394,13 +1712,15 @@ export class SourceApiClient {
     query: z.input<typeof list_benchmark_observationsQuerySchema>,
     options: SourceReadOptions = {},
   ): Promise<
-    SourceApiResponse<z.output<typeof SourcePage_BenchmarkObservation_Schema>>
+    SourceApiResponse<
+      z.output<typeof list_benchmark_observationsResponseSchema>
+    >
   > {
     try {
       return await this.#request(
         "GET",
         `/api/v1/benchmark-snapshots/${encodeURIComponent(z.string().regex(new RegExp("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")).uuid().parse(snapshot_id))}/observations`,
-        SourcePage_BenchmarkObservation_Schema,
+        list_benchmark_observationsResponseSchema,
         list_benchmark_observationsQuerySchema.parse(query),
         undefined,
         options,

@@ -8,6 +8,12 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from .historical_schemas import (
+    HistoricalAttributionToolResult,
+    HistoricalBenchmarkToolResult,
+    HistoricalDividendToolResult,
+    HistoricalPerformanceToolResult,
+)
 from .planning_schemas import (
     ActualVsTargetToolResult,
     ContributionPlanToolResult,
@@ -407,4 +413,8 @@ RESULT_MODELS = {
     "get_drift_analysis": DriftAnalysisToolResult,
     "get_contribution_plan": ContributionPlanToolResult,
     "create_contribution_plan": CreateContributionPlanToolResult,
+    "get_performance_summary": HistoricalPerformanceToolResult,
+    "get_benchmark_comparison": HistoricalBenchmarkToolResult,
+    "get_dividend_intelligence": HistoricalDividendToolResult,
+    "get_attribution_summary": HistoricalAttributionToolResult,
 }

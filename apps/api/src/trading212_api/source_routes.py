@@ -9,6 +9,7 @@ from typing import Annotated, Any, Protocol
 from fastapi import APIRouter, Depends, FastAPI, Query, Request, Response
 from fastapi.routing import APIRoute
 from pydantic import TypeAdapter
+from trading212_api_contracts import historical as historical_wire
 from trading212_api_contracts import sources as wire
 from trading212_api_contracts.targets import IdempotencyKey, UUIDString
 from trading212_application import sources as app
@@ -183,7 +184,8 @@ def register_source_routes(
 
     @router.get(
         "/benchmark-snapshots/{snapshot_id}",
-        response_model=wire.BenchmarkSnapshotHeader,
+        response_model=wire.BenchmarkSnapshotHeader
+        | historical_wire.CompositeBenchmarkSnapshotHeader,
         operation_id="get_benchmark_snapshot",
     )
     async def get_benchmark_snapshot(
@@ -195,7 +197,13 @@ def register_source_routes(
         value = await service(request).get_benchmark_snapshot(
             principal, snapshot_id, account_id=query.account_id
         )
-        return source_response(request, value, wire.BenchmarkSnapshotHeader)
+        return source_response(
+            request,
+            value,
+            historical_wire.CompositeBenchmarkSnapshotHeader
+            if isinstance(value, app.CompositeBenchmarkSnapshotHeaderView)
+            else wire.BenchmarkSnapshotHeader,
+        )
 
     @router.get(
         "/price-snapshots/{snapshot_id}/observations",
@@ -231,7 +239,8 @@ def register_source_routes(
 
     @router.get(
         "/benchmark-snapshots/{snapshot_id}/observations",
-        response_model=wire.SourcePage[wire.BenchmarkObservation],
+        response_model=wire.SourcePage[wire.BenchmarkObservation]
+        | historical_wire.CompositeBenchmarkObservationPage,
         operation_id="list_benchmark_observations",
     )
     async def list_benchmark_observations(
@@ -243,7 +252,13 @@ def register_source_routes(
         value = await service(request).list_benchmark_observations(
             principal, snapshot_id, query=app.SourceObservationQuery(**query.model_dump())
         )
-        return source_response(request, value, wire.SourcePage[wire.BenchmarkObservation])
+        return source_response(
+            request,
+            value,
+            historical_wire.CompositeBenchmarkObservationPage
+            if isinstance(value, app.CompositeBenchmarkObservationPageView)
+            else wire.SourcePage[wire.BenchmarkObservation],
+        )
 
     @router.get(
         "/benchmark-definitions",

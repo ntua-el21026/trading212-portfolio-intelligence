@@ -31,13 +31,19 @@ must not alter results. Presentation rounding never feeds a calculation.
 
 The method identifiers are `drift_v1`, `contribution_weighted_drift_v1`,
 `performance_v2`, `benchmark_comparison_v1`, `income_v1`,
-`attribution_bridge_v1`, `xray_v1`, `report_manifest_v1`, and
+`attribution_bridge_v1`, `cash_flow_intelligence_v1`, `xray_v1`, `report_manifest_v1`, and
 `alert_evaluation_v1`. Each is registered with semantic version `1.0.0` for this
 contract. Existing Phase 1 XIRR, Modified Dietz, and snapshot-subperiod TWR
 primitives retain their existing identifiers and version `1.0.0`; an enclosing
 Phase 2 calculation records both its own method and the primitives used.
 Changing a formula, bound, ordering, quality gate, or rounding rule creates a
 new method version and new immutable result.
+
+`cash_flow_intelligence_v1` is the additive P2-04 method identifier for the
+separate dated external/internal cash-flow classification and currency totals
+specified in this document. It does not change a performance primitive. Enclosing
+calculations record the exact Phase 1 primitive identifiers they actually invoke:
+`xirr`, `modified_dietz`, and `snapshot_subperiod_twr`, all at version `1.0.0`.
 
 Every result records the authorized owner/account scope; immutable input IDs
 and content digests; valuation instant; source cutoff; requested period;

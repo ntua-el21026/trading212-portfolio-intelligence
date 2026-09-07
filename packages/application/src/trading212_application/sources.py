@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Literal, Protocol
 from uuid import UUID
 
 from trading212_domain.enums import QualityState
+from trading212_domain.historical import HistoricalCoverage
+from trading212_domain.historical_results import CompositeBenchmarkPoint
 from trading212_domain.sources import (
     BenchmarkContent,
     BenchmarkNormalizationAdjustment,
@@ -29,6 +31,7 @@ from trading212_domain.sources import (
 from trading212_domain.values import CurrencyCode
 from trading212_security.principals import Principal
 
+from .historical import CompositeBenchmarkHeaderView, HistoricalAccessView
 from .source_providers import SourceCapability
 from .targets import TargetPageQuery, target_etag
 from .views import Page
@@ -387,6 +390,22 @@ class BenchmarkSnapshotHeaderView:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
+class CompositeBenchmarkSnapshotHeaderView(CompositeBenchmarkHeaderView):
+    coverage: HistoricalCoverage
+    access: HistoricalAccessView = field(default_factory=HistoricalAccessView)
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class CompositeBenchmarkObservationPageView:
+    items: tuple[CompositeBenchmarkPoint, ...]
+    next_cursor: str | None
+    limit: int
+    total: int
+    snapshot_id: str
+    kind: Literal["composite"] = "composite"
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
 class BenchmarkDefinitionSummaryView:
     id: str
     name: str
@@ -441,7 +460,7 @@ class SourceService(Protocol):
     ) -> FxSnapshotHeaderView: ...
     async def get_benchmark_snapshot(
         self, principal: Principal, snapshot_id: str, *, account_id: str | None = None
-    ) -> BenchmarkSnapshotHeaderView: ...
+    ) -> BenchmarkSnapshotHeaderView | CompositeBenchmarkSnapshotHeaderView: ...
     async def list_price_observations(
         self, principal: Principal, snapshot_id: str, *, query: SourceObservationQuery
     ) -> Page[PriceObservation]: ...
@@ -450,7 +469,7 @@ class SourceService(Protocol):
     ) -> Page[FxObservation]: ...
     async def list_benchmark_observations(
         self, principal: Principal, snapshot_id: str, *, query: SourceObservationQuery
-    ) -> Page[BenchmarkObservation]: ...
+    ) -> Page[BenchmarkObservation] | CompositeBenchmarkObservationPageView: ...
     async def list_benchmark_definitions(
         self, principal: Principal, *, query: BenchmarkDefinitionQuery
     ) -> Page[BenchmarkDefinitionSummaryView]: ...

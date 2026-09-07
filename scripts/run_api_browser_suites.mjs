@@ -33,11 +33,16 @@ const onTerminate = () => interrupt("SIGTERM");
 process.on("SIGINT", onInterrupt);
 process.on("SIGTERM", onTerminate);
 
-function run(arguments_) {
+function run(arguments_, historical) {
   return new Promise((resolve, reject) => {
     activeChild = spawn("corepack", arguments_, {
       cwd: webDirectory,
-      env: process.env,
+      env: {
+        ...process.env,
+        // Each process still gets a fresh database and the production quota.
+        // Only historical journeys need the larger dated replay fixtures.
+        T212PI_E2E_HISTORICAL: historical ? "1" : "0",
+      },
       stdio: "inherit",
       shell: false,
       detached: grouped,
@@ -63,16 +68,19 @@ try {
     for (const project of projects) {
       if (interruptedSignal) break suiteLoop;
       console.log(`API browser suite: ${spec} · ${project}`);
-      const code = await run([
-        "pnpm",
-        "exec",
-        "playwright",
-        "test",
-        "--config=playwright.api.config.ts",
-        `--project=${project}`,
-        ...(listOnly ? ["--list"] : []),
-        fileFilter,
-      ]);
+      const code = await run(
+        [
+          "pnpm",
+          "exec",
+          "playwright",
+          "test",
+          "--config=playwright.api.config.ts",
+          `--project=${project}`,
+          ...(listOnly ? ["--list"] : []),
+          fileFilter,
+        ],
+        spec === "historical.spec.ts",
+      );
       if (code !== 0) {
         process.exitCode = code;
         break suiteLoop;

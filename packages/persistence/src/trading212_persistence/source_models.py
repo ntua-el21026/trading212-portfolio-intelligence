@@ -418,8 +418,13 @@ class BenchmarkSnapshotModel(SourceSnapshotFields):
         owner_fk("benchmark_version_id", "benchmark_versions"),
         CheckConstraint(
             "(snapshot_kind = 'provider_series' AND series_id IS NOT NULL AND "
-            "benchmark_version_id IS NULL) OR (snapshot_kind = 'composite' AND series_id "
-            "IS NULL AND benchmark_version_id IS NOT NULL)",
+            "benchmark_version_id IS NULL AND provider_id IS NOT NULL AND "
+            "license_version_id IS NOT NULL AND adapter_version IS NOT NULL AND "
+            "source_revision IS NOT NULL) OR (snapshot_kind = 'composite' AND "
+            "series_id "
+            "IS NULL AND benchmark_version_id IS NOT NULL AND provider_id IS "
+            "NULL AND license_version_id IS NULL AND adapter_version IS NULL AND "
+            "source_revision IS NULL)",
             name="snapshot_kind_xor",
         ),
         Index(
@@ -431,6 +436,12 @@ class BenchmarkSnapshotModel(SourceSnapshotFields):
             "id",
         ),
     )
+    # Provider provenance is absent on the derived composite branch; the XOR guard
+    # requires the full provenance for every provider-series row.
+    provider_id: Mapped[UUID] = mapped_column(nullable=True)
+    license_version_id: Mapped[UUID] = mapped_column(nullable=True)
+    adapter_version: Mapped[str] = mapped_column(String(120), nullable=True)
+    source_revision: Mapped[str] = mapped_column(String(120), nullable=True)
     series_id: Mapped[UUID | None] = mapped_column()
     benchmark_version_id: Mapped[UUID | None] = mapped_column()
     snapshot_kind: Mapped[str] = mapped_column(String(20))

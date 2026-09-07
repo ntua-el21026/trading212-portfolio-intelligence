@@ -57,6 +57,9 @@ capabilities. See [the P2-03 evidence](docs/implementation/evidence/phase-2-p2-0
 Phase 2 now has three of ten packages, eight of 29 local rows and twelve of 40
 scenarios complete (30%). P2-04 through P2-10 and shared release predicates remain
 required. Real reference provider configuration/licensing remain unavailable.
+P2-04 is `in_progress` from synchronized starting SHA
+`05d01c7a9a9cb6cc3f351c3adbed2036f02b94a9`. Historical capture, calculations and
+their API/MCP/web surfaces are being implemented; no P2-04 acceptance is claimed.
 Phase 3 remains `not_started`.
 
 ## Previously accepted baseline

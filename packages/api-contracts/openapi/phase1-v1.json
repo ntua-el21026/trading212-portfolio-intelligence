@@ -294,6 +294,405 @@
         "title": "AllocationResponse",
         "type": "object"
       },
+      "AttributionComponent": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "effects": {
+            "items": {
+              "$ref": "#/components/schemas/AttributionEffect"
+            },
+            "maxItems": 7,
+            "title": "Effects",
+            "type": "array"
+          },
+          "group_key": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Key"
+          },
+          "instrument_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Id"
+          },
+          "key": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "listing_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Listing Id"
+          },
+          "return_contribution": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "unresolved": {
+            "default": false,
+            "title": "Unresolved",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "instrument_id",
+          "listing_id",
+          "group_key",
+          "currency",
+          "amount",
+          "return_contribution",
+          "effects"
+        ],
+        "title": "AttributionComponent",
+        "type": "object"
+      },
+      "AttributionEffect": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "kind": {
+            "enum": [
+              "price",
+              "income",
+              "fees",
+              "taxes",
+              "fx",
+              "interaction",
+              "cash_fx"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "return_contribution": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          }
+        },
+        "required": [
+          "kind",
+          "amount",
+          "return_contribution"
+        ],
+        "title": "AttributionEffect",
+        "type": "object"
+      },
+      "AttributionMetrics": {
+        "additionalProperties": false,
+        "properties": {
+          "attributed_amount": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "attributed_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "brinson_allocation": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "brinson_selection": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "cash_drag": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "dietz_denominator": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "investment_gain": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "portfolio_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "quantization_residual": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "residual": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "residual_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "uncovered_residual": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          }
+        },
+        "required": [
+          "investment_gain",
+          "attributed_amount",
+          "residual",
+          "uncovered_residual",
+          "quantization_residual",
+          "portfolio_return",
+          "attributed_return",
+          "residual_return",
+          "dietz_denominator",
+          "cash_drag",
+          "brinson_allocation",
+          "brinson_selection"
+        ],
+        "title": "AttributionMetrics",
+        "type": "object"
+      },
+      "AttributionSummaryResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/HistoricalRunContext"
+          },
+          "effects": {
+            "items": {
+              "$ref": "#/components/schemas/AttributionEffect"
+            },
+            "maxItems": 7,
+            "title": "Effects",
+            "type": "array"
+          },
+          "eligible_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Eligible Count",
+            "type": "integer"
+          },
+          "omitted_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Omitted Count",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/AttributionComponent"
+            },
+            "maxItems": 50,
+            "title": "Rows",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/AttributionMetrics"
+          }
+        },
+        "required": [
+          "context",
+          "summary",
+          "rows",
+          "eligible_count",
+          "omitted_count",
+          "effects"
+        ],
+        "title": "AttributionSummaryResponse",
+        "type": "object"
+      },
+      "BenchmarkComparisonMetrics": {
+        "additionalProperties": false,
+        "properties": {
+          "annualized_benchmark_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "annualized_portfolio_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "annualized_tracking_difference": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "benchmark_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "comparable_total_return_basis": {
+            "title": "Comparable Total Return Basis",
+            "type": "boolean"
+          },
+          "excess_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "paired_observation_count": {
+            "maximum": 3661.0,
+            "minimum": 0.0,
+            "title": "Paired Observation Count",
+            "type": "integer"
+          },
+          "portfolio_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "relative_wealth_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "tracking_difference": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "tracking_error": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          }
+        },
+        "required": [
+          "portfolio_return",
+          "benchmark_return",
+          "excess_return",
+          "tracking_difference",
+          "relative_wealth_return",
+          "annualized_portfolio_return",
+          "annualized_benchmark_return",
+          "annualized_tracking_difference",
+          "tracking_error",
+          "paired_observation_count",
+          "comparable_total_return_basis"
+        ],
+        "title": "BenchmarkComparisonMetrics",
+        "type": "object"
+      },
+      "BenchmarkComparisonPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "benchmark_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "benchmark_wealth": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "excess_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "ordinal": {
+            "maximum": 3660.0,
+            "minimum": 0.0,
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "portfolio_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "portfolio_wealth": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "relative_wealth": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ordinal",
+          "date",
+          "valuation_at",
+          "portfolio_return",
+          "benchmark_return",
+          "excess_return",
+          "portfolio_wealth",
+          "benchmark_wealth",
+          "relative_wealth"
+        ],
+        "title": "BenchmarkComparisonPoint",
+        "type": "object"
+      },
+      "BenchmarkComparisonResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "calendar_returns": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalBenchmarkPeriodReturn"
+            },
+            "maxItems": 121,
+            "title": "Calendar Returns",
+            "type": "array"
+          },
+          "composite_snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CompositeBenchmarkSnapshotHeader"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "context": {
+            "$ref": "#/components/schemas/HistoricalRunContext"
+          },
+          "rolling_returns": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalBenchmarkPeriodReturn"
+            },
+            "maxItems": 3661,
+            "title": "Rolling Returns",
+            "type": "array"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/BenchmarkComparisonPoint"
+            },
+            "maxItems": 3661,
+            "title": "Series",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/BenchmarkComparisonMetrics"
+          }
+        },
+        "required": [
+          "context",
+          "summary",
+          "series",
+          "composite_snapshot",
+          "rolling_returns",
+          "calendar_returns"
+        ],
+        "title": "BenchmarkComparisonResponse",
+        "type": "object"
+      },
       "BenchmarkComponent": {
         "additionalProperties": false,
         "properties": {
@@ -792,6 +1191,134 @@
         "title": "CapabilityQualityResponse",
         "type": "object"
       },
+      "CashFlowIntelligenceResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/HistoricalRunContext"
+          },
+          "events": {
+            "$ref": "#/components/schemas/HistoricalPage_HistoricalCashFlowPoint_"
+          },
+          "filtered_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Filtered Count",
+            "type": "integer"
+          },
+          "native_currency_totals": {
+            "items": {
+              "$ref": "#/components/schemas/CurrencyCashFlowTotals"
+            },
+            "maxItems": 32,
+            "title": "Native Currency Totals",
+            "type": "array"
+          },
+          "period_rows": {
+            "items": {
+              "$ref": "#/components/schemas/CashFlowPeriod"
+            },
+            "maxItems": 3661,
+            "title": "Period Rows",
+            "type": "array"
+          },
+          "reporting_totals": {
+            "$ref": "#/components/schemas/CurrencyCashFlowTotals"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/CashFlowMetrics"
+          }
+        },
+        "required": [
+          "context",
+          "summary",
+          "native_currency_totals",
+          "reporting_totals",
+          "period_rows",
+          "events",
+          "filtered_count"
+        ],
+        "title": "CashFlowIntelligenceResponse",
+        "type": "object"
+      },
+      "CashFlowMetrics": {
+        "additionalProperties": false,
+        "properties": {
+          "event_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Event Count",
+            "type": "integer"
+          },
+          "external_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "External Count",
+            "type": "integer"
+          },
+          "filtered_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Filtered Count",
+            "type": "integer"
+          },
+          "internal_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Internal Count",
+            "type": "integer"
+          },
+          "unresolved_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Unresolved Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "event_count",
+          "filtered_count",
+          "external_count",
+          "internal_count",
+          "unresolved_count"
+        ],
+        "title": "CashFlowMetrics",
+        "type": "object"
+      },
+      "CashFlowPeriod": {
+        "additionalProperties": false,
+        "properties": {
+          "end_date": {
+            "format": "date",
+            "title": "End Date",
+            "type": "string"
+          },
+          "native_totals": {
+            "items": {
+              "$ref": "#/components/schemas/CurrencyCashFlowTotals"
+            },
+            "maxItems": 32,
+            "title": "Native Totals",
+            "type": "array"
+          },
+          "reporting_totals": {
+            "$ref": "#/components/schemas/CurrencyCashFlowTotals"
+          },
+          "start_date": {
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_date",
+          "end_date",
+          "native_totals",
+          "reporting_totals"
+        ],
+        "title": "CashFlowPeriod",
+        "type": "object"
+      },
       "CheckpointQualityResponse": {
         "additionalProperties": false,
         "properties": {
@@ -840,6 +1367,266 @@
           "coverage_complete"
         ],
         "title": "CheckpointQualityResponse",
+        "type": "object"
+      },
+      "CompositeBenchmarkComponentRef": {
+        "additionalProperties": false,
+        "properties": {
+          "calendar_ref": {
+            "$ref": "#/components/schemas/HistoricalCalendarRef"
+          },
+          "license_version_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 256,
+            "title": "License Version Ids",
+            "type": "array"
+          },
+          "snapshot_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 256,
+            "title": "Snapshot Ids",
+            "type": "array"
+          },
+          "source_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "weight": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Weight",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "weight",
+          "snapshot_ids",
+          "license_version_ids",
+          "calendar_ref"
+        ],
+        "title": "CompositeBenchmarkComponentRef",
+        "type": "object"
+      },
+      "CompositeBenchmarkObservationPage": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CompositeBenchmarkPoint"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "kind": {
+            "const": "composite",
+            "title": "Kind",
+            "type": "string"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "total": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total",
+          "snapshot_id",
+          "kind"
+        ],
+        "title": "CompositeBenchmarkObservationPage",
+        "type": "object"
+      },
+      "CompositeBenchmarkPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "effective_at": {
+            "format": "date-time",
+            "title": "Effective At",
+            "type": "string"
+          },
+          "interval_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "ordinal": {
+            "maximum": 3660.0,
+            "minimum": 0.0,
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "session_date": {
+            "format": "date",
+            "title": "Session Date",
+            "type": "string"
+          },
+          "wealth": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          }
+        },
+        "required": [
+          "ordinal",
+          "session_date",
+          "effective_at",
+          "wealth",
+          "interval_return"
+        ],
+        "title": "CompositeBenchmarkPoint",
+        "type": "object"
+      },
+      "CompositeBenchmarkSnapshotHeader": {
+        "additionalProperties": false,
+        "properties": {
+          "access": {
+            "$ref": "#/components/schemas/HistoricalAccess"
+          },
+          "benchmark_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Benchmark Version Id",
+            "type": "string"
+          },
+          "calculated_at": {
+            "format": "date-time",
+            "title": "Calculated At",
+            "type": "string"
+          },
+          "calendar_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Calendar Id",
+            "type": "string"
+          },
+          "calendar_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Calendar Version",
+            "type": "string"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/HistoricalCoverage"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "inputs": {
+            "items": {
+              "$ref": "#/components/schemas/CompositeBenchmarkComponentRef"
+            },
+            "maxItems": 256,
+            "title": "Inputs",
+            "type": "array"
+          },
+          "kind": {
+            "const": "composite",
+            "title": "Kind",
+            "type": "string"
+          },
+          "method": {
+            "$ref": "#/components/schemas/HistoricalMethodMetadata"
+          },
+          "observation_count": {
+            "maximum": 3661.0,
+            "minimum": 0.0,
+            "title": "Observation Count",
+            "type": "integer"
+          },
+          "rebalance_rule": {
+            "enum": [
+              "buy_and_hold",
+              "daily_rebalanced"
+            ],
+            "title": "Rebalance Rule",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "return_basis": {
+            "enum": [
+              "raw_close",
+              "split_adjusted",
+              "total_return"
+            ],
+            "title": "Return Basis",
+            "type": "string"
+          },
+          "window": {
+            "$ref": "#/components/schemas/HistoricalWindow"
+          }
+        },
+        "required": [
+          "coverage",
+          "id",
+          "benchmark_version_id",
+          "reporting_currency",
+          "return_basis",
+          "calendar_id",
+          "calendar_version",
+          "rebalance_rule",
+          "window",
+          "input_digest",
+          "content_digest",
+          "calculated_at",
+          "method",
+          "inputs",
+          "observation_count",
+          "kind",
+          "access"
+        ],
+        "title": "CompositeBenchmarkSnapshotHeader",
         "type": "object"
       },
       "ContributionMoney": {
@@ -1805,6 +2592,138 @@
         "title": "CreateVirtualPortfolioRequest",
         "type": "object"
       },
+      "CurrencyCashFlowTotals": {
+        "additionalProperties": false,
+        "properties": {
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "deposits": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "external_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "External Count",
+            "type": "integer"
+          },
+          "external_net": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "fees": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "income": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "internal_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Internal Count",
+            "type": "integer"
+          },
+          "internal_net": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "purchases": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "sales": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "taxes": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "unresolved_amount": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "unresolved_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Unresolved Count",
+            "type": "integer"
+          },
+          "withdrawals": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          }
+        },
+        "required": [
+          "currency",
+          "external_net",
+          "deposits",
+          "withdrawals",
+          "internal_net",
+          "income",
+          "fees",
+          "taxes",
+          "purchases",
+          "sales",
+          "unresolved_amount",
+          "external_count",
+          "internal_count",
+          "unresolved_count"
+        ],
+        "title": "CurrencyCashFlowTotals",
+        "type": "object"
+      },
+      "CurrencyIncomeTotals": {
+        "additionalProperties": false,
+        "properties": {
+          "correction_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Correction Count",
+            "type": "integer"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "event_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Event Count",
+            "type": "integer"
+          },
+          "gross": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "negative_corrections": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "net": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "positive_event_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Positive Event Count",
+            "type": "integer"
+          },
+          "positive_income": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "withholding": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          }
+        },
+        "required": [
+          "currency",
+          "net",
+          "gross",
+          "withholding",
+          "positive_income",
+          "negative_corrections",
+          "event_count",
+          "positive_event_count",
+          "correction_count"
+        ],
+        "title": "CurrencyIncomeTotals",
+        "type": "object"
+      },
       "DataQualitySummaryResponse": {
         "additionalProperties": false,
         "properties": {
@@ -1963,6 +2882,72 @@
           "truncated"
         ],
         "title": "DirectAllocationResponse",
+        "type": "object"
+      },
+      "DividendIntelligenceResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/HistoricalRunContext"
+          },
+          "eligible_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Eligible Count",
+            "type": "integer"
+          },
+          "event_preview": {
+            "$ref": "#/components/schemas/HistoricalEventPreview"
+          },
+          "native_currency_totals": {
+            "items": {
+              "$ref": "#/components/schemas/CurrencyIncomeTotals"
+            },
+            "maxItems": 32,
+            "title": "Native Currency Totals",
+            "type": "array"
+          },
+          "omitted_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Omitted Count",
+            "type": "integer"
+          },
+          "period_rows": {
+            "items": {
+              "$ref": "#/components/schemas/IncomePeriod"
+            },
+            "maxItems": 121,
+            "title": "Period Rows",
+            "type": "array"
+          },
+          "reporting_totals": {
+            "$ref": "#/components/schemas/CurrencyIncomeTotals"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/IncomeComponent"
+            },
+            "maxItems": 50,
+            "title": "Rows",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/IncomeMetrics"
+          }
+        },
+        "required": [
+          "context",
+          "summary",
+          "native_currency_totals",
+          "reporting_totals",
+          "rows",
+          "eligible_count",
+          "omitted_count",
+          "period_rows",
+          "event_preview"
+        ],
+        "title": "DividendIntelligenceResponse",
         "type": "object"
       },
       "DividendResponse": {
@@ -2430,6 +3415,1489 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HistoricalAccess": {
+        "additionalProperties": false,
+        "properties": {
+          "reproducibility": {
+            "enum": [
+              "reproducible",
+              "inputs_expired",
+              "license_restricted"
+            ],
+            "title": "Reproducibility",
+            "type": "string"
+          },
+          "status_reference_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Reference At"
+          }
+        },
+        "required": [
+          "reproducibility",
+          "status_reference_at"
+        ],
+        "title": "HistoricalAccess",
+        "type": "object"
+      },
+      "HistoricalBenchmarkPeriodReturn": {
+        "additionalProperties": false,
+        "properties": {
+          "annualized_benchmark_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "annualized_portfolio_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "benchmark_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "excess_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "kind": {
+            "enum": [
+              "rolling_30",
+              "rolling_90",
+              "rolling_365",
+              "calendar_month",
+              "calendar_quarter",
+              "calendar_year"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "period_end_at": {
+            "format": "date-time",
+            "title": "Period End At",
+            "type": "string"
+          },
+          "period_start_at": {
+            "format": "date-time",
+            "title": "Period Start At",
+            "type": "string"
+          },
+          "portfolio_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "relative_wealth_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          }
+        },
+        "required": [
+          "period_start_at",
+          "period_end_at",
+          "kind",
+          "portfolio_return",
+          "benchmark_return",
+          "excess_return",
+          "relative_wealth_return",
+          "annualized_portfolio_return",
+          "annualized_benchmark_return"
+        ],
+        "title": "HistoricalBenchmarkPeriodReturn",
+        "type": "object"
+      },
+      "HistoricalCalendarRef": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "version"
+        ],
+        "title": "HistoricalCalendarRef",
+        "type": "object"
+      },
+      "HistoricalCashFlowPoint": {
+        "additionalProperties": false,
+        "properties": {
+          "classification": {
+            "enum": [
+              "external",
+              "internal",
+              "unresolved"
+            ],
+            "title": "Classification",
+            "type": "string"
+          },
+          "correction_of": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Correction Of"
+          },
+          "economic_at": {
+            "format": "date-time",
+            "title": "Economic At",
+            "type": "string"
+          },
+          "economic_key": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Economic Key",
+            "type": "string"
+          },
+          "event_revision_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Event Revision Id",
+            "type": "string"
+          },
+          "group_key": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Key"
+          },
+          "instrument_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Id"
+          },
+          "kind": {
+            "enum": [
+              "deposit",
+              "withdrawal",
+              "transfer_in",
+              "transfer_out",
+              "buy",
+              "sell",
+              "dividend",
+              "interest",
+              "fee",
+              "tax",
+              "internal_transfer",
+              "fx_conversion",
+              "corporate_action",
+              "unknown"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "listing_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Listing Id"
+          },
+          "native_amount": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "ordinal": {
+            "maximum": 9999.0,
+            "minimum": 0.0,
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "reporting_amount": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "source_ref_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 4,
+            "title": "Source Ref Ids",
+            "type": "array"
+          },
+          "source_ref_omitted_count": {
+            "default": 0,
+            "maximum": 8192.0,
+            "minimum": 0.0,
+            "title": "Source Ref Omitted Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ordinal",
+          "event_revision_id",
+          "economic_key",
+          "economic_at",
+          "kind",
+          "classification",
+          "native_amount",
+          "reporting_amount",
+          "instrument_id",
+          "listing_id",
+          "group_key",
+          "correction_of",
+          "source_ref_ids"
+        ],
+        "title": "HistoricalCashFlowPoint",
+        "type": "object"
+      },
+      "HistoricalCoverage": {
+        "additionalProperties": false,
+        "properties": {
+          "measures": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalCoverageMeasure"
+            },
+            "maxItems": 10,
+            "title": "Measures",
+            "type": "array"
+          }
+        },
+        "required": [
+          "measures"
+        ],
+        "title": "HistoricalCoverage",
+        "type": "object"
+      },
+      "HistoricalCoverageMeasure": {
+        "additionalProperties": false,
+        "properties": {
+          "available_count": {
+            "maximum": 400000.0,
+            "minimum": 0.0,
+            "title": "Available Count",
+            "type": "integer"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "expected_count": {
+            "maximum": 400000.0,
+            "minimum": 0.0,
+            "title": "Expected Count",
+            "type": "integer"
+          },
+          "key": {
+            "enum": [
+              "opening",
+              "quantity",
+              "cash",
+              "cost",
+              "events",
+              "valuation_cells",
+              "actions",
+              "fx_cells",
+              "benchmark_sessions",
+              "prior_income"
+            ],
+            "title": "Key",
+            "type": "string"
+          },
+          "reasons": {
+            "items": {
+              "enum": [
+                "unavailable_opening_evidence",
+                "unavailable_opening_reconciliation",
+                "unavailable_event_coverage",
+                "unavailable_unknown_economic_effect",
+                "unavailable_ambiguous_economic_revision",
+                "unavailable_unreconciled_knowledge_transition",
+                "unavailable_valuation",
+                "unavailable_price",
+                "unavailable_fx",
+                "unavailable_corporate_action_coverage",
+                "unavailable_corporate_action_accounting",
+                "unavailable_mapping",
+                "unavailable_classification",
+                "unavailable_cost_basis",
+                "unavailable_gross_income",
+                "unavailable_withholding",
+                "unavailable_fee",
+                "unavailable_positive_denominator",
+                "unavailable_exact_flow_valuation",
+                "unavailable_numeric_result",
+                "unavailable_conventional_xirr_root",
+                "unavailable_xirr_root",
+                "unavailable_xirr_bracket",
+                "unavailable_xirr_convergence",
+                "unavailable_annualization_period",
+                "unavailable_rolling_boundary",
+                "unavailable_complete_calendar_period",
+                "unavailable_benchmark_inputs",
+                "unavailable_benchmark_alignment",
+                "benchmark_price_only_comparison",
+                "unavailable_reporting_currency_alignment",
+                "unavailable_tracking_error_observations",
+                "unavailable_positive_income",
+                "unavailable_comparable_calendar_period",
+                "unavailable_cash_counterfactual_inputs",
+                "unavailable_price_quantity_basis",
+                "partial_covered_subtotal",
+                "historical_reconstruction_restated",
+                "explicit_target_comparison_grouping",
+                "output_quantization_residual",
+                "unavailable_source_license",
+                "unavailable_source_retention",
+                "historical_source_stale",
+                "unavailable_resource_capacity",
+                "unavailable_income_assignment",
+                "unavailable_benchmark_constituent_attribution"
+              ],
+              "type": "string"
+            },
+            "maxItems": 64,
+            "title": "Reasons",
+            "type": "array"
+          }
+        },
+        "required": [
+          "key",
+          "expected_count",
+          "available_count",
+          "complete"
+        ],
+        "title": "HistoricalCoverageMeasure",
+        "type": "object"
+      },
+      "HistoricalEventPreview": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalCashFlowPoint"
+            },
+            "maxItems": 16,
+            "title": "Items",
+            "type": "array"
+          },
+          "omitted_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Omitted Count",
+            "type": "integer"
+          },
+          "total_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Total Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total_count",
+          "omitted_count"
+        ],
+        "title": "HistoricalEventPreview",
+        "type": "object"
+      },
+      "HistoricalIssue": {
+        "additionalProperties": false,
+        "properties": {
+          "coverage_key": {
+            "anyOf": [
+              {
+                "enum": [
+                  "opening",
+                  "quantity",
+                  "cash",
+                  "cost",
+                  "events",
+                  "valuation_cells",
+                  "actions",
+                  "fx_cells",
+                  "benchmark_sessions",
+                  "prior_income"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Key"
+          },
+          "reason_code": {
+            "enum": [
+              "unavailable_opening_evidence",
+              "unavailable_opening_reconciliation",
+              "unavailable_event_coverage",
+              "unavailable_unknown_economic_effect",
+              "unavailable_ambiguous_economic_revision",
+              "unavailable_unreconciled_knowledge_transition",
+              "unavailable_valuation",
+              "unavailable_price",
+              "unavailable_fx",
+              "unavailable_corporate_action_coverage",
+              "unavailable_corporate_action_accounting",
+              "unavailable_mapping",
+              "unavailable_classification",
+              "unavailable_cost_basis",
+              "unavailable_gross_income",
+              "unavailable_withholding",
+              "unavailable_fee",
+              "unavailable_positive_denominator",
+              "unavailable_exact_flow_valuation",
+              "unavailable_numeric_result",
+              "unavailable_conventional_xirr_root",
+              "unavailable_xirr_root",
+              "unavailable_xirr_bracket",
+              "unavailable_xirr_convergence",
+              "unavailable_annualization_period",
+              "unavailable_rolling_boundary",
+              "unavailable_complete_calendar_period",
+              "unavailable_benchmark_inputs",
+              "unavailable_benchmark_alignment",
+              "benchmark_price_only_comparison",
+              "unavailable_reporting_currency_alignment",
+              "unavailable_tracking_error_observations",
+              "unavailable_positive_income",
+              "unavailable_comparable_calendar_period",
+              "unavailable_cash_counterfactual_inputs",
+              "unavailable_price_quantity_basis",
+              "partial_covered_subtotal",
+              "historical_reconstruction_restated",
+              "explicit_target_comparison_grouping",
+              "output_quantization_residual",
+              "unavailable_source_license",
+              "unavailable_source_retention",
+              "historical_source_stale",
+              "unavailable_resource_capacity",
+              "unavailable_income_assignment",
+              "unavailable_benchmark_constituent_attribution"
+            ],
+            "title": "Reason Code",
+            "type": "string"
+          },
+          "reference_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 64,
+            "title": "Reference Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "reason_code"
+        ],
+        "title": "HistoricalIssue",
+        "type": "object"
+      },
+      "HistoricalMethodMetadata": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Name",
+            "type": "string"
+          },
+          "version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ],
+        "title": "HistoricalMethodMetadata",
+        "type": "object"
+      },
+      "HistoricalMoney": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Amount",
+            "type": "string"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "title": "HistoricalMoney",
+        "type": "object"
+      },
+      "HistoricalMoneyMetric": {
+        "additionalProperties": false,
+        "properties": {
+          "availability": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "coverage_key": {
+            "enum": [
+              "opening",
+              "quantity",
+              "cash",
+              "cost",
+              "events",
+              "valuation_cells",
+              "actions",
+              "fx_cells",
+              "benchmark_sessions",
+              "prior_income"
+            ],
+            "title": "Coverage Key",
+            "type": "string"
+          },
+          "origin": {
+            "default": "derived",
+            "enum": [
+              "provider",
+              "derived"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reason_code": {
+            "anyOf": [
+              {
+                "enum": [
+                  "unavailable_opening_evidence",
+                  "unavailable_opening_reconciliation",
+                  "unavailable_event_coverage",
+                  "unavailable_unknown_economic_effect",
+                  "unavailable_ambiguous_economic_revision",
+                  "unavailable_unreconciled_knowledge_transition",
+                  "unavailable_valuation",
+                  "unavailable_price",
+                  "unavailable_fx",
+                  "unavailable_corporate_action_coverage",
+                  "unavailable_corporate_action_accounting",
+                  "unavailable_mapping",
+                  "unavailable_classification",
+                  "unavailable_cost_basis",
+                  "unavailable_gross_income",
+                  "unavailable_withholding",
+                  "unavailable_fee",
+                  "unavailable_positive_denominator",
+                  "unavailable_exact_flow_valuation",
+                  "unavailable_numeric_result",
+                  "unavailable_conventional_xirr_root",
+                  "unavailable_xirr_root",
+                  "unavailable_xirr_bracket",
+                  "unavailable_xirr_convergence",
+                  "unavailable_annualization_period",
+                  "unavailable_rolling_boundary",
+                  "unavailable_complete_calendar_period",
+                  "unavailable_benchmark_inputs",
+                  "unavailable_benchmark_alignment",
+                  "benchmark_price_only_comparison",
+                  "unavailable_reporting_currency_alignment",
+                  "unavailable_tracking_error_observations",
+                  "unavailable_positive_income",
+                  "unavailable_comparable_calendar_period",
+                  "unavailable_cash_counterfactual_inputs",
+                  "unavailable_price_quantity_basis",
+                  "partial_covered_subtotal",
+                  "historical_reconstruction_restated",
+                  "explicit_target_comparison_grouping",
+                  "output_quantization_residual",
+                  "unavailable_source_license",
+                  "unavailable_source_retention",
+                  "historical_source_stale",
+                  "unavailable_resource_capacity",
+                  "unavailable_income_assignment",
+                  "unavailable_benchmark_constituent_attribution"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Code"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HistoricalMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "value",
+          "availability",
+          "reason_code",
+          "quality",
+          "coverage_key"
+        ],
+        "title": "HistoricalMoneyMetric",
+        "type": "object"
+      },
+      "HistoricalPage_HistoricalCashFlowPoint_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalCashFlowPoint"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "HistoricalPage[HistoricalCashFlowPoint]",
+        "type": "object"
+      },
+      "HistoricalPage_PerformancePoint_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PerformancePoint"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "HistoricalPage[PerformancePoint]",
+        "type": "object"
+      },
+      "HistoricalPeriodReturn": {
+        "additionalProperties": false,
+        "properties": {
+          "annualized_value": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "kind": {
+            "enum": [
+              "rolling_30",
+              "rolling_90",
+              "rolling_365",
+              "calendar_month",
+              "calendar_quarter",
+              "calendar_year"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "method": {
+            "enum": [
+              "twr",
+              "mwr",
+              "modified_dietz"
+            ],
+            "title": "Method",
+            "type": "string"
+          },
+          "period_end_at": {
+            "format": "date-time",
+            "title": "Period End At",
+            "type": "string"
+          },
+          "period_start_at": {
+            "format": "date-time",
+            "title": "Period Start At",
+            "type": "string"
+          },
+          "value": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          }
+        },
+        "required": [
+          "period_start_at",
+          "period_end_at",
+          "kind",
+          "method",
+          "value",
+          "annualized_value"
+        ],
+        "title": "HistoricalPeriodReturn",
+        "type": "object"
+      },
+      "HistoricalRatioMetric": {
+        "additionalProperties": false,
+        "properties": {
+          "availability": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "coverage_key": {
+            "enum": [
+              "opening",
+              "quantity",
+              "cash",
+              "cost",
+              "events",
+              "valuation_cells",
+              "actions",
+              "fx_cells",
+              "benchmark_sessions",
+              "prior_income"
+            ],
+            "title": "Coverage Key",
+            "type": "string"
+          },
+          "origin": {
+            "default": "derived",
+            "enum": [
+              "provider",
+              "derived"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reason_code": {
+            "anyOf": [
+              {
+                "enum": [
+                  "unavailable_opening_evidence",
+                  "unavailable_opening_reconciliation",
+                  "unavailable_event_coverage",
+                  "unavailable_unknown_economic_effect",
+                  "unavailable_ambiguous_economic_revision",
+                  "unavailable_unreconciled_knowledge_transition",
+                  "unavailable_valuation",
+                  "unavailable_price",
+                  "unavailable_fx",
+                  "unavailable_corporate_action_coverage",
+                  "unavailable_corporate_action_accounting",
+                  "unavailable_mapping",
+                  "unavailable_classification",
+                  "unavailable_cost_basis",
+                  "unavailable_gross_income",
+                  "unavailable_withholding",
+                  "unavailable_fee",
+                  "unavailable_positive_denominator",
+                  "unavailable_exact_flow_valuation",
+                  "unavailable_numeric_result",
+                  "unavailable_conventional_xirr_root",
+                  "unavailable_xirr_root",
+                  "unavailable_xirr_bracket",
+                  "unavailable_xirr_convergence",
+                  "unavailable_annualization_period",
+                  "unavailable_rolling_boundary",
+                  "unavailable_complete_calendar_period",
+                  "unavailable_benchmark_inputs",
+                  "unavailable_benchmark_alignment",
+                  "benchmark_price_only_comparison",
+                  "unavailable_reporting_currency_alignment",
+                  "unavailable_tracking_error_observations",
+                  "unavailable_positive_income",
+                  "unavailable_comparable_calendar_period",
+                  "unavailable_cash_counterfactual_inputs",
+                  "unavailable_price_quantity_basis",
+                  "partial_covered_subtotal",
+                  "historical_reconstruction_restated",
+                  "explicit_target_comparison_grouping",
+                  "output_quantization_residual",
+                  "unavailable_source_license",
+                  "unavailable_source_retention",
+                  "historical_source_stale",
+                  "unavailable_resource_capacity",
+                  "unavailable_income_assignment",
+                  "unavailable_benchmark_constituent_attribution"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Code"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "value",
+          "availability",
+          "reason_code",
+          "quality",
+          "coverage_key"
+        ],
+        "title": "HistoricalRatioMetric",
+        "type": "object"
+      },
+      "HistoricalRunContext": {
+        "additionalProperties": false,
+        "properties": {
+          "access": {
+            "$ref": "#/components/schemas/HistoricalAccess"
+          },
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "accounting_policy_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Accounting Policy Version",
+            "type": "string"
+          },
+          "assumptions": {
+            "items": {
+              "enum": [
+                "utc_accounting_boundaries",
+                "previous_completed_session_close",
+                "explicit_target_comparison",
+                "price_only_benchmark",
+                "act_365",
+                "income_holdings_and_fx_may_change"
+              ],
+              "type": "string"
+            },
+            "maxItems": 16,
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "availability": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "calculated_at": {
+            "format": "date-time",
+            "title": "Calculated At",
+            "type": "string"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/HistoricalCoverage"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "input_snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Input Snapshot Id",
+            "type": "string"
+          },
+          "method": {
+            "$ref": "#/components/schemas/HistoricalMethodMetadata"
+          },
+          "primitive_methods": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalMethodMetadata"
+            },
+            "maxItems": 8,
+            "title": "Primitive Methods",
+            "type": "array"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reconstruction": {
+            "enum": [
+              "point_in_time",
+              "restated"
+            ],
+            "title": "Reconstruction",
+            "type": "string"
+          },
+          "run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_count": {
+            "maximum": 8192.0,
+            "minimum": 0.0,
+            "title": "Source Count",
+            "type": "integer"
+          },
+          "source_omitted_count": {
+            "maximum": 8192.0,
+            "minimum": 0.0,
+            "title": "Source Omitted Count",
+            "type": "integer"
+          },
+          "source_policy_version": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Policy Version"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalSourceReference"
+            },
+            "maxItems": 64,
+            "title": "Sources",
+            "type": "array"
+          },
+          "warning_count": {
+            "maximum": 8192.0,
+            "minimum": 0.0,
+            "title": "Warning Count",
+            "type": "integer"
+          },
+          "warning_omitted_count": {
+            "maximum": 8192.0,
+            "minimum": 0.0,
+            "title": "Warning Omitted Count",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalIssue"
+            },
+            "maxItems": 64,
+            "title": "Warnings",
+            "type": "array"
+          },
+          "window": {
+            "$ref": "#/components/schemas/HistoricalWindow"
+          }
+        },
+        "required": [
+          "account_id",
+          "window",
+          "method",
+          "primitive_methods",
+          "input_digest",
+          "source_policy_version",
+          "accounting_policy_version",
+          "coverage",
+          "quality",
+          "availability",
+          "reconstruction",
+          "sources",
+          "warnings",
+          "assumptions",
+          "schema_version",
+          "run_id",
+          "input_snapshot_id",
+          "content_digest",
+          "calculated_at",
+          "source_count",
+          "source_omitted_count",
+          "warning_count",
+          "warning_omitted_count",
+          "access"
+        ],
+        "title": "HistoricalRunContext",
+        "type": "object"
+      },
+      "HistoricalSourceReference": {
+        "additionalProperties": false,
+        "properties": {
+          "derived_projection_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derived Projection Digest"
+          },
+          "effective_at": {
+            "format": "date-time",
+            "title": "Effective At",
+            "type": "string"
+          },
+          "first_observed_at": {
+            "format": "date-time",
+            "title": "First Observed At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "broker_source_record",
+              "broker_source_occurrence",
+              "portfolio_snapshot",
+              "calculation_run",
+              "reconciliation_run",
+              "price_snapshot",
+              "fx_snapshot",
+              "corporate_action_snapshot",
+              "provider_benchmark_snapshot",
+              "instrument_mapping",
+              "calendar_version",
+              "provider_license_version",
+              "benchmark_version",
+              "target_version",
+              "classification_evidence",
+              "historical_evidence",
+              "ingestion_run"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "original_fingerprint": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original Fingerprint"
+          },
+          "parent_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 16,
+            "title": "Parent Ids",
+            "type": "array"
+          },
+          "semantic_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Semantic Digest"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          }
+        },
+        "required": [
+          "kind",
+          "id",
+          "effective_at",
+          "first_observed_at"
+        ],
+        "title": "HistoricalSourceReference",
+        "type": "object"
+      },
+      "HistoricalWindow": {
+        "additionalProperties": false,
+        "properties": {
+          "coverage_policy": {
+            "enum": [
+              "require_complete",
+              "allow_degraded"
+            ],
+            "title": "Coverage Policy",
+            "type": "string"
+          },
+          "end_date": {
+            "format": "date",
+            "title": "End Date",
+            "type": "string"
+          },
+          "knowledge_policy": {
+            "enum": [
+              "as_of_cutoff",
+              "point_in_time"
+            ],
+            "title": "Knowledge Policy",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_date",
+          "end_date",
+          "source_cutoff_at",
+          "reporting_currency",
+          "coverage_policy",
+          "knowledge_policy"
+        ],
+        "title": "HistoricalWindow",
+        "type": "object"
+      },
+      "IncomeComponent": {
+        "additionalProperties": false,
+        "properties": {
+          "concentration": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "event_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Event Count",
+            "type": "integer"
+          },
+          "gross": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "group_key": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Key"
+          },
+          "instrument_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Id"
+          },
+          "key": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "negative_corrections": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "net": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "positive_income": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "unresolved": {
+            "default": false,
+            "title": "Unresolved",
+            "type": "boolean"
+          },
+          "withholding": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "instrument_id",
+          "group_key",
+          "currency",
+          "net",
+          "gross",
+          "withholding",
+          "positive_income",
+          "negative_corrections",
+          "concentration",
+          "event_count"
+        ],
+        "title": "IncomeComponent",
+        "type": "object"
+      },
+      "IncomeMetrics": {
+        "additionalProperties": false,
+        "properties": {
+          "dividend_growth": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "event_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Event Count",
+            "type": "integer"
+          },
+          "gross_income": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "income_yield": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "mean_invested_value": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "negative_corrections": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "net_income": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "positive_income": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "previous_period_income": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "withholding": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          }
+        },
+        "required": [
+          "net_income",
+          "gross_income",
+          "withholding",
+          "positive_income",
+          "negative_corrections",
+          "mean_invested_value",
+          "income_yield",
+          "previous_period_income",
+          "dividend_growth",
+          "event_count"
+        ],
+        "title": "IncomeMetrics",
+        "type": "object"
+      },
+      "IncomePeriod": {
+        "additionalProperties": false,
+        "properties": {
+          "end_date": {
+            "format": "date",
+            "title": "End Date",
+            "type": "string"
+          },
+          "reporting_net": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "start_date": {
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          },
+          "totals": {
+            "items": {
+              "$ref": "#/components/schemas/CurrencyIncomeTotals"
+            },
+            "maxItems": 32,
+            "title": "Totals",
+            "type": "array"
+          }
+        },
+        "required": [
+          "start_date",
+          "end_date",
+          "totals",
+          "reporting_net"
+        ],
+        "title": "IncomePeriod",
         "type": "object"
       },
       "InstrumentResponse": {
@@ -3053,6 +5521,257 @@
           "total"
         ],
         "title": "PageResponse[SnapshotResponse]",
+        "type": "object"
+      },
+      "PerformanceIntelligenceResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "calendar_returns": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalPeriodReturn"
+            },
+            "maxItems": 121,
+            "title": "Calendar Returns",
+            "type": "array"
+          },
+          "context": {
+            "$ref": "#/components/schemas/HistoricalRunContext"
+          },
+          "rolling_returns": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalPeriodReturn"
+            },
+            "maxItems": 3661,
+            "title": "Rolling Returns",
+            "type": "array"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/PerformancePoint"
+            },
+            "maxItems": 3661,
+            "title": "Series",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/PerformanceMetrics"
+          }
+        },
+        "required": [
+          "context",
+          "summary",
+          "series",
+          "rolling_returns",
+          "calendar_returns"
+        ],
+        "title": "PerformanceIntelligenceResponse",
+        "type": "object"
+      },
+      "PerformanceMetrics": {
+        "additionalProperties": false,
+        "properties": {
+          "annualized_modified_dietz_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "annualized_time_weighted_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "beginning_value": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "deposits": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "ending_value": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "fees": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "income": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "investment_gain": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "maximum_drawdown": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "modified_dietz_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "money_weighted_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "net_contributions": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "realized_profit_loss": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "time_weighted_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "unrealized_profit_loss": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "withdrawals": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "withholding_taxes": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          }
+        },
+        "required": [
+          "beginning_value",
+          "ending_value",
+          "deposits",
+          "withdrawals",
+          "net_contributions",
+          "investment_gain",
+          "income",
+          "fees",
+          "withholding_taxes",
+          "realized_profit_loss",
+          "unrealized_profit_loss",
+          "time_weighted_return",
+          "money_weighted_return",
+          "modified_dietz_return",
+          "annualized_time_weighted_return",
+          "annualized_modified_dietz_return",
+          "maximum_drawdown"
+        ],
+        "title": "PerformanceMetrics",
+        "type": "object"
+      },
+      "PerformancePoint": {
+        "additionalProperties": false,
+        "properties": {
+          "cash_value": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "cumulative_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "deposits": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "drawdown": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "external_flow": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "fees": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "flow_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Flow Count",
+            "type": "integer"
+          },
+          "flow_revision_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 4,
+            "title": "Flow Revision Ids",
+            "type": "array"
+          },
+          "flow_revision_omitted_count": {
+            "default": 0,
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Flow Revision Omitted Count",
+            "type": "integer"
+          },
+          "income": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "interval_return": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "invested_value": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "net_contributions": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "ordinal": {
+            "maximum": 3660.0,
+            "minimum": 0.0,
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "portfolio_value": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "twr_wealth": {
+            "$ref": "#/components/schemas/HistoricalRatioMetric"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          },
+          "withdrawals": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          },
+          "withholding_taxes": {
+            "$ref": "#/components/schemas/HistoricalMoneyMetric"
+          }
+        },
+        "required": [
+          "ordinal",
+          "date",
+          "valuation_at",
+          "portfolio_value",
+          "invested_value",
+          "cash_value",
+          "external_flow",
+          "deposits",
+          "withdrawals",
+          "net_contributions",
+          "income",
+          "fees",
+          "withholding_taxes",
+          "interval_return",
+          "cumulative_return",
+          "twr_wealth",
+          "drawdown",
+          "flow_count",
+          "flow_revision_ids"
+        ],
+        "title": "PerformancePoint",
+        "type": "object"
+      },
+      "PerformanceSeriesResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/HistoricalRunContext"
+          },
+          "points": {
+            "$ref": "#/components/schemas/HistoricalPage_PerformancePoint_"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/PerformanceMetrics"
+          }
+        },
+        "required": [
+          "context",
+          "summary",
+          "points"
+        ],
+        "title": "PerformanceSeriesResponse",
         "type": "object"
       },
       "PerformanceSummaryResponse": {
@@ -8345,6 +11064,444 @@
         ]
       }
     },
+    "/api/v1/accounts/{account_id}/attribution": {
+      "get": {
+        "operationId": "get_attribution_summary",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Start Date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "End Date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_cutoff_at",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "Source Cutoff At",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "reporting_currency",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "title": "Reporting Currency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "coverage_policy",
+            "required": false,
+            "schema": {
+              "default": "require_complete",
+              "enum": [
+                "require_complete",
+                "allow_degraded"
+              ],
+              "title": "Coverage Policy",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "knowledge_policy",
+            "required": false,
+            "schema": {
+              "default": "as_of_cutoff",
+              "enum": [
+                "as_of_cutoff",
+                "point_in_time"
+              ],
+              "title": "Knowledge Policy",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "input_snapshot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Input Snapshot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "grouping",
+            "required": false,
+            "schema": {
+              "default": "holding",
+              "enum": [
+                "holding",
+                "group",
+                "sector",
+                "asset_class",
+                "currency"
+              ],
+              "title": "Grouping",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "method",
+            "required": false,
+            "schema": {
+              "default": "twr",
+              "enum": [
+                "twr",
+                "modified_dietz"
+              ],
+              "title": "Method",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "benchmark_version_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Benchmark Version Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "target_version_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Version Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "grouping_policy",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "historical_assignment",
+                    "explicit_comparison"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Grouping Policy"
+            }
+          },
+          {
+            "in": "query",
+            "name": "top_n",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Top N",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttributionSummaryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Attribution Summary",
+        "tags": [
+          "historical"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/benchmark-comparison": {
+      "get": {
+        "operationId": "get_benchmark_comparison",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Start Date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "End Date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_cutoff_at",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "Source Cutoff At",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "reporting_currency",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "title": "Reporting Currency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "coverage_policy",
+            "required": false,
+            "schema": {
+              "default": "require_complete",
+              "enum": [
+                "require_complete",
+                "allow_degraded"
+              ],
+              "title": "Coverage Policy",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "knowledge_policy",
+            "required": false,
+            "schema": {
+              "default": "as_of_cutoff",
+              "enum": [
+                "as_of_cutoff",
+                "point_in_time"
+              ],
+              "title": "Knowledge Policy",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "input_snapshot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Input Snapshot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "benchmark_version_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Benchmark Version Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "frequency",
+            "required": false,
+            "schema": {
+              "default": "monthly",
+              "enum": [
+                "daily",
+                "monthly"
+              ],
+              "title": "Frequency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "rolling_window",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "enum": [
+                "none",
+                "calendar_days_30",
+                "calendar_days_90",
+                "calendar_days_365"
+              ],
+              "title": "Rolling Window",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "calendar_period",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "enum": [
+                "none",
+                "month",
+                "quarter",
+                "year"
+              ],
+              "title": "Calendar Period",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkComparisonResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Benchmark Comparison",
+        "tags": [
+          "historical"
+        ]
+      }
+    },
     "/api/v1/accounts/{account_id}/benchmark-sources": {
       "get": {
         "operationId": "get_benchmark_source_status",
@@ -8585,6 +11742,224 @@
         ]
       }
     },
+    "/api/v1/accounts/{account_id}/cash-flow-intelligence": {
+      "get": {
+        "operationId": "get_cash_flow_intelligence",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Start Date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "End Date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_cutoff_at",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "Source Cutoff At",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "reporting_currency",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "title": "Reporting Currency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "coverage_policy",
+            "required": false,
+            "schema": {
+              "default": "require_complete",
+              "enum": [
+                "require_complete",
+                "allow_degraded"
+              ],
+              "title": "Coverage Policy",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "knowledge_policy",
+            "required": false,
+            "schema": {
+              "default": "as_of_cutoff",
+              "enum": [
+                "as_of_cutoff",
+                "point_in_time"
+              ],
+              "title": "Knowledge Policy",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "input_snapshot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Input Snapshot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "frequency",
+            "required": false,
+            "schema": {
+              "default": "monthly",
+              "enum": [
+                "daily",
+                "monthly"
+              ],
+              "title": "Frequency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "deposit",
+                    "withdrawal",
+                    "transfer_in",
+                    "transfer_out",
+                    "buy",
+                    "sell",
+                    "dividend",
+                    "interest",
+                    "fee",
+                    "tax",
+                    "internal_transfer",
+                    "fx_conversion",
+                    "corporate_action",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CashFlowIntelligenceResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Cash Flow Intelligence",
+        "tags": [
+          "historical"
+        ]
+      }
+    },
     "/api/v1/accounts/{account_id}/data-quality": {
       "get": {
         "operationId": "data_quality_api_v1_accounts__account_id__data_quality_get",
@@ -8632,6 +12007,211 @@
         "summary": "Data Quality",
         "tags": [
           "quality"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/dividend-intelligence": {
+      "get": {
+        "operationId": "get_dividend_intelligence",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Start Date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "End Date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_cutoff_at",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "Source Cutoff At",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "reporting_currency",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "title": "Reporting Currency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "coverage_policy",
+            "required": false,
+            "schema": {
+              "default": "require_complete",
+              "enum": [
+                "require_complete",
+                "allow_degraded"
+              ],
+              "title": "Coverage Policy",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "knowledge_policy",
+            "required": false,
+            "schema": {
+              "default": "as_of_cutoff",
+              "enum": [
+                "as_of_cutoff",
+                "point_in_time"
+              ],
+              "title": "Knowledge Policy",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "input_snapshot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Input Snapshot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "grouping",
+            "required": false,
+            "schema": {
+              "default": "holding",
+              "enum": [
+                "holding",
+                "group"
+              ],
+              "title": "Grouping",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "target_version_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Version Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "grouping_policy",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "historical_assignment",
+                    "explicit_comparison"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Grouping Policy"
+            }
+          },
+          {
+            "in": "query",
+            "name": "top_n",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Top N",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DividendIntelligenceResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Dividend Intelligence",
+        "tags": [
+          "historical"
         ]
       }
     },
@@ -9393,6 +12973,441 @@
         "summary": "Orders",
         "tags": [
           "activity"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/performance/intelligence": {
+      "get": {
+        "operationId": "get_performance_summary",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Start Date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "End Date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_cutoff_at",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "Source Cutoff At",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "reporting_currency",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "title": "Reporting Currency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "coverage_policy",
+            "required": false,
+            "schema": {
+              "default": "require_complete",
+              "enum": [
+                "require_complete",
+                "allow_degraded"
+              ],
+              "title": "Coverage Policy",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "knowledge_policy",
+            "required": false,
+            "schema": {
+              "default": "as_of_cutoff",
+              "enum": [
+                "as_of_cutoff",
+                "point_in_time"
+              ],
+              "title": "Knowledge Policy",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "input_snapshot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Input Snapshot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "method",
+            "required": false,
+            "schema": {
+              "default": "twr",
+              "enum": [
+                "twr",
+                "mwr",
+                "modified_dietz"
+              ],
+              "title": "Method",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "frequency",
+            "required": false,
+            "schema": {
+              "default": "monthly",
+              "enum": [
+                "daily",
+                "monthly"
+              ],
+              "title": "Frequency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "rolling_window",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "enum": [
+                "none",
+                "calendar_days_30",
+                "calendar_days_90",
+                "calendar_days_365"
+              ],
+              "title": "Rolling Window",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "calendar_period",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "enum": [
+                "none",
+                "month",
+                "quarter",
+                "year"
+              ],
+              "title": "Calendar Period",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerformanceIntelligenceResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Performance Summary",
+        "tags": [
+          "historical"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/performance/series": {
+      "get": {
+        "operationId": "get_performance_series",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "Start Date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "title": "End Date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_cutoff_at",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "Source Cutoff At",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "reporting_currency",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "title": "Reporting Currency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "coverage_policy",
+            "required": false,
+            "schema": {
+              "default": "require_complete",
+              "enum": [
+                "require_complete",
+                "allow_degraded"
+              ],
+              "title": "Coverage Policy",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "knowledge_policy",
+            "required": false,
+            "schema": {
+              "default": "as_of_cutoff",
+              "enum": [
+                "as_of_cutoff",
+                "point_in_time"
+              ],
+              "title": "Knowledge Policy",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "input_snapshot_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Input Snapshot Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "method",
+            "required": false,
+            "schema": {
+              "default": "twr",
+              "enum": [
+                "twr",
+                "mwr",
+                "modified_dietz"
+              ],
+              "title": "Method",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "frequency",
+            "required": false,
+            "schema": {
+              "default": "monthly",
+              "enum": [
+                "daily",
+                "monthly"
+              ],
+              "title": "Frequency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "rolling_window",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "enum": [
+                "none",
+                "calendar_days_30",
+                "calendar_days_90",
+                "calendar_days_365"
+              ],
+              "title": "Rolling Window",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "calendar_period",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "enum": [
+                "none",
+                "month",
+                "quarter",
+                "year"
+              ],
+              "title": "Calendar Period",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerformanceSeriesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Performance Series",
+        "tags": [
+          "historical"
         ]
       }
     },
@@ -10899,7 +14914,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BenchmarkSnapshotHeader"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/BenchmarkSnapshotHeader"
+                    },
+                    {
+                      "$ref": "#/components/schemas/CompositeBenchmarkSnapshotHeader"
+                    }
+                  ],
+                  "title": "Response Get Benchmark Snapshot"
                 }
               }
             },
@@ -11009,7 +15032,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SourcePage_BenchmarkObservation_"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/SourcePage_BenchmarkObservation_"
+                    },
+                    {
+                      "$ref": "#/components/schemas/CompositeBenchmarkObservationPage"
+                    }
+                  ],
+                  "title": "Response List Benchmark Observations"
                 }
               }
             },

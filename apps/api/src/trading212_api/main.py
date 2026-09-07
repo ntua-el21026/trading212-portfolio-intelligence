@@ -31,6 +31,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text as sql_text
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import Response as StarletteResponse
+from trading212_application.historical import HistoricalServiceError, PerformanceIntelligenceService
 from trading212_application.ingestion import (
     RefreshScope,
     RunMode,
@@ -90,6 +91,7 @@ from trading212_security.sessions import InMemorySessionStore, SessionManager
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 from trading212_security.tokens import BearerAuthenticator, LocalSyntheticAuthenticator
 
+from .historical_routes import register_historical_routes
 from .planning_routes import register_planning_routes
 from .refresh_queue import PostgresRefreshQueue
 from .schemas import (
@@ -145,6 +147,7 @@ class ApiContext:
     target_service: TargetService | None
     planning_service: PlanningService | None
     source_service: SourceService | None
+    historical_service: PerformanceIntelligenceService | None
     sessions: SessionManager
     local_authenticator: LocalSyntheticAuthenticator | None
     bearer_authenticator: BearerAuthenticator | None
@@ -161,6 +164,7 @@ def create_app(
     target_service: TargetService | None = None,
     planning_service: PlanningService | None = None,
     source_service: SourceService | None = None,
+    historical_service: PerformanceIntelligenceService | None = None,
     session_manager: SessionManager | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -185,16 +189,22 @@ def create_app(
             "bearer authenticator, and dispatcher-aware readiness probe"
         )
     if service is None:
-        portfolio_service, default_targets, default_planning, default_sources, default_readiness = (
-            _local_runtime_defaults(
-                security_settings,
-                runtime_clock,
-                cursor_signing_key=cursor_signing_key,
-            )
+        (
+            portfolio_service,
+            default_targets,
+            default_planning,
+            default_sources,
+            default_historical,
+            default_readiness,
+        ) = _local_runtime_defaults(
+            security_settings,
+            runtime_clock,
+            cursor_signing_key=cursor_signing_key,
         )
         target_service = target_service or default_targets
         planning_service = planning_service or default_planning
         source_service = source_service or default_sources
+        historical_service = historical_service or default_historical
     else:
         portfolio_service = service
         default_readiness = _ready
@@ -214,6 +224,7 @@ def create_app(
         target_service=target_service,
         planning_service=planning_service,
         source_service=source_service,
+        historical_service=historical_service,
         sessions=sessions,
         local_authenticator=local_authenticator,
         bearer_authenticator=bearer_authenticator,
@@ -260,6 +271,7 @@ def create_app(
     register_target_routes(application, _principal, _context)
     register_planning_routes(application, _principal, _context)
     register_source_routes(application, _principal, _context)
+    register_historical_routes(application, _principal, _context)
     _install_openapi_contract(application)
     return application
 
@@ -270,8 +282,14 @@ def _local_runtime_defaults(
     *,
     cursor_signing_key: bytes | None,
 ) -> tuple[
-    PortfolioService, TargetService, PlanningService, SourceService, Callable[[], Awaitable[bool]]
+    PortfolioService,
+    TargetService,
+    PlanningService,
+    SourceService,
+    PerformanceIntelligenceService,
+    Callable[[], Awaitable[bool]],
 ]:
+    from trading212_persistence.historical_service import PostgresHistoricalService
     from trading212_persistence.planning_service import PostgresPlanningService
     from trading212_persistence.source_service import PostgresSourceService
 
@@ -322,6 +340,12 @@ def _local_runtime_defaults(
         ),
         PostgresSourceService(
             sessions=sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=settings.cursor_ttl_seconds,
+        ),
+        PostgresHistoricalService(
+            sessions,
             clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
             cursor_ttl_seconds=settings.cursor_ttl_seconds,
@@ -663,6 +687,32 @@ def _register_error_handlers(application: FastAPI) -> None:
         code = exc.code.value
         response_status, message = errors.get(
             code, (500, "The source operation could not complete.")
+        )
+        return JSONResponse(
+            status_code=response_status,
+            content=envelope(request, code, message, retryable=response_status == 503),
+            headers={"Cache-Control": "private, no-store"},
+        )
+
+    @application.exception_handler(HistoricalServiceError)
+    async def historical_service_error(
+        request: Request, exc: HistoricalServiceError
+    ) -> JSONResponse:
+        errors = {
+            "NOT_FOUND": (404, "The requested historical resource was not found."),
+            "ACCESS_DENIED": (403, "Access to this historical resource is denied."),
+            "VALIDATION_FAILED": (422, "The historical request is invalid."),
+            "INPUT_SNAPSHOT_MISMATCH": (
+                409,
+                "The retained input does not match the requested historical scope.",
+            ),
+            "IDEMPOTENCY_KEY_REUSED": (409, "The idempotency key belongs to a different command."),
+            "RESULT_TOO_LARGE": (422, "The historical result exceeds its permitted size."),
+            "HISTORICAL_UNAVAILABLE": (503, "The historical service is unavailable."),
+        }
+        code = exc.code.value
+        response_status, message = errors.get(
+            code, (500, "The historical operation could not complete.")
         )
         return JSONResponse(
             status_code=response_status,
