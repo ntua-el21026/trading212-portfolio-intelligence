@@ -1,0 +1,563 @@
+{
+  "baseline": {
+    "api_mcp_canonical_fields_equal": true,
+    "canonical_summary_sha256_after_restart": "4778f1957fd46b2846c43c3e5b98addf7b8f8d0ed538104ab304c6d955d5b07f",
+    "canonical_summary_sha256_before_restart": "4778f1957fd46b2846c43c3e5b98addf7b8f8d0ed538104ab304c6d955d5b07f",
+    "canonical_summary_sha256_initial": "4778f1957fd46b2846c43c3e5b98addf7b8f8d0ed538104ab304c6d955d5b07f",
+    "currency": "EUR",
+    "mcp_tool_count": 11,
+    "mcp_tool_names": [
+      "compare_portfolio_snapshots",
+      "get_account_summary",
+      "get_data_quality_summary",
+      "get_direct_allocation",
+      "get_dividend_summary",
+      "get_portfolio_snapshot",
+      "get_reconciliation_status",
+      "get_virtual_pie",
+      "list_positions",
+      "list_recent_transactions",
+      "list_virtual_pies"
+    ],
+    "value": "248431.27",
+    "web_rendered_canonical_value": true
+  },
+  "execution": {
+    "build_recorded_at": "2026-09-07T14:49:35.017150+00:00",
+    "command_timestamp_note": "Only source verification, overall completion, build record and activation times were recorded; per-command timings are not inferred.",
+    "commands": [
+      {
+        "command": "COMPOSE_PROJECT_NAME=t212pi_stage_a_20260907 make container-build",
+        "exit_code": 0,
+        "phase": "clean_source_image_build"
+      },
+      {
+        "command": "uv run python <runtime-evidence>/acceptance.py --phase all --execute-authorized --expected-sha ecc75154397c8f9d7532fa2df8576846b60bae7c",
+        "exit_code": 0,
+        "phase": "complete_runtime_harness"
+      },
+      {
+        "command": "docker compose -p t212pi_p2_01_corrected_runtime_20260907 -f <checkout>/compose.yaml -f <runtime-evidence>/override.json up -d --no-build migrate seed",
+        "exit_code": 0,
+        "phase": "bootstrap_migration_seed"
+      },
+      {
+        "command": "docker compose -p t212pi_p2_01_corrected_runtime_20260907 -f <checkout>/compose.yaml -f <runtime-evidence>/override.json run --rm --no-deps migrate",
+        "exit_code": 0,
+        "phase": "repeat_migration"
+      },
+      {
+        "command": "docker compose -p t212pi_p2_01_corrected_runtime_20260907 -f <checkout>/compose.yaml -f <runtime-evidence>/override.json run --rm --no-deps seed",
+        "exit_code": 0,
+        "phase": "repeat_seed"
+      },
+      {
+        "command": "docker compose -p t212pi_p2_01_corrected_runtime_20260907 -f <checkout>/compose.yaml -f <runtime-evidence>/override.json up -d --no-build --wait --wait-timeout 180 api worker dispatcher mcp web",
+        "exit_code": 0,
+        "phase": "start_applications"
+      },
+      {
+        "command": "docker compose -p t212pi_p2_01_corrected_runtime_20260907 -f <checkout>/compose.yaml -f <runtime-evidence>/override.json stop postgres redis api worker dispatcher mcp web",
+        "exit_code": 0,
+        "phase": "stop_all_seven"
+      },
+      {
+        "command": "docker compose -p t212pi_p2_01_corrected_runtime_20260907 -f <checkout>/compose.yaml -f <runtime-evidence>/override.json start --wait --wait-timeout 180 postgres redis api worker dispatcher mcp web",
+        "exit_code": 0,
+        "phase": "restart_all_seven"
+      }
+    ],
+    "completed_at": "2026-09-07T14:51:13.489738+00:00",
+    "exit_code": 0,
+    "path_placeholders": {
+      "<checkout>": "The clean checkout of source_sha.",
+      "<runtime-evidence>": "The operator-controlled temporary evidence directory containing acceptance.py, override.json and immutable image/build manifests."
+    },
+    "ports": {
+      "API_PORT": "48000",
+      "MCP_PORT": "48001",
+      "POSTGRES_PORT": "45432",
+      "REDIS_PORT": "46379",
+      "WEB_PORT": "43000"
+    },
+    "project": "t212pi_p2_01_corrected_runtime_20260907",
+    "recovery_errors": [],
+    "resumed_phases": false,
+    "seconds_from_source_verification_to_completion": 77.523487,
+    "services": [
+      "postgres",
+      "redis",
+      "api",
+      "worker",
+      "dispatcher",
+      "mcp",
+      "web"
+    ],
+    "source_verified_at": "2026-09-07T14:49:55.966251+00:00"
+  },
+  "hardening": {
+    "api": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:5ce99fc1a3bc8a9bef9af1f4c80ed378b8b3705073b94f7953031b1f1b9c7d88",
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    },
+    "dispatcher": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:118b4e2fbd517761eb372aed5d67cf44f521f7c7723c2750d1ad6b576d0690c2",
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    },
+    "mcp": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:a19ff1dcb9993f3686ea34ac2e3ed5c5174d5a398cf4a143db4a45fd7fd0c8d5",
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    },
+    "postgres": {
+      "cap_drop": null,
+      "configured_user": "postgres",
+      "image_id": "sha256:78ade3c83735edb2544553271bb6c278139467d72a1e4c4513831cbe9e0ea902",
+      "readonly_rootfs": false,
+      "security_opt": null,
+      "uid": 999
+    },
+    "redis": {
+      "cap_drop": null,
+      "configured_user": "redis",
+      "image_id": "sha256:a61c70b08f636d97bf289f34a24a09cb2a5b7a365eab9eafe71cb4f60890ac48",
+      "readonly_rootfs": false,
+      "security_opt": null,
+      "uid": 999
+    },
+    "web": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:317fc7c7235126c8a9940bde52667ea367b1c660bff779e9ff55874779d368fd",
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    },
+    "worker": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:118b4e2fbd517761eb372aed5d67cf44f521f7c7723c2750d1ad6b576d0690c2",
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    }
+  },
+  "migration_and_seed": {
+    "alembic_head": "20260907_0009",
+    "repeat_migration_seed_rows_and_hashes_identical": true,
+    "seed_counts_after_repeat": {
+      "cash_balance_observations": 1,
+      "cash_flows": 1,
+      "dividends": 1,
+      "ingestion_runs": 1,
+      "ledger_entries": 3,
+      "order_observations": 2,
+      "portfolio_snapshots": 1,
+      "position_observations": 1,
+      "source_record_occurrences": 10,
+      "source_records": 10,
+      "target_command_identities": 8,
+      "target_constraints": 2,
+      "target_exclusions": 0,
+      "target_holdings": 2,
+      "target_mapping_decisions": 2,
+      "target_nodes": 6,
+      "target_normalization_adjustments": 0,
+      "target_validation_issues": 0,
+      "target_validation_results": 2,
+      "target_version_events": 8,
+      "target_versions": 2,
+      "transactions": 2,
+      "virtual_portfolio_events": 2,
+      "virtual_portfolios": 2
+    },
+    "seed_counts_before_repeat": {
+      "cash_balance_observations": 1,
+      "cash_flows": 1,
+      "dividends": 1,
+      "ingestion_runs": 1,
+      "ledger_entries": 3,
+      "order_observations": 2,
+      "portfolio_snapshots": 1,
+      "position_observations": 1,
+      "source_record_occurrences": 10,
+      "source_records": 10,
+      "target_command_identities": 8,
+      "target_constraints": 2,
+      "target_exclusions": 0,
+      "target_holdings": 2,
+      "target_mapping_decisions": 2,
+      "target_nodes": 6,
+      "target_normalization_adjustments": 0,
+      "target_validation_issues": 0,
+      "target_validation_results": 2,
+      "target_version_events": 8,
+      "target_versions": 2,
+      "transactions": 2,
+      "virtual_portfolio_events": 2,
+      "virtual_portfolios": 2
+    }
+  },
+  "privacy": {
+    "database_rows_scanned": 229,
+    "database_tables_scanned": 45,
+    "logs_scanned": 7,
+    "runtime_secret_and_export_markers_absent": true
+  },
+  "restart": {
+    "activation_events_after_restart": 1,
+    "all_seven_initial_compose_wait_succeeded": true,
+    "all_seven_restart_compose_wait_succeeded": true,
+    "api_readiness_status_before_after": 200,
+    "canonical_and_target_rows_identical": true,
+    "excluded_mutable_bookkeeping": "Collection query snapshot/reference retention and worker health bookkeeping are excluded from equality comparison; privacy scans include every public table.",
+    "hash_method": "SHA256 over newline-joined PostgreSQL row_to_json(t)::text rows ordered by primary-key id; exact decimal text is preserved.",
+    "mcp_transport_status_before_after": 200,
+    "published_content_digests_identical": true,
+    "row_comparisons": {
+      "cash_balance_observations": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "3a0d37e0de6ff80c7ce6125aa5608605e4a3da0bd8ee4b7a10e8e3d249c0c038",
+        "sha256_before": "3a0d37e0de6ff80c7ce6125aa5608605e4a3da0bd8ee4b7a10e8e3d249c0c038"
+      },
+      "cash_flows": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "d76ffee57b25887303c1903e990052d9d15671b8cb1f5526eab542a39cd5feb8",
+        "sha256_before": "d76ffee57b25887303c1903e990052d9d15671b8cb1f5526eab542a39cd5feb8"
+      },
+      "dividends": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "abe660f5e61fbb8a8675675840612003bea9244c81c801e70ab64bb376366500",
+        "sha256_before": "abe660f5e61fbb8a8675675840612003bea9244c81c801e70ab64bb376366500"
+      },
+      "ingestion_runs": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "12c648e5fc0110252d26ffe805eaba52e3b342fa892c1a68ea8417ed919315e2",
+        "sha256_before": "12c648e5fc0110252d26ffe805eaba52e3b342fa892c1a68ea8417ed919315e2"
+      },
+      "ledger_entries": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "958ece314c2b57f4f58201f8153381291d871a8dfedd42da1482fb475ad4cf58",
+        "sha256_before": "958ece314c2b57f4f58201f8153381291d871a8dfedd42da1482fb475ad4cf58"
+      },
+      "order_observations": {
+        "count_after": 2,
+        "count_before": 2,
+        "sha256_after": "7b6b1b5b14daab726f466cf41a874c11090f38eba29e211a5b59c948e8b6a356",
+        "sha256_before": "7b6b1b5b14daab726f466cf41a874c11090f38eba29e211a5b59c948e8b6a356"
+      },
+      "portfolio_snapshots": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "c66f7987670024dab56522fd1be0d2457918228a21fb01dc2756f4afb5aa2f3a",
+        "sha256_before": "c66f7987670024dab56522fd1be0d2457918228a21fb01dc2756f4afb5aa2f3a"
+      },
+      "position_observations": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "ac70f16d6883ee71f31093a3d353831a4898a83360595792507671aac0470039",
+        "sha256_before": "ac70f16d6883ee71f31093a3d353831a4898a83360595792507671aac0470039"
+      },
+      "source_record_occurrences": {
+        "count_after": 10,
+        "count_before": 10,
+        "sha256_after": "5eaf49952006c63f0a9e82cd8f53fd8dc3b74704adc4078faa7d8cd365bf0b06",
+        "sha256_before": "5eaf49952006c63f0a9e82cd8f53fd8dc3b74704adc4078faa7d8cd365bf0b06"
+      },
+      "source_records": {
+        "count_after": 10,
+        "count_before": 10,
+        "sha256_after": "6670dd43233aef7d3e1053159017e0ece2beef7903737d1f57f3a5ed2a7b7a6b",
+        "sha256_before": "6670dd43233aef7d3e1053159017e0ece2beef7903737d1f57f3a5ed2a7b7a6b"
+      },
+      "target_command_identities": {
+        "count_after": 12,
+        "count_before": 12,
+        "sha256_after": "c924cb3062ade06cd086949ae7b23dffd99a4e47ef673429bb04cb0037f00ae6",
+        "sha256_before": "c924cb3062ade06cd086949ae7b23dffd99a4e47ef673429bb04cb0037f00ae6"
+      },
+      "target_constraints": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "c884bbae262f88728178533c8a41675479e211204b3624bcffc2820029062567",
+        "sha256_before": "c884bbae262f88728178533c8a41675479e211204b3624bcffc2820029062567"
+      },
+      "target_exclusions": {
+        "count_after": 0,
+        "count_before": 0,
+        "sha256_after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "target_holdings": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "7daa27e502c8405a3955796fd268af22f2d156cf62c803068e36e6e5da5d8d30",
+        "sha256_before": "7daa27e502c8405a3955796fd268af22f2d156cf62c803068e36e6e5da5d8d30"
+      },
+      "target_mapping_decisions": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "148172ce795192fda5081c62924e7f09afeac85b3847f9e06a4146b0f4aeee40",
+        "sha256_before": "148172ce795192fda5081c62924e7f09afeac85b3847f9e06a4146b0f4aeee40"
+      },
+      "target_nodes": {
+        "count_after": 9,
+        "count_before": 9,
+        "sha256_after": "80d7b43c764123af2879afe52e6b80d2853bad45833ec0c69240408ddad1315d",
+        "sha256_before": "80d7b43c764123af2879afe52e6b80d2853bad45833ec0c69240408ddad1315d"
+      },
+      "target_normalization_adjustments": {
+        "count_after": 0,
+        "count_before": 0,
+        "sha256_after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "target_validation_issues": {
+        "count_after": 0,
+        "count_before": 0,
+        "sha256_after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "target_validation_results": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "8fd690b11c0e8b82432e27025a31ba75ae6566b64ac075f9811b74968d2da8d5",
+        "sha256_before": "8fd690b11c0e8b82432e27025a31ba75ae6566b64ac075f9811b74968d2da8d5"
+      },
+      "target_version_events": {
+        "count_after": 12,
+        "count_before": 12,
+        "sha256_after": "dadc384cf750b45a2020df58ba766a1cf883b290c3074a2f4ddf80b61817373c",
+        "sha256_before": "dadc384cf750b45a2020df58ba766a1cf883b290c3074a2f4ddf80b61817373c"
+      },
+      "target_versions": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "26823ceedfde81f87066892d0a0c6dafa27867eafab582649d7281da3fe83a6f",
+        "sha256_before": "26823ceedfde81f87066892d0a0c6dafa27867eafab582649d7281da3fe83a6f"
+      },
+      "transactions": {
+        "count_after": 2,
+        "count_before": 2,
+        "sha256_after": "017da94733585f26b636a3c314528f46bfe5a0dd0c891628d2688c350ddbb38a",
+        "sha256_before": "017da94733585f26b636a3c314528f46bfe5a0dd0c891628d2688c350ddbb38a"
+      },
+      "virtual_portfolio_events": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "eb1ecd6297ba2549b038693479d3fc2a1840bd961c0d15c0acff1d9572b0c6d7",
+        "sha256_before": "eb1ecd6297ba2549b038693479d3fc2a1840bd961c0d15c0acff1d9572b0c6d7"
+      },
+      "virtual_portfolios": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "690faa697f371a7579a85318ed5a82c4174ca05877a119b8e664737dcebf0a7a",
+        "sha256_before": "690faa697f371a7579a85318ed5a82c4174ca05877a119b8e664737dcebf0a7a"
+      }
+    },
+    "stopped_states": {
+      "api": "exited",
+      "dispatcher": "exited",
+      "mcp": "exited",
+      "postgres": "exited",
+      "redis": "exited",
+      "web": "exited",
+      "worker": "exited"
+    },
+    "table_comparison_count": 24,
+    "volumes_after": [
+      "t212pi_p2_01_corrected_runtime_20260907_postgres-data"
+    ],
+    "volumes_before": [
+      "t212pi_p2_01_corrected_runtime_20260907_postgres-data"
+    ],
+    "web_overview_status_before_after": 200
+  },
+  "result": "passed",
+  "retention": {
+    "credentials_or_environment_snapshots_retained": false,
+    "fixtures": "Synthetic local accounts, holdings and target commands only.",
+    "no_broker_network_dispatch": true,
+    "prior_stage_a_and_6dde_projects_and_volumes_preserved": true,
+    "runtime_project_and_volume_retained": true
+  },
+  "scheduled_activation": {
+    "activation_events": 1,
+    "actor": "system:target-scheduler",
+    "content_digest": "a28489fc2fba5f6903fd5767b9606cb59738b40aa8ab82917e11d2efef4d42aa",
+    "effective_at": "2026-09-07T14:50:46.128344+00:00",
+    "event_created_at": "2026-09-07T14:50:46.459558+00:00",
+    "event_latency_seconds": 0.331214,
+    "exact_publish_retry": true,
+    "observed_at": "2026-09-07T14:50:46.708596+00:00",
+    "observed_latency_seconds": 0.580252,
+    "poll_elapsed_seconds": 20.479682467999737,
+    "portfolio_id": "56cce9ba-334f-48e9-84c6-2af4061ddcd5",
+    "runtime_component": "dispatcher",
+    "version_id": "f9b13c70-5b84-443c-95f9-7c38941938ab"
+  },
+  "schema_version": 1,
+  "scope": "P2-01 isolated synthetic local runtime acceptance only; aggregate checks and GitHub Actions are recorded separately.",
+  "seeded_published_targets": {
+    "account": {
+      "api_mcp_full_metadata_validation_constraints_exclusions_equal": true,
+      "content_digest": "bde7f60e955d2de837dd5d464bbd7c17f2c80e5bf1df954ae6f294704a9c6cc3",
+      "full_hierarchy_and_explicit_subtree_equal": true,
+      "nodes": [
+        {
+          "effective_weight": "0.1",
+          "holding": null,
+          "key": "cash",
+          "kind": "cash",
+          "node_id": "35bdf1a3-9362-47e9-9856-6ebe9db334ed",
+          "parent_key": null,
+          "path_factors": [
+            "0.1"
+          ],
+          "weight": "0.1"
+        },
+        {
+          "effective_weight": "0.9",
+          "holding": {
+            "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+            "listing_id": null,
+            "preferred_listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+            "state": "resolved"
+          },
+          "key": "global-equity",
+          "kind": "holding",
+          "node_id": "0d73fdea-4c0b-46b5-a773-f5bd6b8be0e5",
+          "parent_key": "growth",
+          "path_factors": [
+            "0.9",
+            "1"
+          ],
+          "weight": "1"
+        },
+        {
+          "effective_weight": "0.9",
+          "holding": null,
+          "key": "growth",
+          "kind": "group",
+          "node_id": "565d96d8-f88c-418b-9d21-b07c626ea14a",
+          "parent_key": null,
+          "path_factors": [
+            "0.9"
+          ],
+          "weight": "0.9"
+        }
+      ],
+      "portfolio_id": "f3ee6a68-05ed-48c4-a209-a9d15bb62e4e",
+      "state": "active",
+      "version_id": "a1f1da7f-fba0-4045-902e-e2437aee14ee"
+    },
+    "template": {
+      "api_mcp_full_metadata_validation_constraints_exclusions_equal": true,
+      "content_digest": "bde7f60e955d2de837dd5d464bbd7c17f2c80e5bf1df954ae6f294704a9c6cc3",
+      "full_hierarchy_and_explicit_subtree_equal": true,
+      "nodes": [
+        {
+          "effective_weight": "0.1",
+          "holding": null,
+          "key": "cash",
+          "kind": "cash",
+          "node_id": "9f142c66-9e2b-4657-89c4-af0ed32f3a90",
+          "parent_key": null,
+          "path_factors": [
+            "0.1"
+          ],
+          "weight": "0.1"
+        },
+        {
+          "effective_weight": "0.9",
+          "holding": {
+            "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+            "listing_id": null,
+            "preferred_listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+            "state": "resolved"
+          },
+          "key": "global-equity",
+          "kind": "holding",
+          "node_id": "4caf9e7f-fe1c-4811-9ce6-e80e38359eca",
+          "parent_key": "growth",
+          "path_factors": [
+            "0.9",
+            "1"
+          ],
+          "weight": "1"
+        },
+        {
+          "effective_weight": "0.9",
+          "holding": null,
+          "key": "growth",
+          "kind": "group",
+          "node_id": "cc39d4ed-4ab1-43bd-928c-07dd82c9295e",
+          "parent_key": null,
+          "path_factors": [
+            "0.9"
+          ],
+          "weight": "0.9"
+        }
+      ],
+      "portfolio_id": "90f9f0de-3137-4547-a8c8-7ff910f50371",
+      "state": "active",
+      "version_id": "02aaa5db-4a70-4b22-9022-20f85fce3559"
+    }
+  },
+  "source": {
+    "build_binding_sha256": "435adbe83ded254b932b3d63c9e56e301ab7d1093bcaef48ee835e10ab9a0220",
+    "build_checkout_clean_after": true,
+    "build_checkout_clean_before": true,
+    "build_log_sha256": "1dc60df1e2d5c12afdb7637a341f8259f481fd958f2c04cc96d62cee2eb39541",
+    "harness_sha256": "9ce928b90a0d8c998ed5637f04acbd708117b1494ae4be48cae2d0cddf234a8c",
+    "initial_checkout_clean": true,
+    "raw_runtime_evidence_sha256": "e0034cc2ad1b8e4f8573c117bcd9ed18b22d656c21aafc38905ad60ba753601f",
+    "runtime_container_image_ids_match_verified_build": true,
+    "runtime_log_sha256": "ee043f6518db916055dc2ce52277775156030b894db7ea158b2cec13a0f3e292",
+    "verified_image_ids": {
+      "api": "sha256:5ce99fc1a3bc8a9bef9af1f4c80ed378b8b3705073b94f7953031b1f1b9c7d88",
+      "mcp": "sha256:a19ff1dcb9993f3686ea34ac2e3ed5c5174d5a398cf4a143db4a45fd7fd0c8d5",
+      "postgres": "sha256:78ade3c83735edb2544553271bb6c278139467d72a1e4c4513831cbe9e0ea902",
+      "redis": "sha256:a61c70b08f636d97bf289f34a24a09cb2a5b7a365eab9eafe71cb4f60890ac48",
+      "web": "sha256:317fc7c7235126c8a9940bde52667ea367b1c660bff779e9ff55874779d368fd",
+      "worker": "sha256:118b4e2fbd517761eb372aed5d67cf44f521f7c7723c2750d1ad6b576d0690c2"
+    }
+  },
+  "source_sha": "ecc75154397c8f9d7532fa2df8576846b60bae7c"
+}

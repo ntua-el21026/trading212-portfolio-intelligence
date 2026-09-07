@@ -15,8 +15,19 @@ all 24 locally executable acceptance rows and 14 mandatory synthetic scenarios,
 all three workflows, all local gates, and the fresh Compose acceptance passed.
 Python verification: 371 isolated plus 73 service-backed tests and 85% coverage.
 Migration head: `20260907_0008`; MCP: nine tools; Trading 212: ten GET capabilities.
-Phase 2 design closure is accepted; implementation is `in_progress` with zero
-completed packages. P2-01 domain, persistence, API, web, MCP, and scheduled activation are integrated; final regression and runtime gates are in progress. The working tree adds migration `20260907_0009` and two target read tools (11 tools total). Phase 3 remains `not_started`. See [the audit record](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
+Phase 2 is `in_progress`: P2-01 is complete at
+`ecc75154397c8f9d7532fa2df8576846b60bae7c`, with three of 29 local acceptance rows
+and five of 40 scenarios complete. Its domain, persistence, API, web, MCP and
+scheduled activation passed full local validation, all three CI workflows and a
+fresh seven-service restart. Verification recorded 592 isolated and 103
+service-backed Python tests, 86% coverage, 48 web unit tests, 32 synthetic browser
+tests and 12 API-backed browser tests, with no browser retries. Migration head is
+`20260907_0009`; the implemented MCP registry contains 11 tools. The original
+implementation's two Gitleaks test-code false positives were corrected with exact
+historical fingerprint exceptions in the accepted SHA and all gates rerun.
+See [the P2-01 evidence](docs/implementation/evidence/phase-2-p2-01-ecc7515.json).
+P2-02 contribution planning is next; P2-02 through P2-10 remain required.
+Phase 3 remains `not_started`.
 
 ## Previously accepted baseline
 

@@ -2,26 +2,26 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** Pending; 0/40 complete
+**Implementation acceptance:** In progress; P2-01 complete; 5/40 complete
 
-**Validated Phase 2 SHA:** None
+**P2-01 evidence SHA:** `ecc75154397c8f9d7532fa2df8576846b60bae7c`; final Phase 2 release SHA pending
 
 **Authority:** Owner assignment, Phase 2 execution manifest and acceptance matrix
 
 All forty owner-required scenarios are preserved below. Each row defines the
-required executable predicate; these are test requirements, not claims that
-those tests already exist. Phase 1 acceptance at
+required executable predicate; pending rows remain requirements without claimed
+execution. P2-S01 through P2-S05 have exact tests and retained evidence. Phase 1 acceptance at
 `99df47b6633791c3900a52f46f56d48be922a436` is prerequisite evidence only.
 
 ## Mandatory predicates
 
 | ID | Owner-required outcome | Package | Required executable/retained evidence | Exact test nodes / evidence SHA | State |
 |---|---|---|---|---|---|
-| P2-S01 | Create a hierarchical virtual Pie with cash and holding targets. | P2-01 | PostgreSQL/API hierarchy with cash, nested groups and holding targets; persist/reload canonical order and owner/account scope. | Not recorded / none | `pending` |
-| P2-S02 | Publish target version V1 and prove it is immutable. | P2-01 | Publish V1; reject update/delete through public commands and persistence constraints; assert content/hash unchanged. | Not recorded / none | `pending` |
-| P2-S03 | Publish V2 and compare it deterministically with V1. | P2-01 | Publish changed V2 with precondition; compare stable identifiers/weights and effective versions in both directions. | Not recorded / none | `pending` |
-| P2-S04 | Reject invalid target sums and contradictory constraints. | P2-01 | Exact-sum tolerance boundaries, negative/overfull weights, cycles, duplicate nodes and conflicting constraints fail atomically. | Not recorded / none | `pending` |
-| P2-S05 | Preserve unresolved instrument mappings explicitly. | P2-01 | Unresolved listing/entity fixtures retain unresolved state, coverage/warnings and cannot become invented mappings. | Not recorded / none | `pending` |
+| P2-S01 | Create a hierarchical virtual Pie with cash and holding targets. | P2-01 | PostgreSQL/API hierarchy with cash, nested groups and holding targets; persist/reload canonical order and owner/account scope. | `tests/integration/test_virtual_targets.py::test_constraint_exclusion_roundtrip_and_invalid_relational_input_rolls_back`; [full assertion map and exact-SHA results](evidence/phase-2-p2-01-ecc7515.json) | `complete` |
+| P2-S02 | Publish target version V1 and prove it is immutable. | P2-01 | Publish V1; reject update/delete through public commands and persistence constraints; assert content/hash unchanged. | `tests/integration/test_virtual_targets.py::test_normalize_publish_clone_and_database_immutability`; [full assertion map and exact-SHA results](evidence/phase-2-p2-01-ecc7515.json) | `complete` |
+| P2-S03 | Publish V2 and compare it deterministically with V1. | P2-01 | Publish changed V2 with precondition; compare stable identifiers/weights and effective versions in both directions. | `tests/integration/test_virtual_targets.py::test_published_version_comparison_is_exact_bidirectional_and_restart_stable`; [full assertion map and exact-SHA results](evidence/phase-2-p2-01-ecc7515.json) | `complete` |
+| P2-S04 | Reject invalid target sums and contradictory constraints. | P2-01 | Exact-sum tolerance boundaries, negative/overfull weights, cycles, duplicate nodes and conflicting constraints fail atomically. | `tests/unit/domain/test_targets.py::test_ancestor_funding_and_post_weight_conflicts_and_exclusions`; [full assertion map and exact-SHA results](evidence/phase-2-p2-01-ecc7515.json) | `complete` |
+| P2-S05 | Preserve unresolved instrument mappings explicitly. | P2-01 | Unresolved listing/entity fixtures retain unresolved state, coverage/warnings and cannot become invented mappings. | `tests/integration/test_virtual_targets.py::test_unresolved_mapping_is_explicit_and_publishable_with_warning`; [full assertion map and exact-SHA results](evidence/phase-2-p2-01-ecc7515.json) | `complete` |
 | P2-S06 | Calculate actual-versus-target drift from an immutable portfolio snapshot. | P2-02 | Hand-calculated cash/group/holding drift references use explicit immutable snapshot and target version; later mutations do not alter result. | Not recorded / none | `pending` |
 | P2-S07 | Produce a no-sale contribution plan that conserves the contribution exactly. | P2-02 | Decimal property and reference cases prove non-negative allocations, no sales and exact contribution = allocations + residual. | Not recorded / none | `pending` |
 | P2-S08 | Obey minimum allocations, increments, exclusions, and maximum weights. | P2-02 | Reference/exhaustive small constrained cases and randomized properties cover minimums, increments, eligibility, exclusions, hierarchy and maximum weights. | Not recorded / none | `pending` |

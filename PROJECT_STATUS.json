@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-07T14:25:27Z",
+  "updated_at": "2026-09-07T14:56:54.093457Z",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -83,7 +83,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "P2-01_virtual_portfolios_and_immutable_targets",
+  "next_gate": "P2-02_actual_target_drift_and_contribution_plans",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -141,7 +141,14 @@
   "phase_2_design": {
     "version": "0.2",
     "status": "accepted",
-    "runtime_acceptance": "pending",
+    "runtime_acceptance": "in_progress",
     "authority": "docs/DESIGN_FREEZE_V0_2.md"
+  },
+  "phase_2_package_evidence": {
+    "P2-01": {
+      "sha": "ecc75154397c8f9d7532fa2df8576846b60bae7c",
+      "status": "complete",
+      "artifact": "docs/implementation/evidence/phase-2-p2-01-ecc7515.json"
+    }
   }
 }

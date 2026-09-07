@@ -2,16 +2,16 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** Pending
+**Implementation acceptance:** In progress; P2-01 complete
 
 **Target release:** `0.2.0`
 
-**Validated Phase 2 SHA:** None
+**P2-01 evidence SHA:** `ecc75154397c8f9d7532fa2df8576846b60bae7c`; final Phase 2 release SHA pending
 
 The owner assignment authorizes P2-01 through P2-10 after corrected Phase 1
 acceptance at `99df47b6633791c3900a52f46f56d48be922a436`. That SHA proves Stage A;
 it does not prove any Phase 2 behavior. The design contract is accepted while
-all implementation rows below remain `pending`.
+P2-01 has passed its scoped acceptance; later and shared predicates remain `pending`.
 
 ## Evidence and state rules
 
@@ -33,9 +33,9 @@ gates, and final release evidence. A design commit cannot close a runtime row.
 
 | ID | Package | Required acceptance | Scenario mapping | State |
 |---|---|---|---|---|
-| P2-TGT-001 | P2-01 | Owner-scoped hierarchical virtual portfolios include cash, holding/group constraints, exclusions, effective dates, archive/template behavior, stable ordering and explicit unresolved mappings. | 1, 4, 5, 32 | `pending` |
-| P2-TGT-002 | P2-01 | Published target versions are immutable; changes create a new version; comparison, optimistic preconditions and audit remain deterministic under concurrency. | 2, 3, 4 | `pending` |
-| P2-TGT-003 | P2-01 | Target validation rejects invalid sums/contradictions; normalization follows the accepted exact-decimal tolerance policy and preserves mapping/duplicate-exposure warnings. | 4, 5 | `pending` |
+| P2-TGT-001 | P2-01 | Owner-scoped hierarchical virtual portfolios include cash, holding/group constraints, exclusions, effective dates, archive/template behavior, stable ordering and explicit unresolved mappings. | 1, 4, 5, 32 | `complete` |
+| P2-TGT-002 | P2-01 | Published target versions are immutable; changes create a new version; comparison, optimistic preconditions and audit remain deterministic under concurrency. | 2, 3, 4 | `complete` |
+| P2-TGT-003 | P2-01 | Target validation rejects invalid sums/contradictions; normalization follows the accepted exact-decimal tolerance policy and preserves mapping/duplicate-exposure warnings. | 4, 5 | `complete` |
 | P2-OPT-001 | P2-02 | Actual-versus-target and drift use immutable target/portfolio references and disclose cash, hierarchy, unmatched exposure, currency, methodology and coverage. | 6, 34, 38 | `pending` |
 | P2-OPT-002 | P2-02 | Global, hierarchical, restricted and explicit cash-only planning conserve the contribution, prohibit sales, obey hard constraints and produce deterministic residual cash. | 7, 8, 9, 11 | `pending` |
 | P2-OPT-003 | P2-02 | Hand-calculated and exhaustive bounded reference cases validate objective/tie-breaks; infeasibility and degraded inputs remain structured; immutable plans and concurrent safe retries never call a broker. | 10, 11, 12, 37 | `pending` |
@@ -80,3 +80,14 @@ There are **29 local rows**, **40 mandatory scenarios** and **6 separately track
 external predicates**. At design closure, zero Phase 2 local rows/scenarios are
 accepted. No external unavailable predicate blocks secure synthetic/local
 implementation. Phase 3 remains `not_started`.
+
+## P2-01 observed evidence
+
+P2-01, P2-TGT-001 through P2-TGT-003, and P2-S01 through P2-S05 passed at
+`ecc75154397c8f9d7532fa2df8576846b60bae7c`. The [retained assertion map](evidence/phase-2-p2-01-ecc7515.json)
+binds each predicate to exact tests, observed local commands and all three successful CI runs.
+The [runtime record](evidence/phase-2-p2-01-ecc7515-runtime.json) contains fresh Compose
+activation, API/MCP parity and full restart hashes; the [security record](evidence/phase-2-p2-01-ecc7515-security.json)
+retains source/history and six immutable-image scans with their policy limitations.
+Shared authorization, parity, accessibility and release-wide restart scenarios remain pending
+until their complete Phase 2 predicates pass. Phase 3 remains `not_started`.

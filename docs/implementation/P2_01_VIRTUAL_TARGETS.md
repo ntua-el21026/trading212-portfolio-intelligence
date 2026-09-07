@@ -1,7 +1,8 @@
 # P2-01 Virtual Portfolios and Target Versions
 
-Implementation is integrated; immutable acceptance remains pending until the
-package evidence is recorded. The accepted [execution manifest](PHASE_2_EXECUTION_MANIFEST.md),
+P2-01 is complete at `ecc75154397c8f9d7532fa2df8576846b60bae7c` with
+[retained exact-SHA evidence](evidence/phase-2-p2-01-ecc7515.json).
+The accepted [execution manifest](PHASE_2_EXECUTION_MANIFEST.md),
 [target ADR](../adr/ADR-0010-IMMUTABLE-VIRTUAL-TARGETS.md), and
 [API contracts](../architecture/PHASE_2_API_SERVICE_CONTRACTS.md) define the scope.
 
@@ -81,10 +82,24 @@ history must not be repaired by direct SQL mutation.
 
 ## Verification boundary
 
-Focused domain/property, PostgreSQL, API, MCP, generated-client, editor and
-desktop/mobile browser checks cover this capability. Full gates use
-`make validate`. Immutable acceptance must additionally record the source SHA,
-observed command exits, CI state, image IDs and runtime restart evidence in the
-[acceptance matrix](PHASE_2_ACCEPTANCE_MATRIX.md) and
-[scenario ledger](PHASE_2_SCENARIO_EVIDENCE.md). P2-02 through P2-10 remain separate
-required work; Phase 3 remains not started.
+Full `make validate` passed at the accepted clean SHA: 592 isolated and 103
+service-backed Python tests, 86% coverage, 48 web unit tests, 32 synthetic and
+12 API-backed desktop/mobile browser tests with zero retries. All three CI
+workflows passed. The retained assertion map identifies 54 selectors and 100
+collected Python test nodes for the package's three acceptance rows and five
+scenarios, plus editor and browser assertions.
+
+The [fresh runtime record](evidence/phase-2-p2-01-ecc7515-runtime.json) proves
+repeat migration/seed, unchanged EUR 248431.27 baseline, API/MCP hierarchy parity,
+one scheduled activation 0.331214 seconds after its effective time, and identical
+financial/target hashes after all seven services stopped and restarted on the
+same volume. Runtime logs and 45 database tables passed canary checks.
+The [security record](evidence/phase-2-p2-01-ecc7515-security.json) retains full
+history/source and six immutable-image scans, build bindings and scanner limits.
+The earlier `6dde264` history scan failed on two verified test-code false
+positives; the exact fingerprint correction and all acceptance reruns belong to
+`ecc7515`. The failed gate is not presented as a pass.
+
+The [acceptance matrix](PHASE_2_ACCEPTANCE_MATRIX.md) and
+[scenario ledger](PHASE_2_SCENARIO_EVIDENCE.md) preserve pending shared predicates.
+P2-02 through P2-10 remain required work; Phase 3 remains not started.

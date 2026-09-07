@@ -6,6 +6,11 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Phase 2 virtual targets
 
+- Accept P2-01 at `ecc75154397c8f9d7532fa2df8576846b60bae7c` with full local/CI
+  gates, exact test mappings, fresh activation/restart evidence and eight
+  source/history/image security scans. Three local rows and five scenarios are
+  complete; the full Phase 2 release remains in progress.
+
 - Add owner-scoped portfolios/templates and normalized hierarchical target versions
   with exact validation, explicit normalization, mappings, constraints and audit.
 - Enforce immutable published content, optimistic/idempotent commands, scheduled

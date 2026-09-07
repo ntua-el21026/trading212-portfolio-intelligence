@@ -1,0 +1,1584 @@
+{
+  "schema_version": 1,
+  "source_sha": "ecc75154397c8f9d7532fa2df8576846b60bae7c",
+  "result": "passed",
+  "requirements": [
+    "P2-01",
+    "P2-S01",
+    "P2-S02",
+    "P2-S03",
+    "P2-S04",
+    "P2-S05",
+    "P2-TGT-001",
+    "P2-TGT-002",
+    "P2-TGT-003"
+  ],
+  "recorded_at_utc": "2026-09-07T14:56:54.093457Z",
+  "scope": "P2-01 vertical capability only; three local rows and five scenarios. Shared and later Phase 2 predicates remain pending.",
+  "assertion_map": {
+    "P2-S01": {
+      "predicate": "Create/persist/reload owner-scoped hierarchy with cash, group and holding targets.",
+      "test_refs": [
+        "atomic_read_revision",
+        "atomic_read_scope",
+        "constraint_roundtrip",
+        "cursor_restart",
+        "hierarchy_math",
+        "http_scope",
+        "invalid_hierarchy_read",
+        "mcp_parity",
+        "owner_scope",
+        "template_clone"
+      ],
+      "test_nodes": [
+        "tests/integration/test_target_api_postgres.py::test_target_owner_and_account_scopes_fail_closed",
+        "tests/integration/test_target_mcp_postgres.py::test_canonical_targets_match_api_and_resume_mcp_hierarchy_after_restart",
+        "tests/integration/test_virtual_targets.py::test_atomic_portfolio_target_read_enforces_scope_selection_and_empty_state",
+        "tests/integration/test_virtual_targets.py::test_atomic_portfolio_target_read_holds_one_revision_across_concurrent_replacement",
+        "tests/integration/test_virtual_targets.py::test_constraint_exclusion_roundtrip_and_invalid_relational_input_rolls_back",
+        "tests/integration/test_virtual_targets.py::test_hierarchy_cursor_restart_draft_change_and_published_lifecycle",
+        "tests/integration/test_virtual_targets.py::test_invalid_draft_hierarchy_remains_inspectable_and_parent_is_scoped",
+        "tests/integration/test_virtual_targets.py::test_owner_scope_database_scope_and_clone_read_permission",
+        "tests/integration/test_virtual_targets.py::test_template_clone_keeps_source_provenance_and_separate_parent",
+        "tests/unit/domain/test_targets.py::test_hierarchy_products_and_depth_first_order"
+      ]
+    },
+    "P2-S02": {
+      "predicate": "Publish V1; reject public/persistence update and deletion; retain content/hash.",
+      "test_refs": [
+        "published_immutability",
+        "published_delete_guard",
+        "http_lifecycle",
+        "mapping_seal",
+        "digest",
+        "publication_race_audit"
+      ],
+      "test_nodes": [
+        "tests/integration/test_target_api_postgres.py::test_target_persisted_lifecycle_replays_and_conditional_get",
+        "tests/integration/test_virtual_targets.py::test_concurrent_publication_has_one_command_and_audit_chain",
+        "tests/integration/test_virtual_targets.py::test_disjoint_listing_selectors_revalidate_catalog_and_seal_mapping_decisions",
+        "tests/integration/test_virtual_targets.py::test_normalize_publish_clone_and_database_immutability",
+        "tests/integration/test_virtual_targets.py::test_published_nodes_and_versions_reject_database_delete",
+        "tests/unit/domain/test_targets.py::test_digest_binds_effective_time_currency_and_semantics_but_not_tuple_order"
+      ]
+    },
+    "P2-S03": {
+      "predicate": "Publish V2 and compare deterministic exact changes with V1 in both directions.",
+      "test_refs": [
+        "published_v2_comparison",
+        "comparison_domain",
+        "http_revision_template",
+        "publication_race_audit"
+      ],
+      "test_nodes": [
+        "tests/integration/test_target_api_postgres.py::test_normalization_revision_pin_and_template_clone_are_enforced",
+        "tests/integration/test_virtual_targets.py::test_concurrent_publication_has_one_command_and_audit_chain",
+        "tests/integration/test_virtual_targets.py::test_published_version_comparison_is_exact_bidirectional_and_restart_stable",
+        "tests/unit/domain/test_targets.py::test_comparison_aligns_stable_keys_and_preserves_both_versions"
+      ]
+    },
+    "P2-S04": {
+      "predicate": "Reject invalid sums, tree shapes and contradictory constraints; exact opt-in normalization.",
+      "test_refs": [
+        "normalization_exact",
+        "material_weights",
+        "tree_validation",
+        "constraint_variants",
+        "constraint_bounds",
+        "ancestor_constraints",
+        "exclusions",
+        "normalization_property",
+        "canonical_property",
+        "deep_product_property",
+        "http_invalid_validation",
+        "http_revision_template",
+        "constraint_roundtrip",
+        "wire_financial",
+        "node_bound",
+        "depth_bound"
+      ],
+      "test_nodes": [
+        "tests/integration/test_target_api_postgres.py::test_normalization_revision_pin_and_template_clone_are_enforced",
+        "tests/integration/test_target_api_postgres.py::test_target_invalid_content_is_persisted_as_failed_validation",
+        "tests/integration/test_virtual_targets.py::test_constraint_exclusion_roundtrip_and_invalid_relational_input_rolls_back",
+        "tests/property/test_target_properties.py::test_deep_products_reconstruct_from_factors_without_leaf_renormalization",
+        "tests/property/test_target_properties.py::test_explicit_normalization_conserves_exact_weight_and_is_idempotent",
+        "tests/property/test_target_properties.py::test_input_order_and_ambient_precision_preserve_canonical_validation",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[+1]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[.5]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[0.1111111111111111111]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[0.5]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[01]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[1.]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[111111111111111111111]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[1]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[1e2]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[Infinity]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[NaN]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[None]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[True]",
+        "tests/unit/domain/test_targets.py::test_256_nodes_allowed_and_257_rejected_before_expensive_work",
+        "tests/unit/domain/test_targets.py::test_ancestor_funding_and_post_weight_conflicts_and_exclusions",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint0]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint1]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint2]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint3]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint4]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint5]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint6]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint7]",
+        "tests/unit/domain/test_targets.py::test_constraint_scope_and_exact_bound_contradictions",
+        "tests/unit/domain/test_targets.py::test_eight_factors_allowed_nine_rejected",
+        "tests/unit/domain/test_targets.py::test_exclusion_identity_and_unknown_reference_validation",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[-0.1]",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[0.99]",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[0]",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[1.1]",
+        "tests/unit/domain/test_targets.py::test_opt_in_normalization_retains_originals_and_deterministic_remainder_tie",
+        "tests/unit/domain/test_targets.py::test_tree_errors_are_structured_and_do_not_recurse_indefinitely"
+      ]
+    },
+    "P2-S05": {
+      "predicate": "Keep unresolved mappings explicit with warning and no invented identity.",
+      "test_refs": [
+        "unresolved_domain",
+        "unresolved_persisted",
+        "wire_partial_mapping",
+        "mcp_unresolved_quality",
+        "selector_validation",
+        "mapping_seal"
+      ],
+      "test_nodes": [
+        "tests/integration/test_virtual_targets.py::test_disjoint_listing_selectors_revalidate_catalog_and_seal_mapping_decisions",
+        "tests/integration/test_virtual_targets.py::test_unresolved_mapping_is_explicit_and_publishable_with_warning",
+        "tests/unit/api/test_target_schemas.py::test_unresolved_listing_can_preserve_a_known_canonical_instrument",
+        "tests/unit/domain/test_targets.py::test_mapping_catalog_and_selector_disjointness",
+        "tests/unit/domain/test_targets.py::test_unresolved_mapping_can_publish_only_with_explicit_warning",
+        "tests/unit/mcp/test_target_gateway.py::test_unresolved_mapping_quality_and_stale_draft_validation_are_explicit"
+      ]
+    },
+    "P2-TGT-001": {
+      "predicate": "Owner-scoped hierarchy, constraints/exclusions, template/archive/effective dates and explicit mapping.",
+      "test_refs": [
+        "activation_service",
+        "atomic_read_revision",
+        "atomic_read_scope",
+        "constraint_roundtrip",
+        "cursor_restart",
+        "hierarchy_math",
+        "http_lifecycle",
+        "http_scope",
+        "invalid_hierarchy_read",
+        "mapping_seal",
+        "mcp_parity",
+        "mcp_unresolved_quality",
+        "overdue_schedule",
+        "owner_scope",
+        "seed_replay",
+        "selector_validation",
+        "template_clone",
+        "unresolved_domain",
+        "unresolved_persisted",
+        "wire_partial_mapping"
+      ],
+      "test_nodes": [
+        "tests/integration/test_target_api_postgres.py::test_target_owner_and_account_scopes_fail_closed",
+        "tests/integration/test_target_api_postgres.py::test_target_persisted_lifecycle_replays_and_conditional_get",
+        "tests/integration/test_target_mcp_postgres.py::test_canonical_targets_match_api_and_resume_mcp_hierarchy_after_restart",
+        "tests/integration/test_virtual_targets.py::test_atomic_portfolio_target_read_enforces_scope_selection_and_empty_state",
+        "tests/integration/test_virtual_targets.py::test_atomic_portfolio_target_read_holds_one_revision_across_concurrent_replacement",
+        "tests/integration/test_virtual_targets.py::test_constraint_exclusion_roundtrip_and_invalid_relational_input_rolls_back",
+        "tests/integration/test_virtual_targets.py::test_disjoint_listing_selectors_revalidate_catalog_and_seal_mapping_decisions",
+        "tests/integration/test_virtual_targets.py::test_dispatcher_outage_supersedes_overtaken_schedule_without_regressing_active_target[exact-due-boundary]",
+        "tests/integration/test_virtual_targets.py::test_dispatcher_outage_supersedes_overtaken_schedule_without_regressing_active_target[explicit-backdated]",
+        "tests/integration/test_virtual_targets.py::test_dispatcher_outage_supersedes_overtaken_schedule_without_regressing_active_target[newer-effective]",
+        "tests/integration/test_virtual_targets.py::test_hierarchy_cursor_restart_draft_change_and_published_lifecycle",
+        "tests/integration/test_virtual_targets.py::test_invalid_draft_hierarchy_remains_inspectable_and_parent_is_scoped",
+        "tests/integration/test_virtual_targets.py::test_owner_scope_database_scope_and_clone_read_permission",
+        "tests/integration/test_virtual_targets.py::test_scheduled_activation_archive_has_no_fallback",
+        "tests/integration/test_virtual_targets.py::test_synthetic_target_seed_repeats_without_changes_and_preserves_owner_edits",
+        "tests/integration/test_virtual_targets.py::test_template_clone_keeps_source_provenance_and_separate_parent",
+        "tests/integration/test_virtual_targets.py::test_unresolved_mapping_is_explicit_and_publishable_with_warning",
+        "tests/unit/api/test_target_schemas.py::test_unresolved_listing_can_preserve_a_known_canonical_instrument",
+        "tests/unit/domain/test_targets.py::test_hierarchy_products_and_depth_first_order",
+        "tests/unit/domain/test_targets.py::test_mapping_catalog_and_selector_disjointness",
+        "tests/unit/domain/test_targets.py::test_unresolved_mapping_can_publish_only_with_explicit_warning",
+        "tests/unit/mcp/test_target_gateway.py::test_unresolved_mapping_quality_and_stale_draft_validation_are_explicit"
+      ]
+    },
+    "P2-TGT-002": {
+      "predicate": "Immutable published versions, new-version edits, deterministic comparison/preconditions/concurrent audit.",
+      "test_refs": [
+        "atomic_read_revision",
+        "atomic_read_scope",
+        "command_races",
+        "comparison_domain",
+        "cursor_restart",
+        "digest",
+        "http_lifecycle",
+        "http_revision_template",
+        "mapping_seal",
+        "publication_race_audit",
+        "published_delete_guard",
+        "published_immutability",
+        "published_v2_comparison"
+      ],
+      "test_nodes": [
+        "tests/integration/test_target_api_postgres.py::test_normalization_revision_pin_and_template_clone_are_enforced",
+        "tests/integration/test_target_api_postgres.py::test_target_persisted_lifecycle_replays_and_conditional_get",
+        "tests/integration/test_virtual_targets.py::test_atomic_portfolio_target_read_enforces_scope_selection_and_empty_state",
+        "tests/integration/test_virtual_targets.py::test_atomic_portfolio_target_read_holds_one_revision_across_concurrent_replacement",
+        "tests/integration/test_virtual_targets.py::test_command_races_safe_replay_and_revision_preconditions",
+        "tests/integration/test_virtual_targets.py::test_concurrent_publication_has_one_command_and_audit_chain",
+        "tests/integration/test_virtual_targets.py::test_disjoint_listing_selectors_revalidate_catalog_and_seal_mapping_decisions",
+        "tests/integration/test_virtual_targets.py::test_hierarchy_cursor_restart_draft_change_and_published_lifecycle",
+        "tests/integration/test_virtual_targets.py::test_normalize_publish_clone_and_database_immutability",
+        "tests/integration/test_virtual_targets.py::test_published_nodes_and_versions_reject_database_delete",
+        "tests/integration/test_virtual_targets.py::test_published_version_comparison_is_exact_bidirectional_and_restart_stable",
+        "tests/unit/domain/test_targets.py::test_comparison_aligns_stable_keys_and_preserves_both_versions",
+        "tests/unit/domain/test_targets.py::test_digest_binds_effective_time_currency_and_semantics_but_not_tuple_order"
+      ]
+    },
+    "P2-TGT-003": {
+      "predicate": "Exact validation/normalization with contradictory constraint rejection and retained mapping/exposure warnings.",
+      "test_refs": [
+        "ancestor_constraints",
+        "canonical_property",
+        "constraint_bounds",
+        "constraint_roundtrip",
+        "constraint_variants",
+        "deep_product_property",
+        "depth_bound",
+        "exclusions",
+        "http_invalid_validation",
+        "http_revision_template",
+        "mapping_seal",
+        "material_weights",
+        "mcp_unresolved_quality",
+        "node_bound",
+        "normalization_exact",
+        "normalization_property",
+        "published_immutability",
+        "selector_validation",
+        "tree_validation",
+        "unresolved_domain",
+        "unresolved_persisted",
+        "wire_financial",
+        "wire_partial_mapping"
+      ],
+      "test_nodes": [
+        "tests/integration/test_target_api_postgres.py::test_normalization_revision_pin_and_template_clone_are_enforced",
+        "tests/integration/test_target_api_postgres.py::test_target_invalid_content_is_persisted_as_failed_validation",
+        "tests/integration/test_virtual_targets.py::test_constraint_exclusion_roundtrip_and_invalid_relational_input_rolls_back",
+        "tests/integration/test_virtual_targets.py::test_disjoint_listing_selectors_revalidate_catalog_and_seal_mapping_decisions",
+        "tests/integration/test_virtual_targets.py::test_normalize_publish_clone_and_database_immutability",
+        "tests/integration/test_virtual_targets.py::test_unresolved_mapping_is_explicit_and_publishable_with_warning",
+        "tests/property/test_target_properties.py::test_deep_products_reconstruct_from_factors_without_leaf_renormalization",
+        "tests/property/test_target_properties.py::test_explicit_normalization_conserves_exact_weight_and_is_idempotent",
+        "tests/property/test_target_properties.py::test_input_order_and_ambient_precision_preserve_canonical_validation",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[+1]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[.5]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[0.1111111111111111111]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[0.5]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[01]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[1.]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[111111111111111111111]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[1]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[1e2]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[Infinity]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[NaN]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[None]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[True]",
+        "tests/unit/api/test_target_schemas.py::test_unresolved_listing_can_preserve_a_known_canonical_instrument",
+        "tests/unit/domain/test_targets.py::test_256_nodes_allowed_and_257_rejected_before_expensive_work",
+        "tests/unit/domain/test_targets.py::test_ancestor_funding_and_post_weight_conflicts_and_exclusions",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint0]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint1]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint2]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint3]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint4]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint5]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint6]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint7]",
+        "tests/unit/domain/test_targets.py::test_constraint_scope_and_exact_bound_contradictions",
+        "tests/unit/domain/test_targets.py::test_eight_factors_allowed_nine_rejected",
+        "tests/unit/domain/test_targets.py::test_exclusion_identity_and_unknown_reference_validation",
+        "tests/unit/domain/test_targets.py::test_mapping_catalog_and_selector_disjointness",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[-0.1]",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[0.99]",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[0]",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[1.1]",
+        "tests/unit/domain/test_targets.py::test_opt_in_normalization_retains_originals_and_deterministic_remainder_tie",
+        "tests/unit/domain/test_targets.py::test_tree_errors_are_structured_and_do_not_recurse_indefinitely",
+        "tests/unit/domain/test_targets.py::test_unresolved_mapping_can_publish_only_with_explicit_warning",
+        "tests/unit/mcp/test_target_gateway.py::test_unresolved_mapping_quality_and_stale_draft_validation_are_explicit"
+      ]
+    },
+    "P2-01": {
+      "predicate": "Complete scoped target vertical capability; shared Phase2 gates remain incremental.",
+      "test_refs": [
+        "activation_service",
+        "ancestor_constraints",
+        "api_auth",
+        "api_csrf",
+        "api_request_bound",
+        "api_result_bound",
+        "atomic_read_revision",
+        "atomic_read_scope",
+        "canonical_property",
+        "command_races",
+        "comparison_domain",
+        "constraint_bounds",
+        "constraint_roundtrip",
+        "constraint_variants",
+        "cursor_restart",
+        "database_private_failure",
+        "deep_product_property",
+        "depth_bound",
+        "digest",
+        "exclusions",
+        "generated_financial",
+        "generated_routes",
+        "hierarchy_math",
+        "http_invalid_validation",
+        "http_lifecycle",
+        "http_rejected_atomic",
+        "http_revision_template",
+        "http_scope",
+        "invalid_hierarchy_read",
+        "mapping_seal",
+        "material_weights",
+        "mcp_parity",
+        "mcp_scope",
+        "mcp_unresolved_quality",
+        "migration_head",
+        "migration_numeric",
+        "node_bound",
+        "normalization_exact",
+        "normalization_property",
+        "overdue_schedule",
+        "owner_scope",
+        "publication_race_audit",
+        "published_delete_guard",
+        "published_immutability",
+        "published_v2_comparison",
+        "seed_replay",
+        "selector_validation",
+        "template_clone",
+        "tree_validation",
+        "unresolved_domain",
+        "unresolved_persisted",
+        "wire_exact",
+        "wire_financial",
+        "wire_partial_mapping"
+      ],
+      "test_nodes": [
+        "tests/contract/test_target_client_generation.py::test_financial_fields_are_generated_as_bounded_strings",
+        "tests/contract/test_target_client_generation.py::test_generated_operations_match_all_target_routes_deterministically",
+        "tests/integration/test_migrations.py::test_empty_to_head_is_idempotent_and_matches_metadata",
+        "tests/integration/test_migrations.py::test_schema_uses_exact_numeric_and_timezone_aware_columns",
+        "tests/integration/test_target_api_postgres.py::test_normalization_revision_pin_and_template_clone_are_enforced",
+        "tests/integration/test_target_api_postgres.py::test_rejected_http_input_and_csrf_create_no_command_identity",
+        "tests/integration/test_target_api_postgres.py::test_target_invalid_content_is_persisted_as_failed_validation",
+        "tests/integration/test_target_api_postgres.py::test_target_owner_and_account_scopes_fail_closed",
+        "tests/integration/test_target_api_postgres.py::test_target_persisted_lifecycle_replays_and_conditional_get",
+        "tests/integration/test_target_mcp_postgres.py::test_canonical_targets_match_api_and_resume_mcp_hierarchy_after_restart",
+        "tests/integration/test_virtual_targets.py::test_atomic_portfolio_target_read_enforces_scope_selection_and_empty_state",
+        "tests/integration/test_virtual_targets.py::test_atomic_portfolio_target_read_holds_one_revision_across_concurrent_replacement",
+        "tests/integration/test_virtual_targets.py::test_command_races_safe_replay_and_revision_preconditions",
+        "tests/integration/test_virtual_targets.py::test_concurrent_publication_has_one_command_and_audit_chain",
+        "tests/integration/test_virtual_targets.py::test_constraint_exclusion_roundtrip_and_invalid_relational_input_rolls_back",
+        "tests/integration/test_virtual_targets.py::test_database_failure_rolls_back_and_discards_exception_parameters",
+        "tests/integration/test_virtual_targets.py::test_disjoint_listing_selectors_revalidate_catalog_and_seal_mapping_decisions",
+        "tests/integration/test_virtual_targets.py::test_dispatcher_outage_supersedes_overtaken_schedule_without_regressing_active_target[exact-due-boundary]",
+        "tests/integration/test_virtual_targets.py::test_dispatcher_outage_supersedes_overtaken_schedule_without_regressing_active_target[explicit-backdated]",
+        "tests/integration/test_virtual_targets.py::test_dispatcher_outage_supersedes_overtaken_schedule_without_regressing_active_target[newer-effective]",
+        "tests/integration/test_virtual_targets.py::test_hierarchy_cursor_restart_draft_change_and_published_lifecycle",
+        "tests/integration/test_virtual_targets.py::test_invalid_draft_hierarchy_remains_inspectable_and_parent_is_scoped",
+        "tests/integration/test_virtual_targets.py::test_normalize_publish_clone_and_database_immutability",
+        "tests/integration/test_virtual_targets.py::test_owner_scope_database_scope_and_clone_read_permission",
+        "tests/integration/test_virtual_targets.py::test_published_nodes_and_versions_reject_database_delete",
+        "tests/integration/test_virtual_targets.py::test_published_version_comparison_is_exact_bidirectional_and_restart_stable",
+        "tests/integration/test_virtual_targets.py::test_scheduled_activation_archive_has_no_fallback",
+        "tests/integration/test_virtual_targets.py::test_synthetic_target_seed_repeats_without_changes_and_preserves_owner_edits",
+        "tests/integration/test_virtual_targets.py::test_template_clone_keeps_source_provenance_and_separate_parent",
+        "tests/integration/test_virtual_targets.py::test_unresolved_mapping_is_explicit_and_publishable_with_warning",
+        "tests/property/test_target_properties.py::test_deep_products_reconstruct_from_factors_without_leaf_renormalization",
+        "tests/property/test_target_properties.py::test_explicit_normalization_conserves_exact_weight_and_is_idempotent",
+        "tests/property/test_target_properties.py::test_input_order_and_ambient_precision_preserve_canonical_validation",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes0-6390976b-402a-4813-835d-8a33e49c0643-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes0-6390976b-402a-4813-835d-8a33e49c0643-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes0-None-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes0-None-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes1-6390976b-402a-4813-835d-8a33e49c0643-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes1-6390976b-402a-4813-835d-8a33e49c0643-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes1-None-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes1-None-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes2-6390976b-402a-4813-835d-8a33e49c0643-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes2-6390976b-402a-4813-835d-8a33e49c0643-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes2-None-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes2-None-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes3-6390976b-402a-4813-835d-8a33e49c0643-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes3-6390976b-402a-4813-835d-8a33e49c0643-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes3-None-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes3-None-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes4-6390976b-402a-4813-835d-8a33e49c0643-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes4-6390976b-402a-4813-835d-8a33e49c0643-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes4-None-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes4-None-list_virtual_pies]",
+        "tests/unit/api/test_target_routes.py::test_cookie_commands_require_both_session_csrf_and_trusted_origin",
+        "tests/unit/api/test_target_routes.py::test_target_authentication_and_scopes_precede_service_calls",
+        "tests/unit/api/test_target_routes.py::test_target_request_bound_counts_actual_stream_bytes_without_content_length",
+        "tests/unit/api/test_target_routes.py::test_target_response_limit_counts_utf8_bytes_and_never_returns_partial_results",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_preserve_exact_decimal_strings[-0]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_preserve_exact_decimal_strings[0.000000000000000001]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_preserve_exact_decimal_strings[0]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_preserve_exact_decimal_strings[99999999999999999999.999999999999999999]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[+1]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[.5]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[0.1111111111111111111]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[0.5]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[01]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[1.]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[111111111111111111111]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[1]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[1e2]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[Infinity]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[NaN]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[None]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[True]",
+        "tests/unit/api/test_target_schemas.py::test_unresolved_listing_can_preserve_a_known_canonical_instrument",
+        "tests/unit/domain/test_targets.py::test_256_nodes_allowed_and_257_rejected_before_expensive_work",
+        "tests/unit/domain/test_targets.py::test_ancestor_funding_and_post_weight_conflicts_and_exclusions",
+        "tests/unit/domain/test_targets.py::test_comparison_aligns_stable_keys_and_preserves_both_versions",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint0]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint1]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint2]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint3]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint4]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint5]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint6]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint7]",
+        "tests/unit/domain/test_targets.py::test_constraint_scope_and_exact_bound_contradictions",
+        "tests/unit/domain/test_targets.py::test_digest_binds_effective_time_currency_and_semantics_but_not_tuple_order",
+        "tests/unit/domain/test_targets.py::test_eight_factors_allowed_nine_rejected",
+        "tests/unit/domain/test_targets.py::test_exclusion_identity_and_unknown_reference_validation",
+        "tests/unit/domain/test_targets.py::test_hierarchy_products_and_depth_first_order",
+        "tests/unit/domain/test_targets.py::test_mapping_catalog_and_selector_disjointness",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[-0.1]",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[0.99]",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[0]",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[1.1]",
+        "tests/unit/domain/test_targets.py::test_opt_in_normalization_retains_originals_and_deterministic_remainder_tie",
+        "tests/unit/domain/test_targets.py::test_tree_errors_are_structured_and_do_not_recurse_indefinitely",
+        "tests/unit/domain/test_targets.py::test_unresolved_mapping_can_publish_only_with_explicit_warning",
+        "tests/unit/mcp/test_target_gateway.py::test_unresolved_mapping_quality_and_stale_draft_validation_are_explicit"
+      ]
+    }
+  },
+  "tests": {
+    "hierarchy_math": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_hierarchy_products_and_depth_first_order",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_hierarchy_products_and_depth_first_order"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 102,
+      "assertions_reviewed": [
+        "Shuffled source nodes flatten to group/a/b/cash in depth-first order, depths 1/2/2/1.",
+        "Exact weights 0.6/0.15/0.45/0.4, path factors and zero rounding residual are asserted."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "normalization_exact": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_opt_in_normalization_retains_originals_and_deterministic_remainder_tie",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_opt_in_normalization_retains_originals_and_deterministic_remainder_tie"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 127,
+      "assertions_reviewed": [
+        "Non-unit sum fails without normalization; explicit normalization sums exactly to one.",
+        "Stable-key tie allocation, original weights/sum, changed input/result digest and idempotent normalization are asserted."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "material_weights": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[-0.1]",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[0.99]",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[0]",
+        "tests/unit/domain/test_targets.py::test_materially_invalid_weights_never_normalize[1.1]"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 152,
+      "assertions_reviewed": [
+        "Zero, 0.99, negative and over-one sole-child weights remain invalid with no normalization adjustments."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "tree_validation": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_tree_errors_are_structured_and_do_not_recurse_indefinitely",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_tree_errors_are_structured_and_do_not_recurse_indefinitely"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 159,
+      "assertions_reviewed": [
+        "Empty tree, missing parent, cycles, duplicate keys/order, empty groups, invalid children and nested/multiple cash fail with explicit issue codes."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "depth_bound": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_eight_factors_allowed_nine_rejected",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_eight_factors_allowed_nine_rejected"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 177,
+      "assertions_reviewed": [
+        "Depth eight is valid; ninth factor yields depth_exceeded."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "node_bound": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_256_nodes_allowed_and_257_rejected_before_expensive_work",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_256_nodes_allowed_and_257_rejected_before_expensive_work"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 186,
+      "assertions_reviewed": [
+        "256 nodes accepted; 257 rejected before validation work."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "unresolved_domain": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_unresolved_mapping_can_publish_only_with_explicit_warning",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_unresolved_mapping_can_publish_only_with_explicit_warning"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 200,
+      "assertions_reviewed": [
+        "Ambiguous ISIN mapping validates only with mapping_unresolved warning; unresolved mapping without supporting identifier/reason raises."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": [
+        "This domain test validates publication eligibility; actual publication is exercised by unresolved_persisted."
+      ]
+    },
+    "selector_validation": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_mapping_catalog_and_selector_disjointness",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_mapping_catalog_and_selector_disjointness"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 215,
+      "assertions_reviewed": [
+        "Unknown/mismatched instrument/listing, overlapping selectors and invalid preferred listing are rejected.",
+        "Disjoint listings for one instrument remain valid with duplicate_economic_exposure warning."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "constraint_variants": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint0]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint1]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint2]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint3]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint4]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint5]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint6]",
+        "tests/unit/domain/test_targets.py::test_constraint_field_variants_are_checked[constraint7]"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 277,
+      "assertions_reviewed": [
+        "Malformed kind/value combinations yield constraint_fields_invalid."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "constraint_bounds": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_constraint_scope_and_exact_bound_contradictions",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_constraint_scope_and_exact_bound_contradictions"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 281,
+      "assertions_reviewed": [
+        "Minimum greater than maximum, wrong node-kind scope and duplicate constraint key/kind are rejected."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "ancestor_constraints": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_ancestor_funding_and_post_weight_conflicts_and_exclusions",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_ancestor_funding_and_post_weight_conflicts_and_exclusions"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 303,
+      "assertions_reviewed": [
+        "Ancestor funding/post-weight contradictions and excluded mandatory funding are rejected.",
+        "When-funded minima alone do not invent mandatory funding for an excluded holding."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "exclusions": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_exclusion_identity_and_unknown_reference_validation",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_exclusion_identity_and_unknown_reference_validation"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 336,
+      "assertions_reviewed": [
+        "Unknown instrument/listing/node exclusion selectors and multiple selectors fail explicitly."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "comparison_domain": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_comparison_aligns_stable_keys_and_preserves_both_versions",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_comparison_aligns_stable_keys_and_preserves_both_versions"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 351,
+      "assertions_reviewed": [
+        "Stable-key added/name/weight and exclusion changes are ordered; effective-time change detected; both inputs preserved."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "digest": {
+      "pytest_selector": "tests/unit/domain/test_targets.py::test_digest_binds_effective_time_currency_and_semantics_but_not_tuple_order",
+      "collected_node_ids": [
+        "tests/unit/domain/test_targets.py::test_digest_binds_effective_time_currency_and_semantics_but_not_tuple_order"
+      ],
+      "source_file": "tests/unit/domain/test_targets.py",
+      "definition_line": 369,
+      "assertions_reviewed": [
+        "Reordering input tuple preserves digest, while effective time or reporting currency changes digest."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "normalization_property": {
+      "pytest_selector": "tests/property/test_target_properties.py::test_explicit_normalization_conserves_exact_weight_and_is_idempotent",
+      "collected_node_ids": [
+        "tests/property/test_target_properties.py::test_explicit_normalization_conserves_exact_weight_and_is_idempotent"
+      ],
+      "source_file": "tests/property/test_target_properties.py",
+      "definition_line": 45,
+      "assertions_reviewed": [
+        "Generated rounded sibling sets explicitly normalize to exact total one and replay without adjustments or digest change."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "canonical_property": {
+      "pytest_selector": "tests/property/test_target_properties.py::test_input_order_and_ambient_precision_preserve_canonical_validation",
+      "collected_node_ids": [
+        "tests/property/test_target_properties.py::test_input_order_and_ambient_precision_preserve_canonical_validation"
+      ],
+      "source_file": "tests/property/test_target_properties.py",
+      "definition_line": 74,
+      "assertions_reviewed": [
+        "Generated exact 18-place weights and precision 2..100 retain identical canonical validation under reversed input order."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "deep_product_property": {
+      "pytest_selector": "tests/property/test_target_properties.py::test_deep_products_reconstruct_from_factors_without_leaf_renormalization",
+      "collected_node_ids": [
+        "tests/property/test_target_properties.py::test_deep_products_reconstruct_from_factors_without_leaf_renormalization"
+      ],
+      "source_file": "tests/property/test_target_properties.py",
+      "definition_line": 115,
+      "assertions_reviewed": [
+        "Generated depths 1..8 retain original factors, exact 160-context product quantized to 1e-18 and disclosed residual conserving total one."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "published_immutability": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_normalize_publish_clone_and_database_immutability",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_normalize_publish_clone_and_database_immutability"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 191,
+      "assertions_reviewed": [
+        "Persisted explicit normalization advances revision and publishes digest bound to validation.",
+        "Direct published node-weight and version-effective-time UPDATEs fail; clone has new identity and equal content; audit includes create/update/publish/activate."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "published_delete_guard": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_published_nodes_and_versions_reject_database_delete",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_published_nodes_and_versions_reject_database_delete"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 259,
+      "assertions_reviewed": [
+        "Direct SQL DELETE of published nodes and version independently raises publication-guard SQLSTATE23514.",
+        "After each rolled-back transaction the full published view, content and digest remain unchanged."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "command_races": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_command_races_safe_replay_and_revision_preconditions",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_command_races_safe_replay_and_revision_preconditions"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 281,
+      "assertions_reviewed": [
+        "Eight concurrent identical creates have one portfolio identity; changed-payload replay conflicts.",
+        "Exact metadata retry without If-Match returns prior result; stale new command rejects revision."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "owner_scope": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_owner_scope_database_scope_and_clone_read_permission",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_owner_scope_database_scope_and_clone_read_permission"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 332,
+      "assertions_reviewed": [
+        "Foreign-owner target read yields NOT_FOUND; direct cross-owner account/node/connection mutations violate DB scope.",
+        "Clone requires source targets:read even when caller has targets:write and portfolio:read."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "activation_service": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_scheduled_activation_archive_has_no_fallback",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_scheduled_activation_archive_has_no_fallback"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 390,
+      "assertions_reviewed": [
+        "Future version stays scheduled before due; four concurrent activation attempts total exactly one and repeat returns zero.",
+        "Archiving active version exposes no fallback; previous version remains superseded."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": [
+        "Uses injected application clock and direct service calls; does not prove dispatcher latency or container restart."
+      ]
+    },
+    "cursor_restart": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_hierarchy_cursor_restart_draft_change_and_published_lifecycle",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_hierarchy_cursor_restart_draft_change_and_published_lifecycle"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 428,
+      "assertions_reviewed": [
+        "Fresh service resumes retained page without duplicate identity; draft replacement invalidates old cursor.",
+        "Published hierarchy continuation remains available after archive."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": [
+        "Service reconstruction, not full Compose restart."
+      ]
+    },
+    "publication_race_audit": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_concurrent_publication_has_one_command_and_audit_chain",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_concurrent_publication_has_one_command_and_audit_chain"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 561,
+      "assertions_reviewed": [
+        "Eight identical publications return one revision and one persisted command.",
+        "Audit is exactly draft_created/validated/published/activated with linked predecessor IDs; distinct stale publication rejects."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "template_clone": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_template_clone_keeps_source_provenance_and_separate_parent",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_template_clone_keeps_source_provenance_and_separate_parent"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 631,
+      "assertions_reviewed": [
+        "Owner-private template clone preserves source content/id, schema/method versions, and null same-portfolio parent.",
+        "Assigning a cross-portfolio parent fails DB constraint."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "invalid_hierarchy_read": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_invalid_draft_hierarchy_remains_inspectable_and_parent_is_scoped",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_invalid_draft_hierarchy_remains_inspectable_and_parent_is_scoped"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 664,
+      "assertions_reviewed": [
+        "Invalid draft still returns complete group/holding/cash projection and explicit group subtree; foreign parent fails NOT_FOUND."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "constraint_roundtrip": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_constraint_exclusion_roundtrip_and_invalid_relational_input_rolls_back",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_constraint_exclusion_roundtrip_and_invalid_relational_input_rolls_back"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 702,
+      "assertions_reviewed": [
+        "Cash reserve and funded amount constraints plus listing exclusion round-trip exactly.",
+        "Wrong currency rolls back with unchanged version and no command identity; malformed values/NaN fail DB; absent mapping fails NOT_FOUND."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "seed_replay": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_synthetic_target_seed_repeats_without_changes_and_preserves_owner_edits",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_synthetic_target_seed_repeats_without_changes_and_preserves_owner_edits"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 800,
+      "assertions_reviewed": [
+        "Seed retries retain IDs, table counts and immutable digests; owner metadata edits remain intact.",
+        "Production seed is rejected without database changes."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "mapping_seal": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_disjoint_listing_selectors_revalidate_catalog_and_seal_mapping_decisions",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_disjoint_listing_selectors_revalidate_catalog_and_seal_mapping_decisions"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 953,
+      "assertions_reviewed": [
+        "Disjoint listing selectors preserve duplicate exposure warning; malformed persisted selectors fail.",
+        "Catalog change between validation/publication rejects publication; sealed mapping rows reject UPDATE; later catalog edits do not alter published DTO."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "unresolved_persisted": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_unresolved_mapping_is_explicit_and_publishable_with_warning",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_unresolved_mapping_is_explicit_and_publishable_with_warning"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 1089,
+      "assertions_reviewed": [
+        "Unresolved provider-key mapping publishes with retained identifier/reason and mapping_unresolved warning.",
+        "Stored instrument_id remains NULL and mapping_state remains unresolved; no invented canonical mapping."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "database_private_failure": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_database_failure_rolls_back_and_discards_exception_parameters",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_database_failure_rolls_back_and_discards_exception_parameters"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 1136,
+      "assertions_reviewed": [
+        "Injected SQL error becomes safe TARGETS_UNAVAILABLE without cause/context, canary in exception/trace/log, portfolio row or idempotency row."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "published_v2_comparison": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_published_version_comparison_is_exact_bidirectional_and_restart_stable",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_published_version_comparison_is_exact_bidirectional_and_restart_stable"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 1186,
+      "assertions_reviewed": [
+        "Both V1 and changed V2 publish through revision preconditions.",
+        "Forward exact weight changes are cash 0.2->0.3 and holding 0.8->0.7; reverse swaps values; only weight fields differ.",
+        "Fresh service returns identical forward/reverse comparison; V1 content/digest remain unchanged and superseded while V2 is active."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": [
+        "Service reconstruction, not full Compose restart."
+      ]
+    },
+    "overdue_schedule": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_dispatcher_outage_supersedes_overtaken_schedule_without_regressing_active_target",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_dispatcher_outage_supersedes_overtaken_schedule_without_regressing_active_target[exact-due-boundary]",
+        "tests/integration/test_virtual_targets.py::test_dispatcher_outage_supersedes_overtaken_schedule_without_regressing_active_target[explicit-backdated]",
+        "tests/integration/test_virtual_targets.py::test_dispatcher_outage_supersedes_overtaken_schedule_without_regressing_active_target[newer-effective]"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 1265,
+      "assertions_reviewed": [
+        "Newer-effective, explicit-backdated and exact-due-boundary publication supersede overtaken schedules without replacing current active target.",
+        "Missed version content/digest/effective time remain intact; one superseded system audit event; later future version still activates once."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": [
+        "Injected-clock service regression, not a stopped dispatcher process test."
+      ]
+    },
+    "http_lifecycle": {
+      "pytest_selector": "tests/integration/test_target_api_postgres.py::test_target_persisted_lifecycle_replays_and_conditional_get",
+      "collected_node_ids": [
+        "tests/integration/test_target_api_postgres.py::test_target_persisted_lifecycle_replays_and_conditional_get"
+      ],
+      "source_file": "tests/integration/test_target_api_postgres.py",
+      "definition_line": 176,
+      "assertions_reviewed": [
+        "Persisted HTTP create/update/draft/validate/publish/compare/archive support exact retries and stable identity; changed payload/stale/missing preconditions reject.",
+        "Validation advances revision and changes conditional GET; published PATCH fails IMMUTABLE_VERSION.",
+        "Unsupported authenticated DELETE for version/portfolio returns405; full version JSON, ETag and digest remain unchanged.",
+        "Node/audit pagination is available; archive preserves content digest and changes aggregate ETag."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "http_scope": {
+      "pytest_selector": "tests/integration/test_target_api_postgres.py::test_target_owner_and_account_scopes_fail_closed",
+      "collected_node_ids": [
+        "tests/integration/test_target_api_postgres.py::test_target_owner_and_account_scopes_fail_closed"
+      ],
+      "source_file": "tests/integration/test_target_api_postgres.py",
+      "definition_line": 302,
+      "assertions_reviewed": [
+        "Template targets:read can read while write-only cannot; foreign owner and account-backed missing portfolio scope fail closed."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "http_invalid_validation": {
+      "pytest_selector": "tests/integration/test_target_api_postgres.py::test_target_invalid_content_is_persisted_as_failed_validation",
+      "collected_node_ids": [
+        "tests/integration/test_target_api_postgres.py::test_target_invalid_content_is_persisted_as_failed_validation"
+      ],
+      "source_file": "tests/integration/test_target_api_postgres.py",
+      "definition_line": 338,
+      "assertions_reviewed": [
+        "Non-unit draft is retained with explicit failed validation issues; publication returns422 TARGET_VALIDATION_FAILED and remains draft."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "http_rejected_atomic": {
+      "pytest_selector": "tests/integration/test_target_api_postgres.py::test_rejected_http_input_and_csrf_create_no_command_identity",
+      "collected_node_ids": [
+        "tests/integration/test_target_api_postgres.py::test_rejected_http_input_and_csrf_create_no_command_identity"
+      ],
+      "source_file": "tests/integration/test_target_api_postgres.py",
+      "definition_line": 366,
+      "assertions_reviewed": [
+        "Unknown provider_url is rejected without canary echo; foreign-origin cookie command denied; body >64KiB rejected.",
+        "Rejected requests create no command identity."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "http_revision_template": {
+      "pytest_selector": "tests/integration/test_target_api_postgres.py::test_normalization_revision_pin_and_template_clone_are_enforced",
+      "collected_node_ids": [
+        "tests/integration/test_target_api_postgres.py::test_normalization_revision_pin_and_template_clone_are_enforced"
+      ],
+      "source_file": "tests/integration/test_target_api_postgres.py",
+      "definition_line": 404,
+      "assertions_reviewed": [
+        "Explicit 18-place normalization returns changed digest and exact unit weight; subsequent edit invalidates old validation.",
+        "Latest validation follows result revision; clone requires read scope, preserves source content and records changed effective time."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "api_csrf": {
+      "pytest_selector": "tests/unit/api/test_target_routes.py::test_cookie_commands_require_both_session_csrf_and_trusted_origin",
+      "collected_node_ids": [
+        "tests/unit/api/test_target_routes.py::test_cookie_commands_require_both_session_csrf_and_trusted_origin"
+      ],
+      "source_file": "tests/unit/api/test_target_routes.py",
+      "definition_line": 123,
+      "assertions_reviewed": [
+        "Cookie commands require both session CSRF and a trusted origin before service dispatch."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "api_auth": {
+      "pytest_selector": "tests/unit/api/test_target_routes.py::test_target_authentication_and_scopes_precede_service_calls",
+      "collected_node_ids": [
+        "tests/unit/api/test_target_routes.py::test_target_authentication_and_scopes_precede_service_calls"
+      ],
+      "source_file": "tests/unit/api/test_target_routes.py",
+      "definition_line": 94,
+      "assertions_reviewed": [
+        "Missing authentication or scope cannot dispatch to target service."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "api_request_bound": {
+      "pytest_selector": "tests/unit/api/test_target_routes.py::test_target_request_bound_counts_actual_stream_bytes_without_content_length",
+      "collected_node_ids": [
+        "tests/unit/api/test_target_routes.py::test_target_request_bound_counts_actual_stream_bytes_without_content_length"
+      ],
+      "source_file": "tests/unit/api/test_target_routes.py",
+      "definition_line": 189,
+      "assertions_reviewed": [
+        "Chunked request actual bytes enforce64KiB without trusting Content-Length."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "api_result_bound": {
+      "pytest_selector": "tests/unit/api/test_target_routes.py::test_target_response_limit_counts_utf8_bytes_and_never_returns_partial_results",
+      "collected_node_ids": [
+        "tests/unit/api/test_target_routes.py::test_target_response_limit_counts_utf8_bytes_and_never_returns_partial_results"
+      ],
+      "source_file": "tests/unit/api/test_target_routes.py",
+      "definition_line": 234,
+      "assertions_reviewed": [
+        "UTF-8 output bytes enforce2MiB; no truncated success response."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "wire_partial_mapping": {
+      "pytest_selector": "tests/unit/api/test_target_schemas.py::test_unresolved_listing_can_preserve_a_known_canonical_instrument",
+      "collected_node_ids": [
+        "tests/unit/api/test_target_schemas.py::test_unresolved_listing_can_preserve_a_known_canonical_instrument"
+      ],
+      "source_file": "tests/unit/api/test_target_schemas.py",
+      "definition_line": 89,
+      "assertions_reviewed": [
+        "Unresolved listing mapping may retain known canonical instrument while preserving unresolved state."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "wire_financial": {
+      "pytest_selector": "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text",
+      "collected_node_ids": [
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[+1]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[.5]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[0.1111111111111111111]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[0.5]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[01]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[1.]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[111111111111111111111]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[1]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[1e2]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[Infinity]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[NaN]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[None]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_reject_numbers_and_unbounded_or_noncanonical_text[True]"
+      ],
+      "source_file": "tests/unit/api/test_target_schemas.py",
+      "definition_line": 42,
+      "assertions_reviewed": [
+        "Binary numbers, exponents and invalid/beyond-bound decimal strings are rejected."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "wire_exact": {
+      "pytest_selector": "tests/unit/api/test_target_schemas.py::test_financial_wire_values_preserve_exact_decimal_strings",
+      "collected_node_ids": [
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_preserve_exact_decimal_strings[-0]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_preserve_exact_decimal_strings[0.000000000000000001]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_preserve_exact_decimal_strings[0]",
+        "tests/unit/api/test_target_schemas.py::test_financial_wire_values_preserve_exact_decimal_strings[99999999999999999999.999999999999999999]"
+      ],
+      "source_file": "tests/unit/api/test_target_schemas.py",
+      "definition_line": 52,
+      "assertions_reviewed": [
+        "Accepted bounded decimal strings retain exact text."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "mcp_parity": {
+      "pytest_selector": "tests/integration/test_target_mcp_postgres.py::test_canonical_targets_match_api_and_resume_mcp_hierarchy_after_restart",
+      "collected_node_ids": [
+        "tests/integration/test_target_mcp_postgres.py::test_canonical_targets_match_api_and_resume_mcp_hierarchy_after_restart"
+      ],
+      "source_file": "tests/integration/test_target_mcp_postgres.py",
+      "definition_line": 100,
+      "assertions_reviewed": [
+        "Persisted cash/group/holding target publishes; actual API JSON equals MCP metadata, validation, canonical nodes and flattened Decimal values.",
+        "Fresh MCP/service instances resume page cursor with exact depth-first order; UUID subtree selection works.",
+        "Wrong parent/account/portfolio/version and tampered cursor are typed denials."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": [
+        "In-process API/MCP and service reconstruction; real HTTP transports and full stack restart remain operational gates."
+      ]
+    },
+    "mcp_unresolved_quality": {
+      "pytest_selector": "tests/unit/mcp/test_target_gateway.py::test_unresolved_mapping_quality_and_stale_draft_validation_are_explicit",
+      "collected_node_ids": [
+        "tests/unit/mcp/test_target_gateway.py::test_unresolved_mapping_quality_and_stale_draft_validation_are_explicit"
+      ],
+      "source_file": "tests/unit/mcp/test_target_gateway.py",
+      "definition_line": 398,
+      "assertions_reviewed": [
+        "Current unresolved validation produces partial quality and unresolved_count1; changed draft becomes unvalidated while retaining historical audit.",
+        "Equal revision with wrong digest is not current; published lifecycle uses immutable content digest."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "mcp_scope": {
+      "pytest_selector": "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo",
+      "collected_node_ids": [
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes0-6390976b-402a-4813-835d-8a33e49c0643-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes0-6390976b-402a-4813-835d-8a33e49c0643-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes0-None-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes0-None-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes1-6390976b-402a-4813-835d-8a33e49c0643-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes1-6390976b-402a-4813-835d-8a33e49c0643-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes1-None-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes1-None-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes2-6390976b-402a-4813-835d-8a33e49c0643-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes2-6390976b-402a-4813-835d-8a33e49c0643-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes2-None-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes2-None-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes3-6390976b-402a-4813-835d-8a33e49c0643-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes3-6390976b-402a-4813-835d-8a33e49c0643-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes3-None-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes3-None-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes4-6390976b-402a-4813-835d-8a33e49c0643-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes4-6390976b-402a-4813-835d-8a33e49c0643-list_virtual_pies]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes4-None-get_virtual_pie]",
+        "tests/security/test_target_mcp_security.py::test_target_tools_require_both_scopes_before_availability_without_secret_echo[scopes4-None-list_virtual_pies]"
+      ],
+      "source_file": "tests/security/test_target_mcp_security.py",
+      "definition_line": 52,
+      "assertions_reviewed": [
+        "Both portfolio:read and targets:read are required before backend availability; errors do not echo secret values."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "generated_routes": {
+      "pytest_selector": "tests/contract/test_target_client_generation.py::test_generated_operations_match_all_target_routes_deterministically",
+      "collected_node_ids": [
+        "tests/contract/test_target_client_generation.py::test_generated_operations_match_all_target_routes_deterministically"
+      ],
+      "source_file": "tests/contract/test_target_client_generation.py",
+      "definition_line": 24,
+      "assertions_reviewed": [
+        "All15 target OpenAPI operations are generated deterministically with strict objects and encoded IDs; no z.any/z.unknown."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "generated_financial": {
+      "pytest_selector": "tests/contract/test_target_client_generation.py::test_financial_fields_are_generated_as_bounded_strings",
+      "collected_node_ids": [
+        "tests/contract/test_target_client_generation.py::test_financial_fields_are_generated_as_bounded_strings"
+      ],
+      "source_file": "tests/contract/test_target_client_generation.py",
+      "definition_line": 82,
+      "assertions_reviewed": [
+        "Financial OpenAPI field is string with max20 integer/max18 fractional digits and generated regex validator."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "migration_head": {
+      "pytest_selector": "tests/integration/test_migrations.py::test_empty_to_head_is_idempotent_and_matches_metadata",
+      "collected_node_ids": [
+        "tests/integration/test_migrations.py::test_empty_to_head_is_idempotent_and_matches_metadata"
+      ],
+      "source_file": "tests/integration/test_migrations.py",
+      "definition_line": 184,
+      "assertions_reviewed": [
+        "Database table inventory matches ORM metadata and head equals20260907_0009; fixture executes migrations."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "migration_numeric": {
+      "pytest_selector": "tests/integration/test_migrations.py::test_schema_uses_exact_numeric_and_timezone_aware_columns",
+      "collected_node_ids": [
+        "tests/integration/test_migrations.py::test_schema_uses_exact_numeric_and_timezone_aware_columns"
+      ],
+      "source_file": "tests/integration/test_migrations.py",
+      "definition_line": 494,
+      "assertions_reviewed": [
+        "Schema monetary/numeric storage and datetime columns use exact numeric and timezone-aware types."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": []
+    },
+    "atomic_read_revision": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_atomic_portfolio_target_read_holds_one_revision_across_concurrent_replacement",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_atomic_portfolio_target_read_holds_one_revision_across_concurrent_replacement"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 1341,
+      "assertions_reviewed": [
+        "Real PostgreSQL read pauses after selected metadata while concurrent draft replacement is observed waiting on an advisory lock in pg_locks.",
+        "Read returns one old version and matching old node page; only after release does mutation advance revision and replace content.",
+        "Old draft continuation cursor is rejected; fresh atomic read returns new version with its exact replacement node."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": [
+        "Real PostgreSQL service regression; not full Compose runtime acceptance."
+      ]
+    },
+    "atomic_read_scope": {
+      "pytest_selector": "tests/integration/test_virtual_targets.py::test_atomic_portfolio_target_read_enforces_scope_selection_and_empty_state",
+      "collected_node_ids": [
+        "tests/integration/test_virtual_targets.py::test_atomic_portfolio_target_read_enforces_scope_selection_and_empty_state"
+      ],
+      "source_file": "tests/integration/test_virtual_targets.py",
+      "definition_line": 1454,
+      "assertions_reviewed": [
+        "Before active publication, atomic default read returns no selected version and an empty node page; invalid parent/cursor with absent active target yields NOT_FOUND.",
+        "After publication default read selects exact active version; wrong account or another portfolio version returns NOT_FOUND.",
+        "Missing portfolio:read or targets:read is denied; MCP atomic template reads retain conservative portfolio:read requirement."
+      ],
+      "result_at_immutable_sha": "passed",
+      "limitations": [
+        "Real PostgreSQL service regression; not full Compose runtime acceptance."
+      ]
+    }
+  },
+  "browser_tests": [
+    {
+      "file": "tests/e2e/api-web/targets.spec.ts",
+      "definition_line": 62,
+      "title": "durable target editor preserves errors and completes version lifecycle",
+      "project": "api-chromium-desktop",
+      "retries": 0,
+      "assertions_reviewed": [
+        "Private-template Pie create; cash draft invalid exponent retains input; save/validate/publish locks content.",
+        "Clone renamed cash, compare V1 active to V2 draft, archive V2 and Pie, explicitly view archived audit.",
+        "Accessible labels/landmarks/headings/table names, no horizontal overflow, no error portal, no export markers and no console errors/warnings.",
+        "This browser scenario does not publish V2; published-V2 evidence is published_v2_comparison."
+      ],
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "tests/e2e/api-web/targets.spec.ts",
+      "definition_line": 62,
+      "title": "durable target editor preserves errors and completes version lifecycle",
+      "project": "api-chromium-mobile",
+      "retries": 0,
+      "assertions_reviewed": [
+        "Private-template Pie create; cash draft invalid exponent retains input; save/validate/publish locks content.",
+        "Clone renamed cash, compare V1 active to V2 draft, archive V2 and Pie, explicitly view archived audit.",
+        "Accessible labels/landmarks/headings/table names, no horizontal overflow, no error portal, no export markers and no console errors/warnings.",
+        "This browser scenario does not publish V2; published-V2 evidence is published_v2_comparison."
+      ],
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "tests/e2e/api-web/targets.spec.ts",
+      "definition_line": 184,
+      "title": "target pagination retains membership while a new Pie is created",
+      "project": "api-chromium-desktop",
+      "retries": 0,
+      "assertions_reviewed": [
+        "API creates26 filtered private templates; browser first page25; later27th insertion stays outside retained second page.",
+        "Retained traversal has26 unique IDs/names, fresh traversal shows27; pagination keyboard focus and page accessibility checked."
+      ],
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "tests/e2e/api-web/targets.spec.ts",
+      "definition_line": 184,
+      "title": "target pagination retains membership while a new Pie is created",
+      "project": "api-chromium-mobile",
+      "retries": 0,
+      "assertions_reviewed": [
+        "API creates26 filtered private templates; browser first page25; later27th insertion stays outside retained second page.",
+        "Retained traversal has26 unique IDs/names, fresh traversal shows27; pagination keyboard focus and page accessibility checked."
+      ],
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "tests/e2e/api-web/targets.spec.ts",
+      "definition_line": 251,
+      "title": "deep-linked old target remains selectable beyond the first version page",
+      "project": "api-chromium-desktop",
+      "retries": 0,
+      "assertions_reviewed": [
+        "Authenticated CSRF/idempotency commands with observed aggregate ETags create26 private-target versions.",
+        "Oldest version deep link remains outside first25 navigation links but appears exactly once in each26-option comparison selector.",
+        "Both selectors accept oldest version; oldest-to-newest comparison preserves URL IDs and displays the newly added cash node.",
+        "Page accessibility structure and no-overflow checks remain satisfied."
+      ],
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "tests/e2e/api-web/targets.spec.ts",
+      "definition_line": 251,
+      "title": "deep-linked old target remains selectable beyond the first version page",
+      "project": "api-chromium-mobile",
+      "retries": 0,
+      "assertions_reviewed": [
+        "Authenticated CSRF/idempotency commands with observed aggregate ETags create26 private-target versions.",
+        "Oldest version deep link remains outside first25 navigation links but appears exactly once in each26-option comparison selector.",
+        "Both selectors accept oldest version; oldest-to-newest comparison preserves URL IDs and displays the newly added cash node.",
+        "Page accessibility structure and no-overflow checks remain satisfied."
+      ],
+      "result_at_immutable_sha": "passed"
+    }
+  ],
+  "component_tests": [
+    {
+      "file": "apps/web/tests/target-editor.test.tsx",
+      "suite": "target editing security and recovery",
+      "title": "preserves exact unsaved values after an unknown failure and reuses the retry identity",
+      "definition_line": 63,
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "apps/web/tests/target-editor.test.tsx",
+      "suite": "target editing security and recovery",
+      "title": "keeps a conflicting edit visible with an actionable revision warning",
+      "definition_line": 100,
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "apps/web/tests/target-editor.test.tsx",
+      "suite": "target editing security and recovery",
+      "title": "locks published financial content while retaining the internal archive action",
+      "definition_line": 133,
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "apps/web/tests/target-editor.test.tsx",
+      "suite": "target editing security and recovery",
+      "title": "retains an unsaved target while an instrument page fails to load",
+      "definition_line": 167,
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "apps/web/tests/target-editor.test.tsx",
+      "suite": "target editing security and recovery",
+      "title": "distinguishes retained historical validation from a valid current draft",
+      "definition_line": 200,
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "apps/web/tests/target-editor-order.test.tsx",
+      "suite": "target hierarchy order and effective timestamp preservation",
+      "title": "preserves the exact existing UTC timestamp when only content changes",
+      "definition_line": 112,
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "apps/web/tests/target-editor-order.test.tsx",
+      "suite": "target hierarchy order and effective timestamp preservation",
+      "title": "changes the effective instant only after explicit date-field editing",
+      "definition_line": 125,
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "apps/web/tests/target-editor-order.test.tsx",
+      "suite": "target hierarchy order and effective timestamp preservation",
+      "title": "renders shuffled source nodes in hierarchy order and moves only siblings",
+      "definition_line": 137,
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "apps/web/tests/target-editor-order.test.tsx",
+      "suite": "target hierarchy order and effective timestamp preservation",
+      "title": "keeps unrelated ordering when removing a child and adding a root",
+      "definition_line": 187,
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "apps/web/tests/target-editor-order.test.tsx",
+      "suite": "target hierarchy order and effective timestamp preservation",
+      "title": "keeps cyclic and orphan draft nodes visible exactly once",
+      "definition_line": 207,
+      "result_at_immutable_sha": "passed"
+    },
+    {
+      "file": "apps/web/tests/target-editor-order.test.tsx",
+      "suite": "target hierarchy order and effective timestamp preservation",
+      "title": "appends within the bounded root-order range without changing child order",
+      "definition_line": 224,
+      "result_at_immutable_sha": "passed"
+    }
+  ],
+  "test_file_sha256": [
+    {
+      "file": "apps/web/tests/target-editor-order.test.tsx",
+      "sha256": "c421588a555450dabbbfc28062ac55760301848e671b623e83d16d518912b9ef"
+    },
+    {
+      "file": "apps/web/tests/target-editor.test.tsx",
+      "sha256": "bb390980a4583baeb244f24c663c1362cacb36591cc89268cf80c18b3043cd83"
+    },
+    {
+      "file": "tests/contract/test_target_client_generation.py",
+      "sha256": "e4dd121a69302252f962c66a34ea97cd108d392b42a61102d88eef10b9cdc5de"
+    },
+    {
+      "file": "tests/e2e/api-web/targets.spec.ts",
+      "sha256": "2c7f850d56693fce6c5f20e23d332e94194f95cb901eccaac434a5242b75f678"
+    },
+    {
+      "file": "tests/integration/test_migrations.py",
+      "sha256": "f7e3abf5425f5fe589f28fc5e2d7f578f69faf1e308c093506ab92046d3875d8"
+    },
+    {
+      "file": "tests/integration/test_target_api_postgres.py",
+      "sha256": "bcc6803f96500ee28c04b76445e15d3b8179c20a05a42b83a9ba3d269567e9eb"
+    },
+    {
+      "file": "tests/integration/test_target_mcp_postgres.py",
+      "sha256": "6b104a04527f28c791c7a7f73a9a2ca4290b779f052284bcb5346e5a4d251b33"
+    },
+    {
+      "file": "tests/integration/test_virtual_targets.py",
+      "sha256": "edacff51530966238cbfdf9e1007ac6a19d07608fe0e16319d351e2cab85285b"
+    },
+    {
+      "file": "tests/property/test_target_properties.py",
+      "sha256": "2740a344116874943554ed43a1c504b17a152ca6c85f3e9f6a0486c6c58f8406"
+    },
+    {
+      "file": "tests/security/test_target_mcp_security.py",
+      "sha256": "343977881cb740e31086e9d89e24435a1d49150dd45c254ca998f956a278c8a8"
+    },
+    {
+      "file": "tests/unit/api/test_target_routes.py",
+      "sha256": "13a0f466e5ebcdadf49d4eda29ba4e74e453f6733a35485774642b72f8e932ac"
+    },
+    {
+      "file": "tests/unit/api/test_target_schemas.py",
+      "sha256": "be6b5677ce53f82e55afb033787fe818431b894eae271232de8a7a59b778a98f"
+    },
+    {
+      "file": "tests/unit/domain/test_targets.py",
+      "sha256": "cd1a49e3bd9cece4ef426bdc709946ea6114d1f7b219183783ea5453034f1dd1"
+    },
+    {
+      "file": "tests/unit/mcp/test_target_gateway.py",
+      "sha256": "6314e1f19972c113e9c5508327dbbde08489882205163edfcb804de52640e5e0"
+    }
+  ],
+  "validation": {
+    "command": "COMPOSE_PROJECT_NAME=t212pi_stage_a_20260907 make validate",
+    "exit_code": 0,
+    "source_sha": "ecc75154397c8f9d7532fa2df8576846b60bae7c",
+    "clean_checkout_before_and_after": true,
+    "log_sha256": "c4c3af7fc757ca4de8c1f1563c664443758d7dafc3a0cc44b8ae59d3be99a32e",
+    "completion_observed_at_utc": "2026-09-07T14:56:54.093457Z",
+    "python_isolated_tests": 592,
+    "python_integration_and_migration_tests": 103,
+    "web_unit_tests": 48,
+    "synthetic_browser_tests": 32,
+    "api_backed_browser_tests": 12,
+    "browser_retries": 0,
+    "gates": [
+      "Ruff format and lint",
+      "ESLint and Prettier",
+      "strict mypy and TypeScript",
+      "architecture and exact ten GET broker capabilities",
+      "unit/property/contract/security tests",
+      "real PostgreSQL integration and migrations",
+      "generated OpenAPI and TypeScript freshness",
+      "coverage",
+      "desktop/mobile Playwright",
+      "documentation and workspace pins",
+      "Semgrep 1.175.0: seven rules, 177 files, zero findings",
+      "Python and production Node dependency audits",
+      "Python and web production builds",
+      "six runtime container builds and package-manager absence"
+    ],
+    "versions": {
+      "python": "3.13.15",
+      "uv": "0.12.7",
+      "node": "24.20.0",
+      "pnpm": "10.34.5",
+      "postgres": "18.6",
+      "redis": "8.10.1"
+    },
+    "post_build_canary": {
+      "command": "uv run python -m scripts.check_export_url_canary packages/api-contracts/openapi/phase1-v1.json packages/api-contracts/src apps/web/.next/standalone apps/web/.next/static apps/web/.next/server apps/web/.next/trace apps/web/.next/trace-build",
+      "exit_code": 0,
+      "paths_scanned": 7,
+      "log_sha256": "b5670739cbfd0006b1ea253a6e7614445cf212029b0b0ef30c80737dde7f1042"
+    },
+    "python_coverage_percent": 86,
+    "branch_measurement_enabled": true
+  },
+  "github_actions": [
+    {
+      "attempt": 1,
+      "conclusion": "success",
+      "createdAt": "2026-09-07T14:48:34Z",
+      "databaseId": 34134973481,
+      "headSha": "ecc75154397c8f9d7532fa2df8576846b60bae7c",
+      "name": "Phase 1 quality gates",
+      "status": "completed",
+      "updatedAt": "2026-09-07T14:53:31Z",
+      "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34134973481"
+    },
+    {
+      "attempt": 1,
+      "conclusion": "success",
+      "createdAt": "2026-09-07T14:48:34Z",
+      "databaseId": 34134973521,
+      "headSha": "ecc75154397c8f9d7532fa2df8576846b60bae7c",
+      "name": "Documentation baseline validation",
+      "status": "completed",
+      "updatedAt": "2026-09-07T14:48:45Z",
+      "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34134973521"
+    },
+    {
+      "attempt": 1,
+      "conclusion": "success",
+      "createdAt": "2026-09-07T14:48:34Z",
+      "databaseId": 34134973399,
+      "headSha": "ecc75154397c8f9d7532fa2df8576846b60bae7c",
+      "name": "Security and dependency gates",
+      "status": "completed",
+      "updatedAt": "2026-09-07T14:51:06Z",
+      "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34134973399"
+    }
+  ],
+  "runtime_artifact": "phase-2-p2-01-ecc7515-runtime.json",
+  "security_artifact": "phase-2-p2-01-ecc7515-security.json",
+  "limitations": [
+    "This package evidence does not accept the complete Phase 2 release or any Phase 3 work.",
+    "External broker credentials, public OAuth/ChatGPT registration, deployment and real opening-history coverage remain separately gated.",
+    "The original implementation commit 6dde264 failed Gitleaks on two reviewed test-code false positives. The exact fingerprint policy correction is ecc7515; all acceptance here was rerun at that corrected SHA.",
+    "Scanner severity, fixed-vulnerability, license and dependency coverage limits are specified in the separate security artifact."
+  ]
+}
