@@ -139,8 +139,8 @@ def collection_filter_fingerprint(*parts: object) -> str:
 class CollectionSnapshotStore:
     """Materialize and page a fixed, scope-bound ordered record identity set.
 
-    The caller owns the surrounding transaction. Creating the snapshot row and
-    all member rows is therefore atomic with respect to the first response.
+    The caller owns the surrounding transaction. A savepoint protects the new
+    snapshot and its members even when the caller catches materialization errors.
     """
 
     def __init__(
@@ -197,62 +197,57 @@ class CollectionSnapshotStore:
             or active_member_count >= self._max_active_members
         ):
             raise CollectionSnapshotCapacityError()
-        allow_first_oversized_snapshot = active_snapshot_count == 0
         available_member_capacity = self._max_active_members - active_member_count
-        snapshot = CollectionQuerySnapshotModel(
-            id=uuid4(),
-            schema_version=COLLECTION_SNAPSHOT_SCHEMA_VERSION,
-            resource=definition.resource.value,
-            owner_id=definition.owner_id,
-            broker_account_id=definition.broker_account_id,
-            source_snapshot_id=definition.source_snapshot_id,
-            sort_specification=definition.sort_specification,
-            filter_fingerprint=definition.filter_fingerprint,
-            # The row and members are uncommitted while the streaming result is
-            # consumed. exact_total is sealed before the surrounding transaction
-            # can expose the snapshot.
-            exact_total=0,
-            created_at=created_at,
-            expires_at=created_at + self._ttl,
-        )
-        self._session.add(snapshot)
-        self._session.flush()
-        source = ordered_record_ids() if callable(ordered_record_ids) else ordered_record_ids
-        iterator = iter(source)
-        exact_total = 0
-        while True:
-            batch_size = _INSERT_BATCH_SIZE
-            if not allow_first_oversized_snapshot:
+        # Keep the capacity lock outside the savepoint so catching an overflow
+        # cannot release it before the caller's surrounding transaction finishes.
+        with self._session.begin_nested():
+            snapshot = CollectionQuerySnapshotModel(
+                id=uuid4(),
+                schema_version=COLLECTION_SNAPSHOT_SCHEMA_VERSION,
+                resource=definition.resource.value,
+                owner_id=definition.owner_id,
+                broker_account_id=definition.broker_account_id,
+                source_snapshot_id=definition.source_snapshot_id,
+                sort_specification=definition.sort_specification,
+                filter_fingerprint=definition.filter_fingerprint,
+                # Seal the exact total only after the complete identity set fits.
+                exact_total=0,
+                created_at=created_at,
+                expires_at=created_at + self._ttl,
+            )
+            self._session.add(snapshot)
+            self._session.flush()
+            source = ordered_record_ids() if callable(ordered_record_ids) else ordered_record_ids
+            iterator = iter(source)
+            exact_total = 0
+            while True:
                 batch_size = min(
-                    batch_size,
+                    _INSERT_BATCH_SIZE,
                     available_member_capacity - exact_total + 1,
                 )
-            batch = tuple(islice(iterator, batch_size))
-            if not batch:
-                break
-            if any(not isinstance(record_id, UUID) for record_id in batch):
-                raise ValueError("collection snapshot record IDs must be UUIDs")
-            if (
-                not allow_first_oversized_snapshot
-                and exact_total + len(batch) > available_member_capacity
-            ):
-                raise CollectionSnapshotCapacityError()
-            self._session.execute(
-                insert(CollectionQuerySnapshotMemberModel),
-                [
-                    {
-                        "snapshot_id": snapshot.id,
-                        "ordinal": exact_total + offset + 1,
-                        "record_id": record_id,
-                    }
-                    for offset, record_id in enumerate(batch)
-                ],
-            )
-            exact_total += len(batch)
-        snapshot.exact_total = exact_total
-        self._session.flush()
-        value = _snapshot_value(snapshot)
-        return self._read_page(value, after_ordinal=0, limit=page_limit)
+                batch = tuple(islice(iterator, batch_size))
+                if not batch:
+                    break
+                if exact_total + len(batch) > available_member_capacity:
+                    raise CollectionSnapshotCapacityError()
+                if any(not isinstance(record_id, UUID) for record_id in batch):
+                    raise ValueError("collection snapshot record IDs must be UUIDs")
+                self._session.execute(
+                    insert(CollectionQuerySnapshotMemberModel),
+                    [
+                        {
+                            "snapshot_id": snapshot.id,
+                            "ordinal": exact_total + offset + 1,
+                            "record_id": record_id,
+                        }
+                        for offset, record_id in enumerate(batch)
+                    ],
+                )
+                exact_total += len(batch)
+            snapshot.exact_total = exact_total
+            self._session.flush()
+            value = _snapshot_value(snapshot)
+            return self._read_page(value, after_ordinal=0, limit=page_limit)
 
     def resume(
         self,

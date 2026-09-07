@@ -158,6 +158,10 @@ status. Search runs against metadata tables and can find unheld instruments.
 - Malformed, expired, tampered, or mismatched cursors return HTTP 400 with
   `CURSOR_INVALID`. Exhausted durable traversal capacity returns HTTP 429 with
   `COLLECTION_SNAPSHOT_CAPACITY_EXCEEDED`; it never returns partial data as exact.
+- Member quotas apply to every traversal, including an owner's first one. Under
+  the owner capacity lock, the service counts unexpired members before consuming
+  the source, reads at most remaining capacity plus one identities, and rolls back
+  all new snapshot/member rows on overflow. No total or cursor is returned on failure.
 - Date filters use explicit UTC/date semantics; normalized searches are bounded to
   80 characters; arbitrary SQL/order-by fields are not accepted.
 

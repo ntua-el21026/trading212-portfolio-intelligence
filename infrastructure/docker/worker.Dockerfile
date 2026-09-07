@@ -26,6 +26,20 @@ RUN groupadd --gid 10001 app \
 COPY --from=builder --chown=app:app /opt/venv /opt/venv
 COPY --from=builder --chown=app:app /build/alembic.ini /app/alembic.ini
 COPY --from=builder --chown=app:app /build/migrations /app/migrations
+# Keep dpkg's status database for vulnerability/license provenance, while
+# removing package-manager executables and their fixed helper installations.
+RUN for manager_dir in /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin /opt/venv/bin; do \
+        rm -f "$manager_dir"/apt* "$manager_dir"/dpkg* \
+            "$manager_dir"/npm "$manager_dir"/npx "$manager_dir"/corepack \
+            "$manager_dir"/pnpm "$manager_dir"/pnpx \
+            "$manager_dir"/yarn "$manager_dir"/yarnpkg \
+            "$manager_dir"/uv "$manager_dir"/uvx "$manager_dir"/pip*; \
+    done \
+    && rm -rf /usr/lib/apt /usr/lib/dpkg /opt/yarn-v* \
+        /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+        /usr/local/lib/node_modules/pnpm /usr/local/lib/node_modules/yarn \
+    && test -s /var/lib/dpkg/status
+
 USER app
 HEALTHCHECK --interval=30s --timeout=8s --start-period=15s --retries=3 \
   CMD ["celery", "-A", "trading212_worker.tasks:celery_app", "inspect", "ping", "--timeout", "5"]

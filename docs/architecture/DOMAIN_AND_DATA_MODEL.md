@@ -203,6 +203,13 @@ SourceRecord
 
 Unique keys prevent duplicate processing.
 
+For `historical_exports`, `sanitized_payload` is selected metadata only:
+`reportId`, `status`, `timeFrom`, `timeTo`, documented boolean `dataIncluded`
+flags, and `downloadAvailable`. No download URL/component or reversible derivative
+is retained. New fingerprints use selected metadata; URL-only rotation does not
+change semantic identity. `20260907_0008` removes both legacy top-level download
+URL key spellings without changing unrelated source data or historical identifiers.
+
 ### Provenance reference
 
 Canonical records include references to one or more source records and mapping version.
@@ -433,6 +440,13 @@ and 250,000 members), expires after the configured cursor TTL, and is cleaned in
 bounded non-blocking batches. Capacity exhaustion is explicit; it does not return
 a silently truncated result.
 
+The quota is hard for the first and every later traversal. Remaining unexpired
+member capacity is counted under an owner advisory transaction lock before source
+consumption. At most remaining capacity plus one identities are consumed; overflow
+rolls back the new snapshot and members through a savepoint, even when the caller
+catches the failure. Expired rows do not count against capacity even when a locked
+or larger cleanup backlog remains. Cleanup deletes only its bounded unlocked batch.
+
 ## 11. Persistence constraints
 
 At minimum, Phase 1 enforces:
@@ -453,7 +467,7 @@ At minimum, Phase 1 enforces:
 - immutable collection snapshot membership, exact totals, ownership, expiry, and
   source-snapshot constraints.
 
-The Phase 1 Alembic head is `20260901_0007`. The correction sequence is:
+The Phase 1 Alembic head is `20260907_0008`. The correction sequence is:
 
 - `20260901_0004`: semantic refresh identity, fenced leases, transactional
   refresh-dispatch outbox, and dispatcher heartbeat;
@@ -461,6 +475,7 @@ The Phase 1 Alembic head is `20260901_0007`. The correction sequence is:
   `not_configured` state;
 - `20260901_0006`: immutable collection-query snapshots and members;
 - `20260901_0007`: active external-cash-flow revisions.
+- `20260907_0008`: selective removal of legacy export download URL fields.
 
 ## 12. API serialization
 

@@ -135,6 +135,7 @@ generated-check: ## Verify committed generated API contracts are current.
 
 container-build: ## Build all pinned non-root Phase 1 runtime images.
 	$(COMPOSE) build postgres redis api worker mcp web
+	python3 -m scripts.check_runtime_package_managers
 
 test: test-unit test-property test-contract test-integration test-migrations test-security test-coverage test-e2e ## Run every locally executable test layer.
 

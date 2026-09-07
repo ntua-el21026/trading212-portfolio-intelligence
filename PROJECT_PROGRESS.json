@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-01T21:51:27Z",
+  "updated_at": "2026-09-07T12:14:20Z",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -95,5 +95,19 @@
     "real_provider_opening_history_coverage": "complete"
   },
   "live_trading212": "disabled_and_untested_not_an_acceptance_gate",
-  "release_readiness": "blocked_external"
+  "release_readiness": "blocked_external",
+  "audit_remediation": {
+    "stage": "A",
+    "status": "in_progress",
+    "starting_sha": "c7b0b7090f60354f0f1f7a3dabdb0030b6f87038",
+    "previous_accepted_evidence_sha": "e13916eca34d8e3be1ed130248d6c3d1ed7e3869",
+    "corrected_evidence_sha": null,
+    "findings": {
+      "F-01": "implemented_unverified",
+      "F-02": "implemented_unverified"
+    },
+    "all_phase_1_gates_at_corrected_sha": "pending",
+    "stage_b_allowed": false,
+    "evidence": "docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md"
+  }
 }

@@ -239,7 +239,7 @@ class SyntheticIngestionProvider(BrokerAccountDataProvider):
                     observed_at,
                     {
                         "dataIncluded": {"includeDividends": True, "includeTransactions": True},
-                        "downloadLink": None,
+                        "downloadAvailable": False,
                         "reportId": 1,
                         "status": "Finished",
                         "timeFrom": added_on,

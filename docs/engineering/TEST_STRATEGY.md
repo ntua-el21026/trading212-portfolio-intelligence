@@ -65,6 +65,11 @@ API/worker/dispatcher composition.
 - SSRF/open redirect/input limits;
 - cursor tampering, expiry, resource/scope/filter/sort mismatch, and per-owner
   collection-snapshot capacity exhaustion;
+- first-owner exact fit and overflow, remaining-capacity-plus-one iterator bounds,
+  caught-error savepoint rollback, concurrent snapshot/member quotas, and expiry
+  capacity release independently of bounded non-blocking cleanup;
+- export metadata selection, rotated-link fingerprint identity, prior-head URL
+  cleanup migration, and canary absence from retained and generated artifacts;
 - outbox payload excludes credentials/raw broker data and task name is fixed;
 - production configuration fails closed.
 
@@ -75,7 +80,8 @@ API/worker/dispatcher composition.
 - downgrade only where supported/declared;
 - data-preservation assertions;
 - schema model and migration consistency;
-- repeated upgrade idempotency through head `20260901_0007`.
+- repeated upgrade idempotency through head `20260907_0008`, including selective
+  irreversible removal of legacy export download URL fields.
 
 ### Performance tests
 

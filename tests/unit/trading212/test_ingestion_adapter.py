@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import logging
+import traceback
 from datetime import UTC, date, datetime
 from pathlib import Path
 
@@ -11,11 +13,13 @@ from trading212_application.ingestion import (
     FailureCategory,
     IngestionCapability,
     IngestionFailure,
+    SourceRecord,
 )
 from trading212_provider.client import Trading212Client
 from trading212_provider.configuration import BrokerEnvironment, Trading212Settings
 from trading212_provider.credentials import StaticCredentialProvider, Trading212Credentials
 from trading212_provider.ingestion_adapter import Trading212IngestionAdapter
+from trading212_worker.synthetic import SyntheticIngestionProvider
 
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures/trading212"
 
@@ -274,3 +278,178 @@ async def test_dividend_date_remains_typed_at_the_application_boundary() -> None
     assert record.provider_record_id == "dividend-date-1"
     assert record.payload["paidOn"] == date(2026, 6, 30)
     assert record.source_timestamp == datetime(2026, 6, 30, tzinfo=UTC)
+
+
+def _export_canary() -> tuple[str, tuple[str, ...]]:
+    token = "_".join(("EXPORT", "URL", "CANARY"))
+    host = ".".join(("signed", "example", "invalid"))
+    path = "/" + "report" + ".csv"
+    signature = "-".join(("private", "export", "signature"))
+    fragment = "-".join(("private", "export", "fragment"))
+    url = f"https://{host}{path}?token={token}&signature={signature}#" + fragment
+    return url, (url, token, host, path, signature, fragment)
+
+
+def _export_payload(url: object) -> dict[str, object]:
+    return {
+        "reportId": 17,
+        "status": "Finished",
+        "timeFrom": "2026-01-01T00:00:00Z",
+        "timeTo": "2026-08-31T00:00:00Z",
+        "dataIncluded": {"includeDividends": True, "includeTransactions": True},
+        "downloadLink": url,
+    }
+
+
+@pytest.mark.asyncio
+async def test_export_metadata_is_selected_before_every_fingerprint_and_url_is_never_followed(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    url, forbidden = _export_canary()
+    requests: list[tuple[str, str]] = []
+    current_url = url
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        requests.append((request.method, str(request.url)))
+        payload = _export_payload(current_url)
+        payload["download_link"] = current_url
+        payload["futureProviderField"] = {"url": current_url}
+        payload["dataIncluded"] = {
+            "includeDividends": True,
+            "includeTransactions": True,
+            "futureLink": current_url,
+        }
+        return httpx.Response(200, json=[payload])
+
+    caplog.set_level(logging.DEBUG)
+    adapter, client = _adapter(httpx.MockTransport(handler))
+    pages = []
+    hashes = []
+    try:
+        for rotation in ("original", "rotated"):
+            current_url = url + "-" + rotation
+            response = await client.get_historical_exports(correlation_id="export-hash-test")
+            for component in forbidden:
+                assert component not in repr(response)
+                assert component not in repr(response.model_dump())
+            hashes.append(response.source_sha256)
+            pages.append(
+                await adapter.read_page(
+                    owner_id="owner-1",
+                    account_id="account-1",
+                    capability=IngestionCapability.EXPORT_METADATA,
+                    checkpoint=None,
+                    correlation_id="export-minimization-test",
+                )
+            )
+    finally:
+        await client.aclose()
+
+    record = pages[0].records[0]
+    expected = {
+        "reportId": 17,
+        "status": "Finished",
+        "timeFrom": datetime(2026, 1, 1, tzinfo=UTC),
+        "timeTo": datetime(2026, 8, 31, tzinfo=UTC),
+        "dataIncluded": {"includeDividends": True, "includeTransactions": True},
+        "downloadAvailable": True,
+    }
+    assert record.payload == expected
+    assert record.source_timestamp == expected["timeTo"]
+    assert (
+        record.payload_sha256
+        == SourceRecord(
+            provider_record_id="17",
+            source_timestamp=record.source_timestamp,
+            observed_at=record.observed_at,
+            schema_version=record.schema_version,
+            payload=expected,
+        ).payload_sha256
+    )
+    assert hashes[0] == hashes[1]
+    assert record.payload_sha256 == pages[1].records[0].payload_sha256
+    assert pages[0].fingerprint == pages[1].fingerprint
+    retained = repr(pages) + repr(hashes) + caplog.text
+    for component in forbidden:
+        assert component not in retained
+    assert requests == [("GET", "https://demo.trading212.com/api/v0/equity/history/exports")] * 4
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("download_link", [None, ""])
+async def test_export_without_download_retains_only_false_availability(
+    download_link: str | None,
+) -> None:
+    adapter, client = _adapter(
+        httpx.MockTransport(lambda _: httpx.Response(200, json=[_export_payload(download_link)]))
+    )
+    try:
+        page = await adapter.read_page(
+            owner_id="owner-1",
+            account_id="account-1",
+            capability=IngestionCapability.EXPORT_METADATA,
+            checkpoint=None,
+            correlation_id="export-unavailable-test",
+        )
+    finally:
+        await client.aclose()
+    assert page.records[0].payload["downloadAvailable"] is False
+    assert "downloadLink" not in page.records[0].payload
+    assert "download_link" not in page.records[0].payload
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "invalid_field", ["downloadLink", "status", "dataIncluded", "timeTo", "reportId", "json"]
+)
+async def test_invalid_export_dto_remains_sanitized_in_exceptions_traces_and_logs(
+    invalid_field: str,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    url, forbidden = _export_canary()
+    payload = _export_payload(url)
+    payload[invalid_field] = {"includeDividends": url} if invalid_field == "dataIncluded" else url
+    if invalid_field == "downloadLink":
+        payload[invalid_field] = {"value": url}
+    content = ("{" + url).encode() if invalid_field == "json" else json.dumps([payload]).encode()
+    adapter, client = _adapter(httpx.MockTransport(lambda _: httpx.Response(200, content=content)))
+    caplog.set_level(logging.DEBUG)
+    try:
+        with pytest.raises(IngestionFailure) as captured:
+            await adapter.read_page(
+                owner_id="owner-1",
+                account_id="account-1",
+                capability=IngestionCapability.EXPORT_METADATA,
+                checkpoint=None,
+                correlation_id="export-validation-test",
+            )
+    finally:
+        await client.aclose()
+    assert captured.value.category is FailureCategory.CONTRACT
+    rendered = "".join(traceback.format_exception(captured.value)) + caplog.text
+    for component in forbidden:
+        assert component not in rendered
+    provider_error = captured.value.__cause__
+    assert provider_error is not None
+    assert provider_error.__cause__ is None
+    assert provider_error.__context__ is None
+
+
+@pytest.mark.asyncio
+async def test_synthetic_export_metadata_matches_minimized_provider_representation() -> None:
+    page = await SyntheticIngestionProvider().read_page(
+        owner_id="owner-1",
+        account_id="account-1",
+        capability=IngestionCapability.EXPORT_METADATA,
+        checkpoint=None,
+        correlation_id="synthetic-export-test",
+    )
+    assert set(page.records[0].payload) == {
+        "reportId",
+        "status",
+        "timeFrom",
+        "timeTo",
+        "dataIncluded",
+        "downloadAvailable",
+    }
+    assert page.records[0].payload["downloadAvailable"] is False

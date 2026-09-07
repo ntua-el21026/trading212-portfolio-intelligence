@@ -418,28 +418,45 @@ class Trading212Client:
         content = await response.aread()
         if len(content) > self._settings.max_response_bytes:
             raise ProviderError(ProviderErrorKind.CONTRACT, "provider response exceeded size bound")
+        parse_failed = False
         try:
             raw = json.loads(content, parse_float=Decimal, parse_int=int)
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            parse_failed = True
+        if parse_failed:
             raise ProviderError(
                 ProviderErrorKind.CONTRACT,
                 "provider returned malformed JSON",
-            ) from exc
+            )
+        validation_failed = False
         try:
             data = adapter.validate_python(raw)
             rate_limit = parse_rate_limit_headers(dict(response.headers))
-        except (ValidationError, ValueError) as exc:
+        except (ValidationError, ValueError):
+            validation_failed = True
+        if validation_failed:
+            # Raising outside the handler prevents URL-bearing validation input
+            # from remaining in the public exception cause/context or traceback.
             raise ProviderError(
                 ProviderErrorKind.CONTRACT,
                 "provider response did not satisfy the pinned semantic contract",
-            ) from exc
+            )
+        fingerprint_content = content
+        if capability_name == "historical_exports":
+            exports = cast(tuple[HistoricalExportDTO, ...], data)
+            fingerprint_content = json.dumps(
+                [item.retained_metadata() for item in exports],
+                default=str,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
         return ProviderResponse[_T](
             data=data,
             observed_at=self._now().astimezone(UTC),
             correlation_id=safe_correlation_id,
             status_code=response.status_code,
             rate_limit=rate_limit,
-            source_sha256=hashlib.sha256(content).hexdigest(),
+            source_sha256=hashlib.sha256(fingerprint_content).hexdigest(),
         )
 
     async def _send_with_retry(

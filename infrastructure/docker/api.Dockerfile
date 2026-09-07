@@ -24,6 +24,20 @@ RUN groupadd --gid 10001 app \
         /usr/local/lib/python3.13/site-packages/pip \
         /usr/local/lib/python3.13/site-packages/pip-*
 COPY --from=builder --chown=app:app /opt/venv /opt/venv
+# Keep dpkg's status database for vulnerability/license provenance, while
+# removing package-manager executables and their fixed helper installations.
+RUN for manager_dir in /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin /opt/venv/bin; do \
+        rm -f "$manager_dir"/apt* "$manager_dir"/dpkg* \
+            "$manager_dir"/npm "$manager_dir"/npx "$manager_dir"/corepack \
+            "$manager_dir"/pnpm "$manager_dir"/pnpx \
+            "$manager_dir"/yarn "$manager_dir"/yarnpkg \
+            "$manager_dir"/uv "$manager_dir"/uvx "$manager_dir"/pip*; \
+    done \
+    && rm -rf /usr/lib/apt /usr/lib/dpkg /opt/yarn-v* \
+        /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+        /usr/local/lib/node_modules/pnpm /usr/local/lib/node_modules/yarn \
+    && test -s /var/lib/dpkg/status
+
 USER app
 EXPOSE 8000
 HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \

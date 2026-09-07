@@ -19,7 +19,7 @@ from trading212_application.ingestion import (
 from .allowlist import CAPABILITIES
 from .client import Trading212Client
 from .errors import ProviderError, ProviderErrorKind
-from .models import PaginatedDTO, ProviderResponse, RateLimitObservation
+from .models import HistoricalExportDTO, PaginatedDTO, ProviderResponse, RateLimitObservation
 
 _ERROR_CATEGORIES = {
     ProviderErrorKind.AUTHENTICATION: FailureCategory.AUTHENTICATION,
@@ -209,7 +209,12 @@ def _source_record(
 ) -> SourceRecord:
     if not isinstance(value, BaseModel):
         raise IngestionFailure(FailureCategory.CONTRACT, "provider item was not a validated DTO")
-    payload = value.model_dump(mode="python", by_alias=True, exclude_none=False)
+    if capability is IngestionCapability.EXPORT_METADATA:
+        if not isinstance(value, HistoricalExportDTO):
+            raise IngestionFailure(FailureCategory.CONTRACT, "export item was not a validated DTO")
+        payload = value.retained_metadata()
+    else:
+        payload = value.model_dump(mode="python", by_alias=True, exclude_none=False)
     provider_id_value: object = payload
     for part in id_path:
         if not isinstance(provider_id_value, dict) or part not in provider_id_value:

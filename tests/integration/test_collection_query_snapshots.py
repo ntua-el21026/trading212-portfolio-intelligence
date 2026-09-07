@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime, timedelta
 from threading import Barrier
+from unittest.mock import Mock
 from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 
 import psycopg
@@ -19,6 +20,7 @@ from trading212_application.queries import (
     CollectionSnapshotCapacityError,
     CursorCodec,
     CursorValidationError,
+    cursor_binding,
 )
 from trading212_domain import build_synthetic_identity
 from trading212_persistence import (
@@ -446,40 +448,177 @@ def test_filter_varied_first_pages_stop_before_source_query_at_snapshot_quota(
         )
 
 
-def test_member_quota_is_atomic_and_first_oversized_traversal_remains_exact(
+def test_first_materialization_at_member_quota_is_exact_and_stable(
+    collection_snapshot_database: tuple[Engine, sessionmaker[Session]],
+) -> None:
+    _, sessions = collection_snapshot_database
+    with sessions.begin() as session:
+        owner_id, account_id = _create_isolated_scope(session, label="exact-fit")
+    definition = _scoped_definition(owner_id, account_id, filter_name="exact-fit")
+    expected = tuple(uuid4() for _ in range(3))
+    with sessions.begin() as session:
+        first = CollectionSnapshotStore(
+            session,
+            CursorCodec(CURSOR_KEY),
+            max_active_members_per_owner=3,
+        ).materialize(definition, expected, limit=1)
+    assert first.exact_total == 3
+    assert first.record_ids == expected[:1]
+    assert first.next_cursor is not None
+
+    seen = list(first.record_ids)
+    cursor: str | None = first.next_cursor
+    while cursor is not None:
+        with sessions.begin() as session:
+            page = CollectionSnapshotStore(
+                session,
+                CursorCodec(CURSOR_KEY),
+                max_active_members_per_owner=3,
+            ).resume(definition, cursor, limit=1)
+            assert page.exact_total == 3
+            assert page.snapshot_id == first.snapshot_id
+        seen.extend(page.record_ids)
+        cursor = page.next_cursor
+    assert tuple(seen) == expected
+    with sessions.begin() as session:
+        replay = CollectionSnapshotStore(session, CursorCodec(CURSOR_KEY)).resume(
+            definition, first.next_cursor, limit=1
+        )
+    assert replay.record_ids == expected[1:2]
+
+
+@pytest.mark.parametrize("capacity", [3, 1_003])
+def test_first_overflow_is_bounded_atomic_and_never_resumable(
+    collection_snapshot_database: tuple[Engine, sessionmaker[Session]],
+    monkeypatch: pytest.MonkeyPatch,
+    capacity: int,
+) -> None:
+    _, sessions = collection_snapshot_database
+    with sessions.begin() as session:
+        owner_id, account_id = _create_isolated_scope(session, label="first-overflow")
+    definition = _scoped_definition(owner_id, account_id, filter_name="first-overflow")
+    codec = CursorCodec(CURSOR_KEY)
+    encode = Mock(wraps=codec.encode)
+    monkeypatch.setattr(codec, "encode", encode)
+    consumed = 0
+    attempted_snapshot: CollectionQuerySnapshotModel | None = None
+
+    with sessions.begin() as session:
+        owner = session.get(OwnerModel, owner_id)
+        assert owner is not None
+        owner.display_name = "Unrelated caller change survives overflow"
+
+        def overflow_source() -> Iterator[UUID]:
+            nonlocal consumed, attempted_snapshot
+            attempted_snapshot = session.scalar(
+                select(CollectionQuerySnapshotModel).where(
+                    CollectionQuerySnapshotModel.owner_id == owner_id
+                )
+            )
+            assert attempted_snapshot is not None
+            for _ in range(capacity + 1):
+                if consumed == 1_000:
+                    assert (
+                        session.scalar(
+                            select(func.count())
+                            .select_from(CollectionQuerySnapshotMemberModel)
+                            .where(
+                                CollectionQuerySnapshotMemberModel.snapshot_id
+                                == attempted_snapshot.id
+                            )
+                        )
+                        == 1_000
+                    )
+                consumed += 1
+                yield uuid4()
+            pytest.fail("materialization consumed past the overflow identity")
+
+        # The error is caught inside the surrounding transaction deliberately.
+        # Only the failed materialization must roll back when that transaction commits.
+        with pytest.raises(CollectionSnapshotCapacityError):
+            CollectionSnapshotStore(
+                session,
+                codec,
+                max_active_members_per_owner=capacity,
+            ).materialize(definition, overflow_source, limit=1)
+        assert (
+            session.scalar(
+                select(func.count())
+                .select_from(CollectionQuerySnapshotModel)
+                .where(CollectionQuerySnapshotModel.owner_id == owner_id)
+            )
+            == 0
+        )
+
+    assert consumed == capacity + 1
+    encode.assert_not_called()
+    assert attempted_snapshot is not None
+    with sessions() as session:
+        assert session.get(CollectionQuerySnapshotModel, attempted_snapshot.id) is None
+        assert (
+            session.scalar(
+                select(func.count())
+                .select_from(CollectionQuerySnapshotMemberModel)
+                .where(CollectionQuerySnapshotMemberModel.snapshot_id == attempted_snapshot.id)
+            )
+            == 0
+        )
+        owner = session.get(OwnerModel, owner_id)
+        assert owner is not None
+        assert owner.display_name == "Unrelated caller change survives overflow"
+
+    # Even a correctly authenticated token constructed for the attempted row
+    # cannot recover failed state. No such token was emitted by materialization.
+    signed_attempt = CursorCodec(CURSOR_KEY).encode(
+        resource=f"collection_snapshot.{definition.resource.value}",
+        binding=cursor_binding(
+            "collection-query-snapshot",
+            1,
+            definition.owner_id,
+            definition.broker_account_id,
+            definition.resource,
+            definition.sort_specification,
+            definition.filter_fingerprint,
+        ),
+        read_cutoff=attempted_snapshot.created_at,
+        key=(str(attempted_snapshot.id), "1"),
+    )
+    with sessions.begin() as session, pytest.raises(CursorValidationError):
+        CollectionSnapshotStore(session, CursorCodec(CURSOR_KEY)).resume(
+            definition, signed_attempt, limit=1
+        )
+
+
+def test_remaining_member_quota_overflow_preserves_existing_traversal(
     collection_snapshot_database: tuple[Engine, sessionmaker[Session]],
 ) -> None:
     _, sessions = collection_snapshot_database
     with sessions.begin() as session:
         owner_id, account_id = _create_isolated_scope(session, label="member-count")
 
+    first_definition = _scoped_definition(owner_id, account_id, filter_name="member-first")
     first_ids = (uuid4(), uuid4())
     with sessions.begin() as session:
         first = CollectionSnapshotStore(
             session,
             CursorCodec(CURSOR_KEY),
-            max_active_snapshots_per_owner=10,
             max_active_members_per_owner=3,
-        ).materialize(
-            _scoped_definition(owner_id, account_id, filter_name="member-first"),
-            first_ids,
-            limit=1,
-        )
+        ).materialize(first_definition, first_ids, limit=1)
     assert first.exact_total == 2
-
+    assert first.next_cursor is not None
     consumed = 0
 
     def over_capacity_source() -> Iterator[UUID]:
         nonlocal consumed
-        for _ in range(10):
+        for _ in range(2):
             consumed += 1
             yield uuid4()
+        pytest.fail("materialization consumed beyond remaining capacity plus one")
 
-    with pytest.raises(CollectionSnapshotCapacityError), sessions.begin() as session:
+    with sessions.begin() as session, pytest.raises(CollectionSnapshotCapacityError):
         CollectionSnapshotStore(
             session,
             CursorCodec(CURSOR_KEY),
-            max_active_snapshots_per_owner=10,
             max_active_members_per_owner=3,
         ).materialize(
             _scoped_definition(owner_id, account_id, filter_name="member-blocked"),
@@ -487,7 +626,7 @@ def test_member_quota_is_atomic_and_first_oversized_traversal_remains_exact(
             limit=1,
         )
     assert consumed == 2
-    with sessions() as session:
+    with sessions.begin() as session:
         assert (
             session.scalar(
                 select(func.count())
@@ -502,57 +641,23 @@ def test_member_quota_is_atomic_and_first_oversized_traversal_remains_exact(
             .join(CollectionQuerySnapshotModel)
             .where(CollectionQuerySnapshotModel.owner_id == owner_id)
         ) == len(first_ids)
-
-    with sessions.begin() as session:
-        oversized_owner_id, oversized_account_id = _create_isolated_scope(
-            session,
-            label="first-oversized",
+        resumed = CollectionSnapshotStore(session, CursorCodec(CURSOR_KEY)).resume(
+            first_definition, first.next_cursor, limit=1
         )
-    oversized_ids = tuple(uuid4() for _ in range(5))
-    with sessions.begin() as session:
-        oversized = CollectionSnapshotStore(
-            session,
-            CursorCodec(CURSOR_KEY),
-            max_active_snapshots_per_owner=10,
-            max_active_members_per_owner=3,
-        ).materialize(
-            _scoped_definition(
-                oversized_owner_id,
-                oversized_account_id,
-                filter_name="first-oversized",
-            ),
-            oversized_ids,
-            limit=1,
-        )
-    assert oversized.exact_total == len(oversized_ids)
-
-    oversized_duplicate_started = False
-
-    def oversized_duplicate() -> Iterator[UUID]:
-        nonlocal oversized_duplicate_started
-        oversized_duplicate_started = True
-        yield uuid4()
-
-    with pytest.raises(CollectionSnapshotCapacityError), sessions.begin() as session:
-        CollectionSnapshotStore(
-            session,
-            CursorCodec(CURSOR_KEY),
-            max_active_snapshots_per_owner=10,
-            max_active_members_per_owner=3,
-        ).materialize(
-            _scoped_definition(
-                oversized_owner_id,
-                oversized_account_id,
-                filter_name="first-oversized-duplicate",
-            ),
-            oversized_duplicate,
-            limit=1,
-        )
-    assert oversized_duplicate_started is False
+    assert resumed.record_ids == first_ids[1:]
+    assert resumed.exact_total == 2
 
 
+@pytest.mark.parametrize(
+    ("snapshot_quota", "member_quota", "request_size"),
+    [(1, 100, 1), (10, 3, 2)],
+    ids=["snapshot-quota", "member-quota"],
+)
 def test_concurrent_materializations_share_one_owner_capacity_decision(
     collection_snapshot_database: tuple[Engine, sessionmaker[Session]],
+    snapshot_quota: int,
+    member_quota: int,
+    request_size: int,
 ) -> None:
     _, sessions = collection_snapshot_database
     with sessions.begin() as session:
@@ -566,15 +671,15 @@ def test_concurrent_materializations_share_one_owner_capacity_decision(
                 CollectionSnapshotStore(
                     session,
                     CursorCodec(CURSOR_KEY),
-                    max_active_snapshots_per_owner=1,
-                    max_active_members_per_owner=100,
+                    max_active_snapshots_per_owner=snapshot_quota,
+                    max_active_members_per_owner=member_quota,
                 ).materialize(
                     _scoped_definition(
                         owner_id,
                         account_id,
                         filter_name=f"concurrent-{index}",
                     ),
-                    (uuid4(),),
+                    tuple(uuid4() for _ in range(request_size)),
                     limit=1,
                 )
         except CollectionSnapshotCapacityError:
@@ -594,3 +699,73 @@ def test_concurrent_materializations_share_one_owner_capacity_decision(
             )
             == 1
         )
+        assert (
+            session.scalar(
+                select(func.count())
+                .select_from(CollectionQuerySnapshotMemberModel)
+                .join(CollectionQuerySnapshotModel)
+                .where(CollectionQuerySnapshotModel.owner_id == owner_id)
+            )
+            == request_size
+        )
+
+
+def test_expiry_releases_quota_before_bounded_cleanup_finishes(
+    collection_snapshot_database: tuple[Engine, sessionmaker[Session]],
+) -> None:
+    _, sessions = collection_snapshot_database
+    with sessions.begin() as session:
+        owner_id, account_id = _create_isolated_scope(session, label="expired-capacity")
+        expired_ids = []
+        for index in range(3):
+            page = CollectionSnapshotStore(
+                session,
+                CursorCodec(CURSOR_KEY),
+                max_active_snapshots_per_owner=3,
+                max_active_members_per_owner=3,
+            ).materialize(
+                _scoped_definition(owner_id, account_id, filter_name=f"expire-{index}"),
+                (uuid4(),),
+                limit=1,
+            )
+            expired_ids.append(page.snapshot_id)
+    expired_at = datetime.now(UTC) - timedelta(days=365)
+    with sessions.begin() as session:
+        for snapshot_id in expired_ids:
+            snapshot = session.get(CollectionQuerySnapshotModel, snapshot_id)
+            assert snapshot is not None
+            snapshot.created_at = expired_at - timedelta(hours=1)
+            snapshot.expires_at = expired_at
+
+    # A locked expired row and a cleanup batch smaller than the backlog cannot
+    # prevent the next traversal from using the owner's released capacity.
+    with sessions.begin() as locker:
+        locker.scalar(
+            select(CollectionQuerySnapshotModel.id)
+            .where(CollectionQuerySnapshotModel.id == expired_ids[0])
+            .with_for_update()
+        )
+        with sessions.begin() as session:
+            expected = tuple(uuid4() for _ in range(3))
+            page = CollectionSnapshotStore(
+                session,
+                CursorCodec(CURSOR_KEY),
+                cleanup_batch_size=1,
+                max_active_snapshots_per_owner=1,
+                max_active_members_per_owner=3,
+            ).materialize(
+                _scoped_definition(owner_id, account_id, filter_name="after-expiry"),
+                expected,
+                limit=1,
+            )
+            assert page.exact_total == 3
+            assert page.record_ids == expected[:1]
+            assert page.next_cursor is not None
+            assert (
+                session.scalar(
+                    select(func.count())
+                    .select_from(CollectionQuerySnapshotModel)
+                    .where(CollectionQuerySnapshotModel.id.in_(expired_ids))
+                )
+                == 2
+            )

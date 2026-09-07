@@ -187,7 +187,86 @@ def test_empty_to_head_is_idempotent_and_matches_metadata(database_engine: Engin
     expected = set(Base.metadata.tables)
     assert actual == expected
     with database_engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260901_0007"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260907_0008"
+
+
+def test_export_url_cleanup_is_scoped_null_safe_and_repeatable(database_engine: Engine) -> None:
+    config = Config("alembic.ini")
+    config.set_main_option(
+        "sqlalchemy.url", database_engine.url.render_as_string(hide_password=False)
+    )
+    command.downgrade(config, "20260901_0007")
+    now = datetime(2026, 9, 7, tzinfo=UTC)
+    token = "_".join(("EXPORT", "URL", "CANARY"))
+    host = ".".join(("signed", "example", "invalid"))
+    url = f"https://{host}/" + "report" + ".csv?token=" + token
+    preserved = {
+        "reportId": 19,
+        "status": "Finished",
+        "dataIncluded": {"includeTransactions": True},
+        "nested": {"downloadLink": "non-url unrelated nested value"},
+    }
+    values: tuple[tuple[str, object, object], ...] = (
+        ("historical_exports", {**preserved, "downloadLink": url, "download_link": url}, preserved),
+        ("historical_exports", {**preserved, "downloadLink": None}, preserved),
+        ("historical_exports", preserved, preserved),
+        ("historical_exports", None, None),
+        ("historical_exports", None, None),
+        ("historical_exports", {}, {}),
+        ("historical_exports", [], []),
+        ("historical_exports", "legacy scalar", "legacy scalar"),
+        (
+            "historical_transactions",
+            {"downloadLink": "unrelated literal", "download_link": "unrelated literal"},
+            {"downloadLink": "unrelated literal", "download_link": "unrelated literal"},
+        ),
+    )
+    rows = []
+    with Session(database_engine) as session, session.begin():
+        owner_id, _, account_id, instrument_id, listing_id, run_id = _add_identity_graph(session)
+        for index, (capability, payload, expected) in enumerate(values):
+            record_id = uuid4()
+            session.add(
+                SourceRecordModel(
+                    id=record_id,
+                    ingestion_run_id=run_id,
+                    broker_account_id=account_id,
+                    provider="synthetic",
+                    capability=capability,
+                    provider_record_type=capability,
+                    provider_record_id=f"export-migration-{index}",
+                    payload_fingerprint=f"{index:064x}",
+                    observed_at=now,
+                    schema_version="migration-test-v1",
+                    sanitized_payload=payload,
+                )
+            )
+            rows.append((record_id, expected))
+        session.flush()
+        # Exercise SQL NULL separately from the JSON null produced by the ORM.
+        session.execute(
+            text("UPDATE source_records SET sanitized_payload = NULL WHERE id = :id"),
+            {"id": rows[3][0]},
+        )
+    try:
+        for _ in range(2):
+            command.upgrade(config, "head")
+            command.upgrade(config, "head")
+            command.check(config)
+            with Session(database_engine) as session:
+                for record_id, expected in rows:
+                    record = session.get(SourceRecordModel, record_id)
+                    assert record is not None
+                    assert record.sanitized_payload == expected
+                    assert token not in repr(record.sanitized_payload)
+                    assert host not in repr(record.sanitized_payload)
+            command.downgrade(config, "20260901_0007")
+    finally:
+        command.upgrade(config, "head")
+        with Session(database_engine) as cleanup, cleanup.begin():
+            cleanup.execute(delete(OwnerModel).where(OwnerModel.id == owner_id))
+            cleanup.execute(delete(ListingModel).where(ListingModel.id == listing_id))
+            cleanup.execute(delete(InstrumentModel).where(InstrumentModel.id == instrument_id))
 
 
 def test_external_cash_flow_active_state_is_durable(database_engine: Engine) -> None:

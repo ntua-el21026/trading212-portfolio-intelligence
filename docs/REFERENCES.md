@@ -1,6 +1,6 @@
 # Primary External References
 
-**Last reviewed:** 2026-09-01
+**Last reviewed:** 2026-09-07 (historical export schema; other references retain prior review)
 
 Primary sources are authoritative for external contracts. The application must fail closed when a beta provider contract cannot be verified.
 
@@ -19,6 +19,14 @@ Primary sources are authoritative for external contracts. The application must f
 - API-key help: https://helpcentre.trading212.com/hc/en-us/articles/14584770928157-Trading-212-API-key
 
 Endpoint names/slugs on the documentation website may move; verify the official OpenAPI before implementing P1-04. The frozen relative-path templates are maintained in the Trading 212 contract and machine allowlist.
+
+The historical export response was rechecked against the official
+[List generated reports reference](https://docs.trading212.com/api/historical-events/getreports)
+on 2026-09-07. Its status enum is `Queued`, `Processing`, `Running`, `Canceled`,
+`Failed`, or `Finished`; `dataIncluded` defines the boolean flags
+`includeDividends`, `includeInterest`, `includeOrders`, and `includeTransactions`.
+The audit correction retains these selected semantics and download availability
+without retaining or following `downloadLink`. No dispatch capability changed.
 
 ## OpenAI / ChatGPT Apps and MCP
 

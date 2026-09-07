@@ -6,7 +6,7 @@ import math
 import re
 from datetime import UTC, date, datetime
 from decimal import Decimal
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from pydantic import (
     BaseModel,
@@ -256,17 +256,52 @@ class DividendDTO(CurrencyMixin):
 
 
 class HistoricalExportDTO(ProviderModel):
+    # Additive export fields can carry alternate download locations. Retaining
+    # them would defeat the URL field's exclusion from diagnostic serialization.
+    model_config = ConfigDict(extra="ignore", frozen=True, populate_by_name=True)
+
     data_included: dict[str, Any] = Field(alias="dataIncluded")
-    download_link: str | None = Field(default=None, alias="downloadLink")
-    report_id: int = Field(alias="reportId")
-    status: str
+    download_link: str | None = Field(default=None, alias="downloadLink", repr=False, exclude=True)
+    report_id: int = Field(alias="reportId", strict=True, ge=0)
+    status: Literal["Queued", "Processing", "Running", "Canceled", "Failed", "Finished"]
     time_from: datetime = Field(alias="timeFrom")
     time_to: datetime = Field(alias="timeTo")
+
+    @field_validator("data_included")
+    @classmethod
+    def validate_data_included(cls, value: dict[str, Any]) -> dict[str, Any]:
+        for key in _EXPORT_DATA_FLAGS:
+            if key in value and not isinstance(value[key], bool):
+                raise ValueError("export data-inclusion flags must be booleans")
+        return {key: value[key] for key in _EXPORT_DATA_FLAGS if key in value}
+
+    def retained_metadata(self) -> dict[str, object]:
+        """Select semantics before hashing or crossing the application boundary."""
+        return {
+            "reportId": self.report_id,
+            "status": self.status,
+            "timeFrom": self.time_from,
+            "timeTo": self.time_to,
+            "dataIncluded": {
+                key: self.data_included[key]
+                for key in _EXPORT_DATA_FLAGS
+                if key in self.data_included
+            },
+            "downloadAvailable": bool(self.download_link),
+        }
 
     @field_validator("time_from", "time_to")
     @classmethod
     def validate_times(cls, value: datetime) -> datetime:
         return _utc(value)
+
+
+_EXPORT_DATA_FLAGS = (
+    "includeDividends",
+    "includeInterest",
+    "includeOrders",
+    "includeTransactions",
+)
 
 
 class PaginatedDTO[ItemT](ProviderModel):

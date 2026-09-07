@@ -4,6 +4,22 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Independent Phase 1 audit corrections
+
+- Enforce hard collection membership quotas from the first traversal, bound source
+  consumption to remaining capacity plus one, and roll back failed materialization
+  through a savepoint without cursor or partial state.
+- Select non-downloadable historical export metadata before fingerprinting and
+  retention; ignore URL-only rotation and remove legacy top-level URL keys with
+  migration `20260907_0008`.
+- Add quota, concurrency, rollback, export-URL canary and migration regressions,
+  with explicit post-generation contract/web/browser artifact scans in CI.
+- Remove remaining Debian and bundled Node package-manager tooling from all six
+  runtime images while retaining package inventory for vulnerability/license scans;
+  add an executable image probe to local builds and the security image matrix.
+- Corrected immutable-SHA Phase 1 revalidation is pending; Stage B is gated by
+  [the audit correction record](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
+
 ### Changed
 
 - Fast-forwarded the existing Phase 1 implementation into the authoritative `main`

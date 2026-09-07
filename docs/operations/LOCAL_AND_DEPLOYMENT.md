@@ -3,6 +3,25 @@
 **Status:** Phase 1 operational contract
 **Release:** `0.1.0`
 
+## Independent audit correction operations
+
+Collection traversal quotas are hard, including for an owner's first request:
+64 active snapshots and 250,000 active members by default. Overflow returns
+`COLLECTION_SNAPSHOT_CAPACITY_EXCEEDED` (HTTP 429 or bounded MCP failure) with no
+new cursor or partial snapshot state. Resume an existing valid traversal or retry
+after expiry. Expired rows release active capacity even when bounded non-blocking
+cleanup has a backlog; increasing quotas requires an explicit deployment capacity
+decision, not an automatic first-request exception.
+
+Apply migration `20260907_0008` before declaring export URL minimization complete.
+It removes legacy top-level download URL fields from export source payloads only.
+Do not save pre-migration URL payloads in ordinary logs or migration artifacts.
+The migration cannot restore removed URLs on downgrade. New ingestion fingerprints
+selected non-downloadable metadata, and the ten GET capabilities remain unchanged.
+
+Current audit acceptance is tracked in
+[Phase 1 audit corrections](../implementation/PHASE_1_AUDIT_CORRECTIONS.md).
+
 This runbook applies to the API, worker, durable refresh-outbox dispatcher, MCP gateway, web application,
 PostgreSQL system of record, and non-authoritative Redis coordination service.
 It does not authorize Trading 212 Live access or public exposure of local
@@ -76,7 +95,7 @@ make migrate
 make seed-demo
 ```
 
-`make migrate` upgrades to Alembic head `20260901_0007`. Re-running the upgrade and synthetic
+`make migrate` upgrades to Alembic head `20260907_0008`. Re-running the upgrade and synthetic
 seed is safe. Migration downgrades are not an operational rollback mechanism.
 For a deployment, run the migration image as a controlled one-shot job with an
 advisory deployment lock, record the previous and new Alembic revisions, and
@@ -89,6 +108,7 @@ The correction migrations are:
 - `20260901_0005`: explicit `not_configured` credential state;
 - `20260901_0006`: immutable collection-query snapshots and members;
 - `20260901_0007`: active external-cash-flow revisions.
+- `20260907_0008`: selective irreversible deletion of legacy export download URL fields.
 
 ## 4. Deployment configuration boundary
 

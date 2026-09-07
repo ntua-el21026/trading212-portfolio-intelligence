@@ -1,5 +1,9 @@
 # Trading 212 Portfolio Intelligence
 
+**Active work (2026-09-07):** Phase 1 independent audit corrections and exact-SHA
+revalidation are in progress. The previous acceptance record below is historical;
+Phase 2 remains gated by [the Stage A audit record](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
+
 A private, premium, strictly read-only portfolio intelligence platform for Trading 212. It combines auditable brokerage-data ingestion, deterministic financial accounting, reconciliation, historical snapshots, portfolio analytics, a responsive web/PWA application, and a ChatGPT-native MCP app.
 
 > **Current state:** Architecture Design Freeze v0.1 is approved. Phase 1 implementation is complete on `main`, and all 24 locally executable acceptance rows passed at immutable evidence SHA `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`. Release readiness is `blocked_external` only by the documented owner/deployment conditions. Real Trading 212 opening-history coverage remains `unavailable_explicit` and is not inferred from the synthetic scenario 8 acceptance fixture. Phase 2 and Phase 3 are `not_started`.

@@ -6,6 +6,18 @@ test.beforeEach(async ({ page }) => {
   await expect(page).toHaveURL("http://127.0.0.1:3001/");
 });
 
+test.afterEach(async ({ page }) => {
+  const rendered = await page.content();
+  for (const component of [
+    ["EXPORT", "URL", "CANARY"].join("_"),
+    ["signed", "example", "invalid"].join("."),
+  ]) {
+    expect(rendered.includes(component)).toBe(false);
+  }
+  expect(rendered.includes("downloadLink")).toBe(false);
+  expect(rendered.includes("download_link")).toBe(false);
+});
+
 test("API-backed overview renders canonical 248431.27 EUR", async ({
   page,
 }) => {

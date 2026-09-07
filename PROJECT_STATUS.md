@@ -6,9 +6,18 @@
 
 **Implementation authority:** `main`
 
-**Updated:** 2026-09-01
+**Updated:** 2026-09-07
 
-## Current state
+## Active assignment: Phase 1 audit corrections
+
+Stage A is **in progress** from `c7b0b7090f60354f0f1f7a3dabdb0030b6f87038`.
+F-01 hard collection capacity and F-02 export URL minimization are implemented;
+the complete corrected-SHA revalidation is pending. The evidence below is the
+previous accepted baseline, not acceptance of the audit corrections. Phase 2 may
+start only after every Stage A gate passes; Phase 3 remains `not_started`.
+See [the active audit record](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
+
+## Previously accepted baseline
 
 - Architecture Design Freeze v0.1: **Accepted**
 - Documentation and Phase 1 readiness: **Approved**
@@ -44,7 +53,9 @@ than fabricated.
 
 ## Next action
 
-Preserve the accepted evidence while completing only the external owner/deployment work:
+First finish the audit corrections and exact-SHA Phase 1 revalidation, then
+continue the authorized Phase 2 implementation. Preserve these separate external
+owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo
    credential is supplied.

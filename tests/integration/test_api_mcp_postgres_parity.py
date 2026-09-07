@@ -12,7 +12,7 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from psycopg import sql
-from sqlalchemy import Engine, select
+from sqlalchemy import Engine, func, select
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
 from starlette.testclient import TestClient
@@ -40,6 +40,8 @@ from trading212_persistence import (
 )
 from trading212_persistence.models import (
     CashFlowModel,
+    CollectionQuerySnapshotMemberModel,
+    CollectionQuerySnapshotModel,
     IngestionCheckpointModel,
     IngestionRunModel,
     PortfolioSnapshotModel,
@@ -97,6 +99,88 @@ def parity_database() -> Iterator[tuple[str, Engine]]:
             connection.execute(
                 sql.SQL("DROP DATABASE {} WITH (FORCE)").format(sql.Identifier(database_name))
             )
+
+
+@pytest.mark.asyncio
+async def test_hard_collection_capacity_reaches_api_and_mcp_without_cursor_state(
+    parity_database: tuple[str, Engine],
+) -> None:
+    _, engine = parity_database
+    identity = build_synthetic_identity()
+    account_id = str(identity.account.id)
+    sessions = create_session_factory(engine)
+    completed = await IngestionCoordinator(
+        provider=SyntheticIngestionProvider(clock=lambda: NOW),
+        store=PostgresIngestionStore(
+            sessions, provider="synthetic", materializer=PostgresCanonicalMaterializer()
+        ),
+        clock=lambda: NOW,
+    ).refresh(
+        owner_id=str(identity.owner.id),
+        account_id=account_id,
+        mode=RunMode.FULL,
+        idempotency_key="hard-capacity-interface-regression",
+        correlation_id="hard-capacity-interface-regression",
+        capabilities=FULL_REFRESH_ORDER,
+    )
+    assert completed.status is RunStatus.SUCCEEDED
+    with sessions() as session:
+        assert session.scalar(select(func.count()).select_from(TransactionModel)) == 2
+    service = PostgresPortfolioService(
+        sessions=sessions,
+        cursor_signing_key=b"hard-capacity-interface-regression-key",
+        clock=lambda: NOW,
+        max_active_collection_members_per_owner=1,
+    )
+    settings = SecuritySettings(
+        environment=RuntimeEnvironment.TEST,
+        local_synthetic_auth_enabled=True,
+        allowed_hosts=("localhost", "testserver"),
+    )
+    api = create_api_app(settings=settings, service=service, clock=lambda: NOW)
+    with TestClient(api, base_url="https://testserver") as client:
+        assert client.post("/api/v1/auth/local-session").status_code == 201
+        # A failed first attempt must not leave resumable state or alter retries.
+        for _ in range(2):
+            response = client.get(f"/api/v1/accounts/{account_id}/transactions")
+            assert response.status_code == 429
+            assert response.json()["error"] == {
+                "code": "COLLECTION_SNAPSHOT_CAPACITY_EXCEEDED",
+                "message": "Active pagination capacity is temporarily exhausted.",
+                "correlation_id": response.headers["x-correlation-id"],
+                "retryable": True,
+                "details": {},
+            }
+            for forbidden in (account_id, str(identity.owner.id), "next_cursor", "total"):
+                assert forbidden not in response.text
+
+    runtime = create_runtime(security_settings=settings, service=service, clock=lambda: NOW)
+    with TestClient(runtime.asgi_app(), base_url="http://localhost") as client:
+        response = _call_tool(
+            client,
+            {"Accept": "application/json, text/event-stream"},
+            request_id=1,
+            name="list_recent_transactions",
+            arguments={
+                "account_id": account_id,
+                "limit": 1,
+                "start_date": "2026-01-01",
+                "end_date": "2026-08-31",
+            },
+        )
+    assert response.status_code == 200
+    result = response.json()["result"]
+    assert result["isError"] is True
+    assert result["structuredContent"]["error"]["code"] == ("COLLECTION_SNAPSHOT_CAPACITY_EXCEEDED")
+    assert len(response.content) < 2_048
+    for forbidden in (account_id, str(identity.owner.id), "next_cursor", "snapshot_id"):
+        assert forbidden not in response.text
+    with sessions() as session:
+        assert session.scalar(select(func.count()).select_from(CollectionQuerySnapshotModel)) == 0
+        assert (
+            session.scalar(select(func.count()).select_from(CollectionQuerySnapshotMemberModel))
+            == 0
+        )
 
 
 @pytest.mark.asyncio

@@ -53,6 +53,11 @@ jobs:
       - name: Reject generated API contract drift
         run: uv run python scripts/generate_api_contract.py --check
 
+      - name: Reject export URL canary in contracts and retained fixtures
+        run: >-
+          uv run python -m scripts.check_export_url_canary
+          packages/api-contracts/openapi packages/api-contracts/src/index.ts tests/fixtures
+
   python-quality:
     name: python-${{ matrix.gate }}
     runs-on: ubuntu-24.04
@@ -165,6 +170,13 @@ jobs:
           apps/web/.next/server
           apps/web/.next/trace
           apps/web/.next/trace-build
+
+      - name: Reject export URL canary in web runtime artifacts
+        if: matrix.gate == 'build'
+        run: >-
+          python3 -m scripts.check_export_url_canary
+          apps/web/.next/standalone apps/web/.next/static apps/web/.next/server
+          apps/web/.next/trace apps/web/.next/trace-build
 
   postgres:
     name: postgres-migrations-and-integration
@@ -289,6 +301,10 @@ jobs:
 
       - name: Run browser smoke tests
         run: pnpm test:e2e
+
+      - name: Reject export URL canary in browser artifacts
+        if: always()
+        run: python3 -m scripts.check_export_url_canary apps/web/test-results
 
   containers:
     name: application-container-builds

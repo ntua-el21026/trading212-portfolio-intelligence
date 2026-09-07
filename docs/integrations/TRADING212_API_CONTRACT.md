@@ -71,6 +71,14 @@ their own unambiguous total and remain eligible for mismatch/reconciliation test
 
 Historical export creation is intentionally not supported because it requires a mutating request. The GET capability may observe already-existing export metadata but can be disabled when unnecessary.
 
+The strict upstream export DTO is reduced before retention to `reportId`, `status`,
+`timeFrom`, `timeTo`, the documented `dataIncluded` boolean flags, and
+`downloadAvailable`. Neither the download URL nor its components or reversible
+derivatives enter source payloads. Export response/source fingerprints use this
+selected representation, so URL rotation alone is not a semantic revision. The
+client never follows a report link. Migration `20260907_0008` removes legacy
+top-level `downloadLink` and `download_link` keys from export source payloads only.
+
 If official documentation removes, renames, or semantically changes an endpoint, contract tests must fail until this document, the machine allowlist, DTOs, fixtures, and exact/negative tests are deliberately updated from primary documentation. The adapter must not probe alternative paths.
 
 ## 6. Explicitly forbidden endpoint families

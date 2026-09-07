@@ -66,6 +66,10 @@ Controls:
 - production secret manager;
 - rotation/revocation runbook;
 - tests containing canary secrets and asserting absence from outputs/telemetry.
+- export download URLs are validated only at the provider boundary, never followed,
+  and excluded from selected retained metadata and new source fingerprints. Export
+  URL rotation alone does not create a source revision. The export URL canary gate
+  also scans generated contracts, web bundles, and browser artifacts.
 
 ### Unauthorized portfolio access / IDOR
 
@@ -140,6 +144,9 @@ Controls:
 - immutable collection traversal capacity bounded per owner (default 64 active
   snapshots and 250,000 members) with explicit HTTP 429/MCP failure rather than
   silent truncation;
+- no first-request quota exception: read no more than remaining member capacity
+  plus one source identities under the owner lock; snapshot/member savepoint
+  rollback prevents caught overflow from committing partial state or cursor state;
 - outbox claims use bounded batches, `SKIP LOCKED`, expiry, publication backoff,
   and non-secret bounded-cardinality telemetry;
 - provider rate coordination;

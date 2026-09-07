@@ -1,5 +1,10 @@
 # Phase 1 Validation Report
 
+**Active audit, 2026-09-07:** Stage A corrections are in progress. The results below
+remain historical evidence at the stated SHA; they do not close F-01/F-02 or the
+corrected-SHA gate. Current commands and limitations are recorded in
+[Phase 1 audit corrections](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
+
 **Date:** 2026-09-02
 **Repository:** `ntua-el21026/trading212-portfolio-intelligence`
 **Validated implementation/evidence SHA:** `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`

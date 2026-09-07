@@ -19,7 +19,7 @@ Docker Compose provides:
 - Redis 8, strictly non-authoritative coordination/rate/task-broker infrastructure.
 
 Applications run through documented make targets or containers. A single command
-bootstraps dependencies, migrates through Alembic head `20260901_0007`, seeds a
+bootstraps dependencies, migrates through Alembic head `20260907_0008`, seeds a
 synthetic portfolio, and starts API, worker, outbox dispatcher, MCP, and web.
 
 ## 3. Production topology
@@ -135,7 +135,7 @@ Alerts include run/correlation references and safe remediation links.
 - Roll back application image when compatible; database rollback follows explicit migration plan, never ad hoc.
 - Record deployed commit, image digest, migration head, and config version.
 
-The Phase 1 migration chain ends at `20260901_0007`:
+The Phase 1 migration chain ends at `20260907_0008`:
 
 1. `20260901_0004` adds refresh request identity, fenced leases, atomic
    refresh-dispatch outbox, durable consumer attempt bound, and dispatcher
@@ -143,6 +143,8 @@ The Phase 1 migration chain ends at `20260901_0007`:
 2. `20260901_0005` permits an explicit unconfigured broker credential;
 3. `20260901_0006` adds immutable collection-query snapshots and ordered members;
 4. `20260901_0007` adds active/reversed external-cash-flow state.
+5. `20260907_0008` irreversibly removes legacy export download URL fields without
+   copying them or changing unrelated capabilities and payload keys.
 
 Deploy the migration before processes that require these columns/tables. Verify a
 healthy dispatcher cycle before treating API readiness as green. Migration

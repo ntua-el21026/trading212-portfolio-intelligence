@@ -16,6 +16,26 @@
 
 Persist only data required for portfolio history, reconciliation, analytics, provenance, operations, or legal/security obligations. Avoid storing full raw provider payloads when a sanitized canonical record plus fingerprint/selected source representation is sufficient. The owning schema documents each sensitive field's purpose.
 
+Historical Trading 212 exports retain only `reportId`, `status`, `timeFrom`,
+`timeTo`, the documented boolean `dataIncluded` flags, and `downloadAvailable`.
+The upstream DTO is validated first. Download links and their components,
+URL-specific hashes, encrypted values, or reversible encodings are not retained.
+New fingerprints derive from the selected non-downloadable representation, so
+rotating a link without changing semantic metadata does not create a revision.
+No export is created and no download URL is followed.
+
+Migration `20260907_0008` removes legacy top-level `downloadLink` and
+`download_link` keys only from `historical_exports` source payloads. It retains
+unrelated fields and capabilities, creates no backup copy of the removed values,
+and leaves historical opaque source identities unchanged. Rolling application
+code back must not re-enable URL retention; removed URLs cannot be restored by
+migration downgrade.
+
+Because legacy full-payload fingerprints remain immutable, the first replay of
+an old scrubbed record may create one selected-format source revision. Subsequent
+URL-only rotations deduplicate against that safe revision. This format transition
+does not create canonical economic activity from export metadata.
+
 ## 3. Retention categories
 
 Configurable policy distinguishes:

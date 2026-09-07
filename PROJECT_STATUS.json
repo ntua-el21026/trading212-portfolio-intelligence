@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-01T21:51:27Z",
+  "updated_at": "2026-09-07T12:14:20Z",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -13,7 +13,7 @@
   "documentation_readiness": "approved",
   "current_phase": "phase_1",
   "current_release_target": "0.1.0",
-  "implementation_status": "complete",
+  "implementation_status": "in_progress",
   "release_readiness": "blocked_external",
   "release_candidate_sha": "e13916eca34d8e3be1ed130248d6c3d1ed7e3869",
   "release_candidate_relationship": "validated_evidence_sha_is_ancestor_of_main",
@@ -66,5 +66,19 @@
     "workflow_actions_and_docker_bases_immutable": true
   },
   "remaining_external_conditions": 4,
-  "next_gate": "owner_and_deployment_external_conditions"
+  "next_gate": "phase_1_audit_corrections_exact_sha_revalidation",
+  "audit_remediation": {
+    "stage": "A",
+    "status": "in_progress",
+    "starting_sha": "c7b0b7090f60354f0f1f7a3dabdb0030b6f87038",
+    "previous_accepted_evidence_sha": "e13916eca34d8e3be1ed130248d6c3d1ed7e3869",
+    "corrected_evidence_sha": null,
+    "findings": {
+      "F-01": "implemented_unverified",
+      "F-02": "implemented_unverified"
+    },
+    "all_phase_1_gates_at_corrected_sha": "pending",
+    "stage_b_allowed": false,
+    "evidence": "docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md"
+  }
 }
