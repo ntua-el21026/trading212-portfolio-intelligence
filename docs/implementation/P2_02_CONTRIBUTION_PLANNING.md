@@ -1,12 +1,13 @@
 # P2-02 Drift and Contribution Planning
 
-P2-02 is in progress from `c9aeebe8e0481fee6f7d897bd3fb89b3a7fdfaed`.
+P2-02 is complete at `f78c9d2917c3ce8c93f9ae5631390c59616abc82`, following
+implementation from `c9aeebe8e0481fee6f7d897bd3fb89b3a7fdfaed`.
 The [execution manifest](PHASE_2_EXECUTION_MANIFEST.md),
 [optimizer ADR](../adr/ADR-0011-DETERMINISTIC-CONTRIBUTION-OPTIMIZER.md),
 [methods](../analytics/PHASE_2_METHODS.md) and
 [API contract](../architecture/PHASE_2_API_SERVICE_CONTRACTS.md) define its scope.
-Implementation candidate `5fa43b2fe1f671b9e2734c70fd0c13480ae08555` is
-committed. Package acceptance remains pending.
+The [assertion map](evidence/phase-2-p2-02-f78c9d2.json) binds its three local
+acceptance rows and six scenarios to observed tests and exact-SHA gates.
 
 ## Calculation and identity
 
@@ -84,14 +85,33 @@ A changed target version or currency requires an explicit reset of incompatible
 options; a changed currency also requires a newly entered contribution amount.
 Snapshot-only revisions preserve all exact options.
 
-## Verification boundary
+## Observed verification and limits
 
-Focused evidence includes 17 independent rational reference cases, web type and
-lint checks, web unit regressions, strict API/MCP contracts, and real PostgreSQL
-migration/service/worker tests. The evolving focused counts are recorded in the
-working status rather than treated as immutable release evidence. Full local
-gates, source/history/image scans, API-backed desktop/mobile behavior, fresh
-Compose recovery and pushed-SHA CI must all pass before this package is accepted.
+Exact-commit `make validate` passed with 790 isolated Python tests, 129
+service-backed integration/migration cases, 87% combined Coverage.py coverage
+with branch measurement, 111 web unit tests and 36 synthetic plus 16 API-backed
+browser tests, without retries. The reference suite includes 17 independent
+rational cases. A separate observed statistics run passed all 175 generated
+examples across the three planning properties; no fixed random seed is claimed.
+Formatting, lint, strict typing, contracts, architecture, migration/schema,
+security, dependency, documentation, production-build and six container gates
+passed. The post-build canary scan checked ten paths, including both screenshots.
+
+All three exact-SHA CI workflows passed: documentation `34145884900`, security
+`34145884876` and quality `34145884991`. The [security record](evidence/phase-2-p2-02-f78c9d2-security.json)
+contains complete-history Gitleaks, Trivy source and six immutable-image scans.
+The [fresh runtime record](evidence/phase-2-p2-02-f78c9d2-runtime.json) contains
+all four planning modes, identical canonical API/MCP input/result/source proofs,
+seven immutable revisions, real Redis message-loss recovery, and all seven
+services stopped before restart. All 44 compared tables remained identical,
+including the 20 planning tables and retained cache-binding times. Recovery
+used the same job, two publications and one consumer attempt. Privacy scans
+covered 65 database tables, 518 rows and all seven service logs.
+
+[Desktop](evidence/phase-2-p2-02-f78c9d2-desktop.png) and
+[mobile](evidence/phase-2-p2-02-f78c9d2-mobile.png) screenshots show the synthetic
+API-backed finalized plan. Effective company exposure remains explicitly
+unavailable until P2-05; this package does not claim that later capability.
 
 The first exact candidate passed `make validate`: 790 isolated Python tests,
 124 PostgreSQL/migration tests, 87% combined coverage with branch measurement,
@@ -104,7 +124,7 @@ hit the unchanged 64-snapshot owner quota. Local validation used the resettable
 default database, so it did not exercise that failing configuration. The fixture
 runner now uses a newly created disposable database for each launch, retaining
 the configured URL only for connection settings and preserving its base database.
-The correction requires a new exact-SHA acceptance run; the failed candidate is
-retained as history and is not accepted.
+The correction passed the new exact-SHA gates above; the [failed candidate](evidence/phase-2-p2-02-5fa43b2-failed-quality.json)
+is retained as history and remains unaccepted.
 
 P2-03 through P2-10 remain required; Phase 3 remains not started.

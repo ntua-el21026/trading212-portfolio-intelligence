@@ -12,7 +12,11 @@ All notable project changes are recorded here. The project follows semantic vers
   immutable result revisions through migration `20260907_0010`.
 - Add six bounded API operations, four MCP tools and authenticated drift/planner
   pages with preserved edits, revision history and canonical server results.
-- Keep P2-02 in progress while full package acceptance is being verified.
+- Accept P2-02 at `f78c9d2917c3ce8c93f9ae5631390c59616abc82` after full local/CI
+  gates, eight source/history/image scans, all four planning modes and a fresh
+  seven-service restart with immutable revision and lost-message recovery proof.
+  Phase 2 has two complete packages, six local rows and eleven scenarios; later
+  packages and shared release predicates remain required.
 - Isolate each browser fixture launch in its own disposable PostgreSQL database,
   including when CI supplies a database URL, so independent desktop/mobile runs
   retain the production owner quota without sharing earlier test reservations.
@@ -156,7 +160,7 @@ Live is disabled and untested, not another Phase 1 gate.
 
 Virtual Pies/targets, contribution optimization, full performance/benchmarks, X-ray, reports, alerts, and premium analytical interfaces.
 
-Status: `not_started`.
+Status: `in_progress`; P2-01 and P2-02 complete (2/10 packages).
 
 ### [1.0.0] — Phase 3: Premium Intelligence and Productization
 

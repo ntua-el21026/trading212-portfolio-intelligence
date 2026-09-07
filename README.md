@@ -49,7 +49,7 @@ API, web, workers, reports, and MCP tools share the same canonical domain, autho
 | Phase | Release | Outcome | Status |
 |---|---:|---|---|
 | 1. Trusted Foundation | `0.1.0` | Monorepo, domain/persistence, GET-only Trading 212 ingestion, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, CI and operations | Implementation complete; 24 local acceptance rows complete; external gates remain |
-| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 complete, 1/10 packages |
+| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 and P2-02 complete, 2/10 packages |
 | 3. Premium Intelligence & Productization | `1.0.0` | Advanced risk/scenarios/projections/goals, research cockpit, rich ChatGPT UI, PWA polish, premium providers and production hardening | Not started |
 
 ## Phase 1 technical baseline
@@ -83,6 +83,9 @@ The connected local `/pies` route now supports private hierarchical targets,
 validation, immutable publication and version comparison. See the
 [P2-01 implementation and recovery notes](docs/implementation/P2_01_VIRTUAL_TARGETS.md).
 These are internal application targets; Trading 212 remains strictly read-only.
+The `/drift` and `/planner` routes provide canonical target comparisons and
+durable manual contribution plans with immutable revision history. See the
+[P2-02 implementation and exact-SHA evidence](docs/implementation/P2_02_CONTRIBUTION_PLANNING.md).
 
 ## Documentation entry point
 

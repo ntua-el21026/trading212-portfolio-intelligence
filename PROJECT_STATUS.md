@@ -16,8 +16,8 @@ all three workflows, all local gates, and the fresh Compose acceptance passed.
 Python verification: 371 isolated plus 73 service-backed tests and 85% coverage.
 Migration head: `20260907_0008`; MCP: nine tools; Trading 212: ten GET capabilities.
 Phase 2 is `in_progress`: P2-01 is complete at
-`ecc75154397c8f9d7532fa2df8576846b60bae7c`, with three of 29 local acceptance rows
-and five of 40 scenarios complete. Its domain, persistence, API, web, MCP and
+`ecc75154397c8f9d7532fa2df8576846b60bae7c`. Its three local acceptance rows and
+five scenarios passed. Its domain, persistence, API, web, MCP and
 scheduled activation passed full local validation, all three CI workflows and a
 fresh seven-service restart. Verification recorded 592 isolated and 103
 service-backed Python tests, 86% coverage, 48 web unit tests, 32 synthetic browser
@@ -26,20 +26,23 @@ tests and 12 API-backed browser tests, with no browser retries. Migration head i
 implementation's two Gitleaks test-code false positives were corrected with exact
 historical fingerprint exceptions in the accepted SHA and all gates rerun.
 See [the P2-01 evidence](docs/implementation/evidence/phase-2-p2-01-ecc7515.json).
-P2-02 contribution planning is `in_progress`. Its four-mode Decimal solver,
+P2-02 contribution planning is **complete** at
+`f78c9d2917c3ce8c93f9ae5631390c59616abc82`. Its four-mode Decimal solver,
 normalized requests/results, fixed durable job, six API operations, four MCP
-tools and drift/planner web routes are committed at
-`5fa43b2fe1f671b9e2734c70fd0c13480ae08555`. Exact local validation passed 790
-isolated and 124 service-backed Python tests, 87% combined coverage with branch
+tools and drift/planner web routes passed exact local validation with 790
+isolated and 129 service-backed Python tests, 87% combined coverage with branch
 measurement, 111 web unit tests and 52 browser tests without retries. Seventeen
 rational optimizer reference cases and 175 observed property examples passed.
-Documentation and security CI passed; quality run `34144309940` failed because
-the configured CI browser database was reused across desktop/mobile launches,
-exhausting the unchanged owner snapshot quota. The fixture-isolation correction
-creates a disposable database for each launch and requires a new exact-SHA run.
-The failed candidate is not accepted. Fresh Compose runtime evidence and all
-exact pushed-SHA gates remain pending.
-P2-02 through P2-10 remain required.
+All three CI workflows and eight source/history/image security scans passed.
+Fresh Compose acceptance preserved seven immutable plan revisions through
+API/MCP rereads, recovered an actually lost Redis message using the same durable
+job, and retained identical hashes for all 44 compared tables after stopping and
+restarting all seven services. Migration head is `20260907_0010`; MCP has 15 tools;
+Trading 212 remains ten GET capabilities. The initial candidate's failed quality
+run `34144309940` is retained separately; the browser database isolation fix is
+included in the accepted SHA. See [the P2-02 evidence](docs/implementation/evidence/phase-2-p2-02-f78c9d2.json).
+Phase 2 now has two of ten packages, six of 29 local rows and eleven of 40
+scenarios complete (20%). P2-03 through P2-10 remain required.
 Phase 3 remains `not_started`.
 
 ## Previously accepted baseline
@@ -78,7 +81,7 @@ than fabricated.
 
 ## Next action
 
-Complete and accept P2-02, then implement P2-03 through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+Implement P2-03 market, FX and benchmark sources, then P2-04 through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo

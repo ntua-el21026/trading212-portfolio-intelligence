@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_kind": "historical_failed_quality_candidate",
+  "source_sha": "5fa43b2fe1f671b9e2734c70fd0c13480ae08555",
+  "accepted": false,
+  "quality_ci": {
+    "run_id": 34144309940,
+    "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34144309940",
+    "status": "completed",
+    "conclusion": "failure",
+    "browser_job_id": 101812879715,
+    "browser_job_url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34144309940/job/101812879715",
+    "other_independent_jobs_passed": 13,
+    "aggregate_required_gate": "failure",
+    "command": "pnpm test:e2e",
+    "browser_step_exit_code": 1,
+    "fixture_browser": {
+      "passed": 36,
+      "failed": 0
+    },
+    "api_desktop": {
+      "passed": 8,
+      "failed": 0
+    },
+    "api_mobile": {
+      "passed": 3,
+      "failed": 5
+    },
+    "retries": 0,
+    "artifact_count": 0,
+    "artifact_limitation": "No uploaded trace or error-context artifacts were available for this run; diagnosis used the retained GitHub job log and committed harness/workflow source."
+  },
+  "failure": {
+    "code": "COLLECTION_SNAPSHOT_CAPACITY_EXCEEDED",
+    "http_status": 429,
+    "first_observed_at_utc": "2026-09-07T16:45:44.2581344Z",
+    "root_cause": "CI supplied TEST_DATABASE_URL, bypassing the runner branch that recreated its default database. Separate desktop/mobile processes therefore reused the same configured database and retained owner collection snapshots; mobile exhausted the unchanged 64-snapshot limit.",
+    "supporting_observations": [
+      "CI set TEST_DATABASE_URL to its shared PostgreSQL service database.",
+      "Desktop startup applied migrations from empty through head; mobile startup applied no migrations.",
+      "The mobile server logged the typed collection-capacity error with HTTP 429 before the affected page assertions failed."
+    ]
+  },
+  "correction": {
+    "source_sha": "f78c9d2917c3ce8c93f9ae5631390c59616abc82",
+    "behavior": "Every browser fixture launch creates a uniquely named disposable database from configured server credentials, pins the Alembic database environment before migration, and cleans up only that database after normal exit, startup failure or graceful SIGTERM. Playwright allows a bounded graceful API shutdown.",
+    "limits_and_tests": "The 64-snapshot quota, browser scenarios and retries=0 remain unchanged.",
+    "acceptance_status": "pending_separate_exact_commit_gates"
+  },
+  "retained_job_log": {
+    "path": "${EVIDENCE_ROOT}/t212-p2-02-ci-quality-failure.log",
+    "sha256": "22cb81bb3c6362d465f31f18bd314796b6ee1c27307676b902de0d84229d7954"
+  },
+  "retention_recorded_at_utc": "2026-09-07T17:03:32.324654+00:00",
+  "limitations": [
+    "This record preserves a failed historical candidate and does not relabel it as passing.",
+    "Corrected-commit source, image, runtime, full validation and CI results require separate exact-SHA evidence.",
+    "${EVIDENCE_ROOT} is a local audit-artifact directory placeholder; raw logs and private host paths are not embedded."
+  ]
+}

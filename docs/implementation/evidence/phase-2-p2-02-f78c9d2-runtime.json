@@ -1,0 +1,4098 @@
+{
+  "baseline": {
+    "canonical_summary_sha256": "4778f1957fd46b2846c43c3e5b98addf7b8f8d0ed538104ab304c6d955d5b07f",
+    "currency": "EUR",
+    "mcp_tool_names": [
+      "compare_portfolio_snapshots",
+      "create_contribution_plan",
+      "get_account_summary",
+      "get_actual_vs_target",
+      "get_contribution_plan",
+      "get_data_quality_summary",
+      "get_direct_allocation",
+      "get_dividend_summary",
+      "get_drift_analysis",
+      "get_portfolio_snapshot",
+      "get_reconciliation_status",
+      "get_virtual_pie",
+      "list_positions",
+      "list_recent_transactions",
+      "list_virtual_pies"
+    ],
+    "total_value": "248431.27"
+  },
+  "evidence_kind": "exact_commit_synthetic_runtime_acceptance",
+  "execution": {
+    "command_timestamp_note": "Invocation start/end times are observed. Individual nested Compose command timings are not inferred.",
+    "completed_at": "2026-09-07T17:14:45.860149+00:00",
+    "earlier_nonzero_invocations": 0,
+    "invocations": [
+      {
+        "command": [
+          "uv",
+          "run",
+          "python",
+          "<runtime-evidence>/acceptance.py",
+          "--phase",
+          "all",
+          "--execute-authorized",
+          "--expected-sha",
+          "f78c9d2917c3ce8c93f9ae5631390c59616abc82"
+        ],
+        "completed_at_utc": "2026-09-07T17:14:45.905782+00:00",
+        "cwd": "<checkout>",
+        "duration_seconds": 157.130741,
+        "exit_code": 0,
+        "harness_sha256": "398d8d9f083c21134efea9f61a18a87ea3a66343e254b368b651f6f397231e71",
+        "log_sha256": "ca90a55d38c9a16dfef79333f3b8588507e1f8d3facadb25caa4e1480aceedc0",
+        "phase": "all",
+        "started_at_utc": "2026-09-07T17:12:08.775041+00:00"
+      }
+    ],
+    "path_placeholders": {
+      "<checkout>": "Clean checkout of source_sha.",
+      "<runtime-evidence>": "Operator-controlled local directory containing the exact harness and immutable build/image manifests."
+    },
+    "ports": {
+      "API_PORT": "58010",
+      "MCP_PORT": "58011",
+      "POSTGRES_PORT": "65432",
+      "REDIS_PORT": "65379",
+      "WEB_PORT": "53010"
+    },
+    "project": "t212pi_p2_02_corrected_runtime_20260907",
+    "resumed_phases": false,
+    "services": [
+      "postgres",
+      "redis",
+      "api",
+      "worker",
+      "dispatcher",
+      "mcp",
+      "web"
+    ],
+    "single_contributing_harness_sha256": "398d8d9f083c21134efea9f61a18a87ea3a66343e254b368b651f6f397231e71",
+    "source_verified_at": "2026-09-07T17:12:09.071201+00:00"
+  },
+  "hardening": {
+    "api": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:e7219da1d1ae3a37d29cab718cdb177d2ebdaf1599f9d36e7440e00218660b47",
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    },
+    "dispatcher": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:74e868d3e3ba1118f81ecfe524af4dc1a01b7a6c25bc91101ca9c73b675d53cd",
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    },
+    "mcp": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:7124ca79928b1363dedf6514dbca4ededc5c1367a24186f8461d487e36540d9d",
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    },
+    "postgres": {
+      "cap_drop": null,
+      "configured_user": "postgres",
+      "image_id": "sha256:7ef19f3189b7fdc54fa18822106f086a60ae6b6ad95c19331d0ac25f5896e2fa",
+      "readonly_rootfs": false,
+      "security_opt": null,
+      "uid": 999
+    },
+    "redis": {
+      "cap_drop": null,
+      "configured_user": "redis",
+      "image_id": "sha256:10193a5c09c4587e6ae4d02bf4fb81e869ceef094d024efce5a9e480b7201762",
+      "readonly_rootfs": false,
+      "security_opt": null,
+      "uid": 999
+    },
+    "web": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:bee71944d6d609725676e4fbc127e2acef8b86029fa67f81368f934a8665168f",
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    },
+    "worker": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:74e868d3e3ba1118f81ecfe524af4dc1a01b7a6c25bc91101ca9c73b675d53cd",
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    }
+  },
+  "limitations": [
+    "Synthetic local accounts, sources and target commands only; no live broker or third-party market data validation is represented.",
+    "Plans are manual proposals. API/MCP equality and independent financial verification do not authorize order execution.",
+    "Runtime privacy checks cover logs, canonical planning bytes, public database rows and retained JSON/log/HTML/text artifacts against the harness's fixed markers. Raw environment values, cookies and credentials are not retained here.",
+    "Runtime filesystem secret scans, package-manager probes, image vulnerability scans, browser journeys, full test results and hosted CI are separate evidence records; this summary does not imply they passed.",
+    "Original invocation logs and manifests remain local. This portable record retains their hashes and safe selected results, without raw findings or private host paths.",
+    "A resumed run, if present, retains earlier nonzero invocation exits instead of relabeling those attempts as successful."
+  ],
+  "migration_and_seed": {
+    "alembic_head": "20260907_0010",
+    "initial_database": {
+      "analytics_drift_rows": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analytics_run_sources": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "analytics_runs": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "cash_balance_observations": {
+        "count": 1,
+        "sha256": "4eb06ed138a8d890296808db2eead08837805cd31ec96c97bbeda0fda865b8d6"
+      },
+      "cash_flows": {
+        "count": 1,
+        "sha256": "bca9eaa8ab035cac1616cb3e5bbed9d84e74b3bfda78effae310865d55c57b44"
+      },
+      "contribution_plan_attempts": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_catalog": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_dispatch_outbox": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_explanations": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_holding_constraints": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_inputs": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_jobs": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_lines": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_request_constraints": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_requests": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_revisions": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_selections": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_sources": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plans": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "dividends": {
+        "count": 1,
+        "sha256": "8d987ee40dc331c1de4b1c713bb9f395a0625d6b1d9282397e1cc7e8bd47043c"
+      },
+      "ingestion_runs": {
+        "count": 1,
+        "sha256": "9cb326c4397dca9ebf1d3fa90af1c92faf1889d9f9de4a20532933a2bdc594a7"
+      },
+      "ledger_entries": {
+        "count": 3,
+        "sha256": "2c12cff6eb17f41de057a6a5bd040ea11306d923b1243bfc0cb6811d73e0c164"
+      },
+      "order_observations": {
+        "count": 2,
+        "sha256": "9ec728f7597c00825dad08dbb398dc5be29058c9331cf1b7f20aae73734cbf0d"
+      },
+      "planning_audit_events": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "planning_collection_bindings": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "planning_command_identities": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "portfolio_snapshots": {
+        "count": 1,
+        "sha256": "2083c1d9605f1c9d9b3e19f84a26e63698460549e09e76a726bed89208c84607"
+      },
+      "position_observations": {
+        "count": 1,
+        "sha256": "e4a36b4a882a9c5c064b61898c7a64f75b42c619c11c6096ec38cfbc576b1f2b"
+      },
+      "source_record_occurrences": {
+        "count": 10,
+        "sha256": "a1daf7a9cc59913bb40f33f9953d59094e9af8bca747ed81270ebde1f2f74f80"
+      },
+      "source_records": {
+        "count": 10,
+        "sha256": "5d7e0ec38255f921f322d65f4b4d544717b29f6b874e200a6bdab4c8f61677b3"
+      },
+      "target_command_identities": {
+        "count": 8,
+        "sha256": "26c35ff7c19b3a08f39f91ce2d897b5ab4fdc015ab7fb0454321caab85a2adc0"
+      },
+      "target_constraints": {
+        "count": 2,
+        "sha256": "ea0d7b52e2cb6a2395d5838aaf78da5597ef262525a1bcb2655b5d124b36f914"
+      },
+      "target_exclusions": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "target_holdings": {
+        "count": 2,
+        "sha256": "5a589711920961a8d57ff2c8ed3786693ff88bc213bd6f4beeb448dd56446359"
+      },
+      "target_mapping_decisions": {
+        "count": 2,
+        "sha256": "02baf7fca731fa6f253f7a7e7108852ecc975b64301c83e0a4064ee216182c63"
+      },
+      "target_nodes": {
+        "count": 6,
+        "sha256": "aac306029e80f77969b83664dde6d3a832427cd41635d4151b150eb9d3706dd6"
+      },
+      "target_normalization_adjustments": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "target_validation_issues": {
+        "count": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "target_validation_results": {
+        "count": 2,
+        "sha256": "b0f8bd0cc79bbbcf6212df1fdead1b54a136c1aa91ccb0627ba0c41811145222"
+      },
+      "target_version_events": {
+        "count": 8,
+        "sha256": "043eeeb6792109643b38b8125dfdcb7507f08e46227c1ae71f83c0f72dd69b0f"
+      },
+      "target_versions": {
+        "count": 2,
+        "sha256": "e0f3f7c653c5d58e28eda607c901ea83af21524881d8345e66673057977dbfff"
+      },
+      "transactions": {
+        "count": 2,
+        "sha256": "c7e2516c68c6bd01e3f9ccac95e25179d45daaf1c98ef0bd5b60a0aa315ec601"
+      },
+      "virtual_portfolio_events": {
+        "count": 2,
+        "sha256": "b28d7020fa1f66d084529f92e0cab4a11cb1e1a88e53983fd96fa4f1e2ab991f"
+      },
+      "virtual_portfolios": {
+        "count": 2,
+        "sha256": "df2771ebe09c3e641011a6269e6148ea5964688b37f780c62f49877ba5ea7ff4"
+      }
+    },
+    "repeat_migration_seed_identical": true
+  },
+  "planning": {
+    "all_four_modes": {
+      "cash_only": {
+        "content_digest": "1788b1785bbc1e281c62956b5f5e26573f12329639bbae05600bd7f7e058528b",
+        "job_id": "bef439a7-a8d3-4ca3-8364-8eca3d405b8a",
+        "outcome": "optimal",
+        "plan_id": "933498b1-2fdb-4bd6-9b1d-22af980beccd",
+        "plan_revision_id": "67cc78d4-5653-4f71-bce1-53528cd51203",
+        "provenance": {
+          "content_digest": "1788b1785bbc1e281c62956b5f5e26573f12329639bbae05600bd7f7e058528b",
+          "independent_result_validation": true,
+          "input_digest": "121a6d901d5071ab9839fec6118381d8f6bf946e99de11e1d252db7e35cbe26e",
+          "normalized_source_count": 13,
+          "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+          "public_payload_matches_canonical_storage": true,
+          "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+          "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+        },
+        "residual_cash": {
+          "amount": "20",
+          "currency": "EUR"
+        },
+        "revision_etag": "\"933498b1-2fdb-4bd6-9b1d-22af980beccd:1\""
+      },
+      "global": {
+        "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+        "job_id": "59efc7c9-9341-48fc-bc60-faf3af75ecb3",
+        "outcome": "optimal",
+        "plan_id": "ef1fc9d8-832a-42ad-a810-a3f57ebe618a",
+        "plan_revision_id": "ac8a1e98-2837-4cc4-8367-efd576361f93",
+        "provenance": {
+          "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+          "independent_result_validation": true,
+          "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+          "normalized_source_count": 13,
+          "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+          "public_payload_matches_canonical_storage": true,
+          "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+          "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+        },
+        "residual_cash": {
+          "amount": "20",
+          "currency": "EUR"
+        },
+        "revision_etag": "\"ef1fc9d8-832a-42ad-a810-a3f57ebe618a:1\""
+      },
+      "hierarchical": {
+        "content_digest": "d419dcf0841e55f2e37e85e4a9c2ebbda859ae1a97b943043a7e6de5f2db953b",
+        "job_id": "b4a8b706-adaf-4e58-a3d6-16d0ec82bf2f",
+        "outcome": "optimal",
+        "plan_id": "28e878ee-07a0-4d8c-888d-fc4ac6125e06",
+        "plan_revision_id": "1fe013df-6fee-4748-9fb5-940cfe48bba8",
+        "provenance": {
+          "content_digest": "d419dcf0841e55f2e37e85e4a9c2ebbda859ae1a97b943043a7e6de5f2db953b",
+          "independent_result_validation": true,
+          "input_digest": "128cda7986d8afcdd92218c985fb356346bdfaf43c0d5bbcc75ec7d8d31bb4ed",
+          "normalized_source_count": 13,
+          "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+          "public_payload_matches_canonical_storage": true,
+          "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+          "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+        },
+        "residual_cash": {
+          "amount": "20",
+          "currency": "EUR"
+        },
+        "revision_etag": "\"28e878ee-07a0-4d8c-888d-fc4ac6125e06:1\""
+      },
+      "restricted": {
+        "content_digest": "47ff1108a1a926523df72ceb87ebd7b003e45935e0951de76451b13ce36975e5",
+        "job_id": "2b24091b-043a-4f39-9c6c-fd9ffbf0cedb",
+        "outcome": "optimal",
+        "plan_id": "5055b062-0927-4803-93f2-7d4f762b5528",
+        "plan_revision_id": "a18662c7-508f-4510-975d-e0976c1bd0ca",
+        "provenance": {
+          "content_digest": "47ff1108a1a926523df72ceb87ebd7b003e45935e0951de76451b13ce36975e5",
+          "independent_result_validation": true,
+          "input_digest": "abe0fce9bbe92a46b7f0644809d8f488a15ab229890ef26c2e5826e8963a8e80",
+          "normalized_source_count": 13,
+          "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+          "public_payload_matches_canonical_storage": true,
+          "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+          "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+        },
+        "residual_cash": {
+          "amount": "20",
+          "currency": "EUR"
+        },
+        "revision_etag": "\"5055b062-0927-4803-93f2-7d4f762b5528:1\""
+      }
+    },
+    "canonical_bytes_and_normalized_provenance_verified": true,
+    "direct_api_mcp_parity": true,
+    "exact_conservation": true,
+    "finalized_revisions": {
+      "1cb324cc-f19f-4e3c-9e1f-7d2944a91838": {
+        "projection": {
+          "calculated_at": "2026-09-07T17:14:14.843986Z",
+          "content_digest": "1788b1785bbc1e281c62956b5f5e26573f12329639bbae05600bd7f7e058528b",
+          "execution_allowed": false,
+          "identity": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "input_digest": "121a6d901d5071ab9839fec6118381d8f6bf946e99de11e1d252db7e35cbe26e",
+            "plan_id": "a17e2a3b-5b28-4b62-9765-97b11eefb90d",
+            "plan_revision_id": "1cb324cc-f19f-4e3c-9e1f-7d2944a91838",
+            "request_id": "5f3f85e9-1cc6-4ddb-b3eb-a26c79c23b6b",
+            "request_revision": 1,
+            "requested_at": "2026-09-07T17:13:13.427314Z",
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "line_total": 1,
+          "lines": [
+            {
+              "binding_constraint_keys": [],
+              "current_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "current_weight": "0.94996092883154363",
+              "excluded": true,
+              "holding_id": "6697f718-d0ca-4dde-a246-ee211de9af56",
+              "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+              "listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+              "minimum_funded_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "node_id": "fe9a42c3-aa6d-42a6-bd92-4b4b70a09bc7",
+              "node_key": "global-equity",
+              "ordinal": 0,
+              "post_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "post_weight": "0.949884458227965589",
+              "recommended_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "target_weight": "0.9",
+              "value_increment": {
+                "amount": "0.01",
+                "currency": "EUR"
+              }
+            }
+          ],
+          "request": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "options": {
+              "allocation_constraints": [],
+              "cash_reserve": null,
+              "contribution": {
+                "amount": "20",
+                "currency": "EUR"
+              },
+              "coverage_policy": "allow_degraded",
+              "eligible_holding_ids": null,
+              "excluded_holding_ids": [],
+              "holding_constraints": [],
+              "listing_preferences": [],
+              "mode": "cash_only",
+              "monetary_quantum": "0.01",
+              "restricted_group_ids": []
+            },
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "result": {
+            "after_drift": {
+              "cash": {
+                "amount": "12451.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.049884458227965589",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248451.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004976918345395287"
+            },
+            "attempted_assignments": 0,
+            "before_drift": {
+              "cash": {
+                "amount": "12431.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.04996092883154363",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248431.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004992188819421135"
+            },
+            "bound_kind": "finite_domain_exhaustion",
+            "constraints": [
+              {
+                "amount": "100",
+                "coefficient": null,
+                "count": null,
+                "currency": "EUR",
+                "enabled": null,
+                "key": "reserve",
+                "kind": "cash_reserve",
+                "node_key": null,
+                "weight": null
+              }
+            ],
+            "context": {
+              "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+              "as_of": "2026-08-31T12:00:00Z",
+              "assumptions": [
+                {
+                  "code": "explicit_pinned_target",
+                  "constraint_keys": [],
+                  "message": "The requested published target is a pinned comparison configuration.",
+                  "node_keys": [],
+                  "severity": "info"
+                },
+                {
+                  "code": "no_existing_cash_spending",
+                  "constraint_keys": [],
+                  "message": "New contribution only; existing cash remains in the portfolio.",
+                  "node_keys": [],
+                  "severity": "info"
+                }
+              ],
+              "availability": "available",
+              "calculated_at": "2026-09-07T17:14:14.843986Z",
+              "coverage": {
+                "basis": "full_reporting_currency_valuation",
+                "complete": true,
+                "denominator": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                },
+                "matched_total": {
+                  "amount": "236000",
+                  "currency": "EUR"
+                },
+                "matched_weight": "0.94996092883154363",
+                "unclassified_total": {
+                  "amount": "0",
+                  "currency": "EUR"
+                },
+                "unclassified_weight": "0",
+                "unresolved_target_weight": "0",
+                "valued_total": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                }
+              },
+              "data_quality": {
+                "coverage_end_at": "2026-08-31T12:00:00Z",
+                "coverage_start_at": "2026-08-31T12:00:00Z",
+                "evaluated_at": "2026-09-07T17:14:14.843986Z",
+                "missing_inputs": [],
+                "reconciled": true,
+                "state": "fresh",
+                "warnings": []
+              },
+              "input_digest": "121a6d901d5071ab9839fec6118381d8f6bf946e99de11e1d252db7e35cbe26e",
+              "method": {
+                "name": "contribution_weighted_drift_v1",
+                "version": "1.0.0"
+              },
+              "reason_code": null,
+              "reporting_currency": "EUR",
+              "schema_version": "1.0.0",
+              "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+              "source_cutoff_at": "2026-08-31T12:00:00Z",
+              "sources": [
+                {
+                  "content_digest": "72bb4a5e07d4ea2e3b36d3488301b06fd7970c9ed2970c1f7da95141690df090",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "48882429-ca3d-5c19-8119-872935bf2e96",
+                  "kind": "calculation_run",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "06dfdcb4ccd1f193b4d5c71b8eeb54ec97e81d0d1219c4e3e8d2c1946563a614",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-09-07T17:12:17.900816Z",
+                  "id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+                  "kind": "portfolio_snapshot",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "839938cc0ae68d742db5ee2dc08ee56b4f74e1846ce023ee0898fc227dab45d5",
+                  "effective_at": "2026-01-16T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "1084069c-9975-4622-bde5-b178656dce04",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "f92fd1dc79de4f6e9d96904a11d189d593eca3dda4240f5703f31173398c5fe2",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "20f6f5f8-ecbb-4d77-9753-e76bbc50ad8c",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_instruments"
+                },
+                {
+                  "content_digest": "d6409edd0d7939a846aad8935b2da5be5d42ee3255c8630111e9f9aa29462095",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "2f796d01-34aa-4598-81e6-cff7de196e83",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:account_summary"
+                },
+                {
+                  "content_digest": "4fdd34bc7aa24443fd14a807ff1d7068c57445bf16be5421655a3dbc2d055263",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "658650b2-9333-4ad2-9af6-85b1e21b0b1f",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_exports"
+                },
+                {
+                  "content_digest": "d0513a522117f1276c6584c592d73d400edc53acf87085aded295570c41337f6",
+                  "effective_at": "2026-06-30T00:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7c54af7e-9ec1-47d1-b55d-8f20b2cb9cef",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_dividends"
+                },
+                {
+                  "content_digest": "f863cf51aacd198cd9d5a80e693d577f0c834057b326dbad5924db88be0bbcce",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7d2786d2-94df-4a4b-8c35-53a2b6f6dcf0",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "40f7fac2b753df4afc7f3fb0db48ccb37062d9f83c485fd2dcbe0d9aab125e73",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8f12ae61-a2bb-42e8-99cb-bb7ff6796939",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:pending_orders"
+                },
+                {
+                  "content_digest": "36b961fd063089540855d1e912bb7919a801126ee2ff772bb6d377256215d0e2",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "9d799e71-1f57-402b-92f8-64c8acafa920",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_orders"
+                },
+                {
+                  "content_digest": "f4bed7165fb0d85d7d88cded7a61f091bbee70f4066a5d2589fa238910f1e41b",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "c9c3b5d1-7cb9-46c6-9597-265994b21d1a",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_exchanges"
+                },
+                {
+                  "content_digest": "ab97b016ec07a305674a86a812a5214be7334f489b412cd828328eeab5f155d8",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "fc108bbc-a4da-48b3-9df3-b7bd27a360b6",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:portfolio_positions"
+                },
+                {
+                  "content_digest": "bde7f60e955d2de837dd5d464bbd7c17f2c80e5bf1df954ae6f294704a9c6cc3",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+                  "kind": "target_version",
+                  "version": "1.0.0"
+                }
+              ],
+              "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+              "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a",
+              "warnings": []
+            },
+            "contribution": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "currency_policy_version": "iso4217-six-2026-01-01-v1",
+            "current_cash": {
+              "amount": "12431.27",
+              "currency": "EUR"
+            },
+            "examined_moves": 0,
+            "excluded_node_keys": [
+              "global-equity"
+            ],
+            "execution_allowed": false,
+            "exhaustive": true,
+            "explanations": [
+              {
+                "code": "finite_domain_exhausted",
+                "constraint_keys": [],
+                "message": "Every feasible finite-domain candidate was considered or excluded by a necessary constraint.",
+                "node_keys": [],
+                "severity": "info"
+              }
+            ],
+            "lower_bound": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "mode": "cash_only",
+            "monetary_quantum": "0.01",
+            "objective_after": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "objective_before": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "objective_gap": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0"
+              ]
+            },
+            "outcome": "optimal",
+            "post_cash": {
+              "amount": "12451.27",
+              "currency": "EUR"
+            },
+            "post_total": {
+              "amount": "248451.27",
+              "currency": "EUR"
+            },
+            "residual_cash": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "unresolved_node_keys": []
+          }
+        },
+        "provenance": {
+          "content_digest": "1788b1785bbc1e281c62956b5f5e26573f12329639bbae05600bd7f7e058528b",
+          "independent_result_validation": true,
+          "input_digest": "121a6d901d5071ab9839fec6118381d8f6bf946e99de11e1d252db7e35cbe26e",
+          "normalized_source_count": 13,
+          "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+          "public_payload_matches_canonical_storage": true,
+          "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+          "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+        }
+      },
+      "1fe013df-6fee-4748-9fb5-940cfe48bba8": {
+        "projection": {
+          "calculated_at": "2026-09-07T17:13:07.053516Z",
+          "content_digest": "d419dcf0841e55f2e37e85e4a9c2ebbda859ae1a97b943043a7e6de5f2db953b",
+          "execution_allowed": false,
+          "identity": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "input_digest": "128cda7986d8afcdd92218c985fb356346bdfaf43c0d5bbcc75ec7d8d31bb4ed",
+            "plan_id": "28e878ee-07a0-4d8c-888d-fc4ac6125e06",
+            "plan_revision_id": "1fe013df-6fee-4748-9fb5-940cfe48bba8",
+            "request_id": "42297a0f-7d6c-424b-9cfa-2df28a37aca3",
+            "request_revision": 1,
+            "requested_at": "2026-09-07T17:13:06.829465Z",
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "line_total": 1,
+          "lines": [
+            {
+              "binding_constraint_keys": [],
+              "current_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "current_weight": "0.94996092883154363",
+              "excluded": false,
+              "holding_id": "6697f718-d0ca-4dde-a246-ee211de9af56",
+              "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+              "listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+              "minimum_funded_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "node_id": "fe9a42c3-aa6d-42a6-bd92-4b4b70a09bc7",
+              "node_key": "global-equity",
+              "ordinal": 0,
+              "post_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "post_weight": "0.949884458227965589",
+              "recommended_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "target_weight": "0.9",
+              "value_increment": {
+                "amount": "0.01",
+                "currency": "EUR"
+              }
+            }
+          ],
+          "request": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "options": {
+              "allocation_constraints": [],
+              "cash_reserve": null,
+              "contribution": {
+                "amount": "20",
+                "currency": "EUR"
+              },
+              "coverage_policy": "allow_degraded",
+              "eligible_holding_ids": null,
+              "excluded_holding_ids": [],
+              "holding_constraints": [],
+              "listing_preferences": [],
+              "mode": "hierarchical",
+              "monetary_quantum": "0.01",
+              "restricted_group_ids": []
+            },
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "result": {
+            "after_drift": {
+              "cash": {
+                "amount": "12451.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.049884458227965589",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248451.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004976918345395287"
+            },
+            "attempted_assignments": 2001,
+            "before_drift": {
+              "cash": {
+                "amount": "12431.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.04996092883154363",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248431.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004992188819421135"
+            },
+            "bound_kind": "finite_domain_exhaustion",
+            "constraints": [
+              {
+                "amount": "100",
+                "coefficient": null,
+                "count": null,
+                "currency": "EUR",
+                "enabled": null,
+                "key": "reserve",
+                "kind": "cash_reserve",
+                "node_key": null,
+                "weight": null
+              }
+            ],
+            "context": {
+              "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+              "as_of": "2026-08-31T12:00:00Z",
+              "assumptions": [
+                {
+                  "code": "explicit_pinned_target",
+                  "constraint_keys": [],
+                  "message": "The requested published target is a pinned comparison configuration.",
+                  "node_keys": [],
+                  "severity": "info"
+                },
+                {
+                  "code": "no_existing_cash_spending",
+                  "constraint_keys": [],
+                  "message": "New contribution only; existing cash remains in the portfolio.",
+                  "node_keys": [],
+                  "severity": "info"
+                }
+              ],
+              "availability": "available",
+              "calculated_at": "2026-09-07T17:13:07.053516Z",
+              "coverage": {
+                "basis": "full_reporting_currency_valuation",
+                "complete": true,
+                "denominator": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                },
+                "matched_total": {
+                  "amount": "236000",
+                  "currency": "EUR"
+                },
+                "matched_weight": "0.94996092883154363",
+                "unclassified_total": {
+                  "amount": "0",
+                  "currency": "EUR"
+                },
+                "unclassified_weight": "0",
+                "unresolved_target_weight": "0",
+                "valued_total": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                }
+              },
+              "data_quality": {
+                "coverage_end_at": "2026-08-31T12:00:00Z",
+                "coverage_start_at": "2026-08-31T12:00:00Z",
+                "evaluated_at": "2026-09-07T17:13:07.053516Z",
+                "missing_inputs": [],
+                "reconciled": true,
+                "state": "fresh",
+                "warnings": []
+              },
+              "input_digest": "128cda7986d8afcdd92218c985fb356346bdfaf43c0d5bbcc75ec7d8d31bb4ed",
+              "method": {
+                "name": "contribution_weighted_drift_v1",
+                "version": "1.0.0"
+              },
+              "reason_code": null,
+              "reporting_currency": "EUR",
+              "schema_version": "1.0.0",
+              "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+              "source_cutoff_at": "2026-08-31T12:00:00Z",
+              "sources": [
+                {
+                  "content_digest": "72bb4a5e07d4ea2e3b36d3488301b06fd7970c9ed2970c1f7da95141690df090",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "48882429-ca3d-5c19-8119-872935bf2e96",
+                  "kind": "calculation_run",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "06dfdcb4ccd1f193b4d5c71b8eeb54ec97e81d0d1219c4e3e8d2c1946563a614",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-09-07T17:12:17.900816Z",
+                  "id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+                  "kind": "portfolio_snapshot",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "839938cc0ae68d742db5ee2dc08ee56b4f74e1846ce023ee0898fc227dab45d5",
+                  "effective_at": "2026-01-16T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "1084069c-9975-4622-bde5-b178656dce04",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "f92fd1dc79de4f6e9d96904a11d189d593eca3dda4240f5703f31173398c5fe2",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "20f6f5f8-ecbb-4d77-9753-e76bbc50ad8c",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_instruments"
+                },
+                {
+                  "content_digest": "d6409edd0d7939a846aad8935b2da5be5d42ee3255c8630111e9f9aa29462095",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "2f796d01-34aa-4598-81e6-cff7de196e83",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:account_summary"
+                },
+                {
+                  "content_digest": "4fdd34bc7aa24443fd14a807ff1d7068c57445bf16be5421655a3dbc2d055263",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "658650b2-9333-4ad2-9af6-85b1e21b0b1f",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_exports"
+                },
+                {
+                  "content_digest": "d0513a522117f1276c6584c592d73d400edc53acf87085aded295570c41337f6",
+                  "effective_at": "2026-06-30T00:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7c54af7e-9ec1-47d1-b55d-8f20b2cb9cef",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_dividends"
+                },
+                {
+                  "content_digest": "f863cf51aacd198cd9d5a80e693d577f0c834057b326dbad5924db88be0bbcce",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7d2786d2-94df-4a4b-8c35-53a2b6f6dcf0",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "40f7fac2b753df4afc7f3fb0db48ccb37062d9f83c485fd2dcbe0d9aab125e73",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8f12ae61-a2bb-42e8-99cb-bb7ff6796939",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:pending_orders"
+                },
+                {
+                  "content_digest": "36b961fd063089540855d1e912bb7919a801126ee2ff772bb6d377256215d0e2",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "9d799e71-1f57-402b-92f8-64c8acafa920",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_orders"
+                },
+                {
+                  "content_digest": "f4bed7165fb0d85d7d88cded7a61f091bbee70f4066a5d2589fa238910f1e41b",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "c9c3b5d1-7cb9-46c6-9597-265994b21d1a",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_exchanges"
+                },
+                {
+                  "content_digest": "ab97b016ec07a305674a86a812a5214be7334f489b412cd828328eeab5f155d8",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "fc108bbc-a4da-48b3-9df3-b7bd27a360b6",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:portfolio_positions"
+                },
+                {
+                  "content_digest": "bde7f60e955d2de837dd5d464bbd7c17f2c80e5bf1df954ae6f294704a9c6cc3",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+                  "kind": "target_version",
+                  "version": "1.0.0"
+                }
+              ],
+              "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+              "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a",
+              "warnings": []
+            },
+            "contribution": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "currency_policy_version": "iso4217-six-2026-01-01-v1",
+            "current_cash": {
+              "amount": "12431.27",
+              "currency": "EUR"
+            },
+            "examined_moves": 1,
+            "excluded_node_keys": [],
+            "execution_allowed": false,
+            "exhaustive": true,
+            "explanations": [
+              {
+                "code": "finite_domain_exhausted",
+                "constraint_keys": [],
+                "message": "Every feasible finite-domain candidate was considered or excluded by a necessary constraint.",
+                "node_keys": [],
+                "severity": "info"
+              }
+            ],
+            "lower_bound": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287"
+              ]
+            },
+            "mode": "hierarchical",
+            "monetary_quantum": "0.01",
+            "objective_after": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287"
+              ]
+            },
+            "objective_before": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287",
+                "0.004976918345395287"
+              ]
+            },
+            "objective_gap": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                "0"
+              ]
+            },
+            "outcome": "optimal",
+            "post_cash": {
+              "amount": "12451.27",
+              "currency": "EUR"
+            },
+            "post_total": {
+              "amount": "248451.27",
+              "currency": "EUR"
+            },
+            "residual_cash": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "unresolved_node_keys": []
+          }
+        },
+        "provenance": {
+          "content_digest": "d419dcf0841e55f2e37e85e4a9c2ebbda859ae1a97b943043a7e6de5f2db953b",
+          "independent_result_validation": true,
+          "input_digest": "128cda7986d8afcdd92218c985fb356346bdfaf43c0d5bbcc75ec7d8d31bb4ed",
+          "normalized_source_count": 13,
+          "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+          "public_payload_matches_canonical_storage": true,
+          "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+          "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+        }
+      },
+      "4416a074-115e-46a4-b5a1-fe26d6eacfde": {
+        "projection": {
+          "calculated_at": "2026-09-07T17:14:15.810486Z",
+          "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+          "execution_allowed": false,
+          "identity": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+            "plan_id": "ef1fc9d8-832a-42ad-a810-a3f57ebe618a",
+            "plan_revision_id": "4416a074-115e-46a4-b5a1-fe26d6eacfde",
+            "request_id": "447aff9a-ab71-4038-ad82-c3d6d5d95799",
+            "request_revision": 2,
+            "requested_at": "2026-09-07T17:14:15.018199Z",
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "line_total": 1,
+          "lines": [
+            {
+              "binding_constraint_keys": [],
+              "current_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "current_weight": "0.94996092883154363",
+              "excluded": false,
+              "holding_id": "6697f718-d0ca-4dde-a246-ee211de9af56",
+              "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+              "listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+              "minimum_funded_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "node_id": "fe9a42c3-aa6d-42a6-bd92-4b4b70a09bc7",
+              "node_key": "global-equity",
+              "ordinal": 0,
+              "post_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "post_weight": "0.949884458227965589",
+              "recommended_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "target_weight": "0.9",
+              "value_increment": {
+                "amount": "0.01",
+                "currency": "EUR"
+              }
+            }
+          ],
+          "request": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "options": {
+              "allocation_constraints": [],
+              "cash_reserve": null,
+              "contribution": {
+                "amount": "20",
+                "currency": "EUR"
+              },
+              "coverage_policy": "allow_degraded",
+              "eligible_holding_ids": null,
+              "excluded_holding_ids": [],
+              "holding_constraints": [],
+              "listing_preferences": [],
+              "mode": "global",
+              "monetary_quantum": "0.01",
+              "restricted_group_ids": []
+            },
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "result": {
+            "after_drift": {
+              "cash": {
+                "amount": "12451.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.049884458227965589",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248451.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004976918345395287"
+            },
+            "attempted_assignments": 2001,
+            "before_drift": {
+              "cash": {
+                "amount": "12431.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.04996092883154363",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248431.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004992188819421135"
+            },
+            "bound_kind": "finite_domain_exhaustion",
+            "constraints": [
+              {
+                "amount": "100",
+                "coefficient": null,
+                "count": null,
+                "currency": "EUR",
+                "enabled": null,
+                "key": "reserve",
+                "kind": "cash_reserve",
+                "node_key": null,
+                "weight": null
+              }
+            ],
+            "context": {
+              "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+              "as_of": "2026-08-31T12:00:00Z",
+              "assumptions": [
+                {
+                  "code": "explicit_pinned_target",
+                  "constraint_keys": [],
+                  "message": "The requested published target is a pinned comparison configuration.",
+                  "node_keys": [],
+                  "severity": "info"
+                },
+                {
+                  "code": "no_existing_cash_spending",
+                  "constraint_keys": [],
+                  "message": "New contribution only; existing cash remains in the portfolio.",
+                  "node_keys": [],
+                  "severity": "info"
+                }
+              ],
+              "availability": "available",
+              "calculated_at": "2026-09-07T17:14:15.810486Z",
+              "coverage": {
+                "basis": "full_reporting_currency_valuation",
+                "complete": true,
+                "denominator": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                },
+                "matched_total": {
+                  "amount": "236000",
+                  "currency": "EUR"
+                },
+                "matched_weight": "0.94996092883154363",
+                "unclassified_total": {
+                  "amount": "0",
+                  "currency": "EUR"
+                },
+                "unclassified_weight": "0",
+                "unresolved_target_weight": "0",
+                "valued_total": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                }
+              },
+              "data_quality": {
+                "coverage_end_at": "2026-08-31T12:00:00Z",
+                "coverage_start_at": "2026-08-31T12:00:00Z",
+                "evaluated_at": "2026-09-07T17:14:15.810486Z",
+                "missing_inputs": [],
+                "reconciled": true,
+                "state": "fresh",
+                "warnings": []
+              },
+              "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+              "method": {
+                "name": "contribution_weighted_drift_v1",
+                "version": "1.0.0"
+              },
+              "reason_code": null,
+              "reporting_currency": "EUR",
+              "schema_version": "1.0.0",
+              "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+              "source_cutoff_at": "2026-08-31T12:00:00Z",
+              "sources": [
+                {
+                  "content_digest": "72bb4a5e07d4ea2e3b36d3488301b06fd7970c9ed2970c1f7da95141690df090",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "48882429-ca3d-5c19-8119-872935bf2e96",
+                  "kind": "calculation_run",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "06dfdcb4ccd1f193b4d5c71b8eeb54ec97e81d0d1219c4e3e8d2c1946563a614",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-09-07T17:12:17.900816Z",
+                  "id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+                  "kind": "portfolio_snapshot",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "839938cc0ae68d742db5ee2dc08ee56b4f74e1846ce023ee0898fc227dab45d5",
+                  "effective_at": "2026-01-16T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "1084069c-9975-4622-bde5-b178656dce04",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "f92fd1dc79de4f6e9d96904a11d189d593eca3dda4240f5703f31173398c5fe2",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "20f6f5f8-ecbb-4d77-9753-e76bbc50ad8c",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_instruments"
+                },
+                {
+                  "content_digest": "d6409edd0d7939a846aad8935b2da5be5d42ee3255c8630111e9f9aa29462095",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "2f796d01-34aa-4598-81e6-cff7de196e83",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:account_summary"
+                },
+                {
+                  "content_digest": "4fdd34bc7aa24443fd14a807ff1d7068c57445bf16be5421655a3dbc2d055263",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "658650b2-9333-4ad2-9af6-85b1e21b0b1f",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_exports"
+                },
+                {
+                  "content_digest": "d0513a522117f1276c6584c592d73d400edc53acf87085aded295570c41337f6",
+                  "effective_at": "2026-06-30T00:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7c54af7e-9ec1-47d1-b55d-8f20b2cb9cef",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_dividends"
+                },
+                {
+                  "content_digest": "f863cf51aacd198cd9d5a80e693d577f0c834057b326dbad5924db88be0bbcce",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7d2786d2-94df-4a4b-8c35-53a2b6f6dcf0",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "40f7fac2b753df4afc7f3fb0db48ccb37062d9f83c485fd2dcbe0d9aab125e73",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8f12ae61-a2bb-42e8-99cb-bb7ff6796939",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:pending_orders"
+                },
+                {
+                  "content_digest": "36b961fd063089540855d1e912bb7919a801126ee2ff772bb6d377256215d0e2",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "9d799e71-1f57-402b-92f8-64c8acafa920",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_orders"
+                },
+                {
+                  "content_digest": "f4bed7165fb0d85d7d88cded7a61f091bbee70f4066a5d2589fa238910f1e41b",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "c9c3b5d1-7cb9-46c6-9597-265994b21d1a",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_exchanges"
+                },
+                {
+                  "content_digest": "ab97b016ec07a305674a86a812a5214be7334f489b412cd828328eeab5f155d8",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "fc108bbc-a4da-48b3-9df3-b7bd27a360b6",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:portfolio_positions"
+                },
+                {
+                  "content_digest": "bde7f60e955d2de837dd5d464bbd7c17f2c80e5bf1df954ae6f294704a9c6cc3",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+                  "kind": "target_version",
+                  "version": "1.0.0"
+                }
+              ],
+              "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+              "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a",
+              "warnings": []
+            },
+            "contribution": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "currency_policy_version": "iso4217-six-2026-01-01-v1",
+            "current_cash": {
+              "amount": "12431.27",
+              "currency": "EUR"
+            },
+            "examined_moves": 1,
+            "excluded_node_keys": [],
+            "execution_allowed": false,
+            "exhaustive": true,
+            "explanations": [
+              {
+                "code": "finite_domain_exhausted",
+                "constraint_keys": [],
+                "message": "Every feasible finite-domain candidate was considered or excluded by a necessary constraint.",
+                "node_keys": [],
+                "severity": "info"
+              }
+            ],
+            "lower_bound": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "mode": "global",
+            "monetary_quantum": "0.01",
+            "objective_after": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "objective_before": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "objective_gap": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0"
+              ]
+            },
+            "outcome": "optimal",
+            "post_cash": {
+              "amount": "12451.27",
+              "currency": "EUR"
+            },
+            "post_total": {
+              "amount": "248451.27",
+              "currency": "EUR"
+            },
+            "residual_cash": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "unresolved_node_keys": []
+          }
+        },
+        "provenance": {
+          "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+          "independent_result_validation": true,
+          "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+          "normalized_source_count": 13,
+          "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+          "public_payload_matches_canonical_storage": true,
+          "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+          "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+        }
+      },
+      "67cc78d4-5653-4f71-bce1-53528cd51203": {
+        "projection": {
+          "calculated_at": "2026-09-07T17:13:09.050981Z",
+          "content_digest": "1788b1785bbc1e281c62956b5f5e26573f12329639bbae05600bd7f7e058528b",
+          "execution_allowed": false,
+          "identity": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "input_digest": "121a6d901d5071ab9839fec6118381d8f6bf946e99de11e1d252db7e35cbe26e",
+            "plan_id": "933498b1-2fdb-4bd6-9b1d-22af980beccd",
+            "plan_revision_id": "67cc78d4-5653-4f71-bce1-53528cd51203",
+            "request_id": "d5ff6305-b554-427a-801c-8789dc4f26a2",
+            "request_revision": 1,
+            "requested_at": "2026-09-07T17:13:08.205699Z",
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "line_total": 1,
+          "lines": [
+            {
+              "binding_constraint_keys": [],
+              "current_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "current_weight": "0.94996092883154363",
+              "excluded": true,
+              "holding_id": "6697f718-d0ca-4dde-a246-ee211de9af56",
+              "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+              "listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+              "minimum_funded_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "node_id": "fe9a42c3-aa6d-42a6-bd92-4b4b70a09bc7",
+              "node_key": "global-equity",
+              "ordinal": 0,
+              "post_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "post_weight": "0.949884458227965589",
+              "recommended_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "target_weight": "0.9",
+              "value_increment": {
+                "amount": "0.01",
+                "currency": "EUR"
+              }
+            }
+          ],
+          "request": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "options": {
+              "allocation_constraints": [],
+              "cash_reserve": null,
+              "contribution": {
+                "amount": "20",
+                "currency": "EUR"
+              },
+              "coverage_policy": "allow_degraded",
+              "eligible_holding_ids": null,
+              "excluded_holding_ids": [],
+              "holding_constraints": [],
+              "listing_preferences": [],
+              "mode": "cash_only",
+              "monetary_quantum": "0.01",
+              "restricted_group_ids": []
+            },
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "result": {
+            "after_drift": {
+              "cash": {
+                "amount": "12451.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.049884458227965589",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248451.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004976918345395287"
+            },
+            "attempted_assignments": 0,
+            "before_drift": {
+              "cash": {
+                "amount": "12431.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.04996092883154363",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248431.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004992188819421135"
+            },
+            "bound_kind": "finite_domain_exhaustion",
+            "constraints": [
+              {
+                "amount": "100",
+                "coefficient": null,
+                "count": null,
+                "currency": "EUR",
+                "enabled": null,
+                "key": "reserve",
+                "kind": "cash_reserve",
+                "node_key": null,
+                "weight": null
+              }
+            ],
+            "context": {
+              "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+              "as_of": "2026-08-31T12:00:00Z",
+              "assumptions": [
+                {
+                  "code": "explicit_pinned_target",
+                  "constraint_keys": [],
+                  "message": "The requested published target is a pinned comparison configuration.",
+                  "node_keys": [],
+                  "severity": "info"
+                },
+                {
+                  "code": "no_existing_cash_spending",
+                  "constraint_keys": [],
+                  "message": "New contribution only; existing cash remains in the portfolio.",
+                  "node_keys": [],
+                  "severity": "info"
+                }
+              ],
+              "availability": "available",
+              "calculated_at": "2026-09-07T17:13:09.050981Z",
+              "coverage": {
+                "basis": "full_reporting_currency_valuation",
+                "complete": true,
+                "denominator": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                },
+                "matched_total": {
+                  "amount": "236000",
+                  "currency": "EUR"
+                },
+                "matched_weight": "0.94996092883154363",
+                "unclassified_total": {
+                  "amount": "0",
+                  "currency": "EUR"
+                },
+                "unclassified_weight": "0",
+                "unresolved_target_weight": "0",
+                "valued_total": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                }
+              },
+              "data_quality": {
+                "coverage_end_at": "2026-08-31T12:00:00Z",
+                "coverage_start_at": "2026-08-31T12:00:00Z",
+                "evaluated_at": "2026-09-07T17:13:09.050981Z",
+                "missing_inputs": [],
+                "reconciled": true,
+                "state": "fresh",
+                "warnings": []
+              },
+              "input_digest": "121a6d901d5071ab9839fec6118381d8f6bf946e99de11e1d252db7e35cbe26e",
+              "method": {
+                "name": "contribution_weighted_drift_v1",
+                "version": "1.0.0"
+              },
+              "reason_code": null,
+              "reporting_currency": "EUR",
+              "schema_version": "1.0.0",
+              "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+              "source_cutoff_at": "2026-08-31T12:00:00Z",
+              "sources": [
+                {
+                  "content_digest": "72bb4a5e07d4ea2e3b36d3488301b06fd7970c9ed2970c1f7da95141690df090",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "48882429-ca3d-5c19-8119-872935bf2e96",
+                  "kind": "calculation_run",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "06dfdcb4ccd1f193b4d5c71b8eeb54ec97e81d0d1219c4e3e8d2c1946563a614",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-09-07T17:12:17.900816Z",
+                  "id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+                  "kind": "portfolio_snapshot",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "839938cc0ae68d742db5ee2dc08ee56b4f74e1846ce023ee0898fc227dab45d5",
+                  "effective_at": "2026-01-16T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "1084069c-9975-4622-bde5-b178656dce04",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "f92fd1dc79de4f6e9d96904a11d189d593eca3dda4240f5703f31173398c5fe2",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "20f6f5f8-ecbb-4d77-9753-e76bbc50ad8c",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_instruments"
+                },
+                {
+                  "content_digest": "d6409edd0d7939a846aad8935b2da5be5d42ee3255c8630111e9f9aa29462095",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "2f796d01-34aa-4598-81e6-cff7de196e83",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:account_summary"
+                },
+                {
+                  "content_digest": "4fdd34bc7aa24443fd14a807ff1d7068c57445bf16be5421655a3dbc2d055263",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "658650b2-9333-4ad2-9af6-85b1e21b0b1f",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_exports"
+                },
+                {
+                  "content_digest": "d0513a522117f1276c6584c592d73d400edc53acf87085aded295570c41337f6",
+                  "effective_at": "2026-06-30T00:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7c54af7e-9ec1-47d1-b55d-8f20b2cb9cef",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_dividends"
+                },
+                {
+                  "content_digest": "f863cf51aacd198cd9d5a80e693d577f0c834057b326dbad5924db88be0bbcce",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7d2786d2-94df-4a4b-8c35-53a2b6f6dcf0",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "40f7fac2b753df4afc7f3fb0db48ccb37062d9f83c485fd2dcbe0d9aab125e73",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8f12ae61-a2bb-42e8-99cb-bb7ff6796939",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:pending_orders"
+                },
+                {
+                  "content_digest": "36b961fd063089540855d1e912bb7919a801126ee2ff772bb6d377256215d0e2",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "9d799e71-1f57-402b-92f8-64c8acafa920",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_orders"
+                },
+                {
+                  "content_digest": "f4bed7165fb0d85d7d88cded7a61f091bbee70f4066a5d2589fa238910f1e41b",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "c9c3b5d1-7cb9-46c6-9597-265994b21d1a",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_exchanges"
+                },
+                {
+                  "content_digest": "ab97b016ec07a305674a86a812a5214be7334f489b412cd828328eeab5f155d8",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "fc108bbc-a4da-48b3-9df3-b7bd27a360b6",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:portfolio_positions"
+                },
+                {
+                  "content_digest": "bde7f60e955d2de837dd5d464bbd7c17f2c80e5bf1df954ae6f294704a9c6cc3",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+                  "kind": "target_version",
+                  "version": "1.0.0"
+                }
+              ],
+              "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+              "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a",
+              "warnings": []
+            },
+            "contribution": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "currency_policy_version": "iso4217-six-2026-01-01-v1",
+            "current_cash": {
+              "amount": "12431.27",
+              "currency": "EUR"
+            },
+            "examined_moves": 0,
+            "excluded_node_keys": [
+              "global-equity"
+            ],
+            "execution_allowed": false,
+            "exhaustive": true,
+            "explanations": [
+              {
+                "code": "finite_domain_exhausted",
+                "constraint_keys": [],
+                "message": "Every feasible finite-domain candidate was considered or excluded by a necessary constraint.",
+                "node_keys": [],
+                "severity": "info"
+              }
+            ],
+            "lower_bound": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "mode": "cash_only",
+            "monetary_quantum": "0.01",
+            "objective_after": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "objective_before": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "objective_gap": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0"
+              ]
+            },
+            "outcome": "optimal",
+            "post_cash": {
+              "amount": "12451.27",
+              "currency": "EUR"
+            },
+            "post_total": {
+              "amount": "248451.27",
+              "currency": "EUR"
+            },
+            "residual_cash": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "unresolved_node_keys": []
+          }
+        },
+        "provenance": {
+          "content_digest": "1788b1785bbc1e281c62956b5f5e26573f12329639bbae05600bd7f7e058528b",
+          "independent_result_validation": true,
+          "input_digest": "121a6d901d5071ab9839fec6118381d8f6bf946e99de11e1d252db7e35cbe26e",
+          "normalized_source_count": 13,
+          "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+          "public_payload_matches_canonical_storage": true,
+          "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+          "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+        }
+      },
+      "7b1d1951-3766-4ad3-a235-319b932e8180": {
+        "projection": {
+          "calculated_at": "2026-09-07T17:13:10.102659Z",
+          "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+          "execution_allowed": false,
+          "identity": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+            "plan_id": "ccea83a8-ce68-43c3-b43a-5c7080f7f618",
+            "plan_revision_id": "7b1d1951-3766-4ad3-a235-319b932e8180",
+            "request_id": "7fbcb272-fec6-4cef-9086-1562f0f21a27",
+            "request_revision": 1,
+            "requested_at": "2026-09-07T17:13:09.413112Z",
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "line_total": 1,
+          "lines": [
+            {
+              "binding_constraint_keys": [],
+              "current_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "current_weight": "0.94996092883154363",
+              "excluded": false,
+              "holding_id": "6697f718-d0ca-4dde-a246-ee211de9af56",
+              "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+              "listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+              "minimum_funded_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "node_id": "fe9a42c3-aa6d-42a6-bd92-4b4b70a09bc7",
+              "node_key": "global-equity",
+              "ordinal": 0,
+              "post_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "post_weight": "0.949884458227965589",
+              "recommended_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "target_weight": "0.9",
+              "value_increment": {
+                "amount": "0.01",
+                "currency": "EUR"
+              }
+            }
+          ],
+          "request": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "options": {
+              "allocation_constraints": [],
+              "cash_reserve": null,
+              "contribution": {
+                "amount": "20",
+                "currency": "EUR"
+              },
+              "coverage_policy": "allow_degraded",
+              "eligible_holding_ids": null,
+              "excluded_holding_ids": [],
+              "holding_constraints": [],
+              "listing_preferences": [],
+              "mode": "global",
+              "monetary_quantum": "0.01",
+              "restricted_group_ids": []
+            },
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "result": {
+            "after_drift": {
+              "cash": {
+                "amount": "12451.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.049884458227965589",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248451.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004976918345395287"
+            },
+            "attempted_assignments": 2001,
+            "before_drift": {
+              "cash": {
+                "amount": "12431.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.04996092883154363",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248431.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004992188819421135"
+            },
+            "bound_kind": "finite_domain_exhaustion",
+            "constraints": [
+              {
+                "amount": "100",
+                "coefficient": null,
+                "count": null,
+                "currency": "EUR",
+                "enabled": null,
+                "key": "reserve",
+                "kind": "cash_reserve",
+                "node_key": null,
+                "weight": null
+              }
+            ],
+            "context": {
+              "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+              "as_of": "2026-08-31T12:00:00Z",
+              "assumptions": [
+                {
+                  "code": "explicit_pinned_target",
+                  "constraint_keys": [],
+                  "message": "The requested published target is a pinned comparison configuration.",
+                  "node_keys": [],
+                  "severity": "info"
+                },
+                {
+                  "code": "no_existing_cash_spending",
+                  "constraint_keys": [],
+                  "message": "New contribution only; existing cash remains in the portfolio.",
+                  "node_keys": [],
+                  "severity": "info"
+                }
+              ],
+              "availability": "available",
+              "calculated_at": "2026-09-07T17:13:10.102659Z",
+              "coverage": {
+                "basis": "full_reporting_currency_valuation",
+                "complete": true,
+                "denominator": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                },
+                "matched_total": {
+                  "amount": "236000",
+                  "currency": "EUR"
+                },
+                "matched_weight": "0.94996092883154363",
+                "unclassified_total": {
+                  "amount": "0",
+                  "currency": "EUR"
+                },
+                "unclassified_weight": "0",
+                "unresolved_target_weight": "0",
+                "valued_total": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                }
+              },
+              "data_quality": {
+                "coverage_end_at": "2026-08-31T12:00:00Z",
+                "coverage_start_at": "2026-08-31T12:00:00Z",
+                "evaluated_at": "2026-09-07T17:13:10.102659Z",
+                "missing_inputs": [],
+                "reconciled": true,
+                "state": "fresh",
+                "warnings": []
+              },
+              "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+              "method": {
+                "name": "contribution_weighted_drift_v1",
+                "version": "1.0.0"
+              },
+              "reason_code": null,
+              "reporting_currency": "EUR",
+              "schema_version": "1.0.0",
+              "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+              "source_cutoff_at": "2026-08-31T12:00:00Z",
+              "sources": [
+                {
+                  "content_digest": "72bb4a5e07d4ea2e3b36d3488301b06fd7970c9ed2970c1f7da95141690df090",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "48882429-ca3d-5c19-8119-872935bf2e96",
+                  "kind": "calculation_run",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "06dfdcb4ccd1f193b4d5c71b8eeb54ec97e81d0d1219c4e3e8d2c1946563a614",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-09-07T17:12:17.900816Z",
+                  "id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+                  "kind": "portfolio_snapshot",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "839938cc0ae68d742db5ee2dc08ee56b4f74e1846ce023ee0898fc227dab45d5",
+                  "effective_at": "2026-01-16T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "1084069c-9975-4622-bde5-b178656dce04",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "f92fd1dc79de4f6e9d96904a11d189d593eca3dda4240f5703f31173398c5fe2",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "20f6f5f8-ecbb-4d77-9753-e76bbc50ad8c",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_instruments"
+                },
+                {
+                  "content_digest": "d6409edd0d7939a846aad8935b2da5be5d42ee3255c8630111e9f9aa29462095",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "2f796d01-34aa-4598-81e6-cff7de196e83",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:account_summary"
+                },
+                {
+                  "content_digest": "4fdd34bc7aa24443fd14a807ff1d7068c57445bf16be5421655a3dbc2d055263",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "658650b2-9333-4ad2-9af6-85b1e21b0b1f",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_exports"
+                },
+                {
+                  "content_digest": "d0513a522117f1276c6584c592d73d400edc53acf87085aded295570c41337f6",
+                  "effective_at": "2026-06-30T00:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7c54af7e-9ec1-47d1-b55d-8f20b2cb9cef",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_dividends"
+                },
+                {
+                  "content_digest": "f863cf51aacd198cd9d5a80e693d577f0c834057b326dbad5924db88be0bbcce",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7d2786d2-94df-4a4b-8c35-53a2b6f6dcf0",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "40f7fac2b753df4afc7f3fb0db48ccb37062d9f83c485fd2dcbe0d9aab125e73",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8f12ae61-a2bb-42e8-99cb-bb7ff6796939",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:pending_orders"
+                },
+                {
+                  "content_digest": "36b961fd063089540855d1e912bb7919a801126ee2ff772bb6d377256215d0e2",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "9d799e71-1f57-402b-92f8-64c8acafa920",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_orders"
+                },
+                {
+                  "content_digest": "f4bed7165fb0d85d7d88cded7a61f091bbee70f4066a5d2589fa238910f1e41b",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "c9c3b5d1-7cb9-46c6-9597-265994b21d1a",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_exchanges"
+                },
+                {
+                  "content_digest": "ab97b016ec07a305674a86a812a5214be7334f489b412cd828328eeab5f155d8",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "fc108bbc-a4da-48b3-9df3-b7bd27a360b6",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:portfolio_positions"
+                },
+                {
+                  "content_digest": "bde7f60e955d2de837dd5d464bbd7c17f2c80e5bf1df954ae6f294704a9c6cc3",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+                  "kind": "target_version",
+                  "version": "1.0.0"
+                }
+              ],
+              "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+              "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a",
+              "warnings": []
+            },
+            "contribution": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "currency_policy_version": "iso4217-six-2026-01-01-v1",
+            "current_cash": {
+              "amount": "12431.27",
+              "currency": "EUR"
+            },
+            "examined_moves": 1,
+            "excluded_node_keys": [],
+            "execution_allowed": false,
+            "exhaustive": true,
+            "explanations": [
+              {
+                "code": "finite_domain_exhausted",
+                "constraint_keys": [],
+                "message": "Every feasible finite-domain candidate was considered or excluded by a necessary constraint.",
+                "node_keys": [],
+                "severity": "info"
+              }
+            ],
+            "lower_bound": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "mode": "global",
+            "monetary_quantum": "0.01",
+            "objective_after": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "objective_before": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "objective_gap": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0"
+              ]
+            },
+            "outcome": "optimal",
+            "post_cash": {
+              "amount": "12451.27",
+              "currency": "EUR"
+            },
+            "post_total": {
+              "amount": "248451.27",
+              "currency": "EUR"
+            },
+            "residual_cash": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "unresolved_node_keys": []
+          }
+        },
+        "provenance": {
+          "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+          "independent_result_validation": true,
+          "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+          "normalized_source_count": 13,
+          "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+          "public_payload_matches_canonical_storage": true,
+          "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+          "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+        }
+      },
+      "a18662c7-508f-4510-975d-e0976c1bd0ca": {
+        "projection": {
+          "calculated_at": "2026-09-07T17:13:08.044975Z",
+          "content_digest": "47ff1108a1a926523df72ceb87ebd7b003e45935e0951de76451b13ce36975e5",
+          "execution_allowed": false,
+          "identity": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "input_digest": "abe0fce9bbe92a46b7f0644809d8f488a15ab229890ef26c2e5826e8963a8e80",
+            "plan_id": "5055b062-0927-4803-93f2-7d4f762b5528",
+            "plan_revision_id": "a18662c7-508f-4510-975d-e0976c1bd0ca",
+            "request_id": "cf5515a0-9272-4aad-b651-21d83b5801e6",
+            "request_revision": 1,
+            "requested_at": "2026-09-07T17:13:07.518338Z",
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "line_total": 1,
+          "lines": [
+            {
+              "binding_constraint_keys": [],
+              "current_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "current_weight": "0.94996092883154363",
+              "excluded": false,
+              "holding_id": "6697f718-d0ca-4dde-a246-ee211de9af56",
+              "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+              "listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+              "minimum_funded_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "node_id": "fe9a42c3-aa6d-42a6-bd92-4b4b70a09bc7",
+              "node_key": "global-equity",
+              "ordinal": 0,
+              "post_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "post_weight": "0.949884458227965589",
+              "recommended_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "target_weight": "0.9",
+              "value_increment": {
+                "amount": "0.01",
+                "currency": "EUR"
+              }
+            }
+          ],
+          "request": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "options": {
+              "allocation_constraints": [],
+              "cash_reserve": null,
+              "contribution": {
+                "amount": "20",
+                "currency": "EUR"
+              },
+              "coverage_policy": "allow_degraded",
+              "eligible_holding_ids": null,
+              "excluded_holding_ids": [],
+              "holding_constraints": [],
+              "listing_preferences": [],
+              "mode": "restricted",
+              "monetary_quantum": "0.01",
+              "restricted_group_ids": [
+                "461436f8-b3f7-4bfb-8542-8e3e28aec76b"
+              ]
+            },
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "result": {
+            "after_drift": {
+              "cash": {
+                "amount": "12451.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.049884458227965589",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248451.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004976918345395287"
+            },
+            "attempted_assignments": 2001,
+            "before_drift": {
+              "cash": {
+                "amount": "12431.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.04996092883154363",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248431.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004992188819421135"
+            },
+            "bound_kind": "finite_domain_exhaustion",
+            "constraints": [
+              {
+                "amount": "100",
+                "coefficient": null,
+                "count": null,
+                "currency": "EUR",
+                "enabled": null,
+                "key": "reserve",
+                "kind": "cash_reserve",
+                "node_key": null,
+                "weight": null
+              }
+            ],
+            "context": {
+              "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+              "as_of": "2026-08-31T12:00:00Z",
+              "assumptions": [
+                {
+                  "code": "explicit_pinned_target",
+                  "constraint_keys": [],
+                  "message": "The requested published target is a pinned comparison configuration.",
+                  "node_keys": [],
+                  "severity": "info"
+                },
+                {
+                  "code": "no_existing_cash_spending",
+                  "constraint_keys": [],
+                  "message": "New contribution only; existing cash remains in the portfolio.",
+                  "node_keys": [],
+                  "severity": "info"
+                }
+              ],
+              "availability": "available",
+              "calculated_at": "2026-09-07T17:13:08.044975Z",
+              "coverage": {
+                "basis": "full_reporting_currency_valuation",
+                "complete": true,
+                "denominator": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                },
+                "matched_total": {
+                  "amount": "236000",
+                  "currency": "EUR"
+                },
+                "matched_weight": "0.94996092883154363",
+                "unclassified_total": {
+                  "amount": "0",
+                  "currency": "EUR"
+                },
+                "unclassified_weight": "0",
+                "unresolved_target_weight": "0",
+                "valued_total": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                }
+              },
+              "data_quality": {
+                "coverage_end_at": "2026-08-31T12:00:00Z",
+                "coverage_start_at": "2026-08-31T12:00:00Z",
+                "evaluated_at": "2026-09-07T17:13:08.044975Z",
+                "missing_inputs": [],
+                "reconciled": true,
+                "state": "fresh",
+                "warnings": []
+              },
+              "input_digest": "abe0fce9bbe92a46b7f0644809d8f488a15ab229890ef26c2e5826e8963a8e80",
+              "method": {
+                "name": "contribution_weighted_drift_v1",
+                "version": "1.0.0"
+              },
+              "reason_code": null,
+              "reporting_currency": "EUR",
+              "schema_version": "1.0.0",
+              "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+              "source_cutoff_at": "2026-08-31T12:00:00Z",
+              "sources": [
+                {
+                  "content_digest": "72bb4a5e07d4ea2e3b36d3488301b06fd7970c9ed2970c1f7da95141690df090",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "48882429-ca3d-5c19-8119-872935bf2e96",
+                  "kind": "calculation_run",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "06dfdcb4ccd1f193b4d5c71b8eeb54ec97e81d0d1219c4e3e8d2c1946563a614",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-09-07T17:12:17.900816Z",
+                  "id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+                  "kind": "portfolio_snapshot",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "839938cc0ae68d742db5ee2dc08ee56b4f74e1846ce023ee0898fc227dab45d5",
+                  "effective_at": "2026-01-16T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "1084069c-9975-4622-bde5-b178656dce04",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "f92fd1dc79de4f6e9d96904a11d189d593eca3dda4240f5703f31173398c5fe2",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "20f6f5f8-ecbb-4d77-9753-e76bbc50ad8c",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_instruments"
+                },
+                {
+                  "content_digest": "d6409edd0d7939a846aad8935b2da5be5d42ee3255c8630111e9f9aa29462095",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "2f796d01-34aa-4598-81e6-cff7de196e83",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:account_summary"
+                },
+                {
+                  "content_digest": "4fdd34bc7aa24443fd14a807ff1d7068c57445bf16be5421655a3dbc2d055263",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "658650b2-9333-4ad2-9af6-85b1e21b0b1f",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_exports"
+                },
+                {
+                  "content_digest": "d0513a522117f1276c6584c592d73d400edc53acf87085aded295570c41337f6",
+                  "effective_at": "2026-06-30T00:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7c54af7e-9ec1-47d1-b55d-8f20b2cb9cef",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_dividends"
+                },
+                {
+                  "content_digest": "f863cf51aacd198cd9d5a80e693d577f0c834057b326dbad5924db88be0bbcce",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7d2786d2-94df-4a4b-8c35-53a2b6f6dcf0",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "40f7fac2b753df4afc7f3fb0db48ccb37062d9f83c485fd2dcbe0d9aab125e73",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8f12ae61-a2bb-42e8-99cb-bb7ff6796939",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:pending_orders"
+                },
+                {
+                  "content_digest": "36b961fd063089540855d1e912bb7919a801126ee2ff772bb6d377256215d0e2",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "9d799e71-1f57-402b-92f8-64c8acafa920",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_orders"
+                },
+                {
+                  "content_digest": "f4bed7165fb0d85d7d88cded7a61f091bbee70f4066a5d2589fa238910f1e41b",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "c9c3b5d1-7cb9-46c6-9597-265994b21d1a",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_exchanges"
+                },
+                {
+                  "content_digest": "ab97b016ec07a305674a86a812a5214be7334f489b412cd828328eeab5f155d8",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "fc108bbc-a4da-48b3-9df3-b7bd27a360b6",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:portfolio_positions"
+                },
+                {
+                  "content_digest": "bde7f60e955d2de837dd5d464bbd7c17f2c80e5bf1df954ae6f294704a9c6cc3",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+                  "kind": "target_version",
+                  "version": "1.0.0"
+                }
+              ],
+              "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+              "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a",
+              "warnings": []
+            },
+            "contribution": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "currency_policy_version": "iso4217-six-2026-01-01-v1",
+            "current_cash": {
+              "amount": "12431.27",
+              "currency": "EUR"
+            },
+            "examined_moves": 1,
+            "excluded_node_keys": [],
+            "execution_allowed": false,
+            "exhaustive": true,
+            "explanations": [
+              {
+                "code": "finite_domain_exhausted",
+                "constraint_keys": [],
+                "message": "Every feasible finite-domain candidate was considered or excluded by a necessary constraint.",
+                "node_keys": [],
+                "severity": "info"
+              }
+            ],
+            "lower_bound": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "mode": "restricted",
+            "monetary_quantum": "0.01",
+            "objective_after": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "objective_before": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "objective_gap": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0"
+              ]
+            },
+            "outcome": "optimal",
+            "post_cash": {
+              "amount": "12451.27",
+              "currency": "EUR"
+            },
+            "post_total": {
+              "amount": "248451.27",
+              "currency": "EUR"
+            },
+            "residual_cash": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "unresolved_node_keys": []
+          }
+        },
+        "provenance": {
+          "content_digest": "47ff1108a1a926523df72ceb87ebd7b003e45935e0951de76451b13ce36975e5",
+          "independent_result_validation": true,
+          "input_digest": "abe0fce9bbe92a46b7f0644809d8f488a15ab229890ef26c2e5826e8963a8e80",
+          "normalized_source_count": 13,
+          "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+          "public_payload_matches_canonical_storage": true,
+          "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+          "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+        }
+      },
+      "ac8a1e98-2837-4cc4-8367-efd576361f93": {
+        "projection": {
+          "calculated_at": "2026-09-07T17:13:06.072778Z",
+          "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+          "execution_allowed": false,
+          "identity": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+            "plan_id": "ef1fc9d8-832a-42ad-a810-a3f57ebe618a",
+            "plan_revision_id": "ac8a1e98-2837-4cc4-8367-efd576361f93",
+            "request_id": "40e6989b-90dd-423a-95af-48d1e65f3d2d",
+            "request_revision": 1,
+            "requested_at": "2026-09-07T17:13:01.418982Z",
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "line_total": 1,
+          "lines": [
+            {
+              "binding_constraint_keys": [],
+              "current_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "current_weight": "0.94996092883154363",
+              "excluded": false,
+              "holding_id": "6697f718-d0ca-4dde-a246-ee211de9af56",
+              "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+              "listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+              "minimum_funded_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "node_id": "fe9a42c3-aa6d-42a6-bd92-4b4b70a09bc7",
+              "node_key": "global-equity",
+              "ordinal": 0,
+              "post_value": {
+                "amount": "236000",
+                "currency": "EUR"
+              },
+              "post_weight": "0.949884458227965589",
+              "recommended_amount": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "target_weight": "0.9",
+              "value_increment": {
+                "amount": "0.01",
+                "currency": "EUR"
+              }
+            }
+          ],
+          "request": {
+            "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+            "options": {
+              "allocation_constraints": [],
+              "cash_reserve": null,
+              "contribution": {
+                "amount": "20",
+                "currency": "EUR"
+              },
+              "coverage_policy": "allow_degraded",
+              "eligible_holding_ids": null,
+              "excluded_holding_ids": [],
+              "holding_constraints": [],
+              "listing_preferences": [],
+              "mode": "global",
+              "monetary_quantum": "0.01",
+              "restricted_group_ids": []
+            },
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+            "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a"
+          },
+          "result": {
+            "after_drift": {
+              "cash": {
+                "amount": "12451.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.049884458227965589",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248451.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004976918345395287"
+            },
+            "attempted_assignments": 2001,
+            "before_drift": {
+              "cash": {
+                "amount": "12431.27",
+                "currency": "EUR"
+              },
+              "effective_weight_rounding_residual": "0",
+              "frontier_keys": [
+                "target/cash",
+                "target/global-equity"
+              ],
+              "group_count": 1,
+              "holding_count": 1,
+              "l1_drift": "0.04996092883154363",
+              "unclassified": {
+                "amount": "0",
+                "currency": "EUR"
+              },
+              "unclassified_count": 0,
+              "value": {
+                "amount": "248431.27",
+                "currency": "EUR"
+              },
+              "weighted_squared_drift": "0.004992188819421135"
+            },
+            "bound_kind": "finite_domain_exhaustion",
+            "constraints": [
+              {
+                "amount": "100",
+                "coefficient": null,
+                "count": null,
+                "currency": "EUR",
+                "enabled": null,
+                "key": "reserve",
+                "kind": "cash_reserve",
+                "node_key": null,
+                "weight": null
+              }
+            ],
+            "context": {
+              "account_id": "f0f5c66e-b128-59b2-a620-83bc8faa4a57",
+              "as_of": "2026-08-31T12:00:00Z",
+              "assumptions": [
+                {
+                  "code": "explicit_pinned_target",
+                  "constraint_keys": [],
+                  "message": "The requested published target is a pinned comparison configuration.",
+                  "node_keys": [],
+                  "severity": "info"
+                },
+                {
+                  "code": "no_existing_cash_spending",
+                  "constraint_keys": [],
+                  "message": "New contribution only; existing cash remains in the portfolio.",
+                  "node_keys": [],
+                  "severity": "info"
+                }
+              ],
+              "availability": "available",
+              "calculated_at": "2026-09-07T17:13:06.072778Z",
+              "coverage": {
+                "basis": "full_reporting_currency_valuation",
+                "complete": true,
+                "denominator": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                },
+                "matched_total": {
+                  "amount": "236000",
+                  "currency": "EUR"
+                },
+                "matched_weight": "0.94996092883154363",
+                "unclassified_total": {
+                  "amount": "0",
+                  "currency": "EUR"
+                },
+                "unclassified_weight": "0",
+                "unresolved_target_weight": "0",
+                "valued_total": {
+                  "amount": "248431.27",
+                  "currency": "EUR"
+                }
+              },
+              "data_quality": {
+                "coverage_end_at": "2026-08-31T12:00:00Z",
+                "coverage_start_at": "2026-08-31T12:00:00Z",
+                "evaluated_at": "2026-09-07T17:13:06.072778Z",
+                "missing_inputs": [],
+                "reconciled": true,
+                "state": "fresh",
+                "warnings": []
+              },
+              "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+              "method": {
+                "name": "contribution_weighted_drift_v1",
+                "version": "1.0.0"
+              },
+              "reason_code": null,
+              "reporting_currency": "EUR",
+              "schema_version": "1.0.0",
+              "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+              "source_cutoff_at": "2026-08-31T12:00:00Z",
+              "sources": [
+                {
+                  "content_digest": "72bb4a5e07d4ea2e3b36d3488301b06fd7970c9ed2970c1f7da95141690df090",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "48882429-ca3d-5c19-8119-872935bf2e96",
+                  "kind": "calculation_run",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "06dfdcb4ccd1f193b4d5c71b8eeb54ec97e81d0d1219c4e3e8d2c1946563a614",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-09-07T17:12:17.900816Z",
+                  "id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+                  "kind": "portfolio_snapshot",
+                  "version": "1.0.0"
+                },
+                {
+                  "content_digest": "839938cc0ae68d742db5ee2dc08ee56b4f74e1846ce023ee0898fc227dab45d5",
+                  "effective_at": "2026-01-16T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "1084069c-9975-4622-bde5-b178656dce04",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "f92fd1dc79de4f6e9d96904a11d189d593eca3dda4240f5703f31173398c5fe2",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "20f6f5f8-ecbb-4d77-9753-e76bbc50ad8c",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_instruments"
+                },
+                {
+                  "content_digest": "d6409edd0d7939a846aad8935b2da5be5d42ee3255c8630111e9f9aa29462095",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "2f796d01-34aa-4598-81e6-cff7de196e83",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:account_summary"
+                },
+                {
+                  "content_digest": "4fdd34bc7aa24443fd14a807ff1d7068c57445bf16be5421655a3dbc2d055263",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "658650b2-9333-4ad2-9af6-85b1e21b0b1f",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_exports"
+                },
+                {
+                  "content_digest": "d0513a522117f1276c6584c592d73d400edc53acf87085aded295570c41337f6",
+                  "effective_at": "2026-06-30T00:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7c54af7e-9ec1-47d1-b55d-8f20b2cb9cef",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_dividends"
+                },
+                {
+                  "content_digest": "f863cf51aacd198cd9d5a80e693d577f0c834057b326dbad5924db88be0bbcce",
+                  "effective_at": "2026-01-15T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "7d2786d2-94df-4a4b-8c35-53a2b6f6dcf0",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_transactions"
+                },
+                {
+                  "content_digest": "40f7fac2b753df4afc7f3fb0db48ccb37062d9f83c485fd2dcbe0d9aab125e73",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8f12ae61-a2bb-42e8-99cb-bb7ff6796939",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:pending_orders"
+                },
+                {
+                  "content_digest": "36b961fd063089540855d1e912bb7919a801126ee2ff772bb6d377256215d0e2",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "9d799e71-1f57-402b-92f8-64c8acafa920",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:historical_orders"
+                },
+                {
+                  "content_digest": "f4bed7165fb0d85d7d88cded7a61f091bbee70f4066a5d2589fa238910f1e41b",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "c9c3b5d1-7cb9-46c6-9597-265994b21d1a",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:metadata_exchanges"
+                },
+                {
+                  "content_digest": "ab97b016ec07a305674a86a812a5214be7334f489b412cd828328eeab5f155d8",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "fc108bbc-a4da-48b3-9df3-b7bd27a360b6",
+                  "kind": "provider_observation",
+                  "version": "synthetic-phase1:portfolio_positions"
+                },
+                {
+                  "content_digest": "bde7f60e955d2de837dd5d464bbd7c17f2c80e5bf1df954ae6f294704a9c6cc3",
+                  "effective_at": "2026-08-31T12:00:00Z",
+                  "first_observed_at": "2026-08-31T12:00:00Z",
+                  "id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+                  "kind": "target_version",
+                  "version": "1.0.0"
+                }
+              ],
+              "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d",
+              "virtual_portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a",
+              "warnings": []
+            },
+            "contribution": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "currency_policy_version": "iso4217-six-2026-01-01-v1",
+            "current_cash": {
+              "amount": "12431.27",
+              "currency": "EUR"
+            },
+            "examined_moves": 1,
+            "excluded_node_keys": [],
+            "execution_allowed": false,
+            "exhaustive": true,
+            "explanations": [
+              {
+                "code": "finite_domain_exhausted",
+                "constraint_keys": [],
+                "message": "Every feasible finite-domain candidate was considered or excluded by a necessary constraint.",
+                "node_keys": [],
+                "severity": "info"
+              }
+            ],
+            "lower_bound": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "mode": "global",
+            "monetary_quantum": "0.01",
+            "objective_after": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "objective_before": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0.004976918345395287"
+              ]
+            },
+            "objective_gap": {
+              "quantum": "0.000000000000000001",
+              "rounding": "ROUND_HALF_EVEN",
+              "rounding_error_bound": "half_quantum",
+              "scores": [
+                "0"
+              ]
+            },
+            "outcome": "optimal",
+            "post_cash": {
+              "amount": "12451.27",
+              "currency": "EUR"
+            },
+            "post_total": {
+              "amount": "248451.27",
+              "currency": "EUR"
+            },
+            "residual_cash": {
+              "amount": "20",
+              "currency": "EUR"
+            },
+            "unresolved_node_keys": []
+          }
+        },
+        "provenance": {
+          "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+          "independent_result_validation": true,
+          "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+          "normalized_source_count": 13,
+          "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+          "public_payload_matches_canonical_storage": true,
+          "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+          "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+        }
+      }
+    },
+    "historical_api_mcp_full_projection_unchanged": true,
+    "identical_api_mcp_normalized_sources": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+    "identical_request_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+    "identical_result_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+    "lost_redis_message_recovery": {
+      "consumer_attempts": 1,
+      "job_id": "71a236e4-2862-4c69-a51e-568d329b612e",
+      "pinned_input_and_result_unchanged": true,
+      "publication_attempts": 2,
+      "redis_broker_database_empty_after_loss": true,
+      "redis_messages_before_loss": 1,
+      "same_logical_job": true
+    },
+    "old_revision_unchanged": true,
+    "request_committed_before_publication": true,
+    "revision_count": 2,
+    "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+    "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+  },
+  "privacy": {
+    "database_rows_scanned": 518,
+    "database_tables_scanned": 65,
+    "logs_scanned": 7,
+    "runtime_secret_and_export_markers_absent": true
+  },
+  "restart": {
+    "activation_events_after_restart": 1,
+    "canonical_summary_sha256_after": "4778f1957fd46b2846c43c3e5b98addf7b8f8d0ed538104ab304c6d955d5b07f",
+    "canonical_summary_sha256_before": "4778f1957fd46b2846c43c3e5b98addf7b8f8d0ed538104ab304c6d955d5b07f",
+    "excluded_mutable_bookkeeping": "Generic collection query snapshot/member/reference retention and worker health bookkeeping are excluded from equality. Planning collection bindings are included among all 20 planning tables. Privacy scanning covers every public table.",
+    "hash_method": "SHA256 of newline-joined PostgreSQL row_to_json(t)::text ordered by id, retaining exact decimal text and every timestamp.",
+    "immutable_plan_projections_identical": true,
+    "planning_after_restart": {
+      "api_mcp_immutable_projections_equal": true,
+      "historical_revision_preserved": true,
+      "immutable_revision_count": 7,
+      "latest_plan_count": 6,
+      "revision_checks": {
+        "1cb324cc-f19f-4e3c-9e1f-7d2944a91838": {
+          "plan_id": "a17e2a3b-5b28-4b62-9765-97b11eefb90d",
+          "projection_sha256": "d790e3033fe2853a7f4faff8a4ca2a1be54fed514864b4479c458588cbc42901",
+          "provenance": {
+            "content_digest": "1788b1785bbc1e281c62956b5f5e26573f12329639bbae05600bd7f7e058528b",
+            "independent_result_validation": true,
+            "input_digest": "121a6d901d5071ab9839fec6118381d8f6bf946e99de11e1d252db7e35cbe26e",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 1
+        },
+        "1fe013df-6fee-4748-9fb5-940cfe48bba8": {
+          "plan_id": "28e878ee-07a0-4d8c-888d-fc4ac6125e06",
+          "projection_sha256": "465f716197b7ed35d3b30103dc254e608b7a0d0c97536642520390f94eee0e55",
+          "provenance": {
+            "content_digest": "d419dcf0841e55f2e37e85e4a9c2ebbda859ae1a97b943043a7e6de5f2db953b",
+            "independent_result_validation": true,
+            "input_digest": "128cda7986d8afcdd92218c985fb356346bdfaf43c0d5bbcc75ec7d8d31bb4ed",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 1
+        },
+        "4416a074-115e-46a4-b5a1-fe26d6eacfde": {
+          "plan_id": "ef1fc9d8-832a-42ad-a810-a3f57ebe618a",
+          "projection_sha256": "13d5c571b452199282b56168a121a745a69f4629140b2e9f3b4adaf34885aa18",
+          "provenance": {
+            "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+            "independent_result_validation": true,
+            "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 2
+        },
+        "67cc78d4-5653-4f71-bce1-53528cd51203": {
+          "plan_id": "933498b1-2fdb-4bd6-9b1d-22af980beccd",
+          "projection_sha256": "b5fbcab9896a815b5645651df6042573e86e1a7718881124f3e1e97fdd435436",
+          "provenance": {
+            "content_digest": "1788b1785bbc1e281c62956b5f5e26573f12329639bbae05600bd7f7e058528b",
+            "independent_result_validation": true,
+            "input_digest": "121a6d901d5071ab9839fec6118381d8f6bf946e99de11e1d252db7e35cbe26e",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 1
+        },
+        "7b1d1951-3766-4ad3-a235-319b932e8180": {
+          "plan_id": "ccea83a8-ce68-43c3-b43a-5c7080f7f618",
+          "projection_sha256": "c1b5d313b951311e67d8b5642f1d285e3d6864bf1cf0887118e6a32be177174e",
+          "provenance": {
+            "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+            "independent_result_validation": true,
+            "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 1
+        },
+        "a18662c7-508f-4510-975d-e0976c1bd0ca": {
+          "plan_id": "5055b062-0927-4803-93f2-7d4f762b5528",
+          "projection_sha256": "7a70016a7c04b8bb7bd73e3d6198c267b9c22a2c1d865f28eff0c6ccc4a35299",
+          "provenance": {
+            "content_digest": "47ff1108a1a926523df72ceb87ebd7b003e45935e0951de76451b13ce36975e5",
+            "independent_result_validation": true,
+            "input_digest": "abe0fce9bbe92a46b7f0644809d8f488a15ab229890ef26c2e5826e8963a8e80",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 1
+        },
+        "ac8a1e98-2837-4cc4-8367-efd576361f93": {
+          "plan_id": "ef1fc9d8-832a-42ad-a810-a3f57ebe618a",
+          "projection_sha256": "b2f2079dff681509bd8a57d5fa0f26143f6b7f16df67417745750616ade51f8e",
+          "provenance": {
+            "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+            "independent_result_validation": true,
+            "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 1
+        }
+      }
+    },
+    "planning_before_restart": {
+      "api_mcp_immutable_projections_equal": true,
+      "historical_revision_preserved": true,
+      "immutable_revision_count": 7,
+      "latest_plan_count": 6,
+      "revision_checks": {
+        "1cb324cc-f19f-4e3c-9e1f-7d2944a91838": {
+          "plan_id": "a17e2a3b-5b28-4b62-9765-97b11eefb90d",
+          "projection_sha256": "d790e3033fe2853a7f4faff8a4ca2a1be54fed514864b4479c458588cbc42901",
+          "provenance": {
+            "content_digest": "1788b1785bbc1e281c62956b5f5e26573f12329639bbae05600bd7f7e058528b",
+            "independent_result_validation": true,
+            "input_digest": "121a6d901d5071ab9839fec6118381d8f6bf946e99de11e1d252db7e35cbe26e",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 1
+        },
+        "1fe013df-6fee-4748-9fb5-940cfe48bba8": {
+          "plan_id": "28e878ee-07a0-4d8c-888d-fc4ac6125e06",
+          "projection_sha256": "465f716197b7ed35d3b30103dc254e608b7a0d0c97536642520390f94eee0e55",
+          "provenance": {
+            "content_digest": "d419dcf0841e55f2e37e85e4a9c2ebbda859ae1a97b943043a7e6de5f2db953b",
+            "independent_result_validation": true,
+            "input_digest": "128cda7986d8afcdd92218c985fb356346bdfaf43c0d5bbcc75ec7d8d31bb4ed",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 1
+        },
+        "4416a074-115e-46a4-b5a1-fe26d6eacfde": {
+          "plan_id": "ef1fc9d8-832a-42ad-a810-a3f57ebe618a",
+          "projection_sha256": "13d5c571b452199282b56168a121a745a69f4629140b2e9f3b4adaf34885aa18",
+          "provenance": {
+            "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+            "independent_result_validation": true,
+            "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 2
+        },
+        "67cc78d4-5653-4f71-bce1-53528cd51203": {
+          "plan_id": "933498b1-2fdb-4bd6-9b1d-22af980beccd",
+          "projection_sha256": "b5fbcab9896a815b5645651df6042573e86e1a7718881124f3e1e97fdd435436",
+          "provenance": {
+            "content_digest": "1788b1785bbc1e281c62956b5f5e26573f12329639bbae05600bd7f7e058528b",
+            "independent_result_validation": true,
+            "input_digest": "121a6d901d5071ab9839fec6118381d8f6bf946e99de11e1d252db7e35cbe26e",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 1
+        },
+        "7b1d1951-3766-4ad3-a235-319b932e8180": {
+          "plan_id": "ccea83a8-ce68-43c3-b43a-5c7080f7f618",
+          "projection_sha256": "c1b5d313b951311e67d8b5642f1d285e3d6864bf1cf0887118e6a32be177174e",
+          "provenance": {
+            "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+            "independent_result_validation": true,
+            "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 1
+        },
+        "a18662c7-508f-4510-975d-e0976c1bd0ca": {
+          "plan_id": "5055b062-0927-4803-93f2-7d4f762b5528",
+          "projection_sha256": "7a70016a7c04b8bb7bd73e3d6198c267b9c22a2c1d865f28eff0c6ccc4a35299",
+          "provenance": {
+            "content_digest": "47ff1108a1a926523df72ceb87ebd7b003e45935e0951de76451b13ce36975e5",
+            "independent_result_validation": true,
+            "input_digest": "abe0fce9bbe92a46b7f0644809d8f488a15ab229890ef26c2e5826e8963a8e80",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 1
+        },
+        "ac8a1e98-2837-4cc4-8367-efd576361f93": {
+          "plan_id": "ef1fc9d8-832a-42ad-a810-a3f57ebe618a",
+          "projection_sha256": "b2f2079dff681509bd8a57d5fa0f26143f6b7f16df67417745750616ade51f8e",
+          "provenance": {
+            "content_digest": "3b0179a1797754f141e51221db4f93d16b842ead6d2b6e0689c976f2f785df90",
+            "independent_result_validation": true,
+            "input_digest": "5bbc626f57d064c5197cc58bba82b4e01cf5ef7915b2f2a6492ad679c43e7379",
+            "normalized_source_count": 13,
+            "normalized_sources_sha256": "0edae813dd1deddc77964d1328ac170777b1b73525b47efb32ae3269cca7371d",
+            "public_payload_matches_canonical_storage": true,
+            "snapshot_id": "9ec86a30-56a5-53bd-b5bb-acaf97050f3a",
+            "target_version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+          },
+          "request_revision": 1
+        }
+      }
+    },
+    "planning_binding_expiry_policy": "The harness requires more than five minutes of original binding TTL before the short restart; it neither extends expiry nor deletes bindings for equality.",
+    "planning_table_count": 20,
+    "planning_tables": [
+      "analytics_drift_rows",
+      "analytics_run_sources",
+      "analytics_runs",
+      "contribution_plan_attempts",
+      "contribution_plan_catalog",
+      "contribution_plan_dispatch_outbox",
+      "contribution_plan_explanations",
+      "contribution_plan_holding_constraints",
+      "contribution_plan_inputs",
+      "contribution_plan_jobs",
+      "contribution_plan_lines",
+      "contribution_plan_request_constraints",
+      "contribution_plan_requests",
+      "contribution_plan_revisions",
+      "contribution_plan_selections",
+      "contribution_plan_sources",
+      "contribution_plans",
+      "planning_audit_events",
+      "planning_collection_bindings",
+      "planning_command_identities"
+    ],
+    "quiescence_policy": "The harness requires succeeded/completed planning jobs and outboxes with no active consumer lease or dispatch claim before and after restart.",
+    "row_comparisons": {
+      "analytics_drift_rows": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "3cb36f4335be1777af3d606bb57710786f5e647d28a959f6721d67281384b6ce",
+        "sha256_before": "3cb36f4335be1777af3d606bb57710786f5e647d28a959f6721d67281384b6ce"
+      },
+      "analytics_run_sources": {
+        "count_after": 12,
+        "count_before": 12,
+        "sha256_after": "44bac0e1933dfe0c0ad85e80997c1e7aa3a6483a70b006c51ca02fb38494d3ec",
+        "sha256_before": "44bac0e1933dfe0c0ad85e80997c1e7aa3a6483a70b006c51ca02fb38494d3ec"
+      },
+      "analytics_runs": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "a01ef2ca51a5eea0f613d3cbb5dbcaf9b82eb24a66029231a78244d65ddd76e8",
+        "sha256_before": "a01ef2ca51a5eea0f613d3cbb5dbcaf9b82eb24a66029231a78244d65ddd76e8"
+      },
+      "cash_balance_observations": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "4eb06ed138a8d890296808db2eead08837805cd31ec96c97bbeda0fda865b8d6",
+        "sha256_before": "4eb06ed138a8d890296808db2eead08837805cd31ec96c97bbeda0fda865b8d6"
+      },
+      "cash_flows": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "bca9eaa8ab035cac1616cb3e5bbed9d84e74b3bfda78effae310865d55c57b44",
+        "sha256_before": "bca9eaa8ab035cac1616cb3e5bbed9d84e74b3bfda78effae310865d55c57b44"
+      },
+      "contribution_plan_attempts": {
+        "count_after": 30,
+        "count_before": 30,
+        "sha256_after": "0974822150c09f3d7e265815461d3224ca95a3adf567739bd5932335396e35f2",
+        "sha256_before": "0974822150c09f3d7e265815461d3224ca95a3adf567739bd5932335396e35f2"
+      },
+      "contribution_plan_catalog": {
+        "count_after": 7,
+        "count_before": 7,
+        "sha256_after": "fcf56ef16b7ac2c282316222a82e2843d22cb4ed8fa5ad5bd813df23a8aa6c6f",
+        "sha256_before": "fcf56ef16b7ac2c282316222a82e2843d22cb4ed8fa5ad5bd813df23a8aa6c6f"
+      },
+      "contribution_plan_dispatch_outbox": {
+        "count_after": 7,
+        "count_before": 7,
+        "sha256_after": "6bc50c0b52566a5d0454966918b9c815cb721eee719031ddcf6d9d19dbd5ec10",
+        "sha256_before": "6bc50c0b52566a5d0454966918b9c815cb721eee719031ddcf6d9d19dbd5ec10"
+      },
+      "contribution_plan_explanations": {
+        "count_after": 7,
+        "count_before": 7,
+        "sha256_after": "54984c6b30c48fc3a39f37367e31d092cf23f4090858229cd4b3634ce743273b",
+        "sha256_before": "54984c6b30c48fc3a39f37367e31d092cf23f4090858229cd4b3634ce743273b"
+      },
+      "contribution_plan_holding_constraints": {
+        "count_after": 0,
+        "count_before": 0,
+        "sha256_after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_inputs": {
+        "count_after": 14,
+        "count_before": 14,
+        "sha256_after": "8a15e9a0007415dccaad08f4653eeb179147336242429042e5ac1e3466beb97f",
+        "sha256_before": "8a15e9a0007415dccaad08f4653eeb179147336242429042e5ac1e3466beb97f"
+      },
+      "contribution_plan_jobs": {
+        "count_after": 7,
+        "count_before": 7,
+        "sha256_after": "7b1df8c44113823602d158c616880c3d3f4ed66fea359c63a1e5a91bc603afb9",
+        "sha256_before": "7b1df8c44113823602d158c616880c3d3f4ed66fea359c63a1e5a91bc603afb9"
+      },
+      "contribution_plan_lines": {
+        "count_after": 7,
+        "count_before": 7,
+        "sha256_after": "1712790febb251b6d533f00d5385311b0eb63027df4a20b377a3974770c48f68",
+        "sha256_before": "1712790febb251b6d533f00d5385311b0eb63027df4a20b377a3974770c48f68"
+      },
+      "contribution_plan_request_constraints": {
+        "count_after": 0,
+        "count_before": 0,
+        "sha256_after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contribution_plan_requests": {
+        "count_after": 7,
+        "count_before": 7,
+        "sha256_after": "25c6bc904f2eb4a44d7be0eca487c50dcb25c918bc6307c001573919100f02f1",
+        "sha256_before": "25c6bc904f2eb4a44d7be0eca487c50dcb25c918bc6307c001573919100f02f1"
+      },
+      "contribution_plan_revisions": {
+        "count_after": 7,
+        "count_before": 7,
+        "sha256_after": "dbaf12a1b550085551d015b13d3ef60caef501513b0b5edc02475d38399a1224",
+        "sha256_before": "dbaf12a1b550085551d015b13d3ef60caef501513b0b5edc02475d38399a1224"
+      },
+      "contribution_plan_selections": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "fccb864bfb5a9b2f535abcf2e524936ae585d5285a611efe7cacea7d4da1a569",
+        "sha256_before": "fccb864bfb5a9b2f535abcf2e524936ae585d5285a611efe7cacea7d4da1a569"
+      },
+      "contribution_plan_sources": {
+        "count_after": 91,
+        "count_before": 91,
+        "sha256_after": "b644f2046f7e0a51c6f0cea5069a797a940cb6cdb1066703be40434d128eae35",
+        "sha256_before": "b644f2046f7e0a51c6f0cea5069a797a940cb6cdb1066703be40434d128eae35"
+      },
+      "contribution_plans": {
+        "count_after": 6,
+        "count_before": 6,
+        "sha256_after": "f78fe750810113580192f1fcd2ae5126de59c955e4272a63d74042cea25a2dc3",
+        "sha256_before": "f78fe750810113580192f1fcd2ae5126de59c955e4272a63d74042cea25a2dc3"
+      },
+      "dividends": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "8d987ee40dc331c1de4b1c713bb9f395a0625d6b1d9282397e1cc7e8bd47043c",
+        "sha256_before": "8d987ee40dc331c1de4b1c713bb9f395a0625d6b1d9282397e1cc7e8bd47043c"
+      },
+      "ingestion_runs": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "9cb326c4397dca9ebf1d3fa90af1c92faf1889d9f9de4a20532933a2bdc594a7",
+        "sha256_before": "9cb326c4397dca9ebf1d3fa90af1c92faf1889d9f9de4a20532933a2bdc594a7"
+      },
+      "ledger_entries": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "2c12cff6eb17f41de057a6a5bd040ea11306d923b1243bfc0cb6811d73e0c164",
+        "sha256_before": "2c12cff6eb17f41de057a6a5bd040ea11306d923b1243bfc0cb6811d73e0c164"
+      },
+      "order_observations": {
+        "count_after": 2,
+        "count_before": 2,
+        "sha256_after": "9ec728f7597c00825dad08dbb398dc5be29058c9331cf1b7f20aae73734cbf0d",
+        "sha256_before": "9ec728f7597c00825dad08dbb398dc5be29058c9331cf1b7f20aae73734cbf0d"
+      },
+      "planning_audit_events": {
+        "count_after": 14,
+        "count_before": 14,
+        "sha256_after": "49b04c5f81be02e83b397f03ba1d0ddda83b44c1b1a5c6bbd664e4c6bb57f386",
+        "sha256_before": "49b04c5f81be02e83b397f03ba1d0ddda83b44c1b1a5c6bbd664e4c6bb57f386"
+      },
+      "planning_collection_bindings": {
+        "count_after": 22,
+        "count_before": 22,
+        "sha256_after": "e76da7d580fe12a533f89bf8bc0739b6cc9edc074053cc885940d45ca2dbecb6",
+        "sha256_before": "e76da7d580fe12a533f89bf8bc0739b6cc9edc074053cc885940d45ca2dbecb6"
+      },
+      "planning_command_identities": {
+        "count_after": 7,
+        "count_before": 7,
+        "sha256_after": "0e027dd92a2fc2f65b87713ee89604d5b0f83b2b6919aef6349e9f21143a9f0c",
+        "sha256_before": "0e027dd92a2fc2f65b87713ee89604d5b0f83b2b6919aef6349e9f21143a9f0c"
+      },
+      "portfolio_snapshots": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "2083c1d9605f1c9d9b3e19f84a26e63698460549e09e76a726bed89208c84607",
+        "sha256_before": "2083c1d9605f1c9d9b3e19f84a26e63698460549e09e76a726bed89208c84607"
+      },
+      "position_observations": {
+        "count_after": 1,
+        "count_before": 1,
+        "sha256_after": "e4a36b4a882a9c5c064b61898c7a64f75b42c619c11c6096ec38cfbc576b1f2b",
+        "sha256_before": "e4a36b4a882a9c5c064b61898c7a64f75b42c619c11c6096ec38cfbc576b1f2b"
+      },
+      "source_record_occurrences": {
+        "count_after": 10,
+        "count_before": 10,
+        "sha256_after": "a1daf7a9cc59913bb40f33f9953d59094e9af8bca747ed81270ebde1f2f74f80",
+        "sha256_before": "a1daf7a9cc59913bb40f33f9953d59094e9af8bca747ed81270ebde1f2f74f80"
+      },
+      "source_records": {
+        "count_after": 10,
+        "count_before": 10,
+        "sha256_after": "5d7e0ec38255f921f322d65f4b4d544717b29f6b874e200a6bdab4c8f61677b3",
+        "sha256_before": "5d7e0ec38255f921f322d65f4b4d544717b29f6b874e200a6bdab4c8f61677b3"
+      },
+      "target_command_identities": {
+        "count_after": 12,
+        "count_before": 12,
+        "sha256_after": "5a6a0799bd960853f94de2c812ec7d618edf1807a2f2a88e439d8a93aec06b39",
+        "sha256_before": "5a6a0799bd960853f94de2c812ec7d618edf1807a2f2a88e439d8a93aec06b39"
+      },
+      "target_constraints": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "de6a5256f75ea191e3adf96c162f55ffa93285d364ed4f3213ba029c28ff9010",
+        "sha256_before": "de6a5256f75ea191e3adf96c162f55ffa93285d364ed4f3213ba029c28ff9010"
+      },
+      "target_exclusions": {
+        "count_after": 0,
+        "count_before": 0,
+        "sha256_after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "target_holdings": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "372a31a985371461ff38553879718409cc1194f7b31a09b5f705200b5625b59d",
+        "sha256_before": "372a31a985371461ff38553879718409cc1194f7b31a09b5f705200b5625b59d"
+      },
+      "target_mapping_decisions": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "5184e959902f6c5a9530f1920238f27dd5774b17e6b33d18444a0d433ac5ddef",
+        "sha256_before": "5184e959902f6c5a9530f1920238f27dd5774b17e6b33d18444a0d433ac5ddef"
+      },
+      "target_nodes": {
+        "count_after": 9,
+        "count_before": 9,
+        "sha256_after": "4761fe2a3b0fd3941548e43b38d0388a01680fe8bdae8add3dad3353e4d4e1e6",
+        "sha256_before": "4761fe2a3b0fd3941548e43b38d0388a01680fe8bdae8add3dad3353e4d4e1e6"
+      },
+      "target_normalization_adjustments": {
+        "count_after": 0,
+        "count_before": 0,
+        "sha256_after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "target_validation_issues": {
+        "count_after": 0,
+        "count_before": 0,
+        "sha256_after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sha256_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "target_validation_results": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "f626ff9b2bfdcd42b183fd97e367ba978c7e90bca38c2b3b590ec6ac94c48987",
+        "sha256_before": "f626ff9b2bfdcd42b183fd97e367ba978c7e90bca38c2b3b590ec6ac94c48987"
+      },
+      "target_version_events": {
+        "count_after": 12,
+        "count_before": 12,
+        "sha256_after": "c2c92199395f336f6799326f6ac669527888f20dccab92fded6881fb187de68f",
+        "sha256_before": "c2c92199395f336f6799326f6ac669527888f20dccab92fded6881fb187de68f"
+      },
+      "target_versions": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "9e1a3080614440ac1d3e3dbd3141c631ad9180aebc8efb23fd582a12eac3950e",
+        "sha256_before": "9e1a3080614440ac1d3e3dbd3141c631ad9180aebc8efb23fd582a12eac3950e"
+      },
+      "transactions": {
+        "count_after": 2,
+        "count_before": 2,
+        "sha256_after": "c7e2516c68c6bd01e3f9ccac95e25179d45daaf1c98ef0bd5b60a0aa315ec601",
+        "sha256_before": "c7e2516c68c6bd01e3f9ccac95e25179d45daaf1c98ef0bd5b60a0aa315ec601"
+      },
+      "virtual_portfolio_events": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "14a2bacf841cc3e797ed08ddd2cd86f92e6b05d279839702b3ba59106caaa64f",
+        "sha256_before": "14a2bacf841cc3e797ed08ddd2cd86f92e6b05d279839702b3ba59106caaa64f"
+      },
+      "virtual_portfolios": {
+        "count_after": 3,
+        "count_before": 3,
+        "sha256_after": "ffe571129408f4a43a6dfb3585d8139f067ad097c13dfbd17fe1a1dfc6d4812f",
+        "sha256_before": "ffe571129408f4a43a6dfb3585d8139f067ad097c13dfbd17fe1a1dfc6d4812f"
+      }
+    },
+    "stopped_states": {
+      "api": "exited",
+      "dispatcher": "exited",
+      "mcp": "exited",
+      "postgres": "exited",
+      "redis": "exited",
+      "web": "exited",
+      "worker": "exited"
+    },
+    "table_comparison_count": 44,
+    "volumes_retained": [
+      "t212pi_p2_02_corrected_runtime_20260907_postgres-data"
+    ]
+  },
+  "result": "passed",
+  "scheduled_activation": {
+    "activation_events": 1,
+    "actor": "system:target-scheduler",
+    "content_digest": "855003a012d5bc0fb447c68b0aa63bd402b991cb5138964a7b12e5dfa810dfa7",
+    "effective_at": "2026-09-07T17:12:59.765787+00:00",
+    "event_created_at": "2026-09-07T17:13:00.467780+00:00",
+    "event_latency_seconds": 0.701993,
+    "exact_publish_retry": true,
+    "observed_at": "2026-09-07T17:13:00.489023+00:00",
+    "observed_latency_seconds": 0.723236,
+    "poll_elapsed_seconds": 20.664582074001373,
+    "portfolio_id": "d2bd56ec-b4f1-45ce-88c9-03c09ace3f5f",
+    "runtime_component": "dispatcher",
+    "version_id": "bd57fc5f-b889-456e-b5f5-fe7ed2ec18f5"
+  },
+  "schema_version": 1,
+  "scope": "P2-02 isolated synthetic local runtime acceptance; full validation, browser scenarios and hosted CI have separate evidence.",
+  "seeded_published_targets": {
+    "account": {
+      "content_digest": "bde7f60e955d2de837dd5d464bbd7c17f2c80e5bf1df954ae6f294704a9c6cc3",
+      "nodes": {
+        "cash": {
+          "calculated": {
+            "depth": 1,
+            "effective_weight": "0.1",
+            "node": {
+              "holding": null,
+              "key": "cash",
+              "kind": "cash",
+              "name": "EUR cash",
+              "order": 2,
+              "parent_key": null,
+              "weight": "0.1"
+            },
+            "ordinal": 2,
+            "path_factors": [
+              "0.1"
+            ],
+            "path_keys": [
+              "cash"
+            ]
+          },
+          "hierarchy": {
+            "id": "52b20d26-5583-4c2c-a0cb-5e557200469a",
+            "node": {
+              "holding": null,
+              "key": "cash",
+              "kind": "cash",
+              "name": "EUR cash",
+              "order": 2,
+              "parent_key": null,
+              "weight": "0.1"
+            }
+          }
+        },
+        "global-equity": {
+          "calculated": {
+            "depth": 2,
+            "effective_weight": "0.9",
+            "node": {
+              "holding": {
+                "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+                "listing_id": null,
+                "preferred_listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+                "reason": null,
+                "requested_identifier": null,
+                "state": "resolved"
+              },
+              "key": "global-equity",
+              "kind": "holding",
+              "name": "Synthetic Global Equity",
+              "order": 1,
+              "parent_key": "growth",
+              "weight": "1"
+            },
+            "ordinal": 1,
+            "path_factors": [
+              "0.9",
+              "1"
+            ],
+            "path_keys": [
+              "growth",
+              "global-equity"
+            ]
+          },
+          "hierarchy": {
+            "id": "fe9a42c3-aa6d-42a6-bd92-4b4b70a09bc7",
+            "node": {
+              "holding": {
+                "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+                "listing_id": null,
+                "preferred_listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+                "reason": null,
+                "requested_identifier": null,
+                "state": "resolved"
+              },
+              "key": "global-equity",
+              "kind": "holding",
+              "name": "Synthetic Global Equity",
+              "order": 1,
+              "parent_key": "growth",
+              "weight": "1"
+            }
+          }
+        },
+        "growth": {
+          "calculated": {
+            "depth": 1,
+            "effective_weight": "0.9",
+            "node": {
+              "holding": null,
+              "key": "growth",
+              "kind": "group",
+              "name": "Growth",
+              "order": 0,
+              "parent_key": null,
+              "weight": "0.9"
+            },
+            "ordinal": 0,
+            "path_factors": [
+              "0.9"
+            ],
+            "path_keys": [
+              "growth"
+            ]
+          },
+          "hierarchy": {
+            "id": "461436f8-b3f7-4bfb-8542-8e3e28aec76b",
+            "node": {
+              "holding": null,
+              "key": "growth",
+              "kind": "group",
+              "name": "Growth",
+              "order": 0,
+              "parent_key": null,
+              "weight": "0.9"
+            }
+          }
+        }
+      },
+      "portfolio_id": "0fa5c0e5-acb9-4fd3-a429-40f84dc9ac9a",
+      "version_id": "8aced305-78a1-4f54-a8f3-069f655c628d"
+    },
+    "template": {
+      "content_digest": "bde7f60e955d2de837dd5d464bbd7c17f2c80e5bf1df954ae6f294704a9c6cc3",
+      "nodes": {
+        "cash": {
+          "calculated": {
+            "depth": 1,
+            "effective_weight": "0.1",
+            "node": {
+              "holding": null,
+              "key": "cash",
+              "kind": "cash",
+              "name": "EUR cash",
+              "order": 2,
+              "parent_key": null,
+              "weight": "0.1"
+            },
+            "ordinal": 2,
+            "path_factors": [
+              "0.1"
+            ],
+            "path_keys": [
+              "cash"
+            ]
+          },
+          "hierarchy": {
+            "id": "4b6daf85-ebd5-42d8-a716-1b835a2fbd11",
+            "node": {
+              "holding": null,
+              "key": "cash",
+              "kind": "cash",
+              "name": "EUR cash",
+              "order": 2,
+              "parent_key": null,
+              "weight": "0.1"
+            }
+          }
+        },
+        "global-equity": {
+          "calculated": {
+            "depth": 2,
+            "effective_weight": "0.9",
+            "node": {
+              "holding": {
+                "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+                "listing_id": null,
+                "preferred_listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+                "reason": null,
+                "requested_identifier": null,
+                "state": "resolved"
+              },
+              "key": "global-equity",
+              "kind": "holding",
+              "name": "Synthetic Global Equity",
+              "order": 1,
+              "parent_key": "growth",
+              "weight": "1"
+            },
+            "ordinal": 1,
+            "path_factors": [
+              "0.9",
+              "1"
+            ],
+            "path_keys": [
+              "growth",
+              "global-equity"
+            ]
+          },
+          "hierarchy": {
+            "id": "f64ca723-26ed-4b84-ac34-cde504531601",
+            "node": {
+              "holding": {
+                "instrument_id": "fed6114f-869c-5259-9833-4ba9014b3a21",
+                "listing_id": null,
+                "preferred_listing_id": "750217ef-70f4-5e03-b2c8-65f94dd84a81",
+                "reason": null,
+                "requested_identifier": null,
+                "state": "resolved"
+              },
+              "key": "global-equity",
+              "kind": "holding",
+              "name": "Synthetic Global Equity",
+              "order": 1,
+              "parent_key": "growth",
+              "weight": "1"
+            }
+          }
+        },
+        "growth": {
+          "calculated": {
+            "depth": 1,
+            "effective_weight": "0.9",
+            "node": {
+              "holding": null,
+              "key": "growth",
+              "kind": "group",
+              "name": "Growth",
+              "order": 0,
+              "parent_key": null,
+              "weight": "0.9"
+            },
+            "ordinal": 0,
+            "path_factors": [
+              "0.9"
+            ],
+            "path_keys": [
+              "growth"
+            ]
+          },
+          "hierarchy": {
+            "id": "bd8c3957-b97a-4d14-9b8d-35b942d862ff",
+            "node": {
+              "holding": null,
+              "key": "growth",
+              "kind": "group",
+              "name": "Growth",
+              "order": 0,
+              "parent_key": null,
+              "weight": "0.9"
+            }
+          }
+        }
+      },
+      "portfolio_id": "1bd01a48-ad09-48e4-9700-6837c844c54d",
+      "version_id": "0f584fd6-292e-4b1d-94a2-0ad8dd9861ca"
+    }
+  },
+  "source": {
+    "build_binding_sha256": "ac8cb5f52ff95948f576db3585308793a2fb3bb6fa0fa68a1b4e0afe14014298",
+    "build_checkout_clean_after": true,
+    "build_checkout_clean_before": true,
+    "build_command": "COMPOSE_PROJECT_NAME=t212pi_stage_a_20260907 make validate",
+    "build_exit_code": 0,
+    "build_log_sha256": "bc55120b99e90912ce165c9727d69b1f0d4ab7b1ebe6eea3afa89f95162ac5a7",
+    "execution_manifest_sha256": "268ab3524d8dc056ce020a6a102804b0609dfdd36fefdb61125cb602562e1107",
+    "harness_sha256": "398d8d9f083c21134efea9f61a18a87ea3a66343e254b368b651f6f397231e71",
+    "initial_checkout_clean": true,
+    "raw_runtime_evidence_sha256": "f7373bc5e1b3e2a0b2dd6a6674fcce406d8c66b84df0e22a74d224e20d144169",
+    "verified_image_ids": {
+      "api": "sha256:e7219da1d1ae3a37d29cab718cdb177d2ebdaf1599f9d36e7440e00218660b47",
+      "mcp": "sha256:7124ca79928b1363dedf6514dbca4ededc5c1367a24186f8461d487e36540d9d",
+      "postgres": "sha256:7ef19f3189b7fdc54fa18822106f086a60ae6b6ad95c19331d0ac25f5896e2fa",
+      "redis": "sha256:10193a5c09c4587e6ae4d02bf4fb81e869ceef094d024efce5a9e480b7201762",
+      "web": "sha256:bee71944d6d609725676e4fbc127e2acef8b86029fa67f81368f934a8665168f",
+      "worker": "sha256:74e868d3e3ba1118f81ecfe524af4dc1a01b7a6c25bc91101ca9c73b675d53cd"
+    }
+  },
+  "source_sha": "f78c9d2917c3ce8c93f9ae5631390c59616abc82"
+}

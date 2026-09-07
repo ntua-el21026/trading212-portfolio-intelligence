@@ -1,0 +1,107 @@
+{
+  "baseline_sha": "c9aeebe8e0481fee6f7d897bd3fb89b3a7fdfaed",
+  "source_sha": "f78c9d2917c3ce8c93f9ae5631390c59616abc82",
+  "result": "passed",
+  "findings": [],
+  "retained_openapi_operations_equal": 40,
+  "retained_openapi_schemas_equal": 69,
+  "added_openapi_operations": [
+    {
+      "method": "GET",
+      "path": "/api/v1/accounts/{account_id}/actual-vs-target",
+      "operation_id": "get_actual_vs_target"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/accounts/{account_id}/drift",
+      "operation_id": "get_drift_analysis"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/contribution-plans",
+      "operation_id": "list_contribution_plans"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/contribution-plans",
+      "operation_id": "create_contribution_plan"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/contribution-plans/{plan_id}",
+      "operation_id": "get_contribution_plan"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/contribution-plans/{plan_id}/revisions",
+      "operation_id": "create_contribution_plan_revision"
+    }
+  ],
+  "unchanged_git_paths": [
+    "apps/api/src/trading212_api/schemas.py",
+    "apps/api/src/trading212_api/target_schemas.py",
+    "packages/api-contracts/src/trading212_api_contracts/targets.py",
+    "packages/api-contracts/src/targets.generated.ts",
+    "apps/mcp/src/trading212_mcp/gateway.py",
+    "apps/mcp/src/trading212_mcp/target_gateway.py",
+    "apps/mcp/src/trading212_mcp/target_schemas.py",
+    "apps/mcp/src/trading212_mcp/sdk_compat.py",
+    "apps/mcp/src/trading212_mcp/widget.py",
+    "packages/application/src/trading212_application/queries.py",
+    "packages/security/src/trading212_security/settings.py"
+  ],
+  "legacy_typescript_index_preserved_as_exact_prefix": true,
+  "preserved_mcp_descriptors": [
+    "get_account_summary",
+    "get_portfolio_snapshot",
+    "list_positions",
+    "list_recent_transactions",
+    "get_dividend_summary",
+    "get_direct_allocation",
+    "compare_portfolio_snapshots",
+    "get_reconciliation_status",
+    "get_data_quality_summary",
+    "list_virtual_pies",
+    "get_virtual_pie"
+  ],
+  "preserved_mcp_descriptor_sha256": "0d32d4d13835724f99ddbb30fb92242c661da0a26cd4a998286df7be3bf3fd9c",
+  "mcp_tool_count": 15,
+  "broker_allowlist_capabilities": 10,
+  "broker_methods": [
+    "GET"
+  ],
+  "broker_source_and_contract_changed_files": [],
+  "correction_changed_paths": [
+    "CHANGELOG.md",
+    "PROJECT_PROGRESS.json",
+    "PROJECT_STATUS.md",
+    "apps/web/playwright.api.config.ts",
+    "docs/implementation/P2_02_CONTRIBUTION_PLANNING.md",
+    "scripts/run_api_backed_e2e.py",
+    "tests/integration/test_browser_fixture_database.py"
+  ],
+  "scope_note": "Compares immutable Git API/schema/tool/client and broker boundaries. Target transport is a deliberate behavior-preserving shared-transport extraction, not byte-identical; shared collection registry adds planning resource kinds without changing retained quota implementation.",
+  "retained_collection_implementation_ast_equal": [
+    "CollectionSnapshot",
+    "CollectionSnapshotDefinition",
+    "CollectionSnapshotPage",
+    "CollectionSnapshotScopeError",
+    "CollectionSnapshotStore",
+    "_acquire_owner_capacity_lock",
+    "_cursor_binding",
+    "_cursor_resource",
+    "_database_now",
+    "_page_limit",
+    "_snapshot_value",
+    "_utc",
+    "cleanup_expired_collection_snapshots",
+    "collection_filter_fingerprint"
+  ],
+  "target_transport_error_policy_equal": true,
+  "production_quota_limits": {
+    "active_traversals_per_owner": 64,
+    "active_members_per_owner": 250000
+  },
+  "broker_package_tree_sha": "bb3aa605a2846f38b566baee84e460350838b7ba",
+  "broker_contract_sha256": "36aa7afbbeb416bfeaca4efda31bc52983bcbeaab93aea906fa43204cf12a284"
+}

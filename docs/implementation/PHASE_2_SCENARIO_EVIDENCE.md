@@ -2,15 +2,17 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 complete; 5/40 complete
+**Implementation acceptance:** In progress; P2-01 and P2-02 complete; 11/40 complete
 
-**P2-01 evidence SHA:** `ecc75154397c8f9d7532fa2df8576846b60bae7c`; final Phase 2 release SHA pending
+**P2-01 evidence SHA:** `ecc75154397c8f9d7532fa2df8576846b60bae7c`
+
+**P2-02 evidence SHA:** `f78c9d2917c3ce8c93f9ae5631390c59616abc82`; final Phase 2 release SHA pending
 
 **Authority:** Owner assignment, Phase 2 execution manifest and acceptance matrix
 
 All forty owner-required scenarios are preserved below. Each row defines the
 required executable predicate; pending rows remain requirements without claimed
-execution. P2-S01 through P2-S05 have exact tests and retained evidence. Phase 1 acceptance at
+execution. P2-S01 through P2-S11 have exact tests and retained evidence. Phase 1 acceptance at
 `99df47b6633791c3900a52f46f56d48be922a436` is prerequisite evidence only.
 
 ## Mandatory predicates
@@ -22,12 +24,12 @@ execution. P2-S01 through P2-S05 have exact tests and retained evidence. Phase 1
 | P2-S03 | Publish V2 and compare it deterministically with V1. | P2-01 | Publish changed V2 with precondition; compare stable identifiers/weights and effective versions in both directions. | `tests/integration/test_virtual_targets.py::test_published_version_comparison_is_exact_bidirectional_and_restart_stable`; [full assertion map and exact-SHA results](evidence/phase-2-p2-01-ecc7515.json) | `complete` |
 | P2-S04 | Reject invalid target sums and contradictory constraints. | P2-01 | Exact-sum tolerance boundaries, negative/overfull weights, cycles, duplicate nodes and conflicting constraints fail atomically. | `tests/unit/domain/test_targets.py::test_ancestor_funding_and_post_weight_conflicts_and_exclusions`; [full assertion map and exact-SHA results](evidence/phase-2-p2-01-ecc7515.json) | `complete` |
 | P2-S05 | Preserve unresolved instrument mappings explicitly. | P2-01 | Unresolved listing/entity fixtures retain unresolved state, coverage/warnings and cannot become invented mappings. | `tests/integration/test_virtual_targets.py::test_unresolved_mapping_is_explicit_and_publishable_with_warning`; [full assertion map and exact-SHA results](evidence/phase-2-p2-01-ecc7515.json) | `complete` |
-| P2-S06 | Calculate actual-versus-target drift from an immutable portfolio snapshot. | P2-02 | Hand-calculated cash/group/holding drift references use explicit immutable snapshot and target version; later mutations do not alter result. | Not recorded / none | `pending` |
-| P2-S07 | Produce a no-sale contribution plan that conserves the contribution exactly. | P2-02 | Decimal property and reference cases prove non-negative allocations, no sales and exact contribution = allocations + residual. | Not recorded / none | `pending` |
-| P2-S08 | Obey minimum allocations, increments, exclusions, and maximum weights. | P2-02 | Reference/exhaustive small constrained cases and randomized properties cover minimums, increments, eligibility, exclusions, hierarchy and maximum weights. | Not recorded / none | `pending` |
-| P2-S09 | Return a deterministic residual-cash amount. | P2-02 | Ties, non-divisible contributions and cash-reserve boundaries yield identical exact residual cash and stable line order. | Not recorded / none | `pending` |
-| P2-S10 | Return a structured infeasibility explanation for impossible constraints. | P2-02 | Impossible hard constraints produce stable conflict codes/explanations without a fabricated feasible plan or hidden relaxation. | Not recorded / none | `pending` |
-| P2-S11 | Produce identical plan output for identical canonical inputs. | P2-02 | Repeated and concurrent canonical requests preserve byte-equivalent plan data and semantic identity; operational timestamps/IDs are tested separately. | Not recorded / none | `pending` |
+| P2-S06 | Calculate actual-versus-target drift from an immutable portfolio snapshot. | P2-02 | Hand-calculated cash/group/holding drift references use explicit immutable snapshot and target version; later mutations do not alter result. | `tests/unit/analytics/test_planning.py::test_nonzero_group_holding_cash_drift_matches_independent_reference`; [full assertion map and exact-SHA results](evidence/phase-2-p2-02-f78c9d2.json) | `complete` |
+| P2-S07 | Produce a no-sale contribution plan that conserves the contribution exactly. | P2-02 | Decimal property and reference cases prove non-negative allocations, no sales and exact contribution = allocations + residual. | `tests/property/test_planning_properties.py::test_discrete_global_optimum_matches_independent_rational_enumeration`; [full assertion map and exact-SHA results](evidence/phase-2-p2-02-f78c9d2.json) | `complete` |
+| P2-S08 | Obey minimum allocations, increments, exclusions, and maximum weights. | P2-02 | Reference/exhaustive small constrained cases and randomized properties cover minimums, increments, eligibility, exclusions, hierarchy and maximum weights. | `tests/property/test_planning_properties.py::test_constrained_hierarchy_matches_independent_rational_exhaustion`; [full assertion map and exact-SHA results](evidence/phase-2-p2-02-f78c9d2.json) | `complete` |
+| P2-S09 | Return a deterministic residual-cash amount. | P2-02 | Ties, non-divisible contributions and cash-reserve boundaries yield identical exact residual cash and stable line order. | `tests/property/test_planning_properties.py::test_permutations_preserve_hash_and_result_and_exact_conservation`; [full assertion map and exact-SHA results](evidence/phase-2-p2-02-f78c9d2.json) | `complete` |
+| P2-S10 | Return a structured infeasibility explanation for impossible constraints. | P2-02 | Impossible hard constraints produce stable conflict codes/explanations without a fabricated feasible plan or hidden relaxation. | `tests/unit/analytics/test_planning.py::test_infeasibility_proof_names_only_supporting_constraints`; [full assertion map and exact-SHA results](evidence/phase-2-p2-02-f78c9d2.json) | `complete` |
+| P2-S11 | Produce identical plan output for identical canonical inputs. | P2-02 | Repeated and concurrent canonical requests preserve byte-equivalent plan data and semantic identity; operational timestamps/IDs are tested separately. | `tests/integration/test_planning_api_postgres.py::test_actual_drift_and_saved_plan_match_mcp_with_real_worker_and_revision_history`; [full assertion map and exact-SHA results](evidence/phase-2-p2-02-f78c9d2.json) | `complete` |
 | P2-S12 | Prevent a contribution plan from calling any Trading 212 transport method. | P2-02/P2-09 | Broker transport spy raises on every invocation; successful/invalid/retried plan creation invokes it zero times and creates no order payload. | Not recorded / none | `pending` |
 | P2-S13 | Ingest synthetic price, FX, and benchmark data with provenance and gaps. | P2-03 | Deterministic replay providers persist prices, FX and benchmark revisions with provenance, source/retrieval times, licenses and explicit gaps. | Not recorded / none | `pending` |
 | P2-S14 | Reject look-ahead FX or post-cutoff market observations. | P2-03/P2-04 | Boundary fixtures reject naive/post-cutoff observations and prevent look-ahead in direct/inverse/triangulated FX and valuation/benchmark selection. | Not recorded / none | `pending` |
@@ -115,3 +117,17 @@ changes an external `blocked_external` or `unavailable_explicit` predicate.
 
 The [acceptance matrix](PHASE_2_ACCEPTANCE_MATRIX.md) owns release accounting.
 Phase 3 remains `not_started`.
+
+## P2-02 observed evidence
+
+P2-02, P2-OPT-001 through P2-OPT-003, and P2-S06 through P2-S11 passed at
+`f78c9d2917c3ce8c93f9ae5631390c59616abc82`. The [assertion map](evidence/phase-2-p2-02-f78c9d2.json)
+retains 197 collected cases, 17 rational reference cases, 175 observed property
+examples, full local validation and all three successful exact-SHA CI runs.
+The [runtime record](evidence/phase-2-p2-02-f78c9d2-runtime.json) proves all four
+modes, immutable API/MCP revisions, real Redis message-loss recovery and unchanged
+44-table state after a full seven-service restart. The [security record](evidence/phase-2-p2-02-f78c9d2-security.json)
+binds source/history and six image scans to that clean build. The [earlier failed
+CI candidate](evidence/phase-2-p2-02-5fa43b2-failed-quality.json) remains unaccepted.
+P2-S12 has a passing broker-transport spy for the planning path; its shared P2-09
+predicate remains pending. Later packages and full-release acceptance remain required.
