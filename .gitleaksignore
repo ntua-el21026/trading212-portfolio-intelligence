@@ -19,3 +19,10 @@ dfe40f67aa60cb53fbac323e8e3905c4995ef241:PROJECT_STATUS.json:generic-api-key:62
 # Review trigger: revalidate on every Gitleaks upgrade and by 2026-12-01.
 6dde264e865dd5fdfc8e3116a35b1661a48a68fd:tests/integration/test_virtual_targets.py:generic-api-key:290
 6dde264e865dd5fdfc8e3116a35b1661a48a68fd:tests/integration/test_virtual_targets.py:generic-api-key:298
+
+# Owner: repository owner and designated security reviewer.
+# Reason/scope: this exact historical compatibility-evidence fingerprint is the
+# SHA-256 of the committed generated OpenAPI contract at e258f54; verified by
+# hashing that Git blob. It is not a credential or a credential derivative.
+# Review trigger: revalidate on every Gitleaks upgrade and by 2026-12-01.
+05d01c7a9a9cb6cc3f351c3adbed2036f02b94a9:docs/implementation/evidence/phase-2-p2-03-e258f54-compatibility.json:generic-api-key:85

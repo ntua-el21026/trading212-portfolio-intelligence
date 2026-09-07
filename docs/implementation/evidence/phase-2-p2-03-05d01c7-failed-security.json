@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "recorded_at": "2026-09-07T19:57:00.631096+00:00",
+  "affected_commit": "05d01c7a9a9cb6cc3f351c3adbed2036f02b94a9",
+  "accepted_implementation_sha": "e258f54bb03a958f7847b310ee882b7f4a54686f",
+  "failed_workflow": {
+    "id": 34157052449,
+    "attempt": 1,
+    "conclusion": "failure",
+    "failed_gate": "repository-secret-scan",
+    "other_security_gates": "passed"
+  },
+  "finding": {
+    "rule": "generic-api-key",
+    "file": "docs/implementation/evidence/phase-2-p2-03-e258f54-compatibility.json",
+    "line": 85,
+    "field": "openapi_sha256",
+    "classification": "Verified non-secret SHA-256 of the exact generated OpenAPI Git blob.",
+    "verification": "Hash git show e258f54bb03a958f7847b310ee882b7f4a54686f:packages/api-contracts/openapi/phase1-v1.json and compare with the retained field.",
+    "verified_digest": "62245a093da97e1168d6705d96593b82396c18dd1706adb24f9845935cf08575"
+  },
+  "correction": "Document one exact historical fingerprint exception in .gitleaksignore. Preserve the evidence bytes, rules, paths and Git history.",
+  "corrected_local_scan": {
+    "tool": "Gitleaks 8.30.1",
+    "image": "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f",
+    "scope": "Complete Git history through affected_commit, with the corrected working-tree .gitleaksignore.",
+    "findings": 0,
+    "report_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "log_sha256": "fad3b82bd157f4687fb2ebe8d96ba65f593a613c28314341196bf7bdf5ce1c64"
+  },
+  "ci_after_correction": "pending exact pushed correction SHA",
+  "other_ci": [
+    {
+      "id": 34157052439,
+      "name": "Documentation baseline validation",
+      "conclusion": "success"
+    },
+    {
+      "id": 34157052456,
+      "name": "Phase 1 quality gates",
+      "conclusion": "success"
+    }
+  ]
+}
