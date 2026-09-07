@@ -11,3 +11,11 @@
 # Review trigger: revalidate on every Gitleaks upgrade, when the retained
 # evidence fixture changes, and by 2026-12-01.
 dfe40f67aa60cb53fbac323e8e3905c4995ef241:PROJECT_STATUS.json:generic-api-key:62
+
+# Owner: repository owner and designated security reviewer.
+# Reason/scope: these exact historical test fingerprints match argument syntax
+# passing a runtime-generated uuid4().hex idempotency key and the synthetic
+# correlation ID target-test; neither match contains a credential literal.
+# Review trigger: revalidate on every Gitleaks upgrade and by 2026-12-01.
+6dde264e865dd5fdfc8e3116a35b1661a48a68fd:tests/integration/test_virtual_targets.py:generic-api-key:290
+6dde264e865dd5fdfc8e3116a35b1661a48a68fd:tests/integration/test_virtual_targets.py:generic-api-key:298
