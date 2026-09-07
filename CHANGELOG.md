@@ -17,7 +17,8 @@ All notable project changes are recorded here. The project follows semantic vers
 - Remove remaining Debian and bundled Node package-manager tooling from all six
   runtime images while retaining package inventory for vulnerability/license scans;
   add an executable image probe to local builds and the security image matrix.
-- Corrected immutable-SHA Phase 1 revalidation is pending; Stage B is gated by
+- Close both audit findings at `99df47b6633791c3900a52f46f56d48be922a436` after all local/CI,
+  security, browser, and Compose restart gates pass; preserve the exact evidence in
   [the audit correction record](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
 
 ### Changed

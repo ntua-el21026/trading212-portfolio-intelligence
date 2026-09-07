@@ -1,14 +1,14 @@
 # Phase 1 independent audit corrections
 
-**Status:** In progress; corrected immutable-SHA acceptance is pending.
+**Status:** Complete at corrected immutable SHA `99df47b6633791c3900a52f46f56d48be922a436`.
 **Starting main SHA:** `c7b0b7090f60354f0f1f7a3dabdb0030b6f87038`
 **Previous accepted evidence:** `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`
 **Scope:** Stage A only. Phase 2 and Phase 3 remain `not_started`.
 
-The earlier evidence remains historical. It does not close the two independent
-audit findings or authorize Stage B. Both corrections, their regression suites,
-all Phase 1 local gates, and all three workflows must pass at one corrected
-immutable SHA before the Stage B transition.
+The earlier evidence remains historical. Both corrections, their regression
+suites, all Phase 1 local gates, all mandatory synthetic scenarios, and all three
+workflows passed at the corrected SHA above. Stage B is authorized to begin;
+this evidence commit contains no Phase 2 code.
 
 ## Starting inventory and baseline
 
@@ -96,7 +96,7 @@ The artifact canary scanner also inspects stored and deflated ZIP members becaus
 Playwright traces compress response content. It enforces archive, member, expanded
 byte, and member-count bounds, checks chunk boundaries, and fails closed on
 unsupported, encrypted, corrupt, nested, or oversized archives. Seventeen security
-tests cover plain and compressed artifact scanning without persisting the canary.
+tests cover plain and compressed artifact scanning without committing signed URLs.
 
 ## Working-tree verification before the correction commit
 
@@ -104,7 +104,7 @@ These results establish local readiness for the correction commit; they are not
 immutable-SHA acceptance evidence. The final repetition encountered a port conflict
 with the earlier temporary Compose acceptance stack before API-backed Playwright.
 That stack was stopped without deleting its volume; the browser and remaining
-gates were rerun. The corrected-SHA run below must still complete end to end:
+gates were rerun. A complete corrected-SHA run was still required at that point:
 
 - `make bootstrap` and `make validate`: passed, including formatting, linting,
   strict typing, generated contracts, Python/web builds, dependency audits,
@@ -139,10 +139,69 @@ sockets and starting the installed application. No Docker daemon, replacement
 system interpreter, or global Node/Python toolchain was installed. Final checks
 use the pinned uv 0.12.7, Python 3.13.15, Node 24.20.0, and pnpm 10.34.5.
 
-## Current verification boundary
+## Corrected immutable-SHA acceptance
 
-The corrected immutable SHA, its complete local rerun, and all three workflows
-remain pending. Stage B remains closed until those gates pass at that SHA.
+The following commands ran against clean `99df47b6633791c3900a52f46f56d48be922a436`.
+No implementation edits occurred during validation. `make bootstrap validate`
+completed end to end with exit 0; the working tree was clean afterward.
+
+| Gate | Observed result |
+|---|---|
+| `python3 scripts/validate_repository.py` | Passed; 62 required files and exactly ten GET capabilities |
+| `make bootstrap` | Passed with frozen locks and exact runtimes |
+| `make format-check lint typecheck` (through `validate`) | Passed, including strict mypy and generated TypeScript compilation |
+| Unit/property/contract/security targets | 371 isolated Python tests, including 33 security tests; 22 web unit tests passed |
+| PostgreSQL/Redis integration and migration targets | 73 tests passed, including prior-head/empty/repeated upgrades and ORM drift |
+| `make test-coverage` (through `validate`) | Combined branch-aware coverage 85% |
+| `make test-e2e` (through `validate`) | 32 synthetic and six API-backed Playwright tests passed, retries disabled |
+| `make docs-check security-check` (through `validate`) | Documentation, Semgrep, source secrets, pip-audit and production pnpm audit passed |
+| `make build container-build` (through `validate`) | Python/web distributions and all six hardened runtime images passed |
+| `make generated-check` | No OpenAPI/TypeScript contract drift |
+| Export artifact CLI with nine required paths | Contracts, fixtures, web bundles/traces and browser artifacts passed |
+| Gitleaks 8.30.1 history to corrected SHA | Exit 0; no leaks; scanner processed 66 commits from 67 reachable commits |
+| Trivy 0.74.0 immutable source archive | Filesystem/configuration/secret/license policy passed |
+| Trivy 0.74.0 six immutable runtime IDs | Every image passed vulnerability/secret policy |
+| Isolated Compose acceptance | Migration, seed/replay, URL rotation, authenticated parity, worker recovery and full restart passed |
+
+Trivy scan conclusions use the committed policy: HIGH/CRITICAL and
+`--ignore-unfixed` where configured. Source license scanning mirrors a clean CI
+checkout; it does not claim complete installed-node-package license inventory.
+Lower-severity and unfixed vulnerabilities are outside that pass claim.
+
+### Exact-SHA GitHub Actions
+
+- [Quality run 34121465069](https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34121465069): successful, attempt 2.
+- [Security run 34121465107](https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34121465107): successful, attempt 1.
+- [Documentation run 34121465071](https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34121465071): successful, attempt 1.
+
+Quality attempt 1 failed only because its browser runner could not resolve
+`github.com` during checkout. Retrying that failed job at the same SHA succeeded;
+no source change or test suppression was needed.
+
+### Runtime and scenario evidence
+
+The [machine-readable runtime evidence](evidence/phase-1-audit-99df47b.json)
+records image IDs, synthetic counts, source SHA, canary scan counts, and the
+observed stop/restart states. All 14 Phase 1 scenario requirements retain their
+existing executable test references in the scenario ledger and passed again.
+
+For scenario 14b, run `b9cec93b-0c0a-4dda-bf36-2c8c3ebbcf12` had one confirmed
+publication, queue depth one while its worker was stopped, and one consumer
+attempt after recovery; idempotent replay returned the same run. For 14c, all
+seven services were observed exited before restart. The same PostgreSQL volume,
+all recorded counts, and canonical summary hash
+`07f13e364c3a43f1c517f30823a485f027047c4d8044604ced039d6d80056104`
+were preserved. API, MCP and authenticated rendered web agreed on
+`248431.27 EUR`; all nine MCP tools remained registered.
+
+The runtime canary was absent from 41,822 application files, five logs, 121 rows
+across all 31 tables, API/MCP/rendered-web artifacts, and metrics. The export
+rotation created one safe semantic revision without duplicate economic activity.
+Application UIDs were 10001; PostgreSQL/Redis UIDs were 999. All six images lacked
+package managers; application root filesystems were read-only with all
+capabilities dropped and `no-new-privileges`.
+
+## Remaining external boundary
 
 The four existing external provider/deployment conditions remain unchanged. No
 Demo/Live connectivity, production identity/deployment, public MCP registration,

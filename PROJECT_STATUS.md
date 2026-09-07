@@ -8,14 +8,15 @@
 
 **Updated:** 2026-09-07
 
-## Active assignment: Phase 1 audit corrections
+## Current state
 
-Stage A is **in progress** from `c7b0b7090f60354f0f1f7a3dabdb0030b6f87038`.
-F-01 hard collection capacity and F-02 export URL minimization are implemented;
-the complete corrected-SHA revalidation is pending. The evidence below is the
-previous accepted baseline, not acceptance of the audit corrections. Phase 2 may
-start only after every Stage A gate passes; Phase 3 remains `not_started`.
-See [the active audit record](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
+Stage A is **complete** at `99df47b6633791c3900a52f46f56d48be922a436`. F-01 and F-02 are closed;
+all 24 locally executable acceptance rows and 14 mandatory synthetic scenarios,
+all three workflows, all local gates, and the fresh Compose acceptance passed.
+Python verification: 371 isolated plus 73 service-backed tests and 85% coverage.
+Migration head: `20260907_0008`; MCP: nine tools; Trading 212: ten GET capabilities.
+Phase 2 design closure is next. Phase 2 and Phase 3 remain `not_started` in this
+evidence commit. See [the audit record](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
 
 ## Previously accepted baseline
 
@@ -53,8 +54,7 @@ than fabricated.
 
 ## Next action
 
-First finish the audit corrections and exact-SHA Phase 1 revalidation, then
-continue the authorized Phase 2 implementation. Preserve these separate external
+Continue the authorized Phase 2 design closure and P2-01 through P2-10 implementation. Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo

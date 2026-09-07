@@ -1,9 +1,10 @@
 # Phase 1 Mandatory Scenario Evidence
 
-**Active audit, 2026-09-07:** The ledger below is retained historical evidence.
-Both audit corrections and all mandatory scenarios must be revalidated at one
-new immutable SHA before Stage B. The active record is
-[Phase 1 audit corrections](PHASE_1_AUDIT_CORRECTIONS.md).
+**Corrected scenario acceptance:** All 14 mandatory scenarios passed again at
+`99df47b6633791c3900a52f46f56d48be922a436`, including worker recovery 14b and full stop/restart
+14c. The [audit record](PHASE_1_AUDIT_CORRECTIONS.md) provides the new command
+results and [runtime observations](evidence/phase-1-audit-99df47b.json).
+The original ledger below preserves its historical SHA and executable test nodes.
 
 **Authority:** `docs/implementation/PHASE_1_EXECUTION_MANIFEST.md`
 **Validated implementation SHA:** `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`

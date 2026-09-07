@@ -1,10 +1,9 @@
 # Phase 1 Acceptance Matrix
 
-**Active audit, 2026-09-07:** This matrix retains historical acceptance at the SHA
-below. F-01 reopens hard-capacity evidence for P1-DATA-003/P1-API-001/P1-MCP-001;
-F-02 reopens retention evidence for P1-SEC-001/P1-DATA-001/P1-OPS-002. Stage B is
-blocked until all corrected-SHA gates pass. Current evidence is in
-[Phase 1 audit corrections](PHASE_1_AUDIT_CORRECTIONS.md).
+**Corrected acceptance:** All 24 local rows, F-01 and F-02, and all 14 mandatory
+scenarios passed at `99df47b6633791c3900a52f46f56d48be922a436`. Stage B may begin.
+See [the audit record](PHASE_1_AUDIT_CORRECTIONS.md) for exact local and CI evidence.
+The table below retains its original accepted baseline for provenance.
 
 **Status:** Complete at validated implementation SHA `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`
 

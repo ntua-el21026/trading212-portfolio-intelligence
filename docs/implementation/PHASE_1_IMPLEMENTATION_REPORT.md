@@ -1,11 +1,12 @@
 # Phase 1 Trusted Foundation Implementation Report
 
-**Active audit, 2026-09-07:** F-01 now applies hard owner member quotas to every
-traversal with bounded source consumption and savepoint rollback. F-02 selects
-non-downloadable export metadata before fingerprinting/retention and adds legacy
-cleanup migration `20260907_0008`. Full corrected-SHA validation is pending; the
-report below remains the previous accepted evidence. See
-[the audit correction record](PHASE_1_AUDIT_CORRECTIONS.md).
+**Corrected acceptance:** `99df47b6633791c3900a52f46f56d48be922a436` closes F-01/F-02
+with hard traversal quotas, selected export metadata, migration `20260907_0008`,
+444 Python tests, 85% coverage, all browser gates, six hardened image scans,
+Compose restart/canary evidence, and three green workflows.
+See [the corrected audit record](PHASE_1_AUDIT_CORRECTIONS.md).
+
+## Historical accepted baseline
 
 **Release target:** `0.1.0`
 **Implementation authority:** `main`

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-07T12:14:20Z",
+  "updated_at": "2026-09-07T12:30:00Z",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -32,9 +32,63 @@
       },
       "implementation_branch": "main",
       "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-      "release_candidate_sha": "e13916eca34d8e3be1ed130248d6c3d1ed7e3869",
+      "release_candidate_sha": "99df47b6633791c3900a52f46f56d48be922a436",
       "release_candidate_relationship": "validated_evidence_sha_is_ancestor_of_main",
       "acceptance": {
+        "status": "complete",
+        "locally_executable_rows_total": 24,
+        "locally_executable_rows_complete": 24,
+        "locally_executable_rows_implemented_pending_validation": 0,
+        "external_conditions_total": 4,
+        "external_rows_blocked_external": 3,
+        "external_rows_unavailable_explicit": 1,
+        "external_rows_reporting_complete": 1,
+        "mandatory_scenarios_total": 14,
+        "mandatory_scenarios_with_complete_release_evidence": 14,
+        "mandatory_scenarios_partial": 0,
+        "partial_scenario_ids": [],
+        "release_evidence_sha": "99df47b6633791c3900a52f46f56d48be922a436",
+        "scenario_8_evidence_boundary": "synthetic_pass_real_provider_opening_history_unavailable",
+        "scenario_14_api_commit_before_publication_recovery": "passed",
+        "scenario_14_worker_restart_after_publication": "passed",
+        "scenario_14_full_stack_state_retention": "passed",
+        "compose_runtime": "passed",
+        "hardened_runtime_nonroot_probe": "passed",
+        "trivy_image_matrix": "passed",
+        "trivy_filesystem_config_license": "passed",
+        "gitleaks_complete_history": "passed",
+        "semgrep_sast": "passed",
+        "complete_make_validate": "passed",
+        "release_sha_gate": "passed",
+        "pushed_sha_ci_security": "passed",
+        "python_coverage_percent": 85,
+        "isolated_python_tests_passed": 371,
+        "migration_and_integration_tests_passed": 73,
+        "web_unit_tests_passed": 22,
+        "synthetic_playwright_tests_passed": 32,
+        "api_backed_playwright_tests_passed": 6,
+        "alembic_head": "20260907_0008",
+        "mcp_tool_count": 9,
+        "security_gate": "semgrep_dependency_secret_trivy_hardened_images",
+        "github_actions": {
+          "quality": {
+            "run_id": 34121465069,
+            "attempt": 2,
+            "conclusion": "success"
+          },
+          "security": {
+            "run_id": 34121465107,
+            "attempt": 1,
+            "conclusion": "success"
+          },
+          "documentation": {
+            "run_id": 34121465071,
+            "attempt": 1,
+            "conclusion": "success"
+          }
+        }
+      },
+      "historical_acceptance": {
         "status": "complete",
         "locally_executable_rows_total": 24,
         "locally_executable_rows_complete": 24,
@@ -98,16 +152,33 @@
   "release_readiness": "blocked_external",
   "audit_remediation": {
     "stage": "A",
-    "status": "in_progress",
+    "status": "complete",
     "starting_sha": "c7b0b7090f60354f0f1f7a3dabdb0030b6f87038",
     "previous_accepted_evidence_sha": "e13916eca34d8e3be1ed130248d6c3d1ed7e3869",
-    "corrected_evidence_sha": null,
+    "corrected_evidence_sha": "99df47b6633791c3900a52f46f56d48be922a436",
     "findings": {
-      "F-01": "implemented_unverified",
-      "F-02": "implemented_unverified"
+      "F-01": "complete",
+      "F-02": "complete"
     },
-    "all_phase_1_gates_at_corrected_sha": "pending",
-    "stage_b_allowed": false,
-    "evidence": "docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md"
+    "all_phase_1_gates_at_corrected_sha": "passed",
+    "stage_b_allowed": true,
+    "evidence": "docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md",
+    "github_actions": {
+      "quality": {
+        "run_id": 34121465069,
+        "attempt": 2,
+        "conclusion": "success"
+      },
+      "security": {
+        "run_id": 34121465107,
+        "attempt": 1,
+        "conclusion": "success"
+      },
+      "documentation": {
+        "run_id": 34121465071,
+        "attempt": 1,
+        "conclusion": "success"
+      }
+    }
   }
 }

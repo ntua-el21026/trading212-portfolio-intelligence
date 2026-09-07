@@ -1,0 +1,284 @@
+{
+  "after-restart": {
+    "canonical_summary_sha256": "07f13e364c3a43f1c517f30823a485f027047c4d8044604ced039d6d80056104",
+    "counts": {
+      "cash_balance_observations": 1,
+      "cash_flows": 1,
+      "dividends": 1,
+      "ingestion_runs": 4,
+      "ledger_entries": 3,
+      "order_observations": 2,
+      "portfolio_snapshots": 4,
+      "position_observations": 1,
+      "source_record_occurrences": 40,
+      "source_records": 12,
+      "transactions": 2
+    },
+    "currency": "EUR",
+    "mcp_tools": 9,
+    "total_value": "248431.27"
+  },
+  "all_local_gates": "passed",
+  "before-restart": {
+    "canonical_summary_sha256": "07f13e364c3a43f1c517f30823a485f027047c4d8044604ced039d6d80056104",
+    "counts": {
+      "cash_balance_observations": 1,
+      "cash_flows": 1,
+      "dividends": 1,
+      "ingestion_runs": 4,
+      "ledger_entries": 3,
+      "order_observations": 2,
+      "portfolio_snapshots": 4,
+      "position_observations": 1,
+      "source_record_occurrences": 40,
+      "source_records": 12,
+      "transactions": 2
+    },
+    "currency": "EUR",
+    "mcp_tools": 9,
+    "total_value": "248431.27"
+  },
+  "canary_scans": {
+    "application_filesystem_files": {
+      "api": 9567,
+      "dispatcher": 9505,
+      "mcp": 8161,
+      "web": 5084,
+      "worker": 9505
+    },
+    "application_logs": 5,
+    "database_rows": 121,
+    "database_tables": 31,
+    "export_url_components_absent": true,
+    "metrics_ready": 1,
+    "pending_events": 0,
+    "runtime_secret_absent": true,
+    "undeliverable_runs": 0
+  },
+  "export_canary": {
+    "downloadAvailable": true,
+    "economic_counts_unchanged": true,
+    "provider_requests": 2,
+    "safe_source_revisions": 1,
+    "transport": "httpx.MockTransport only; no network",
+    "url_rotation_unchanged": true
+  },
+  "github_actions": {
+    "documentation": {
+      "attempt": 1,
+      "conclusion": "success",
+      "run_id": 34121465071
+    },
+    "quality": {
+      "attempt": 2,
+      "conclusion": "success",
+      "run_id": 34121465069
+    },
+    "security": {
+      "attempt": 1,
+      "conclusion": "success",
+      "run_id": 34121465107
+    }
+  },
+  "initial-parity": {
+    "canonical_summary_sha256": "ab80b3f8d7a4c65105d179950286c3613b06b424e218b395859e2879e49292af",
+    "counts": {
+      "cash_balance_observations": 1,
+      "cash_flows": 1,
+      "dividends": 1,
+      "ingestion_runs": 3,
+      "ledger_entries": 3,
+      "order_observations": 2,
+      "portfolio_snapshots": 3,
+      "position_observations": 1,
+      "source_record_occurrences": 30,
+      "source_records": 11,
+      "transactions": 2
+    },
+    "currency": "EUR",
+    "mcp_tools": 9,
+    "total_value": "248431.27"
+  },
+  "repeat_seed_counts": {
+    "cash_balance_observations": 1,
+    "cash_flows": 1,
+    "dividends": 1,
+    "ingestion_runs": 1,
+    "ledger_entries": 3,
+    "order_observations": 2,
+    "portfolio_snapshots": 1,
+    "position_observations": 1,
+    "source_record_occurrences": 10,
+    "source_records": 10,
+    "transactions": 2
+  },
+  "runtime_hardening": {
+    "api": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:86ecf2300c9e6f1878678e4aa4dfba7b68c3af06d3fae2fe84d175fc601fdaa1",
+      "package_manager_paths": [],
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    },
+    "dispatcher": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:5f490aa8305451821c1e3abec32db65452b8a6361dc4a383618895119397df31",
+      "package_manager_paths": [],
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    },
+    "mcp": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:4aac380fbe7c9e955b712ae30f7c1ec0a7279ed27e4518d1d31e5fccf875020c",
+      "package_manager_paths": [],
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    },
+    "postgres": {
+      "cap_drop": null,
+      "configured_user": "postgres",
+      "image_id": "sha256:32f0a0c1f1866222f0fe4498a2fbaddba1b6e7cebee2854730ac0d4b4f9fdffb",
+      "package_manager_paths": [],
+      "readonly_rootfs": false,
+      "security_opt": null,
+      "uid": 999
+    },
+    "redis": {
+      "cap_drop": null,
+      "configured_user": "redis",
+      "image_id": "sha256:ebf6c8a74d32cf0b27c00082412bd1e9f653b21fc9b37cf22736d79e32fb8e07",
+      "package_manager_paths": [],
+      "readonly_rootfs": false,
+      "security_opt": null,
+      "uid": 999
+    },
+    "web": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:b4b854023cfbed81f45a4b6cad82f5d55031ec17efd213e49dc548adbfd7374f",
+      "package_manager_paths": [],
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    },
+    "worker": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "configured_user": "app",
+      "image_id": "sha256:5f490aa8305451821c1e3abec32db65452b8a6361dc4a383618895119397df31",
+      "package_manager_paths": [],
+      "readonly_rootfs": true,
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "uid": 10001
+    }
+  },
+  "scenario_14b": {
+    "after_counts": {
+      "cash_balance_observations": 1,
+      "cash_flows": 1,
+      "dividends": 1,
+      "ingestion_runs": 4,
+      "ledger_entries": 3,
+      "order_observations": 2,
+      "portfolio_snapshots": 4,
+      "position_observations": 1,
+      "source_record_occurrences": 40,
+      "source_records": 12,
+      "transactions": 2
+    },
+    "before_counts": {
+      "cash_balance_observations": 1,
+      "cash_flows": 1,
+      "dividends": 1,
+      "ingestion_runs": 3,
+      "ledger_entries": 3,
+      "order_observations": 2,
+      "portfolio_snapshots": 3,
+      "position_observations": 1,
+      "source_record_occurrences": 30,
+      "source_records": 11,
+      "transactions": 2
+    },
+    "confirmed_published_attempts": 1,
+    "consumer_attempts_after_recovery": 1,
+    "queue_depth_while_stopped": 1,
+    "run_id": "b9cec93b-0c0a-4dda-bf36-2c8c3ebbcf12",
+    "same_run_on_idempotent_replay": true
+  },
+  "scenario_14c": {
+    "same_canonical_counts": true,
+    "same_summary_sha256": true,
+    "services_restarted": [
+      "postgres",
+      "redis",
+      "api",
+      "worker",
+      "dispatcher",
+      "mcp",
+      "web"
+    ],
+    "volume_retained": true
+  },
+  "scenario_14c_all_stopped": {
+    "api": "exited",
+    "dispatcher": "exited",
+    "mcp": "exited",
+    "postgres": "exited",
+    "redis": "exited",
+    "web": "exited",
+    "worker": "exited"
+  },
+  "scenario_14c_volume_identity": [
+    "t212pi_stage_a_exact_runtime_20260907_postgres-data"
+  ],
+  "source": {
+    "clean_checkout": true,
+    "head": "99df47b6633791c3900a52f46f56d48be922a436",
+    "observed_at": "2026-09-07T12:26:53.659270+00:00",
+    "pinned_image_ids": {
+      "api": "sha256:86ecf2300c9e6f1878678e4aa4dfba7b68c3af06d3fae2fe84d175fc601fdaa1",
+      "mcp": "sha256:4aac380fbe7c9e955b712ae30f7c1ec0a7279ed27e4518d1d31e5fccf875020c",
+      "postgres": "sha256:32f0a0c1f1866222f0fe4498a2fbaddba1b6e7cebee2854730ac0d4b4f9fdffb",
+      "redis": "sha256:ebf6c8a74d32cf0b27c00082412bd1e9f653b21fc9b37cf22736d79e32fb8e07",
+      "web": "sha256:b4b854023cfbed81f45a4b6cad82f5d55031ec17efd213e49dc548adbfd7374f",
+      "worker": "sha256:5f490aa8305451821c1e3abec32db65452b8a6361dc4a383618895119397df31"
+    },
+    "project": "t212pi_stage_a_exact_runtime_20260907"
+  },
+  "trading212_get_capabilities": 10,
+  "validation_counts": {
+    "alembic_head": "20260907_0008",
+    "api_backed_playwright_tests_passed": 6,
+    "isolated_python_tests_passed": 371,
+    "mcp_tool_count": 9,
+    "migration_and_integration_tests_passed": 73,
+    "python_coverage_percent": 85,
+    "synthetic_playwright_tests_passed": 32,
+    "web_unit_tests_passed": 22
+  }
+}

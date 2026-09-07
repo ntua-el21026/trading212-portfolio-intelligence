@@ -1,9 +1,14 @@
 # Phase 1 Validation Report
 
-**Active audit, 2026-09-07:** Stage A corrections are in progress. The results below
-remain historical evidence at the stated SHA; they do not close F-01/F-02 or the
-corrected-SHA gate. Current commands and limitations are recorded in
-[Phase 1 audit corrections](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
+**Corrected Phase 1 acceptance (2026-09-07):** `99df47b6633791c3900a52f46f56d48be922a436`
+passed all local gates and all three workflows: Quality `34121465069` (attempt 2),
+Security `34121465107`, Documentation `34121465071`. Python: 371 isolated plus 73
+service-backed tests, 85% branch-aware coverage; web: 22 unit, 32 synthetic browser,
+six API-backed browser tests. Head: `20260907_0008`. Both F-01/F-02 are closed.
+The [audit record](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md) contains the
+command matrix, runtime IDs, restart and canary evidence, and external limits.
+
+## Historical accepted baseline
 
 **Date:** 2026-09-02
 **Repository:** `ntua-el21026/trading212-portfolio-intelligence`
