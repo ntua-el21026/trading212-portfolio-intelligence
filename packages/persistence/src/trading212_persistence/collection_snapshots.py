@@ -38,6 +38,11 @@ _INSERT_BATCH_SIZE = 1_000
 
 
 class CollectionSnapshotResource(StrEnum):
+    PORTFOLIOS_NAME = "portfolios_name"
+    PORTFOLIOS_UPDATED = "portfolios_updated"
+    TARGET_VERSIONS = "target_versions"
+    TARGET_EVENTS = "target_events"
+    TARGET_NODES = "target_nodes"
     ACTIVITY = "activity"
     DIVIDENDS = "dividends"
     INSTRUMENTS = "instruments"
@@ -47,6 +52,11 @@ class CollectionSnapshotResource(StrEnum):
 
 
 _SORT_SPECIFICATIONS = {
+    CollectionSnapshotResource.PORTFOLIOS_NAME: "name_asc_id_asc",
+    CollectionSnapshotResource.PORTFOLIOS_UPDATED: "updated_at_desc_id_desc",
+    CollectionSnapshotResource.TARGET_VERSIONS: "version_number_desc_id_desc",
+    CollectionSnapshotResource.TARGET_EVENTS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.TARGET_NODES: "depth_first_order_key",
     CollectionSnapshotResource.ACTIVITY: "occurred_at_desc_id_desc",
     CollectionSnapshotResource.DIVIDENDS: "paid_on_desc_id_desc",
     CollectionSnapshotResource.INSTRUMENTS: (
@@ -58,6 +68,15 @@ _SORT_SPECIFICATIONS = {
     CollectionSnapshotResource.POSITIONS_WEIGHT: ("direct_weight_desc_ticker_asc_listing_id_asc"),
     CollectionSnapshotResource.POSITIONS_TICKER: "ticker_asc_listing_id_asc",
 }
+_OPTIONAL_ACCOUNT_RESOURCES = frozenset(
+    {
+        CollectionSnapshotResource.PORTFOLIOS_NAME,
+        CollectionSnapshotResource.PORTFOLIOS_UPDATED,
+        CollectionSnapshotResource.TARGET_VERSIONS,
+        CollectionSnapshotResource.TARGET_EVENTS,
+        CollectionSnapshotResource.TARGET_NODES,
+    }
+)
 _ACCOUNT_RESOURCES = frozenset(
     {
         CollectionSnapshotResource.ACTIVITY,
@@ -96,7 +115,9 @@ class CollectionSnapshotDefinition:
         if self.broker_account_id is not None and not isinstance(self.broker_account_id, UUID):
             raise ValueError("broker_account_id must be a UUID")
         requires_account = self.resource in _ACCOUNT_RESOURCES
-        if requires_account != (self.broker_account_id is not None):
+        if self.resource not in _OPTIONAL_ACCOUNT_RESOURCES and requires_account != (
+            self.broker_account_id is not None
+        ):
             raise ValueError("collection snapshot account scope does not match resource")
         if _FILTER_FINGERPRINT.fullmatch(self.filter_fingerprint) is None:
             raise ValueError("filter_fingerprint must be a lowercase SHA-256 digest")

@@ -76,7 +76,11 @@ def exact_decimal(value: Decimal | int | str, *, field: str = "value") -> Decima
     fractional_digits = max(-exponent, 0)
     integer_digits = max(len(digits) + exponent, 0)
     precision = max(integer_digits + fractional_digits, 1)
-    if fractional_digits > MAX_SCALE or precision > MAX_PRECISION:
+    if (
+        fractional_digits > MAX_SCALE
+        or integer_digits > MAX_PRECISION - MAX_SCALE
+        or precision > MAX_PRECISION
+    ):
         fail_validation(
             f"{field} exceeds NUMERIC({MAX_PRECISION},{MAX_SCALE})",
             field=field,

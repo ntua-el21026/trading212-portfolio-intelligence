@@ -12,7 +12,11 @@ import type { ReactNode } from "react";
 import type { AccountSummaryResponse } from "../lib/contracts";
 import { formatDateTime } from "../lib/format";
 import type { WebAccess } from "../lib/auth";
-import { DesktopNavigation, MobileNavigation } from "./navigation";
+import {
+  DesktopNavigation,
+  MobileNavigation,
+  MobileSectionNavigation,
+} from "./navigation";
 
 export function AppShell({
   access,
@@ -79,6 +83,7 @@ export function AppShell({
             Synthetic demo data · no broker request was made
           </div>
         ) : null}
+        <MobileSectionNavigation />
         {children}
       </main>
 
@@ -89,7 +94,7 @@ export function AppShell({
         <LockKeyhole aria-hidden="true" size={18} />
         <span>
           <strong>Read-only</strong>
-          No portfolio changes or trades can be made here.
+          No broker changes or trades can be made here.
         </span>
       </aside>
       <MobileNavigation />

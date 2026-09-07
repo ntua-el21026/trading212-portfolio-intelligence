@@ -8,22 +8,25 @@ import ipaddress
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
-from typing import Annotated, Any, cast
+from typing import Annotated, Any, Literal, cast
 
 from mcp.server.auth.settings import AuthSettings
 from mcp.server.mcpserver import Context, MCPServer
 from mcp.server.transport_security import TransportSecuritySettings
 from mcp.types import CallToolResult, ToolAnnotations
-from pydantic import AnyHttpUrl, Field, TypeAdapter
+from pydantic import AnyHttpUrl, Field, StrictInt, TypeAdapter
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
+from trading212_api_contracts.targets import UUIDString
 from trading212_application.services import PortfolioService, SyntheticPortfolioService
+from trading212_application.targets import TargetService
 from trading212_persistence import (
     PostgresPortfolioService,
     create_database_engine,
     create_session_factory,
 )
+from trading212_persistence.target_service import PostgresTargetService
 from trading212_security.principals import Scope as PortfolioScope
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 from trading212_security.tokens import BearerAuthenticator
@@ -43,8 +46,10 @@ from .schemas import (
     SnapshotComparisonResult,
     TransactionsResult,
 )
-from .sdk_compat import finalize_tool_contract
+from .sdk_compat import finalize_tool_contract, harden_target_arguments
 from .settings import McpSettings
+from .target_gateway import TargetMcpGateway
+from .target_schemas import VirtualPieResult, VirtualPiesResult
 from .widget import SNAPSHOT_WIDGET_HTML, SNAPSHOT_WIDGET_MIME, SNAPSHOT_WIDGET_URI
 
 FROZEN_TOOL_NAMES = (
@@ -57,6 +62,8 @@ FROZEN_TOOL_NAMES = (
     "compare_portfolio_snapshots",
     "get_reconciliation_status",
     "get_data_quality_summary",
+    "list_virtual_pies",
+    "get_virtual_pie",
 )
 
 AccountId = Annotated[
@@ -85,6 +92,7 @@ class McpRuntime:
     security_settings: SecuritySettings
     mcp_settings: McpSettings
     access_control_configured: bool
+    target_service: TargetService | None = None
 
     def asgi_app(self) -> ASGIApp:
         transport_security = TransportSecuritySettings(
@@ -110,6 +118,7 @@ def create_runtime(
     security_settings: SecuritySettings | None = None,
     mcp_settings: McpSettings | None = None,
     service: PortfolioService | None = None,
+    target_service: TargetService | None = None,
     database_url: str | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -148,6 +157,13 @@ def create_runtime(
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
             cursor_ttl_seconds=security.cursor_ttl_seconds,
         )
+        if target_service is None:
+            target_service = PostgresTargetService(
+                sessions=create_session_factory(engine),
+                clock=runtime_clock,
+                cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+                cursor_ttl_seconds=security.cursor_ttl_seconds,
+            )
 
         async def database_readiness() -> bool:
             def probe() -> bool:
@@ -195,7 +211,7 @@ def create_runtime(
     server = MCPServer(
         name="trading212-portfolio-intelligence",
         title="Trading 212 Portfolio Intelligence",
-        description="Private read-only canonical portfolio observations and Phase 1 analytics.",
+        description="Private portfolio observations, canonical analytics, and virtual targets.",
         instructions=(
             "Use these tools only to read the authenticated user's canonical portfolio. "
             "Values are observations or deterministic analytics, never trade instructions; "
@@ -214,12 +230,21 @@ def create_runtime(
     )
     _register_widget(server, widget_domain=transport.widget_domain)
     _register_tools(server, gateway)
+    _register_target_tools(
+        server,
+        TargetMcpGateway(
+            service=target_service,
+            principals=principal_resolver,
+            clock=runtime_clock,
+        ),
+    )
     return McpRuntime(
         server=server,
         service=portfolio_service,
         security_settings=security,
         mcp_settings=transport,
         access_control_configured=access_control_configured,
+        target_service=target_service,
     )
 
 
@@ -579,6 +604,92 @@ def _register_tools(server: MCPServer[Any], gateway: PortfolioMcpGateway) -> Non
     finalize_tool_contract(
         server, name="get_data_quality_summary", output_model=DataQualitySummaryResult
     )
+
+
+def _register_target_tools(server: MCPServer[Any], gateway: TargetMcpGateway) -> None:
+    annotations = ToolAnnotations(
+        read_only_hint=True,
+        destructive_hint=False,
+        idempotent_hint=True,
+        open_world_hint=False,
+    )
+
+    @server.tool(
+        name="list_virtual_pies",
+        title="List virtual portfolios",
+        description=(
+            "Read an authorized bounded page of virtual portfolio configuration. "
+            "An explicit null account selects private templates. No broker mutation."
+        ),
+        annotations=annotations,
+        meta=_tool_meta(
+            (PortfolioScope.PORTFOLIO_READ, PortfolioScope.TARGETS_READ),
+            invoking="Reading virtual portfolios",
+            invoked="Virtual portfolios ready",
+        ),
+        structured_output=False,
+    )
+    async def list_virtual_pies(
+        account_id: UUIDString | None,
+        context: Context[Any, Any],
+        cursor: Cursor | None = None,
+        limit: Annotated[StrictInt, Field(ge=1, le=100)] = 25,
+        state: Literal["draft", "active", "archived", "all"] = "active",
+        search: Annotated[str | None, Field(max_length=80)] = None,
+        sort: Literal["name_asc", "updated_desc"] = "name_asc",
+    ) -> CallToolResult:
+        return await gateway.list_virtual_pies(
+            account_id,
+            cursor=cursor,
+            limit=limit,
+            state=state,
+            search=search,
+            sort=sort,
+            context=context,
+        )
+
+    finalize_tool_contract(server, name="list_virtual_pies", output_model=VirtualPiesResult)
+
+    @server.tool(
+        name="get_virtual_pie",
+        title="Read virtual portfolio targets",
+        description=(
+            "Read one authorized virtual portfolio and its selected target version, "
+            "with bounded hierarchy, validation, and unresolved mapping states. "
+            "An omitted version selects the current active version; no broker action."
+        ),
+        annotations=annotations,
+        meta=_tool_meta(
+            (PortfolioScope.PORTFOLIO_READ, PortfolioScope.TARGETS_READ),
+            invoking="Reading virtual targets",
+            invoked="Virtual targets ready",
+        ),
+        structured_output=False,
+    )
+    async def get_virtual_pie(
+        account_id: UUIDString | None,
+        virtual_portfolio_id: UUIDString,
+        context: Context[Any, Any],
+        target_version_id: UUIDString | None = None,
+        parent_node_id: UUIDString | None = None,
+        cursor: Cursor | None = None,
+        limit: Annotated[StrictInt, Field(ge=1, le=100)] = 25,
+    ) -> CallToolResult:
+        return await gateway.get_virtual_pie(
+            account_id,
+            virtual_portfolio_id,
+            target_version_id=target_version_id,
+            parent_node_id=parent_node_id,
+            cursor=cursor,
+            limit=limit,
+            context=context,
+        )
+
+    finalize_tool_contract(server, name="get_virtual_pie", output_model=VirtualPieResult)
+    # Apply strict/no-input-echo validation only to new tools; the nine existing
+    # descriptor schemas and argument behavior retain their Phase 1 contract.
+    for name in ("list_virtual_pies", "get_virtual_pie"):
+        harden_target_arguments(server, name=name)
 
 
 def _tool_meta(

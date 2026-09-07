@@ -14,6 +14,8 @@ class Scope(StrEnum):
     ACTIVITY_READ = "activity:read"
     PORTFOLIO_REFRESH = "portfolio:refresh"
     CONFIGURATION_READ = "configuration:read"
+    TARGETS_READ = "targets:read"
+    TARGETS_WRITE = "targets:write"
 
 
 class AuthenticationError(RuntimeError):

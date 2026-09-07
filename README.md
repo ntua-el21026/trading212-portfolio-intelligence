@@ -49,7 +49,7 @@ API, web, workers, reports, and MCP tools share the same canonical domain, autho
 | Phase | Release | Outcome | Status |
 |---|---:|---|---|
 | 1. Trusted Foundation | `0.1.0` | Monorepo, domain/persistence, GET-only Trading 212 ingestion, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, CI and operations | Implementation complete; 24 local acceptance rows complete; external gates remain |
-| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | Not started |
+| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 acceptance pending |
 | 3. Premium Intelligence & Productization | `1.0.0` | Advanced risk/scenarios/projections/goals, research cockpit, rich ChatGPT UI, PWA polish, premium providers and production hardening | Not started |
 
 ## Phase 1 technical baseline
@@ -78,6 +78,11 @@ make build
 ```
 
 Start only pinned PostgreSQL 18.6 and non-authoritative Redis 8.10.1 with `make run-dependencies`, or build, migrate, seed, and start the complete container stack with `make run-local`. PostgreSQL remains the sole authoritative financial system of record. `make dev` migrates/seeds the local database and starts the API/web host processes with loopback synthetic authentication. See the [P1-01 dependency baseline](docs/implementation/P1_01_DEPENDENCY_BASELINE.md) for registry evidence and exact pins and the [Phase 1 operations runbook](docs/operations/LOCAL_AND_DEPLOYMENT.md) for deployment, recovery, and health procedures.
+
+The connected local `/pies` route now supports private hierarchical targets,
+validation, immutable publication and version comparison. See the
+[P2-01 implementation and recovery notes](docs/implementation/P2_01_VIRTUAL_TARGETS.md).
+These are internal application targets; Trading 212 remains strictly read-only.
 
 ## Documentation entry point
 

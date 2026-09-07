@@ -53,7 +53,9 @@ from trading212_application.services import (
     PortfolioService,
     RefreshUnavailableError,
 )
+from trading212_application.targets import TargetService, TargetServiceError
 from trading212_application.views import Page
+from trading212_domain.errors import DomainError
 from trading212_observability import (
     AuthenticationMethod,
     OperationalMetrics,
@@ -74,6 +76,7 @@ from trading212_persistence import (
     create_session_factory,
     refresh_dispatcher_is_ready,
 )
+from trading212_persistence.target_service import PostgresTargetService
 from trading212_security.principals import (
     AuthenticationError,
     AuthorizationError,
@@ -112,6 +115,7 @@ from .schemas import (
     SnapshotDetailResponse,
     SnapshotResponse,
 )
+from .target_routes import register_target_routes
 
 SESSION_COOKIE = "t212pi_session"
 CORRELATION_HEADER = "X-Correlation-ID"
@@ -134,6 +138,7 @@ async def _ready() -> bool:
 class ApiContext:
     settings: SecuritySettings
     service: PortfolioService
+    target_service: TargetService | None
     sessions: SessionManager
     local_authenticator: LocalSyntheticAuthenticator | None
     bearer_authenticator: BearerAuthenticator | None
@@ -147,6 +152,7 @@ def create_app(
     *,
     settings: SecuritySettings | None = None,
     service: PortfolioService | None = None,
+    target_service: TargetService | None = None,
     session_manager: SessionManager | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -171,11 +177,12 @@ def create_app(
             "bearer authenticator, and dispatcher-aware readiness probe"
         )
     if service is None:
-        portfolio_service, default_readiness = _local_runtime_defaults(
+        portfolio_service, default_targets, default_readiness = _local_runtime_defaults(
             security_settings,
             runtime_clock,
             cursor_signing_key=cursor_signing_key,
         )
+        target_service = target_service or default_targets
     else:
         portfolio_service = service
         default_readiness = _ready
@@ -192,6 +199,7 @@ def create_app(
     context = ApiContext(
         settings=security_settings,
         service=portfolio_service,
+        target_service=target_service,
         sessions=sessions,
         local_authenticator=local_authenticator,
         bearer_authenticator=bearer_authenticator,
@@ -218,18 +226,22 @@ def create_app(
             CORSMiddleware,
             allow_origins=list(security_settings.allowed_origins),
             allow_credentials=True,
-            allow_methods=["GET", "POST"],
+            allow_methods=["GET", "POST", "PATCH"],
             allow_headers=[
                 "Authorization",
                 "Content-Type",
                 CORRELATION_HEADER,
                 "X-CSRF-Token",
                 "X-Idempotency-Key",
+                "If-Match",
+                "If-None-Match",
             ],
+            expose_headers=["ETag", CORRELATION_HEADER],
         )
     _register_error_handlers(application)
     _register_middleware(application)
     _register_routes(application)
+    register_target_routes(application, _principal, _context)
     _install_openapi_contract(application)
     return application
 
@@ -239,7 +251,7 @@ def _local_runtime_defaults(
     clock: Callable[[], datetime],
     *,
     cursor_signing_key: bytes | None,
-) -> tuple[PortfolioService, Callable[[], Awaitable[bool]]]:
+) -> tuple[PortfolioService, TargetService, Callable[[], Awaitable[bool]]]:
     database_url = os.environ.get("DATABASE_URL")
     if database_url is None:
         database_url = _LOCAL_DATABASE_URL
@@ -270,6 +282,12 @@ def _local_runtime_defaults(
             sessions=sessions,
             clock=clock,
             refresh_queue=queue,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=settings.cursor_ttl_seconds,
+        ),
+        PostgresTargetService(
+            sessions=sessions,
+            clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
             cursor_ttl_seconds=settings.cursor_ttl_seconds,
         ),
@@ -424,7 +442,7 @@ def _register_middleware(application: FastAPI) -> None:
             response = await call_next(request)
             outcome = "success" if response.status_code < 500 else "error"
             response.headers[CORRELATION_HEADER] = correlation_id
-            response.headers["Cache-Control"] = "no-store"
+            response.headers.setdefault("Cache-Control", "no-store")
             response.headers["X-Content-Type-Options"] = "nosniff"
             response.headers["Referrer-Policy"] = "no-referrer"
             return response
@@ -524,6 +542,43 @@ def _register_error_handlers(application: FastAPI) -> None:
     async def validation_error(request: Request, _: ValueError) -> JSONResponse:
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            content=envelope(request, "VALIDATION_FAILED", "The request is invalid."),
+        )
+
+    @application.exception_handler(TargetServiceError)
+    async def target_service_error(request: Request, exc: TargetServiceError) -> JSONResponse:
+        errors = {
+            "NOT_FOUND": (404, "The requested resource was not found."),
+            "ACCESS_DENIED": (403, "Access denied."),
+            "IDEMPOTENCY_KEY_REUSED": (409, "The idempotency key belongs to a different command."),
+            "IMMUTABLE_VERSION": (
+                409,
+                "Published target content is immutable; create a new draft.",
+            ),
+            "INVALID_STATE_TRANSITION": (409, "This target lifecycle transition is unavailable."),
+            "REVISION_MISMATCH": (412, "The revision changed. Reload before submitting again."),
+            "REVISION_REQUIRED": (428, "The current aggregate revision is required."),
+            "VALIDATION_FAILED": (422, "The target request is invalid."),
+            "TARGET_VALIDATION_FAILED": (
+                422,
+                "Validate the current target content before publishing.",
+            ),
+            "CURRENCY_MISMATCH": (422, "The target currency does not match the account."),
+            "RESULT_TOO_LARGE": (413, "The target result exceeds its permitted size."),
+            "TARGETS_UNAVAILABLE": (503, "The target service is unavailable."),
+        }
+        code = exc.code.value
+        response_status, message = errors.get(code, (500, "The target command could not complete."))
+        return JSONResponse(
+            status_code=response_status,
+            content=envelope(request, code, message, retryable=response_status == 503),
+            headers={"Cache-Control": "private, no-store"},
+        )
+
+    @application.exception_handler(DomainError)
+    async def domain_error(request: Request, _: DomainError) -> JSONResponse:
+        return JSONResponse(
+            status_code=422,
             content=envelope(request, "VALIDATION_FAILED", "The request is invalid."),
         )
 

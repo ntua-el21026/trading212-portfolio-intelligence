@@ -1,11 +1,13 @@
-"""PostgreSQL-backed relay for the fixed ``portfolio.refresh`` task."""
+"""PostgreSQL-backed refresh relay and scheduled target activation."""
 
 from __future__ import annotations
 
 import argparse
+import asyncio
 import logging
 import os
 import re
+import secrets
 import signal
 import time
 from collections.abc import Callable, Mapping, Sequence
@@ -46,6 +48,7 @@ from trading212_persistence.refresh_semantics import (
     REFRESH_TASK_NAME,
     REFRESH_TASK_VERSION,
 )
+from trading212_persistence.target_service import PostgresTargetService
 from trading212_security.settings import RuntimeEnvironment
 
 _LOGGER = logging.getLogger("trading212_worker.outbox_dispatcher")
@@ -1346,6 +1349,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                 else 1
             )
         metrics = OperationalMetrics(service="outbox-dispatcher")
+        target_service = PostgresTargetService(
+            sessions=create_session_factory(engine),
+            clock=lambda: datetime.now(UTC),
+            # Activation does not issue cursors; this process never exposes its local key.
+            cursor_signing_key=secrets.token_bytes(32),
+        )
         dispatcher = PostgresOutboxDispatcher(
             sessions=create_session_factory(engine),
             celery=celery,
@@ -1354,6 +1363,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         if args.once:
             dispatcher.dispatch_once()
+            asyncio.run(target_service.activate_due_versions(limit=settings.batch_size))
             return 0
         stopped = Event()
 
@@ -1375,6 +1385,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             while not stopped.is_set():
                 try:
                     dispatcher.dispatch_once()
+                    asyncio.run(target_service.activate_due_versions(limit=settings.batch_size))
                 except Exception:
                     _LOGGER.error("refresh_outbox_cycle_failed")
                 stopped.wait(settings.poll_interval_seconds)

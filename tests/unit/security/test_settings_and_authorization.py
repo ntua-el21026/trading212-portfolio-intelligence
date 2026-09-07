@@ -75,6 +75,8 @@ def test_scope_registry_contains_no_execution_capability() -> None:
         "activity:read",
         "portfolio:refresh",
         "configuration:read",
+        "targets:read",
+        "targets:write",
     }
     assert all("trade" not in scope.value for scope in Scope)
 
@@ -118,3 +120,18 @@ async def test_synthetic_auth_is_local_only_and_explicit() -> None:
     principal = await LocalSyntheticAuthenticator(settings, clock=lambda: NOW).authenticate("")
     assert principal.owner_id == LOCAL_SYNTHETIC_OWNER_ID
     assert Scope.PORTFOLIO_REFRESH in principal.scopes
+    assert {Scope.TARGETS_READ, Scope.TARGETS_WRITE} <= principal.scopes
+
+
+@pytest.mark.parametrize(
+    "granted,denied",
+    [(Scope.TARGETS_WRITE, Scope.TARGETS_READ), (Scope.TARGETS_READ, Scope.TARGETS_WRITE)],
+)
+def test_target_read_and_write_scopes_are_independent(granted: Scope, denied: Scope) -> None:
+    principal = _principal(scopes=frozenset({granted}))
+    authorizer = Authorizer()
+    authorizer.require_scope(principal, granted, now=NOW)
+    with pytest.raises(AuthorizationError, match="access denied"):
+        authorizer.require_scope(principal, denied, now=NOW)
+    with pytest.raises(AuthorizationError, match="access denied"):
+        authorizer.require_scope(principal, Scope.PORTFOLIO_READ, now=NOW)

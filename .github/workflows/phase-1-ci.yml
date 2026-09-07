@@ -50,6 +50,21 @@ jobs:
           uv run python scripts/check_architecture.py
           uv run python scripts/check_trading212_boundary.py
 
+      - name: Set up pnpm for generated TypeScript contracts
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Set up Node.js for generated TypeScript contracts
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install locked formatter dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Reject generated API contract drift
         run: uv run python scripts/generate_api_contract.py --check
 

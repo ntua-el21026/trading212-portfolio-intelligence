@@ -24,6 +24,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base, CreatedAtMixin, UpdatedAtMixin, UUIDPrimaryKeyMixin
+from .target_models import TARGET_MODELS
 from .types import ExactNumeric, UTCDateTime
 
 JSON = dict[str, Any]
@@ -334,10 +335,11 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
 
     __tablename__ = "collection_query_snapshots"
     __table_args__ = (
+        UniqueConstraint("owner_id", "id", name="uq_collection_snapshots_owner_identity"),
         CheckConstraint("schema_version = 1", name="schema_version_supported"),
         CheckConstraint(
             "resource IN ('activity','dividends','instruments','positions_market_value',"
-            "'positions_weight','positions_ticker')",
+            "'positions_weight','positions_ticker','portfolios_name','portfolios_updated','target_versions','target_events','target_nodes')",
             name="resource_allowed",
         ),
         CheckConstraint(
@@ -353,13 +355,22 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "(resource = 'positions_weight' AND "
             "sort_specification = 'direct_weight_desc_ticker_asc_listing_id_asc') OR "
             "(resource = 'positions_ticker' AND "
-            "sort_specification = 'ticker_asc_listing_id_asc')",
+            "sort_specification = 'ticker_asc_listing_id_asc') OR "
+            "(resource = 'portfolios_name' AND sort_specification = 'name_asc_id_asc') OR "
+            "(resource = 'portfolios_updated' AND "
+            "sort_specification = 'updated_at_desc_id_desc') OR "
+            "(resource = 'target_versions' AND "
+            "sort_specification = 'version_number_desc_id_desc') OR "
+            "(resource = 'target_events' AND sort_specification = 'created_at_desc_id_desc') OR "
+            "(resource = 'target_nodes' AND sort_specification = 'depth_first_order_key')",
             name="resource_sort_match",
         ),
         CheckConstraint(
             "((resource IN ('activity','dividends','positions_market_value',"
             "'positions_weight','positions_ticker') AND broker_account_id IS NOT NULL) OR "
-            "(resource = 'instruments' AND broker_account_id IS NULL))",
+            "(resource = 'instruments' AND broker_account_id IS NULL) OR "
+            "resource IN ('portfolios_name','portfolios_updated','target_versions',"
+            "'target_events','target_nodes'))",
             name="account_scope_match",
         ),
         CheckConstraint(
@@ -1034,4 +1045,5 @@ ALL_MODELS = (
     ReconciliationDiscrepancyModel,
     AuditEventModel,
     CalculationRegistryModel,
+    *TARGET_MODELS,
 )

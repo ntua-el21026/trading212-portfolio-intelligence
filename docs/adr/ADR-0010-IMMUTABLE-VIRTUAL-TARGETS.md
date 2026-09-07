@@ -68,6 +68,14 @@ Archiving the active version clears current selection without falling back to a
 superseded version; a new activation is required. Archiving scheduled content
 prevents activation. Superseded/archived content cannot reactivate; clone a new
 version. Portfolio archive disables current selection and scheduled activation.
+After a scheduler outage, an overdue scheduled intent cannot replace a version
+explicitly published after that intent's effective time. When the current active
+version was published later than the candidate and at or after its effective
+time, the bounded scheduler records the candidate as superseded without an
+activation. A scheduled effective time after the active version's publication
+still activates normally. This retains the missed intent and actual knowledge
+time without undoing a newer explicit publication or processing an unbounded
+catch-up set inside a user command.
 Historical ID-based access and prior results retain their selected version;
 earlier effective times cannot backdate publication knowledge.
 

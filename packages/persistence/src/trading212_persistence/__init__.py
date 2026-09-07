@@ -29,6 +29,7 @@ from .repositories import (
     SnapshotWriteContext,
     SourceRecordRepository,
 )
+from .target_service import PostgresTargetService
 from .types import ExactNumeric, UTCDateTime
 
 __all__ = [
@@ -47,6 +48,7 @@ __all__ = [
     "CollectionSnapshotStore",
     "ExactNumeric",
     "PostgresPortfolioService",
+    "PostgresTargetService",
     "ReconciliationDiscrepancyWrite",
     "ReconciliationPersistenceResult",
     "ReconciliationRepository",

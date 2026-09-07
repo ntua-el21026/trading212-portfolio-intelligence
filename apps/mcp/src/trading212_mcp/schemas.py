@@ -8,6 +8,8 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from .target_schemas import VirtualPieResult, VirtualPiesResult
+
 DecimalString = Annotated[str, Field(pattern=r"^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$")]
 CurrencyCode = Annotated[str, Field(pattern=r"^[A-Z]{3}$")]
 OpaqueId = Annotated[str, Field(min_length=1, max_length=255, pattern=r"^[A-Za-z0-9._:-]+$")]
@@ -393,4 +395,6 @@ RESULT_MODELS = {
     "compare_portfolio_snapshots": SnapshotComparisonResult,
     "get_reconciliation_status": ReconciliationResult,
     "get_data_quality_summary": DataQualitySummaryResult,
+    "list_virtual_pies": VirtualPiesResult,
+    "get_virtual_pie": VirtualPieResult,
 }

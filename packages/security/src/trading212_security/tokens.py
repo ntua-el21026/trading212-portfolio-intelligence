@@ -105,6 +105,8 @@ class LocalSyntheticAuthenticator:
                     Scope.ACTIVITY_READ,
                     Scope.PORTFOLIO_REFRESH,
                     Scope.CONFIGURATION_READ,
+                    Scope.TARGETS_READ,
+                    Scope.TARGETS_WRITE,
                 }
             ),
             authenticated_at=now,

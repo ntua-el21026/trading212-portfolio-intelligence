@@ -23,6 +23,7 @@ const primaryItems = [
   { href: "/snapshots", icon: Clock3, label: "Snapshots" },
   { href: "/synchronization", icon: RefreshCw, label: "Synchronization" },
   { href: "/quality", icon: ShieldCheck, label: "Data quality" },
+  { href: "/pies", icon: ChartPie, label: "Pies" },
 ] as const;
 
 const secondaryItems = [
@@ -49,6 +50,7 @@ export function DesktopNavigation() {
         {primaryItems.map(({ href, icon: Icon, label }) => (
           <li key={href}>
             <Link
+              prefetch={false}
               aria-current={isCurrent(pathname, href) ? "page" : undefined}
               className="nav-link"
               href={href}
@@ -63,6 +65,7 @@ export function DesktopNavigation() {
         {secondaryItems.map(({ href, icon: Icon, label }) => (
           <li key={href}>
             <Link
+              prefetch={false}
               aria-current={isCurrent(pathname, href) ? "page" : undefined}
               className="nav-link"
               href={href}
@@ -83,6 +86,7 @@ export function MobileNavigation() {
     <nav aria-label="Primary" className="mobile-navigation">
       {mobileItems.map(({ href, icon: Icon, label }) => (
         <Link
+          prefetch={false}
           aria-current={isCurrent(pathname, href) ? "page" : undefined}
           className="mobile-nav-link"
           href={href}
@@ -93,5 +97,30 @@ export function MobileNavigation() {
         </Link>
       ))}
     </nav>
+  );
+}
+
+export function MobileSectionNavigation() {
+  const pathname = usePathname();
+  return (
+    <details className="mobile-section-navigation">
+      <summary>All sections</summary>
+      <nav aria-label="All portfolio sections">
+        {[...primaryItems, ...secondaryItems].map(({ href, label }) => (
+          <Link
+            prefetch={false}
+            key={href}
+            href={href}
+            aria-current={isCurrent(pathname, href) ? "page" : undefined}
+            onClick={(event) => {
+              const menu = event.currentTarget.closest("details");
+              if (menu) menu.open = false;
+            }}
+          >
+            {label}
+          </Link>
+        ))}
+      </nav>
+    </details>
   );
 }

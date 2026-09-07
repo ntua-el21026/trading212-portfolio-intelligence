@@ -16,7 +16,7 @@ all three workflows, all local gates, and the fresh Compose acceptance passed.
 Python verification: 371 isolated plus 73 service-backed tests and 85% coverage.
 Migration head: `20260907_0008`; MCP: nine tools; Trading 212: ten GET capabilities.
 Phase 2 design closure is accepted; implementation is `in_progress` with zero
-completed packages. P2-01 is next. Phase 3 remains `not_started`. See [the audit record](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
+completed packages. P2-01 domain, persistence, API, web, MCP, and scheduled activation are integrated; final regression and runtime gates are in progress. The working tree adds migration `20260907_0009` and two target read tools (11 tools total). Phase 3 remains `not_started`. See [the audit record](docs/implementation/PHASE_1_AUDIT_CORRECTIONS.md).
 
 ## Previously accepted baseline
 
@@ -66,8 +66,7 @@ owner/deployment conditions without substituting synthetic evidence:
    unless valid provider evidence becomes available.
 
 The accepted direct-`main` policy is the only active delivery mechanism. Frozen
-architecture and safety decisions remain unchanged. Phase 2 and Phase 3 remain
-`not_started`.
+architecture and safety decisions remain unchanged. Phase 2 is `in_progress`; Phase 3 remains `not_started`.
 
 ## Permanent boundaries
 

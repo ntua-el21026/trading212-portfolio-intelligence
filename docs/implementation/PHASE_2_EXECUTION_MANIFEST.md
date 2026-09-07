@@ -18,7 +18,7 @@ regressions. The current design closure does not claim a Phase 2 capability work
 
 | Package | Required coherent vertical capability | Completion evidence |
 |---|---|---|
-| P2-01 | Virtual portfolios, hierarchy, targets, mappings, validation, immutable publication/lifecycle and audit | Scoped PostgreSQL/API/editor/read tool tests; invalid weights, immutable versions, comparison, CSRF, concurrency |
+| P2-01 | [Virtual portfolios, hierarchy, targets, mappings, validation, immutable publication/lifecycle and audit](P2_01_VIRTUAL_TARGETS.md) | Scoped PostgreSQL/API/editor/read tool tests; invalid weights, immutable versions, comparison, CSRF, concurrency |
 | P2-02 | Actual/target drift and deterministic no-sale contribution plans in all required modes | Hand-calculated fixtures, properties, constraints/infeasibility, stored plan and API/web/MCP parity |
 | P2-03 | Typed market/FX/benchmark inputs, immutable snapshots, licensing and replay | Revision/gap/cutoff/FX tests, provider isolation and explicit configuration states |
 | P2-04 | Historical performance, benchmark, attribution, dividends and cash flows | Flow separation, period/currency alignment, reference returns and residual/coverage tests |

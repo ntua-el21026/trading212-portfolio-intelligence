@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-07T13:08:09Z",
+  "updated_at": "2026-09-07T14:25:27Z",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -133,7 +133,7 @@
       "progress_percent": 0,
       "design_closure": "accepted",
       "work_packages": {
-        "P2-01": "not_started",
+        "P2-01": "implemented_unverified",
         "P2-02": "not_started",
         "P2-03": "not_started",
         "P2-04": "not_started",
@@ -145,7 +145,7 @@
         "P2-10": "not_started"
       },
       "acceptance": {
-        "status": "pending",
+        "status": "in_progress",
         "locally_executable_rows_total": 29,
         "locally_executable_rows_complete": 0,
         "mandatory_scenarios_total": 40,

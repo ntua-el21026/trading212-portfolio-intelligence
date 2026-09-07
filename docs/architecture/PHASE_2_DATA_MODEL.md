@@ -64,7 +64,7 @@ constraints, provider responses, and rules are not untyped JSON documents.
 | `virtual_portfolios` | `broker_account_id` nullable only for a private template; name (1..120), description (0..2000), reporting currency, optimistic `revision >= 1`; owner, account association and reporting currency are fixed at creation |
 | `virtual_portfolio_events` | Portfolio FK, sequence, `created`/`metadata_updated`/`archived`, actor and time; unique portfolio/sequence; append-only lifecycle/audit record |
 | `target_versions` | Portfolio FK, sequential version number, optional parent-version FK in the same portfolio, reporting currency, effective time, draft revision, schema/method versions, optional published time and content digest; unique portfolio/version number |
-| `target_version_events` | Version FK, sequence, `draft_created`/`draft_updated`/`published`/`activated`/`superseded`/`archived`, actor, time, preceding event FK and validation-result FK when published; append-only |
+| `target_version_events` | Version FK, sequence, `draft_created`/`draft_updated`/`validated`/`published`/`activated`/`superseded`/`archived`, actor, time, preceding event FK and validation-result FK when published; append-only |
 | `target_nodes` | Version FK, stable node key retained when cloning, parent node FK within the same version, `group`/`holding`/`cash` kind, display name, sibling order, relative weight; unique version/node key and version/parent/sibling order with NULLS NOT DISTINCT for top-level parents |
 | `target_holdings` | Exactly one row per holding node; canonical instrument FK nullable only for unresolved/ambiguous state; optional `listing_id` FK selects actual-allocation scope; separate optional `preferred_listing_id` FK selects funding preference; mapping-decision FK and `resolved`/`unresolved`/`ambiguous` state; every supplied listing belongs to the mapped instrument |
 | `target_mapping_decisions` | Version and holding FKs, typed requested identifier (`isin`, provider key, or MIC+ticker), selected canonical instrument/listing when resolved, method/version, confidence, actor/source and effective time; decisions referenced by publication are immutable |
@@ -152,8 +152,10 @@ and increments must be exact multiples of it before optimization.
 Draft content changes atomically under `If-Match` and increment its draft
 revision. Publication locks the portfolio and draft, validates its complete
 content, seals a canonical digest, records publication, and appends lifecycle
-events in one transaction. A normalization result retains both input and result
-draft revisions; the latter advances only when the command changed weights.
+events in one transaction. Every new validation retains both input and result
+aggregate revisions and advances the latter once because latest-validation
+metadata changes. Normalization additionally records any changed weights;
+an exact idempotent replay does not advance the revision again.
 Publication requires that result revision and its post-normalization digest to
 match the current draft. Old validation rows retain stable keys and values even
 if later draft replacement removes the named nodes. Published nodes, mappings, weights, constraints,
@@ -163,7 +165,10 @@ ordinary application roles. Corrections clone a new draft/version. `active`,
 not edits to published content. Publishing a version already effective activates
 it in the publication transaction; a future-effective version is scheduled.
 A bounded worker scans due scheduled versions by `(effective_at, version_number,
-id)` under the same portfolio lock. Activation appends an event and supersedes
+id)` under the same portfolio lock. An overdue candidate overtaken by an active
+version published later than the candidate and at or after its effective time
+is marked superseded with an audit event and no activation; it cannot undo that
+newer explicit publication. Otherwise activation appends an event and supersedes
 the prior active version atomically. Record logical effective time and actual
 recording time separately; a delayed worker cannot backdate knowledge. Unique
 version/activation identity makes restart/retry idempotent. At most one active

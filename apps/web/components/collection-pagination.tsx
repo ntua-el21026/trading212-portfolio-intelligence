@@ -7,18 +7,20 @@ interface CollectionPaginationProps {
   preservedQuery?: Readonly<Record<string, string | undefined>>;
   returnedCount: number;
   total: number;
+  cursorParameter?: "cursor" | "events_cursor";
 }
 
 function nextPageHref(
   pathname: string,
   cursor: string,
   preservedQuery: Readonly<Record<string, string | undefined>>,
+  cursorParameter: string,
 ): string {
   const query = new URLSearchParams();
   for (const [key, value] of Object.entries(preservedQuery)) {
     if (value) query.set(key, value);
   }
-  query.set("cursor", cursor);
+  query.set(cursorParameter, cursor);
   return `${pathname}?${query.toString()}`;
 }
 
@@ -28,6 +30,7 @@ export function CollectionPagination({
   preservedQuery = {},
   returnedCount,
   total,
+  cursorParameter = "cursor",
 }: Readonly<CollectionPaginationProps>) {
   return (
     <nav className="collection-pagination" aria-label="Collection pagination">
@@ -39,7 +42,12 @@ export function CollectionPagination({
       {nextCursor ? (
         <Link
           className="collection-pagination__next"
-          href={nextPageHref(pathname, nextCursor, preservedQuery)}
+          href={nextPageHref(
+            pathname,
+            nextCursor,
+            preservedQuery,
+            cursorParameter,
+          )}
           prefetch={false}
           rel="next"
         >

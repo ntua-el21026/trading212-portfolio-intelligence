@@ -725,3 +725,11 @@ export class PortfolioApiClient {
     return new PortfolioApiError(response.status, envelope);
   }
 }
+export * from "./targets.generated";
+export { TargetApiError } from "./target-transport";
+export type {
+  TargetApiResponse,
+  TargetClientOptions,
+  TargetCommandOptions,
+  TargetReadOptions,
+} from "./target-transport";

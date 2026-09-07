@@ -4,6 +4,18 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Phase 2 virtual targets
+
+- Add owner-scoped portfolios/templates and normalized hierarchical target versions
+  with exact validation, explicit normalization, mappings, constraints and audit.
+- Enforce immutable published content, optimistic/idempotent commands, scheduled
+  activation and deterministic version comparison in PostgreSQL.
+- Add fifteen typed API operations, generated strict TypeScript methods, the
+  authenticated `/pies` editor and two atomic/scoped MCP target read tools.
+- Preserve shared collection limits and Phase 1 economics; add adversarial,
+  concurrent, migration, editor and browser regressions. Immutable P2-01
+  acceptance is recorded separately; the complete Phase 2 release remains pending.
+
 ### Phase 2 design closure
 
 - Accept the v0.2 design delta and eight ADRs for targets, provider isolation,

@@ -112,6 +112,11 @@ Immutable result GETs use their quoted content digest as ETag and honor
 `Cache-Control: private, no-store` unless an explicitly reviewed local cache
 policy applies.
 
+Target version detail includes mutable lifecycle and validation metadata even
+after publication, so its full representation uses the aggregate revision ETag.
+The separate `content_digest` identifies the immutable target content; it is
+not a valid conditional GET validator for the complete version detail.
+
 ## 3. Virtual portfolios and targets
 
 All paths below begin `/api/v1`. `T-R` means `targets:read`; `T-W` means
@@ -121,6 +126,7 @@ Create responds 201; other synchronous commands/read operations respond 200.
 | Method and path | Canonical service | Input → result | Scope |
 |---|---|---|---|
 | GET `/virtual-portfolios` | `ListVirtualPortfolios` | account/state/search/sort/page → `VirtualPortfolioPage` | T-R |
+| GET `/target-versions/{version_id}/nodes` | `ListTargetNodes` | version ID, optional parent node UUID, page → ordered hierarchy node page | T-R |
 | POST `/virtual-portfolios` | `CreateVirtualPortfolio` | `CreateVirtualPortfolioRequest` → `VirtualPortfolioDetail` | T-W |
 | GET `/virtual-portfolios/{portfolio_id}` | `GetVirtualPortfolio` | ID → `VirtualPortfolioDetail` | T-R |
 | PATCH `/virtual-portfolios/{portfolio_id}` | `UpdateVirtualPortfolioMetadata` | `UpdateVirtualPortfolioRequest`, If-Match → detail | T-W |
@@ -182,6 +188,11 @@ superseded version leaves current selection unchanged. Archived/superseded
 content is corrected by cloning, never by reactivation. Portfolio archive
 disables current selection and future activation; historical ID-based reads
 remain available. Earlier effective dates never backdate publication knowledge.
+If an outage leaves a schedule overdue and the owner subsequently publishes an
+immediate replacement, the worker records the older scheduled version as
+superseded without activating it when the active version was published later
+than that candidate and at or after its effective time. Future effective times
+after the active version's publication remain eligible for normal activation.
 Each flattened node exposes depth, relative weight, exact path factors, quantized
 effective weight, mapping state, and deterministic order. The detail includes
 `effective_weight_rounding_residual`. Audit events have a separate bounded
@@ -189,11 +200,14 @@ effective weight, mapping state, and deterministic order. The detail includes
 `ListTargetVersionEvents` with T-R.
 
 `ValidateTargetRequest {normalize: boolean}` defaults false. Validation stores
-the exact `input_revision`/input digest and typed issues. With explicit normalization it
-also records original/adjusted weights and atomically advances the draft revision
-if content changes. `result_revision` and post-normalization digest identify the
-validated result, and are equal to the input counterparts when content did not
-change. The returned ETag identifies that result revision; publication uses
+the exact `input_revision`/input digest and typed issues. Each new validation
+atomically advances the aggregate revision once because its latest-validation
+metadata changes the detail representation. An exact idempotent retry does not
+advance it again. Explicit normalization additionally records original/adjusted
+weights. `result_revision` is the resulting aggregate revision; the result digest
+equals the input digest when content did not change. Latest validation is ordered
+by result revision, including when timestamps coincide. The returned ETag
+identifies that result revision; publication uses
 the returned `validation_id` in `PublishTargetRequest` and requires the current
 draft to match its result revision/digest. Retained issues/adjustments copy stable
 node/constraint keys and values instead of retaining FKs to replaceable draft
