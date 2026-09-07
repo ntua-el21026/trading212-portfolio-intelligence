@@ -26,6 +26,7 @@ const primaryItems = [
   { href: "/pies", icon: ChartPie, label: "Pies" },
   { href: "/drift", icon: ChartPie, label: "Drift" },
   { href: "/planner", icon: CircleDollarSign, label: "Planner" },
+  { href: "/sources", icon: ShieldCheck, label: "Sources" },
 ] as const;
 
 const secondaryItems = [

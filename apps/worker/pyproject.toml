@@ -16,6 +16,7 @@ dependencies = [
     "trading212-persistence==0.1.0",
     "trading212-security==0.1.0",
     "trading212-provider==0.1.0",
+    "trading212-reference-data==0.1.0",
 ]
 
 [tool.uv.sources]
@@ -26,3 +27,4 @@ trading212-observability = { workspace = true }
 trading212-persistence = { workspace = true }
 trading212-security = { workspace = true }
 trading212-provider = { workspace = true }
+trading212-reference-data = { workspace = true }

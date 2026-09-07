@@ -1,0 +1,17 @@
+[build-system]
+requires = ["uv_build==0.12.7"]
+build-backend = "uv_build"
+
+[project]
+name = "trading212-reference-data"
+version = "0.1.0"
+description = "Isolated typed reference-data replay adapters"
+requires-python = "==3.13.*"
+dependencies = [
+    "trading212-application==0.1.0",
+    "trading212-domain==0.1.0",
+]
+
+[tool.uv.sources]
+trading212-application = { workspace = true }
+trading212-domain = { workspace = true }

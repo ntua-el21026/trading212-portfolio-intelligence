@@ -6,9 +6,9 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   // A flaky browser assertion is a failed Phase 1 evidence gate, including in CI.
   retries: 0,
-  // test:e2e starts each viewport in its own process with a fresh fixture DB.
+  // test:e2e starts each spec file and viewport in a separate process and DB.
   // This preserves the real 64-snapshot quota across independent test lifecycles.
-  // Tests within a viewport share mutable synthetic fixtures and run serially.
+  // Tests within one spec/viewport share mutable fixtures and run serially.
   workers: 1,
   reporter: process.env.CI ? "github" : "list",
   use: {

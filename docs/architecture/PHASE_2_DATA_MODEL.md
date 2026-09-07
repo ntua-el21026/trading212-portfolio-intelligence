@@ -224,6 +224,7 @@ instruction, or predicted return.
 | `provider_license_versions` | Provider FK, effective time/version, attribution text, permitted storage/display/report/export flags, retention bounds and evidence reference; immutable; unknown permissions deny that use |
 | `source_retrieval_occurrences` | Provider FK, exactly one typed price/FX/benchmark/constituent snapshot FK, retrieval time and safe receipt category; repeated identical data appends an occurrence while preserving first knowledge time |
 | `market_data_instruments` | Provider FK, bounded provider instrument key, canonical instrument/listing FKs where resolved, mapping state/version, currency and asset type; unique provider/key/mapping version |
+| `market_source_series` | Immutable owner-scoped catalog identity with `security_price` or `benchmark_level` kind, provider/license/mapping version, basis, currency and calendar; benchmark levels do not require a fabricated canonical instrument |
 | `price_snapshots` | Provider/instrument mapping FKs, requested period, price basis (`raw_close`, `split_adjusted`, `total_return`), source currency, effective/retrieval times, source/schema/license versions, canonical digest, coverage/gap state; immutable |
 | `price_observations` | Snapshot FK, exchange/session date and valuation instant, exact price/index level, currency, corporate-action revision reference, observation availability; unique snapshot/session/basis |
 | `corporate_action_observations` | Provider/instrument FKs, source snapshot/digest, fixed action kind, effective date, split ratio or distribution/currency, status and correction reference; never infer an unsupported action |
@@ -231,8 +232,8 @@ instruction, or predicted return.
 | `fx_observations` | Snapshot FK, base/quote currencies, effective instant, positive rate and provider sequence/revision; unique snapshot/pair/time; inverse/triangulated rates pin the original one/two observations |
 | `benchmark_definitions` | Owner, stable name/key, reporting currency and optimistic revision; archive lifecycle preserves used definitions |
 | `benchmark_versions` | Definition FK, sequential version, effective time, return basis, rebalancing calendar/rule and content digest; published content immutable |
-| `benchmark_components` | Version FK, provider series/canonical instrument reference, exact weight; weights sum exactly one under the target normalization policy |
-| `benchmark_snapshots` | Version/provider/license FKs, period, effective/retrieval times, canonical input digest, methodology and coverage; immutable |
+| `benchmark_components` | Version FK, immutable source-series catalog FK and exact weight; weights sum exactly one under the target normalization policy |
+| `benchmark_snapshots` | Closed `provider_series`/`composite` kind with mutually exclusive references: provider series requires source-series/provider/license FKs and no benchmark-version FK; composite requires a benchmark-version FK and normalized component/FX inputs. Period, effective/retrieval times, canonical input digest, methodology and coverage are immutable |
 | `benchmark_observations` | Snapshot FK, session/valuation instant, exact level, native/reporting currencies, FX reference and availability; unique snapshot/time |
 | `economic_entities` | Owner-scoped economic company/issuer identity, stable canonical key, display name, optional LEI and evidence references; provider IDs and tickers are not identity |
 | `share_classes` | Entity FK, canonical instrument FK, class identifier and evidence/version; unique owner/instrument/effective version |
@@ -246,6 +247,14 @@ instruction, or predicted return.
 | `xray_exposures` | Run FK, entity/classification/unresolved bucket, exact direct/indirect/effective weights and values/currency, confidence and coverage |
 | `xray_exposure_paths` | Exposure FK, source position, fund/constituent and mapping relationship references, exact path weight; distinguishes the direct position from its look-through path |
 | `etf_overlap_pairs` | Run FK, canonically ordered pair of funds, exact overlap weight, common entity count, covered/unresolved weights and quality; one row per unordered pair |
+
+The source catalog is an identity layer, not a mutable latest-snapshot pointer.
+Benchmark command component `source_id` fields reference this catalog, never an
+observation snapshot or another benchmark definition. This clarifies the original
+abbreviated version/provider/license relationship without a circular dependency:
+P2-03 serves actual provider levels through the frozen benchmark-snapshot routes;
+P2-04 adds calculated composite wealth through the other explicit header variant.
+Creating a definition does not fabricate observations or a composite result.
 
 Observation revisions append a new snapshot with a new digest; an unchanged
 canonical dataset reuses the same snapshot and records an additional retrieval

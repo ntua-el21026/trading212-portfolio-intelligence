@@ -25,6 +25,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base, CreatedAtMixin, UpdatedAtMixin, UUIDPrimaryKeyMixin
 from .planning_models import PLANNING_MODELS
+from .source_models import SOURCE_MODELS
 from .target_models import TARGET_MODELS
 from .types import ExactNumeric, UTCDateTime
 
@@ -342,7 +343,8 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "resource IN ('activity','dividends','instruments','positions_market_value',"
             "'positions_weight','positions_ticker','portfolios_name','portfolios_updated',"
             "'target_versions','target_events','target_nodes','contribution_plans',"
-            "'plan_lines','actual_target_rows','plan_revisions')",
+            "'plan_lines','actual_target_rows','plan_revisions',"
+            "'market_source_status','benchmark_source_status','fx_source_status','price_observations','fx_observations','benchmark_observations','benchmark_defs_name','benchmark_defs_created','benchmark_versions')",
             name="resource_allowed",
         ),
         CheckConstraint(
@@ -371,7 +373,20 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "(resource = 'contribution_plans' AND "
             "sort_specification = 'created_at_desc_id_desc') OR "
             "(resource IN ('plan_lines','actual_target_rows','plan_revisions') AND "
-            "sort_specification = 'ordinal_asc')",
+            "sort_specification = 'ordinal_asc') OR "
+            "(resource = 'market_source_status' AND "
+            "sort_specification = 'source_key_asc_id_asc') OR "
+            "(resource = 'benchmark_source_status' AND "
+            "sort_specification = 'source_key_asc_id_asc') OR "
+            "(resource = 'fx_source_status' AND sort_specification = 'base_quote_provider_asc') OR "
+            "(resource = 'price_observations' AND sort_specification = 'ordinal_asc') OR "
+            "(resource = 'fx_observations' AND sort_specification = 'ordinal_asc') OR "
+            "(resource = 'benchmark_observations' AND sort_specification = 'ordinal_asc') OR "
+            "(resource = 'benchmark_defs_name' AND sort_specification = 'name_asc_id_asc') OR "
+            "(resource = 'benchmark_defs_created' AND "
+            "sort_specification = 'created_at_desc_id_desc') OR "
+            "(resource = 'benchmark_versions' AND "
+            "sort_specification = 'version_number_desc_id_desc')",
             name="resource_sort_match",
         ),
         CheckConstraint(
@@ -380,7 +395,8 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "'actual_target_rows','plan_revisions') AND broker_account_id IS NOT NULL) OR "
             "(resource = 'instruments' AND broker_account_id IS NULL) OR "
             "resource IN ('portfolios_name','portfolios_updated','target_versions',"
-            "'target_events','target_nodes'))",
+            "'target_events','target_nodes',"
+            "'market_source_status','benchmark_source_status','fx_source_status','price_observations','fx_observations','benchmark_observations','benchmark_defs_name','benchmark_defs_created','benchmark_versions'))",
             name="account_scope_match",
         ),
         CheckConstraint(
@@ -1057,4 +1073,5 @@ ALL_MODELS = (
     CalculationRegistryModel,
     *TARGET_MODELS,
     *PLANNING_MODELS,
+    *SOURCE_MODELS,
 )

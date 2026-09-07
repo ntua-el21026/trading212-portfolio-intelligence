@@ -13,6 +13,7 @@ from trading212_persistence.seed import seed_synthetic
 
 from .materializer import PostgresCanonicalMaterializer
 from .postgres_store import PostgresIngestionStore
+from .source_seed import seed_source_scenarios
 from .synthetic import SyntheticIngestionProvider
 from .target_seed import seed_target_scenarios
 
@@ -46,6 +47,7 @@ async def seed_materialized_synthetic(database_url: str, *, app_environment: str
         if run.status is not RunStatus.SUCCEEDED:
             raise RuntimeError("synthetic canonical seed did not complete successfully")
         await seed_target_scenarios(sessions, app_environment=app_environment, at=SEED_TIME)
+        await seed_source_scenarios(sessions, app_environment=app_environment, at=SEED_TIME)
     finally:
         engine.dispose()
 

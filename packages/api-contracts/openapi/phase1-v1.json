@@ -294,6 +294,424 @@
         "title": "AllocationResponse",
         "type": "object"
       },
+      "BenchmarkComponent": {
+        "additionalProperties": false,
+        "properties": {
+          "source_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "weight": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Weight",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "weight"
+        ],
+        "title": "BenchmarkComponent",
+        "type": "object"
+      },
+      "BenchmarkContent": {
+        "additionalProperties": false,
+        "properties": {
+          "calendar_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Calendar Id",
+            "type": "string"
+          },
+          "calendar_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Calendar Version",
+            "type": "string"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/BenchmarkComponent"
+            },
+            "maxItems": 256,
+            "minItems": 1,
+            "title": "Components",
+            "type": "array"
+          },
+          "effective_at": {
+            "format": "date-time",
+            "title": "Effective At",
+            "type": "string"
+          },
+          "rebalance_rule": {
+            "enum": [
+              "buy_and_hold",
+              "daily_rebalanced"
+            ],
+            "title": "Rebalance Rule",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "return_basis": {
+            "enum": [
+              "raw_close",
+              "split_adjusted",
+              "total_return"
+            ],
+            "title": "Return Basis",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reporting_currency",
+          "effective_at",
+          "return_basis",
+          "calendar_id",
+          "calendar_version",
+          "rebalance_rule",
+          "components"
+        ],
+        "title": "BenchmarkContent",
+        "type": "object"
+      },
+      "BenchmarkDefinitionDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "definition": {
+            "$ref": "#/components/schemas/BenchmarkDefinitionSummary"
+          },
+          "selected_version": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BenchmarkVersion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "versions": {
+            "$ref": "#/components/schemas/SourcePage_BenchmarkVersion_"
+          }
+        },
+        "required": [
+          "definition",
+          "versions",
+          "selected_version"
+        ],
+        "title": "BenchmarkDefinitionDetail",
+        "type": "object"
+      },
+      "BenchmarkDefinitionSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "latest_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Version Id"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "revision": {
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "revision_etag": {
+            "maxLength": 2048,
+            "minLength": 1,
+            "title": "Revision Etag",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "active",
+              "archived"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "version_count": {
+            "minimum": 0.0,
+            "title": "Version Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "reporting_currency",
+          "revision",
+          "revision_etag",
+          "state",
+          "created_at",
+          "updated_at",
+          "latest_version_id",
+          "version_count"
+        ],
+        "title": "BenchmarkDefinitionSummary",
+        "type": "object"
+      },
+      "BenchmarkNormalizationAdjustment": {
+        "additionalProperties": false,
+        "properties": {
+          "normalized_weight": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Normalized Weight",
+            "type": "string"
+          },
+          "original_weight": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Original Weight",
+            "type": "string"
+          },
+          "source_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Source Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "original_weight",
+          "normalized_weight"
+        ],
+        "title": "BenchmarkNormalizationAdjustment",
+        "type": "object"
+      },
+      "BenchmarkObservation": {
+        "additionalProperties": false,
+        "properties": {
+          "effective_at": {
+            "format": "date-time",
+            "title": "Effective At",
+            "type": "string"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "session_date": {
+            "format": "date",
+            "title": "Session Date",
+            "type": "string"
+          },
+          "state": {
+            "default": "available",
+            "enum": [
+              "available",
+              "missing",
+              "unsupported",
+              "disputed"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_date",
+          "effective_at",
+          "level"
+        ],
+        "title": "BenchmarkObservation",
+        "type": "object"
+      },
+      "BenchmarkSnapshotHeader": {
+        "additionalProperties": false,
+        "properties": {
+          "benchmark_version_id": {
+            "title": "Benchmark Version Id",
+            "type": "null"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/SourceCoverage"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/SourceFreshness"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "const": "provider_series",
+            "default": "provider_series",
+            "title": "Kind",
+            "type": "string"
+          },
+          "latest_retrieval": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceRetrievalOccurrence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "license": {
+            "$ref": "#/components/schemas/SourceLicense"
+          },
+          "period": {
+            "$ref": "#/components/schemas/SourcePeriod"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/SourceProvenance"
+          },
+          "series": {
+            "$ref": "#/components/schemas/SourceSeries"
+          }
+        },
+        "required": [
+          "id",
+          "series",
+          "provenance",
+          "period",
+          "coverage",
+          "content_digest",
+          "license",
+          "latest_retrieval",
+          "freshness"
+        ],
+        "title": "BenchmarkSnapshotHeader",
+        "type": "object"
+      },
+      "BenchmarkSourceStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderStatus"
+            },
+            "maxItems": 100,
+            "title": "Providers",
+            "type": "array"
+          },
+          "series": {
+            "$ref": "#/components/schemas/SourcePage_SourceSeriesStatus_"
+          }
+        },
+        "required": [
+          "account_id",
+          "providers",
+          "series"
+        ],
+        "title": "BenchmarkSourceStatus",
+        "type": "object"
+      },
+      "BenchmarkVersion": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/BenchmarkContent"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "definition_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Definition Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "normalization_adjustments": {
+            "items": {
+              "$ref": "#/components/schemas/BenchmarkNormalizationAdjustment"
+            },
+            "maxItems": 256,
+            "title": "Normalization Adjustments",
+            "type": "array"
+          },
+          "published_at": {
+            "format": "date-time",
+            "title": "Published At",
+            "type": "string"
+          },
+          "version_number": {
+            "minimum": 1.0,
+            "title": "Version Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "definition_id",
+          "version_number",
+          "content",
+          "content_digest",
+          "published_at",
+          "normalization_adjustments"
+        ],
+        "title": "BenchmarkVersion",
+        "type": "object"
+      },
       "BrokerConnectionResponse": {
         "additionalProperties": false,
         "properties": {
@@ -1119,6 +1537,49 @@
         "title": "ContributionPlanSummary",
         "type": "object"
       },
+      "CreateBenchmarkDefinitionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/BenchmarkContent"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "normalize": {
+            "default": false,
+            "title": "Normalize",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "content"
+        ],
+        "title": "CreateBenchmarkDefinitionRequest",
+        "type": "object"
+      },
+      "CreateBenchmarkVersionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/BenchmarkContent"
+          },
+          "normalize": {
+            "default": false,
+            "title": "Normalize",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "content"
+        ],
+        "title": "CreateBenchmarkVersionRequest",
+        "type": "object"
+      },
       "CreateContributionPlanRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1644,6 +2105,12 @@
         "title": "DriftAnalysisResult",
         "type": "object"
       },
+      "EmptySourceRequest": {
+        "additionalProperties": false,
+        "properties": {},
+        "title": "EmptySourceRequest",
+        "type": "object"
+      },
       "EmptyTargetRequest": {
         "additionalProperties": false,
         "properties": {},
@@ -1704,6 +2171,252 @@
           "effective_weight"
         ],
         "title": "FlattenedTargetNodeResponse",
+        "type": "object"
+      },
+      "FxObservation": {
+        "additionalProperties": false,
+        "properties": {
+          "base": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Base",
+            "type": "string"
+          },
+          "batch_key": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Batch Key",
+            "type": "string"
+          },
+          "effective_at": {
+            "format": "date-time",
+            "title": "Effective At",
+            "type": "string"
+          },
+          "quote": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Quote",
+            "type": "string"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate"
+          },
+          "session_date": {
+            "format": "date",
+            "title": "Session Date",
+            "type": "string"
+          },
+          "state": {
+            "default": "available",
+            "enum": [
+              "available",
+              "missing",
+              "unsupported",
+              "disputed"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "base",
+          "quote",
+          "session_date",
+          "effective_at",
+          "rate",
+          "batch_key"
+        ],
+        "title": "FxObservation",
+        "type": "object"
+      },
+      "FxPairStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "availability": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "base": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Base",
+            "type": "string"
+          },
+          "latest_snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceSnapshotSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "license_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "License Version Id",
+            "type": "string"
+          },
+          "provider_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Provider Id",
+            "type": "string"
+          },
+          "quote": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Quote",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "no_observations",
+                  "missing_session",
+                  "outside_calendar",
+                  "before_first_observation",
+                  "future_observation",
+                  "after_cutoff",
+                  "stale",
+                  "unsupported",
+                  "disputed",
+                  "ambiguous_revision",
+                  "missing_fx_pair",
+                  "incompatible_fixing",
+                  "numeric_unrepresentable",
+                  "license_denied",
+                  "expired",
+                  "not_configured",
+                  "unresolved",
+                  "ambiguous",
+                  "retention_removed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "provider_id",
+          "license_version_id",
+          "base",
+          "quote",
+          "latest_snapshot",
+          "availability"
+        ],
+        "title": "FxPairStatus",
+        "type": "object"
+      },
+      "FxSnapshotHeader": {
+        "additionalProperties": false,
+        "properties": {
+          "calendar_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Calendar Id",
+            "type": "string"
+          },
+          "calendar_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Calendar Version",
+            "type": "string"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/SourceCoverage"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/SourceFreshness"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "latest_retrieval": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceRetrievalOccurrence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "license": {
+            "$ref": "#/components/schemas/SourceLicense"
+          },
+          "period": {
+            "$ref": "#/components/schemas/SourcePeriod"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/SourceProvenance"
+          }
+        },
+        "required": [
+          "calendar_id",
+          "calendar_version",
+          "id",
+          "provenance",
+          "period",
+          "coverage",
+          "content_digest",
+          "license",
+          "latest_retrieval",
+          "freshness"
+        ],
+        "title": "FxSnapshotHeader",
+        "type": "object"
+      },
+      "FxSourceStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "pairs": {
+            "$ref": "#/components/schemas/SourcePage_FxPairStatus_"
+          },
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderStatus"
+            },
+            "maxItems": 100,
+            "title": "Providers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "account_id",
+          "providers",
+          "pairs"
+        ],
+        "title": "FxSourceStatus",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -1841,6 +2554,35 @@
           "expires_at"
         ],
         "title": "LocalSessionResponse",
+        "type": "object"
+      },
+      "MarketSourceStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderStatus"
+            },
+            "maxItems": 100,
+            "title": "Providers",
+            "type": "array"
+          },
+          "series": {
+            "$ref": "#/components/schemas/SourcePage_SourceSeriesStatus_"
+          }
+        },
+        "required": [
+          "account_id",
+          "providers",
+          "series"
+        ],
+        "title": "MarketSourceStatus",
         "type": "object"
       },
       "McpPlanAllocationConstraint": {
@@ -3839,6 +4581,120 @@
         "title": "PositionSort",
         "type": "string"
       },
+      "PriceObservation": {
+        "additionalProperties": false,
+        "properties": {
+          "corporate_action_revision": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corporate Action Revision"
+          },
+          "effective_at": {
+            "format": "date-time",
+            "title": "Effective At",
+            "type": "string"
+          },
+          "session_date": {
+            "format": "date",
+            "title": "Session Date",
+            "type": "string"
+          },
+          "state": {
+            "default": "available",
+            "enum": [
+              "available",
+              "missing",
+              "unsupported",
+              "disputed"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "session_date",
+          "effective_at",
+          "value"
+        ],
+        "title": "PriceObservation",
+        "type": "object"
+      },
+      "PriceSnapshotHeader": {
+        "additionalProperties": false,
+        "properties": {
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/SourceCoverage"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/SourceFreshness"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "latest_retrieval": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceRetrievalOccurrence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "license": {
+            "$ref": "#/components/schemas/SourceLicense"
+          },
+          "period": {
+            "$ref": "#/components/schemas/SourcePeriod"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/SourceProvenance"
+          },
+          "series": {
+            "$ref": "#/components/schemas/SourceSeries"
+          }
+        },
+        "required": [
+          "id",
+          "series",
+          "provenance",
+          "period",
+          "coverage",
+          "content_digest",
+          "license",
+          "latest_retrieval",
+          "freshness"
+        ],
+        "title": "PriceSnapshotHeader",
+        "type": "object"
+      },
       "PrincipalResponse": {
         "additionalProperties": false,
         "properties": {
@@ -3864,6 +4720,165 @@
           "scopes"
         ],
         "title": "PrincipalResponse",
+        "type": "object"
+      },
+      "ProviderStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "adapter_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Adapter Version",
+            "type": "string"
+          },
+          "availability": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "capabilities": {
+            "items": {
+              "enum": [
+                "price_history",
+                "corporate_actions",
+                "fx_rates",
+                "benchmark_series",
+                "resolve_instrument",
+                "classifications",
+                "constituents"
+              ],
+              "type": "string"
+            },
+            "maxItems": 7,
+            "title": "Capabilities",
+            "type": "array"
+          },
+          "configuration_state": {
+            "enum": [
+              "configured",
+              "not_configured",
+              "disabled"
+            ],
+            "title": "Configuration State",
+            "type": "string"
+          },
+          "freshness_policy_version": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Freshness Policy Version"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "key": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Key",
+            "type": "string"
+          },
+          "license": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceLicense"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "max_age_seconds": {
+            "anyOf": [
+              {
+                "maximum": 315360000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Age Seconds"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "no_observations",
+                  "missing_session",
+                  "outside_calendar",
+                  "before_first_observation",
+                  "future_observation",
+                  "after_cutoff",
+                  "stale",
+                  "unsupported",
+                  "disputed",
+                  "ambiguous_revision",
+                  "missing_fx_pair",
+                  "incompatible_fixing",
+                  "numeric_unrepresentable",
+                  "license_denied",
+                  "expired",
+                  "not_configured",
+                  "unresolved",
+                  "ambiguous",
+                  "retention_removed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "supported_price_bases": {
+            "items": {
+              "enum": [
+                "raw_close",
+                "split_adjusted",
+                "total_return"
+              ],
+              "type": "string"
+            },
+            "maxItems": 3,
+            "title": "Supported Price Bases",
+            "type": "array"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "name",
+          "adapter_version",
+          "configuration_state",
+          "availability",
+          "synthetic",
+          "license"
+        ],
+        "title": "ProviderStatus",
         "type": "object"
       },
       "PublishTargetRequest": {
@@ -4555,6 +5570,1048 @@
           "data_quality"
         ],
         "title": "SnapshotResponse",
+        "type": "object"
+      },
+      "SourceCoverage": {
+        "additionalProperties": false,
+        "properties": {
+          "available_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Available Count",
+            "type": "integer"
+          },
+          "expected_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Expected Count",
+            "type": "integer"
+          },
+          "gap_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Gap Count",
+            "type": "integer"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/components/schemas/SourceGap"
+            },
+            "maxItems": 100,
+            "title": "Gaps",
+            "type": "array"
+          },
+          "gaps_truncated": {
+            "title": "Gaps Truncated",
+            "type": "boolean"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "no_observations",
+                  "missing_session",
+                  "outside_calendar",
+                  "before_first_observation",
+                  "future_observation",
+                  "after_cutoff",
+                  "stale",
+                  "unsupported",
+                  "disputed",
+                  "ambiguous_revision",
+                  "missing_fx_pair",
+                  "incompatible_fixing",
+                  "numeric_unrepresentable",
+                  "license_denied",
+                  "expired",
+                  "not_configured",
+                  "unresolved",
+                  "ambiguous",
+                  "retention_removed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "expected_count",
+          "available_count",
+          "gaps",
+          "gap_count",
+          "gaps_truncated",
+          "quality"
+        ],
+        "title": "SourceCoverage",
+        "type": "object"
+      },
+      "SourceFreshness": {
+        "additionalProperties": false,
+        "properties": {
+          "max_age_seconds": {
+            "anyOf": [
+              {
+                "maximum": 315360000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Age Seconds"
+          },
+          "policy_version": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Version"
+          },
+          "reference_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference At"
+          },
+          "state": {
+            "enum": [
+              "fresh",
+              "stale",
+              "unavailable"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state",
+          "policy_version",
+          "reference_at",
+          "max_age_seconds"
+        ],
+        "title": "SourceFreshness",
+        "type": "object"
+      },
+      "SourceGap": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "enum": [
+              "no_observations",
+              "missing_session",
+              "outside_calendar",
+              "before_first_observation",
+              "future_observation",
+              "after_cutoff",
+              "stale",
+              "unsupported",
+              "disputed",
+              "ambiguous_revision",
+              "missing_fx_pair",
+              "incompatible_fixing",
+              "numeric_unrepresentable",
+              "license_denied",
+              "expired",
+              "not_configured",
+              "unresolved",
+              "ambiguous",
+              "retention_removed"
+            ],
+            "title": "Reason",
+            "type": "string"
+          },
+          "session_date": {
+            "format": "date",
+            "title": "Session Date",
+            "type": "string"
+          },
+          "source_key": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Key"
+          }
+        },
+        "required": [
+          "session_date",
+          "reason"
+        ],
+        "title": "SourceGap",
+        "type": "object"
+      },
+      "SourceLicense": {
+        "additionalProperties": false,
+        "properties": {
+          "attribution": {
+            "maxLength": 2000,
+            "title": "Attribution",
+            "type": "string"
+          },
+          "display": {
+            "enum": [
+              "allowed",
+              "denied",
+              "unknown"
+            ],
+            "title": "Display",
+            "type": "string"
+          },
+          "effective_at": {
+            "format": "date-time",
+            "title": "Effective At",
+            "type": "string"
+          },
+          "evidence_key": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Evidence Key",
+            "type": "string"
+          },
+          "export": {
+            "enum": [
+              "allowed",
+              "denied",
+              "unknown"
+            ],
+            "title": "Export",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "provider_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Provider Id",
+            "type": "string"
+          },
+          "report": {
+            "enum": [
+              "allowed",
+              "denied",
+              "unknown"
+            ],
+            "title": "Report",
+            "type": "string"
+          },
+          "retention_days": {
+            "anyOf": [
+              {
+                "maximum": 36500.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retention Days"
+          },
+          "store": {
+            "enum": [
+              "allowed",
+              "denied",
+              "unknown"
+            ],
+            "title": "Store",
+            "type": "string"
+          },
+          "version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "provider_id",
+          "version",
+          "effective_at",
+          "store",
+          "display",
+          "report",
+          "export",
+          "retention_days",
+          "attribution",
+          "evidence_key"
+        ],
+        "title": "SourceLicense",
+        "type": "object"
+      },
+      "SourcePage_BenchmarkDefinitionSummary_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BenchmarkDefinitionSummary"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "SourcePage[BenchmarkDefinitionSummary]",
+        "type": "object"
+      },
+      "SourcePage_BenchmarkObservation_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BenchmarkObservation"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "SourcePage[BenchmarkObservation]",
+        "type": "object"
+      },
+      "SourcePage_BenchmarkVersion_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BenchmarkVersion"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "SourcePage[BenchmarkVersion]",
+        "type": "object"
+      },
+      "SourcePage_FxObservation_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FxObservation"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "SourcePage[FxObservation]",
+        "type": "object"
+      },
+      "SourcePage_FxPairStatus_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FxPairStatus"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "SourcePage[FxPairStatus]",
+        "type": "object"
+      },
+      "SourcePage_PriceObservation_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PriceObservation"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "SourcePage[PriceObservation]",
+        "type": "object"
+      },
+      "SourcePage_SourceSeriesStatus_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SourceSeriesStatus"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "SourcePage[SourceSeriesStatus]",
+        "type": "object"
+      },
+      "SourcePeriod": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "format": "date",
+            "title": "End",
+            "type": "string"
+          },
+          "start": {
+            "format": "date",
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "SourcePeriod",
+        "type": "object"
+      },
+      "SourceProvenance": {
+        "additionalProperties": false,
+        "properties": {
+          "adapter_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Adapter Version",
+            "type": "string"
+          },
+          "effective_at": {
+            "format": "date-time",
+            "title": "Effective At",
+            "type": "string"
+          },
+          "first_observed_at": {
+            "format": "date-time",
+            "title": "First Observed At",
+            "type": "string"
+          },
+          "license_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "License Version Id",
+            "type": "string"
+          },
+          "provider_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Provider Id",
+            "type": "string"
+          },
+          "revision_order": {
+            "anyOf": [
+              {
+                "pattern": "^(?:0|[1-9][0-9]{0,18})$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision Order"
+          },
+          "schema_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_revision": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Source Revision",
+            "type": "string"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "provider_id",
+          "license_version_id",
+          "adapter_version",
+          "schema_version",
+          "source_revision",
+          "revision_order",
+          "effective_at",
+          "first_observed_at",
+          "synthetic"
+        ],
+        "title": "SourceProvenance",
+        "type": "object"
+      },
+      "SourceRetrievalOccurrence": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "retrieved_at": {
+            "format": "date-time",
+            "title": "Retrieved At",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "snapshot_id",
+          "retrieved_at"
+        ],
+        "title": "SourceRetrievalOccurrence",
+        "type": "object"
+      },
+      "SourceSeries": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "enum": [
+              "raw_close",
+              "split_adjusted",
+              "total_return"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "calendar_id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Calendar Id",
+            "type": "string"
+          },
+          "calendar_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Calendar Version",
+            "type": "string"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Id"
+          },
+          "kind": {
+            "enum": [
+              "security_price",
+              "benchmark_level"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "license_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "License Version Id",
+            "type": "string"
+          },
+          "listing_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Listing Id"
+          },
+          "mapping_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mapping Id"
+          },
+          "mapping_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Mapping Version",
+            "type": "string"
+          },
+          "provider_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Provider Id",
+            "type": "string"
+          },
+          "provider_key": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Provider Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "provider_id",
+          "license_version_id",
+          "kind",
+          "provider_key",
+          "mapping_version",
+          "basis",
+          "currency",
+          "calendar_id",
+          "calendar_version"
+        ],
+        "title": "SourceSeries",
+        "type": "object"
+      },
+      "SourceSeriesStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "availability": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "latest_snapshot": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceSnapshotSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "no_observations",
+                  "missing_session",
+                  "outside_calendar",
+                  "before_first_observation",
+                  "future_observation",
+                  "after_cutoff",
+                  "stale",
+                  "unsupported",
+                  "disputed",
+                  "ambiguous_revision",
+                  "missing_fx_pair",
+                  "incompatible_fixing",
+                  "numeric_unrepresentable",
+                  "license_denied",
+                  "expired",
+                  "not_configured",
+                  "unresolved",
+                  "ambiguous",
+                  "retention_removed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "series": {
+            "$ref": "#/components/schemas/SourceSeries"
+          }
+        },
+        "required": [
+          "series",
+          "latest_snapshot",
+          "availability"
+        ],
+        "title": "SourceSeriesStatus",
+        "type": "object"
+      },
+      "SourceSnapshotSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "available_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Available Count",
+            "type": "integer"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "effective_at": {
+            "format": "date-time",
+            "title": "Effective At",
+            "type": "string"
+          },
+          "expected_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Expected Count",
+            "type": "integer"
+          },
+          "first_observed_at": {
+            "format": "date-time",
+            "title": "First Observed At",
+            "type": "string"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/SourceFreshness"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "latest_retrieval": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceRetrievalOccurrence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "period": {
+            "$ref": "#/components/schemas/SourcePeriod"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "no_observations",
+                  "missing_session",
+                  "outside_calendar",
+                  "before_first_observation",
+                  "future_observation",
+                  "after_cutoff",
+                  "stale",
+                  "unsupported",
+                  "disputed",
+                  "ambiguous_revision",
+                  "missing_fx_pair",
+                  "incompatible_fixing",
+                  "numeric_unrepresentable",
+                  "license_denied",
+                  "expired",
+                  "not_configured",
+                  "unresolved",
+                  "ambiguous",
+                  "retention_removed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "id",
+          "content_digest",
+          "period",
+          "first_observed_at",
+          "effective_at",
+          "latest_retrieval",
+          "expected_count",
+          "available_count",
+          "quality",
+          "freshness"
+        ],
+        "title": "SourceSnapshotSummary",
         "type": "object"
       },
       "TargetComparisonResponse": {
@@ -6288,6 +8345,246 @@
         ]
       }
     },
+    "/api/v1/accounts/{account_id}/benchmark-sources": {
+      "get": {
+        "operationId": "get_benchmark_source_status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "provider_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Provider Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Z]{3}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Currency"
+            }
+          },
+          {
+            "in": "query",
+            "name": "basis",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "raw_close",
+                    "split_adjusted",
+                    "total_return"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Basis"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "default": "",
+              "maxLength": 80,
+              "pattern": "^[^\\x00]*$",
+              "title": "Search",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_cutoff_at",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source Cutoff At"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "const": "source_key_asc",
+              "default": "source_key_asc",
+              "title": "Sort",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkSourceStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Benchmark Source Status",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
     "/api/v1/accounts/{account_id}/data-quality": {
       "get": {
         "operationId": "data_quality_api_v1_accounts__account_id__data_quality_get",
@@ -6570,6 +8867,452 @@
         "summary": "Get Drift Analysis",
         "tags": [
           "planning"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/fx-sources": {
+      "get": {
+        "operationId": "get_fx_source_status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "provider_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Provider Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "base",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Z]{3}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Base"
+            }
+          },
+          {
+            "in": "query",
+            "name": "quote",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Z]{3}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Quote"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_cutoff_at",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source Cutoff At"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "const": "pair_asc",
+              "default": "pair_asc",
+              "title": "Sort",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FxSourceStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Fx Source Status",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/market-sources": {
+      "get": {
+        "operationId": "get_market_source_status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "provider_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Provider Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^[A-Z]{3}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Currency"
+            }
+          },
+          {
+            "in": "query",
+            "name": "basis",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "raw_close",
+                    "split_adjusted",
+                    "total_return"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Basis"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "default": "",
+              "maxLength": 80,
+              "pattern": "^[^\\x00]*$",
+              "title": "Search",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_cutoff_at",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source Cutoff At"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "const": "source_key_asc",
+              "default": "source_key_asc",
+              "title": "Sort",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketSourceStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Market Source Status",
+        "tags": [
+          "sources"
         ]
       }
     },
@@ -7620,6 +10363,683 @@
         ]
       }
     },
+    "/api/v1/benchmark-definitions": {
+      "get": {
+        "operationId": "list_benchmark_definitions",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "default": "active",
+              "enum": [
+                "active",
+                "archived",
+                "all"
+              ],
+              "title": "State",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "default": "",
+              "maxLength": 80,
+              "pattern": "^[^\\x00]*$",
+              "title": "Search",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "default": "name_asc",
+              "enum": [
+                "name_asc",
+                "created_desc"
+              ],
+              "title": "Sort",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourcePage_BenchmarkDefinitionSummary_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Benchmark Definitions",
+        "tags": [
+          "sources"
+        ]
+      },
+      "post": {
+        "operationId": "create_benchmark_definition",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Required with a session cookie and configured trusted Origin.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBenchmarkDefinitionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkDefinitionDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Benchmark Definition",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/benchmark-definitions/{definition_id}": {
+      "get": {
+        "operationId": "get_benchmark_definition",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "definition_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Definition Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "selected_version_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Selected Version Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkDefinitionDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Benchmark Definition",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/benchmark-definitions/{definition_id}/archive": {
+      "post": {
+        "operationId": "archive_benchmark_definition",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "definition_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Definition Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Required with a session cookie and configured trusted Origin.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          {
+            "description": "Current benchmark revision token for new commands; authorized exact replay resolves first.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmptySourceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkDefinitionDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Archive Benchmark Definition",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/benchmark-definitions/{definition_id}/versions": {
+      "post": {
+        "operationId": "create_benchmark_version",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "definition_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Definition Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Required with a session cookie and configured trusted Origin.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          {
+            "description": "Current benchmark revision token for new commands; authorized exact replay resolves first.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBenchmarkVersionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkDefinitionDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Benchmark Version",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/benchmark-snapshots/{snapshot_id}": {
+      "get": {
+        "operationId": "get_benchmark_snapshot",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Account Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkSnapshotHeader"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Benchmark Snapshot",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/benchmark-snapshots/{snapshot_id}/observations": {
+      "get": {
+        "operationId": "list_benchmark_observations",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Account Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourcePage_BenchmarkObservation_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Benchmark Observations",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
     "/api/v1/broker-connections": {
       "get": {
         "operationId": "list_connections_api_v1_broker_connections_get",
@@ -8102,6 +11522,195 @@
         ]
       }
     },
+    "/api/v1/fx-snapshots/{snapshot_id}": {
+      "get": {
+        "operationId": "get_fx_snapshot",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Account Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FxSnapshotHeader"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Fx Snapshot",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/fx-snapshots/{snapshot_id}/observations": {
+      "get": {
+        "operationId": "list_fx_observations",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Account Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourcePage_FxObservation_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Fx Observations",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
     "/api/v1/instruments": {
       "get": {
         "operationId": "instruments_api_v1_instruments_get",
@@ -8267,6 +11876,195 @@
         "summary": "Me",
         "tags": [
           "authentication"
+        ]
+      }
+    },
+    "/api/v1/price-snapshots/{snapshot_id}": {
+      "get": {
+        "operationId": "get_price_snapshot",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Account Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PriceSnapshotHeader"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Price Snapshot",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/price-snapshots/{snapshot_id}/observations": {
+      "get": {
+        "operationId": "list_price_observations",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Account Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourcePage_PriceObservation_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Price Observations",
+        "tags": [
+          "sources"
         ]
       }
     },

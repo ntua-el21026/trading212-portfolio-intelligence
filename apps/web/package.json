@@ -8,7 +8,7 @@
     "dev": "next dev",
     "lint": "eslint . --max-warnings 0",
     "start": "next start",
-    "test:e2e": "playwright test && playwright test --config playwright.api.config.ts --project api-chromium-desktop && playwright test --config playwright.api.config.ts --project api-chromium-mobile",
+    "test:e2e": "playwright test && node ../../scripts/run_api_browser_suites.mjs",
     "test:unit": "vitest run",
     "typecheck": "tsc --noEmit"
   },

@@ -47,6 +47,15 @@ class CollectionSnapshotResource(StrEnum):
     PLAN_REVISIONS = "plan_revisions"
     PLAN_LINES = "plan_lines"
     ACTUAL_TARGET_ROWS = "actual_target_rows"
+    MARKET_SOURCE_STATUS = "market_source_status"
+    BENCHMARK_SOURCE_STATUS = "benchmark_source_status"
+    FX_SOURCE_STATUS = "fx_source_status"
+    PRICE_OBSERVATIONS = "price_observations"
+    FX_OBSERVATIONS = "fx_observations"
+    BENCHMARK_OBSERVATIONS = "benchmark_observations"
+    BENCHMARK_DEFINITIONS_NAME = "benchmark_defs_name"
+    BENCHMARK_DEFINITIONS_CREATED = "benchmark_defs_created"
+    BENCHMARK_VERSIONS = "benchmark_versions"
     ACTIVITY = "activity"
     DIVIDENDS = "dividends"
     INSTRUMENTS = "instruments"
@@ -56,6 +65,15 @@ class CollectionSnapshotResource(StrEnum):
 
 
 _SORT_SPECIFICATIONS = {
+    CollectionSnapshotResource.MARKET_SOURCE_STATUS: "source_key_asc_id_asc",
+    CollectionSnapshotResource.BENCHMARK_SOURCE_STATUS: "source_key_asc_id_asc",
+    CollectionSnapshotResource.FX_SOURCE_STATUS: "base_quote_provider_asc",
+    CollectionSnapshotResource.PRICE_OBSERVATIONS: "ordinal_asc",
+    CollectionSnapshotResource.FX_OBSERVATIONS: "ordinal_asc",
+    CollectionSnapshotResource.BENCHMARK_OBSERVATIONS: "ordinal_asc",
+    CollectionSnapshotResource.BENCHMARK_DEFINITIONS_NAME: "name_asc_id_asc",
+    CollectionSnapshotResource.BENCHMARK_DEFINITIONS_CREATED: "created_at_desc_id_desc",
+    CollectionSnapshotResource.BENCHMARK_VERSIONS: "version_number_desc_id_desc",
     CollectionSnapshotResource.PORTFOLIOS_NAME: "name_asc_id_asc",
     CollectionSnapshotResource.PORTFOLIOS_UPDATED: "updated_at_desc_id_desc",
     CollectionSnapshotResource.TARGET_VERSIONS: "version_number_desc_id_desc",
@@ -78,6 +96,15 @@ _SORT_SPECIFICATIONS = {
 }
 _OPTIONAL_ACCOUNT_RESOURCES = frozenset(
     {
+        CollectionSnapshotResource.MARKET_SOURCE_STATUS,
+        CollectionSnapshotResource.BENCHMARK_SOURCE_STATUS,
+        CollectionSnapshotResource.FX_SOURCE_STATUS,
+        CollectionSnapshotResource.PRICE_OBSERVATIONS,
+        CollectionSnapshotResource.FX_OBSERVATIONS,
+        CollectionSnapshotResource.BENCHMARK_OBSERVATIONS,
+        CollectionSnapshotResource.BENCHMARK_DEFINITIONS_NAME,
+        CollectionSnapshotResource.BENCHMARK_DEFINITIONS_CREATED,
+        CollectionSnapshotResource.BENCHMARK_VERSIONS,
         CollectionSnapshotResource.PORTFOLIOS_NAME,
         CollectionSnapshotResource.PORTFOLIOS_UPDATED,
         CollectionSnapshotResource.TARGET_VERSIONS,

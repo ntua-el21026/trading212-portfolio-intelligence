@@ -18,10 +18,29 @@ FORBIDDEN_IMPORTS = {
         "trading212_mcp",
         "trading212_persistence",
         "trading212_provider",
+        "trading212_reference_data",
         "trading212_worker",
     },
-    "packages/analytics": {"fastapi", "mcp", "sqlalchemy", "trading212_provider"},
-    "packages/api-contracts": {"sqlalchemy", "trading212_provider"},
+    "packages/analytics": {
+        "fastapi",
+        "mcp",
+        "sqlalchemy",
+        "trading212_provider",
+        "trading212_reference_data",
+    },
+    "packages/api-contracts": {"sqlalchemy", "trading212_provider", "trading212_reference_data"},
+    "packages/application": {"trading212_reference_data"},
+    "packages/persistence": {"trading212_reference_data"},
+    "packages/reference-data": {
+        "fastapi",
+        "mcp",
+        "sqlalchemy",
+        "trading212_provider",
+        "trading212_persistence",
+        "trading212_api",
+        "trading212_mcp",
+        "trading212_worker",
+    },
 }
 
 

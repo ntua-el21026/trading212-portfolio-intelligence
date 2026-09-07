@@ -87,6 +87,12 @@ The `/drift` and `/planner` routes provide canonical target comparisons and
 durable manual contribution plans with immutable revision history. See the
 [P2-02 implementation and exact-SHA evidence](docs/implementation/P2_02_CONTRIBUTION_PLANNING.md).
 
+The same synthetic seed also registers market, FX and benchmark sources through
+their typed ingestion service. The connected `/sources` area exposes observations,
+coverage, licensing and immutable benchmark definitions. Real reference providers
+remain unconfigured. [P2-03 implementation and pending acceptance](docs/implementation/P2_03_REFERENCE_SOURCES.md)
+records this increment's evidence boundary.
+
 ## Documentation entry point
 
 Start with [Design Index and Authority Order](docs/DESIGN_INDEX.md).

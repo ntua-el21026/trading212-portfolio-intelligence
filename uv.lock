@@ -14,6 +14,7 @@ members = [
     "trading212-persistence",
     "trading212-portfolio-intelligence",
     "trading212-provider",
+    "trading212-reference-data",
     "trading212-security",
     "trading212-worker",
 ]
@@ -1308,6 +1309,21 @@ requires-dist = [
 ]
 
 [[package]]
+name = "trading212-reference-data"
+version = "0.1.0"
+source = { editable = "packages/reference-data" }
+dependencies = [
+    { name = "trading212-application" },
+    { name = "trading212-domain" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "trading212-application", editable = "packages/application" },
+    { name = "trading212-domain", editable = "packages/domain" },
+]
+
+[[package]]
 name = "trading212-security"
 version = "0.1.0"
 source = { editable = "packages/security" }
@@ -1338,6 +1354,7 @@ dependencies = [
     { name = "trading212-observability" },
     { name = "trading212-persistence" },
     { name = "trading212-provider" },
+    { name = "trading212-reference-data" },
     { name = "trading212-security" },
 ]
 
@@ -1350,6 +1367,7 @@ requires-dist = [
     { name = "trading212-observability", editable = "packages/observability" },
     { name = "trading212-persistence", editable = "packages/persistence" },
     { name = "trading212-provider", editable = "packages/trading212" },
+    { name = "trading212-reference-data", editable = "packages/reference-data" },
     { name = "trading212-security", editable = "packages/security" },
 ]
 

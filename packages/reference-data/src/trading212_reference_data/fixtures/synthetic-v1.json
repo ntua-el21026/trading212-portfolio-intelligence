@@ -1,0 +1,1313 @@
+{
+  "schema": "reference-replay/v1",
+  "revision": "synthetic-1",
+  "revision_order": 1,
+  "calendar_id": "synthetic-weekdays",
+  "calendar_version": "2026-08-v1",
+  "period": {
+    "start": "2026-08-03",
+    "end": "2026-08-28"
+  },
+  "sessions": [
+    {
+      "date": "2026-08-03",
+      "close_at": "2026-08-03T16:00:00Z"
+    },
+    {
+      "date": "2026-08-04",
+      "close_at": "2026-08-04T16:00:00Z"
+    },
+    {
+      "date": "2026-08-05",
+      "close_at": "2026-08-05T16:00:00Z"
+    },
+    {
+      "date": "2026-08-06",
+      "close_at": "2026-08-06T16:00:00Z"
+    },
+    {
+      "date": "2026-08-07",
+      "close_at": "2026-08-07T16:00:00Z"
+    },
+    {
+      "date": "2026-08-10",
+      "close_at": "2026-08-10T16:00:00Z"
+    },
+    {
+      "date": "2026-08-11",
+      "close_at": "2026-08-11T16:00:00Z"
+    },
+    {
+      "date": "2026-08-12",
+      "close_at": "2026-08-12T16:00:00Z"
+    },
+    {
+      "date": "2026-08-13",
+      "close_at": "2026-08-13T16:00:00Z"
+    },
+    {
+      "date": "2026-08-14",
+      "close_at": "2026-08-14T16:00:00Z"
+    },
+    {
+      "date": "2026-08-17",
+      "close_at": "2026-08-17T16:00:00Z"
+    },
+    {
+      "date": "2026-08-18",
+      "close_at": "2026-08-18T16:00:00Z"
+    },
+    {
+      "date": "2026-08-19",
+      "close_at": "2026-08-19T16:00:00Z"
+    },
+    {
+      "date": "2026-08-20",
+      "close_at": "2026-08-20T16:00:00Z"
+    },
+    {
+      "date": "2026-08-21",
+      "close_at": "2026-08-21T16:00:00Z"
+    },
+    {
+      "date": "2026-08-24",
+      "close_at": "2026-08-24T16:00:00Z"
+    },
+    {
+      "date": "2026-08-25",
+      "close_at": "2026-08-25T16:00:00Z"
+    },
+    {
+      "date": "2026-08-26",
+      "close_at": "2026-08-26T16:00:00Z"
+    },
+    {
+      "date": "2026-08-27",
+      "close_at": "2026-08-27T16:00:00Z"
+    },
+    {
+      "date": "2026-08-28",
+      "close_at": "2026-08-28T16:00:00Z"
+    }
+  ],
+  "prices": {
+    "raw_close": [
+      {
+        "date": "2026-08-03",
+        "effective_at": "2026-08-03T16:00:00Z",
+        "value": "100",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-04",
+        "effective_at": "2026-08-04T16:00:00Z",
+        "value": "101",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-05",
+        "effective_at": "2026-08-05T16:00:00Z",
+        "value": "102",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-06",
+        "effective_at": "2026-08-06T16:00:00Z",
+        "value": "103",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-07",
+        "effective_at": "2026-08-07T16:00:00Z",
+        "value": "104",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-10",
+        "effective_at": "2026-08-10T16:00:00Z",
+        "value": "105",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-11",
+        "effective_at": "2026-08-11T16:00:00Z",
+        "value": "106",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-12",
+        "effective_at": "2026-08-12T16:00:00Z",
+        "value": "107",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-13",
+        "effective_at": "2026-08-13T16:00:00Z",
+        "value": "108",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-14",
+        "effective_at": "2026-08-14T16:00:00Z",
+        "value": "109",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-17",
+        "effective_at": "2026-08-17T16:00:00Z",
+        "value": "50",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-18",
+        "effective_at": "2026-08-18T16:00:00Z",
+        "value": "51",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-19",
+        "effective_at": "2026-08-19T16:00:00Z",
+        "value": "52",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-20",
+        "effective_at": "2026-08-20T16:00:00Z",
+        "value": "53",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-21",
+        "effective_at": "2026-08-21T16:00:00Z",
+        "value": "54",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-24",
+        "effective_at": "2026-08-24T16:00:00Z",
+        "value": "55",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-25",
+        "effective_at": "2026-08-25T16:00:00Z",
+        "value": "56",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-26",
+        "effective_at": "2026-08-26T16:00:00Z",
+        "value": "57",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-27",
+        "effective_at": "2026-08-27T16:00:00Z",
+        "value": "58",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-28",
+        "effective_at": "2026-08-28T16:00:00Z",
+        "value": "59",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      }
+    ],
+    "split_adjusted": [
+      {
+        "date": "2026-08-03",
+        "effective_at": "2026-08-03T16:00:00Z",
+        "value": "100",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-04",
+        "effective_at": "2026-08-04T16:00:00Z",
+        "value": "101",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-05",
+        "effective_at": "2026-08-05T16:00:00Z",
+        "value": "102",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-06",
+        "effective_at": "2026-08-06T16:00:00Z",
+        "value": "103",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-07",
+        "effective_at": "2026-08-07T16:00:00Z",
+        "value": "104",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-10",
+        "effective_at": "2026-08-10T16:00:00Z",
+        "value": "105",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-11",
+        "effective_at": "2026-08-11T16:00:00Z",
+        "value": "106",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-12",
+        "effective_at": "2026-08-12T16:00:00Z",
+        "value": "107",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-13",
+        "effective_at": "2026-08-13T16:00:00Z",
+        "value": "108",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-14",
+        "effective_at": "2026-08-14T16:00:00Z",
+        "value": "109",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-17",
+        "effective_at": "2026-08-17T16:00:00Z",
+        "value": "110",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-18",
+        "effective_at": "2026-08-18T16:00:00Z",
+        "value": "111",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-19",
+        "effective_at": "2026-08-19T16:00:00Z",
+        "value": "112",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-20",
+        "effective_at": "2026-08-20T16:00:00Z",
+        "value": "113",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-21",
+        "effective_at": "2026-08-21T16:00:00Z",
+        "value": "114",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-24",
+        "effective_at": "2026-08-24T16:00:00Z",
+        "value": "115",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-25",
+        "effective_at": "2026-08-25T16:00:00Z",
+        "value": "116",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-26",
+        "effective_at": "2026-08-26T16:00:00Z",
+        "value": "117",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-27",
+        "effective_at": "2026-08-27T16:00:00Z",
+        "value": "118",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-28",
+        "effective_at": "2026-08-28T16:00:00Z",
+        "value": "119",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      }
+    ],
+    "total_return": [
+      {
+        "date": "2026-08-03",
+        "effective_at": "2026-08-03T16:00:00Z",
+        "value": "100",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-04",
+        "effective_at": "2026-08-04T16:00:00Z",
+        "value": "102",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-05",
+        "effective_at": "2026-08-05T16:00:00Z",
+        "value": "104",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-06",
+        "effective_at": "2026-08-06T16:00:00Z",
+        "value": "106",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-07",
+        "effective_at": "2026-08-07T16:00:00Z",
+        "value": "108",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-10",
+        "effective_at": "2026-08-10T16:00:00Z",
+        "value": "110",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-11",
+        "effective_at": "2026-08-11T16:00:00Z",
+        "value": "112",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-12",
+        "effective_at": "2026-08-12T16:00:00Z",
+        "value": "114",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-13",
+        "effective_at": "2026-08-13T16:00:00Z",
+        "value": "116",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-14",
+        "effective_at": "2026-08-14T16:00:00Z",
+        "value": "118",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-17",
+        "effective_at": "2026-08-17T16:00:00Z",
+        "value": "120",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-18",
+        "effective_at": "2026-08-18T16:00:00Z",
+        "value": "122",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-19",
+        "effective_at": "2026-08-19T16:00:00Z",
+        "value": "124",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-20",
+        "effective_at": "2026-08-20T16:00:00Z",
+        "value": "126",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-21",
+        "effective_at": "2026-08-21T16:00:00Z",
+        "value": "128",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-24",
+        "effective_at": "2026-08-24T16:00:00Z",
+        "value": "130",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-25",
+        "effective_at": "2026-08-25T16:00:00Z",
+        "value": "132",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-26",
+        "effective_at": "2026-08-26T16:00:00Z",
+        "value": "134",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-27",
+        "effective_at": "2026-08-27T16:00:00Z",
+        "value": "136",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      },
+      {
+        "date": "2026-08-28",
+        "effective_at": "2026-08-28T16:00:00Z",
+        "value": "138",
+        "state": "available",
+        "corporate_action_revision": "synthetic-split-1"
+      }
+    ]
+  },
+  "benchmark": {
+    "raw_close": [
+      {
+        "date": "2026-08-03",
+        "effective_at": "2026-08-03T16:00:00Z",
+        "level": "1000",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-04",
+        "effective_at": "2026-08-04T16:00:00Z",
+        "level": "1002",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-05",
+        "effective_at": "2026-08-05T16:00:00Z",
+        "level": "1004",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-06",
+        "effective_at": "2026-08-06T16:00:00Z",
+        "level": "1006",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-07",
+        "effective_at": "2026-08-07T16:00:00Z",
+        "level": "1008",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-10",
+        "effective_at": "2026-08-10T16:00:00Z",
+        "level": "1010",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-11",
+        "effective_at": "2026-08-11T16:00:00Z",
+        "level": "1012",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-12",
+        "effective_at": "2026-08-12T16:00:00Z",
+        "level": "1014",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-13",
+        "effective_at": "2026-08-13T16:00:00Z",
+        "level": "1016",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-14",
+        "effective_at": "2026-08-14T16:00:00Z",
+        "level": "1018",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-17",
+        "effective_at": "2026-08-17T16:00:00Z",
+        "level": "1020",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-18",
+        "effective_at": "2026-08-18T16:00:00Z",
+        "level": "1022",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-19",
+        "effective_at": "2026-08-19T16:00:00Z",
+        "level": "1024",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-20",
+        "effective_at": "2026-08-20T16:00:00Z",
+        "level": "1026",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-21",
+        "effective_at": "2026-08-21T16:00:00Z",
+        "level": "1028",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-24",
+        "effective_at": "2026-08-24T16:00:00Z",
+        "level": "1030",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-25",
+        "effective_at": "2026-08-25T16:00:00Z",
+        "level": "1032",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-26",
+        "effective_at": "2026-08-26T16:00:00Z",
+        "level": "1034",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-27",
+        "effective_at": "2026-08-27T16:00:00Z",
+        "level": "1036",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-28",
+        "effective_at": "2026-08-28T16:00:00Z",
+        "level": "1038",
+        "state": "available"
+      }
+    ],
+    "split_adjusted": [
+      {
+        "date": "2026-08-03",
+        "effective_at": "2026-08-03T16:00:00Z",
+        "level": "1000",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-04",
+        "effective_at": "2026-08-04T16:00:00Z",
+        "level": "1002",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-05",
+        "effective_at": "2026-08-05T16:00:00Z",
+        "level": "1004",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-06",
+        "effective_at": "2026-08-06T16:00:00Z",
+        "level": "1006",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-07",
+        "effective_at": "2026-08-07T16:00:00Z",
+        "level": "1008",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-10",
+        "effective_at": "2026-08-10T16:00:00Z",
+        "level": "1010",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-11",
+        "effective_at": "2026-08-11T16:00:00Z",
+        "level": "1012",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-12",
+        "effective_at": "2026-08-12T16:00:00Z",
+        "level": "1014",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-13",
+        "effective_at": "2026-08-13T16:00:00Z",
+        "level": "1016",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-14",
+        "effective_at": "2026-08-14T16:00:00Z",
+        "level": "1018",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-17",
+        "effective_at": "2026-08-17T16:00:00Z",
+        "level": "1020",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-18",
+        "effective_at": "2026-08-18T16:00:00Z",
+        "level": "1022",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-19",
+        "effective_at": "2026-08-19T16:00:00Z",
+        "level": "1024",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-20",
+        "effective_at": "2026-08-20T16:00:00Z",
+        "level": "1026",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-21",
+        "effective_at": "2026-08-21T16:00:00Z",
+        "level": "1028",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-24",
+        "effective_at": "2026-08-24T16:00:00Z",
+        "level": "1030",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-25",
+        "effective_at": "2026-08-25T16:00:00Z",
+        "level": "1032",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-26",
+        "effective_at": "2026-08-26T16:00:00Z",
+        "level": "1034",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-27",
+        "effective_at": "2026-08-27T16:00:00Z",
+        "level": "1036",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-28",
+        "effective_at": "2026-08-28T16:00:00Z",
+        "level": "1038",
+        "state": "available"
+      }
+    ],
+    "total_return": [
+      {
+        "date": "2026-08-03",
+        "effective_at": "2026-08-03T16:00:00Z",
+        "level": "1000",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-04",
+        "effective_at": "2026-08-04T16:00:00Z",
+        "level": "1003",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-05",
+        "effective_at": "2026-08-05T16:00:00Z",
+        "level": "1006",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-06",
+        "effective_at": "2026-08-06T16:00:00Z",
+        "level": "1009",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-07",
+        "effective_at": "2026-08-07T16:00:00Z",
+        "level": "1012",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-10",
+        "effective_at": "2026-08-10T16:00:00Z",
+        "level": "1015",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-11",
+        "effective_at": "2026-08-11T16:00:00Z",
+        "level": "1018",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-12",
+        "effective_at": "2026-08-12T16:00:00Z",
+        "level": "1021",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-13",
+        "effective_at": "2026-08-13T16:00:00Z",
+        "level": "1024",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-14",
+        "effective_at": "2026-08-14T16:00:00Z",
+        "level": "1027",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-17",
+        "effective_at": "2026-08-17T16:00:00Z",
+        "level": "1030",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-18",
+        "effective_at": "2026-08-18T16:00:00Z",
+        "level": "1033",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-19",
+        "effective_at": "2026-08-19T16:00:00Z",
+        "level": "1036",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-20",
+        "effective_at": "2026-08-20T16:00:00Z",
+        "level": "1039",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-21",
+        "effective_at": "2026-08-21T16:00:00Z",
+        "level": "1042",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-24",
+        "effective_at": "2026-08-24T16:00:00Z",
+        "level": "1045",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-25",
+        "effective_at": "2026-08-25T16:00:00Z",
+        "level": "1048",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-26",
+        "effective_at": "2026-08-26T16:00:00Z",
+        "level": "1051",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-27",
+        "effective_at": "2026-08-27T16:00:00Z",
+        "level": "1054",
+        "state": "available"
+      },
+      {
+        "date": "2026-08-28",
+        "effective_at": "2026-08-28T16:00:00Z",
+        "level": "1057",
+        "state": "available"
+      }
+    ]
+  },
+  "fx": [
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-03",
+      "effective_at": "2026-08-03T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260803",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-03",
+      "effective_at": "2026-08-03T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260803",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-04",
+      "effective_at": "2026-08-04T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260804",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-04",
+      "effective_at": "2026-08-04T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260804",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-05",
+      "effective_at": "2026-08-05T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260805",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-05",
+      "effective_at": "2026-08-05T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260805",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-06",
+      "effective_at": "2026-08-06T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260806",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-06",
+      "effective_at": "2026-08-06T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260806",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-07",
+      "effective_at": "2026-08-07T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260807",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-07",
+      "effective_at": "2026-08-07T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260807",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-10",
+      "effective_at": "2026-08-10T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260810",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-10",
+      "effective_at": "2026-08-10T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260810",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-11",
+      "effective_at": "2026-08-11T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260811",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-11",
+      "effective_at": "2026-08-11T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260811",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-12",
+      "effective_at": "2026-08-12T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260812",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-12",
+      "effective_at": "2026-08-12T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260812",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-13",
+      "effective_at": "2026-08-13T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260813",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-13",
+      "effective_at": "2026-08-13T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260813",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-14",
+      "effective_at": "2026-08-14T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260814",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-14",
+      "effective_at": "2026-08-14T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260814",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-17",
+      "effective_at": "2026-08-17T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260817",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-17",
+      "effective_at": "2026-08-17T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260817",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-18",
+      "effective_at": "2026-08-18T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260818",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-18",
+      "effective_at": "2026-08-18T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260818",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-19",
+      "effective_at": "2026-08-19T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260819",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-19",
+      "effective_at": "2026-08-19T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260819",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-20",
+      "effective_at": "2026-08-20T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260820",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-20",
+      "effective_at": "2026-08-20T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260820",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-21",
+      "effective_at": "2026-08-21T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260821",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-21",
+      "effective_at": "2026-08-21T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260821",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-24",
+      "effective_at": "2026-08-24T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260824",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-24",
+      "effective_at": "2026-08-24T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260824",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-25",
+      "effective_at": "2026-08-25T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260825",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-25",
+      "effective_at": "2026-08-25T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260825",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-26",
+      "effective_at": "2026-08-26T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260826",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-26",
+      "effective_at": "2026-08-26T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260826",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-27",
+      "effective_at": "2026-08-27T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260827",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-27",
+      "effective_at": "2026-08-27T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260827",
+      "state": "available"
+    },
+    {
+      "base": "EUR",
+      "quote": "USD",
+      "date": "2026-08-28",
+      "effective_at": "2026-08-28T16:00:00Z",
+      "rate": "1.2",
+      "batch_key": "fx-20260828",
+      "state": "available"
+    },
+    {
+      "base": "GBP",
+      "quote": "EUR",
+      "date": "2026-08-28",
+      "effective_at": "2026-08-28T16:00:00Z",
+      "rate": "1.1",
+      "batch_key": "fx-20260828",
+      "state": "available"
+    }
+  ],
+  "actions": [
+    {
+      "key": "synthetic-split",
+      "kind": "split",
+      "effective_date": "2026-08-17",
+      "ratio": "2",
+      "amount": null,
+      "currency": null,
+      "revision": "synthetic-split-1"
+    },
+    {
+      "key": "synthetic-distribution",
+      "kind": "cash_distribution",
+      "effective_date": "2026-08-24",
+      "ratio": null,
+      "amount": "0.5",
+      "currency": "EUR",
+      "revision": "synthetic-distribution-1"
+    }
+  ],
+  "instrument": {
+    "isin": "XS0000000001",
+    "provider_key": "SYNTHETIC_EQ_1",
+    "mic": "XOFF",
+    "ticker": "SYNEQ",
+    "name": "Synthetic Global Equity"
+  },
+  "classifications": [
+    {
+      "dimension": "sector",
+      "category": "Technology"
+    },
+    {
+      "dimension": "country",
+      "category": "IE"
+    },
+    {
+      "dimension": "region",
+      "category": "Europe"
+    },
+    {
+      "dimension": "economic_currency",
+      "category": "EUR"
+    }
+  ],
+  "constituents": [
+    {
+      "key": "synthetic-known",
+      "weight": "0.8",
+      "state": "known"
+    },
+    {
+      "key": "synthetic-unresolved",
+      "weight": "0.1",
+      "state": "unresolved"
+    },
+    {
+      "key": "synthetic-cash",
+      "weight": "0.1",
+      "state": "cash"
+    }
+  ]
+}

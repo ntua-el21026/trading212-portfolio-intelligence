@@ -22,8 +22,8 @@ class TargetClientGenerator:
     """Deliberately bounded JSON Schema subset; unsupported shapes fail generation."""
 
     def __init__(self, contract: dict[str, Any], *, tag: str = "targets") -> None:
-        if tag not in {"targets", "planning"}:
-            raise ValueError("Only fixed target and planning operations are supported")
+        if tag not in {"targets", "planning", "sources"}:
+            raise ValueError("Only fixed target, planning and source operations are supported")
         self.tag = tag
         self.contract = contract
         self.definitions: dict[str, Any] = contract["components"]["schemas"]
@@ -182,11 +182,23 @@ class TargetClientGenerator:
         if len(successes) != 1:
             raise ValueError("Target operations require exactly one typed success response")
         response_schema = self.schema(successes[0]["content"]["application/json"]["schema"])
+        invocation = (
+            f"this.#request({_quoted(method.upper())}, `{path}`, "
+            f"{response_schema}, {query}, {body}, options)"
+        )
+        body_text = f"return {invocation};\n"
+        if self.tag == "sources":
+            # Source SDK errors never expose an unknown caller-supplied field name.
+            body_text = (
+                f"try {{ return await {invocation}; }} catch (error) {{ "
+                "if (error instanceof z.ZodError) throw new SourceApiError("
+                '"VALIDATION_FAILED", 422, "The reference source request is invalid."); '
+                "throw error; }\n"
+            )
         return (
             f"async {name}({', '.join(arguments)}): "
             f"Promise<TargetApiResponse<z.output<typeof {response_schema}>>> {{\n"
-            f"return this.#request({_quoted(method.upper())}, `{path}`, "
-            f"{response_schema}, {query}, {body}, options);\n}}"
+            f"{body_text}}}"
         )
 
     def render(self) -> str:
@@ -240,3 +252,20 @@ def render_planning_client(contract: dict[str, Any]) -> str:
     ):
         rendered = rendered.replace(f"Target{name}", f"Planning{name}")
     return rendered.replace("./target-transport", "./planning-transport")
+
+
+def render_source_client(contract: dict[str, Any]) -> str:
+    """Generate only the fourteen frozen source and benchmark operations."""
+    rendered = TargetClientGenerator(contract, tag="sources").render()
+    for name in (
+        "Transport",
+        "ApiClient",
+        "ApiResponse",
+        "ReadOptions",
+        "CommandOptions",
+        "ClientOptions",
+    ):
+        rendered = rendered.replace(f"Target{name}", f"Source{name}")
+    return rendered.replace("./target-transport", "./source-transport").replace(
+        "SourceTransport, type", "SourceTransport, SourceApiError, type"
+    )

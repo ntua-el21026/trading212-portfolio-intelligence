@@ -54,6 +54,7 @@ from trading212_application.services import (
     PortfolioService,
     RefreshUnavailableError,
 )
+from trading212_application.sources import SourceService, SourceServiceError
 from trading212_application.targets import TargetService, TargetServiceError
 from trading212_application.views import Page
 from trading212_domain.errors import DomainError
@@ -117,6 +118,7 @@ from .schemas import (
     SnapshotDetailResponse,
     SnapshotResponse,
 )
+from .source_routes import register_source_routes
 from .target_routes import register_target_routes
 
 SESSION_COOKIE = "t212pi_session"
@@ -142,6 +144,7 @@ class ApiContext:
     service: PortfolioService
     target_service: TargetService | None
     planning_service: PlanningService | None
+    source_service: SourceService | None
     sessions: SessionManager
     local_authenticator: LocalSyntheticAuthenticator | None
     bearer_authenticator: BearerAuthenticator | None
@@ -157,6 +160,7 @@ def create_app(
     service: PortfolioService | None = None,
     target_service: TargetService | None = None,
     planning_service: PlanningService | None = None,
+    source_service: SourceService | None = None,
     session_manager: SessionManager | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -181,7 +185,7 @@ def create_app(
             "bearer authenticator, and dispatcher-aware readiness probe"
         )
     if service is None:
-        portfolio_service, default_targets, default_planning, default_readiness = (
+        portfolio_service, default_targets, default_planning, default_sources, default_readiness = (
             _local_runtime_defaults(
                 security_settings,
                 runtime_clock,
@@ -190,6 +194,7 @@ def create_app(
         )
         target_service = target_service or default_targets
         planning_service = planning_service or default_planning
+        source_service = source_service or default_sources
     else:
         portfolio_service = service
         default_readiness = _ready
@@ -208,6 +213,7 @@ def create_app(
         service=portfolio_service,
         target_service=target_service,
         planning_service=planning_service,
+        source_service=source_service,
         sessions=sessions,
         local_authenticator=local_authenticator,
         bearer_authenticator=bearer_authenticator,
@@ -253,6 +259,7 @@ def create_app(
     _register_routes(application)
     register_target_routes(application, _principal, _context)
     register_planning_routes(application, _principal, _context)
+    register_source_routes(application, _principal, _context)
     _install_openapi_contract(application)
     return application
 
@@ -262,8 +269,11 @@ def _local_runtime_defaults(
     clock: Callable[[], datetime],
     *,
     cursor_signing_key: bytes | None,
-) -> tuple[PortfolioService, TargetService, PlanningService, Callable[[], Awaitable[bool]]]:
+) -> tuple[
+    PortfolioService, TargetService, PlanningService, SourceService, Callable[[], Awaitable[bool]]
+]:
     from trading212_persistence.planning_service import PostgresPlanningService
+    from trading212_persistence.source_service import PostgresSourceService
 
     database_url = os.environ.get("DATABASE_URL")
     if database_url is None:
@@ -305,6 +315,12 @@ def _local_runtime_defaults(
             cursor_ttl_seconds=settings.cursor_ttl_seconds,
         ),
         PostgresPlanningService(
+            sessions=sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=settings.cursor_ttl_seconds,
+        ),
+        PostgresSourceService(
             sessions=sessions,
             clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
@@ -615,6 +631,38 @@ def _register_error_handlers(application: FastAPI) -> None:
         code = exc.code.value
         response_status, message = errors.get(
             code, (500, "The planning operation could not complete.")
+        )
+        return JSONResponse(
+            status_code=response_status,
+            content=envelope(request, code, message, retryable=response_status == 503),
+            headers={"Cache-Control": "private, no-store"},
+        )
+
+    @application.exception_handler(SourceServiceError)
+    async def source_service_error(request: Request, exc: SourceServiceError) -> JSONResponse:
+        errors = {
+            "NOT_FOUND": (404, "The requested reference resource was not found."),
+            "ACCESS_DENIED": (403, "Access to this reference source is denied."),
+            "VALIDATION_FAILED": (422, "The reference source request is invalid."),
+            "CURRENCY_MISMATCH": (422, "The benchmark reporting currency does not match."),
+            "IMMUTABLE_VERSION": (409, "Published benchmarks are immutable; create a new version."),
+            "IDEMPOTENCY_KEY_REUSED": (409, "The idempotency key belongs to a different command."),
+            "REVISION_REQUIRED": (428, "The current benchmark revision is required."),
+            "REVISION_MISMATCH": (412, "The revision changed. Reload before submitting again."),
+            "INVALID_STATE_TRANSITION": (
+                409,
+                "This benchmark lifecycle transition is unavailable.",
+            ),
+            "SOURCE_REVISION_CONFLICT": (
+                409,
+                "The source revision conflicts with retained evidence.",
+            ),
+            "RESULT_TOO_LARGE": (422, "The source result exceeds its permitted size."),
+            "PROVIDER_UNAVAILABLE": (503, "The reference source service is unavailable."),
+        }
+        code = exc.code.value
+        response_status, message = errors.get(
+            code, (500, "The source operation could not complete.")
         )
         return JSONResponse(
             status_code=response_status,

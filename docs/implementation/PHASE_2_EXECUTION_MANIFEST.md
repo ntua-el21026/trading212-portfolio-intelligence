@@ -20,7 +20,7 @@ regressions. The current design closure does not claim a Phase 2 capability work
 |---|---|---|
 | P2-01 | [Virtual portfolios, hierarchy, targets, mappings, validation, immutable publication/lifecycle and audit](P2_01_VIRTUAL_TARGETS.md) | Scoped PostgreSQL/API/editor/read tool tests; invalid weights, immutable versions, comparison, CSRF, concurrency |
 | P2-02 | [Actual/target drift and deterministic no-sale contribution plans in all required modes](P2_02_CONTRIBUTION_PLANNING.md) | Hand-calculated fixtures, properties, constraints/infeasibility, stored plan and API/web/MCP parity |
-| P2-03 | Typed market/FX/benchmark inputs, immutable snapshots, licensing and replay | Revision/gap/cutoff/FX tests, provider isolation and explicit configuration states |
+| P2-03 | [Typed market/FX/benchmark inputs, immutable snapshots, licensing and replay](P2_03_REFERENCE_SOURCES.md) | Revision/gap/cutoff/FX tests, provider isolation and explicit configuration states |
 | P2-04 | Historical performance, benchmark, attribution, dividends and cash flows | Flow separation, period/currency alignment, reference returns and residual/coverage tests |
 | P2-05 | Economic identity, constituents, effective exposure and overlap | Two ETFs/direct holding/share classes/ADR/unresolved/stale fixtures and conservation tests |
 | P2-06 | Private durable reports and PDF/CSV/JSON/XLSX exports | Canonical manifest, format validity, injection, authorization, expiry, licensing and restart tests |

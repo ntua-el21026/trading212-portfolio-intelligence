@@ -67,6 +67,7 @@ REQUIRED_DIRECTORIES = (
     "packages/domain",
     "packages/observability",
     "packages/persistence",
+    "packages/reference-data",
     "packages/security",
     "packages/trading212",
     "packages/ui",

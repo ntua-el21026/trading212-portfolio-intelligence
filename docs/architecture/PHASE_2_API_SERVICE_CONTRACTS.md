@@ -360,6 +360,15 @@ weighted component source IDs; all sources must be owner-authorized and licensed
 Versions are validated and published atomically with immutable content. No
 benchmark/provider credentials or URLs can be configured through this surface.
 
+Component `source_id` refers to an immutable owner-authorized source-series
+catalog entry, not a snapshot or another definition. Benchmark snapshot headers
+are a closed `provider_series`/`composite` union: the former exposes actual provider
+levels and their provider/license/source-series identity; the latter pins a
+benchmark version and component/FX inputs. The same frozen snapshot detail and
+observation routes serve both variants. P2-03 implements provider observations
+and definition commands; composite calculation is P2-04. No empty composite is
+created to make a newly published definition appear calculated.
+
 ## 6. Reports and exports
 
 All report/export operations require account `portfolio:read`. `R-R` means

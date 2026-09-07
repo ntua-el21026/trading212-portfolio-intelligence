@@ -4,6 +4,19 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Phase 2 reference sources
+
+- Add isolated typed synthetic reference adapters for raw, split-adjusted and
+  total-return prices, FX, benchmark levels, corporate actions and metadata.
+- Retain immutable owner-scoped source catalogs, calendars, licenses, observations,
+  revisions, retrieval occurrences and exact benchmark command history in PostgreSQL.
+- Expose fourteen bounded source/benchmark API operations, generated clients,
+  provenance and observation pages, and an immutable benchmark version editor.
+- Enforce cutoff, calendar-gap, revision-ambiguity, freshness and separate
+  storage/display/report/export permission policies. External providers remain
+  explicitly unconfigured. P2-03 acceptance is pending the complete gate and
+  exact-SHA runtime/CI evidence.
+
 ### Phase 2 contribution planning
 
 - Add exact direct drift and four contribution planning modes over pinned

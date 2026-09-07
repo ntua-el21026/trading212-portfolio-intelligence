@@ -742,3 +742,12 @@ export type {
   PlanningCommandOptions,
   PlanningReadOptions,
 } from "./planning-transport";
+
+export * from "./sources.generated";
+export { SourceApiError } from "./source-transport";
+export type {
+  SourceApiResponse,
+  SourceClientOptions,
+  SourceCommandOptions,
+  SourceReadOptions,
+} from "./source-transport";

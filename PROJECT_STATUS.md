@@ -42,7 +42,13 @@ Trading 212 remains ten GET capabilities. The initial candidate's failed quality
 run `34144309940` is retained separately; the browser database isolation fix is
 included in the accepted SHA. See [the P2-02 evidence](docs/implementation/evidence/phase-2-p2-02-f78c9d2.json).
 Phase 2 now has two of ten packages, six of 29 local rows and eleven of 40
-scenarios complete (20%). P2-03 through P2-10 remain required.
+scenarios complete (20%). P2-03 is `implemented_unverified` from synchronized starting SHA
+`c9adba4f427cdbee1ebce7fbbb9425d1061c8146`; all three CI workflows for that
+P2-02 evidence commit passed. Its isolated adapters, 26 normalized source tables
+under migration `20260907_0011`, fourteen fixed HTTP operations, source browser
+and benchmark editor are implemented.
+P2-03 still requires exact committed-SHA validation, CI and fresh-runtime acceptance;
+no acceptance claim is made yet. P2-04 through P2-10 remain required.
 Phase 3 remains `not_started`.
 
 ## Previously accepted baseline
