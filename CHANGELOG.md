@@ -27,7 +27,7 @@ All notable project changes are recorded here. The project follows semantic vers
   and income pages with capture replay, filters, charts and accessible tables.
 - Add separate annual and timely synthetic histories, normalized calculation
   provenance, composite benchmark views and bounded licensed-payload cleanup.
-  P2-04 acceptance remains pending its exact-source validation and runtime gates.
+  Accept scoped P2-04 at `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0` after the exact full gate, clean supplementary browser/web-build gate, CI, eight security scans and fresh runtime/restart/cleanup. Retain failed candidates, both failed runtime attempts and the changed-source browser observation as unaccepted. S34 remains in progress; default multi-account Compose startup, route/global-header consistency and sticky-header visual closure remain P2-08 work.
 
 ### Phase 2 reference sources
 
@@ -204,7 +204,7 @@ Live is disabled and untested, not another Phase 1 gate.
 
 Virtual Pies/targets, contribution optimization, full performance/benchmarks, X-ray, reports, alerts, and premium analytical interfaces.
 
-Status: `in_progress`; P2-01 through P2-03 complete (3/10 packages).
+Status: `in_progress`; P2-01 through P2-04 complete (4/10 packages, 40%). Eleven of 29 local rows and eighteen of 40 scenarios are complete; shared S34 is in progress.
 
 ### [1.0.0] — Phase 3: Premium Intelligence and Productization
 

@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_kind": "retained_failed_runtime_attempt",
+  "source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+  "result": "failed",
+  "requirements": [
+    "P2-04"
+  ],
+  "recorded_at_utc": "2026-09-08T20:39:34.273834+00:00",
+  "attempt": 1,
+  "execution": {
+    "source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+    "invocations": [
+      {
+        "phase": "all",
+        "command": [
+          "uv",
+          "run",
+          "python",
+          "<runtime-attempt-001>/acceptance.py",
+          "--phase",
+          "all",
+          "--execute-authorized",
+          "--expected-sha",
+          "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0"
+        ],
+        "cwd": "<checkout>",
+        "started_at_utc": "2026-09-08T20:19:52.580312+00:00",
+        "completed_at_utc": "2026-09-08T20:20:45.842508+00:00",
+        "exit_code": 1,
+        "log_name": "runtime-all-001.log",
+        "log_sha256": "8e652f8530c18b43b687d1d554db7bf566b9db25523213497bbc2ddfa1f0404e",
+        "harness_sha256": "fa39937a5d3a3fcdd2b64d2ce4162896417d89ef06a36bbd8f822b4ddf3f2d4e",
+        "checkout_clean_before": true,
+        "checkout_clean_after": true,
+        "head_after": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0"
+      }
+    ]
+  },
+  "completed_phases": [
+    "bootstrap",
+    "source"
+  ],
+  "failure": {
+    "assertion": "Web login failed",
+    "boundary": "observe initial: final HTTP status after following web local-session redirect was not 200",
+    "http_status_observed": false,
+    "diagnosis": "Source review found complete seeding creates multiple accounts while the scratch web configuration omitted T212PI_ACCOUNT_ID, which the overview account selector requires. Attempt 001 did not retain HTTP statuses, so its exact response chain is unknown."
+  },
+  "task_cleanup_verified": true,
+  "cleanup": {
+    "project": "t212pi_stage_a_20260907",
+    "stage": "after-runtime",
+    "services_removed": {
+      "6912d0817972": "web",
+      "a35490f0a3d4": "api",
+      "1d1d492a6757": "dispatcher",
+      "34f6138a9ce4": "worker",
+      "c0adbde40248": "mcp",
+      "4a6df90062f6": "redis",
+      "a55a5162e595": "postgres"
+    },
+    "volumes_removed": [
+      "t212pi_stage_a_20260907_postgres-data"
+    ],
+    "networks_removed": [
+      "1676562a8884"
+    ],
+    "verified_absent_after_cleanup": true,
+    "completed_at": "2026-09-08T20:20:45.842344+00:00"
+  },
+  "artifact_sha256": {
+    "acceptance.py": "fa39937a5d3a3fcdd2b64d2ce4162896417d89ef06a36bbd8f822b4ddf3f2d4e",
+    "execution.json": "57b0194afff702e6c2b2858f92c57932eaf6b9cba7bffe8dce53029cae6e7ab5",
+    "runtime-all-001.log": "8e652f8530c18b43b687d1d554db7bf566b9db25523213497bbc2ddfa1f0404e",
+    "evidence.json": "60ff6634b5d72e8cb8f7b2a0adad5f59083eab678c8b2a2495191bc3ebc23613",
+    "after-runtime-cleanup.json": "a57aab523bd3098d20dbb66f95393be3ab7477b3740e21d2cdfb3309022b08e5",
+    "after-runtime-cleanup.log": "9577bde55af1d7acf75f75049b8b4013befc3e009d790d70da125f49d1a69c39"
+  },
+  "acceptance": {
+    "accepted": false,
+    "substitutes_for_successful_runtime": false
+  },
+  "follow_up": "A separate fresh full runtime attempt configures the original synthetic account explicitly and records sanitized login diagnostics; all acceptance assertions and exact-source checks remain required.",
+  "original_local_record_sha256": "fd18dc3205967f1427c2920d3b9c510787d8b92cee8bc16ddae2164dcec2e829"
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_kind": "unaccepted_browser_evidence_source_change",
+  "source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+  "result": "unaccepted_changed_source",
+  "requirements": [
+    "P2-04"
+  ],
+  "observed_browser_passes": 66,
+  "gate_record_sha256": "9088c1b1926294d6f561a7fb8f6e8108bd5670a405a4621b8abdfd1149d72339",
+  "log_sha256": "c2b653f504181ed07b1843b213f0376ab60992ecb554aa157e2ffc77e4166c95",
+  "started_at_utc": "2026-09-08T20:56:57.657244+00:00",
+  "completed_at_utc": "2026-09-08T21:03:08.164521+00:00",
+  "command": [
+    "env",
+    "CI=1",
+    "PW_TEST_REPORTER=list",
+    "T212PI_E2E_TIMINGS=1",
+    "corepack",
+    "pnpm",
+    "test:e2e"
+  ],
+  "reason": "Next dev changed two generated next-env.d.ts imports to .next/dev/types; clean-before/after gate failed. The browser results are not used as accepted evidence.",
+  "follow_up": "Rerun existing make test-e2e build-web with CI=1 and additional list reporter so the production build restores generated types before the final source check."
+}

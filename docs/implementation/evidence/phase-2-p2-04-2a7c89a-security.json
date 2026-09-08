@@ -1,0 +1,429 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_kind": "exact_commit_security_scans",
+  "source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+  "result": "passed",
+  "result_scope": "One complete-history Gitleaks scan, one Trivy source scan, and six immutable-image Trivy scans under the recorded policy; no other gates are represented.",
+  "reproduction": {
+    "placeholders": {
+      "${REPOSITORY_ROOT}": "Local non-shallow repository containing source_sha and its complete reachable history; clean checkout at source_sha when the archive and images are built.",
+      "${EVIDENCE_ROOT}": "Writable local evidence directory containing source.tar and its extracted source/ snapshot of source_sha.",
+      "${TOOLS_ROOT}": "Local tool directory containing trivy-0.74.0/trivy and writable trivy-cache/. Use the recorded pinned versions."
+    },
+    "argument_rule": "Replace placeholders in each argument string before executing the recorded command array. /repo and /snapshot are fixed container mount destinations, not host paths.",
+    "prerequisites": [
+      "Git with complete reachable history",
+      "Docker with the recorded immutable images available locally",
+      "Trivy 0.74.0 Linux executable",
+      "Python with tarfile filter=data support for archive extraction"
+    ],
+    "image_reproduction": "The historical scans require the recorded immutable image IDs. A new build may produce different IDs; record and scan those separately instead of attributing this result to them."
+  },
+  "source_snapshot": {
+    "tree_sha": "a0a7f86b7d74e6e0bc6bba88abd3ac2ab4cfb919",
+    "archive_sha256": "0de517f696ee47adead4491bcda356f6d7761a7bc5ee8c34effc331d66ddb268",
+    "archive_command": [
+      "git",
+      "archive",
+      "--format=tar",
+      "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+      "-o",
+      "${EVIDENCE_ROOT}/source.tar"
+    ],
+    "archive_cwd": "${REPOSITORY_ROOT}",
+    "extraction": "Python tarfile.open('${EVIDENCE_ROOT}/source.tar').extractall('${EVIDENCE_ROOT}/source', filter='data') after placeholder replacement.",
+    "created_at_utc": "2026-09-08T20:19:26.944839+00:00",
+    "checkout_clean": true
+  },
+  "tools": {
+    "gitleaks": {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--cpus=1",
+        "--memory=1g",
+        "-e",
+        "GOMAXPROCS=1",
+        "--network=none",
+        "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f",
+        "version"
+      ],
+      "exit_code": 0,
+      "stdout": "v8.30.1",
+      "stderr": ""
+    },
+    "trivy": {
+      "command": [
+        "${TOOLS_ROOT}/trivy-0.74.0/trivy",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "Version: 0.74.0",
+      "stderr": "2026-09-08T23:19:27+03:00\tINFO\tLoaded\tfile_path=\"trivy.yaml\""
+    }
+  },
+  "policy": {
+    "workflow_path": ".github/workflows/security.yml",
+    "workflow_sha256": "bd7ad84fb98031f0917d2245b1aff21792d7e2315ec07b97cf653c89937cb163",
+    "gitleaks": {
+      "image": "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f",
+      "rules": "Pinned image default rules with the exact committed historical fingerprint exceptions.",
+      "ignore_path": ".gitleaksignore",
+      "ignore_sha256": "6905907035d03fb4572d9c681231f39174c33660284ab7b843e99c333d39b80c",
+      "redact": true,
+      "history_scope": "All ancestors reachable from source_sha, with no starting cutoff.",
+      "reviewed_exception_commit": "abb655eb7f0e1335e4c74040cc96ad1a0f83bbeb",
+      "historical_exception_count": 5
+    },
+    "trivy": {
+      "config_path": "trivy.yaml",
+      "config_sha256": "28494fcd8c095d145d36e177ba11f8fb279a6d1996ca343c516784540bed0703",
+      "severity": [
+        "HIGH",
+        "CRITICAL"
+      ],
+      "ignore_unfixed": true,
+      "source_scanners": [
+        "vuln",
+        "secret",
+        "misconfig",
+        "license"
+      ],
+      "image_scanners": [
+        "vuln",
+        "secret"
+      ],
+      "license_full": true,
+      "license_ignored": [
+        "LGPL-3.0-or-later"
+      ],
+      "vulnerability_database": {
+        "Version": 2,
+        "NextUpdate": "2026-09-09T19:09:56.811508242Z",
+        "UpdatedAt": "2026-09-08T19:09:56.811508512Z",
+        "DownloadedAt": "2026-09-08T20:19:36.498479372Z"
+      },
+      "misconfiguration_policy_bundle": {
+        "Digest": "sha256:1583562f8b90ed2a071b99f0e5ffff6b57e4ceb6ca3e4796577b4e6a339eb74c",
+        "DownloadedAt": "2026-09-08T23:19:37.339433987+03:00",
+        "MajorVersion": 2
+      },
+      "image_vulnerability_database": {
+        "Version": 2,
+        "NextUpdate": "2026-09-09T19:09:56.811508242Z",
+        "UpdatedAt": "2026-09-08T19:09:56.811508512Z",
+        "DownloadedAt": "2026-09-08T20:19:36.498479372Z"
+      }
+    }
+  },
+  "history_scan": {
+    "result": "passed",
+    "reachable_commits": 84,
+    "scanner_reported_commits": 83,
+    "shallow": false,
+    "reported_conclusion": "no leaks found",
+    "command": [
+      "docker",
+      "run",
+      "--rm",
+      "--cpus=1",
+      "--memory=1g",
+      "-e",
+      "GOMAXPROCS=1",
+      "--network=none",
+      "-v",
+      "${REPOSITORY_ROOT}:/repo:ro",
+      "-v",
+      "${EVIDENCE_ROOT}/source:/snapshot:ro",
+      "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f",
+      "detect",
+      "--source=/repo",
+      "--no-banner",
+      "--redact",
+      "--no-color",
+      "--log-opts=2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+      "--gitleaks-ignore-path=/snapshot/.gitleaksignore"
+    ],
+    "cwd": "${EVIDENCE_ROOT}/source",
+    "started_at_utc": "2026-09-08T20:19:27.301238+00:00",
+    "duration_seconds": 4.729,
+    "exit_code": 0,
+    "log_sha256": "d4fab6cb3c057cd598672d0ebd5b90398d818f1ea18e60d07790d1eedceb7699"
+  },
+  "source_scan": {
+    "result": "passed",
+    "detected_lockfiles": [
+      "pnpm-lock.yaml",
+      "uv.lock"
+    ],
+    "detected_dockerfiles": [
+      "infrastructure/docker/api.Dockerfile",
+      "infrastructure/docker/mcp.Dockerfile",
+      "infrastructure/docker/postgres.Dockerfile",
+      "infrastructure/docker/redis.Dockerfile",
+      "infrastructure/docker/web.Dockerfile",
+      "infrastructure/docker/worker.Dockerfile"
+    ],
+    "command": [
+      "${TOOLS_ROOT}/trivy-0.74.0/trivy",
+      "fs",
+      "--cache-dir",
+      "${TOOLS_ROOT}/trivy-cache",
+      "--scanners",
+      "vuln,secret,misconfig,license",
+      "--severity",
+      "HIGH,CRITICAL",
+      "--exit-code",
+      "1",
+      "--ignore-unfixed",
+      "--format",
+      "table",
+      "--config",
+      "${EVIDENCE_ROOT}/source/trivy.yaml",
+      "${EVIDENCE_ROOT}/source"
+    ],
+    "cwd": "${EVIDENCE_ROOT}/source",
+    "started_at_utc": "2026-09-08T20:19:32.030232+00:00",
+    "duration_seconds": 7.437,
+    "exit_code": 0,
+    "log_sha256": "2f9bddf89a3c88c2cccce82c180741763ee469af0dde8cde00311e4cce07676d"
+  },
+  "build_binding": {
+    "source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+    "checkout_clean_before": true,
+    "checkout_clean_after": true,
+    "recorded_command": "COMPOSE_PROJECT_NAME=t212pi_stage_a_20260907 make validate",
+    "command": [
+      "make",
+      "validate"
+    ],
+    "environment": {
+      "COMPOSE_PROJECT_NAME": "t212pi_stage_a_20260907"
+    },
+    "exit_code": 0,
+    "recorded_at_utc": "2026-09-08T20:19:26.703023+00:00",
+    "build_log_sha256": "37219073e4cdb8a61a928b65d468e5b9f213aa00d624395f05993eb2c8626a77",
+    "build_record_sha256": "3bd653fdd3f50634d7ad630f342043ee3b8c9ffab0ef9838754ab656a04cd944",
+    "image_manifest_sha256": "63b4ace0292506b284ccdff5e9981e5333e6c70ec3e5ab5669e7c0ad9b709354",
+    "identity_check": "Every scanned image ID equals the matching clean-build manifest ID and was independently resolved through docker image inspect by the scan runner before scanning."
+  },
+  "image_scans": [
+    {
+      "service": "postgres",
+      "image_id": "sha256:a629f6177b2a4e8f9b339d9a158ec4bf917b754c4f8f599460a9fac237c91f3a",
+      "build_source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+      "command": [
+        "${TOOLS_ROOT}/trivy-0.74.0/trivy",
+        "image",
+        "--cache-dir",
+        "${TOOLS_ROOT}/trivy-cache",
+        "--image-src",
+        "docker",
+        "--scanners",
+        "vuln,secret",
+        "--severity",
+        "HIGH,CRITICAL",
+        "--exit-code",
+        "1",
+        "--ignore-unfixed",
+        "--format",
+        "table",
+        "--config",
+        "${EVIDENCE_ROOT}/source/trivy.yaml",
+        "sha256:a629f6177b2a4e8f9b339d9a158ec4bf917b754c4f8f599460a9fac237c91f3a"
+      ],
+      "cwd": "${EVIDENCE_ROOT}/source",
+      "started_at_utc": "2026-09-08T20:19:47.436721+00:00",
+      "duration_seconds": 3.022,
+      "exit_code": 0,
+      "log_sha256": "9249f819fdd9e15a7ac8acb09962429e180dcdfb34d13fd9a8d02ceafae66eb3"
+    },
+    {
+      "service": "redis",
+      "image_id": "sha256:b077151711ed987668e9a3eedc2dccaf96e668494d0f7108d5013522cbb648bd",
+      "build_source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+      "command": [
+        "${TOOLS_ROOT}/trivy-0.74.0/trivy",
+        "image",
+        "--cache-dir",
+        "${TOOLS_ROOT}/trivy-cache",
+        "--image-src",
+        "docker",
+        "--scanners",
+        "vuln,secret",
+        "--severity",
+        "HIGH,CRITICAL",
+        "--exit-code",
+        "1",
+        "--ignore-unfixed",
+        "--format",
+        "table",
+        "--config",
+        "${EVIDENCE_ROOT}/source/trivy.yaml",
+        "sha256:b077151711ed987668e9a3eedc2dccaf96e668494d0f7108d5013522cbb648bd"
+      ],
+      "cwd": "${EVIDENCE_ROOT}/source",
+      "started_at_utc": "2026-09-08T20:19:50.458620+00:00",
+      "duration_seconds": 0.967,
+      "exit_code": 0,
+      "log_sha256": "d43b275b16245498a3df19328d6ab51cc4028bba3b656311ab7a358a27d962d1"
+    },
+    {
+      "service": "api",
+      "image_id": "sha256:e2edbb7974c4d65d15ae4e891f178011e6b8b9982435c93324cc8b74378ec02a",
+      "build_source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+      "command": [
+        "${TOOLS_ROOT}/trivy-0.74.0/trivy",
+        "image",
+        "--cache-dir",
+        "${TOOLS_ROOT}/trivy-cache",
+        "--image-src",
+        "docker",
+        "--scanners",
+        "vuln,secret",
+        "--severity",
+        "HIGH,CRITICAL",
+        "--exit-code",
+        "1",
+        "--ignore-unfixed",
+        "--format",
+        "table",
+        "--config",
+        "${EVIDENCE_ROOT}/source/trivy.yaml",
+        "sha256:e2edbb7974c4d65d15ae4e891f178011e6b8b9982435c93324cc8b74378ec02a"
+      ],
+      "cwd": "${EVIDENCE_ROOT}/source",
+      "started_at_utc": "2026-09-08T20:19:39.659311+00:00",
+      "duration_seconds": 2.22,
+      "exit_code": 0,
+      "log_sha256": "9eb9e966173ae8ea7fe3fa092d70929df36f4871ed7d263fa92ffb070df3014a"
+    },
+    {
+      "service": "worker",
+      "image_id": "sha256:1319f63d7e3f73f2f91326fd1d00cdea74fd416b6287deb05422694a83bff850",
+      "build_source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+      "command": [
+        "${TOOLS_ROOT}/trivy-0.74.0/trivy",
+        "image",
+        "--cache-dir",
+        "${TOOLS_ROOT}/trivy-cache",
+        "--image-src",
+        "docker",
+        "--scanners",
+        "vuln,secret",
+        "--severity",
+        "HIGH,CRITICAL",
+        "--exit-code",
+        "1",
+        "--ignore-unfixed",
+        "--format",
+        "table",
+        "--config",
+        "${EVIDENCE_ROOT}/source/trivy.yaml",
+        "sha256:1319f63d7e3f73f2f91326fd1d00cdea74fd416b6287deb05422694a83bff850"
+      ],
+      "cwd": "${EVIDENCE_ROOT}/source",
+      "started_at_utc": "2026-09-08T20:19:41.879339+00:00",
+      "duration_seconds": 2.02,
+      "exit_code": 0,
+      "log_sha256": "d0a2f65ef7553e1426dfc142e468f849b4952e6d9f6aabfe6eea01124e2e3ad8"
+    },
+    {
+      "service": "mcp",
+      "image_id": "sha256:d195c47c8fafc74ac3a1ed9b543985f0209b8013b2aed6ec35ada9355a99e16d",
+      "build_source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+      "command": [
+        "${TOOLS_ROOT}/trivy-0.74.0/trivy",
+        "image",
+        "--cache-dir",
+        "${TOOLS_ROOT}/trivy-cache",
+        "--image-src",
+        "docker",
+        "--scanners",
+        "vuln,secret",
+        "--severity",
+        "HIGH,CRITICAL",
+        "--exit-code",
+        "1",
+        "--ignore-unfixed",
+        "--format",
+        "table",
+        "--config",
+        "${EVIDENCE_ROOT}/source/trivy.yaml",
+        "sha256:d195c47c8fafc74ac3a1ed9b543985f0209b8013b2aed6ec35ada9355a99e16d"
+      ],
+      "cwd": "${EVIDENCE_ROOT}/source",
+      "started_at_utc": "2026-09-08T20:19:43.899130+00:00",
+      "duration_seconds": 1.819,
+      "exit_code": 0,
+      "log_sha256": "b0b251d0a28e96b34f433e799273f687a0a24fbfa83e3888ca45349fb65ffae1"
+    },
+    {
+      "service": "web",
+      "image_id": "sha256:a37629cbd1a25cfb8aac772515454e5feb086f8dd69bde3a7a456f29c724c451",
+      "build_source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+      "command": [
+        "${TOOLS_ROOT}/trivy-0.74.0/trivy",
+        "image",
+        "--cache-dir",
+        "${TOOLS_ROOT}/trivy-cache",
+        "--image-src",
+        "docker",
+        "--scanners",
+        "vuln,secret",
+        "--severity",
+        "HIGH,CRITICAL",
+        "--exit-code",
+        "1",
+        "--ignore-unfixed",
+        "--format",
+        "table",
+        "--config",
+        "${EVIDENCE_ROOT}/source/trivy.yaml",
+        "sha256:a37629cbd1a25cfb8aac772515454e5feb086f8dd69bde3a7a456f29c724c451"
+      ],
+      "cwd": "${EVIDENCE_ROOT}/source",
+      "started_at_utc": "2026-09-08T20:19:45.717951+00:00",
+      "duration_seconds": 1.719,
+      "exit_code": 0,
+      "log_sha256": "979d398282ef9f11adec293ff8a6218fd1ae0ffc8ccdc2a17f6720cf05360a02"
+    }
+  ],
+  "historical_note": {
+    "prior_classification": {
+      "prior_source_sha": "6dde264e865dd5fdfc8e3116a35b1661a48a68fd",
+      "prior_history_scan_exit_code": 1,
+      "finding_count": 2,
+      "classification": "Confirmed test-code false positives; lines pass a runtime-generated uuid4().hex idempotency variable and synthetic correlation ID, with no credential literal.",
+      "exact_fingerprints": [
+        "6dde264e865dd5fdfc8e3116a35b1661a48a68fd:tests/integration/test_virtual_targets.py:generic-api-key:290",
+        "6dde264e865dd5fdfc8e3116a35b1661a48a68fd:tests/integration/test_virtual_targets.py:generic-api-key:298"
+      ],
+      "corrective_commit": "ecc75154397c8f9d7532fa2df8576846b60bae7c",
+      "correction": "Only .gitleaksignore changed: two exact historical fingerprints, documented owner/reason/scope and review trigger. No broad rule suppression or history rewrite.",
+      "review_trigger": "Every Gitleaks upgrade and by 2026-12-01.",
+      "prior_evidence": "The prior failing record remains separate and has not been relabeled as passing."
+    },
+    "additional_verified_digest_exception": {
+      "affected_commit": "05d01c7a9a9cb6cc3f351c3adbed2036f02b94a9",
+      "corrective_commit": "abb655eb7f0e1335e4c74040cc96ad1a0f83bbeb",
+      "classification": "Verified non-secret SHA-256 of the exact generated OpenAPI Git blob.",
+      "retained_evidence": "docs/implementation/evidence/phase-2-p2-03-05d01c7-failed-security.json",
+      "verification": "Independently hashed the exact e258f54 generated OpenAPI Git blob; its digest equals the classified evidence value."
+    }
+  },
+  "current_commit_note": "The exact committed source scans require no new ignore exception. Before the initial 6a20741 candidate, a noncredential test policy identifier was renamed after a directory-scan false positive; its corrected scan is recorded separately. The five reviewed historical exceptions remain unchanged.",
+  "limitations": [
+    "Results reflect the recorded scanner versions and database/policy snapshots; they do not assert absence of all vulnerabilities or future findings.",
+    "Trivy excludes lower-severity and unfixed vulnerabilities under HIGH/CRITICAL with ignore-unfixed.",
+    "Source scanning excludes development/test dependencies by the workflow-equivalent default.",
+    "The clean Git archive has no installed node_modules. Trivy requests installed pnpm package metadata for package-license collection; this is not a complete installed-package license inventory.",
+    "The committed LGPL-3.0-or-later exception remains in force under its documented scope and review trigger.",
+    "Image scans enable vulnerability and secret scanners only, without image license or misconfiguration scanning.",
+    "Runtime readiness, restart durability, package-manager absence, full validation, browser tests, and hosted CI results are outside this evidence record.",
+    "Original scanner logs and archives remain local audit artifacts. This portable record retains their relevant commands, results, identities, and policies without embedding raw findings or private host paths."
+  ],
+  "evidence_writer_sha256": "0f204fb16fc5df44523474b2a0899c01299d7b3d028d86423e60cb92d24a3518",
+  "scanner_runner_sha256": "bb5fb7f70af647d50b55ca85cb52f538495423dc1660c3cb7c3b04158b461ea3"
+}

@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_kind": "retained_failed_runtime_attempt",
+  "source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+  "result": "failed",
+  "requirements": [
+    "P2-04"
+  ],
+  "recorded_at_utc": "2026-09-08T20:42:54.065242+00:00",
+  "attempt": 2,
+  "execution": {
+    "source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+    "invocations": [
+      {
+        "phase": "all",
+        "command": [
+          "uv",
+          "run",
+          "python",
+          "<runtime-attempt-002>/acceptance.py",
+          "--phase",
+          "all",
+          "--execute-authorized",
+          "--expected-sha",
+          "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0"
+        ],
+        "cwd": "<checkout>",
+        "started_at_utc": "2026-09-08T20:37:15.717137+00:00",
+        "completed_at_utc": "2026-09-08T20:39:21.291021+00:00",
+        "exit_code": 1,
+        "log_name": "runtime-all-001.log",
+        "log_sha256": "ae7ac0cf93569aa63aada46a6a4440e0acad6de02a5bbce0195d37cbe4162fe2",
+        "harness_sha256": "6b11d9d04cc2023a2a5ea1a627b26e961b9b6c58bdbe6287f05ba58b85966758",
+        "checkout_clean_before": true,
+        "checkout_clean_after": true,
+        "head_after": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0"
+      }
+    ]
+  },
+  "completed_phases": [
+    "all_seven_stopped",
+    "before_restart",
+    "bootstrap",
+    "historical",
+    "initial",
+    "planning",
+    "source"
+  ],
+  "failure": {
+    "assertion": "restart-seven-services failed; sanitized transcript retained",
+    "compose_error": "seed is missing dependency migrate",
+    "diagnosis": "Completed migrate and seed containers were removed after repeat-seed validation. Compose start traversed their dependency graph instead of restarting only the seven existing retained containers."
+  },
+  "task_cleanup_verified": true,
+  "cleanup": {
+    "project": "t212pi_stage_a_20260907",
+    "stage": "after-runtime",
+    "services_removed": {
+      "63a076b01137": "web",
+      "6bebad721416": "dispatcher",
+      "3d0022e318bc": "mcp",
+      "595c0a6d355d": "worker",
+      "8de9318a58a9": "api",
+      "a0fa7ddb9a41": "redis",
+      "bed505a39651": "postgres"
+    },
+    "volumes_removed": [
+      "t212pi_stage_a_20260907_postgres-data"
+    ],
+    "networks_removed": [
+      "33130a8da50e"
+    ],
+    "verified_absent_after_cleanup": true,
+    "completed_at": "2026-09-08T20:39:21.290862+00:00"
+  },
+  "artifact_sha256": {
+    "acceptance.py": "6b11d9d04cc2023a2a5ea1a627b26e961b9b6c58bdbe6287f05ba58b85966758",
+    "execution.json": "ef194e5b1237d4de614f506bee425683714684b880fde56cb496ae6bcd4a5346",
+    "runtime-all-001.log": "ae7ac0cf93569aa63aada46a6a4440e0acad6de02a5bbce0195d37cbe4162fe2",
+    "evidence.json": "b5ff22886afcc6873f96c342fe86c2432debf08b38a2334cf6b12dbe0ef3cf8b",
+    "after-runtime-cleanup.json": "71b1320625aef3592da504c9efb2414495884dd149f50934c579c9034ff80de7",
+    "after-runtime-cleanup.log": "ee95d2ec341392bd2fc78089c329131aa0924c33a964c43b1585d0c6c0e43428",
+    "restart-seven-services.log": "a8f9df7fab73d5bc0ca35200fe50787048bf2c236dfa160f20d72fa0259c2bd9"
+  },
+  "acceptance": {
+    "accepted": false,
+    "substitutes_for_successful_runtime": false
+  },
+  "follow_up": "Separate fresh full attempt starts only the seven verified existing IDs with one 180-second readiness deadline. All immutable data, source, image and restart equality assertions remain required.",
+  "original_local_record_sha256": "4fcd2c614444f9303dc5f5b46619689835a39641d176a30e5dc1888f470b09b5"
+}

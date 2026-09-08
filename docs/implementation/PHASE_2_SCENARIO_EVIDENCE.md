@@ -2,19 +2,21 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 through P2-03 complete; 12/40 complete
+**Implementation acceptance:** In progress; P2-01 through P2-04 complete; 18/40 complete
 
 **P2-01 evidence SHA:** `ecc75154397c8f9d7532fa2df8576846b60bae7c`
 
 **P2-02 evidence SHA:** `f78c9d2917c3ce8c93f9ae5631390c59616abc82`
 
-**P2-03 evidence SHA:** `e258f54bb03a958f7847b310ee882b7f4a54686f`; final Phase 2 release SHA pending
+**P2-03 evidence SHA:** `e258f54bb03a958f7847b310ee882b7f4a54686f`
+
+**P2-04 evidence SHA:** `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`; final Phase 2 release SHA pending
 
 **Authority:** Owner assignment, Phase 2 execution manifest and acceptance matrix
 
 All forty owner-required scenarios are preserved below. Each row defines the
 required executable predicate; pending rows remain requirements without claimed
-execution. P2-S01 through P2-S11 and P2-S13 have exact tests and retained evidence. Phase 1 acceptance at
+execution. P2-S01 through P2-S11 and P2-S13 through P2-S19 have exact tests and retained evidence. Phase 1 acceptance at
 `99df47b6633791c3900a52f46f56d48be922a436` is prerequisite evidence only.
 
 ## Mandatory predicates
@@ -34,12 +36,12 @@ execution. P2-S01 through P2-S11 and P2-S13 have exact tests and retained eviden
 | P2-S11 | Produce identical plan output for identical canonical inputs. | P2-02 | Repeated and concurrent canonical requests preserve byte-equivalent plan data and semantic identity; operational timestamps/IDs are tested separately. | `tests/integration/test_planning_api_postgres.py::test_actual_drift_and_saved_plan_match_mcp_with_real_worker_and_revision_history`; [full assertion map and exact-SHA results](evidence/phase-2-p2-02-f78c9d2.json) | `complete` |
 | P2-S12 | Prevent a contribution plan from calling any Trading 212 transport method. | P2-02/P2-09 | Broker transport spy raises on every invocation; successful/invalid/retried plan creation invokes it zero times and creates no order payload. | Not recorded / none | `pending` |
 | P2-S13 | Ingest synthetic price, FX, and benchmark data with provenance and gaps. | P2-03 | Deterministic replay providers persist prices, FX and benchmark revisions with provenance, source/retrieval times, licenses and explicit gaps. | `tests/integration/test_sources_postgres.py::test_real_seed_idempotent_and_restarted_public_reads`; [exact-SHA assertion map](evidence/phase-2-p2-03-e258f54.json) | `complete` |
-| P2-S14 | Reject look-ahead FX or post-cutoff market observations. | P2-03/P2-04 | Boundary fixtures reject naive/post-cutoff observations and prevent look-ahead in direct/inverse/triangulated FX and valuation/benchmark selection. | Not recorded / none | `pending` |
-| P2-S15 | Align portfolio and benchmark periods/currencies. | P2-04 | Hand-computed portfolio/benchmark calendars, total-return basis and sourced reporting-currency conversion align or return explicit unavailable coverage. | Not recorded / none | `pending` |
-| P2-S16 | Keep deposits separate from investment gain. | P2-04 | Deposit/withdrawal fixtures change external flows without fabricating gain; internal buys/sells and transfer legs do not become external flows. | Not recorded / none | `pending` |
-| P2-S17 | Reconcile attribution components to total return plus disclosed residual. | P2-04 | Position/group/fees/tax/FX components reconcile to the frozen total metric plus a disclosed Decimal residual and decomposition coverage. | Not recorded / none | `pending` |
-| P2-S18 | Degrade performance when valuation, FX, or benchmark coverage is missing. | P2-04 | Missing/stale valuation, FX, benchmark and opening history separately degrade dependent metrics; unrelated metrics retain justified quality. | Not recorded / none | `pending` |
-| P2-S19 | Compute dividend summaries across multiple currencies without implicit FX. | P2-04 | Multi-currency dividends retain per-currency totals; missing conversion cannot substitute one, zero or account currency. | Not recorded / none | `pending` |
+| P2-S14 | Reject look-ahead FX or post-cutoff market observations. | P2-03/P2-04 | Boundary fixtures reject naive/post-cutoff observations and prevent look-ahead in direct/inverse/triangulated FX and valuation/benchmark selection. | `tests/integration/test_historical_postgres.py::test_activity_proofs_reject_future_intervals_and_mutation_of_pinned_runs`; [full assertion map and exact-source evidence](evidence/phase-2-p2-04-2a7c89a.json) | `complete` |
+| P2-S15 | Align portfolio and benchmark periods/currencies. | P2-04 | Hand-computed portfolio/benchmark calendars, total-return basis and sourced reporting-currency conversion align or return explicit unavailable coverage. | `tests/integration/test_historical_api_postgres.py::test_available_annual_results_pages_scope_projection_and_live_license_recheck`; [full assertion map and exact-source evidence](evidence/phase-2-p2-04-2a7c89a.json) | `complete` |
+| P2-S16 | Keep deposits separate from investment gain. | P2-04 | Deposit/withdrawal fixtures change external flows without fabricating gain; internal buys/sells and transfer legs do not become external flows. | `tests/integration/test_historical_api_postgres.py::test_available_annual_results_pages_scope_projection_and_live_license_recheck`; [full assertion map and exact-source evidence](evidence/phase-2-p2-04-2a7c89a.json) | `complete` |
+| P2-S17 | Reconcile attribution components to total return plus disclosed residual. | P2-04 | Position/group/fees/tax/FX components reconcile to the frozen total metric plus a disclosed Decimal residual and decomposition coverage. | `tests/integration/test_historical_api_postgres.py::test_available_annual_results_pages_scope_projection_and_live_license_recheck`; [full assertion map and exact-source evidence](evidence/phase-2-p2-04-2a7c89a.json) | `complete` |
+| P2-S18 | Degrade performance when valuation, FX, or benchmark coverage is missing. | P2-04 | Missing/stale valuation, FX, benchmark and opening history separately degrade dependent metrics; unrelated metrics retain justified quality. | `tests/unit/analytics/test_historical.py::test_empty_unconfigured_benchmark_never_creates_an_unbacked_composite`; [full assertion map and exact-source evidence](evidence/phase-2-p2-04-2a7c89a.json) | `complete` |
+| P2-S19 | Compute dividend summaries across multiple currencies without implicit FX. | P2-04 | Multi-currency dividends retain per-currency totals; missing conversion cannot substitute one, zero or account currency. | `tests/integration/test_historical_api_postgres.py::test_available_annual_results_pages_scope_projection_and_live_license_recheck`; [full assertion map and exact-source evidence](evidence/phase-2-p2-04-2a7c89a.json) | `complete` |
 | P2-S20 | Resolve direct plus ETF indirect exposure without double counting. | P2-05 | Direct holding plus multiple ETF indirect paths aggregate one effective company exposure; fund wrappers and indirect constituents are not added twice. | Not recorded / none | `pending` |
 | P2-S21 | Consolidate documented share classes/ADR exposure correctly. | P2-05 | Dated sourced share-class/ADR mappings consolidate economic exposure; ambiguous/unsupported mappings retain unresolved weight and never guess by ticker. | Not recorded / none | `pending` |
 | P2-S22 | Report ETF overlap and unresolved constituent weight explicitly. | P2-05 | Reference ETF overlap reconciles common/residual/unresolved weight and exposes exclusions without renormalizing unknown constituents into certainty. | Not recorded / none | `pending` |
@@ -54,7 +56,7 @@ execution. P2-S01 through P2-S11 and P2-S13 have exact tests and retained eviden
 | P2-S31 | Preserve alert and report jobs across worker/dispatcher restart. | P2-06/P2-07 | Atomic enqueue/publication/consumer crash windows, duplicate delivery and worker/dispatcher restart preserve original report/alert jobs and artifacts/events. | Not recorded / none | `pending` |
 | P2-S32 | Deny cross-owner API access. | P2-01–09 | Authenticated owner/account cross-products and missing scopes deny all new list/detail/command/download endpoints without existence/secret disclosure. | Not recorded / none | `pending` |
 | P2-S33 | Deny cross-owner MCP access. | P2-09 | All 25 tools reject cross-owner/account and missing-scope invocations; invalid IDs and unknown fields fail before unauthorized services or providers run. | Not recorded / none | `pending` |
-| P2-S34 | Preserve API, web, MCP, and report canonical value parity. | P2-01–09 | Same owner/account, snapshot/target/source revisions, cutoff/currency/method/parameters produce equal canonical Decimal values across service/API/rendered web/MCP/report. | Not recorded / none | `pending` |
+| P2-S34 | Preserve API, web, MCP, and report canonical value parity. | P2-01–09 | Same owner/account, snapshot/target/source revisions, cutoff/currency/method/parameters produce equal canonical Decimal values across service/API/rendered web/MCP/report. | `tests/contract/test_historical_contract.py::test_comparison_widget_has_valid_hash_csp_safe_dom_and_no_network_or_financial_math`; [partial historical API/web/MCP evidence](evidence/phase-2-p2-04-2a7c89a.json); report/export and remaining shared scope pending; not a complete scenario | `in_progress` |
 | P2-S35 | Preserve all Phase 1 mandatory scenarios. | P2-10 | Rerun every Phase 1 mandatory predicate including 14a/14b/14c, 2505/>10000 collection traversal, hard-capacity concurrency and export-URL minimization. | Not recorded / none | `pending` |
 | P2-S36 | Preserve the exact ten-capability Trading 212 GET-only registry. | P2-03/P2-10 | Registry-count/static architecture checks and transport-spy negatives preserve all ten exact GET templates and reject every unknown method/path/parameter. | Not recorded / none | `pending` |
 | P2-S37 | Prove no Phase 2 workflow can place, modify, or cancel a broker order. | P2-10 | Exercise plan/report/alert/provider/web/MCP workflows with sealed broker spies; no place/amend/cancel/Pie/transfer/generic execution API or task is reachable. | Not recorded / none | `pending` |
@@ -146,3 +148,15 @@ and seven-service restart. The two failed harness attempts (cursor issue-time co
 pagination capacity) are retained separately from the corrected fresh runtime. Three packages, eight
 local rows and twelve scenarios are complete; P2-S14/P2-S36 and later/shared
 predicates remain pending. Phase 3 remains `not_started`.
+
+## P2-04 observed evidence
+
+P2-04 is complete at `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`. The [accepted assertion map](evidence/phase-2-p2-04-2a7c89a.json) closes P2-PERF-001, P2-PERF-002, P2-INC-001 and P2-S14 through P2-S19. Shared P2-S34 remains `in_progress`: historical API/web/MCP parity is partial evidence; report/export and remaining shared scope are outstanding.
+
+The clean exact-source `make validate` passed in 1165.723 seconds: 1,346 isolated and 175 service-backed Python tests, 88% combined statement/branch coverage, 203 web unit tests and 66 browser checks. A separate unchanged-source `env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web` passed in 366.184 seconds, retaining all 66 named browser passes and a successful web build with clean source before and after. The original full-gate GitHub reporter lacked individual browser names; the supplement adds that evidence without replacing the full gate or its image-build provenance. Pytest selectors are assertion inventory bound to observed complete test-file execution.
+
+Exact pushed-source CI passed: Quality `34272112673`, Documentation `34272112714`, Security `34272112661`. Eight source/history/image scans passed under their retained scanner policies. Fresh runtime attempt 003 passed in 170.757 seconds: six historical HTTP reads, four MCP reads, configured web journeys and identical retained rows across all 101 inventoried tables after all seven services stopped/restarted. Task containers, volume and network were removed, with cleanup verified. Migration head is `20260907_0012`; the implemented inventory is 66 HTTP operations and 19 MCP tools; Trading 212 remains the exact ten GET-only capabilities.
+
+See [runtime](evidence/phase-2-p2-04-2a7c89a-runtime.json), [security](evidence/phase-2-p2-04-2a7c89a-security.json) and [compatibility](evidence/phase-2-p2-04-2a7c89a-compatibility.json). Phase 2 remains `in_progress`: four of ten packages (40%), eleven of 29 local rows and eighteen of 40 scenarios complete. P2-05 through P2-10 and Phase 3 remain `not_started`; no final Phase 2 release SHA is claimed.
+
+P2-S34 has no completed evidence key in PROJECT_PROGRESS.json. Its partial historical evidence does not close report/export parity. P2-S38/P2-S39 and other release-wide predicates retain their existing states.

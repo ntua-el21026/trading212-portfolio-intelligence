@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-08T19:29:27.673544+00:00",
+  "updated_at": "2026-09-08T21:24:08.512562+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -130,29 +130,60 @@
       "name": "Portfolio Intelligence",
       "release": "0.2.0",
       "status": "in_progress",
-      "progress_percent": 30,
+      "progress_percent": 40,
       "design_closure": "accepted",
       "candidate_validation": {
-        "work_package": "P2-02",
-        "source_sha": "5fa43b2fe1f671b9e2734c70fd0c13480ae08555",
-        "acceptance": "superseded_failed_candidate",
+        "work_package": "P2-04",
+        "source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+        "acceptance": "accepted",
+        "accepted_at_utc": "2026-09-08T21:24:08.512562+00:00",
         "make_validate": "passed",
-        "isolated_python_tests_passed": 790,
-        "service_backed_python_tests_passed": 124,
-        "combined_python_coverage_with_branch_measurement_percent": 87,
-        "web_unit_tests_passed": 111,
-        "browser_tests_passed_locally": 52,
-        "github_quality_run": 34144309940,
-        "github_quality_result": "failed",
+        "make_validate_duration_seconds": 1165.723,
+        "isolated_python_tests_passed": 1346,
+        "service_backed_python_tests_passed": 175,
+        "combined_python_coverage_with_branch_measurement_percent": 88,
+        "web_unit_tests_passed": 203,
+        "browser_tests_passed_locally": 66,
+        "supplementary_browser_and_web_build": {
+          "command": "env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web",
+          "exit_code": 0,
+          "result": "passed",
+          "duration_seconds": 366.184,
+          "named_browser_cases_passed": 66,
+          "source_unchanged": true,
+          "clean_before_and_after": true
+        },
+        "github_quality_run": 34272112673,
+        "github_quality_result": "passed",
+        "github_documentation_run": 34272112714,
         "github_documentation_result": "passed",
+        "github_security_run": 34272112661,
         "github_security_result": "passed",
-        "correction": "Corrected and accepted at f78c9d2917c3ce8c93f9ae5631390c59616abc82; the original candidate remains unaccepted."
+        "runtime": "passed",
+        "runtime_attempt": 3,
+        "runtime_duration_seconds": 170.757,
+        "retained_tables_identical": 101,
+        "runtime_cleanup_verified": true,
+        "source_history_image_scans_passed": 8,
+        "artifacts": [
+          "docs/implementation/evidence/phase-2-p2-04-2a7c89a.json",
+          "docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json",
+          "docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json",
+          "docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json"
+        ],
+        "failed_runtime_artifacts": [
+          "docs/implementation/evidence/phase-2-p2-04-2a7c89a-failed-runtime-001.json",
+          "docs/implementation/evidence/phase-2-p2-04-2a7c89a-failed-runtime-002.json"
+        ],
+        "unaccepted_browser_artifact": "docs/implementation/evidence/phase-2-p2-04-2a7c89a-unaccepted-browser-observation.json",
+        "known_p208_limitations": "Source-backed known P2-08 limitations remain: the normal complete seed has three accounts, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.",
+        "scope": "Scoped P2-04 synthetic acceptance; full Phase 2 and shared S34 remain incomplete."
       },
       "work_packages": {
         "P2-01": "complete",
         "P2-02": "complete",
         "P2-03": "complete",
-        "P2-04": "in_progress",
+        "P2-04": "complete",
         "P2-05": "not_started",
         "P2-06": "not_started",
         "P2-07": "not_started",
@@ -163,9 +194,9 @@
       "acceptance": {
         "status": "in_progress",
         "locally_executable_rows_total": 29,
-        "locally_executable_rows_complete": 8,
+        "locally_executable_rows_complete": 11,
         "mandatory_scenarios_total": 40,
-        "mandatory_scenarios_complete": 12,
+        "mandatory_scenarios_complete": 18,
         "release_evidence_sha": null,
         "evidence": {
           "P2-S01": {
@@ -1468,6 +1499,550 @@
               "docs/implementation/evidence/phase-2-p2-03-e258f54-runtime.json",
               "docs/implementation/evidence/phase-2-p2-03-e258f54-security.json"
             ]
+          },
+          "P2-04": {
+            "sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+            "test_nodes": [
+              "tests/contract/test_historical_contract.py::test_comparison_widget_has_valid_hash_csp_safe_dom_and_no_network_or_financial_math",
+              "tests/contract/test_historical_contract.py::test_exact_four_historical_tools_have_frozen_scopes_fields_annotations_and_resource",
+              "tests/contract/test_historical_contract.py::test_exact_six_historical_get_routes_leave_existing_performance_summary",
+              "tests/integration/test_historical_api_postgres.py::test_available_annual_results_pages_scope_projection_and_live_license_recheck",
+              "tests/integration/test_historical_api_postgres.py::test_persisted_capture_replay_etag_rechecks_owner_window_and_activity_scope",
+              "tests/integration/test_historical_api_postgres.py::test_six_reads_and_four_tools_share_unavailable_capture_without_provider_dispatch",
+              "tests/integration/test_historical_postgres.py::test_activity_proofs_reject_future_intervals_and_mutation_of_pinned_runs",
+              "tests/integration/test_historical_postgres.py::test_capture_dependencies_reauthorize_current_license_before_replay",
+              "tests/integration/test_historical_postgres.py::test_capture_owner_concealment_and_database_immutability",
+              "tests/integration/test_historical_postgres.py::test_composite_detail_uses_only_its_canonical_document_and_rejects_invalid_bytes",
+              "tests/integration/test_historical_postgres.py::test_explicit_configuration_cannot_cross_its_first_knowledge_cutoff",
+              "tests/integration/test_historical_postgres.py::test_full_history_composite_pages_and_restart_preserve_immutable_results",
+              "tests/integration/test_historical_postgres.py::test_historical_seed_repeat_keeps_all_published_knowledge_and_financial_content",
+              "tests/integration/test_historical_postgres.py::test_missing_setup_captures_truthful_unavailable_and_replays_after_new_engine",
+              "tests/integration/test_historical_postgres.py::test_policy_registration_retains_first_knowledge_and_concurrent_capture_identity",
+              "tests/integration/test_historical_postgres.py::test_retention_purges_copied_inputs_and_results_but_preserves_digests",
+              "tests/integration/test_historical_seed.py::test_seeded_benchmark_attribution_and_cash_flow_families_are_available",
+              "tests/integration/test_historical_seed.py::test_seeded_income_uses_prior_coverage_native_currencies_and_zero_values",
+              "tests/integration/test_historical_seed.py::test_seeded_performance_has_exact_conservation_and_retained_replay",
+              "tests/property/test_historical_properties.py::test_ambient_decimal_precision_rounding_and_traps_do_not_change_financial_result",
+              "tests/property/test_historical_properties.py::test_event_permutation_preserves_signed_external_totals_and_digests",
+              "tests/property/test_historical_properties.py::test_positive_constant_quantity_growth_and_attribution_conserve_exact_value",
+              "tests/security/test_historical_canonical_boundary.py::test_result_cannot_relabel_frozen_method_or_change_point_currency",
+              "tests/security/test_historical_canonical_boundary.py::test_result_foreign_input_and_currency_cannot_pass_verifier",
+              "tests/security/test_historical_canonical_boundary.py::test_untrusted_historical_document_never_reflects_canary_in_error_chain",
+              "tests/unit/analytics/test_historical.py::test_already_reporting_currency_anchor_is_not_converted_using_listing_currency",
+              "tests/unit/analytics/test_historical.py::test_cash_flow_detail_filter_keeps_whole_window_totals_and_revision_dedup",
+              "tests/unit/analytics/test_historical.py::test_composite_benchmark_modes_use_exact_original_weights",
+              "tests/unit/analytics/test_historical.py::test_dated_activity_proof_cannot_borrow_opening_or_future_receipt",
+              "tests/unit/analytics/test_historical.py::test_dividend_native_reporting_unknown_tax_and_negative_correction",
+              "tests/unit/analytics/test_historical.py::test_drawdown_uses_flow_neutral_wealth_path",
+              "tests/unit/analytics/test_historical.py::test_effective_mapping_uses_earlier_eligible_identical_identity_revision",
+              "tests/unit/analytics/test_historical.py::test_empty_unconfigured_benchmark_never_creates_an_unbacked_composite",
+              "tests/unit/analytics/test_historical.py::test_exact_midyear_flow_reference_twr_dietz_and_xirr",
+              "tests/unit/analytics/test_historical.py::test_external_flow_at_opening_is_grouped_once_and_terminal_flow_excluded",
+              "tests/unit/analytics/test_historical.py::test_fixed_history_growth_and_serialized_roundtrip",
+              "tests/unit/analytics/test_historical.py::test_frozen_family_registry_records_only_invoked_phase1_primitives",
+              "tests/unit/analytics/test_historical.py::test_income_and_cash_flow_missing_history_do_not_claim_observed_zero_totals",
+              "tests/unit/analytics/test_historical.py::test_late_material_price_revision_gates_point_in_time_return",
+              "tests/unit/analytics/test_historical.py::test_missing_expected_price_does_not_use_previous_session_or_become_zero",
+              "tests/unit/analytics/test_historical.py::test_missing_registered_policy_and_opening_produce_truthful_unavailable",
+              "tests/unit/analytics/test_historical.py::test_point_in_time_receipts_at_boundary_support_covered_history_without_future_use",
+              "tests/unit/analytics/test_historical.py::test_previous_month_uses_calendar_boundaries_across_february",
+              "tests/unit/analytics/test_historical.py::test_price_fx_interaction_partition_reconciles_independent_amounts",
+              "tests/unit/analytics/test_historical.py::test_prior_income_uses_dated_support_not_an_opening_coverage_flag",
+              "tests/unit/analytics/test_historical.py::test_projection_preserves_frozen_canonical_result_and_solver_budget",
+              "tests/unit/analytics/test_historical.py::test_rolling_and_complete_calendar_are_actual_period_calculations",
+              "tests/unit/analytics/test_historical.py::test_tracking_error_refuses_hidden_gap_even_with_twenty_other_pairs",
+              "tests/unit/analytics/test_historical.py::test_tracking_error_uses_sample_variance_and_twenty_pair_threshold",
+              "tests/unit/analytics/test_historical.py::test_unavailable_performance_does_not_claim_uninvoked_return_primitives",
+              "tests/unit/analytics/test_historical.py::test_unpublished_interior_xirr_retains_invoked_primitive_provenance",
+              "tests/unit/analytics/test_historical.py::test_valuation_capacity_refuses_before_any_source_selection",
+              "tests/unit/analytics/test_historical.py::test_weighted_average_cost_keeps_precision_until_output_boundary",
+              "tests/unit/analytics/test_historical.py::test_xirr_wrapper_preserves_nonconventional_and_no_root_reasons",
+              "tests/unit/analytics/test_historical_actions.py::test_action_candidate_fast_path_preserves_revision_and_conflict_rules",
+              "tests/unit/analytics/test_historical_actions.py::test_action_gap_and_late_point_in_time_receipt_are_not_absence_proof",
+              "tests/unit/analytics/test_historical_actions.py::test_cash_drag_obeys_twr_and_modified_dietz_denominators",
+              "tests/unit/analytics/test_historical_actions.py::test_cash_only_internal_effects_have_cash_partition_and_exact_linked_return",
+              "tests/unit/analytics/test_historical_actions.py::test_conflicting_known_income_components_preserve_net_without_false_reconciliation",
+              "tests/unit/analytics/test_historical_actions.py::test_dividend_partition_uses_its_holding_not_last_reconstructed_holding",
+              "tests/unit/analytics/test_historical_actions.py::test_equal_overlapping_action_proofs_keep_earliest_receipt_and_quality_conflicts",
+              "tests/unit/analytics/test_historical_actions.py::test_explicit_reference_correction_replaces_prior_split_without_double_application",
+              "tests/unit/analytics/test_historical_actions.py::test_missing_action_absence_proof_gates_quantity_and_cost_but_not_known_cash",
+              "tests/unit/analytics/test_historical_actions.py::test_missing_fx_decomposition_retains_partial_subtotals_and_uncovered_residual",
+              "tests/unit/analytics/test_historical_actions.py::test_multiple_action_snapshots_preserve_revised_gaps_and_input_order",
+              "tests/unit/analytics/test_historical_actions.py::test_original_singleton_is_selected_only_after_both_cutoff_checks",
+              "tests/unit/analytics/test_historical_actions.py::test_original_singleton_preserves_full_historical_canonical_result",
+              "tests/unit/analytics/test_historical_actions.py::test_original_singleton_preserves_inclusive_period_and_empty_selection",
+              "tests/unit/analytics/test_historical_actions.py::test_source_split_reconstructs_once_and_conserves_cost_wealth_and_attribution",
+              "tests/unit/analytics/test_historical_actions.py::test_unsupported_source_spinoff_gates_quantity_without_inventing_target_holding",
+              "tests/unit/analytics/test_performance.py::test_modified_dietz_midperiod_deposit_and_withdrawal_are_hand_calculable",
+              "tests/unit/analytics/test_performance.py::test_modified_dietz_nonpositive_denominator_is_unavailable",
+              "tests/unit/analytics/test_performance.py::test_performance_metrics_are_coverage_and_quality_gated",
+              "tests/unit/analytics/test_performance.py::test_short_period_return_is_not_annualized_without_policy_override",
+              "tests/unit/analytics/test_performance.py::test_summary_propagates_worst_material_quality",
+              "tests/unit/analytics/test_performance.py::test_twr_links_complete_snapshot_subperiods_and_does_not_count_deposit_as_gain",
+              "tests/unit/analytics/test_performance.py::test_twr_missing_flow_or_valuation_gap_is_unavailable",
+              "tests/unit/analytics/test_performance.py::test_xirr_multiple_sign_changes_and_no_root_are_unavailable",
+              "tests/unit/analytics/test_performance.py::test_xirr_solves_exact_one_year_no_flow_gain",
+              "tests/unit/analytics/test_performance.py::test_xirr_uses_external_flows_only_and_accepts_irregular_dates",
+              "tests/unit/analytics/test_source_policy.py::test_calendar_gaps_and_dst_use_explicit_session_instants",
+              "tests/unit/analytics/test_source_policy.py::test_closed_calendar_carry_does_not_fill_a_missing_open_session",
+              "tests/unit/analytics/test_source_policy.py::test_conflicting_unordered_or_tied_revisions_are_not_silently_selected",
+              "tests/unit/analytics/test_source_policy.py::test_corrected_missing_fx_pair_is_not_replaced_by_old_rate",
+              "tests/unit/analytics/test_source_policy.py::test_corrected_missing_price_does_not_resurrect_old_observation",
+              "tests/unit/analytics/test_source_policy.py::test_correction_is_unavailable_before_actual_first_knowledge",
+              "tests/unit/analytics/test_source_policy.py::test_cross_owner_source_set_rejects_before_selection",
+              "tests/unit/analytics/test_source_policy.py::test_fx_calendar_allows_declared_closed_carry_but_never_misses_open_fixing",
+              "tests/unit/analytics/test_source_policy.py::test_fx_calendar_identity_cannot_be_replaced_by_another_registered_version",
+              "tests/unit/analytics/test_source_policy.py::test_fx_correction_uses_fixing_calendar_date_even_when_utc_date_differs",
+              "tests/unit/analytics/test_source_policy.py::test_fx_coverage_counts_every_pair_and_fixing_without_silent_omission",
+              "tests/unit/analytics/test_source_policy.py::test_fx_direct_precedes_reciprocal_then_one_provider_priority",
+              "tests/unit/analytics/test_source_policy.py::test_fx_identity_missing_stale_and_rounding_overflow_are_distinct",
+              "tests/unit/analytics/test_source_policy.py::test_fx_ignores_future_corrections_and_ambient_decimal_context",
+              "tests/unit/analytics/test_source_policy.py::test_fx_never_combines_incompatible_pivot_legs",
+              "tests/unit/analytics/test_source_policy.py::test_fx_single_pivot_hand_reference_is_exact_and_preserves_both_legs",
+              "tests/unit/analytics/test_source_policy.py::test_license_use_rejects_unknown_retention_boundary_and_removed_replay",
+              "tests/unit/analytics/test_source_policy.py::test_missing_disputed_and_future_observations_do_not_become_zero_or_old_values",
+              "tests/unit/analytics/test_source_policy.py::test_raw_benchmark_level_selection_preserves_source_kind_and_basis",
+              "tests/unit/analytics/test_source_policy.py::test_unchanged_retrieval_keeps_semantic_digest_but_preserves_knowledge_reference",
+              "tests/unit/api/test_historical_routes.py::test_authentication_and_scopes_precede_malformed_selectors",
+              "tests/unit/api/test_historical_routes.py::test_complete_response_etag_changes_with_access_and_authorization_precedes_304",
+              "tests/unit/api/test_historical_routes.py::test_exact_scope_dependencies",
+              "tests/unit/api/test_historical_routes.py::test_historical_body_byte_bound_applies_even_to_read_requests",
+              "tests/unit/api/test_historical_routes.py::test_historical_surface_has_no_business_commands",
+              "tests/unit/api/test_historical_routes.py::test_invalid_or_oversized_result_cannot_pass_conditional_get",
+              "tests/unit/api/test_historical_routes.py::test_missing_historical_service_returns_typed_unavailable_after_authentication",
+              "tests/unit/api/test_historical_routes.py::test_six_historical_reads_delegate_typed_queries_and_return_closed_payloads",
+              "tests/unit/api/test_historical_routes.py::test_unknown_and_out_of_bound_inputs_never_call_service",
+              "tests/unit/api/test_historical_schemas.py::test_cash_flow_filter_cannot_be_a_generic_expression",
+              "tests/unit/api/test_historical_schemas.py::test_grouping_policy_requires_an_explicit_authorizable_target",
+              "tests/unit/api/test_historical_schemas.py::test_grouping_requires_a_pinned_target_and_top_remains_bounded",
+              "tests/unit/api/test_historical_schemas.py::test_historical_coverage_cannot_hide_a_missing_cell_or_repeat_a_denominator",
+              "tests/unit/api/test_historical_schemas.py::test_historical_integer_selectors_reject_coercion",
+              "tests/unit/api/test_historical_schemas.py::test_historical_money_preserves_all_eighteen_fraction_digits",
+              "tests/unit/api/test_historical_schemas.py::test_historical_money_rejects_inexact_or_out_of_range_values",
+              "tests/unit/api/test_historical_schemas.py::test_historical_query_rejects_unsupported_scope",
+              "tests/unit/api/test_historical_schemas.py::test_historical_scope_and_reconstruction_are_explicit",
+              "tests/unit/api/test_historical_schemas.py::test_http_integer_selector_has_same_value_as_typed_mcp_integer",
+              "tests/unit/api/test_historical_schemas.py::test_inclusive_historical_window_retains_exact_boundaries",
+              "tests/unit/api/test_historical_schemas.py::test_unknown_historical_input_key_never_becomes_error_location",
+              "tests/unit/api/test_historical_schemas.py::test_zero_historical_money_is_distinct_from_unavailable_and_partial",
+              "tests/unit/domain/test_historical.py::test_closed_nullable_union_roundtrip",
+              "tests/unit/domain/test_historical.py::test_cross_record_proof_cannot_be_a_fabricated_reconciled_flag",
+              "tests/unit/domain/test_historical.py::test_dated_absence_proof_cannot_cover_future_economics",
+              "tests/unit/domain/test_historical.py::test_optional_result_money_ratio_rejects_excess_scale_even_inside_union",
+              "tests/unit/domain/test_historical.py::test_wire_float_nonfinite_overflow_and_excess_scale_are_rejected",
+              "tests/unit/mcp/test_historical_gateway.py::test_attribution_frozen_bounds_and_group_reference",
+              "tests/unit/mcp/test_historical_gateway.py::test_four_tools_delegate_once_and_preserve_canonical_full_result",
+              "tests/unit/mcp/test_historical_gateway.py::test_invalid_output_is_sanitized_before_tool_result",
+              "tests/unit/mcp/test_historical_gateway.py::test_literal_date_instant_validation_survives_strict_sdk_model",
+              "tests/unit/mcp/test_historical_gateway.py::test_no_extra_api_options_or_unknown_keys_are_exposed_by_mcp",
+              "tests/unit/mcp/test_historical_gateway.py::test_scope_denial_precedes_service",
+              "tests/unit/mcp/test_historical_gateway.py::test_typed_service_failure_and_missing_runtime_never_invent_data"
+            ],
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              },
+              {
+                "command": "env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web",
+                "exit_code": 0
+              }
+            ],
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json"
+            ]
+          },
+          "P2-INC-001": {
+            "sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+            "test_nodes": [
+              "tests/integration/test_historical_api_postgres.py::test_available_annual_results_pages_scope_projection_and_live_license_recheck",
+              "tests/integration/test_historical_seed.py::test_seeded_benchmark_attribution_and_cash_flow_families_are_available",
+              "tests/integration/test_historical_seed.py::test_seeded_income_uses_prior_coverage_native_currencies_and_zero_values",
+              "tests/integration/test_historical_seed.py::test_seeded_performance_has_exact_conservation_and_retained_replay",
+              "tests/unit/analytics/test_historical.py::test_cash_flow_detail_filter_keeps_whole_window_totals_and_revision_dedup",
+              "tests/unit/analytics/test_historical.py::test_dividend_native_reporting_unknown_tax_and_negative_correction",
+              "tests/unit/analytics/test_historical.py::test_previous_month_uses_calendar_boundaries_across_february",
+              "tests/unit/analytics/test_historical.py::test_prior_income_uses_dated_support_not_an_opening_coverage_flag",
+              "tests/unit/analytics/test_historical_actions.py::test_conflicting_known_income_components_preserve_net_without_false_reconciliation"
+            ],
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              },
+              {
+                "command": "env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web",
+                "exit_code": 0
+              }
+            ],
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json"
+            ]
+          },
+          "P2-PERF-001": {
+            "sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+            "test_nodes": [
+              "tests/integration/test_historical_api_postgres.py::test_available_annual_results_pages_scope_projection_and_live_license_recheck",
+              "tests/integration/test_historical_seed.py::test_seeded_benchmark_attribution_and_cash_flow_families_are_available",
+              "tests/integration/test_historical_seed.py::test_seeded_performance_has_exact_conservation_and_retained_replay",
+              "tests/property/test_historical_properties.py::test_ambient_decimal_precision_rounding_and_traps_do_not_change_financial_result",
+              "tests/property/test_historical_properties.py::test_event_permutation_preserves_signed_external_totals_and_digests",
+              "tests/property/test_historical_properties.py::test_positive_constant_quantity_growth_and_attribution_conserve_exact_value",
+              "tests/unit/analytics/test_historical.py::test_already_reporting_currency_anchor_is_not_converted_using_listing_currency",
+              "tests/unit/analytics/test_historical.py::test_cash_flow_detail_filter_keeps_whole_window_totals_and_revision_dedup",
+              "tests/unit/analytics/test_historical.py::test_composite_benchmark_modes_use_exact_original_weights",
+              "tests/unit/analytics/test_historical.py::test_dated_activity_proof_cannot_borrow_opening_or_future_receipt",
+              "tests/unit/analytics/test_historical.py::test_dividend_native_reporting_unknown_tax_and_negative_correction",
+              "tests/unit/analytics/test_historical.py::test_drawdown_uses_flow_neutral_wealth_path",
+              "tests/unit/analytics/test_historical.py::test_effective_mapping_uses_earlier_eligible_identical_identity_revision",
+              "tests/unit/analytics/test_historical.py::test_empty_unconfigured_benchmark_never_creates_an_unbacked_composite",
+              "tests/unit/analytics/test_historical.py::test_exact_midyear_flow_reference_twr_dietz_and_xirr",
+              "tests/unit/analytics/test_historical.py::test_external_flow_at_opening_is_grouped_once_and_terminal_flow_excluded",
+              "tests/unit/analytics/test_historical.py::test_fixed_history_growth_and_serialized_roundtrip",
+              "tests/unit/analytics/test_historical.py::test_frozen_family_registry_records_only_invoked_phase1_primitives",
+              "tests/unit/analytics/test_historical.py::test_income_and_cash_flow_missing_history_do_not_claim_observed_zero_totals",
+              "tests/unit/analytics/test_historical.py::test_late_material_price_revision_gates_point_in_time_return",
+              "tests/unit/analytics/test_historical.py::test_missing_expected_price_does_not_use_previous_session_or_become_zero",
+              "tests/unit/analytics/test_historical.py::test_missing_registered_policy_and_opening_produce_truthful_unavailable",
+              "tests/unit/analytics/test_historical.py::test_point_in_time_receipts_at_boundary_support_covered_history_without_future_use",
+              "tests/unit/analytics/test_historical.py::test_previous_month_uses_calendar_boundaries_across_february",
+              "tests/unit/analytics/test_historical.py::test_price_fx_interaction_partition_reconciles_independent_amounts",
+              "tests/unit/analytics/test_historical.py::test_prior_income_uses_dated_support_not_an_opening_coverage_flag",
+              "tests/unit/analytics/test_historical.py::test_projection_preserves_frozen_canonical_result_and_solver_budget",
+              "tests/unit/analytics/test_historical.py::test_rolling_and_complete_calendar_are_actual_period_calculations",
+              "tests/unit/analytics/test_historical.py::test_tracking_error_refuses_hidden_gap_even_with_twenty_other_pairs",
+              "tests/unit/analytics/test_historical.py::test_tracking_error_uses_sample_variance_and_twenty_pair_threshold",
+              "tests/unit/analytics/test_historical.py::test_unavailable_performance_does_not_claim_uninvoked_return_primitives",
+              "tests/unit/analytics/test_historical.py::test_unpublished_interior_xirr_retains_invoked_primitive_provenance",
+              "tests/unit/analytics/test_historical.py::test_valuation_capacity_refuses_before_any_source_selection",
+              "tests/unit/analytics/test_historical.py::test_weighted_average_cost_keeps_precision_until_output_boundary",
+              "tests/unit/analytics/test_historical.py::test_xirr_wrapper_preserves_nonconventional_and_no_root_reasons",
+              "tests/unit/analytics/test_performance.py::test_modified_dietz_midperiod_deposit_and_withdrawal_are_hand_calculable",
+              "tests/unit/analytics/test_performance.py::test_modified_dietz_nonpositive_denominator_is_unavailable",
+              "tests/unit/analytics/test_performance.py::test_performance_metrics_are_coverage_and_quality_gated",
+              "tests/unit/analytics/test_performance.py::test_short_period_return_is_not_annualized_without_policy_override",
+              "tests/unit/analytics/test_performance.py::test_summary_propagates_worst_material_quality",
+              "tests/unit/analytics/test_performance.py::test_twr_links_complete_snapshot_subperiods_and_does_not_count_deposit_as_gain",
+              "tests/unit/analytics/test_performance.py::test_twr_missing_flow_or_valuation_gap_is_unavailable",
+              "tests/unit/analytics/test_performance.py::test_xirr_multiple_sign_changes_and_no_root_are_unavailable",
+              "tests/unit/analytics/test_performance.py::test_xirr_solves_exact_one_year_no_flow_gain",
+              "tests/unit/analytics/test_performance.py::test_xirr_uses_external_flows_only_and_accepts_irregular_dates",
+              "tests/unit/domain/test_historical.py::test_closed_nullable_union_roundtrip",
+              "tests/unit/domain/test_historical.py::test_cross_record_proof_cannot_be_a_fabricated_reconciled_flag",
+              "tests/unit/domain/test_historical.py::test_dated_absence_proof_cannot_cover_future_economics",
+              "tests/unit/domain/test_historical.py::test_optional_result_money_ratio_rejects_excess_scale_even_inside_union",
+              "tests/unit/domain/test_historical.py::test_wire_float_nonfinite_overflow_and_excess_scale_are_rejected"
+            ],
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              },
+              {
+                "command": "env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web",
+                "exit_code": 0
+              }
+            ],
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json"
+            ]
+          },
+          "P2-PERF-002": {
+            "sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+            "test_nodes": [
+              "tests/integration/test_historical_api_postgres.py::test_available_annual_results_pages_scope_projection_and_live_license_recheck",
+              "tests/integration/test_historical_seed.py::test_seeded_benchmark_attribution_and_cash_flow_families_are_available",
+              "tests/integration/test_historical_seed.py::test_seeded_performance_has_exact_conservation_and_retained_replay",
+              "tests/unit/analytics/test_historical.py::test_composite_benchmark_modes_use_exact_original_weights",
+              "tests/unit/analytics/test_historical.py::test_price_fx_interaction_partition_reconciles_independent_amounts",
+              "tests/unit/analytics/test_historical.py::test_rolling_and_complete_calendar_are_actual_period_calculations",
+              "tests/unit/analytics/test_historical.py::test_tracking_error_refuses_hidden_gap_even_with_twenty_other_pairs",
+              "tests/unit/analytics/test_historical.py::test_tracking_error_uses_sample_variance_and_twenty_pair_threshold",
+              "tests/unit/analytics/test_historical_actions.py::test_action_candidate_fast_path_preserves_revision_and_conflict_rules",
+              "tests/unit/analytics/test_historical_actions.py::test_action_gap_and_late_point_in_time_receipt_are_not_absence_proof",
+              "tests/unit/analytics/test_historical_actions.py::test_cash_drag_obeys_twr_and_modified_dietz_denominators",
+              "tests/unit/analytics/test_historical_actions.py::test_cash_only_internal_effects_have_cash_partition_and_exact_linked_return",
+              "tests/unit/analytics/test_historical_actions.py::test_conflicting_known_income_components_preserve_net_without_false_reconciliation",
+              "tests/unit/analytics/test_historical_actions.py::test_dividend_partition_uses_its_holding_not_last_reconstructed_holding",
+              "tests/unit/analytics/test_historical_actions.py::test_equal_overlapping_action_proofs_keep_earliest_receipt_and_quality_conflicts",
+              "tests/unit/analytics/test_historical_actions.py::test_explicit_reference_correction_replaces_prior_split_without_double_application",
+              "tests/unit/analytics/test_historical_actions.py::test_missing_action_absence_proof_gates_quantity_and_cost_but_not_known_cash",
+              "tests/unit/analytics/test_historical_actions.py::test_missing_fx_decomposition_retains_partial_subtotals_and_uncovered_residual",
+              "tests/unit/analytics/test_historical_actions.py::test_multiple_action_snapshots_preserve_revised_gaps_and_input_order",
+              "tests/unit/analytics/test_historical_actions.py::test_original_singleton_is_selected_only_after_both_cutoff_checks",
+              "tests/unit/analytics/test_historical_actions.py::test_original_singleton_preserves_full_historical_canonical_result",
+              "tests/unit/analytics/test_historical_actions.py::test_original_singleton_preserves_inclusive_period_and_empty_selection",
+              "tests/unit/analytics/test_historical_actions.py::test_source_split_reconstructs_once_and_conserves_cost_wealth_and_attribution",
+              "tests/unit/analytics/test_historical_actions.py::test_unsupported_source_spinoff_gates_quantity_without_inventing_target_holding"
+            ],
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              },
+              {
+                "command": "env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web",
+                "exit_code": 0
+              }
+            ],
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json"
+            ]
+          },
+          "P2-S14": {
+            "sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+            "test_nodes": [
+              "tests/integration/test_historical_postgres.py::test_activity_proofs_reject_future_intervals_and_mutation_of_pinned_runs",
+              "tests/integration/test_historical_postgres.py::test_explicit_configuration_cannot_cross_its_first_knowledge_cutoff",
+              "tests/unit/analytics/test_historical.py::test_dated_activity_proof_cannot_borrow_opening_or_future_receipt",
+              "tests/unit/analytics/test_historical.py::test_late_material_price_revision_gates_point_in_time_return",
+              "tests/unit/analytics/test_historical.py::test_point_in_time_receipts_at_boundary_support_covered_history_without_future_use",
+              "tests/unit/analytics/test_historical_actions.py::test_action_gap_and_late_point_in_time_receipt_are_not_absence_proof",
+              "tests/unit/analytics/test_source_policy.py::test_calendar_gaps_and_dst_use_explicit_session_instants",
+              "tests/unit/analytics/test_source_policy.py::test_closed_calendar_carry_does_not_fill_a_missing_open_session",
+              "tests/unit/analytics/test_source_policy.py::test_conflicting_unordered_or_tied_revisions_are_not_silently_selected",
+              "tests/unit/analytics/test_source_policy.py::test_corrected_missing_fx_pair_is_not_replaced_by_old_rate",
+              "tests/unit/analytics/test_source_policy.py::test_corrected_missing_price_does_not_resurrect_old_observation",
+              "tests/unit/analytics/test_source_policy.py::test_correction_is_unavailable_before_actual_first_knowledge",
+              "tests/unit/analytics/test_source_policy.py::test_cross_owner_source_set_rejects_before_selection",
+              "tests/unit/analytics/test_source_policy.py::test_fx_calendar_allows_declared_closed_carry_but_never_misses_open_fixing",
+              "tests/unit/analytics/test_source_policy.py::test_fx_calendar_identity_cannot_be_replaced_by_another_registered_version",
+              "tests/unit/analytics/test_source_policy.py::test_fx_correction_uses_fixing_calendar_date_even_when_utc_date_differs",
+              "tests/unit/analytics/test_source_policy.py::test_fx_coverage_counts_every_pair_and_fixing_without_silent_omission",
+              "tests/unit/analytics/test_source_policy.py::test_fx_direct_precedes_reciprocal_then_one_provider_priority",
+              "tests/unit/analytics/test_source_policy.py::test_fx_identity_missing_stale_and_rounding_overflow_are_distinct",
+              "tests/unit/analytics/test_source_policy.py::test_fx_ignores_future_corrections_and_ambient_decimal_context",
+              "tests/unit/analytics/test_source_policy.py::test_fx_never_combines_incompatible_pivot_legs",
+              "tests/unit/analytics/test_source_policy.py::test_fx_single_pivot_hand_reference_is_exact_and_preserves_both_legs",
+              "tests/unit/analytics/test_source_policy.py::test_license_use_rejects_unknown_retention_boundary_and_removed_replay",
+              "tests/unit/analytics/test_source_policy.py::test_missing_disputed_and_future_observations_do_not_become_zero_or_old_values",
+              "tests/unit/analytics/test_source_policy.py::test_raw_benchmark_level_selection_preserves_source_kind_and_basis",
+              "tests/unit/analytics/test_source_policy.py::test_unchanged_retrieval_keeps_semantic_digest_but_preserves_knowledge_reference"
+            ],
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              },
+              {
+                "command": "env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web",
+                "exit_code": 0
+              }
+            ],
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json"
+            ]
+          },
+          "P2-S15": {
+            "sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+            "test_nodes": [
+              "tests/integration/test_historical_api_postgres.py::test_available_annual_results_pages_scope_projection_and_live_license_recheck",
+              "tests/integration/test_historical_seed.py::test_seeded_benchmark_attribution_and_cash_flow_families_are_available",
+              "tests/integration/test_historical_seed.py::test_seeded_performance_has_exact_conservation_and_retained_replay",
+              "tests/unit/analytics/test_historical.py::test_composite_benchmark_modes_use_exact_original_weights",
+              "tests/unit/analytics/test_historical.py::test_price_fx_interaction_partition_reconciles_independent_amounts",
+              "tests/unit/analytics/test_historical.py::test_rolling_and_complete_calendar_are_actual_period_calculations",
+              "tests/unit/analytics/test_historical.py::test_tracking_error_refuses_hidden_gap_even_with_twenty_other_pairs",
+              "tests/unit/analytics/test_historical.py::test_tracking_error_uses_sample_variance_and_twenty_pair_threshold",
+              "tests/unit/analytics/test_historical_actions.py::test_action_candidate_fast_path_preserves_revision_and_conflict_rules",
+              "tests/unit/analytics/test_historical_actions.py::test_action_gap_and_late_point_in_time_receipt_are_not_absence_proof",
+              "tests/unit/analytics/test_historical_actions.py::test_cash_drag_obeys_twr_and_modified_dietz_denominators",
+              "tests/unit/analytics/test_historical_actions.py::test_cash_only_internal_effects_have_cash_partition_and_exact_linked_return",
+              "tests/unit/analytics/test_historical_actions.py::test_conflicting_known_income_components_preserve_net_without_false_reconciliation",
+              "tests/unit/analytics/test_historical_actions.py::test_dividend_partition_uses_its_holding_not_last_reconstructed_holding",
+              "tests/unit/analytics/test_historical_actions.py::test_equal_overlapping_action_proofs_keep_earliest_receipt_and_quality_conflicts",
+              "tests/unit/analytics/test_historical_actions.py::test_explicit_reference_correction_replaces_prior_split_without_double_application",
+              "tests/unit/analytics/test_historical_actions.py::test_missing_action_absence_proof_gates_quantity_and_cost_but_not_known_cash",
+              "tests/unit/analytics/test_historical_actions.py::test_missing_fx_decomposition_retains_partial_subtotals_and_uncovered_residual",
+              "tests/unit/analytics/test_historical_actions.py::test_multiple_action_snapshots_preserve_revised_gaps_and_input_order",
+              "tests/unit/analytics/test_historical_actions.py::test_original_singleton_is_selected_only_after_both_cutoff_checks",
+              "tests/unit/analytics/test_historical_actions.py::test_original_singleton_preserves_full_historical_canonical_result",
+              "tests/unit/analytics/test_historical_actions.py::test_original_singleton_preserves_inclusive_period_and_empty_selection",
+              "tests/unit/analytics/test_historical_actions.py::test_source_split_reconstructs_once_and_conserves_cost_wealth_and_attribution",
+              "tests/unit/analytics/test_historical_actions.py::test_unsupported_source_spinoff_gates_quantity_without_inventing_target_holding"
+            ],
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              },
+              {
+                "command": "env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web",
+                "exit_code": 0
+              }
+            ],
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json"
+            ]
+          },
+          "P2-S16": {
+            "sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+            "test_nodes": [
+              "tests/integration/test_historical_api_postgres.py::test_available_annual_results_pages_scope_projection_and_live_license_recheck",
+              "tests/integration/test_historical_seed.py::test_seeded_benchmark_attribution_and_cash_flow_families_are_available",
+              "tests/integration/test_historical_seed.py::test_seeded_performance_has_exact_conservation_and_retained_replay",
+              "tests/property/test_historical_properties.py::test_event_permutation_preserves_signed_external_totals_and_digests",
+              "tests/unit/analytics/test_historical.py::test_cash_flow_detail_filter_keeps_whole_window_totals_and_revision_dedup",
+              "tests/unit/analytics/test_historical.py::test_exact_midyear_flow_reference_twr_dietz_and_xirr",
+              "tests/unit/analytics/test_historical.py::test_external_flow_at_opening_is_grouped_once_and_terminal_flow_excluded",
+              "tests/unit/analytics/test_historical.py::test_weighted_average_cost_keeps_precision_until_output_boundary"
+            ],
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              },
+              {
+                "command": "env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web",
+                "exit_code": 0
+              }
+            ],
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json"
+            ]
+          },
+          "P2-S17": {
+            "sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+            "test_nodes": [
+              "tests/integration/test_historical_api_postgres.py::test_available_annual_results_pages_scope_projection_and_live_license_recheck",
+              "tests/integration/test_historical_seed.py::test_seeded_benchmark_attribution_and_cash_flow_families_are_available",
+              "tests/integration/test_historical_seed.py::test_seeded_performance_has_exact_conservation_and_retained_replay",
+              "tests/unit/analytics/test_historical.py::test_composite_benchmark_modes_use_exact_original_weights",
+              "tests/unit/analytics/test_historical.py::test_price_fx_interaction_partition_reconciles_independent_amounts",
+              "tests/unit/analytics/test_historical.py::test_rolling_and_complete_calendar_are_actual_period_calculations",
+              "tests/unit/analytics/test_historical.py::test_tracking_error_refuses_hidden_gap_even_with_twenty_other_pairs",
+              "tests/unit/analytics/test_historical.py::test_tracking_error_uses_sample_variance_and_twenty_pair_threshold",
+              "tests/unit/analytics/test_historical_actions.py::test_action_candidate_fast_path_preserves_revision_and_conflict_rules",
+              "tests/unit/analytics/test_historical_actions.py::test_action_gap_and_late_point_in_time_receipt_are_not_absence_proof",
+              "tests/unit/analytics/test_historical_actions.py::test_cash_drag_obeys_twr_and_modified_dietz_denominators",
+              "tests/unit/analytics/test_historical_actions.py::test_cash_only_internal_effects_have_cash_partition_and_exact_linked_return",
+              "tests/unit/analytics/test_historical_actions.py::test_conflicting_known_income_components_preserve_net_without_false_reconciliation",
+              "tests/unit/analytics/test_historical_actions.py::test_dividend_partition_uses_its_holding_not_last_reconstructed_holding",
+              "tests/unit/analytics/test_historical_actions.py::test_equal_overlapping_action_proofs_keep_earliest_receipt_and_quality_conflicts",
+              "tests/unit/analytics/test_historical_actions.py::test_explicit_reference_correction_replaces_prior_split_without_double_application",
+              "tests/unit/analytics/test_historical_actions.py::test_missing_action_absence_proof_gates_quantity_and_cost_but_not_known_cash",
+              "tests/unit/analytics/test_historical_actions.py::test_missing_fx_decomposition_retains_partial_subtotals_and_uncovered_residual",
+              "tests/unit/analytics/test_historical_actions.py::test_multiple_action_snapshots_preserve_revised_gaps_and_input_order",
+              "tests/unit/analytics/test_historical_actions.py::test_original_singleton_is_selected_only_after_both_cutoff_checks",
+              "tests/unit/analytics/test_historical_actions.py::test_original_singleton_preserves_full_historical_canonical_result",
+              "tests/unit/analytics/test_historical_actions.py::test_original_singleton_preserves_inclusive_period_and_empty_selection",
+              "tests/unit/analytics/test_historical_actions.py::test_source_split_reconstructs_once_and_conserves_cost_wealth_and_attribution",
+              "tests/unit/analytics/test_historical_actions.py::test_unsupported_source_spinoff_gates_quantity_without_inventing_target_holding"
+            ],
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              },
+              {
+                "command": "env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web",
+                "exit_code": 0
+              }
+            ],
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json"
+            ]
+          },
+          "P2-S18": {
+            "sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+            "test_nodes": [
+              "tests/unit/analytics/test_historical.py::test_empty_unconfigured_benchmark_never_creates_an_unbacked_composite",
+              "tests/unit/analytics/test_historical.py::test_income_and_cash_flow_missing_history_do_not_claim_observed_zero_totals",
+              "tests/unit/analytics/test_historical.py::test_missing_expected_price_does_not_use_previous_session_or_become_zero",
+              "tests/unit/analytics/test_historical.py::test_missing_registered_policy_and_opening_produce_truthful_unavailable",
+              "tests/unit/analytics/test_historical_actions.py::test_missing_action_absence_proof_gates_quantity_and_cost_but_not_known_cash",
+              "tests/unit/analytics/test_historical_actions.py::test_missing_fx_decomposition_retains_partial_subtotals_and_uncovered_residual",
+              "tests/unit/analytics/test_source_policy.py::test_calendar_gaps_and_dst_use_explicit_session_instants",
+              "tests/unit/analytics/test_source_policy.py::test_closed_calendar_carry_does_not_fill_a_missing_open_session",
+              "tests/unit/analytics/test_source_policy.py::test_conflicting_unordered_or_tied_revisions_are_not_silently_selected",
+              "tests/unit/analytics/test_source_policy.py::test_corrected_missing_fx_pair_is_not_replaced_by_old_rate",
+              "tests/unit/analytics/test_source_policy.py::test_corrected_missing_price_does_not_resurrect_old_observation",
+              "tests/unit/analytics/test_source_policy.py::test_correction_is_unavailable_before_actual_first_knowledge",
+              "tests/unit/analytics/test_source_policy.py::test_cross_owner_source_set_rejects_before_selection",
+              "tests/unit/analytics/test_source_policy.py::test_fx_calendar_allows_declared_closed_carry_but_never_misses_open_fixing",
+              "tests/unit/analytics/test_source_policy.py::test_fx_calendar_identity_cannot_be_replaced_by_another_registered_version",
+              "tests/unit/analytics/test_source_policy.py::test_fx_correction_uses_fixing_calendar_date_even_when_utc_date_differs",
+              "tests/unit/analytics/test_source_policy.py::test_fx_coverage_counts_every_pair_and_fixing_without_silent_omission",
+              "tests/unit/analytics/test_source_policy.py::test_fx_direct_precedes_reciprocal_then_one_provider_priority",
+              "tests/unit/analytics/test_source_policy.py::test_fx_identity_missing_stale_and_rounding_overflow_are_distinct",
+              "tests/unit/analytics/test_source_policy.py::test_fx_ignores_future_corrections_and_ambient_decimal_context",
+              "tests/unit/analytics/test_source_policy.py::test_fx_never_combines_incompatible_pivot_legs",
+              "tests/unit/analytics/test_source_policy.py::test_fx_single_pivot_hand_reference_is_exact_and_preserves_both_legs",
+              "tests/unit/analytics/test_source_policy.py::test_license_use_rejects_unknown_retention_boundary_and_removed_replay",
+              "tests/unit/analytics/test_source_policy.py::test_missing_disputed_and_future_observations_do_not_become_zero_or_old_values",
+              "tests/unit/analytics/test_source_policy.py::test_raw_benchmark_level_selection_preserves_source_kind_and_basis",
+              "tests/unit/analytics/test_source_policy.py::test_unchanged_retrieval_keeps_semantic_digest_but_preserves_knowledge_reference"
+            ],
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              },
+              {
+                "command": "env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web",
+                "exit_code": 0
+              }
+            ],
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json"
+            ]
+          },
+          "P2-S19": {
+            "sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+            "test_nodes": [
+              "tests/integration/test_historical_api_postgres.py::test_available_annual_results_pages_scope_projection_and_live_license_recheck",
+              "tests/integration/test_historical_seed.py::test_seeded_benchmark_attribution_and_cash_flow_families_are_available",
+              "tests/integration/test_historical_seed.py::test_seeded_income_uses_prior_coverage_native_currencies_and_zero_values",
+              "tests/integration/test_historical_seed.py::test_seeded_performance_has_exact_conservation_and_retained_replay",
+              "tests/unit/analytics/test_historical.py::test_cash_flow_detail_filter_keeps_whole_window_totals_and_revision_dedup",
+              "tests/unit/analytics/test_historical.py::test_dividend_native_reporting_unknown_tax_and_negative_correction",
+              "tests/unit/analytics/test_historical.py::test_previous_month_uses_calendar_boundaries_across_february",
+              "tests/unit/analytics/test_historical.py::test_prior_income_uses_dated_support_not_an_opening_coverage_flag",
+              "tests/unit/analytics/test_historical_actions.py::test_conflicting_known_income_components_preserve_net_without_false_reconciliation"
+            ],
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              },
+              {
+                "command": "env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web",
+                "exit_code": 0
+              }
+            ],
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json",
+              "docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json"
+            ]
           }
         }
       },
@@ -1561,6 +2136,22 @@
           ],
           "artifact": "docs/implementation/evidence/phase-2-p2-04-4aa1e23-failed-quality.json",
           "correction": "Prepare bounded calculation-local calendar/source-selection indexes and read the existing sealed canonical composite directly for source detail, preserving canonical financial evidence, all authorization/license checks and unchanged deadlines. Corrected exact-source acceptance remains required."
+        },
+        {
+          "work_package": "P2-02",
+          "source_sha": "5fa43b2fe1f671b9e2734c70fd0c13480ae08555",
+          "acceptance": "superseded_failed_candidate",
+          "make_validate": "passed",
+          "isolated_python_tests_passed": 790,
+          "service_backed_python_tests_passed": 124,
+          "combined_python_coverage_with_branch_measurement_percent": 87,
+          "web_unit_tests_passed": 111,
+          "browser_tests_passed_locally": 52,
+          "github_quality_run": 34144309940,
+          "github_quality_result": "failed",
+          "github_documentation_result": "passed",
+          "github_security_result": "passed",
+          "correction": "Corrected and accepted at f78c9d2917c3ce8c93f9ae5631390c59616abc82; the original candidate remains unaccepted."
         }
       ]
     },

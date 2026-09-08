@@ -1,0 +1,387 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "p204_compatibility_review",
+  "baseline_sha": "abb655eb7f0e1335e4c74040cc96ad1a0f83bbeb",
+  "source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+  "source_binding": "immutable_commit",
+  "result": "compatible",
+  "acceptance_result": "pending",
+  "unchanged_http_operation_count": 58,
+  "unchanged_component_schema_count": 135,
+  "additive_composite_response_operations": [
+    {
+      "path": "/api/v1/benchmark-snapshots/{snapshot_id}",
+      "method": "GET",
+      "operation_id": "get_benchmark_snapshot"
+    },
+    {
+      "path": "/api/v1/benchmark-snapshots/{snapshot_id}/observations",
+      "method": "GET",
+      "operation_id": "list_benchmark_observations"
+    }
+  ],
+  "added_http_operations": [
+    {
+      "path": "/api/v1/accounts/{account_id}/attribution",
+      "method": "GET",
+      "operation_id": "get_attribution_summary"
+    },
+    {
+      "path": "/api/v1/accounts/{account_id}/benchmark-comparison",
+      "method": "GET",
+      "operation_id": "get_benchmark_comparison"
+    },
+    {
+      "path": "/api/v1/accounts/{account_id}/cash-flow-intelligence",
+      "method": "GET",
+      "operation_id": "get_cash_flow_intelligence"
+    },
+    {
+      "path": "/api/v1/accounts/{account_id}/dividend-intelligence",
+      "method": "GET",
+      "operation_id": "get_dividend_intelligence"
+    },
+    {
+      "path": "/api/v1/accounts/{account_id}/performance/intelligence",
+      "method": "GET",
+      "operation_id": "get_performance_summary"
+    },
+    {
+      "path": "/api/v1/accounts/{account_id}/performance/series",
+      "method": "GET",
+      "operation_id": "get_performance_series"
+    }
+  ],
+  "contract_content_digest": "b1e2afc6178fcdf4e62aae44c8030341901b570d58aad7c09574a034c13a1ed7",
+  "unchanged_boundary_files": [
+    {
+      "file": "apps/api/src/trading212_api/planning_routes.py",
+      "content_digest": "51bfc9b1d7507a948fb7fb5c22b763633a11ec275c6ab223a78d1510abe6bc32",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/api/src/trading212_api/planning_schemas.py",
+      "content_digest": "4fc9b672541146d3862dc9b31cdad4629d327c0db090d91ad39fda12d055adea",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/api/src/trading212_api/schemas.py",
+      "content_digest": "8446492206864442f25c507091e90b755bf425d58e1d2998c42b33bee9aaca5d",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/api/src/trading212_api/target_routes.py",
+      "content_digest": "6a83d61d3fa05b872bb4f4a686d3c33b0a13fa72195e6cf70b01b195842322da",
+      "byte_identical": true
+    },
+    {
+      "file": "apps/api/src/trading212_api/target_schemas.py",
+      "content_digest": "d6e191691fcdfba4b3bf145c9e22859a206b46a290b8541ec7aca7b356a6e8b5",
+      "byte_identical": true
+    },
+    {
+      "file": "config/contracts/trading212-openapi-verification.json",
+      "content_digest": "b61f867a93da49d7b80d26679f619a747346e5b8b609ba69ea4ba09cdcf37a5e",
+      "byte_identical": true
+    },
+    {
+      "file": "config/contracts/trading212-read-allowlist.yaml",
+      "content_digest": "36aa7afbbeb416bfeaca4efda31bc52983bcbeaab93aea906fa43204cf12a284",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/api-contracts/src/planning-transport.ts",
+      "content_digest": "b40dd8d200a1edbd0f65531e84127b8e8c38050770460cf385967f51e298ce90",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/api-contracts/src/planning.generated.ts",
+      "content_digest": "cb39e4ec17d3957e8e6053ee1ab8954b6e62b8455994dc16bf3d037d4e436ca5",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/api-contracts/src/target-transport.ts",
+      "content_digest": "a1da480f158c0ea64dcc56b576d228100c92c213d26607ac767f22f192fc22e6",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/api-contracts/src/targets.generated.ts",
+      "content_digest": "909ec494fd6dfbced3502fcb81e80c0a64ffaec7023695c077dae3ec2ec5924b",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/security/src/trading212_security/principals.py",
+      "content_digest": "30d232c0541307b087c68f591540217f348f9a1d3861e4f66e4de74e8cf056ab",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/security/src/trading212_security/settings.py",
+      "content_digest": "8436b97d8732686673b5411cc092aa5d2f16308431d88df40891a41de5a7c503",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/security/src/trading212_security/tokens.py",
+      "content_digest": "3867ab857fe439c62c2c8cbaae2914f452f7e453a64a64a23b19353961c9edd0",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/pyproject.toml",
+      "content_digest": "8986333293755c7f863f3a160be0bf166f21ace814699d23a50d032ce5d3af8c",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/__init__.py",
+      "content_digest": "47a4bcca3d74467a825c6ee7f5f920e57d0e139a76304ad905131464d5f4e1a7",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/allowlist.py",
+      "content_digest": "225f005792349178875ee3715141a26a0f43ea05f9b2d083428a689475f798ea",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/client.py",
+      "content_digest": "5b163ee73c4caceb4ef5349f94b2d73d209b8acea5447dcc5855bf1c159c2157",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/configuration.py",
+      "content_digest": "3478c7e6cfe57ccee6f505762419241c2fe4ea20e1a1bd8a1c7ca16da7181d82",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/contracts/trading212-read-allowlist.yaml",
+      "content_digest": "36aa7afbbeb416bfeaca4efda31bc52983bcbeaab93aea906fa43204cf12a284",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/credentials.py",
+      "content_digest": "6bb36ba5fa5dcf4ff0e4b53b2a63f1ccbfe99cfc8dc17ac566b06523f3a12d7f",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/errors.py",
+      "content_digest": "470f6ad88c94a5a02fd8293c4b41629655256b25965db539cdd6cfa5309eda16",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/ingestion_adapter.py",
+      "content_digest": "d22cdb7853596965fca55833f806781012c9c8819c13ec9fa1453ce0a9ea86b9",
+      "byte_identical": true
+    },
+    {
+      "file": "packages/trading212/src/trading212_provider/models.py",
+      "content_digest": "d56cfd0d430dfbb1518e0b2c65ca2842d0d696b82e172aa1d0da55fe01deb192",
+      "byte_identical": true
+    }
+  ],
+  "retained_mcp_descriptors_equal": 15,
+  "added_mcp_descriptors": [
+    {
+      "name": "get_performance_summary",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "required_input_fields": [
+        "account_id",
+        "start_date",
+        "end_date",
+        "source_cutoff_at",
+        "reporting_currency"
+      ],
+      "input_fields": [
+        "account_id",
+        "end_date",
+        "frequency",
+        "method",
+        "reporting_currency",
+        "source_cutoff_at",
+        "start_date"
+      ],
+      "security_schemes": [
+        {
+          "type": "oauth2",
+          "scopes": [
+            "portfolio:read",
+            "analytics:read"
+          ]
+        }
+      ],
+      "descriptor_content_digest": "9ee12084a109693be05cf3a92220f30329a8f746f3814b510ed5fc23986d1a5e"
+    },
+    {
+      "name": "get_benchmark_comparison",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "required_input_fields": [
+        "account_id",
+        "start_date",
+        "end_date",
+        "source_cutoff_at",
+        "reporting_currency",
+        "benchmark_version_id"
+      ],
+      "input_fields": [
+        "account_id",
+        "benchmark_version_id",
+        "end_date",
+        "frequency",
+        "reporting_currency",
+        "source_cutoff_at",
+        "start_date"
+      ],
+      "security_schemes": [
+        {
+          "type": "oauth2",
+          "scopes": [
+            "portfolio:read",
+            "analytics:read"
+          ]
+        }
+      ],
+      "descriptor_content_digest": "23de868d4d919ab86845db38d059f3b7846ff79316cd17429a37d54b401d0335"
+    },
+    {
+      "name": "get_dividend_intelligence",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "required_input_fields": [
+        "account_id",
+        "start_date",
+        "end_date",
+        "source_cutoff_at",
+        "reporting_currency"
+      ],
+      "input_fields": [
+        "account_id",
+        "end_date",
+        "reporting_currency",
+        "source_cutoff_at",
+        "start_date",
+        "top_n"
+      ],
+      "security_schemes": [
+        {
+          "type": "oauth2",
+          "scopes": [
+            "portfolio:read",
+            "activity:read",
+            "analytics:read"
+          ]
+        }
+      ],
+      "descriptor_content_digest": "6437d6b354e64009029d39c131dfc3949925cfe460345de67fbdf6f0f76dc821"
+    },
+    {
+      "name": "get_attribution_summary",
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "required_input_fields": [
+        "account_id",
+        "start_date",
+        "end_date",
+        "source_cutoff_at",
+        "reporting_currency"
+      ],
+      "input_fields": [
+        "account_id",
+        "end_date",
+        "grouping",
+        "reporting_currency",
+        "source_cutoff_at",
+        "start_date",
+        "target_version_id",
+        "top_n"
+      ],
+      "security_schemes": [
+        {
+          "type": "oauth2",
+          "scopes": [
+            "portfolio:read",
+            "analytics:read",
+            "targets:read"
+          ]
+        }
+      ],
+      "descriptor_content_digest": "f2a278941d7d62c31a65d704ee33f0be86a35402f705b12cd5f94797a0ccb25f"
+    }
+  ],
+  "broker_capabilities": [
+    {
+      "capability": "account_summary",
+      "method": "GET",
+      "path": "/equity/account/summary"
+    },
+    {
+      "capability": "metadata_instruments",
+      "method": "GET",
+      "path": "/equity/metadata/instruments"
+    },
+    {
+      "capability": "metadata_exchanges",
+      "method": "GET",
+      "path": "/equity/metadata/exchanges"
+    },
+    {
+      "capability": "portfolio_positions",
+      "method": "GET",
+      "path": "/equity/positions"
+    },
+    {
+      "capability": "pending_orders",
+      "method": "GET",
+      "path": "/equity/orders"
+    },
+    {
+      "capability": "order_detail",
+      "method": "GET",
+      "path": "/equity/orders/{order_id}",
+      "path_parameters": {
+        "order_id": {
+          "type": "provider_identifier",
+          "required": true
+        }
+      }
+    },
+    {
+      "capability": "historical_orders",
+      "method": "GET",
+      "path": "/equity/history/orders"
+    },
+    {
+      "capability": "historical_transactions",
+      "method": "GET",
+      "path": "/equity/history/transactions"
+    },
+    {
+      "capability": "historical_dividends",
+      "method": "GET",
+      "path": "/equity/history/dividends"
+    },
+    {
+      "capability": "historical_exports",
+      "method": "GET",
+      "path": "/equity/history/exports"
+    }
+  ],
+  "limitations": [
+    "Descriptor comparison registers tools without executing them or dispatching providers.",
+    "Read timeout changes are separately covered by observed historical client tests; existing transport defaults remain eight seconds.",
+    "This read-only comparison does not establish runtime, CI, scanner, or external-provider acceptance."
+  ]
+}

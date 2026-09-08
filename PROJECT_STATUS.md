@@ -6,7 +6,7 @@
 
 **Implementation authority:** `main`
 
-**Updated:** 2026-09-08
+**Updated:** 2026-09-09
 
 ## Current state
 
@@ -54,12 +54,11 @@ capacity exhausted by repeated earlier-package checks. The production source
 and 64-view quota did not change.
 Migration head is `20260907_0011`; MCP remains 15 tools and Trading 212 ten GET
 capabilities. See [the P2-03 evidence](docs/implementation/evidence/phase-2-p2-03-e258f54.json).
-Phase 2 now has three of ten packages, eight of 29 local rows and twelve of 40
-scenarios complete (30%). P2-04 through P2-10 and shared release predicates remain
+Phase 2 now has four of ten packages, eleven of 29 local rows and eighteen of 40
+scenarios complete (40%). P2-05 through P2-10 and shared release predicates remain
 required. Real reference provider configuration/licensing remain unavailable.
-P2-04 is `in_progress` from synchronized starting SHA
-`05d01c7a9a9cb6cc3f351c3adbed2036f02b94a9`. Historical capture, calculations and
-their API/MCP/web surfaces are implemented under verification. Candidate
+P2-04 implementation began at synchronized starting SHA
+`05d01c7a9a9cb6cc3f351c3adbed2036f02b94a9`; scoped acceptance is recorded below. Earlier failed candidates remain unaccepted. Candidate
 `6a2074141d9c7bdd8aa64e1710777d153c4996f5` failed historical browser load
 limits and the PostgreSQL coverage job timeout in quality CI run `34165840790`;
 its documentation and security workflows passed. The interrupted local exact-SHA
@@ -77,9 +76,19 @@ sequence passed locally with `CI=1`. Diagnostic revision
 benchmark calculation and 7.669 seconds in source-use publication in CI. The
 benchmark request completed, but the subsequent composite snapshot heading
 exceeded five seconds while two source reads ran consecutively. PostgreSQL
-coverage, documentation and security passed; package acceptance remains pending
-correction and complete exact-source validation. See the
+coverage, documentation and security passed; that candidate remained unaccepted. See the
 [latest retained failed candidate](docs/implementation/evidence/phase-2-p2-04-4aa1e23-failed-quality.json).
+
+P2-04 is complete at `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`. The [accepted assertion map](docs/implementation/evidence/phase-2-p2-04-2a7c89a.json) closes P2-PERF-001, P2-PERF-002, P2-INC-001 and P2-S14 through P2-S19. Shared P2-S34 remains `in_progress`: historical API/web/MCP parity is partial evidence; report/export and remaining shared scope are outstanding.
+
+The clean exact-source `make validate` passed in 1165.723 seconds: 1,346 isolated and 175 service-backed Python tests, 88% combined statement/branch coverage, 203 web unit tests and 66 browser checks. A separate unchanged-source `env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web` passed in 366.184 seconds, retaining all 66 named browser passes and a successful web build with clean source before and after. The original full-gate GitHub reporter lacked individual browser names; the supplement adds that evidence without replacing the full gate or its image-build provenance. Pytest selectors are assertion inventory bound to observed complete test-file execution.
+
+Exact pushed-source CI passed: Quality `34272112673`, Documentation `34272112714`, Security `34272112661`. Eight source/history/image scans passed under their retained scanner policies. Fresh runtime attempt 003 passed in 170.757 seconds: six historical HTTP reads, four MCP reads, configured web journeys and identical retained rows across all 101 inventoried tables after all seven services stopped/restarted. Task containers, volume and network were removed, with cleanup verified. Migration head is `20260907_0012`; the implemented inventory is 66 HTTP operations and 19 MCP tools; Trading 212 remains the exact ten GET-only capabilities.
+
+See [runtime](docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json), [security](docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json) and [compatibility](docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json). Phase 2 remains `in_progress`: four of ten packages (40%), eleven of 29 local rows and eighteen of 40 scenarios complete. P2-05 through P2-10 and Phase 3 remain `not_started`; no final Phase 2 release SHA is claimed.
+
+Source-backed known P2-08 limitations remain: the normal complete seed has three accounts, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.
+
 Phase 3 remains `not_started`.
 
 ## Previously accepted baseline
@@ -118,7 +127,7 @@ than fabricated.
 
 ## Next action
 
-Implement P2-04 historical performance and income intelligence, then P2-05 through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+Proceed to P2-05 after its authority synchronization, then P2-06 through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo

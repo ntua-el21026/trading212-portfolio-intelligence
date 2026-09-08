@@ -2,7 +2,7 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 through P2-03 complete
+**Implementation acceptance:** In progress; P2-01 through P2-04 complete; 11/29 local rows
 
 **Target release:** `0.2.0`
 
@@ -10,12 +10,14 @@
 
 **P2-02 evidence SHA:** `f78c9d2917c3ce8c93f9ae5631390c59616abc82`
 
-**P2-03 evidence SHA:** `e258f54bb03a958f7847b310ee882b7f4a54686f`; final Phase 2 release SHA pending
+**P2-03 evidence SHA:** `e258f54bb03a958f7847b310ee882b7f4a54686f`
+
+**P2-04 evidence SHA:** `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`; final Phase 2 release SHA pending
 
 The owner assignment authorizes P2-01 through P2-10 after corrected Phase 1
 acceptance at `99df47b6633791c3900a52f46f56d48be922a436`. That SHA proves Stage A;
 it does not prove any Phase 2 behavior. The design contract is accepted while
-P2-01 through P2-03 have passed their scoped acceptance; later and shared predicates remain `pending`.
+P2-01 through P2-04 have passed scoped acceptance; later/shared predicates remain pending or in progress, including partial P2-S34.
 
 ## Evidence and state rules
 
@@ -45,9 +47,9 @@ gates, and final release evidence. A design commit cannot close a runtime row.
 | P2-OPT-003 | P2-02 | Hand-calculated and exhaustive bounded reference cases validate objective/tie-breaks; infeasibility and degraded inputs remain structured; immutable plans and concurrent safe retries never call a broker. | 10, 11, 12, 37 | `complete` |
 | P2-SRC-001 | P2-03 | Typed price/FX/benchmark/metadata adapters provide fixed trusted origins, bounded parsing/retries and isolated egress; deterministic replay works without external credentials. | 13, 14, 36, 37 | `complete` |
 | P2-SRC-002 | P2-03 | Immutable sources preserve time, currency, revisions, gaps, corporate-action basis, provenance/license/export policy and cutoff-safe FX precedence. | 13, 14, 18, 38 | `complete` |
-| P2-PERF-001 | P2-04 | TWR, MWR and Modified Dietz follow frozen methods, correct external-flow treatment, explicit unavailable roots/coverage and no browser/model financial computation. | 15, 16, 18 | `pending` |
-| P2-PERF-002 | P2-04 | Benchmark composition, calendars/currency alignment, excess/rolling metrics and attribution reconcile to total plus disclosed residual without invented precision. | 15, 17, 18, 34 | `pending` |
-| P2-INC-001 | P2-04 | Dividend/income, fees/taxes and cash-flow views retain original currencies and sourced conversion; purchases/sales are not investment gain. | 16, 19, 34 | `pending` |
+| P2-PERF-001 | P2-04 | TWR, MWR and Modified Dietz follow frozen methods, correct external-flow treatment, explicit unavailable roots/coverage and no browser/model financial computation. [Exact-SHA assertion map](evidence/phase-2-p2-04-2a7c89a.json). | 15, 16, 18 | `complete` |
+| P2-PERF-002 | P2-04 | Benchmark composition, calendars/currency alignment, excess/rolling metrics and attribution reconcile to total plus disclosed residual without invented precision. [Exact-SHA assertion map](evidence/phase-2-p2-04-2a7c89a.json). | 15, 17, 18, 34 | `complete` |
+| P2-INC-001 | P2-04 | Dividend/income, fees/taxes and cash-flow views retain original currencies and sourced conversion; purchases/sales are not investment gain. [Exact-SHA assertion map](evidence/phase-2-p2-04-2a7c89a.json). | 16, 19, 34 | `complete` |
 | P2-XRAY-001 | P2-05 | Versioned ETF constituents and explicit entity/share-class/ADR/listing mappings produce direct/indirect/effective exposure without double counting. | 20, 21 | `pending` |
 | P2-XRAY-002 | P2-05 | Overlap, classifications and concentration retain unresolved weight, coverage, confidence, source dates and stale/partial quality. | 22, 23, 34, 38 | `pending` |
 | P2-RPT-001 | P2-06 | Every required report type and PDF/CSV/JSON/XLSX format has a reproducible canonical manifest, shared service values, source/method/quality/license metadata and bounded private artifacts. | 24, 27, 34 | `pending` |
@@ -122,3 +124,15 @@ and seven-service restart. The two failed harness attempts (cursor issue-time co
 pagination capacity) are retained separately from the corrected fresh runtime. Three packages, eight
 local rows and twelve scenarios are complete; P2-S14/P2-S36 and later/shared
 predicates remain pending. Phase 3 remains `not_started`.
+
+## P2-04 observed evidence
+
+P2-04 is complete at `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`. The [accepted assertion map](evidence/phase-2-p2-04-2a7c89a.json) closes P2-PERF-001, P2-PERF-002, P2-INC-001 and P2-S14 through P2-S19. Shared P2-S34 remains `in_progress`: historical API/web/MCP parity is partial evidence; report/export and remaining shared scope are outstanding.
+
+The clean exact-source `make validate` passed in 1165.723 seconds: 1,346 isolated and 175 service-backed Python tests, 88% combined statement/branch coverage, 203 web unit tests and 66 browser checks. A separate unchanged-source `env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web` passed in 366.184 seconds, retaining all 66 named browser passes and a successful web build with clean source before and after. The original full-gate GitHub reporter lacked individual browser names; the supplement adds that evidence without replacing the full gate or its image-build provenance. Pytest selectors are assertion inventory bound to observed complete test-file execution.
+
+Exact pushed-source CI passed: Quality `34272112673`, Documentation `34272112714`, Security `34272112661`. Eight source/history/image scans passed under their retained scanner policies. Fresh runtime attempt 003 passed in 170.757 seconds: six historical HTTP reads, four MCP reads, configured web journeys and identical retained rows across all 101 inventoried tables after all seven services stopped/restarted. Task containers, volume and network were removed, with cleanup verified. Migration head is `20260907_0012`; the implemented inventory is 66 HTTP operations and 19 MCP tools; Trading 212 remains the exact ten GET-only capabilities.
+
+See [runtime](evidence/phase-2-p2-04-2a7c89a-runtime.json), [security](evidence/phase-2-p2-04-2a7c89a-security.json) and [compatibility](evidence/phase-2-p2-04-2a7c89a-compatibility.json). Phase 2 remains `in_progress`: four of ten packages (40%), eleven of 29 local rows and eighteen of 40 scenarios complete. P2-05 through P2-10 and Phase 3 remain `not_started`; no final Phase 2 release SHA is claimed.
+
+Source-backed known P2-08 limitations remain: the normal complete seed has three accounts, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.

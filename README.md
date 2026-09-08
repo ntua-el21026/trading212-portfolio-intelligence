@@ -49,7 +49,7 @@ API, web, workers, reports, and MCP tools share the same canonical domain, autho
 | Phase | Release | Outcome | Status |
 |---|---:|---|---|
 | 1. Trusted Foundation | `0.1.0` | Monorepo, domain/persistence, GET-only Trading 212 ingestion, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, CI and operations | Implementation complete; 24 local acceptance rows complete; external gates remain |
-| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 through P2-03 complete, 3/10 packages |
+| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 through P2-04 complete, 4/10 packages (40%) |
 | 3. Premium Intelligence & Productization | `1.0.0` | Advanced risk/scenarios/projections/goals, research cockpit, rich ChatGPT UI, PWA polish, premium providers and production hardening | Not started |
 
 ## Phase 1 technical baseline
@@ -79,6 +79,8 @@ make build
 
 Start only pinned PostgreSQL 18.6 and non-authoritative Redis 8.10.1 with `make run-dependencies`, or build, migrate, seed, and start the complete container stack with `make run-local`. PostgreSQL remains the sole authoritative financial system of record. `make dev` migrates/seeds the local database and starts the API/web host processes with loopback synthetic authentication. See the [P1-01 dependency baseline](docs/implementation/P1_01_DEPENDENCY_BASELINE.md) for registry evidence and exact pins and the [Phase 1 operations runbook](docs/operations/LOCAL_AND_DEPLOYMENT.md) for deployment, recovery, and health procedures.
 
+**Current full-stack web startup limitation:** `make run-local` with the complete three-account seed requires the unresolved P2-08 account-configuration/selection closure described below; the accepted scratch override is not the default Compose setup.
+
 The connected local `/pies` route now supports private hierarchical targets,
 validation, immutable publication and version comparison. See the
 [P2-01 implementation and recovery notes](docs/implementation/P2_01_VIRTUAL_TARGETS.md).
@@ -92,6 +94,10 @@ their typed ingestion service. The connected `/sources` area exposes observation
 coverage, licensing and immutable benchmark definitions. Real reference providers
 remain unconfigured. [P2-03 implementation and exact-SHA acceptance](docs/implementation/P2_03_REFERENCE_SOURCES.md)
 records this increment's evidence boundary.
+
+P2-04 historical performance, benchmark, attribution, income and cash-flow intelligence has [scoped exact-source acceptance](docs/implementation/P2_04_HISTORICAL_INTELLIGENCE.md) at `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`. Shared report parity and P2-05 through P2-10 remain required.
+
+Source-backed known P2-08 limitations remain: the normal complete seed has three accounts, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.
 
 ## Documentation entry point
 
