@@ -1,17 +1,25 @@
 from dataclasses import replace
 from decimal import Decimal
+from unittest.mock import patch
 
 import pytest
+from trading212_analytics import _historical_performance as performance
 from trading212_analytics.historical import calculate_performance, verify_historical_result
+from trading212_analytics.performance import calculate_xirr
+from trading212_domain import Money, QualityState
 from trading212_domain import historical as d
 from trading212_domain import historical_results as r
 from trading212_domain.historical_serialization import (
     historical_canonical_bytes,
     historical_input_from_json,
+    historical_result_digest,
     historical_result_from_json,
 )
+from trading212_domain.planning import CoveragePolicy
+from trading212_domain.sources import ObservationState, SourceCoverage, SourceGap, SourceReason
 
-from .historical_factories import fixture
+from .historical_factories import START, fixture, identity, with_events, with_fx
+from .source_factories import EUR, USD
 
 pytestmark = pytest.mark.unit
 
@@ -763,3 +771,166 @@ def test_xirr_wrapper_preserves_nonconventional_and_no_root_reasons() -> None:
     empty = calculate_performance(fixture(quantity="0"), options=r.PerformanceOptions())
     assert empty.summary.money_weighted_return.value is None
     assert empty.summary.money_weighted_return.reason_code is d.HistoricalReason.XIRR_NO_ROOT
+
+
+def projection_input(scenario: str) -> d.HistoricalInput:
+    if scenario.startswith("missing"):
+        value = fixture(("100", "100.01", "100.02", "100.03"))
+        source = value.price_snapshots[0]
+        last = source.observations[-1]
+        missing = replace(
+            source,
+            observations=(
+                *source.observations[:-1],
+                replace(last, state=ObservationState.MISSING, value=None),
+            ),
+            coverage=SourceCoverage(
+                expected_count=4,
+                available_count=3,
+                gaps=(
+                    SourceGap(session_date=last.session_date, reason=SourceReason.MISSING_SESSION),
+                ),
+                quality=QualityState.PARTIAL,
+            ),
+        )
+        return replace(
+            value,
+            price_snapshots=(missing,),
+            selection=replace(
+                value.selection,
+                window=replace(
+                    value.selection.window,
+                    coverage_policy=CoveragePolicy.ALLOW_DEGRADED
+                    if scenario == "missing_degraded"
+                    else CoveragePolicy.REQUIRE_COMPLETE,
+                ),
+            ),
+        )
+    prices = tuple(str(Decimal("100") + Decimal(index % 5) * Decimal(".01")) for index in range(36))
+    value = with_fx(fixture(prices, currency=USD), (".9",) * len(prices), base=USD)
+    value = with_events(
+        value,
+        d.HistoricalExternalFlow(
+            identity=identity(100, START),
+            kind="deposit",
+            signed_amount=Money(Decimal("20"), EUR),
+            scope_proof="account_boundary",
+        ),
+    )
+    if scenario == "unavailable":
+        value = replace(
+            value,
+            opening=d.UnavailableHistoricalOpening(reasons=(d.HistoricalReason.OPENING_MISSING,)),
+        )
+    return value
+
+
+def projection_options(
+    scenario: str, method: d.ReturnMethod, frequency: d.HistoricalFrequency
+) -> r.PerformanceOptions:
+    return r.PerformanceOptions(
+        method=method,
+        frequency=frequency,
+        rolling_window=d.RollingWindow.DAYS_30 if scenario == "periods" else d.RollingWindow.NONE,
+        calendar_period=d.CalendarPeriod.MONTH if scenario == "periods" else d.CalendarPeriod.NONE,
+    )
+
+
+# Full canonical result digests recorded from the unchanged 92dc0e445809737a766c7f211c5dfef42adf9f6a
+# implementation before this optimization, including context, selected uses and conversions.
+# Do not regenerate these from the optimized implementation to bless a parity change.
+PROJECTION_BASELINE_DIGESTS: dict[str, str] = {
+    "complete/modified_dietz/daily": (
+        "eab14badb091ef209fdebd40a4277bc0d698fec983a41bf4330d11051050c0fe"
+    ),
+    "complete/modified_dietz/monthly": (
+        "b4f2fbfc401d8554e0c8cad073fae17e003c12b746172fe52b4381562dd799a3"
+    ),
+    "complete/mwr/daily": ("84cfbec404c8a89cecb900d7961d79bc341fe6472b7cd0b7925919d60f6027d9"),
+    "complete/mwr/monthly": ("2b7ee6659bb68ae74f459b53c30b7ebc48b16a26cf3c3326d2e69092bb594735"),
+    "complete/twr/daily": ("09291a006d4789f56b4260496d7988abb2584d14a849b4085aba671df91f0de0"),
+    "complete/twr/monthly": ("c73f918d37d3736ada82a074ffbc16151b114e202c57ea7d35a24759430318d4"),
+    "missing_degraded/mwr/monthly": (
+        "a557b6e15c8aa5f9b9ed31e7a6a39d32a8e48a28089561634d09f23e945aec7d"
+    ),
+    "missing_strict/mwr/monthly": (
+        "4433372965490047aaa1c853d398f6dfd2595a990cbfa65fb281f8f0c0982da8"
+    ),
+    "periods/modified_dietz/daily": (
+        "53df4555b8c27ab5f4a4c532d896d6500175ad22ec55afd45307489929786e85"
+    ),
+    "periods/modified_dietz/monthly": (
+        "de44b4d919cc6ecebecd216929b3c386c455fb9a465b40410182f056ae9e1f9e"
+    ),
+    "periods/mwr/daily": ("2d8267b63f740174131ae1960a6bd79bd8c4c789dc66a251066f3419b4497024"),
+    "periods/mwr/monthly": ("2861704951fd926bdf48435db2cce5ca2accc3f1a073033d7434d9232baf891f"),
+    "periods/twr/daily": ("725770a9ce2d03ea82a63c058f97d54da3c228ecab38957839d387cd4dfc3dba"),
+    "periods/twr/monthly": ("f904cc66d02bf79b159fec653f4c45c597fc100335b6723cc9663665cc4eaf49"),
+    "unavailable/modified_dietz/daily": (
+        "80836f35c6fec9fd9f4660f3ef381aca349b8f71d119b5960ef4edf360e5cf09"
+    ),
+    "unavailable/modified_dietz/monthly": (
+        "7372e179a05143d0b2ce099d4b01f389ee7c23146efc5b090ce51442c3dba88a"
+    ),
+    "unavailable/mwr/daily": ("8dd0a78fca776ec8709919ec4b1bc6b8e1f2a0d7dc1c3243e7dfba6b360c560c"),
+    "unavailable/mwr/monthly": ("a9126bf5959d953d48ca8b1bdc18c6194e1275d135e546deeb5c00d39c5f4aed"),
+    "unavailable/twr/daily": ("003e7fe418ca03a1969c80635bf5f85e14936e825dc952e123a862367de12f07"),
+    "unavailable/twr/monthly": ("32de67e9f1a6f9feab8abae3689a6ae3306235524a3ac0b3d7b0c130c33545f0"),
+}
+
+
+@pytest.mark.parametrize("scenario", ["complete", "periods", "unavailable"])
+@pytest.mark.parametrize("method", list(d.ReturnMethod))
+@pytest.mark.parametrize("frequency", list(d.HistoricalFrequency))
+def test_projection_preserves_frozen_canonical_result_and_solver_budget(
+    scenario: str, method: d.ReturnMethod, frequency: d.HistoricalFrequency
+) -> None:
+    value = projection_input(scenario)
+    options = projection_options(scenario, method, frequency)
+    with patch.object(performance, "calculate_xirr", wraps=calculate_xirr) as solver:
+        result = calculate_performance(value, options=options)
+    assert (
+        historical_result_digest(result)
+        == PROJECTION_BASELINE_DIGESTS[f"{scenario}/{method}/{frequency}"]
+    )
+    verify_historical_result(value, result)
+    if scenario == "unavailable":
+        assert solver.call_count == 0
+        assert result.context.primitive_methods == ()
+        return
+    assert result.source_uses and result.conversions
+    assert result.summary.maximum_drawdown.value is not None
+    assert result.summary.maximum_drawdown.value < 0
+    assert {item.name for item in result.context.primitive_methods} == {
+        "xirr",
+        "modified_dietz",
+        "snapshot_subperiod_twr",
+    }
+    published = 35 if frequency is d.HistoricalFrequency.DAILY else 2
+    expected_calls = 1 + (2 * published if method is d.ReturnMethod.MWR else 0)
+    if scenario == "periods":
+        # Six supported daily 30-day windows (two monthly), plus the complete January.
+        expected_calls += 7 if frequency is d.HistoricalFrequency.DAILY else 3
+    assert len(result.points) == published
+    assert solver.call_count == expected_calls
+
+
+@pytest.mark.parametrize("scenario", ["missing_strict", "missing_degraded"])
+def test_unpublished_interior_xirr_retains_invoked_primitive_provenance(scenario: str) -> None:
+    value = projection_input(scenario)
+    options = projection_options(scenario, d.ReturnMethod.MWR, d.HistoricalFrequency.MONTHLY)
+    with patch.object(performance, "calculate_xirr", wraps=calculate_xirr) as solver:
+        result = calculate_performance(value, options=options)
+    assert (
+        historical_result_digest(result) == PROJECTION_BASELINE_DIGESTS[f"{scenario}/mwr/monthly"]
+    )
+    verify_historical_result(value, result)
+    assert result.summary.money_weighted_return.value is None
+    assert len(result.points) == 1
+    assert result.points[0].interval_return.value is None
+    assert result.points[0].cumulative_return.value is None
+    assert any(isinstance(use, r.HistoricalMissingUse) for use in result.source_uses)
+    assert "xirr" in {item.name for item in result.context.primitive_methods}
+    assert solver.call_count == 1
+    assert solver.call_args is not None
+    assert solver.call_args.kwargs["period_end"].value < value.selection.window.end_at

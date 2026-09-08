@@ -335,10 +335,26 @@ def performance(
     peak, maximum_drawdown = ONE, ZERO
     max_complete = True
     previous = start
+    chosen_boundaries = set(projection_boundaries(engine.value, options.frequency))
+    mwr_selected = options.method is d.ReturnMethod.MWR
+    xirr_identity = (XIRR_METHOD_ID, PERFORMANCE_VERSION)
     for ordinal, at in enumerate(close_boundaries(engine.value)):
         current = engine.valuation(at)
-        interval = period_returns(engine, previous, at, xirr=options.method is d.ReturnMethod.MWR)
-        cumulative = period_returns(engine, start, at, xirr=options.method is d.ReturnMethod.MWR)
+        # Projected intervals replace every daily interval return. Retain only the
+        # first eligible XIRR invocation if an unavailable summary did not record it.
+        interval = period_returns(
+            engine,
+            previous,
+            at,
+            xirr=mwr_selected and xirr_identity not in engine.primitive_methods,
+        )
+        cumulative = period_returns(
+            engine,
+            start,
+            at,
+            xirr=mwr_selected
+            and (at in chosen_boundaries or xirr_identity not in engine.primitive_methods),
+        )
         interval_events = period_events(engine, previous, at)
         cumulative_events = period_events(engine, start, at)
         cumulative_twr = cumulative.twr.value
@@ -437,7 +453,6 @@ def performance(
         annualized_modified_dietz_return=returns.annual_dietz,
         maximum_drawdown=ratio_metric(maximum_drawdown if max_complete else None),
     )
-    chosen_boundaries = set(projection_boundaries(engine.value, options.frequency))
     projected: list[r.PerformancePoint] = []
     previous = start
     for point in daily:

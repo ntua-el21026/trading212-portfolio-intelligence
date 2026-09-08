@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_kind": "unaccepted_candidate_quality_failure",
+  "source_sha": "92dc0e445809737a766c7f211c5dfef42adf9f6a",
+  "result": "failed",
+  "requirements": [
+    "P2-04"
+  ],
+  "quality_workflow": {
+    "run_id": 34245765983,
+    "conclusion": "failure",
+    "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34245765983"
+  },
+  "browser_job": {
+    "job_id": 102127847247,
+    "started_at_utc": "2026-09-08T15:37:35Z",
+    "completed_at_utc": "2026-09-08T15:44:16Z",
+    "conclusion": "failure",
+    "failed_tests": [
+      {
+        "selector": "tests/e2e/api-web/historical.spec.ts:160",
+        "project": "api-chromium-desktop",
+        "failure": "The MWR filter submission at line 258 exceeded the existing 30-second document-load wait."
+      },
+      {
+        "selector": "tests/e2e/api-web/historical.spec.ts:288",
+        "project": "api-chromium-desktop",
+        "failure": "The following benchmark journey did not render its selection prompt within 5 seconds; a Next.js transport exception was logged."
+      }
+    ],
+    "raw_log_sha256": "3534386620558171bbecd2365da5c88ff1bedf66a0be18609eacc103ae3d7ebc"
+  },
+  "postgres_job": {
+    "job_id": 102127847272,
+    "conclusion": "success",
+    "isolated_tests_passed": 1221,
+    "service_backed_tests_passed": 174,
+    "isolated_seconds": 282.87,
+    "service_backed_seconds": 798.08,
+    "combined_coverage_percent": 88,
+    "raw_log_sha256": "37b60e845a5d520cff336fe571dda45de5c93c950816742bb682ed5ca83ee4b6"
+  },
+  "local_exact_validation": {
+    "command": [
+      "make",
+      "validate"
+    ],
+    "source_sha": "92dc0e445809737a766c7f211c5dfef42adf9f6a",
+    "clean_checkout": true,
+    "source_unchanged": true,
+    "exit_code": 0,
+    "started_at_utc": "2026-09-08T15:35:56.333415+00:00",
+    "completed_at_utc": "2026-09-08T15:56:52.362572+00:00",
+    "duration_seconds": 1256.087,
+    "log_sha256": "b714861b9458925d667b1d43560967aca11961c4113e3a1297219858b0db9845",
+    "browser_tests_passed": 66
+  },
+  "other_ci": {
+    "security": {
+      "run_id": 34245768141,
+      "conclusion": "success"
+    },
+    "documentation": {
+      "run_id": 34245766001,
+      "conclusion": "success"
+    }
+  },
+  "follow_up": "Remove redundant unpublished daily XIRR solves from monthly projections while preserving daily valuations, TWR drawdown, all published MWR values and provenance. Corrected immutable-source acceptance remains required.",
+  "acceptance": "No P2-04 acceptance. The queued property, source/image-scan and full-runtime follow-ups were stopped before execution after the CI failure."
+}

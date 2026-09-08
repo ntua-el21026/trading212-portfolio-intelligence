@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-08T15:00:31.132100+00:00",
+  "updated_at": "2026-09-08T15:59:34.042189+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -178,6 +178,25 @@
       ],
       "local_exact_validation": "interrupted_without_accepted_completion",
       "correction": "Remove redundant single-candidate action serialization, repeated pinned-capture decoding, and oversized ORM source-use insertion; retain all financial, legal, integrity, and timeout checks. Corrected exact-source acceptance remains required."
+    },
+    {
+      "work_package": "P2-04",
+      "source_sha": "92dc0e445809737a766c7f211c5dfef42adf9f6a",
+      "acceptance": "failed_candidate",
+      "github_quality_run": 34245765983,
+      "github_quality_result": "failed",
+      "github_documentation_run": 34245766001,
+      "github_documentation_result": "passed",
+      "github_security_run": 34245768141,
+      "github_security_result": "passed",
+      "local_exact_validation": "passed_without_package_acceptance",
+      "github_postgres_coverage": "passed",
+      "failures": [
+        "Monthly MWR filter exceeded the 30-second document-load wait.",
+        "The subsequent benchmark selection prompt did not render within 5 seconds."
+      ],
+      "artifact": "docs/implementation/evidence/phase-2-p2-04-92dc0e4-failed-quality.json",
+      "correction": "Remove redundant unpublished daily XIRR solves from monthly projections while preserving daily valuations, TWR drawdown, all published MWR values and provenance. Corrected immutable-source acceptance remains required."
     }
   ]
 }

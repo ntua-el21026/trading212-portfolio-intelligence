@@ -106,3 +106,13 @@ source/legal checks, immutable bytes, database triggers and existing time limits
 Local validation now reuses one Compose project. PostgreSQL and Redis run only
 as required; the full application stack runs temporarily for acceptance. Obsolete
 task containers, test volumes, networks and build metadata are removed after use.
+
+Correction `92dc0e445809737a766c7f211c5dfef42adf9f6a` passed its complete
+clean-source local gate, all 66 local browser cases and CI PostgreSQL coverage.
+Its [quality CI record](evidence/phase-2-p2-04-92dc0e4-failed-quality.json) remains
+failed: a monthly MWR filter exceeded the document-load limit, followed by an
+unavailable benchmark prompt. The monthly projection computed XIRR for daily
+points it never published and recomputed its displayed intervals. A narrower
+correction removes those redundant solves while preserving daily valuation,
+TWR drawdown and every published return/provenance field. Its exact-source
+validation and runtime acceptance remain required.
