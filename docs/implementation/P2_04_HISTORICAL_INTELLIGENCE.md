@@ -138,3 +138,23 @@ insertion probes preserved all normalized rows but were slower, so persistence
 keeps its existing bounded batches. Failure-only browser diagnostics retain the
 original load predicate, limits and assertions. Exact-source acceptance remains
 required before P2-04 can be marked complete.
+
+
+Correction `f37e8de843419288bc7e4b7531de6cc9d4c9cedc` passed its complete clean-source
+local gate in 1194.048 seconds, including all 66 browser cases, 1431 unique Python
+tests across the coverage stages and 88% combined coverage. Its
+[retained CI record](evidence/phase-2-p2-04-f37e8de-failed-quality.json) records
+successful PostgreSQL, documentation and security checks, but another first
+benchmark/year document-load timeout. The native request received HTTP 200 headers
+at 207 ms and had no completed document or historical form after 30 seconds.
+These are Next document headers; they do not establish upstream API completion.
+
+A fresh instrumented local run kept the original performance-then-benchmark test
+order, one fixture database, `CI=1`, one browser worker, zero retries and the
+existing deadlines. Both tests passed. The cold benchmark API took 4.318 seconds,
+including 1.659 seconds in calculation and 1.267 seconds in source-use publication;
+its temporary database was verified absent after normal fixture cleanup. This
+measurement does not explain the CI timeout. Opt-in fixture diagnostics record
+bounded fixed API/worker stages without payloads, raw identifiers, SQL parameters
+or exception messages so the next CI run can identify the pending stage. This
+is diagnostic work; exact-source package acceptance remains outstanding.

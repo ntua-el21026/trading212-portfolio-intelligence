@@ -1525,6 +1525,24 @@
           ],
           "artifact": "docs/implementation/evidence/phase-2-p2-04-a573343-failed-quality.json",
           "correction": "Specialize action selection for one eligible snapshot after controlled canonical-parity measurements; retain existing persistence batches and add bounded failure-only navigation diagnostics. Corrected exact-source acceptance remains required."
+        },
+        {
+          "work_package": "P2-04",
+          "source_sha": "f37e8de843419288bc7e4b7531de6cc9d4c9cedc",
+          "acceptance": "failed_candidate",
+          "github_quality_run": 34258983311,
+          "github_quality_result": "failed",
+          "github_documentation_run": 34258983432,
+          "github_documentation_result": "passed",
+          "github_security_run": 34258983341,
+          "github_security_result": "passed",
+          "local_exact_validation": "passed_without_package_acceptance",
+          "github_postgres_coverage": "passed",
+          "failures": [
+            "The first benchmark/year filter received native document HTTP 200 headers but did not finish streaming within the unchanged 30-second load wait; the MWR and income desktop journeys passed."
+          ],
+          "artifact": "docs/implementation/evidence/phase-2-p2-04-f37e8de-failed-quality.json",
+          "correction": "Measure bounded API and worker stages in the real browser fixture to distinguish pending upstream work from web response delivery. Local CI-mode performance-to-benchmark profiling passed without reproducing the timeout. No package acceptance is claimed."
         }
       ]
     },

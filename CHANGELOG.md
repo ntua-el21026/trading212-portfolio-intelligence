@@ -6,6 +6,8 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Phase 2 historical intelligence
 
+- Retain the latest benchmark CI timeout and add bounded, opt-in browser-fixture
+  timing diagnostics to locate unfinished API or worker stages.
 - Specialize selection of a sole eligible corporate-action snapshot while
   preserving its coverage period and canonical results. Retain the benchmark
   CI failure and add bounded failure-only document-navigation diagnostics.

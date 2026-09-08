@@ -6,6 +6,7 @@ from __future__ import annotations
 import asyncio
 import os
 import signal
+import sys
 from collections.abc import AsyncIterator, Iterator
 from contextlib import asynccontextmanager, contextmanager, suppress
 from datetime import UTC, datetime, timedelta
@@ -218,6 +219,11 @@ async def _deliver_fixture_plans(service: PostgresPlanningService, stopped: asyn
 
 
 def main() -> None:
+    # Direct script launches also need the repository's test-helper namespace.
+    sys.path.insert(0, str(_REPOSITORY_ROOT))
+    from scripts.api_e2e_timings import timings_enabled
+
+    timings_enabled(os.environ.get("T212PI_E2E_TIMINGS", "0"))
     server_url = os.environ.get("TEST_DATABASE_URL") or _DEFAULT_DATABASE_URL
     # Uvicorn restores and re-raises SIGTERM after its lifespan exits. Raising
     # SystemExit here lets the database context clean up before this process ends.
@@ -234,6 +240,8 @@ def _exit_fixture(signum: int, frame: FrameType | None) -> NoReturn:
 
 
 def _serve_fixture(database_url: str) -> None:
+    from scripts.api_e2e_timings import fixture_timings, timings_enabled
+
     historical = os.environ.get("T212PI_E2E_HISTORICAL", "0")
     if historical not in {"0", "1"}:
         raise RuntimeError("The historical browser fixture selector must be 0 or 1.")
@@ -322,13 +330,15 @@ def _serve_fixture(database_url: str) -> None:
                 session.delete(existing)
         return {"reset": True}
 
-    uvicorn.run(
-        app,
-        host="127.0.0.1",
-        port=18_000,
-        access_log=False,
-        log_config=None,
-    )
+    enabled = timings_enabled(os.environ.get("T212PI_E2E_TIMINGS", "0"))
+    with fixture_timings(app, enabled=enabled and historical == "1") as observed_app:
+        uvicorn.run(
+            observed_app,
+            host="127.0.0.1",
+            port=18_000,
+            access_log=False,
+            log_config=None,
+        )
 
 
 if __name__ == "__main__":

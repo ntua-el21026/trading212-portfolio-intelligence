@@ -132,10 +132,54 @@ async function applyFilters(page: Page) {
       return "[unavailable]";
     }
   };
+  // Observe submitted GET choices, not DOM defaults or normalized API values.
+  // Only explicit enum literals and fixed markers may leave this observer.
+  const submittedChoices = (url: string) => {
+    let params: URLSearchParams | undefined;
+    try {
+      params = new URL(url).searchParams;
+    } catch {
+      // A malformed URL must not throw from the request listener.
+    }
+    const choice = (name: string, allowed: readonly string[]) => {
+      if (!params) return "[unrecognized]";
+      const values = params.getAll(name);
+      if (values.length === 0) return "[missing]";
+      return values.length === 1 && allowed.includes(values[0])
+        ? values[0]
+        : "[unrecognized]";
+    };
+    return {
+      view: choice("view", [
+        "summary",
+        "benchmark",
+        "series",
+        "rolling",
+        "calendar",
+        "attribution",
+        "income",
+        "cash_flows",
+      ]),
+      method: choice("method", ["twr", "mwr", "modified_dietz"]),
+      frequency: choice("frequency", ["daily", "monthly"]),
+      rolling: choice("rolling", [
+        "none",
+        "calendar_days_30",
+        "calendar_days_90",
+        "calendar_days_365",
+      ]),
+      calendar: choice("calendar", ["none", "month", "quarter", "year"]),
+      knowledge: choice("knowledge", ["as_of_cutoff", "point_in_time"]),
+      coverage: choice("coverage", ["require_complete", "allow_degraded"]),
+      // Presence alone includes an empty capture key; its value is never retained.
+      capturePresent: params?.has("capture") ?? false,
+    };
+  };
   const documents = new Map<
     Request,
     {
       pathname: string;
+      submittedChoices: ReturnType<typeof submittedChoices>;
       requestAtMs: number;
       responseAtMs: number | null;
       status: number | null;
@@ -165,6 +209,7 @@ async function applyFilters(page: Page) {
     documents.set(request, {
       pathname: pathname(request.url()),
       requestAtMs: elapsed(),
+      submittedChoices: submittedChoices(request.url()),
       responseAtMs: null,
       status: null,
       finishAtMs: null,

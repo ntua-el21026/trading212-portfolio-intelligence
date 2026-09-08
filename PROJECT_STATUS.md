@@ -68,9 +68,13 @@ but its monthly MWR browser filter still exceeded the load limit in quality run
 `34245765983`. Correction `a573343bf2a17aa01642e9764d97eb74f77fcd27` passed
 its complete clean-source local gate and CI PostgreSQL coverage. Its MWR and
 income desktop journeys passed in CI, but the first benchmark/year filter still
-exceeded the document-load limit. A measured singleton action-selection correction
-and bounded failure diagnostics are under verification; no P2-04 acceptance is
-claimed. See the [latest retained failed candidate](docs/implementation/evidence/phase-2-p2-04-a573343-failed-quality.json).
+exceeded the document-load limit. Correction
+`f37e8de843419288bc7e4b7531de6cc9d4c9cedc` also passed the full clean-source local
+gate and CI PostgreSQL coverage, but CI again received benchmark document headers
+without completing the stream within 30 seconds. The same performance-to-benchmark
+sequence passed locally with `CI=1`; bounded fixture timing diagnostics are being
+added to locate the unfinished CI stage. No P2-04 acceptance is claimed. See the
+[latest retained failed candidate](docs/implementation/evidence/phase-2-p2-04-f37e8de-failed-quality.json).
 Phase 3 remains `not_started`.
 
 ## Previously accepted baseline

@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_kind": "unaccepted_candidate_quality_failure",
+  "source_sha": "f37e8de843419288bc7e4b7531de6cc9d4c9cedc",
+  "result": "failed",
+  "requirements": [
+    "P2-04"
+  ],
+  "quality_workflow": {
+    "run_id": 34258983311,
+    "conclusion": "failure",
+    "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34258983311"
+  },
+  "browser_job": {
+    "job_id": 102171881012,
+    "started_at_utc": "2026-09-08T17:45:29Z",
+    "completed_at_utc": "2026-09-08T17:52:37Z",
+    "conclusion": "failure",
+    "failed_tests": [
+      {
+        "selector": "tests/e2e/api-web/historical.spec.ts:430",
+        "project": "api-chromium-desktop",
+        "failure": "The first benchmark/year filter submission at line 453 exceeded the existing 30-second document-load wait. Native navigation received HTTP 200 headers but the streamed document remained incomplete."
+      }
+    ],
+    "passed_historical_desktop_tests": 2,
+    "navigation_diagnostics": {
+      "failedAtMs": 30016,
+      "observedUntilMs": 30123,
+      "clickCompletedAtMs": 221,
+      "loadAtMs": null,
+      "loadRejectedAtMs": 30016,
+      "nativeDocumentObserved": true,
+      "documents": [
+        {
+          "pathname": "/performance",
+          "requestAtMs": 57,
+          "responseAtMs": 207,
+          "status": 200,
+          "finishAtMs": null,
+          "failAtMs": null
+        }
+      ],
+      "truncated": false,
+      "frameUnavailable": false,
+      "dom": {
+        "readyState": "loading",
+        "formPresent": false,
+        "formValid": null,
+        "historicalResultPresent": false,
+        "benchmarkResultPresent": false
+      }
+    },
+    "raw_log_sha256": "10514ceca648e5a9f9a0c9535c440cb480414ceda6fff3c03d588aeec857cd2e"
+  },
+  "postgres_job": {
+    "job_id": 102171880786,
+    "conclusion": "success",
+    "isolated_tests_passed": 1257,
+    "service_backed_tests_passed": 174,
+    "isolated_seconds": 285.72,
+    "service_backed_seconds": 749.68,
+    "combined_coverage_percent": 88,
+    "raw_log_sha256": "bb070fd50b084b66039cc394417ed5af5a6e7dd7da183304d2c57830612017b9"
+  },
+  "local_exact_validation": {
+    "command": [
+      "make",
+      "validate"
+    ],
+    "source_sha": "f37e8de843419288bc7e4b7531de6cc9d4c9cedc",
+    "source_unchanged": true,
+    "exit_code": 0,
+    "started_at_utc": "2026-09-08T17:45:43.957530+00:00",
+    "completed_at_utc": "2026-09-08T18:05:37.948875+00:00",
+    "duration_seconds": 1194.048,
+    "log_sha256": "87462dd80ec5a36014d33d0c991b84e4dda3bf41a66be28b79d1bce8f77f384a",
+    "clean_checkout": true,
+    "browser_tests_passed": 66
+  },
+  "other_ci": {
+    "security": {
+      "run_id": 34258983341,
+      "conclusion": "success"
+    },
+    "documentation": {
+      "run_id": 34258983432,
+      "conclusion": "success"
+    }
+  },
+  "follow_up": "Measure the actual performance-to-benchmark browser sequence through web, API worker and publication boundaries to identify the unfinished server-stream delay; preserve financial/canonical results, legal checks and existing deadlines.",
+  "acceptance": "No P2-04 acceptance. The queued property, source/image-scan and full-runtime follow-ups were stopped before execution after the CI browser failure."
+}
