@@ -116,3 +116,25 @@ points it never published and recomputed its displayed intervals. A narrower
 correction removes those redundant solves while preserving daily valuation,
 TWR drawdown and every published return/provenance field. Its exact-source
 validation and runtime acceptance remain required.
+
+
+Correction `a573343bf2a17aa01642e9764d97eb74f77fcd27` passed its complete clean-source
+local validation in 1223.038 seconds, including all 66 browser cases and 88%
+combined Python coverage. Its [retained CI record](evidence/phase-2-p2-04-a573343-failed-quality.json)
+shows successful PostgreSQL coverage, MWR and income desktop journeys, but the
+first benchmark/year submission still exceeded the unchanged 30-second document
+load wait. The log has no request timing breakdown, so this is not proof of a
+specific API or rendering bottleneck.
+
+Fresh serialized profiling measured the annual cold benchmark service at
+4.05–4.15 seconds locally. Controlled action-selection A/B measurements retained
+identical canonical result, source-use and conversion bytes: benchmark calculation
+was 1.60–1.62 seconds before and 1.43–1.44 after; group and sector attribution
+were 2.01–2.06 before and 1.67–1.70 after. These are local observations, not CI
+latency guarantees. A sole eligible snapshot now avoids constructing and filtering
+redundant candidate tuples, while checking its inclusive coverage period. Multiple
+snapshots keep the existing revision/conflict selection. Alternative database
+insertion probes preserved all normalized rows but were slower, so persistence
+keeps its existing bounded batches. Failure-only browser diagnostics retain the
+original load predicate, limits and assertions. Exact-source acceptance remains
+required before P2-04 can be marked complete.

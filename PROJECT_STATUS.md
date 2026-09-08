@@ -65,8 +65,12 @@ limits and the PostgreSQL coverage job timeout in quality CI run `34165840790`;
 its documentation and security workflows passed. The interrupted local exact-SHA
 gate has no accepted completion. Correction `92dc0e445809737a766c7f211c5dfef42adf9f6a` passed complete local validation and CI PostgreSQL coverage,
 but its monthly MWR browser filter still exceeded the load limit in quality run
-`34245765983`. Redundant unpublished daily XIRR calculations are being corrected;
-no P2-04 acceptance is claimed. See the [retained failed candidate](docs/implementation/evidence/phase-2-p2-04-92dc0e4-failed-quality.json).
+`34245765983`. Correction `a573343bf2a17aa01642e9764d97eb74f77fcd27` passed
+its complete clean-source local gate and CI PostgreSQL coverage. Its MWR and
+income desktop journeys passed in CI, but the first benchmark/year filter still
+exceeded the document-load limit. A measured singleton action-selection correction
+and bounded failure diagnostics are under verification; no P2-04 acceptance is
+claimed. See the [latest retained failed candidate](docs/implementation/evidence/phase-2-p2-04-a573343-failed-quality.json).
 Phase 3 remains `not_started`.
 
 ## Previously accepted baseline

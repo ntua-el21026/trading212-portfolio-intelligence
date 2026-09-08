@@ -3,6 +3,8 @@ import {
   test,
   type APIRequestContext,
   type Page,
+  type Request,
+  type Response,
 } from "@playwright/test";
 import {
   PerformanceIntelligenceResponseSchema,
@@ -117,11 +119,151 @@ async function get(
 }
 
 async function applyFilters(page: Page) {
-  // These GET forms stream the server calculation. Wait for this document's
-  // load event before reading results or submitting another form.
-  const loaded = page.waitForEvent("load", { timeout: 30_000 });
-  await page.getByRole("button", { name: "Apply filters" }).click();
-  await loaded;
+  const started = performance.now();
+  const elapsed = () => Math.round(performance.now() - started);
+  // Only fixed route names may leave the observer, even after a redirect.
+  const pathname = (url: string) => {
+    try {
+      const path = new URL(url).pathname;
+      return ["/", "/performance", "/income", "/sign-in"].includes(path)
+        ? path
+        : "[redacted]";
+    } catch {
+      return "[unavailable]";
+    }
+  };
+  const documents = new Map<
+    Request,
+    {
+      pathname: string;
+      requestAtMs: number;
+      responseAtMs: number | null;
+      status: number | null;
+      finishAtMs: number | null;
+      failAtMs: number | null;
+    }
+  >();
+  let truncated = false;
+  let frameUnavailable = false;
+  let clickCompletedAtMs: number | null = null;
+  let loadAtMs: number | null = null;
+  let loadRejectedAtMs: number | null = null;
+  const onRequest = (request: Request) => {
+    if (!request.isNavigationRequest() || request.resourceType() !== "document")
+      return;
+    // A navigation can precede frame creation or race page teardown.
+    try {
+      if (request.frame() !== page.mainFrame()) return;
+    } catch {
+      frameUnavailable = true;
+      return;
+    }
+    if (documents.size === 8) {
+      truncated = true;
+      return;
+    }
+    documents.set(request, {
+      pathname: pathname(request.url()),
+      requestAtMs: elapsed(),
+      responseAtMs: null,
+      status: null,
+      finishAtMs: null,
+      failAtMs: null,
+    });
+  };
+  const onResponse = (response: Response) => {
+    const entry = documents.get(response.request());
+    if (entry) {
+      entry.responseAtMs = elapsed();
+      entry.status = response.status();
+    }
+  };
+  const onFinished = (request: Request) => {
+    const entry = documents.get(request);
+    if (entry) entry.finishAtMs = elapsed();
+  };
+  const onFailed = (request: Request) => {
+    const entry = documents.get(request);
+    if (entry) entry.failAtMs = elapsed();
+  };
+  page.on("request", onRequest);
+  page.on("response", onResponse);
+  page.on("requestfinished", onFinished);
+  page.on("requestfailed", onFailed);
+  const loadWait = new AbortController();
+  try {
+    // These GET forms stream the server calculation. Wait for this document's
+    // load event before reading results or submitting another form.
+    const loaded = page
+      .waitForEvent("load", { timeout: 30_000, signal: loadWait.signal })
+      .then(() => {
+        loadAtMs = elapsed();
+      });
+    // Observe rejection while click is pending; await below still propagates it.
+    void loaded.catch(() => {
+      loadRejectedAtMs = elapsed();
+    });
+    await page.getByRole("button", { name: "Apply filters" }).click();
+    clickCompletedAtMs = elapsed();
+    await loaded;
+  } catch (error) {
+    const failedAtMs = elapsed();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      // Failure-only, synchronous DOM read; teardown or an unresponsive renderer
+      // must not hold up the original failure. No DOM values or text are logged.
+      const dom = page.isClosed()
+        ? "page-closed"
+        : await Promise.race([
+            page
+              .evaluate(() => {
+                const form = document.querySelector("form.historical-filters");
+                return {
+                  readyState: document.readyState,
+                  formPresent: form !== null,
+                  // Unlike checkValidity(), this does not dispatch invalid events.
+                  formValid: form?.matches(":valid") ?? null,
+                  historicalResultPresent:
+                    document.querySelector(".historical-context") !== null,
+                  benchmarkResultPresent:
+                    document.querySelector("#benchmark-series-table") !== null,
+                };
+              })
+              .catch(() => "unavailable"),
+            new Promise<string>((resolve) => {
+              timer = setTimeout(() => resolve("timeout"), 250);
+            }),
+          ]);
+      // Marker presence describes the current DOM, possibly the prior document;
+      // it is diagnostic evidence, never a substitute for the load predicate.
+      console.error(
+        "historical.applyFilters.failure",
+        JSON.stringify({
+          failedAtMs,
+          observedUntilMs: elapsed(),
+          clickCompletedAtMs,
+          loadAtMs,
+          loadRejectedAtMs,
+          nativeDocumentObserved: documents.size > 0,
+          documents: [...documents.values()],
+          truncated,
+          frameUnavailable,
+          dom,
+        }),
+      );
+    } catch {
+      // Even an unexpected diagnostic failure must preserve the original error.
+    } finally {
+      clearTimeout(timer);
+    }
+    throw error;
+  } finally {
+    page.off("request", onRequest);
+    page.off("response", onResponse);
+    page.off("requestfinished", onFinished);
+    page.off("requestfailed", onFailed);
+    loadWait.abort();
+  }
 }
 
 async function view(page: Page, label: string, value: string) {

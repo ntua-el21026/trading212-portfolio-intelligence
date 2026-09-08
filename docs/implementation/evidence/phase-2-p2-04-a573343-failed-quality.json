@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_kind": "unaccepted_candidate_quality_failure",
+  "source_sha": "a573343bf2a17aa01642e9764d97eb74f77fcd27",
+  "result": "failed",
+  "requirements": [
+    "P2-04"
+  ],
+  "quality_workflow": {
+    "run_id": 34251863446,
+    "conclusion": "failure",
+    "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34251863446"
+  },
+  "browser_job": {
+    "job_id": 102147969038,
+    "started_at_utc": "2026-09-08T16:34:18Z",
+    "completed_at_utc": "2026-09-08T16:43:13Z",
+    "conclusion": "failure",
+    "failed_tests": [
+      {
+        "selector": "tests/e2e/api-web/historical.spec.ts:288",
+        "project": "api-chromium-desktop",
+        "failure": "The first benchmark/year filter submission at line 311 exceeded the existing 30-second document-load wait."
+      }
+    ],
+    "passed_historical_desktop_tests": 2,
+    "raw_log_sha256": "c87d47d83d476673492ee028da89e9b7c56124888b7801613630c5211f2308e9"
+  },
+  "postgres_job": {
+    "job_id": 102147968952,
+    "conclusion": "success",
+    "isolated_tests_passed": 1241,
+    "service_backed_tests_passed": 174,
+    "isolated_seconds": 263.97,
+    "service_backed_seconds": 755.76,
+    "combined_coverage_percent": 88,
+    "raw_log_sha256": "48dbc8658be66e2ad43dd7fd37509fbca4cb571494c5f0e9c4a2129d2104ce4d"
+  },
+  "local_exact_validation": {
+    "command": [
+      "make",
+      "validate"
+    ],
+    "source_sha": "a573343bf2a17aa01642e9764d97eb74f77fcd27",
+    "source_unchanged": true,
+    "exit_code": 0,
+    "started_at_utc": "2026-09-08T16:34:34.875575+00:00",
+    "completed_at_utc": "2026-09-08T16:54:57.859150+00:00",
+    "duration_seconds": 1223.038,
+    "log_sha256": "e1920ef08208b0de0e57d0d8ae490f2cecf5d4332f7dc729b3e159a68ffb6ca7",
+    "clean_checkout": true,
+    "browser_tests_passed": 66
+  },
+  "other_ci": {
+    "security": {
+      "run_id": 34251863467,
+      "conclusion": "success"
+    },
+    "documentation": {
+      "run_id": 34251863408,
+      "conclusion": "success"
+    }
+  },
+  "follow_up": "Profile the actual cold benchmark/year and attribution requests to identify calculation and publication overhead while preserving exact values, provenance, legal checks and existing timeout limits.",
+  "acceptance": "No P2-04 acceptance. The queued property, source/image-scan and full-runtime follow-ups were stopped before execution after the CI browser failure."
+}

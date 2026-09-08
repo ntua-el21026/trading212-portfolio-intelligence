@@ -6,6 +6,9 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Phase 2 historical intelligence
 
+- Specialize selection of a sole eligible corporate-action snapshot while
+  preserving its coverage period and canonical results. Retain the benchmark
+  CI failure and add bounded failure-only document-navigation diagnostics.
 - Avoid solving unpublished daily XIRR values for monthly money-weighted charts;
   retain the full daily valuation/drawdown basis and exact projected returns.
 - Reduce redundant corporate-action comparisons, pinned-capture decoding and

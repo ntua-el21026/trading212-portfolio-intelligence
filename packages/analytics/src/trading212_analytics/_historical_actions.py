@@ -21,6 +21,11 @@ class SelectedActions:
 def _choose(
     snapshots: tuple[CorporateActionSnapshot, ...], day: date
 ) -> CorporateActionSnapshot | None:
+    # An original singleton needs only the inclusive period check; revision
+    # filtering cannot change which snapshot wins.
+    if len(snapshots) == 1:
+        snapshot = snapshots[0]
+        return snapshot if snapshot.period.start <= day <= snapshot.period.end else None
     candidates = tuple(item for item in snapshots if item.period.start <= day <= item.period.end)
     if not candidates:
         return None

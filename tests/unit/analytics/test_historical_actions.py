@@ -7,14 +7,22 @@ from decimal import Decimal
 import pytest
 from trading212_analytics.historical import (
     calculate_attribution,
+    calculate_benchmark_comparison,
     calculate_performance,
     verify_historical_result,
 )
 from trading212_domain import Money, QualityState
 from trading212_domain import historical as d
 from trading212_domain import historical_results as r
+from trading212_domain.historical_serialization import historical_result_digest
 from trading212_domain.source_details import CorporateActionKind, CorporateActionObservation
-from trading212_domain.sources import ObservationState, SourceCoverage, source_snapshot_digest
+from trading212_domain.sources import (
+    ObservationState,
+    SourceCoverage,
+    SourceGap,
+    SourceReason,
+    source_snapshot_digest,
+)
 
 from .historical_factories import (
     START,
@@ -438,3 +446,148 @@ def test_equal_overlapping_action_proofs_keep_earliest_receipt_and_quality_confl
     assert _choose((later, original), day) is original
     partial = replace(later, coverage=replace(later.coverage, quality=QualityState.PARTIAL))
     assert _choose((original, partial), day) is None
+
+
+@pytest.mark.parametrize(
+    ("boundary", "offset", "included"),
+    [
+        ("start", -1, False),
+        ("start", 0, True),
+        ("start", 1, True),
+        ("end", -1, True),
+        ("end", 0, True),
+        ("end", 1, False),
+    ],
+)
+def test_original_singleton_preserves_inclusive_period_and_empty_selection(
+    boundary: str, offset: int, included: bool
+) -> None:
+    from trading212_analytics._historical_actions import _choose
+
+    snapshot = split_input().action_snapshots[0]
+    day = (snapshot.period.start if boundary == "start" else snapshot.period.end) + timedelta(
+        days=offset
+    )
+    assert _choose((snapshot,), day) is (snapshot if included else None)
+    assert _choose((), day) is None
+
+
+@pytest.mark.parametrize("late_field", [None, "first_observed_at", "effective_at"])
+def test_original_singleton_is_selected_only_after_both_cutoff_checks(
+    late_field: str | None,
+) -> None:
+    from trading212_analytics._historical_actions import select_actions
+
+    value = split_input()
+    original = value.action_snapshots[0]
+    cutoff = value.selection.window.source_cutoff_at
+    snapshot = replace(
+        original,
+        provenance=replace(
+            original.provenance,
+            first_observed_at=cutoff
+            + timedelta(microseconds=1 if late_field == "first_observed_at" else 0),
+            effective_at=cutoff + timedelta(microseconds=1 if late_field == "effective_at" else 0),
+        ),
+    )
+    assert snapshot.series.listing_id is not None
+    selected = select_actions(
+        replace(value, action_snapshots=(snapshot,)),
+        listing_ids=frozenset((snapshot.series.listing_id,)),
+        start=value.selection.window.start_at,
+        through=value.selection.window.end_at,
+        cutoff=cutoff,
+    )
+    assert selected.complete is (late_field is None)
+    assert selected.observations == (((snapshot, 0),) if late_field is None else ())
+    assert selected.coverage_snapshots == ((snapshot,) if late_field is None else ())
+
+
+@pytest.mark.parametrize("ordered", [False, True])
+def test_multiple_action_snapshots_preserve_revised_gaps_and_input_order(ordered: bool) -> None:
+    from trading212_analytics._historical_actions import _choose, select_actions
+
+    value = split_input()
+    original = value.action_snapshots[0]
+    original = replace(
+        original, provenance=replace(original.provenance, revision_order=1 if ordered else None)
+    )
+    day = original.observations[0].session_date
+    gap = replace(
+        original,
+        id=uid(903),
+        provenance=replace(original.provenance, revision_order=2 if ordered else None),
+        observations=(),
+        coverage=SourceCoverage(
+            expected_count=1,
+            available_count=0,
+            gaps=(SourceGap(session_date=day, reason=SourceReason.MISSING_SESSION),),
+            quality=QualityState.PARTIAL,
+        ),
+    )
+    assert original.series.listing_id is not None
+    for snapshots in ((original, gap), (gap, original)):
+        assert _choose(snapshots, day) is (gap if ordered else None)
+        selected = select_actions(
+            replace(value, action_snapshots=snapshots),
+            listing_ids=frozenset((original.series.listing_id,)),
+            start=value.selection.window.start_at,
+            through=value.selection.window.end_at,
+            cutoff=value.selection.window.source_cutoff_at,
+        )
+        assert not selected.complete
+        assert selected.observations == ()
+        assert selected.coverage_snapshots == ((gap,) if ordered else ())
+
+
+# Full canonical hashes captured from a573343 before the original-singleton change.
+# These cover context, selected uses, conversions and primitive inventory as well as values.
+@pytest.mark.parametrize(
+    ("family", "frequency", "expected"),
+    [
+        (
+            "performance",
+            d.HistoricalFrequency.DAILY,
+            "e1d9b2efb07731a3ac1783264b453b7d0407f8b45fb83b7f260d1a70ced8a7f8",
+        ),
+        (
+            "performance",
+            d.HistoricalFrequency.MONTHLY,
+            "bdcfb9154b5e74ab27f7c1e1ba490d3eccb72d04ed4b0f2b40794c018b4b994c",
+        ),
+        (
+            "benchmark",
+            d.HistoricalFrequency.DAILY,
+            "e691064f5468e2e4c6abb0683f6faaf96a7f1c2c9702184d897a2cbd9cd1586b",
+        ),
+        (
+            "benchmark",
+            d.HistoricalFrequency.MONTHLY,
+            "b5f3f244e01bfde18712884dfd7877794be6b04fb613e20e78c87478ca2f6b74",
+        ),
+        (
+            "attribution",
+            d.HistoricalFrequency.DAILY,
+            "ec472c3f5e59fef2181863f5161ffbd57d346c662e51eb42515c383b668bfc85",
+        ),
+    ],
+)
+def test_original_singleton_preserves_full_historical_canonical_result(
+    family: str, frequency: d.HistoricalFrequency, expected: str
+) -> None:
+    value = with_benchmark(split_input(), ("10", "11", "12", "13"), ("10", "9", "8", "7"))
+    assert len(value.action_snapshots) == 1
+    if family == "performance":
+        result: r.HistoricalCalculation = calculate_performance(
+            value, options=r.PerformanceOptions(frequency=frequency)
+        )
+    elif family == "benchmark":
+        result = calculate_benchmark_comparison(
+            value,
+            options=r.ComparisonOptions(frequency=frequency, calendar_period=d.CalendarPeriod.YEAR),
+        )
+    else:
+        assert family == "attribution"
+        result = calculate_attribution(value, options=r.AttributionOptions())
+    verify_historical_result(value, result)
+    assert historical_result_digest(result) == expected
