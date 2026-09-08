@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-08T15:59:34.042189+00:00",
+  "updated_at": "2026-09-08T19:29:27.673544+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -1543,6 +1543,24 @@
           ],
           "artifact": "docs/implementation/evidence/phase-2-p2-04-f37e8de-failed-quality.json",
           "correction": "Measure bounded API and worker stages in the real browser fixture to distinguish pending upstream work from web response delivery. Local CI-mode performance-to-benchmark profiling passed without reproducing the timeout. No package acceptance is claimed."
+        },
+        {
+          "work_package": "P2-04",
+          "source_sha": "4aa1e235a5abe0432ca00060d2b35ce31fb705fe",
+          "acceptance": "failed_candidate",
+          "github_quality_run": 34267056201,
+          "github_quality_result": "failed",
+          "github_documentation_run": 34267056173,
+          "github_documentation_result": "passed",
+          "github_security_run": 34267056005,
+          "github_security_result": "passed",
+          "local_exact_validation": "not_run_diagnostic_only_commit",
+          "github_postgres_coverage": "passed",
+          "failures": [
+            "The composite benchmark snapshot heading exceeded its existing five-second assertion after two consecutive source workers consumed 2.518 and 3.643 seconds; the preceding annual benchmark API completed in 28.509 seconds."
+          ],
+          "artifact": "docs/implementation/evidence/phase-2-p2-04-4aa1e23-failed-quality.json",
+          "correction": "Prepare bounded calculation-local calendar/source-selection indexes and read the existing sealed canonical composite directly for source detail, preserving canonical financial evidence, all authorization/license checks and unchanged deadlines. Corrected exact-source acceptance remains required."
         }
       ]
     },

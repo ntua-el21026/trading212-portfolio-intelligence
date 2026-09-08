@@ -10,7 +10,6 @@ from decimal import ROUND_HALF_EVEN, Context, Decimal, localcontext
 from functools import wraps
 from hashlib import sha256
 from typing import Literal
-from zoneinfo import ZoneInfo
 
 from trading212_domain import CurrencyCode, Money, QualityState
 from trading212_domain import historical as d
@@ -36,6 +35,12 @@ from trading212_domain.sources import (
 
 from ._decimal import persisted_decimal
 from ._historical_actions import select_actions
+from ._selection_index import (
+    MAX_INDEX_CANDIDATES,
+    MAX_INDEX_SERIES,
+    CalendarIndex,
+    CalendarSelectionIndex,
+)
 from .source_policy import _source_digest_scope, select_benchmark, select_fx, select_price
 
 ZERO = Decimal(0)
@@ -304,6 +309,10 @@ class HistoricalEngine:
         self.window = value.selection.window
         self.currency = self.window.reporting_currency
         self.calendars = {(item.id, item.version): item for item in value.calendars}
+        self.calendar_indexes = {key: CalendarIndex(item) for key, item in self.calendars.items()}
+        self.price_sources: dict[str, tuple[PriceSnapshot | BenchmarkSnapshot, ...]] = {}
+        self.selection_indexes: dict[str, CalendarSelectionIndex | None] = {}
+        self.selection_budget = MAX_INDEX_CANDIDATES
         self.instruments = {item.listing_id: item for item in value.instruments}
         self.references = {item.id: item for item in value.sources}
         self.uses: dict[str, r.HistoricalSourceUse] = {}
@@ -594,7 +603,7 @@ class HistoricalEngine:
         role: r.HistoricalUseRole,
         reason: d.HistoricalReason,
     ) -> None:
-        completed = tuple(session for session in calendar.sessions if session.close_at <= at)
+        completed = self.calendar_indexes[(calendar.id, calendar.version)].latest(at)
         self.retain(
             r.HistoricalMissingUse(
                 use_key=key("missing", expected, at, consumer, role),
@@ -603,7 +612,7 @@ class HistoricalEngine:
                 knowledge_cutoff_at=self.cutoff(at),
                 expected=expected,
                 calendar_ref=d.CalendarRef(id=calendar.id, version=calendar.version),
-                expected_session=completed[-1].session_date if completed else None,
+                expected_session=completed.session_date if completed else None,
                 reason=reason,
                 candidate_snapshot_ids=candidates,
                 consumer=consumer,
@@ -615,14 +624,14 @@ class HistoricalEngine:
         policy = self.value.selection.source_policy
         if policy is None:
             return None
-        local_date = at.astimezone(ZoneInfo(calendar.timezone)).date()
+        prepared = self.calendar_indexes[(calendar.id, calendar.version)]
+        local_date = at.astimezone(prepared.zone).date()
         # UTC terminal midnight belongs to the completed preceding accounting day.
         if not calendar.period.start <= local_date <= calendar.period.end + timedelta(days=1):
             return None
-        completed = [session for session in calendar.sessions if session.close_at <= at]
-        if not completed:
+        latest = prepared.latest(at)
+        if latest is None:
             return None
-        latest = completed[-1]
         if at - latest.close_at > timedelta(seconds=policy.max_age_seconds):
             self.warnings.add(d.HistoricalReason.SOURCE_STALE)
             return None
@@ -630,18 +639,9 @@ class HistoricalEngine:
             return None
         return latest.close_at
 
-    def price(
-        self,
-        series_id: str,
-        at: datetime,
-        consumer: r.HistoricalUseConsumer,
-        role: r.HistoricalUseRole = "holding_valuation",
-        *,
-        benchmark: bool = False,
-    ) -> Decimal | None:
-        cache_key = (series_id, at, key(consumer, role, benchmark))
-        if cache_key in self.price_cache:
-            return self.price_cache[cache_key]
+    def _series_snapshots(self, series_id: str) -> tuple[PriceSnapshot | BenchmarkSnapshot, ...]:
+        if series_id in self.price_sources:
+            return self.price_sources[series_id]
         snapshots: tuple[PriceSnapshot | BenchmarkSnapshot, ...] = tuple(
             item for item in self.value.price_snapshots if item.series.id == series_id
         )
@@ -657,6 +657,23 @@ class HistoricalEngine:
                     if item.series is not None and item.series.id == series_id
                 }.values()
             )
+        if len(self.price_sources) < MAX_INDEX_SERIES:
+            self.price_sources[series_id] = snapshots
+        return snapshots
+
+    def price(
+        self,
+        series_id: str,
+        at: datetime,
+        consumer: r.HistoricalUseConsumer,
+        role: r.HistoricalUseRole = "holding_valuation",
+        *,
+        benchmark: bool = False,
+    ) -> Decimal | None:
+        cache_key = (series_id, at, key(consumer, role, benchmark))
+        if cache_key in self.price_cache:
+            return self.price_cache[cache_key]
+        snapshots = self._series_snapshots(series_id)
         policy = self.value.selection.source_policy
         if not snapshots or snapshots[0].series is None or policy is None:
             self.warnings.add(d.HistoricalReason.PRICE_MISSING)
@@ -668,7 +685,33 @@ class HistoricalEngine:
         selected: SelectedSource | None = None
         price: Decimal | None = None
         if anchor is not None:
-            if isinstance(snapshots[0], PriceSnapshot):
+            if (
+                self.window.knowledge_policy is d.KnowledgePolicy.AS_OF_CUTOFF
+                and series_id not in self.selection_indexes
+                and len(self.selection_indexes) < MAX_INDEX_SERIES
+            ):
+                # Resolve the original selector's type/subset once, including ID de-duplication.
+                kind = (
+                    PriceSnapshot if isinstance(snapshots[0], PriceSnapshot) else BenchmarkSnapshot
+                )
+                typed = tuple(item for item in snapshots if isinstance(item, kind))
+                prepared_selection = CalendarSelectionIndex.prepare(
+                    typed,
+                    series_id=series_id,
+                    calendar=self.calendar_indexes[(calendar.id, calendar.version)],
+                    policy=policy,
+                    cutoff=self.window.source_cutoff_at,
+                    budget=self.selection_budget,
+                )
+                self.selection_indexes[series_id] = prepared_selection
+                if prepared_selection is not None:
+                    self.selection_budget -= prepared_selection.count
+            indexed = self.selection_indexes.get(series_id)
+            if indexed is not None:
+                _, candidate, reason = indexed.select(anchor)
+                if candidate is not None and reason is None:
+                    price, selected = candidate.amount, candidate.reference()
+            elif isinstance(snapshots[0], PriceSnapshot):
                 prices = tuple(item for item in snapshots if isinstance(item, PriceSnapshot))
                 selection = select_price(
                     prices,

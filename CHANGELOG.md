@@ -6,6 +6,10 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Phase 2 historical intelligence
 
+- Prepare bounded calendar and source-selection indexes within each historical
+  calculation, preserving provider, revision, cutoff and canonical evidence rules.
+  Read the sealed composite snapshot directly for detail views while retaining
+  dependency, license and account checks. Preserve the measured CI failure.
 - Retain the latest benchmark CI timeout and add bounded, opt-in browser-fixture
   timing diagnostics to locate unfinished API or worker stages.
 - Specialize selection of a sole eligible corporate-action snapshot while

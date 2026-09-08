@@ -503,6 +503,112 @@ def test_full_history_composite_pages_and_restart_preserve_immutable_results(
     asyncio.run(run())
 
 
+def test_composite_detail_uses_only_its_canonical_document_and_rejects_invalid_bytes(
+    historical_database: tuple[Engine, sessionmaker[Session]],
+    historical_seed: dict[str, str],
+) -> None:
+    from typing import Any
+    from unittest.mock import patch
+
+    from trading212_application import sources as sources_app
+    from trading212_domain import historical_serialization as serialization
+    from trading212_domain.historical_results import (
+        CompositeBenchmarkPoint,
+        CompositeBenchmarkSnapshot,
+    )
+    from trading212_domain.serialization import canonical_json
+    from trading212_persistence import historical_source_reads as detail
+    from trading212_persistence.historical_service import PostgresHistoricalService
+    from trading212_persistence.planning_models import AnalyticsRunModel
+    from trading212_persistence.source_service import PostgresSourceService
+    from trading212_worker.historical_seed import history_principal
+
+    _, sessions = historical_database
+    original_get = Session.get
+    original_decode = serialization.historical_value_from_json
+
+    def metadata_get(session: Session, entity: Any, identifier: Any, **kwargs: Any) -> Any:
+        # A detail request must not materialize either full input/result ORM record.
+        assert entity not in (hm.HistoricalInputModel, AnalyticsRunModel)
+        return original_get(session, entity, identifier, **kwargs)
+
+    async def run() -> None:
+        principal = history_principal(NOW)
+        account = historical_seed["annual_account_id"]
+        service = PostgresHistoricalService(sessions, cursor_signing_key=KEY, clock=lambda: NOW)
+        window = d.HistoricalWindow(
+            start_date=date(2025, 1, 1),
+            end_date=date(2025, 12, 31),
+            source_cutoff_at=NOW,
+            reporting_currency=CurrencyCode("EUR"),
+        )
+        comparison = await service.get_benchmark_comparison(
+            principal,
+            account,
+            query=app.BenchmarkComparisonQuery(
+                window=window,
+                benchmark_version_id=historical_seed["annual_benchmark_version_id"],
+            ),
+        )
+        expected = comparison.composite_snapshot
+        assert expected is not None
+        sources = PostgresSourceService(
+            sessions=sessions, cursor_signing_key=KEY, clock=lambda: NOW
+        )
+        query = sources_app.SourceObservationQuery(account_id=account, limit=2)
+        with (
+            patch.object(Session, "get", new=metadata_get),
+            patch.object(detail, "historical_value_from_json", wraps=original_decode) as decoded,
+            patch.object(serialization, "historical_value_from_json", new=decoded),
+        ):
+            header = await sources.get_benchmark_snapshot(
+                principal, expected.id, account_id=account
+            )
+            page = await sources.list_benchmark_observations(principal, expected.id, query=query)
+            assert canonical_json(header) == canonical_json(expected)
+            assert isinstance(page, sources_app.CompositeBenchmarkObservationPageView)
+            assert page.total == expected.observation_count and page.next_cursor is not None
+            assert {call.args[1] for call in decoded.call_args_list} == {
+                CompositeBenchmarkSnapshot,
+                CompositeBenchmarkPoint,
+            }
+            document = decoded.call_args_list[0].args[0]
+            assert isinstance(document, bytes)
+            composite = original_decode(document, CompositeBenchmarkSnapshot)
+            assert page.items == composite.observations[:2]
+            next_page = await sources.list_benchmark_observations(
+                principal, expected.id, query=replace(query, cursor=page.next_cursor)
+            )
+            assert next_page.items == composite.observations[2:4]
+
+        changed = canonical_json(replace(composite, input_digest="0" * 64)).encode()
+        for invalid in (b"", b"{}", b'{"kind":"composite","kind":"composite"}', changed):
+            # Simulate unreadable/mismatched retained bytes at the decoder boundary;
+            # immutable database guards are never disabled or bypassed.
+            def invalid_composite[T](
+                value: str | bytes, kind: type[T], *, document: bytes = invalid
+            ) -> T:
+                return original_decode(
+                    document if kind is CompositeBenchmarkSnapshot else value, kind
+                )
+
+            with patch.object(detail, "historical_value_from_json", side_effect=invalid_composite):
+                with pytest.raises(sources_app.SourceServiceError) as header_failure:
+                    await sources.get_benchmark_snapshot(principal, expected.id, account_id=account)
+                assert (
+                    header_failure.value.code
+                    is sources_app.SourceServiceErrorCode.PROVIDER_UNAVAILABLE
+                )
+                with pytest.raises(sources_app.SourceServiceError) as page_failure:
+                    await sources.list_benchmark_observations(principal, expected.id, query=query)
+                assert (
+                    page_failure.value.code
+                    is sources_app.SourceServiceErrorCode.PROVIDER_UNAVAILABLE
+                )
+
+    asyncio.run(run())
+
+
 def test_historical_seed_repeat_keeps_all_published_knowledge_and_financial_content(
     historical_database: tuple[Engine, sessionmaker[Session]],
     historical_seed: dict[str, str],

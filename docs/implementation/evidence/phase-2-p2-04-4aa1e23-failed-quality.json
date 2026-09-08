@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_kind": "unaccepted_candidate_quality_failure",
+  "source_sha": "4aa1e235a5abe0432ca00060d2b35ce31fb705fe",
+  "result": "failed",
+  "requirements": [
+    "P2-04"
+  ],
+  "quality_workflow": {
+    "run_id": 34267056201,
+    "conclusion": "failure",
+    "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34267056201"
+  },
+  "browser_job": {
+    "job_id": 102198942097,
+    "started_at_utc": "2026-09-08T19:06:58Z",
+    "completed_at_utc": "2026-09-08T19:14:22Z",
+    "conclusion": "failure",
+    "failed_tests": [
+      {
+        "selector": "tests/e2e/api-web/historical.spec.ts:475",
+        "project": "api-chromium-desktop",
+        "failure": "Composite benchmark snapshot heading did not appear within the existing five-second assertion at line 532. The preceding first annual benchmark request completed; no native filter-load timeout was recorded in this run."
+      }
+    ],
+    "passed_historical_desktop_tests": 2,
+    "navigation_failure_records": 0,
+    "timing_event_count": 759,
+    "timing_parse_errors": 0,
+    "cold_benchmark": {
+      "request_ordinal": 69,
+      "route_label": "benchmark",
+      "started_at_utc": "2026-09-08T19:12:40.721045+00:00",
+      "completed_at_utc": "2026-09-08T19:13:09.230369+00:00",
+      "api_seconds": 28.509344165000016,
+      "worker_queue_seconds": 0.0004952369999955408,
+      "worker_seconds": 28.48631941299999,
+      "inclusive_phases_seconds": {
+        "capture_decode": 0.4833680980000281,
+        "capture": 1.888715174999959,
+        "calculate": 13.60563581599996,
+        "verify": 1.169754495999996,
+        "persist_uses": 7.668604173000006,
+        "read_result": 28.44432851800002
+      }
+    },
+    "subsequent_source_workers": [
+      {
+        "request_ordinal": 72,
+        "route_label": "other",
+        "started_at_utc": "2026-09-08T19:13:14.688028+00:00",
+        "completed_at_utc": "2026-09-08T19:13:17.211639+00:00",
+        "api_seconds": 2.5236275439999645,
+        "worker_queue_seconds": 9.685200001285921e-05,
+        "worker_seconds": 2.5178809420000334,
+        "inclusive_phases_seconds": {}
+      },
+      {
+        "request_ordinal": 73,
+        "route_label": "other",
+        "started_at_utc": "2026-09-08T19:13:17.243733+00:00",
+        "completed_at_utc": "2026-09-08T19:13:20.909612+00:00",
+        "api_seconds": 3.665901120000001,
+        "worker_queue_seconds": 0.005840328999966005,
+        "worker_seconds": 3.6425297530000194,
+        "inclusive_phases_seconds": {}
+      }
+    ],
+    "source_worker_interpretation": "Header then observations requests inferred from source order and timing; fixed other route labels do not directly identify endpoints or prove shared immutable IDs. Both reads materialize the complete benchmark result in this source revision.",
+    "raw_log_sha256": "074ffd744620d8faa096e032083e4e0cfbfcfa79410258f241deff5a5e1bb074",
+    "clean_log_sha256": "ab9952ffbc171527911cb1e59c5df0b779bedde072b3d39d930d5952ffb1bd92",
+    "parsed_events_sha256": "1a0a911e938a4dfb34f1d62fdda356e461eea5f64522fd4bca72de2b1e60ad83"
+  },
+  "postgres_job": {
+    "job_id": 102198942487,
+    "conclusion": "success",
+    "isolated_tests_passed": 1291,
+    "service_backed_tests_passed": 174,
+    "isolated_seconds": 264.05,
+    "service_backed_seconds": 688.9,
+    "combined_coverage_percent": 88,
+    "raw_log_sha256": "2ab3b183a535b52cd04647285a5497f9bf913d6372584b976795e02b6c3fb97f"
+  },
+  "local_exact_validation": {
+    "status": "not_run",
+    "acceptance": "The diagnostic-only commit received relevant precommit working-tree checks, not a new clean-source make validate acceptance gate."
+  },
+  "other_ci": {
+    "security": {
+      "run_id": 34267056005,
+      "conclusion": "success"
+    },
+    "documentation": {
+      "run_id": 34267056173,
+      "conclusion": "success"
+    }
+  },
+  "follow_up": "Prepare bounded request-local calendar/source-selection indexes and read the existing sealed canonical composite directly for source detail. Preserve all financial result bytes, authorization, license checks, API shapes and existing deadlines; measure before exact-source acceptance.",
+  "acceptance": "No P2-04 acceptance. No exact-source property, source/image-scan or fresh full-runtime acceptance follow-up ran for this diagnostic revision."
+}

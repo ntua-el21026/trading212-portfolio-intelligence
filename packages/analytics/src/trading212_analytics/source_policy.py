@@ -22,6 +22,7 @@ from trading212_domain.sources import (
     FxObservation,
     FxOperation,
     FxSnapshot,
+    MarketSession,
     ObservationState,
     PriceObservation,
     PriceSelection,
@@ -158,17 +159,12 @@ def _state_reason(candidate: _Candidate) -> SourceReason | None:
     }[candidate.observation.state]
 
 
-def _calendar_selection(
+def _calendar_sources(
     snapshots: tuple[PriceSnapshot | BenchmarkSnapshot, ...],
-    *,
     series_id: str,
-    at: datetime,
-    source_cutoff_at: datetime,
-    policy: SourceSelectionPolicy,
     calendar: SourceCalendar,
-) -> tuple[CurrencyCode, _Candidate | None, SourceReason | None]:
+) -> tuple[PriceSnapshot | BenchmarkSnapshot, ...]:
     source_id(series_id, "series_id")
-    at, cutoff = _inputs(snapshots, at, source_cutoff_at, policy)
     sources = tuple(x for x in snapshots if x.series is not None and x.series.id == series_id)
     if not sources:
         fail_validation(
@@ -183,25 +179,18 @@ def _calendar_selection(
         series.calendar_version,
     ) != (calendar.id, calendar.version):
         fail_validation("The source and versioned calendar must agree.", field="calendar")
-    as_date = at.astimezone(ZoneInfo(calendar.timezone)).date()
-    if not calendar.period.start <= as_date <= calendar.period.end:
-        return series.currency, None, SourceReason.OUTSIDE_CALENDAR
-    sessions = [x for x in calendar.sessions if x.close_at <= at]
-    if not sessions:
-        return series.currency, None, SourceReason.BEFORE_FIRST_OBSERVATION
-    expected = sessions[-1]
-    if as_date != expected.session_date and (
-        not policy.allow_closed_session_carry
-        or any(x.session_date == as_date for x in calendar.sessions)
-    ):
-        return series.currency, None, SourceReason.MISSING_SESSION
-    all_candidates_list: list[_Candidate] = []
-    calendar_sessions = {x.session_date: x for x in calendar.sessions}
+    return sources
+
+
+def _calendar_candidates(
+    sources: tuple[PriceSnapshot | BenchmarkSnapshot, ...],
+    calendar_sessions: dict[date, MarketSession],
+) -> Iterator[_Candidate]:
     for source in sources:
         dates = set()
         for i, observation in enumerate(source.observations):
             assert isinstance(observation, (PriceObservation, BenchmarkObservation))
-            all_candidates_list.append(_Candidate(source, i, observation))
+            yield _Candidate(source, i, observation)
             dates.add(observation.session_date)
         # A corrected dataset may remove an earlier observation. Its declared gap
         # remains a revision candidate, preventing fallback to superseded data.
@@ -230,8 +219,38 @@ def _calendar_selection(
                         state=state,
                     )
                 )
-                all_candidates_list.append(_Candidate(source, -1, missing))
-    all_candidates = tuple(all_candidates_list)
+                yield _Candidate(source, -1, missing)
+
+
+def _calendar_selection(
+    snapshots: tuple[PriceSnapshot | BenchmarkSnapshot, ...],
+    *,
+    series_id: str,
+    at: datetime,
+    source_cutoff_at: datetime,
+    policy: SourceSelectionPolicy,
+    calendar: SourceCalendar,
+) -> tuple[CurrencyCode, _Candidate | None, SourceReason | None]:
+    source_id(series_id, "series_id")
+    at, cutoff = _inputs(snapshots, at, source_cutoff_at, policy)
+    sources = _calendar_sources(snapshots, series_id, calendar)
+    series = sources[0].series
+    assert series is not None
+    as_date = at.astimezone(ZoneInfo(calendar.timezone)).date()
+    if not calendar.period.start <= as_date <= calendar.period.end:
+        return series.currency, None, SourceReason.OUTSIDE_CALENDAR
+    sessions = [x for x in calendar.sessions if x.close_at <= at]
+    if not sessions:
+        return series.currency, None, SourceReason.BEFORE_FIRST_OBSERVATION
+    expected = sessions[-1]
+    if as_date != expected.session_date and (
+        not policy.allow_closed_session_carry
+        or any(x.session_date == as_date for x in calendar.sessions)
+    ):
+        return series.currency, None, SourceReason.MISSING_SESSION
+    all_candidates = tuple(
+        _calendar_candidates(sources, {x.session_date: x for x in calendar.sessions})
+    )
     candidates = tuple(x for x in all_candidates if _eligible(x, at, cutoff))
     candidate, reason = _choose(candidates, policy)
     if candidate is None:

@@ -158,3 +158,49 @@ measurement does not explain the CI timeout. Opt-in fixture diagnostics record
 bounded fixed API/worker stages without payloads, raw identifiers, SQL parameters
 or exception messages so the next CI run can identify the pending stage. This
 is diagnostic work; exact-source package acceptance remains outstanding.
+
+
+Diagnostic revision `4aa1e235a5abe0432ca00060d2b35ce31fb705fe` produced the first
+completed CI stage measurements. Its
+[retained CI record](evidence/phase-2-p2-04-4aa1e23-failed-quality.json) shows
+1291 isolated Python tests, 174 PostgreSQL tests and 88% combined coverage;
+documentation and security passed. The cold annual benchmark API completed in
+28.509 seconds, with 13.606 seconds in calculation and 7.669 seconds in source-use
+publication. Its worker dispatch wait was below one millisecond. These inclusive
+stage measurements establish where this request spent time; they do not quantify
+individual SQL statements or promise a particular optimization gain.
+
+The browser subsequently failed the unchanged five-second composite snapshot
+heading assertion. Two consecutive source workers took 2.518 and 3.643 seconds.
+Source order and timing associate these with header and observation reads, but
+the fixed diagnostic route label does not directly identify those endpoints.
+Both code paths decode the complete historical result to obtain its composite,
+even though the sealed composite is already stored separately. The correction
+prepares bounded source/calendar indexes within one calculation and reads that
+sealed composite directly, retaining all dependency, permission and expiry checks.
+This diagnostic revision received relevant precommit working-tree checks; it did
+not receive a new clean-source `make validate` acceptance run. P2-04 remains under
+verification and P2-05 remains unstarted.
+
+
+Controlled local ABBA comparisons against immutable baseline source and pre-edit
+canonical goldens measured annual benchmark calculation at 1.458 seconds before
+and 1.005 after indexing. Group attribution changed from 1.733 to 1.241 seconds
+and sector attribution from 1.754 to 1.276. All twelve results independently
+verified and retained identical complete canonical bytes, source uses, conversions
+and context. The index belongs to one calculation, keeps at most 256 descriptors
+and 100,000 candidates including synthetic gaps, and falls back to the existing
+selector when capacity is exhausted or the cutoff varies point in time. The
+measured annual fixture retained about 508 KB of traced index/engine allocations;
+this is neither process RSS nor a maximum-input memory bound. Local gains do not
+establish CI timing or package acceptance.
+
+
+A separate warm decoder/header comparison used the saved annual result
+(4,507,978 bytes) and its identical retained composite (152,537 bytes, 365
+observations). Five alternating timed rounds after warmup measured median
+255.14 ms for full-result decoding and 9.87 ms for direct composite decoding;
+every header matched. This excludes SQL, authorization, pagination and transport.
+Focused PostgreSQL tests passed for header and page parity, malformed/mismatching
+retained bytes, and revoked-license denial before decoding, including retained
+cursor/ETag reads. Full exact-source validation and browser CI remain required.

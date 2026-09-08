@@ -72,9 +72,14 @@ exceeded the document-load limit. Correction
 `f37e8de843419288bc7e4b7531de6cc9d4c9cedc` also passed the full clean-source local
 gate and CI PostgreSQL coverage, but CI again received benchmark document headers
 without completing the stream within 30 seconds. The same performance-to-benchmark
-sequence passed locally with `CI=1`; bounded fixture timing diagnostics are being
-added to locate the unfinished CI stage. No P2-04 acceptance is claimed. See the
-[latest retained failed candidate](docs/implementation/evidence/phase-2-p2-04-f37e8de-failed-quality.json).
+sequence passed locally with `CI=1`. Diagnostic revision
+`4aa1e235a5abe0432ca00060d2b35ce31fb705fe` then identified 13.606 seconds in
+benchmark calculation and 7.669 seconds in source-use publication in CI. The
+benchmark request completed, but the subsequent composite snapshot heading
+exceeded five seconds while two source reads ran consecutively. PostgreSQL
+coverage, documentation and security passed; package acceptance remains pending
+correction and complete exact-source validation. See the
+[latest retained failed candidate](docs/implementation/evidence/phase-2-p2-04-4aa1e23-failed-quality.json).
 Phase 3 remains `not_started`.
 
 ## Previously accepted baseline

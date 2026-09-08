@@ -7,7 +7,7 @@ import os
 from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
 from typing import Any
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
 
 import httpx
@@ -482,6 +482,12 @@ async def test_available_annual_results_pages_scope_projection_and_live_license_
             idempotency_key="historical-api-license-denied",
             correlation_id="historical-api-license-test",
         )
+        from trading212_persistence import historical_source_reads as detail
+
+        # A revoked current license denies header and retained cursor/ETag reads
+        # before any retained composite is decoded or its financial data is returned.
+        denied_decode = Mock(side_effect=AssertionError("Denied composite must not be decoded."))
+        monkeypatch.setattr(detail, "historical_value_from_json", denied_decode)
         for path, params, etag in (
             (
                 f"/api/v1/accounts/{account}/performance/intelligence",
@@ -504,5 +510,6 @@ async def test_available_annual_results_pages_scope_projection_and_live_license_
             )
             assert denied.status_code == 403, denied.text
             assert composite["content_digest"] not in denied.text
+        denied_decode.assert_not_called()
     for spy in spies:
         spy.assert_not_called()

@@ -579,9 +579,16 @@ def composite_header(
     assert link is not None and result.composite is not None
     snapshot = session.get(sm.BenchmarkSnapshotModel, link.snapshot_id)
     assert snapshot is not None
-    composite = result.composite
+    return composite_snapshot_header(snapshot, result.composite)
+
+
+def composite_snapshot_header(
+    snapshot: sm.BenchmarkSnapshotModel,
+    composite: r.CompositeBenchmarkSnapshot,
+) -> source_app.CompositeBenchmarkSnapshotHeaderView:
+    """Project the same canonical composite for comparison and source detail reads."""
     return source_app.CompositeBenchmarkSnapshotHeaderView(
-        id=str(link.snapshot_id),
+        id=str(snapshot.id),
         benchmark_version_id=composite.benchmark_version_id,
         reporting_currency=composite.reporting_currency,
         return_basis=composite.return_basis,
