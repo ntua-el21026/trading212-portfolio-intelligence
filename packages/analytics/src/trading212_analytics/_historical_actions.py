@@ -27,6 +27,10 @@ def _choose(
     if all(item.provenance.revision_order is not None for item in candidates):
         latest = max(item.provenance.revision_order or 0 for item in candidates)
         candidates = tuple(item for item in candidates if item.provenance.revision_order == latest)
+    # A single validated candidate cannot conflict with another snapshot. Avoid
+    # serializing its session proof again for every subsequent valuation date.
+    if len(candidates) == 1:
+        return candidates[0]
     # Receipt recency is never a revision order. Equal per-session economics may
     # occur in overlapping full/partial retrieval windows without being revisions.
     signatures = {

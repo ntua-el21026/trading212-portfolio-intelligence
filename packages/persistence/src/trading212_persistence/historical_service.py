@@ -13,7 +13,6 @@ from trading212_domain import historical as d
 from trading212_domain import historical_results as r
 from trading212_security.principals import Principal, Scope
 
-from . import historical_models as hm
 from .historical_store import PostgresHistoricalStore
 
 Query = (
@@ -28,16 +27,14 @@ Query = (
 
 class PostgresHistoricalService(PostgresHistoricalStore):
     def _request(
-        self, session: Session, owner: UUID, account: UUID, query: Query
+        self,
+        session: Session,
+        owner: UUID,
+        account: UUID,
+        query: Query,
+        *,
+        pinned: d.HistoricalSelectionRequest | None,
     ) -> d.HistoricalSelectionRequest:
-        pinned = None
-        if query.input_snapshot_id is not None:
-            row = self._owned(session, owner, hm.HistoricalInputModel, query.input_snapshot_id)
-            if row.broker_account_id != account:
-                from .historical_base import error
-
-                raise error("NOT_FOUND")
-            pinned = self._capture_view(session, owner, row).input.selection
         policy = (
             None
             if pinned is not None
@@ -136,9 +133,8 @@ class PostgresHistoricalService(PostgresHistoricalStore):
 
         def operation(session: Session, owner: UUID, account: UUID | None) -> object:
             assert account is not None
-            request = self._request(session, owner, account, query)
             capture, run, stored, result = read_historical_result(
-                self, session, principal, owner, account, query, request, family
+                self, session, principal, owner, account, query, family
             )
             activity = Scope.ACTIVITY_READ in principal.scopes
             context = self._context(

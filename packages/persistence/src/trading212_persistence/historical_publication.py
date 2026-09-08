@@ -7,7 +7,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import func, select
+from sqlalchemy import func, insert, select
 from sqlalchemy.orm import Session
 from trading212_application import historical as app
 from trading212_application import sources as source_app
@@ -52,20 +52,30 @@ def read_historical_result(
     owner: UUID,
     account: UUID,
     query: Query,
-    request: d.HistoricalSelectionRequest,
     family: str,
 ) -> tuple[
     app.HistoricalCaptureView, hm.HistoricalRunModel, AnalyticsRunModel, r.HistoricalCalculation
 ]:
     from trading212_analytics import historical as analytics
 
-    if query.input_snapshot_id is None:
-        capture = service._capture(session, principal, owner, account, request)
-    else:
+    # A pinned capture is decoded, hashed and legally checked once within this
+    # owner-locked transaction, then reused for selection and result validation.
+    capture = None
+    if query.input_snapshot_id is not None:
         row = service._owned(session, owner, hm.HistoricalInputModel, query.input_snapshot_id)
         if row.broker_account_id != account:
             raise error("NOT_FOUND")
         capture = service._capture_view(session, owner, row)
+    request = service._request(
+        session,
+        owner,
+        account,
+        query,
+        pinned=None if capture is None else capture.input.selection,
+    )
+    if capture is None:
+        capture = service._capture(session, principal, owner, account, request)
+    else:
         pinned = capture.input.selection
         if (
             pinned.window,
@@ -318,7 +328,12 @@ def persist_uses(
     if value.benchmark_input is not None:
         snapshots.update({x.id: x for x in value.benchmark_input.price_snapshots})
         snapshots.update({x.id: x for x in value.benchmark_input.benchmark_snapshots})
-    uses = {}
+    uses: dict[str, UUID] = {}
+    pending: list[dict[str, object]] = []
+    # Fixed-size executemany batches avoid giant RETURNING statements and ORM
+    # identity bookkeeping for immutable rows whose IDs are already assigned.
+    # Every database scope, source-use and sealing trigger still runs per row.
+    statement = insert(hm.HistoricalSourceUseModel).execution_options(render_nulls=True)
     for use in result.source_uses:
         dependency = None
         index = None
@@ -340,8 +355,9 @@ def persist_uses(
             raise error("HISTORICAL_UNAVAILABLE")
         if use.kind != "missing" and dependency is None:
             raise error("HISTORICAL_UNAVAILABLE")
-        row = hm.HistoricalSourceUseModel(
-            id=uuid4(),
+        identifier = uuid4()
+        row: dict[str, object] = dict(
+            id=identifier,
             owner_id=owner,
             run_id=run.id,
             use_key=use.use_key,
@@ -390,8 +406,13 @@ def persist_uses(
             reason=use.reason.value if isinstance(use, r.HistoricalMissingUse) else None,
             canonical_use=encoded(use),
         )
-        session.add(row)
-        uses[use.use_key] = row
+        pending.append(row)
+        uses[use.use_key] = identifier
+        if len(pending) == 256:
+            session.execute(statement, pending)
+            pending.clear()
+    if pending:
+        session.execute(statement, pending)
     session.flush()
     for missing in result.source_uses:
         if isinstance(missing, r.HistoricalMissingUse):
@@ -399,7 +420,7 @@ def persist_uses(
                 session.add(
                     hm.HistoricalUseCandidateModel(
                         owner_id=owner,
-                        source_use_id=uses[missing.use_key].id,
+                        source_use_id=uses[missing.use_key],
                         dependency_id=dependencies[candidate].id,
                     )
                 )
@@ -423,7 +444,7 @@ def persist_uses(
                 hm.HistoricalConversionLegModel(
                     owner_id=owner,
                     run_id=run.id,
-                    source_use_id=uses[use.use_key].id,
+                    source_use_id=uses[use.use_key],
                     conversion_key=leg.conversion_key,
                     ordinal=leg.ordinal,
                     direction=leg.direction,

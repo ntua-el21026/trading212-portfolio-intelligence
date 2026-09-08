@@ -6,6 +6,8 @@ import asyncio
 from dataclasses import replace
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
+from unittest.mock import patch
+from uuid import UUID
 
 import pytest
 from sqlalchemy import Engine, func, select
@@ -14,10 +16,14 @@ from trading212_application import historical as app
 from trading212_domain import build_synthetic_identity
 from trading212_domain import historical as d
 from trading212_domain import historical_results as r
+from trading212_domain.historical_serialization import historical_result_from_json
+from trading212_domain.serialization import canonical_json
 from trading212_domain.values import CurrencyCode
+from trading212_persistence import historical_models as hm
 from trading212_persistence.base import Base
 from trading212_persistence.historical_service import PostgresHistoricalService
 from trading212_persistence.models import PortfolioSnapshotModel
+from trading212_persistence.planning_models import AnalyticsRunModel
 from trading212_worker.historical_seed import (
     CURSOR_KEY,
     history_principal,
@@ -108,19 +114,42 @@ def test_seeded_performance_has_exact_conservation_and_retained_replay(
     assert len(result.series) == (365 if variant == "annual" else 21)
     before = counts(sessions)
     later = NOW + timedelta(hours=1)
-    replay = asyncio.run(
-        PostgresHistoricalService(
-            sessions, cursor_signing_key=CURSOR_KEY, clock=lambda: later
-        ).get_performance_summary(
-            history_principal(later),
-            ids[f"{variant}_account_id"],
-            query=replace(query, input_snapshot_id=result.context.input_snapshot_id),
-        )
+    replay_service = PostgresHistoricalService(
+        sessions, cursor_signing_key=CURSOR_KEY, clock=lambda: later
     )
+    with patch.object(
+        replay_service, "_capture_view", wraps=replay_service._capture_view
+    ) as capture_load:
+        replay = asyncio.run(
+            replay_service.get_performance_summary(
+                history_principal(later),
+                ids[f"{variant}_account_id"],
+                query=replace(query, input_snapshot_id=result.context.input_snapshot_id),
+            )
+        )
+    # Replaying one immutable capture must not repeat its full decode, digest and
+    # legal dependency traversal within the same owner-locked transaction.
+    assert capture_load.call_count == 1
     assert replay.summary == result.summary and replay.series == result.series
     assert replay.context.content_digest == result.context.content_digest
     assert replay.context.calculated_at == result.context.calculated_at
     assert counts(sessions) == before
+    with sessions() as session:
+        run = session.get(hm.HistoricalRunModel, UUID(result.context.run_id))
+        assert run is not None
+        stored = session.get(AnalyticsRunModel, run.analytics_run_id)
+        assert stored is not None
+        calculation = historical_result_from_json(stored.canonical_result)
+        rows = session.scalars(
+            select(hm.HistoricalSourceUseModel).where(hm.HistoricalSourceUseModel.run_id == run.id)
+        ).all()
+        # Every observation/evidence/missing proof survives bounded insertion,
+        # including the final partial batch; no row or nullable field is omitted.
+        assert len(rows) > 256
+        assert {row.use_key: row.canonical_use for row in rows} == {
+            use.use_key: canonical_json(use).encode() for use in calculation.source_uses
+        }
+        assert all(row.owner_id == run.owner_id for row in rows)
 
 
 @pytest.mark.parametrize("variant", ["annual", "point_in_time"])

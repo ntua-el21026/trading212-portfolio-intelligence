@@ -6,7 +6,7 @@
 
 **Implementation authority:** `main`
 
-**Updated:** 2026-09-07
+**Updated:** 2026-09-08
 
 ## Current state
 
@@ -59,7 +59,12 @@ scenarios complete (30%). P2-04 through P2-10 and shared release predicates rema
 required. Real reference provider configuration/licensing remain unavailable.
 P2-04 is `in_progress` from synchronized starting SHA
 `05d01c7a9a9cb6cc3f351c3adbed2036f02b94a9`. Historical capture, calculations and
-their API/MCP/web surfaces are being implemented; no P2-04 acceptance is claimed.
+their API/MCP/web surfaces are implemented under verification. Candidate
+`6a2074141d9c7bdd8aa64e1710777d153c4996f5` failed historical browser load
+limits and the PostgreSQL coverage job timeout in quality CI run `34165840790`;
+its documentation and security workflows passed. The interrupted local exact-SHA
+gate has no accepted completion. Performance corrections are under verification;
+no P2-04 acceptance is claimed.
 Phase 3 remains `not_started`.
 
 ## Previously accepted baseline

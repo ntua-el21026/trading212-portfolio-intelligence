@@ -6,6 +6,9 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Phase 2 historical intelligence
 
+- Reduce redundant corporate-action comparisons, pinned-capture decoding and
+  immutable source-use insertion overhead after the first candidate exceeded CI
+  time limits. Preserve the failed candidate and interrupted local gate honestly.
 - Add immutable historical captures, dated activity/opening evidence and five
   exact calculation families for performance, benchmarks, attribution, income
   and cash flows, with restated and point-in-time source selection.

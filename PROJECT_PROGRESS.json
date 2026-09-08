@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-07T19:52:31.701388+00:00",
+  "updated_at": "2026-09-08T15:00:31.132100+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -1470,7 +1470,26 @@
             ]
           }
         }
-      }
+      },
+      "failed_candidate_history": [
+        {
+          "work_package": "P2-04",
+          "source_sha": "6a2074141d9c7bdd8aa64e1710777d153c4996f5",
+          "acceptance": "failed_candidate",
+          "github_quality_run": 34165840790,
+          "github_quality_result": "failed",
+          "github_documentation_run": 34165840776,
+          "github_documentation_result": "passed",
+          "github_security_run": 34165840832,
+          "github_security_result": "passed",
+          "failures": [
+            "Three historical desktop browser journeys exceeded the existing 30-second load wait.",
+            "The PostgreSQL coverage job reached its existing 20-minute timeout."
+          ],
+          "local_exact_validation": "interrupted_without_accepted_completion",
+          "correction": "Remove redundant single-candidate action serialization, repeated pinned-capture decoding, and oversized ORM source-use insertion; retain all financial, legal, integrity, and timeout checks. Corrected exact-source acceptance remains required."
+        }
+      ]
     },
     "phase_3": {
       "name": "Premium Intelligence and Productization",

@@ -392,3 +392,49 @@ def test_conflicting_known_income_components_preserve_net_without_false_reconcil
     )
     performance = calculate_performance(value, options=r.PerformanceOptions())
     assert performance.summary.withholding_taxes.value is None
+
+
+@pytest.mark.parametrize("ordered", [False, True])
+def test_action_candidate_fast_path_preserves_revision_and_conflict_rules(ordered: bool) -> None:
+    from trading212_analytics._historical_actions import _choose
+
+    original = split_input().action_snapshots[0]
+    original = replace(
+        original,
+        provenance=replace(original.provenance, revision_order=1 if ordered else None),
+    )
+    day = original.observations[0].session_date
+    revised = replace(
+        original,
+        id=uid(901),
+        provenance=replace(
+            original.provenance,
+            first_observed_at=original.provenance.first_observed_at + timedelta(hours=1),
+            revision_order=2 if ordered else None,
+        ),
+        observations=(replace(original.observations[0], ratio=Decimal(3)),),
+    )
+    assert _choose((original,), day) is original
+    assert _choose((original,), original.period.end + timedelta(days=1)) is None
+    assert _choose((original, revised), day) is (revised if ordered else None)
+    # Reordering input cannot turn receipt recency into authority.
+    assert _choose((revised, original), day) is (revised if ordered else None)
+
+
+def test_equal_overlapping_action_proofs_keep_earliest_receipt_and_quality_conflicts() -> None:
+    from trading212_analytics._historical_actions import _choose
+
+    original = split_input().action_snapshots[0]
+    original = replace(original, provenance=replace(original.provenance, revision_order=None))
+    later = replace(
+        original,
+        id=uid(902),
+        provenance=replace(
+            original.provenance,
+            first_observed_at=original.provenance.first_observed_at + timedelta(hours=1),
+        ),
+    )
+    day = original.observations[0].session_date
+    assert _choose((later, original), day) is original
+    partial = replace(later, coverage=replace(later.coverage, quality=QualityState.PARTIAL))
+    assert _choose((original, partial), day) is None

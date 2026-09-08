@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-07T19:52:31.702008+00:00",
+  "updated_at": "2026-09-08T15:00:31.132100+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -160,5 +160,24 @@
       "status": "complete",
       "artifact": "docs/implementation/evidence/phase-2-p2-03-e258f54.json"
     }
-  }
+  },
+  "phase_2_failed_candidate_history": [
+    {
+      "work_package": "P2-04",
+      "source_sha": "6a2074141d9c7bdd8aa64e1710777d153c4996f5",
+      "acceptance": "failed_candidate",
+      "github_quality_run": 34165840790,
+      "github_quality_result": "failed",
+      "github_documentation_run": 34165840776,
+      "github_documentation_result": "passed",
+      "github_security_run": 34165840832,
+      "github_security_result": "passed",
+      "failures": [
+        "Three historical desktop browser journeys exceeded the existing 30-second load wait.",
+        "The PostgreSQL coverage job reached its existing 20-minute timeout."
+      ],
+      "local_exact_validation": "interrupted_without_accepted_completion",
+      "correction": "Remove redundant single-candidate action serialization, repeated pinned-capture decoding, and oversized ORM source-use insertion; retain all financial, legal, integrity, and timeout checks. Corrected exact-source acceptance remains required."
+    }
+  ]
 }

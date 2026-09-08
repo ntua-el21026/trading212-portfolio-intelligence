@@ -90,3 +90,19 @@ Package acceptance also requires full local gates, exact pushed-SHA CI, security
 scans, fresh Compose/API/MCP/browser journeys and retained-volume restart with
 immutable capture/result/source parity. P2-05 through P2-10 remain required.
 Phase 3 remains `not_started`.
+
+
+## Interrupted candidate and correction
+
+Candidate `6a2074141d9c7bdd8aa64e1710777d153c4996f5` is not accepted.
+[Quality run 34165840790](https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34165840790)
+failed three historical browser load waits and the PostgreSQL coverage job limit.
+Documentation and security passed; the interrupted exact local gate has no
+accepted completion. Corrective profiling identified repeated single-candidate
+corporate-action serialization, duplicate pinned-capture decoding and oversized
+ORM source-use insert statements. The correction preserves conflict detection,
+source/legal checks, immutable bytes, database triggers and existing time limits.
+
+Local validation now reuses one Compose project. PostgreSQL and Redis run only
+as required; the full application stack runs temporarily for acceptance. Obsolete
+task containers, test volumes, networks and build metadata are removed after use.
