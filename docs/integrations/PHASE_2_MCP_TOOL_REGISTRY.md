@@ -131,6 +131,31 @@ reading/download permission; the user must also have `reports:read` to retrieve
 artifacts. The attribution tool requires P,N,T conservatively for every grouping choice,
 including owner-authorized target-group attribution.
 
+## P2-05 X-ray projection clarification
+
+Rows 19/20 keep exactly their frozen capabilities, P,N scopes and READ annotations.
+Both use the shared `XrayService` and `ui://trading212-portfolio/xray-v1.html`.
+Row 19 selects absolute exposures with its dimension and signed Page; no view,
+normalization, run replay, provider or mapping argument is added. Row 20 takes two
+distinct held canonical fund UUIDs and Top, with no currency argument. Resolve its
+currency from the immutable authorized snapshot inside the service, then call the
+same explicit-currency calculation; no preliminary gateway/account-default lookup.
+
+Return `xray_v1` 1.1.0 and `xray_decimal256_exact_q18_v1` plus actual representative
+root/source/cutoff/unit coverage. Full pair summaries agree with HTTP common-entity
+pages; Top has exact total/returned/omitted counts and omitted common weight, never
+a recomputed Top-only total. Unit composition remains independent of monetary zero
+or missing FX. A valid incomplete basis returns a known-overlap lower bound,
+including zero with unknown actual overlap; denied/expired/unestablishable bases
+remain errors/unavailable. Threshold-state unavailability is separate from a bound
+value. No client arithmetic or exposure of private exact-state coefficients.
+
+Read existing canonical compositions without fetch/reselection/retraversal. MCP Top
+may be transient and creates no permanent pair cache. Any durable member/binding
+uses shared collection capacity and original TTL; current owner/account/license
+and exact dependency checks precede decode, reuse, cursor and 304. Safe source
+previews disclose exact omissions and preserve access to authorized full path detail.
+
 ## Contribution command DTO
 
 `create_contribution_plan` requires `Snapshot`, `Target`, `Idempotency`,

@@ -70,3 +70,26 @@ loading/failure states, browser history, stable pagination, desktop/mobile keybo
 navigation, accessibility and screenshots. Do not accept a mock-only demo as evidence
 of durable commands. Preserve Phase 1 route tests and canonical `248431.27 EUR`
 synthetic evidence while extending the seeded product without duplicate economics.
+
+## P2-05 X-ray view and collection lifetime
+
+The /xray explorer presents one pinned full-snapshot calculation through exposures,
+complete paths, held-fund discovery, selected pairs and one pair's common entities.
+Normal navigation keeps one collection for each active view family; it does not
+prefetch every fund or every pair detail. Discovery may exceed 32 held funds; one
+comparison selects 2..32 and pages <=496 pairs. Preserve run/snapshot/cutoff/currency/
+dimension/normalization/pair/path pins in URL state and reject mismatched cursors.
+Pages expose exact totals and original TTL; no hidden cap or automatic quota reset.
+
+Render the canonical method 1.1.0/numeric-policy/representative root and source,
+coverage, unknown/cash, freshness and confidence. Absolute and known-normalized
+values remain distinct; a zero lower bound with unresolved mass is not 'no overlap'.
+A zero-valued fund can have meaningful unit composition. Missing/denied/expired
+basis and inconclusive threshold states remain explicit. Server values and rounded
+bound disclosures are authoritative; the browser computes no financial totals.
+
+Durable pair/common projections are owned by active collection bindings within
+shared 64/250,000 capacity; source expiry can deny them before normal collection
+expiry. Complete material path proof remains reachable. RESULT_TOO_LARGE preserves
+the pin and permits a smaller requested page, never silently sampling rows. Broader
+intelligence-data-quality/company actual-weight enrichment remains P2-08.

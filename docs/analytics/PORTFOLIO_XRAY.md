@@ -5,7 +5,9 @@
 The executable release 0.2.0 contract is the
 [Phase 2 methodology](PHASE_2_METHODS.md), with immutable source selection under
 [ADR-0012](../adr/ADR-0012-MARKET-SOURCE-SNAPSHOTS.md) and economic identity under
-[ADR-0013](../adr/ADR-0013-ECONOMIC-ENTITY-NORMALIZATION.md).
+[ADR-0013](../adr/ADR-0013-ECONOMIC-ENTITY-NORMALIZATION.md), narrowly amended by
+[ADR-0017](../adr/ADR-0017-DECIMAL256-EXACT-XRAY.md) for `xray_v1` 1.1.0 and
+`xray_decimal256_exact_q18_v1`. This remains design, not P2-05 implementation evidence.
 
 ## Objective
 
@@ -40,7 +42,10 @@ Effective exposure combines direct and indirect exposure after entity normalizat
 w^{effective}_{j} = w^{direct}_{j} + w^{indirect}_{j}
 \]
 
-Uncovered fund weight remains an explicit `unresolved_fund_exposure` component. It is not redistributed across known constituents unless a separately labeled normalized view is requested.
+Uncovered fund weight remains an explicit `unresolved_fund_exposure` component.
+A separately labeled known-noncash normalized comparison uses its dimension-specific
+known denominator and shows discarded/absolute mass; it never modifies absolute
+exposure, cash, unknown, company concentration or the canonical full run.
 
 ## Required capabilities
 
@@ -74,7 +79,9 @@ A result includes:
 - inferred mapping count/value;
 - total unresolved exposure.
 
-`100% exposure` may be claimed only when weights and mappings reconcile within documented tolerance.
+Complete exposure requires exact pre-round monetary/unit conservation, no exact
+positive unresolved mass and complete required mappings. Displayed zero unknown
+weight or a reconciliation tolerance cannot establish complete coverage.
 
 ## Caching and history
 
@@ -99,3 +106,26 @@ Provider license and redistribution restrictions control persistence, export, UI
 - no redistribution of unresolved weight in absolute view;
 - deterministic aggregation and exact residual;
 - portfolio-value coverage and API/MCP/report parity.
+
+## Exact composition, metric and lifecycle contract
+
+Use one four-edge/10,000-visited-path traversal over the complete snapshot, including
+cash and zero monetary roots; retain pending branch mass at every bound. Each held
+fund's lowest canonical real position root supplies its unit composition, even if
+another occurrence is better covered. Unit coverage is distinct from monetary
+coverage; no second traversal or monetary backfill is permitted. Keep every original
+position as a duplication source and consolidate its entity paths first.
+
+Pair overlap is exact only for complete supported unit bases; incomplete legitimate
+bases yield known lower bounds, including zero with unknown actual overlap. Source
+freshness remains separate. Monetary FX/zero denominators gate monetary ratios,
+not an independently valid unit comparison. Invalid, unauthorized or expired bases
+remain failures/unavailable as applicable. Use exact coefficients for top-N/HHI and
+registered threshold comparisons; a partial inconclusive threshold is unavailable.
+
+Retain canonical fund compositions, then project <=496 pairs per request for 2..32
+selected held funds. Held-fund discovery may exceed 32. Durable pair/common projections
+belong to active collections under shared 64/250,000 limits and expire with their
+references; MCP Top may be transient. No lifetime pair cache is allowed. Reauthorize
+current owner/license/dependencies before decode/replay/cursor/cache/304, and purge
+all forbidden exact-state and projection copies through bounded indexed cleanup.

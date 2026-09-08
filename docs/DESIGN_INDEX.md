@@ -138,7 +138,8 @@ A change to a frozen invariant requires an accepted superseding ADR and synchron
 
 Phase 1 is accepted at `99df47b6633791c3900a52f46f56d48be922a436`. Phase 2 design
 acceptance authorizes implementation, not runtime completion. Read the v0.2 delta,
-ADRs 0009–0016, technical baseline and manifest before depending on the new choices.
+ADRs 0009–0016, the narrow [ADR-0017](adr/ADR-0017-DECIMAL256-EXACT-XRAY.md) X-ray amendment,
+technical baseline and manifest before depending on the new choices.
 
 - [Data model](architecture/PHASE_2_DATA_MODEL.md)
 - [API and service contracts](architecture/PHASE_2_API_SERVICE_CONTRACTS.md)

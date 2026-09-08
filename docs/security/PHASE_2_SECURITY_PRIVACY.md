@@ -85,3 +85,30 @@ SSRF/DNS/redirect variants, broker-dispatch attempts and job replay must fail at
 intended boundary. Scan generated contracts, web/server bundles, compressed browser
 artifacts, database records, report formats, runtime files, logs and telemetry.
 Do not expose secrets in screenshots or commit real account fixtures.
+
+## P2-05 source legality, exact state and bounded projections
+
+Authorize calculation owner/account and analytics read before capture or retained
+result decoding; recheck actual dependency membership and pinned plus current
+license permissions before publication, replay, cursor/cache reuse and 304. Direct
+owned constituent diagnostics require analytics read/display; dependent account/run
+reads additionally require portfolio read and exact source membership. No current
+permission, expired state or guessed source identity is synthesized by a numeric
+fallback. Internal registration uses the existing analytics-read/targets-write
+conventions with idempotency/audit, not a new public write endpoint.
+
+Effective validity and trusted first knowledge are separate. Caller dates cannot
+backdate receipt; sources effective after valuation or known after cutoff fail
+selection. Complete provider request/subject/continuation binding is mandatory;
+F1 payload cannot be relabeled as same-owner F2. Private exact Decimal coefficient
+strings carry licensed information and are not a logging/public-schema exemption.
+
+Canonical compositions are the retained truth. Durable pair/common payloads and
+parent bindings are charged collection-owned projections, under shared 64/250,000
+limits and original TTL, not a permanent run cache. Source expiry/revocation denies
+all accesses immediately even for live collections. Inventory and purge every
+canonical input/result/exact-state, normalized/source/path and derived copy, charging
+bounded indexed physical row/byte work as well as shared capture/run budgets. No
+unbounded cascade, per-family budget reset or purge-complete marker while forbidden
+payload remains. Keep indexed pending work and only legally permitted tombstones/
+digests/audit. Source retention is never extended by a collection or MCP Top query.

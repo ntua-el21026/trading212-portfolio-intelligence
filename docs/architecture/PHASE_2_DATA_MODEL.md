@@ -41,7 +41,12 @@ Authoritative arithmetic explicitly uses local precision 80 and `ROUND_HALF_EVEN
 it never depends on or mutates the process-global Decimal context. Declared
 stored output quantum is `1e-18`. Exact target path products and their sums use
 an expanded local context of 160 digits before that output boundary.
-Display rounding does not modify stored results.
+Display rounding does not modify stored results. The narrow
+[ADR-0017](../adr/ADR-0017-DECIMAL256-EXACT-XRAY.md) exception retains role-bounded
+integral Decimal coefficients in private X-ray exact state under local Decimal256;
+public/normalized values remain Q18 NUMERIC(38,18). Validate shape/sign/role bounds
+before arithmetic, including zero, and reject post-round carry overflow. No global
+numeric codec or Money boundary is widened.
 
 Instants use aware UTC `TIMESTAMPTZ` through the existing `UTCDateTime` boundary;
 naive instants fail. `DATE` is reserved for economic/session dates and carries a
@@ -267,11 +272,11 @@ normalized component/FX/license dependencies, with no invented provider/license.
 | `fund_definitions` | Canonical fund instrument FK, fund key/type, share-class association, provider mapping and entitlement references |
 | `constituent_snapshots` | Fund/provider/license FKs, effective/source/retrieval dates, source version/digest, stated coverage, known/unresolved/cash weights and freshness; immutable |
 | `constituent_holdings` | Snapshot FK, stable source constituent key, exact weight, optional canonical instrument/entity mapping FK, source currency and explicit mapping state/confidence; unique snapshot/source key |
-| `xray_runs` | Account/portfolio-snapshot FKs, valuation/cutoff times, method/schema version, absolute/normalized-view mode, digest, direct/fund/classification coverage, unresolved weight and quality |
+| `xray_runs` | Sealed capture/shared-analytics-run envelope; owner/account/snapshot, valuation/cutoff/currency, xray_v1 1.1.0 and numeric/traversal/policy/schema identities, digest, direct/fund/classification coverage, unresolved weight and quality. View/dimension/normalization/fund subset is not calculation identity |
 | `xray_run_sources` | X-ray FK and pinned constituent snapshot, relationship version or classification-assignment FK; one explicit source per edge used |
 | `xray_exposures` | Run FK, entity/classification/unresolved bucket, exact direct/indirect/effective weights and values/currency, confidence and coverage |
-| `xray_exposure_paths` | Exposure FK, source position, fund/constituent and mapping relationship references, exact path weight; distinguishes the direct position from its look-through path |
-| `etf_overlap_pairs` | Run FK, canonically ordered pair of funds, exact overlap weight, common entity count, covered/unresolved weights and quality; one row per unordered pair |
+| `xray_exposure_paths` | Run FK and stable terminal path key; exactly one real captured snapshot-position or snapshot-cash root FK, ordered fund/constituent/mapping edges, independent exact relative R and nullable monetary N, terminal entity/cash/unresolved state. Bucket associations do not duplicate a physical path |
+| `etf_overlap_pairs` | Bounded materialized projection keyed by run, canonical unordered fund pair and numeric policy; full overlap/common-count/unit-coverage/cash/unresolved summary. Active collection ownership/reservation is required; not an ever-growing canonical pair cache |
 
 The source catalog is an identity layer, not a mutable latest-snapshot pointer.
 Benchmark command component `source_id` fields reference this catalog, never an
@@ -296,6 +301,55 @@ paths; it does not add both the fund wrapper and all its constituents to company
 exposure. Unknown constituent weight remains an unresolved bucket, not cash and
 not a redistributed known holding. Receipt ratios describe security-unit
 mapping; already valued exposure is not multiplied by that ratio again.
+
+### P2-05 capture, exact state and projection ownership
+
+| Supporting aggregate | Required typed binding |
+|---|---|
+| `fund_source_mappings` | Immutable fund-definition/provider/license/provider-fund-key/effective-interval/evidence binding; independent of price/benchmark source-series kinds |
+| `entity_evidence_versions`, `classification_snapshots` | Versioned owned actual subjects, taxonomy, effective interval, trusted knowledge/receipt, closed evidence and revision order |
+| `xray_policy_versions` | Immutable source/identity/classification/freshness/quality/threshold/traversal/numeric/schema/limit policies |
+| `xray_input_snapshots`, `xray_input_positions`, `xray_input_cash`, `xray_input_dependencies` | Complete snapshot/currency/cutoff/valuation capture; real snapshot row IDs, saved Money/FX evidence and closed typed same-subject dependencies |
+| `xray_input_source_selections` | Same-input subject/time/policy decision, selected dependency or closed missing/ambiguous reason and bounded alternatives |
+| `xray_path_edges`, `xray_exposure_path_buckets` | Ordered same-run evidence edges and path-to-dimension associations; one economic path counted once |
+| `xray_fund_compositions`, `xray_fund_entities` | One header per canonical held fund with the chosen real position-root key, independent unit cash/unknown/coverage and consolidated exact entity coefficients; projections are Q18, not replacement exact truth |
+| `etf_overlap_entities`, `xray_collection_bindings` | Pair/common projection rows and bounded active collection ownership, exact ordered membership, run/pair/source/sort/selector pin and original expiry |
+| `xray_command_identities`, `xray_audit_events`, `xray_retention_events` | Atomic idempotent internal results, publication audit and licensed-copy tombstones with safe fixed references |
+
+These specify required storage roles, not implemented ORM classes or a reserved
+migration. Extend shared analytics-run kind/source XORs, constituent/enrichment
+receipt and expiry references additively; never disguise X-ray as a historical
+kind or rewrite shipped migrations. Composite owner/account/subject FKs, sealed
+immutability and source-expiry indexes apply to every child. Reuse shared canonical
+analytics-run storage and inventory every duplicated capture/result payload.
+
+The closed private exact-state codec decodes integral strings directly to Decimal,
+with at most 250 digits and narrower ADR role bounds; no exponent/plus/leading-zero/
+negative-zero spellings. Paths own their R/N and aggregates reference semantic rows.
+Canonical result digest excludes itself and generated/current-access envelopes.
+Publication independently verifies captured input, exact result and normalized rows
+and reauthorizes dependencies before sealing. Input and result each have a 32 MiB
+cap; count complete inputs before loading, never sample an oversized capture.
+
+Canonical compositions serve every requested pair. <=496 is per request, not
+lifetime storage: durable pair/common rows require active collection ownership.
+Each persisted member reserves the shared 250,000-member budget and every binding
+uses the shared 64-collection limit. Common-entity parents retain bounded binding
+references; no hidden permanent header/payload cache. Collection expiry removes
+unreferenced projections; MCP Top may be transient. Same-run regeneration preserves
+identity/value without new source selection or traversal. TTL is unchanged.
+
+Source expiry denies access immediately and initiates indexed physical purge of
+all input/result/exact-state, normalized/use/path, pair/common/binding copies.
+Share 100-capture/100-run budgets across the existing expiry invocation and impose
+additional explicit physical-row/byte budgets; one run counter or cascading delete
+does not bound copy removal. Charge all visited/removed payload work, retain pending
+indexed tasks, and do not complete source purge while forbidden copies remain.
+Only permitted tombstones/digests/audit survive. ADR-0017 fixes separate shared
+ceilings of 4,096 rows and 64 MiB payload bytes inspected and removed per invocation,
+with indexed batches <=512 and the remaining byte budget. It also fixes 256 identity
+decision IDs and 256 source reference IDs per path, four fund edges and one scalar
+classification assignment per projected dimension; no material proof is truncated.
 
 ## 5. Reports, exports, and durable jobs
 

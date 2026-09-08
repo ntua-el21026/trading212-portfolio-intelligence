@@ -116,3 +116,37 @@ metrics and rendered/exported artifacts with dynamically assembled synthetic
 secret and URL canaries. Preserve safe evidence with exact source SHA/image IDs.
 Do not infer production throughput, credentialed provider connectivity or public
 MCP readiness from synthetic local acceptance.
+
+## P2-05 bounded projection and exact-source purge lifecycle
+
+Persist canonical fund compositions. Generate at most 496 pairs for one 2..32-fund
+request, without a lifetime pair cache. Pair/common payloads must be owned/referenced
+by active collection bindings and charge the shared 64 collections/250,000 members.
+Common-entity parents also reserve bounded binding references. First/empty requests
+reserve capacity; exact membership reuse keeps original TTL (default 3600 seconds,
+existing 60..86400 range). MCP Top may remain transient. Expired references remove
+unreferenced projection payloads; deterministic same-run regeneration uses canonical
+compositions, with no source reselection or traversal.
+
+Exact-source expiry denies read/replay/cursor/304 immediately regardless of collection
+TTL. Extend the existing indexed expiry invocation; share its 100-capture/100-run
+budgets across families and add explicit physical projection-row and payload-byte
+limits. Charge rows/bytes visited and removed across bindings, pair/common payloads,
+normalized/source rows and every copied canonical/exact-state document. Batches are
+bounded and indexed. Avoid unbounded cascading deletes and parent markers that
+leave child licensed payloads unaccounted for. Exhaustion retains indexed pending
+work and the exact source remains purge-pending until all forbidden copies are gone.
+Permitted tombstones/digests/audit can remain; replay after required payload deletion
+is unavailable. ADR-0017 fixes separate shared ceilings of 4,096 physical rows
+inspected and removed, and 64 MiB logical payload bytes inspected and removed,
+per invocation. Indexed batches are <=512 and limited by remaining bytes; inspect
+bounded size metadata before loading. Payload clearing counts as removal. Path
+proofs allow 256 identity decision IDs and 256 source reference IDs, four complete
+fund edges and a scalar classification assignment per dimension. Singleton output
+must fit 2 MiB without dropping material proof.
+
+Observe sanitized counts/bytes/pending outcomes without raw owner/source IDs or
+financial payloads. Retention tests must prove budget accounting, forward progress,
+source-denied-before-cleanup, collection expiry, no uncharged lifetime growth and
+restart of pending purge work. No new stack, global data cache or production
+capacity claim follows from this design amendment.

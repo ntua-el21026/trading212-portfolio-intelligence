@@ -20,20 +20,25 @@ reports consume the same persisted application-service calculations.
 
 Financial wire inputs are finite decimal strings, never JSON numbers or binary
 floats. Exact integers are allowed internally for integer-valued domain data.
-Money, quantity, price, FX, weights, ratios, and stored results retain
-`NUMERIC(38,18)`. Reject excess input scale, more than 20 integer digits,
+Money, quantity, price, FX, weights, ratios, and public/normalized results retain
+`NUMERIC(38,18)`. X-ray private exact-state coefficients are the narrowly bounded
+retention exception in [ADR-0017](../adr/ADR-0017-DECIMAL256-EXACT-XRAY.md);
+they are not public financial values or a global numeric-decoder relaxation. Reject excess input scale, more than 20 integer digits,
 and overflow before persistence.
 Every amount has a currency. Use a fixed local Decimal context of precision 80
 with `ROUND_HALF_EVEN`, and a versioned output quantum of `1e-18`, denoted `Q`.
 Sorting, accumulation order, rounding boundaries, and iteration limits below are
-part of the method. Ambient Decimal context and wall-clock execution duration
+part of the method. The closed X-ray coefficient algebra uses the fully specified
+local Decimal256 context in ADR-0017; ordinary precision 80 and target precision 160 stay unchanged.
+Ambient Decimal context and wall-clock execution duration
 must not alter results. Presentation rounding never feeds a calculation.
 
 The method identifiers are `drift_v1`, `contribution_weighted_drift_v1`,
 `performance_v2`, `benchmark_comparison_v1`, `income_v1`,
 `attribution_bridge_v1`, `cash_flow_intelligence_v1`, `xray_v1`, `report_manifest_v1`, and
-`alert_evaluation_v1`. Each is registered with semantic version `1.0.0` for this
-contract. Existing Phase 1 XIRR, Modified Dietz, and snapshot-subperiod TWR
+`alert_evaluation_v1`. Except `xray_v1` at `1.1.0` with numeric policy
+`xray_decimal256_exact_q18_v1`, each remains registered at semantic version
+`1.0.0`. Old immutable results retain their actual versions; do not relabel them. Existing Phase 1 XIRR, Modified Dietz, and snapshot-subperiod TWR
 primitives retain their existing identifiers and version `1.0.0`; an enclosing
 Phase 2 calculation records both its own method and the primitives used.
 Changing a formula, bound, ordering, quality gate, or rounding rule creates a
@@ -59,8 +64,8 @@ inside that document; a different cutoff is a different request.
 
 Availability and quality are separate: unavailable/unsupported/failed are not
 zero; fresh/stale/partial/estimated/unreconciled are not interchangeable.
-Quality is evaluated per metric from its actual dependencies. Request
-`coverage_policy` is `require_complete` by default or explicitly
+Quality is evaluated per metric from its actual dependencies. Where exposed by
+the closed request, `coverage_policy` is `require_complete` by default or explicitly
 `allow_degraded`; the latter cannot invent a material missing value. A complete cash
 series does not make an incomplete price series complete. Default financial
 decisions require complete material valuation, mapping, currency, flow, and
@@ -538,7 +543,10 @@ A separately requested normalized known-only comparison view must disclose
 its discarded mass and cannot replace the default absolute-exposure view.
 
 Nested funds recurse for at most four fund edges and 10,000 visited exposure
-paths. Detect cycles by path identity. At a bound, cycle, missing fund snapshot,
+paths across the complete snapshot, including position/cash roots and zero-valued
+funds. Detect cycles on the current ancestry path; repeated diamond paths remain
+independent. Reserve every pending branch before expansion; reject an initial
+root inventory that cannot fit, rather than selecting a favorable prefix. At a bound, cycle, missing fund snapshot,
 or unsupported instrument, preserve the entire unexpanded path weight in an
 unresolved bucket with its reason. The result is partial, not falsely complete.
 Aggregate paths in stable source/entity-key order; quantities of unlike
@@ -578,6 +586,87 @@ F1/F2 known overlap is 0.50. Portfolio duplicated exposure is
 that same entity; their source paths remain inspectable. Marking F1 stale
 does not change these arithmetic values, but makes the result stale/partial
 according to its pinned quality policy. It cannot be advertised as current.
+
+### 6.1 Exact coefficients, bases and metric states
+
+[ADR-0017](../adr/ADR-0017-DECIMAL256-EXACT-XRAY.md) supplies the complete closed
+precision proof, input/zero/role bounds, trap policy, exact Decimal divmod HALF_EVEN,
+post-round NUMERIC overflow and residual inequalities. At k<=4 fund edges use
+M=amount*10^18, a=weight*10^18, R=product(a)*10^(72-18k), N=M*R. Relative composition
+has denominator 10^72; money has denominator 10^90. R exists independently of M.
+Missing reporting valuation/FX is absent money, never M=0. Both child-unit and
+available-money conservation are mandatory before rounding, including M=0 roots.
+
+Let D be the complete root reporting-value numerator, and K the known noncash
+numerator for the selected dimension. Absolute weights divide by D; D<=0 or an
+unavailable complete basis makes the dependent ratio unavailable. Known-normalized
+comparisons divide by that dimension's K; K=0 is unavailable. Keep absolute cash,
+unknown and discarded mass visible. Company concentration excludes cash numerators
+without renormalizing D. Consolidate entity N before H=sum(N_e*N_e); HHI=H/(D*D).
+Fixed top1/5/10/25/50 sums rank exact N with stable entity-key ties. Duplication
+consolidates each original position per entity before sum-minus-cross-position-max.
+Do not aggregate unlike quantities or apply saved FX/receipt ratios twice.
+
+Threshold policies pin ID/version/source, configured/unconfigured state, top1/top5/
+HHI limits in [0,1] and each strict `gt` or inclusive `ge` operator. Compare exact
+N*10^18 to T*B, never rounded displays. A partial lower bound may prove a breach;
+an inconclusive partial comparison is unavailable, not false. An unavailable
+threshold result does not erase a computable overlap lower-bound value. Positive
+sub-Q18 unknown mass remains unknown; independent signed display residuals never
+repair or redistribute mass. No default concentration limit or P2-07 alert is added.
+
+### 6.2 One run, representative funds and closed interfaces
+
+Calculate once over complete immutable inputs. Dimension, normalized presentation,
+selected fund set, Page, Top and view are projections, not new calculation inputs.
+Select each exact held canonical fund's lowest tagged real snapshot-position UUID
+key, including zero-valued roots, before considering coverage or value. Retain that
+occurrence's unit composition from the same global traversal. No best-root fallback,
+second traversal, cross-root union or multiplication into another monetary root.
+Real snapshot-cash rows retain their own tagged identities. The versioned traversal
+policy `xray_position_then_cash_uuid_v1` orders positions before cash, then lowercase
+real row UUIDs lexically within each kind; do not use ASCII tag or input order.
+
+For two valid unit bases, consolidate entities then sum min(R_a,e,R_b,e)/10^72.
+An incomplete legitimate basis yields a known-overlap lower bound, including zero
+with unknown actual overlap; fully supported disjoint funds can yield exact zero.
+Missing monetary FX alone does not remove an independent authorized unit basis.
+An unestablishable/expired basis is unavailable; license/owner/nonheld-ID denial
+preserves the normal error, never a successful zero fallback. Q18 can round a lower
+bound upward by Q/2, so it is a displayed approximation; exact comparisons use R.
+
+X-ray pins its completeness/degraded metric gates in the immutable quality policy;
+no undeclared public coverage-policy argument is introduced.
+
+The closed shared domain records are `XrayPolicyVersion`, `XrayInput`,
+`XrayPosition`, `XrayCash`, tagged `RootRef`, `XrayCalculation`, `FundComposition`,
+`XrayExactState`, `XrayMoneyMetric` and `XrayRatioMetric`. Pin complete snapshot/
+owner/account/currency/cutoff, typed dependencies, provider/identity/classification/
+freshness/quality/threshold/traversal policy versions and method/schema identity.
+Current access/generated envelopes do not enter semantic bytes. `content_digest`
+is derived from the complete canonical result excluding itself.
+
+```text
+calculate_xray(value: XrayInput) -> XrayCalculation
+verify_xray_result(value: XrayInput, result: XrayCalculation) -> None
+calculate_overlap_pairs(result: XrayCalculation,
+                        fund_ids: tuple[UUID, ...]) -> tuple[CanonicalOverlapPair, ...]
+calculate_common_entities(result: XrayCalculation,
+                          pair: CanonicalFundPair) -> CanonicalCommonEntities
+company_exposure_basis(result: XrayCalculation) -> CompanyExposureBasis
+encode_xray_input(value: XrayInput) -> bytes
+decode_xray_input(payload: bytes) -> XrayInput
+encode_xray_result(value: XrayCalculation) -> bytes
+decode_xray_result(payload: bytes) -> XrayCalculation
+```
+
+These are required implementation seams, not existing implemented exports. Pair
+helpers use retained compositions only; neither source selection nor traversal is
+repeated. Same-run A/B values/evidence survive adding C or changing presentation.
+Changed actual snapshots need not select the same representative. Public row/run
+UUIDs and calculation time belong to the stored envelope; path identities and
+exact-state/provenance are semantic. Closed codecs validate role bounds and typed
+states; independent verification checks both normalized and retained exact truth.
 
 ## 7. Private reports and exports
 

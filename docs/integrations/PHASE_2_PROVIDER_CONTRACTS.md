@@ -208,3 +208,47 @@ Provider selection must not change application/domain methods or weaken the
 architecture checker. Local Compose acceptance executes real persistence,
 worker restart, replay ingestion, reporting and in-app notification paths;
 unconfigured real-provider status is recorded separately from local completion.
+
+## P2-05 constituent and classification publication contract
+
+Keep fund definitions and immutable fund_source_mappings separate from price/
+benchmark market_source_series. `ConstituentRequest.fund_series_id` retains its
+existing spelling but binds an immutable fund source-mapping ID. ConstituentPage
+and ClassificationPage echo the complete typed request, including original subject,
+effective_at, source_cutoff_at and continuation; classification requests additionally
+bind the exact 1..100 instrument set and taxonomy/version. Requested and actual
+snapshot effective dates are distinct fields. Older eligible data can be stale;
+future-effective data or first knowledge after cutoff is excluded.
+
+The store assigns trusted first_observed_at/receipt; caller economic dates cannot
+backdate knowledge. Select sources effective at/before valuation and known at/before
+cutoff, with applicable validity intervals and pinned provider/revision/ambiguity
+policy. Explicit eligible entity classification wins; otherwise applicable evidenced
+instrument assignments must agree for that entity/taxonomy/version. No issuer-parent,
+exchange-country, ticker-only or listing-to-economic-currency inference. Receipt
+ratios do not multiply already valued money. Corrections append and restatements
+identify their changed cutoff/version; current latest never retargets replay.
+
+Require first continuation null, each next request equal the previous response
+continuation, no cycles/duplicates and one final null, at most 100 pages of 1,000
+rows and 100,000 total rows. Validate the entire chain before atomic seal: owner,
+provider, license, fund mapping, actual normalized subjects, source revision/
+provenance, unique row keys and coverage. An echo cannot relabel same-owner F1 as
+F2. Nonnegative exact weights must sum <=1; known/cash/unresolved header totals
+reconcile to row states and implicit 1-sum missing mass is retained exactly once.
+A text evidence key alone is not a registered identity relationship.
+
+Authorized internal principal-first registration/ingestion uses analytics:read plus
+targets:write, keyword idempotency_key/correlation_id, closed typed payloads and
+atomic header/children/digest/receipt/command-result/audit publication. Same key and
+payload replays one result; changed payload conflicts. A separate identical-economic
+retrieval reuses the source and appends one receipt without changing first knowledge
+or retention. Invalid chains create no partial source or successful command result.
+Workers authorize before typed provider fetch; persistence accepts fetched typed
+pages and has no transport dependency. Read endpoints use retained data only.
+
+Check pinned and current store/display/report/export permissions at their respective
+boundaries. Expiry/revocation denies immediately even during delayed physical purge.
+Inventory X-ray canonical/exact-state, normalized and derived projection copies;
+share existing expiry budgets and charge additional bounded physical row/byte work.
+No provider credentials or raw payloads enter domain inputs, logs or public output.

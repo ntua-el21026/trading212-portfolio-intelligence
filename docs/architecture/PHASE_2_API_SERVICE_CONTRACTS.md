@@ -590,6 +590,91 @@ by stable canonical ID, with explicit residual/unresolved rows preserved.
 Allowed filters are only those named above. Time filters use inclusive start,
 exclusive next-day end for date-to-UTC conversion, documented before hashing.
 
+### P2-05 closed X-ray requests and metrics
+
+The four existing GETs are `/accounts/{account_id}/effective-exposure`,
+`/accounts/{account_id}/etf-overlap`, `/constituent-snapshots/{id}` and its
+`/holdings` child, relative to `/api/v1`. Keep the existing two MCP reads and
+`ui://trading212-portfolio/xray-v1.html`; no public ingestion/catalog route or
+additional broker capability is introduced. The principal-first `XrayService`
+methods are `get_effective_exposure`, `get_etf_overlap`, `get_constituent_snapshot`
+and `list_constituent_holdings`, each with its named closed query/result type.
+
+Account calculations require `portfolio:read` and `analytics:read`. Direct owned
+constituent diagnostics require `analytics:read` and current display permission,
+without inventing an account. Dependent diagnostics require account_id and run_id
+together, portfolio scope and exact owned run/source membership. License checks
+apply to both pinned and current permissions, before decode/reuse/304, and again
+before publication. No activity-only reference leaks under these read scopes.
+
+An economic `XrayRunRequest` pins snapshot_id, source_cutoff_at, currency selection
+and optional run_id. HTTP always supplies explicit reporting_currency. MCP overlap
+resolves the immutable snapshot's saved reporting currency inside that same
+principal/account-authorized service call; it adds no currency argument, gateway
+lookup or current-account preference. Once resolved, currency mode is not semantic
+identity. Different reporting currency needs eligible sourced FX; saved money
+currency is never inferred from listing currency or multiplied by a receipt ratio.
+
+`EffectiveExposureQuery` is the economic request plus signed Page and a closed union:
+`exposures` (default company dimension, normalized_known_only=false), `paths` (same
+selectors and optional exposure_id), or `held_funds` (no dimension/normalization/
+exposure selectors). Unfiltered paths page every terminal entity/cash/unresolved
+path; an exposure ID narrows membership without changing totals. HeldFunds pages
+all canonical held funds, including missing mappings with null source IDs.
+
+`EtfOverlapQuery` is `pairs` with 2..32 unique held fund IDs, or `common_entities`
+with that set and one distinct left/right pair in it, plus signed Page. Use repeated
+fund_ids query keys, never CSV. `McpTopPair` is internal-only and cannot be selected
+by HTTP. Paths/common initial detail requests require run_id; a continuation may
+supply the same retained pin. Explicit run/cursor/snapshot/cutoff/currency/selector
+values must agree. Authenticate and resolve cursor membership before selecting a
+new capture. Reject wrong-branch fields instead of ignoring them.
+
+Closed `XrayMoneyMetric`/`XrayRatioMetric` carry typed value/null, availability,
+reason, quality/dependencies and exact/lower-bound semantics. `XrayContext` carries
+account/snapshot/run/input/digests, valuation/cutoff/resolved currency,
+`xray_v1` 1.1.0, `xray_decimal256_exact_q18_v1`, pinned policies, calculated_at,
+current access, safe typed source preview and exact omissions. Private exact-state
+coefficients are absent from public schemas. Numeric wire bounds remain unchanged.
+
+Every exposure/path/held-fund page repeats its invariant PortfolioSummary; exposure
+and path pages also repeat DimensionSummary. Exposures carry direct/indirect/
+effective money/weights, optional normalized metric, dimension/quality and complete
+path counts. Each common-entity page repeats its full pair summary, independent
+unit coverage/cash/unknown and selected-set total. MCP Top returns that same complete
+pair plus exact total/returned/omitted counts and omitted common weight. Rank exact
+coefficients, not rounded displays; totals never come from visible rows.
+
+One pure full-snapshot calculation supplies all projections; view, dimension,
+normalization, selected fund set, Page and Top do not create a new run. Pair A/B is
+unchanged by adding C on the same immutable run. Pin representative root and paths;
+zero money alone does not destroy a valid unit composition. A legitimate unresolved
+unit yields a computable partial lower bound, possibly zero, not proof of disjoint
+funds. Invalid/unauthorized/expired bases keep failure/unavailable semantics. An
+inconclusive partial threshold is unavailable even when overlap has a bound value.
+
+Capture limits are 10,000 positions, 32 currencies, 256 constituent candidates,
+100,000 total constituent rows, 100,000 combined identity/classification evidence
+rows and 100,000 selected uses; canonical input/result each <=32 MiB. Complete root
+inventory including cash must fit the global 10,000-path bound. Public responses
+remain <=2 MiB, Page default25/max100, cursor<=2048, MCP Top default25/max50. No
+successful truncation: oversized output returns RESULT_TOO_LARGE; smaller requested
+limits preserve membership and reachability. A maximal legal one-row path must fit
+with at most 256 identity decision IDs and 256 source reference IDs, four complete
+fund edges and one scalar classification assignment, as fixed by ADR-0017.
+
+Pair/common payloads are collection-owned projections under shared 64/250,000
+capacity and original TTL (default 3600 seconds, existing 60..86400 range). <=496
+pairs is per request, not a lifetime run cache. Every persisted member is charged;
+bounded parent bindings cannot accumulate outside capacity. MCP Top may be transient.
+On expiry, remove unreferenced projections. Exact-source expiry overrides live
+collections immediately and budgets physical payload purge separately. ETag hashes
+the full currently authorized representation, not only financial content_digest.
+
+P2-08 owns intelligence-data-quality and actual company-effective-weight enrichment;
+company drift remains `effective_exposure_target_unavailable` without a separately
+pinned entity-target basis. P2-06 report and P2-07 alert acceptance remain separate.
+
 ## 9. Canonical parity and generated contracts
 
 The [MCP registry](../integrations/PHASE_2_MCP_TOOL_REGISTRY.md) maps each tool to

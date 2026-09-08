@@ -41,7 +41,11 @@ capabilities; its sealed transport continues to reject unknown input before I/O.
 - Reuse exact numeric and UTC value boundaries. Perform calculations with the
   existing fixed 80-digit Decimal context and explicit persistence rounding.
   Bounded hierarchy products use the local 160-digit context in ADR-0010 and
-  retain a disclosed rounding residual.
+  retain a disclosed rounding residual. The narrow
+  [ADR-0017](adr/ADR-0017-DECIMAL256-EXACT-XRAY.md) exception uses a fresh local
+  Decimal256 context and role-bounded private exact coefficients for `xray_v1`
+  1.1.0 / `xray_decimal256_exact_q18_v1`, with exact Q18 HALF_EVEN publication.
+  Ordinary precision 80, target precision 160 and public/normalized NUMERIC(38,18) remain unchanged.
 - Publish immutable analytical inputs and version every methodology. Keep source
   time, retrieval time, calculation time, and valuation cutoff distinguishable.
 - Normalize owner-scoped entities and foreign keys. Persist completed jobs and

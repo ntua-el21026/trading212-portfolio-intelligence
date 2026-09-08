@@ -58,6 +58,13 @@ Turn the trusted canonical history into a differentiated portfolio intelligence 
 - coverage/confidence/unresolved exposure;
 - concentration thresholds and explainable drill-down.
 
+The authority for this package is [ADR-0017](../adr/ADR-0017-DECIMAL256-EXACT-XRAY.md)
+and Methods section 6: `xray_v1` 1.1.0 / `xray_decimal256_exact_q18_v1`, independent
+unit/money conservation, deterministic real-root representatives and retained exact
+state. Pair/common projections are collection-owned and physically purge-bounded;
+496 limits one request, not lifetime storage. Four GETs/two MCP reads stay fixed.
+This design amendment does not begin P2-05 implementation or claim test acceptance.
+
 ### P2-06 — Reports and exports
 
 - deterministic PDF monthly/quarterly/annual reports;

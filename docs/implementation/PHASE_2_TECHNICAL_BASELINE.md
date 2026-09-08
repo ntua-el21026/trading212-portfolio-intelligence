@@ -59,6 +59,14 @@ fixed 80-digit Decimal context, and documented rounding at persistence/serializa
 The bounded target hierarchy uses a local 160-digit context for exact products
 across at most eight 18-decimal weights; this does not change the global context.
 Quantized leaf weights disclose their residual instead of silently renormalizing.
+[ADR-0017](../adr/ADR-0017-DECIMAL256-EXACT-XRAY.md) adds only the closed X-ray
+Decimal256 coefficient exception: `xray_v1` 1.1.0 with numeric policy
+`xray_decimal256_exact_q18_v1`. Role-bounded private exact-state strings decode
+directly to Decimal; public/normalized fields remain Q18 NUMERIC(38,18). Use exact
+divmod HALF_EVEN, post-carry overflow rejection and explicit zero representation
+bounds. Never route private coefficients through the ordinary numeric decoder or
+mutate global context. Full input/result canonical bytes are each bounded at 32 MiB;
+the derived content digest excludes itself and generated/current-access envelopes.
 Reject binary-float financial input, NaN, infinity, naive time, excessive scale,
 unknown enum values and unbounded strings/collections before application work.
 UUID/source IDs and ordered canonical input hashes identify immutable inputs.

@@ -20,6 +20,14 @@ The language model never performs authoritative portfolio arithmetic. It may sel
 - No implicit conversion from float to Decimal.
 - Aggregation uses full retained precision, then rounds only at declared output/accounting boundaries.
 
+The narrow [ADR-0017](../adr/ADR-0017-DECIMAL256-EXACT-XRAY.md) policy registers
+`xray_v1` 1.1.0 / `xray_decimal256_exact_q18_v1`. Its closed financial coefficient
+operations are Decimal-only in a fresh fully specified local precision-256 context.
+Private exact state uses role-bounded integral Decimal strings, separate from Q18
+public/normalized NUMERIC fields. Ordinary precision 80 and target precision 160 stay unchanged;
+Python integer/Fraction financial arithmetic is test-oracle-only. Reject oversized
+zero representations before arithmetic and canonicalize admitted zero positively.
+
 ## 4. Currency
 
 Every monetary value includes an ISO-4217 currency. Operations obey:
@@ -40,6 +48,11 @@ Default calculation rounding mode is `ROUND_HALF_EVEN` unless a provider/account
 - Allocation residual caused by displayed rounding is reported where material.
 - Optimizer order amounts obey broker/minimum-increment constraints only in Phase 2 output rounding and then recompute post-rounding drift.
 - Currency minor units are presentation/accounting metadata, not a license to discard fractional internal values prematurely.
+
+X-ray rounds once through exact Decimal divmod and doubled-remainder/quotient-parity
+HALF_EVEN. Reject a rounded coefficient >=10^38 after carry, including negative
+outputs. Exact coefficients drive conservation, ranking and thresholds; disclosed
+signed residuals and rounded lower bounds do not replace that proof or invent mass.
 
 ## 6. Time and valuation
 
