@@ -145,3 +145,17 @@ The documented P2-08 multi-account global header/default Compose configuration
 and full-product mobile presentation follow-ups remain outstanding. Report
 parity belongs to P2-06. Local verification reuses one task Compose project,
 starts only required services and removes disposable task outputs at boundaries.
+
+## Initial candidate security finding
+
+Implementation `b9b75ec54fe94fdcec627d8e31ca94700ccb08ad` remains unaccepted.
+Security CI `34340985984` flagged the synthetic policy label as a generic API key.
+Source tracing and an independent review confirmed it is a policy identifier,
+not a credential. A single commit/file/rule/line exception is documented in
+`.gitleaksignore`; the corrected scan passed all 86 reachable commits. CI now
+prints redacted finding details. The in-progress exact local gate was deliberately
+interrupted after 176 integration passes to avoid repeating its remaining work
+before correction. No full-gate acceptance is claimed for that attempt. See the
+[retained finding and correction](evidence/phase-2-p2-05-b9b75ec-failed-security.json).
+The corrected commit still requires all exact-source gates and fresh runtime
+acceptance.

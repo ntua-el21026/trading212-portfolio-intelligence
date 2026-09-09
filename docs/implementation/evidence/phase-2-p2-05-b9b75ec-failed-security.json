@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "recorded_at": "2026-09-09T10:47:22.740778+00:00",
+  "affected_commit": "b9b75ec54fe94fdcec627d8e31ca94700ccb08ad",
+  "package_acceptance": "not_accepted",
+  "failed_workflow": {
+    "id": 34340985984,
+    "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34340985984",
+    "conclusion": "failure",
+    "failed_gate": "repository-secret-scan",
+    "log_sha256": "0be799f700777eb9cffe9f804c9b6a17ea90eac8847826b2d8fc8a20bd88fa28"
+  },
+  "finding": {
+    "rule": "generic-api-key",
+    "file": "apps/worker/src/trading212_worker/xray_seed.py",
+    "line": 143,
+    "fingerprint": "b9b75ec54fe94fdcec627d8e31ca94700ccb08ad:apps/worker/src/trading212_worker/xray_seed.py:generic-api-key:143",
+    "classification": "Verified non-secret synthetic policy label, not a credential or credential derivative.",
+    "verification": "The exact committed line passes synthetic-xray-v1 to XrayPolicyRegistration. register_xray_policy compares/stores that label in XrayPolicyVersionModel.key for account policy identity; it never feeds credential lookup, authentication, signing or network dispatch.",
+    "source_blob_sha256": "82e6a7584c4a3185ed0338448e8ae018b01a420f2ce6fb418d0c7ae30981f8b1",
+    "independent_source_review": "A second agent independently traced the DTO, registration and SQL model; it confirmed the same classification and exact fingerprint scope."
+  },
+  "correction": "Add one exact historical fingerprint exception with owner, reason, scope and review date. Keep every scan rule/path active. Add redacted verbose finding details to the existing CI history scan. Application behavior and fixture labels are unchanged.",
+  "corrected_local_scan": {
+    "tool": "Gitleaks 8.30.1",
+    "image": "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f",
+    "scope": "All 86 reachable commits through affected_commit using the corrected working-tree .gitleaksignore.",
+    "findings": 0,
+    "exit_code": 0,
+    "report_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "log_sha256": "608fafa8175e875d09300961d079d68e0bfeb366af66f010c79789d2c431790a"
+  },
+  "interrupted_local_gate": {
+    "name": "p205-exact-full-01",
+    "exit_code": 2,
+    "duration_seconds": 379.94,
+    "source_unchanged": true,
+    "record_sha256": "f7043410c6f7d1f76f5788732506c0a9476c99c7afca4358dfdaf52e0cf4ba77",
+    "log_sha256": "071c75e6417609e472e4ff9b4c7f83ad64ae574415cfff3ef7c989087cf85e7b",
+    "reason": "Intentionally interrupted after CI secret-scan failure to diagnose serially and avoid duplicate remaining validation; this is not accepted full-gate evidence.",
+    "observed_completed_layers": {
+      "python_unit": 1394,
+      "web_unit": 223,
+      "property": 34,
+      "contract": 114
+    },
+    "partial_integration": {
+      "passed_before_interrupt": 176,
+      "complete": false
+    },
+    "disposable_test_databases_after_exit": 0
+  },
+  "ci_after_correction": "pending exact pushed correction SHA"
+}

@@ -26,3 +26,11 @@ dfe40f67aa60cb53fbac323e8e3905c4995ef241:PROJECT_STATUS.json:generic-api-key:62
 # hashing that Git blob. It is not a credential or a credential derivative.
 # Review trigger: revalidate on every Gitleaks upgrade and by 2026-12-01.
 05d01c7a9a9cb6cc3f351c3adbed2036f02b94a9:docs/implementation/evidence/phase-2-p2-03-e258f54-compatibility.json:generic-api-key:85
+
+# Owner: repository owner and designated security reviewer.
+# Reason/scope: this exact historical fixture fingerprint is the non-secret
+# synthetic-xray-v1 policy label passed to XrayPolicyRegistration and stored as
+# XrayPolicyVersionModel.key. It is not a credential or credential derivative.
+# Review trigger: revalidate on every Gitleaks upgrade, policy fixture changes,
+# and by 2026-12-01.
+b9b75ec54fe94fdcec627d8e31ca94700ccb08ad:apps/worker/src/trading212_worker/xray_seed.py:generic-api-key:143

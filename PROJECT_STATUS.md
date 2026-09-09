@@ -111,6 +111,15 @@ The housekeeping policy requires serial verification, one reused task Compose
 project, and removal of disposable artifacts at stage boundaries while retaining
 source and acceptance evidence.
 
+Initial P2-05 implementation `b9b75ec54fe94fdcec627d8e31ca94700ccb08ad` is
+unaccepted: security CI `34340985984` flagged a verified non-secret synthetic
+policy label. The exact historical fingerprint exception and redacted CI
+diagnostics are documented in the [failed-candidate record](docs/implementation/evidence/phase-2-p2-05-b9b75ec-failed-security.json).
+The corrected local history scan passed all 86 commits. Its exact local full gate
+was deliberately interrupted after 176 integration passes; completed layers and
+interruption evidence are retained, with no full-gate acceptance claimed. The
+corrected candidate requires fresh exact-source validation, CI, scans and runtime.
+
 Source-backed known P2-08 limitations remain: the complete seed now includes four accounts with the X-ray fixture, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.
 
 Phase 3 remains `not_started`.
