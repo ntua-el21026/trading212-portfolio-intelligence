@@ -29,6 +29,7 @@ from .planning_models import PLANNING_MODELS
 from .source_models import SOURCE_MODELS
 from .target_models import TARGET_MODELS
 from .types import ExactNumeric, UTCDateTime
+from .xray_models import XRAY_MODELS
 
 JSON = dict[str, Any]
 
@@ -345,12 +346,14 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "'positions_weight','positions_ticker','portfolios_name','portfolios_updated',"
             "'target_versions','target_events','target_nodes','contribution_plans',"
             "'plan_lines','actual_target_rows','plan_revisions',"
-            "'market_source_status','benchmark_source_status','fx_source_status','price_observations','fx_observations','benchmark_observations','benchmark_defs_name','benchmark_defs_created','benchmark_versions','historical_performance','historical_cash_flows','composite_benchmark_points')",
+            "'market_source_status','benchmark_source_status','fx_source_status','price_observations','fx_observations','benchmark_observations','benchmark_defs_name','benchmark_defs_created','benchmark_versions','historical_performance','historical_cash_flows','composite_benchmark_points','xray_exposures','xray_paths','xray_held_funds','xray_pairs','xray_common_entities','constituent_holdings')",
             name="resource_allowed",
         ),
         CheckConstraint(
             "(resource IN "
-            "('historical_performance','historical_cash_flows','composite_benchmark_points') "
+            "('historical_performance','historical_cash_flows','composite_benchmark_points',"
+            "'xray_exposures','xray_paths','xray_held_funds','xray_pairs',"
+            "'xray_common_entities','constituent_holdings') "
             "AND sort_specification = 'ordinal_asc') OR "
             "(resource = 'activity' AND "
             "sort_specification = 'occurred_at_desc_id_desc') OR "
@@ -397,12 +400,13 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
             "((resource IN ('activity','dividends','positions_market_value',"
             "'positions_weight','positions_ticker','contribution_plans','plan_lines',"
             "'actual_target_rows','plan_revisions','historical_performance',"
-            "'historical_cash_flows') "
+            "'historical_cash_flows','xray_exposures','xray_paths','xray_held_funds',"
+            "'xray_pairs','xray_common_entities') "
             "AND broker_account_id IS NOT NULL) OR "
             "(resource = 'instruments' AND broker_account_id IS NULL) OR "
             "resource IN ('portfolios_name','portfolios_updated','target_versions',"
             "'target_events','target_nodes',"
-            "'market_source_status','benchmark_source_status','fx_source_status','price_observations','fx_observations','benchmark_observations','benchmark_defs_name','benchmark_defs_created','benchmark_versions','composite_benchmark_points'))",
+            "'market_source_status','benchmark_source_status','fx_source_status','price_observations','fx_observations','benchmark_observations','benchmark_defs_name','benchmark_defs_created','benchmark_versions','composite_benchmark_points','constituent_holdings'))",
             name="account_scope_match",
         ),
         CheckConstraint(
@@ -1081,4 +1085,5 @@ ALL_MODELS = (
     *PLANNING_MODELS,
     *SOURCE_MODELS,
     *HISTORICAL_MODELS,
+    *XRAY_MODELS,
 )

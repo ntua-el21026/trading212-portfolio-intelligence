@@ -245,6 +245,9 @@ def _serve_fixture(database_url: str) -> None:
     historical = os.environ.get("T212PI_E2E_HISTORICAL", "0")
     if historical not in {"0", "1"}:
         raise RuntimeError("The historical browser fixture selector must be 0 or 1.")
+    xray = os.environ.get("T212PI_E2E_XRAY", "0")
+    if xray not in {"0", "1"}:
+        raise RuntimeError("The X-ray browser fixture selector must be 0 or 1.")
     migration_config = Config(str(_REPOSITORY_ROOT / "alembic.ini"))
     migration_config.set_main_option("script_location", str(_REPOSITORY_ROOT / "migrations"))
     migration_config.set_main_option("sqlalchemy.url", database_url)
@@ -253,6 +256,14 @@ def _serve_fixture(database_url: str) -> None:
     asyncio.run(seed(database_url, app_environment="test"))
 
     engine = create_database_engine(database_url)
+    if xray == "1":
+        from trading212_worker.xray_seed import seed_xray_scenario
+
+        try:
+            asyncio.run(seed_xray_scenario(create_session_factory(engine), app_environment="test"))
+        except BaseException:
+            engine.dispose()
+            raise
     identity = build_synthetic_identity()
     scenario_time = max(
         SEED_TIME,

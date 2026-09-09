@@ -552,6 +552,7 @@ class SourceSnapshotReference(SourceOwned):
     fx_snapshot_id: Mapped[UUID | None] = mapped_column()
     benchmark_snapshot_id: Mapped[UUID | None] = mapped_column()
     corporate_action_snapshot_id: Mapped[UUID | None] = mapped_column()
+    constituent_snapshot_id: Mapped[UUID | None] = mapped_column()
 
 
 def snapshot_references() -> tuple[object, ...]:
@@ -559,11 +560,11 @@ def snapshot_references() -> tuple[object, ...]:
         owned(),
         *(
             owner_fk(f"{kind}_snapshot_id", f"{kind}_snapshots")
-            for kind in ("price", "fx", "benchmark", "corporate_action")
+            for kind in ("price", "fx", "benchmark", "corporate_action", "constituent")
         ),
         CheckConstraint(
             "num_nonnulls(price_snapshot_id, fx_snapshot_id, benchmark_snapshot_id, "
-            "corporate_action_snapshot_id) = 1",
+            "corporate_action_snapshot_id, constituent_snapshot_id) = 1",
             name="snapshot_xor",
         ),
     )
@@ -593,13 +594,40 @@ class SourceExpiryEventModel(SourceSnapshotReference):
         *snapshot_references(),
         *(
             UniqueConstraint(f"{kind}_snapshot_id")
-            for kind in ("price", "fx", "benchmark", "corporate_action")
+            for kind in ("price", "fx", "benchmark", "corporate_action", "constituent")
         ),
     )
     removed_at: Mapped[datetime] = mapped_column(UTCDateTime())
     removed_observation_count: Mapped[int] = mapped_column(Integer)
     content_digest: Mapped[str] = mapped_column(String(64))
     reason: Mapped[str] = mapped_column(String(40))
+
+
+class SourceRetentionWorkModel(SourceSnapshotReference):
+    """Exact-source pending authorization and counters across bounded expiry calls."""
+
+    __tablename__ = "source_retention_work"
+    __table_args__ = (
+        *snapshot_references(),
+        *(
+            UniqueConstraint(f"{kind}_snapshot_id")
+            for kind in ("price", "fx", "benchmark", "corporate_action", "constituent")
+        ),
+        CheckConstraint(
+            "phase IN ('copies','observations','coverage','complete')",
+            name="phase_allowed",
+        ),
+        CheckConstraint("removed_observation_count BETWEEN 0 AND 100000", name="removed_bound"),
+        CheckConstraint("(phase='complete') = (completed_at IS NOT NULL)", name="completion_state"),
+        CheckConstraint("content_digest ~ '^[0-9a-f]{64}$'", name="content_digest_format"),
+        CheckConstraint("completed_at IS NULL OR completed_at >= started_at", name="time_order"),
+        Index("ix_source_retention_pending", "owner_id", "phase", "id"),
+    )
+    started_at: Mapped[datetime] = mapped_column(UTCDateTime())
+    content_digest: Mapped[str] = mapped_column(String(64))
+    phase: Mapped[str] = mapped_column(String(20), default="copies")
+    removed_observation_count: Mapped[int] = mapped_column(Integer, default=0)
+    completed_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
 
 
 class SourceCommandIdentityModel(SourceOwned):
@@ -727,9 +755,41 @@ SOURCE_MODELS = (
     SourceCoverageGapModel,
     SourceRetrievalOccurrenceModel,
     SourceExpiryEventModel,
+    SourceRetentionWorkModel,
     SourceCommandIdentityModel,
     SourceAuditEventModel,
     SourceCommandVersionModel,
     SourceCollectionBindingModel,
     SourceStatusSelectionModel,
+)
+
+
+# Source payload expiry uses indexed parent/row batches.
+Index(
+    "ix_retention_price_observations", PriceObservationModel.snapshot_id, PriceObservationModel.id
+)
+Index("ix_retention_fx_observations", FxObservationModel.snapshot_id, FxObservationModel.id)
+Index(
+    "ix_retention_benchmark_observations",
+    BenchmarkObservationModel.snapshot_id,
+    BenchmarkObservationModel.id,
+)
+Index(
+    "ix_retention_corporate_action_observations",
+    CorporateActionObservationModel.snapshot_id,
+    CorporateActionObservationModel.id,
+)
+Index(
+    "ix_retention_gaps_price", SourceCoverageGapModel.price_snapshot_id, SourceCoverageGapModel.id
+)
+Index("ix_retention_gaps_fx", SourceCoverageGapModel.fx_snapshot_id, SourceCoverageGapModel.id)
+Index(
+    "ix_retention_gaps_benchmark",
+    SourceCoverageGapModel.benchmark_snapshot_id,
+    SourceCoverageGapModel.id,
+)
+Index(
+    "ix_retention_gaps_corporate_action",
+    SourceCoverageGapModel.corporate_action_snapshot_id,
+    SourceCoverageGapModel.id,
 )

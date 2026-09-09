@@ -37,7 +37,7 @@ def test_exact_six_historical_get_routes_leave_existing_performance_summary() ->
         )
     }
     assert "/api/v1/accounts/{account_id}/performance/summary" in contract["paths"]
-    assert sum(len(methods) for methods in contract["paths"].values()) == 66
+    assert sum(len(methods) for methods in contract["paths"].values()) == 70
     assert contract == json.loads(
         (ROOT / "packages/api-contracts/openapi/phase1-v1.json").read_text()
     )
@@ -48,7 +48,7 @@ async def test_exact_four_historical_tools_have_frozen_scopes_fields_annotations
 ):
     server = create_runtime().server
     tools = await server.list_tools()
-    assert len(tools) == 19 and tuple(tool.name for tool in tools[15:]) == HISTORICAL_TOOL_NAMES
+    assert len(tools) == 21 and tuple(tool.name for tool in tools[15:19]) == HISTORICAL_TOOL_NAMES
     common = {"account_id", "start_date", "end_date", "source_cutoff_at", "reporting_currency"}
     extras = (
         {"method", "frequency"},
@@ -62,7 +62,7 @@ async def test_exact_four_historical_tools_have_frozen_scopes_fields_annotations
         ["portfolio:read", "activity:read", "analytics:read"],
         ["portfolio:read", "analytics:read", "targets:read"],
     )
-    for tool, extra, required in zip(tools[15:], extras, scopes, strict=True):
+    for tool, extra, required in zip(tools[15:19], extras, scopes, strict=True):
         descriptor = tool.model_dump(by_alias=True)
         assert set(descriptor["inputSchema"]["properties"]) == common | extra
         assert descriptor["inputSchema"]["additionalProperties"] is False

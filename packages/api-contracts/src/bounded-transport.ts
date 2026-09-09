@@ -25,6 +25,7 @@ export interface BoundedTransportPolicy {
   fallbackCode: string;
   error: (code: string, status: number, message: string) => Error;
   readTimeoutMs?: number;
+  repeatedQueryKeys?: readonly string[];
 }
 
 const errorSchema = z.object({
@@ -112,8 +113,21 @@ export class BoundedTransport {
     const policy = this.policy;
     const url = new URL(this.options.baseUrl.replace(/\/$/, "") + path);
     for (const [key, value] of Object.entries(query ?? {})) {
-      if (value !== undefined && value !== null)
+      if (Array.isArray(value)) {
+        if (
+          !policy.repeatedQueryKeys?.includes(key) ||
+          value.length > 32 ||
+          !value.every((item) => typeof item === "string")
+        )
+          throw policy.error(
+            "VALIDATION_FAILED",
+            422,
+            "The bounded query is invalid.",
+          );
+        for (const item of value) url.searchParams.append(key, item);
+      } else if (value !== undefined && value !== null) {
         url.searchParams.set(key, String(value));
+      }
     }
     const headers = new Headers(await this.options.headers?.());
     headers.set("Accept", "application/json");

@@ -769,3 +769,106 @@ def test_expiry_releases_quota_before_bounded_cleanup_finishes(
                 )
                 == 2
             )
+
+
+def test_generated_collection_reserves_all_members_before_payload_factory(
+    collection_snapshot_database: tuple[Engine, sessionmaker[Session]],
+) -> None:
+    _, sessions = collection_snapshot_database
+    with sessions.begin() as session:
+        owner, account = _create_isolated_scope(session, label="generated-reservation")
+        store = CollectionSnapshotStore(
+            session,
+            CursorCodec(CURSOR_KEY),
+            max_active_members_per_owner=3,
+        )
+        store.materialize(
+            _scoped_definition(owner, account, filter_name="existing"), (uuid4(), uuid4()), limit=1
+        )
+        called = False
+
+        def create(identifier: UUID) -> tuple[UUID, ...]:
+            nonlocal called
+            called = True
+            assert session.get(CollectionQuerySnapshotModel, identifier) is not None
+            return uuid4(), uuid4()
+
+        with pytest.raises(CollectionSnapshotCapacityError):
+            store.materialize_generated(
+                _scoped_definition(owner, account, filter_name="blocked"),
+                exact_total=2,
+                create_records=create,
+                limit=1,
+            )
+        assert not called
+        assert (
+            session.scalar(
+                select(func.count())
+                .select_from(CollectionQuerySnapshotModel)
+                .where(
+                    CollectionQuerySnapshotModel.owner_id == owner,
+                )
+            )
+            == 1
+        )
+
+
+def test_generated_count_mismatch_rolls_back_payload_side_effects_and_reservation(
+    collection_snapshot_database: tuple[Engine, sessionmaker[Session]],
+) -> None:
+    _, sessions = collection_snapshot_database
+    created_owner = uuid4()
+    with sessions.begin() as session:
+        owner, account = _create_isolated_scope(session, label="generated-rollback")
+        store = CollectionSnapshotStore(session, CursorCodec(CURSOR_KEY))
+
+        def create(identifier: UUID) -> tuple[UUID, ...]:
+            assert session.get(CollectionQuerySnapshotModel, identifier) is not None
+            session.add(OwnerModel(id=created_owner, display_name="Must roll back"))
+            session.flush()
+            return (uuid4(),)
+
+        with pytest.raises(ValueError, match="does not match its reservation"):
+            store.materialize_generated(
+                _scoped_definition(owner, account, filter_name="mismatch"),
+                exact_total=2,
+                create_records=create,
+                limit=1,
+            )
+        assert session.get(OwnerModel, created_owner) is None
+        assert (
+            session.scalar(
+                select(func.count())
+                .select_from(CollectionQuerySnapshotModel)
+                .where(
+                    CollectionQuerySnapshotModel.owner_id == owner,
+                )
+            )
+            == 0
+        )
+
+
+def test_empty_generated_projection_reserves_snapshot_capacity(
+    collection_snapshot_database: tuple[Engine, sessionmaker[Session]],
+) -> None:
+    _, sessions = collection_snapshot_database
+    with sessions.begin() as session:
+        owner, account = _create_isolated_scope(session, label="generated-empty")
+        store = CollectionSnapshotStore(
+            session, CursorCodec(CURSOR_KEY), max_active_snapshots_per_owner=1
+        )
+        page = store.materialize_generated(
+            _scoped_definition(owner, account, filter_name="empty"),
+            exact_total=0,
+            create_records=lambda identifier: (),
+            limit=1,
+        )
+        assert page.exact_total == 0 and page.next_cursor is None
+        assert session.get(CollectionQuerySnapshotModel, page.snapshot_id) is not None
+        with pytest.raises(CollectionSnapshotCapacityError):
+            store.materialize_generated(
+                _scoped_definition(owner, account, filter_name="second-empty"),
+                exact_total=0,
+                create_records=lambda identifier: (),
+                limit=1,
+            )

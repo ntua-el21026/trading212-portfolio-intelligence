@@ -554,7 +554,7 @@ class AnalyticsRunModel(PlanningOwned):
         ),
         CheckConstraint(
             "kind IN "
-            "('actual_vs_target','drift','performance','benchmark','income','attribution','cash_flow')",
+            "('actual_vs_target','drift','performance','benchmark','income','attribution','cash_flow','xray')",
             name="kind_allowed",
         ),
     )
@@ -577,6 +577,11 @@ class AnalyticsSourceModel(PlanningOwned):
     __table_args__ = (
         _owned(),
         ForeignKeyConstraint(
+            ["owner_id", "xray_input_id"],
+            ["xray_input_snapshots.owner_id", "xray_input_snapshots.id"],
+            ondelete="RESTRICT",
+        ),
+        ForeignKeyConstraint(
             ["owner_id", "historical_input_id"],
             ["historical_input_snapshots.owner_id", "historical_input_snapshots.id"],
             ondelete="RESTRICT",
@@ -587,7 +592,8 @@ class AnalyticsSourceModel(PlanningOwned):
             ondelete="RESTRICT",
         ),
         CheckConstraint(
-            "num_nonnulls(snapshot_id,target_version_id,source_record_id,historical_input_id) = 1",
+            "num_nonnulls(snapshot_id,target_version_id,source_record_id,"
+            "historical_input_id,xray_input_id) = 1",
             name="one_source",
         ),
         ForeignKeyConstraint(
@@ -597,6 +603,7 @@ class AnalyticsSourceModel(PlanningOwned):
         ),
     )
     historical_input_id: Mapped[UUID | None] = mapped_column()
+    xray_input_id: Mapped[UUID | None] = mapped_column()
     run_id: Mapped[UUID] = mapped_column()
     snapshot_id: Mapped[UUID | None] = mapped_column(
         ForeignKey("portfolio_snapshots.id", ondelete="RESTRICT")

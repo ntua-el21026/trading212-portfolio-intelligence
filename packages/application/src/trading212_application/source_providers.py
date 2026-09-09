@@ -337,12 +337,25 @@ class ClassificationRequest:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ClassificationPage:
+    request: ClassificationRequest
     provenance: SourceProvenance
     observations: tuple[ClassificationObservation, ...]
     continuation: str | None = None
 
     def __post_init__(self) -> None:
         _page(self, ClassificationObservation)
+        if not isinstance(self.request, ClassificationRequest):
+            fail_validation("The complete classification request is required.", field="request")
+        subjects = set(self.request.instrument_ids)
+        if any(
+            row.instrument_id not in subjects
+            or row.taxonomy != self.request.taxonomy
+            or row.taxonomy_version != self.request.taxonomy_version
+            for row in self.observations
+        ):
+            fail_validation(
+                "Classification subjects and taxonomy must match the request.", field="observations"
+            )
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -365,6 +378,7 @@ class ConstituentRequest:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ConstituentPage:
+    request: ConstituentRequest
     provenance: SourceProvenance
     effective_at: datetime
     holdings: tuple[ConstituentHolding, ...]
@@ -376,7 +390,13 @@ class ConstituentPage:
     def __post_init__(self) -> None:
         if not isinstance(self.provenance, SourceProvenance):
             fail_validation("Canonical provenance is required.", field="provenance")
+        if not isinstance(self.request, ConstituentRequest):
+            fail_validation("The complete constituent request is required.", field="request")
         object.__setattr__(self, "effective_at", require_utc(self.effective_at))
+        if self.effective_at > self.request.effective_at:
+            fail_validation(
+                "Constituents cannot follow the requested effective date.", field="effective_at"
+            )
         source_tuple(self.holdings, ConstituentHolding, "holdings", MAX_SOURCE_PAGE_ROWS)
         for field in ("stated_coverage", "unresolved_weight", "cash_weight"):
             value = exact_decimal(getattr(self, field), field=field)

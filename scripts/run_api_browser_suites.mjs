@@ -33,15 +33,16 @@ const onTerminate = () => interrupt("SIGTERM");
 process.on("SIGINT", onInterrupt);
 process.on("SIGTERM", onTerminate);
 
-function run(arguments_, historical) {
+function run(arguments_, fixture) {
   return new Promise((resolve, reject) => {
     activeChild = spawn("corepack", arguments_, {
       cwd: webDirectory,
       env: {
         ...process.env,
         // Each process still gets a fresh database and the production quota.
-        // Only historical journeys need the larger dated replay fixtures.
-        T212PI_E2E_HISTORICAL: historical ? "1" : "0",
+        // Each intelligence suite loads only its own deterministic source fixture.
+        T212PI_E2E_HISTORICAL: fixture === "historical.spec.ts" ? "1" : "0",
+        T212PI_E2E_XRAY: fixture === "xray.spec.ts" ? "1" : "0",
       },
       stdio: "inherit",
       shell: false,
@@ -79,7 +80,7 @@ try {
           ...(listOnly ? ["--list"] : []),
           fileFilter,
         ],
-        spec === "historical.spec.ts",
+        spec,
       );
       if (code !== 0) {
         process.exitCode = code;

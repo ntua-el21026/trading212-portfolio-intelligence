@@ -561,6 +561,16 @@ constituent coverage, entity mapping confidence, inferred value, stale value,
 classification coverage, and unresolved weight. Known+unresolved+explicit cash
 must reconcile to the original portfolio mass, with output rounding disclosed.
 
+Direct valuation coverage counts the complete original position/cash root
+inventory and reports its available reporting value against the complete
+portfolio basis. An unavailable root amount is not valued as zero. Inferred
+mapping coverage identifies selected estimated identity evidence; it does not
+authorize new identity heuristics. Stale value counts each affected terminal
+monetary path once, even when multiple used sources are stale. Inferred and
+stale measures may overlap each other and the economic partitions; they are
+quality indicators, not additional portfolio assets. Both use the same exact
+retained coefficients and declared Q18 output boundary as exposure amounts.
+
 Pairwise ETF overlap is `O_ab=sum_e(min(c_a,e,c_b,e))` after economic-entity
 consolidation, over absolute known weights. Incomplete mapping/constituents
 make that a known-overlap lower bound, not evidence of no overlap. Pairs are

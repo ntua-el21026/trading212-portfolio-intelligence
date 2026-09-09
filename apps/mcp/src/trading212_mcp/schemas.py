@@ -21,6 +21,7 @@ from .planning_schemas import (
     DriftAnalysisToolResult,
 )
 from .target_schemas import VirtualPieResult, VirtualPiesResult
+from .xray_schemas import XrayExposureToolResult, XrayOverlapToolResult
 
 DecimalString = Annotated[str, Field(pattern=r"^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$")]
 CurrencyCode = Annotated[str, Field(pattern=r"^[A-Z]{3}$")]
@@ -413,6 +414,8 @@ RESULT_MODELS = {
     "get_drift_analysis": DriftAnalysisToolResult,
     "get_contribution_plan": ContributionPlanToolResult,
     "create_contribution_plan": CreateContributionPlanToolResult,
+    "get_effective_exposure": XrayExposureToolResult,
+    "get_etf_overlap": XrayOverlapToolResult,
     "get_performance_summary": HistoricalPerformanceToolResult,
     "get_benchmark_comparison": HistoricalBenchmarkToolResult,
     "get_dividend_intelligence": HistoricalDividendToolResult,

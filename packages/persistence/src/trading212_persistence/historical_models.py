@@ -19,6 +19,7 @@ from sqlalchemy import (
     String,
     Table,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -756,3 +757,89 @@ for _model in HISTORICAL_MODELS:
                     name=f"hash_{_column.name}",
                 )
             )
+
+
+# Indexed pending payload phases avoid revisiting already-cleared licensed copies.
+Index(
+    "ix_retention_performance_points",
+    PerformancePointModel.run_id,
+    PerformancePointModel.id,
+    postgresql_where=text(
+        "canonical_row <> '\\x'::bytea OR portfolio_value IS NOT NULL "
+        "OR cash_value IS NOT NULL OR wealth IS NOT NULL OR period_return IS NOT NULL"
+    ),
+)
+Index(
+    "ix_retention_performance_period_returns",
+    PerformancePeriodModel.run_id,
+    PerformancePeriodModel.id,
+    postgresql_where=text("canonical_row <> '\\x'::bytea OR period_return IS NOT NULL"),
+)
+Index(
+    "ix_retention_income_components",
+    HistoricalIncomeRowModel.run_id,
+    HistoricalIncomeRowModel.id,
+    postgresql_where=text(
+        "canonical_row <> '\\x'::bytea OR net IS NOT NULL OR gross IS NOT NULL "
+        "OR withholding IS NOT NULL"
+    ),
+)
+Index(
+    "ix_retention_attribution_components",
+    HistoricalAttributionRowModel.run_id,
+    HistoricalAttributionRowModel.id,
+    postgresql_where=text(
+        "canonical_row <> '\\x'::bytea OR gain IS NOT NULL OR return_contribution IS NOT NULL"
+    ),
+)
+Index(
+    "ix_retention_historical_cash_flow_points",
+    HistoricalCashFlowRowModel.run_id,
+    HistoricalCashFlowRowModel.id,
+    postgresql_where=text("canonical_row <> '\\x'::bytea OR amount IS NOT NULL"),
+)
+Index(
+    "ix_retention_historical_conversions",
+    HistoricalConversionModel.run_id,
+    HistoricalConversionModel.id,
+    postgresql_where=text("rate IS NOT NULL"),
+)
+Index(
+    "ix_retention_historical_composite_benchmarks",
+    HistoricalCompositeModel.run_id,
+    HistoricalCompositeModel.id,
+    postgresql_where=text("canonical_composite <> '\\x'::bytea"),
+)
+Index(
+    "ix_retention_benchmark_composite_points",
+    BenchmarkCompositePointModel.snapshot_id,
+    BenchmarkCompositePointModel.id,
+    postgresql_where=text(
+        "canonical_point <> '\\x'::bytea OR wealth IS NOT NULL OR interval_return IS NOT NULL"
+    ),
+)
+Index(
+    "ix_retention_dependency_price",
+    HistoricalDependencyModel.price_snapshot_id,
+    HistoricalDependencyModel.input_id,
+    HistoricalDependencyModel.id,
+)
+Index(
+    "ix_retention_dependency_fx",
+    HistoricalDependencyModel.fx_snapshot_id,
+    HistoricalDependencyModel.input_id,
+    HistoricalDependencyModel.id,
+)
+Index(
+    "ix_retention_dependency_actions",
+    HistoricalDependencyModel.action_snapshot_id,
+    HistoricalDependencyModel.input_id,
+    HistoricalDependencyModel.id,
+)
+Index(
+    "ix_retention_dependency_benchmark",
+    HistoricalDependencyModel.benchmark_snapshot_id,
+    HistoricalDependencyModel.input_id,
+    HistoricalDependencyModel.id,
+)
+Index("ix_retention_runs_input", HistoricalRunModel.input_id, HistoricalRunModel.id)

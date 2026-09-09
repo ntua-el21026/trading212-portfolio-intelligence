@@ -8,7 +8,7 @@ from datetime import timedelta
 from typing import TypedDict, cast
 from uuid import UUID, uuid4
 
-from sqlalchemy import delete, func, select, text
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from trading212_application import sources as app
 from trading212_application.source_ingestion import (
@@ -70,7 +70,6 @@ from .source_models import (
     SourceCalendarModel,
     SourceCalendarSessionModel,
     SourceCoverageGapModel,
-    SourceExpiryEventModel,
     SourceMappingCandidateModel,
     SourceRetrievalOccurrenceModel,
     SourceSnapshotFields,
@@ -986,63 +985,19 @@ class SourceIngestion(SourceStore):
             raise ValueError("A bounded source expiry batch is required.")
 
         def expire() -> int:
-            from .historical_retention import HistoricalPurgeBudget, purge_source_copies
+            from .source_retention import SourcePurgeBudget
+            from .source_retention_service import expire_source_payloads
 
-            budget = HistoricalPurgeBudget()
-            count = 0
             with self._sessions() as session, session.begin():
-                for model, child in (
-                    (PriceSnapshotModel, PriceObservationModel),
-                    (FxSnapshotModel, FxObservationModel),
-                    (BenchmarkSnapshotModel, BenchmarkObservationModel),
-                    (CorporateActionSnapshotModel, CorporateActionObservationModel),
-                ):
-                    reference = model.__tablename__.removesuffix("s") + "_id"
-                    rows = session.scalars(
-                        select(model)
-                        .where(
-                            model.expires_at <= self._now(),
-                            ~select(SourceExpiryEventModel.id)
-                            .where(getattr(SourceExpiryEventModel, reference) == model.id)
-                            .exists(),
-                        )
-                        .order_by(model.expires_at, model.id)
-                        .limit(limit - count)
-                        .with_for_update(skip_locked=True)
+                from .xray_enrichment_retention import expire_enrichment_payloads
+
+                at = self._now()
+                budget = SourcePurgeBudget()
+                completed = expire_source_payloads(session, at=at, limit=limit, budget=budget)
+                if completed < limit:
+                    completed += expire_enrichment_payloads(
+                        session, at=at, limit=limit - completed, budget=budget
                     )
-                    for row in rows:
-                        session.execute(
-                            text("SELECT pg_advisory_xact_lock(hashtextextended(:key,0))"),
-                            {"key": f"sources:{row.owner_id}"},
-                        )
-                        if not purge_source_copies(session, row, at=self._now(), budget=budget):
-                            continue
-                        observation_count = len(
-                            tuple(
-                                session.scalars(select(child.id).where(child.snapshot_id == row.id))
-                            )
-                        )
-                        session.add(
-                            SourceExpiryEventModel(
-                                owner_id=row.owner_id,
-                                **{reference: row.id},
-                                removed_at=self._now(),
-                                removed_observation_count=observation_count,
-                                content_digest=row.content_digest,
-                                reason="retention_removed",
-                                created_at=self._now(),
-                            )
-                        )
-                        session.flush()
-                        session.execute(delete(child).where(child.snapshot_id == row.id))
-                        session.execute(
-                            delete(SourceCoverageGapModel).where(
-                                getattr(SourceCoverageGapModel, reference) == row.id
-                            )
-                        )
-                        count += 1
-                    if count == limit:
-                        break
-            return count
+                return completed
 
         return await asyncio.to_thread(expire)

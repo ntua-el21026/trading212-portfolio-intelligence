@@ -81,3 +81,20 @@ Continue autonomously through locally resolvable work. Stop only for:
 - a requested change that would violate the read-only or security freeze.
 
 When blocked, commit completed coherent work, keep `main` passing, state the exact blocker and evidence, and identify the smallest next action.
+
+## 9. Local resource and disk housekeeping
+
+Keep laptop verification serial and reuse one task Compose project. Start only
+the services a check needs; use one container when sufficient. Reuse those
+services across checks instead of creating a new stack for each attempt.
+
+At verification boundaries, inspect and remove task-owned disposable artifacts
+that are no longer needed: stopped containers, disposable test volumes and
+networks, obsolete build records/cache, inactive Next development outputs, and
+installer archives whose extracted tools are already verified. Remove the task
+stack and its disposable metadata when runtime verification finishes.
+
+Check for active consumers before deleting generated outputs. Preserve source,
+uncommitted work, required dependencies and tools, accepted evidence, and current
+handoffs. Scope cleanup to inspected task-owned paths or Docker identifiers;
+never use global pruning or delete unrelated volumes and user data.

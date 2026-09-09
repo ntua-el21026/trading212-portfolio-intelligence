@@ -28,9 +28,9 @@ class TargetClientGenerator:
         tag: str = "targets",
         imported_schemas: frozenset[str] = frozenset(),
     ) -> None:
-        if tag not in {"targets", "planning", "sources", "historical"}:
+        if tag not in {"targets", "planning", "sources", "historical", "xray"}:
             raise ValueError(
-                "Only fixed target, planning, source and historical operations are supported"
+                "Only fixed target, planning, source, historical and X-ray operations are supported"
             )
         self.tag = tag
         self.contract = contract
@@ -84,12 +84,42 @@ class TargetClientGenerator:
             "pattern",
             "format",
         }
+        if self.tag == "xray":
+            supported.update({"oneOf", "discriminator"})
         if set(schema) - supported:
             raise ValueError(f"Unsupported target schema fields: {sorted(set(schema) - supported)}")
         if "$ref" in schema:
             if set(schema) - {"$ref", "title", "description", "default", "examples", "example"}:
                 raise ValueError("Constraints next to a reference require an explicit schema")
             result = self.reference(schema["$ref"])
+        elif "oneOf" in schema:
+            discriminator = schema.get("discriminator", {})
+            if set(discriminator) - {"propertyName", "mapping"}:
+                raise ValueError("Unsupported response discriminator fields")
+            key = discriminator.get("propertyName")
+            if not isinstance(key, str) or not schema["oneOf"]:
+                raise ValueError("A named closed response discriminator is required")
+            mapping = {}
+            for branch in schema["oneOf"]:
+                if set(branch) != {"$ref"}:
+                    raise ValueError("Discriminated branches require local object references")
+                reference = branch["$ref"]
+                definition = self.definitions.get(
+                    reference.removeprefix("#/components/schemas/"), {}
+                )
+                literal = definition.get("properties", {}).get(key, {}).get("const")
+                if (
+                    not isinstance(literal, str)
+                    or literal in mapping
+                    or key not in definition.get("required", [])
+                    or definition.get("additionalProperties") is not False
+                ):
+                    raise ValueError("Discriminators require distinct required string literals")
+                mapping[literal] = reference
+            if discriminator.get("mapping", mapping) != mapping:
+                raise ValueError("Discriminator mapping does not match its branches")
+            branches = ", ".join(self.schema(branch) for branch in schema["oneOf"])
+            result = f"z.discriminatedUnion({_quoted(key)}, [{branches}])"
         elif "anyOf" in schema:
             result = f"z.union([{', '.join(self.schema(item) for item in schema['anyOf'])}])"
         elif "const" in schema:
@@ -221,6 +251,13 @@ class TargetClientGenerator:
                 '"VALIDATION_FAILED", 422, "The historical request is invalid."); '
                 "throw error; }\n"
             )
+        if self.tag == "xray":
+            body_text = (
+                f"try {{ return await {invocation}; }} catch (error) {{ "
+                "if (error instanceof z.ZodError) throw new XrayApiError("
+                '"VALIDATION_FAILED", 422, "The X-ray request is invalid."); '
+                "throw error; }\n"
+            )
         return (
             f"async {name}({', '.join(arguments)}): "
             f"Promise<TargetApiResponse<z.output<typeof {response_schema}>>> {{\n"
@@ -326,4 +363,25 @@ def render_historical_client(contract: dict[str, Any]) -> str:
         rendered = rendered.replace(f"Target{name}", f"Historical{name}")
     return rendered.replace("./target-transport", "./historical-transport").replace(
         "HistoricalTransport, type", "HistoricalTransport, HistoricalApiError, type"
+    )
+
+
+def render_xray_client(contract: dict[str, Any]) -> str:
+    """Generate the four closed X-ray reads using the shared license contract."""
+    source = TargetClientGenerator(contract, tag="sources")
+    source.render()
+    rendered = TargetClientGenerator(
+        contract, tag="xray", imported_schemas=frozenset(source.rendered)
+    ).render()
+    for name in (
+        "Transport",
+        "ApiClient",
+        "ApiResponse",
+        "ReadOptions",
+        "CommandOptions",
+        "ClientOptions",
+    ):
+        rendered = rendered.replace(f"Target{name}", f"Xray{name}")
+    return rendered.replace("./target-transport", "./xray-transport").replace(
+        "XrayTransport, type", "XrayTransport, XrayApiError, type"
     )

@@ -2356,3 +2356,38 @@ a {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.xray-page .table-wrap {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.xray-page code {
+  overflow-wrap: anywhere;
+}
+.xray-page details {
+  margin-block: 1rem;
+}
+.xray-page summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.xray-page .data-table td:first-child {
+  min-width: 9rem;
+  max-width: 18rem;
+  white-space: normal;
+}
+.xray-fund-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  overflow-wrap: anywhere;
+}
+.xray-fund-choice input {
+  flex: none;
+  margin-top: 0.2rem;
+  width: 1.1rem;
+  height: 1.1rem;
+}

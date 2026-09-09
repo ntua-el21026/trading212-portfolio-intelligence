@@ -14,6 +14,7 @@ from trading212_api_contracts.typescript import (
     render_planning_client,
     render_source_client,
     render_target_client,
+    render_xray_client,
 )
 from trading212_application.services import SyntheticPortfolioService
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
@@ -23,6 +24,7 @@ DEFAULT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/openapi/phase1-v1.jso
 TARGET_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/targets.generated.ts"
 PLANNING_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/planning.generated.ts"
 HISTORICAL_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/historical.generated.ts"
+XRAY_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/xray.generated.ts"
 SOURCE_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/sources.generated.ts"
 
 
@@ -58,6 +60,7 @@ def main() -> int:
         (PLANNING_OUTPUT, render_planning_client),
         (SOURCE_OUTPUT, render_source_client),
         (HISTORICAL_OUTPUT, render_historical_client),
+        (XRAY_OUTPUT, render_xray_client),
     ):
         clients[output] = subprocess.run(  # noqa: S603
             [*package_manager, "exec", "prettier", "--stdin-filepath", str(output)],

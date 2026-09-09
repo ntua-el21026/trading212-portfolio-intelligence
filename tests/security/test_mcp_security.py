@@ -348,10 +348,12 @@ def test_mcp_source_has_no_provider_transport_orm_or_generic_proxy_surface() -> 
 
     assert all(value not in sources for value in forbidden_imports)
     assert forbidden_tools.isdisjoint(FROZEN_TOOL_NAMES)
-    assert len(FROZEN_TOOL_NAMES) == 19
+    assert len(FROZEN_TOOL_NAMES) == 21
     assert FROZEN_TOOL_NAMES[15:] == (
         "get_performance_summary",
         "get_benchmark_comparison",
         "get_dividend_intelligence",
         "get_attribution_summary",
+        "get_effective_exposure",
+        "get_etf_overlap",
     )

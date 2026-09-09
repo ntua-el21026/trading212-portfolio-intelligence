@@ -30,6 +30,7 @@ const primaryItems = [
   { href: "/sources", icon: ShieldCheck, label: "Sources" },
   { href: "/performance", icon: TrendingUp, label: "Performance" },
   { href: "/income", icon: CircleDollarSign, label: "Income" },
+  { href: "/xray", icon: ChartPie, label: "X-ray" },
 ] as const;
 
 const secondaryItems = [

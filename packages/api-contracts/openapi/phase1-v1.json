@@ -10751,6 +10751,2705 @@
         ],
         "title": "VirtualPortfolioResponse",
         "type": "object"
+      },
+      "XrayAccess": {
+        "additionalProperties": false,
+        "properties": {
+          "reproducibility": {
+            "enum": [
+              "reproducible",
+              "inputs_expired",
+              "license_restricted"
+            ],
+            "title": "Reproducibility",
+            "type": "string"
+          },
+          "status_reference_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status Reference At"
+          }
+        },
+        "required": [
+          "reproducibility",
+          "status_reference_at"
+        ],
+        "title": "XrayAccess",
+        "type": "object"
+      },
+      "XrayCashRoot": {
+        "additionalProperties": false,
+        "properties": {
+          "original_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Original Currency",
+            "type": "string"
+          },
+          "snapshot_cash_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Cash Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "snapshot_cash_id",
+          "original_currency"
+        ],
+        "title": "XrayCashRoot",
+        "type": "object"
+      },
+      "XrayCommonEntitiesResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "common_entities": {
+            "$ref": "#/components/schemas/XrayPage_XrayCommonEntity_"
+          },
+          "context": {
+            "$ref": "#/components/schemas/XrayContext"
+          },
+          "pair": {
+            "$ref": "#/components/schemas/XrayOverlapPair"
+          },
+          "selected_fund_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 32,
+            "minItems": 2,
+            "title": "Selected Fund Ids",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/XrayPortfolioSummary"
+          },
+          "view": {
+            "const": "common_entities",
+            "title": "View",
+            "type": "string"
+          }
+        },
+        "required": [
+          "context",
+          "summary",
+          "selected_fund_ids",
+          "pair",
+          "common_entities",
+          "view"
+        ],
+        "title": "XrayCommonEntitiesResponse",
+        "type": "object"
+      },
+      "XrayCommonEntity": {
+        "additionalProperties": false,
+        "properties": {
+          "common_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "entity_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "left_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "right_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          }
+        },
+        "required": [
+          "id",
+          "entity_id",
+          "name",
+          "left_weight",
+          "right_weight",
+          "common_weight"
+        ],
+        "title": "XrayCommonEntity",
+        "type": "object"
+      },
+      "XrayConstituentHolding": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "evidence_key": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Key"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "instrument_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "minLength": 1,
+                "pattern": "^[^\\x00]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "source_key": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Source Key",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "resolved",
+              "cash",
+              "unresolved"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "weight": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Weight",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "source_key",
+          "weight",
+          "state",
+          "currency",
+          "instrument_id",
+          "entity_id",
+          "name",
+          "confidence",
+          "evidence_key"
+        ],
+        "title": "XrayConstituentHolding",
+        "type": "object"
+      },
+      "XrayConstituentHoldingPage": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/XrayConstituentHolding"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "total": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total",
+          "snapshot_id"
+        ],
+        "title": "XrayConstituentHoldingPage",
+        "type": "object"
+      },
+      "XrayConstituentSnapshotHeader": {
+        "additionalProperties": false,
+        "properties": {
+          "access": {
+            "$ref": "#/components/schemas/XrayAccess"
+          },
+          "cash_weight": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cash Weight"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "first_observed_at": {
+            "format": "date-time",
+            "title": "First Observed At",
+            "type": "string"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/SourceFreshness"
+          },
+          "freshness_evaluated_at": {
+            "format": "date-time",
+            "title": "Freshness Evaluated At",
+            "type": "string"
+          },
+          "fund_instrument_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Fund Instrument Id",
+            "type": "string"
+          },
+          "fund_mapping_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Fund Mapping Id",
+            "type": "string"
+          },
+          "fund_name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Fund Name",
+            "type": "string"
+          },
+          "holding_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Holding Count",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "known_weight": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Known Weight"
+          },
+          "license": {
+            "$ref": "#/components/schemas/SourceLicense"
+          },
+          "provider_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Provider Id",
+            "type": "string"
+          },
+          "provider_name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Provider Name",
+            "type": "string"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "source_at": {
+            "format": "date-time",
+            "title": "Source At",
+            "type": "string"
+          },
+          "unresolved_weight": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unresolved Weight"
+          }
+        },
+        "required": [
+          "id",
+          "fund_instrument_id",
+          "fund_name",
+          "fund_mapping_id",
+          "source_at",
+          "first_observed_at",
+          "content_digest",
+          "provider_id",
+          "provider_name",
+          "license",
+          "holding_count",
+          "known_weight",
+          "unresolved_weight",
+          "cash_weight",
+          "quality",
+          "confidence",
+          "freshness",
+          "freshness_evaluated_at",
+          "access"
+        ],
+        "title": "XrayConstituentSnapshotHeader",
+        "type": "object"
+      },
+      "XrayContext": {
+        "additionalProperties": false,
+        "properties": {
+          "access": {
+            "$ref": "#/components/schemas/XrayAccess"
+          },
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "calculated_at": {
+            "format": "date-time",
+            "title": "Calculated At",
+            "type": "string"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "input_snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Input Snapshot Id",
+            "type": "string"
+          },
+          "method": {
+            "$ref": "#/components/schemas/XrayMethod"
+          },
+          "policies": {
+            "items": {
+              "$ref": "#/components/schemas/XrayPolicyReference"
+            },
+            "maxItems": 8,
+            "title": "Policies",
+            "type": "array"
+          },
+          "quality_evaluated_at": {
+            "format": "date-time",
+            "title": "Quality Evaluated At",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "residual_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Residual Count",
+            "type": "integer"
+          },
+          "residual_omitted_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Residual Omitted Count",
+            "type": "integer"
+          },
+          "residuals": {
+            "items": {
+              "$ref": "#/components/schemas/XrayResidual"
+            },
+            "maxItems": 64,
+            "title": "Residuals",
+            "type": "array"
+          },
+          "run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Source Count",
+            "type": "integer"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "source_omitted_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Source Omitted Count",
+            "type": "integer"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/XraySourceReference"
+            },
+            "maxItems": 64,
+            "title": "Sources",
+            "type": "array"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          },
+          "warning_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Warning Count",
+            "type": "integer"
+          },
+          "warning_omitted_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Warning Omitted Count",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/XrayWarning"
+            },
+            "maxItems": 64,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "account_id",
+          "snapshot_id",
+          "run_id",
+          "input_snapshot_id",
+          "input_digest",
+          "content_digest",
+          "valuation_at",
+          "source_cutoff_at",
+          "reporting_currency",
+          "calculated_at",
+          "quality_evaluated_at",
+          "method",
+          "policies",
+          "sources",
+          "source_count",
+          "source_omitted_count",
+          "warnings",
+          "warning_count",
+          "warning_omitted_count",
+          "residuals",
+          "residual_count",
+          "residual_omitted_count",
+          "access"
+        ],
+        "title": "XrayContext",
+        "type": "object"
+      },
+      "XrayDimensionSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "cash": {
+            "$ref": "#/components/schemas/XrayMoneyMetric"
+          },
+          "cash_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "dimension": {
+            "enum": [
+              "company",
+              "sector",
+              "industry",
+              "country",
+              "region",
+              "currency"
+            ],
+            "title": "Dimension",
+            "type": "string"
+          },
+          "known": {
+            "$ref": "#/components/schemas/XrayMoneyMetric"
+          },
+          "known_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "positive_unresolved_below_quantum": {
+            "title": "Positive Unresolved Below Quantum",
+            "type": "boolean"
+          },
+          "unresolved": {
+            "$ref": "#/components/schemas/XrayMoneyMetric"
+          },
+          "unresolved_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          }
+        },
+        "required": [
+          "dimension",
+          "known",
+          "cash",
+          "unresolved",
+          "known_weight",
+          "cash_weight",
+          "unresolved_weight",
+          "complete",
+          "positive_unresolved_below_quantum"
+        ],
+        "title": "XrayDimensionSummary",
+        "type": "object"
+      },
+      "XrayEffectiveExposureResponse": {
+        "discriminator": {
+          "mapping": {
+            "exposures": "#/components/schemas/XrayExposuresResponse",
+            "held_funds": "#/components/schemas/XrayHeldFundsResponse",
+            "paths": "#/components/schemas/XrayPathsResponse"
+          },
+          "propertyName": "view"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/XrayExposuresResponse"
+          },
+          {
+            "$ref": "#/components/schemas/XrayPathsResponse"
+          },
+          {
+            "$ref": "#/components/schemas/XrayHeldFundsResponse"
+          }
+        ]
+      },
+      "XrayEtfOverlapResponse": {
+        "discriminator": {
+          "mapping": {
+            "common_entities": "#/components/schemas/XrayCommonEntitiesResponse",
+            "pairs": "#/components/schemas/XrayOverlapPairsResponse"
+          },
+          "propertyName": "view"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/XrayOverlapPairsResponse"
+          },
+          {
+            "$ref": "#/components/schemas/XrayCommonEntitiesResponse"
+          }
+        ]
+      },
+      "XrayExposureRow": {
+        "additionalProperties": false,
+        "properties": {
+          "absolute_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "bucket_key": {
+            "maxLength": 512,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9._:/-]+$",
+            "title": "Bucket Key",
+            "type": "string"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "dimension": {
+            "enum": [
+              "company",
+              "sector",
+              "industry",
+              "country",
+              "region",
+              "currency"
+            ],
+            "title": "Dimension",
+            "type": "string"
+          },
+          "direct": {
+            "$ref": "#/components/schemas/XrayMoneyMetric"
+          },
+          "direct_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "effective": {
+            "$ref": "#/components/schemas/XrayMoneyMetric"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "indirect": {
+            "$ref": "#/components/schemas/XrayMoneyMetric"
+          },
+          "indirect_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "normalized_known_weight": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/XrayRatioMetric"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "path_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Path Count",
+            "type": "integer"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "residuals": {
+            "items": {
+              "$ref": "#/components/schemas/XrayResidual"
+            },
+            "maxItems": 8,
+            "title": "Residuals",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "dimension",
+          "bucket_key",
+          "name",
+          "direct",
+          "indirect",
+          "effective",
+          "direct_weight",
+          "indirect_weight",
+          "absolute_weight",
+          "normalized_known_weight",
+          "path_count",
+          "residuals",
+          "confidence",
+          "quality"
+        ],
+        "title": "XrayExposureRow",
+        "type": "object"
+      },
+      "XrayExposuresResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/XrayContext"
+          },
+          "dimension_residuals": {
+            "items": {
+              "$ref": "#/components/schemas/XrayResidual"
+            },
+            "maxItems": 8,
+            "title": "Dimension Residuals",
+            "type": "array"
+          },
+          "dimension_summary": {
+            "$ref": "#/components/schemas/XrayDimensionSummary"
+          },
+          "exposures": {
+            "$ref": "#/components/schemas/XrayPage_XrayExposureRow_"
+          },
+          "normalized_known_only": {
+            "title": "Normalized Known Only",
+            "type": "boolean"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/XrayPortfolioSummary"
+          },
+          "view": {
+            "const": "exposures",
+            "title": "View",
+            "type": "string"
+          }
+        },
+        "required": [
+          "context",
+          "summary",
+          "dimension_summary",
+          "dimension_residuals",
+          "normalized_known_only",
+          "exposures",
+          "view"
+        ],
+        "title": "XrayExposuresResponse",
+        "type": "object"
+      },
+      "XrayFundEdge": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "fund_instrument_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Fund Instrument Id",
+            "type": "string"
+          },
+          "holding_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Holding Id"
+          },
+          "mapping_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Mapping Id",
+            "type": "string"
+          },
+          "origin": {
+            "enum": [
+              "holding",
+              "header_cash",
+              "header_unresolved",
+              "remainder"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "weight": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Weight",
+            "type": "string"
+          }
+        },
+        "required": [
+          "origin",
+          "fund_instrument_id",
+          "mapping_id",
+          "candidate_id",
+          "holding_id",
+          "weight"
+        ],
+        "title": "XrayFundEdge",
+        "type": "object"
+      },
+      "XrayHeldFund": {
+        "additionalProperties": false,
+        "properties": {
+          "cash_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "composition_root_key": {
+            "maxLength": 512,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9._:/-]+$",
+            "title": "Composition Root Key",
+            "type": "string"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "constituent_snapshot_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constituent Snapshot Id"
+          },
+          "instrument_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Instrument Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "position_count": {
+            "maximum": 10000.0,
+            "minimum": 1.0,
+            "title": "Position Count",
+            "type": "integer"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "source_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source At"
+          },
+          "unit_coverage": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "unresolved_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          }
+        },
+        "required": [
+          "instrument_id",
+          "name",
+          "position_count",
+          "composition_root_key",
+          "constituent_snapshot_id",
+          "source_at",
+          "unit_coverage",
+          "cash_weight",
+          "unresolved_weight",
+          "complete",
+          "quality",
+          "confidence"
+        ],
+        "title": "XrayHeldFund",
+        "type": "object"
+      },
+      "XrayHeldFundsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/XrayContext"
+          },
+          "held_funds": {
+            "$ref": "#/components/schemas/XrayPage_XrayHeldFund_"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/XrayPortfolioSummary"
+          },
+          "view": {
+            "const": "held_funds",
+            "title": "View",
+            "type": "string"
+          }
+        },
+        "required": [
+          "context",
+          "summary",
+          "held_funds",
+          "view"
+        ],
+        "title": "XrayHeldFundsResponse",
+        "type": "object"
+      },
+      "XrayMethod": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "const": "xray_v1",
+            "title": "Name",
+            "type": "string"
+          },
+          "numeric_policy": {
+            "const": "xray_decimal256_exact_q18_v1",
+            "title": "Numeric Policy",
+            "type": "string"
+          },
+          "traversal_policy": {
+            "const": "xray_position_then_cash_uuid_v1",
+            "title": "Traversal Policy",
+            "type": "string"
+          },
+          "version": {
+            "const": "1.1.0",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "numeric_policy",
+          "traversal_policy"
+        ],
+        "title": "XrayMethod",
+        "type": "object"
+      },
+      "XrayMoney": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Amount",
+            "type": "string"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "title": "XrayMoney",
+        "type": "object"
+      },
+      "XrayMoneyMetric": {
+        "additionalProperties": false,
+        "properties": {
+          "availability": {
+            "enum": [
+              "available",
+              "unavailable"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "bound": {
+            "enum": [
+              "exact",
+              "lower_bound"
+            ],
+            "title": "Bound",
+            "type": "string"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "origin": {
+            "enum": [
+              "observed_provider",
+              "normalized_provider",
+              "derived_deterministic",
+              "estimated",
+              "unavailable"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_fx",
+                  "incomplete_valuation",
+                  "zero_denominator",
+                  "missing_mapping",
+                  "missing_source",
+                  "source_gap",
+                  "ambiguous_source",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "source_remainder",
+                  "depth_limit",
+                  "path_limit",
+                  "proof_limit",
+                  "cycle",
+                  "partial_basis",
+                  "unconfigured",
+                  "inconclusive_lower_bound",
+                  "reconciliation_difference"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "source_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Source Count",
+            "type": "integer"
+          },
+          "source_omitted_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Source Omitted Count",
+            "type": "integer"
+          },
+          "source_reference_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 64,
+            "title": "Source Reference Ids",
+            "type": "array"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/XrayMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "reason",
+          "quality",
+          "bound",
+          "availability",
+          "confidence",
+          "source_reference_ids",
+          "source_count",
+          "source_omitted_count",
+          "value",
+          "origin"
+        ],
+        "title": "XrayMoneyMetric",
+        "type": "object"
+      },
+      "XrayOverlapPair": {
+        "additionalProperties": false,
+        "properties": {
+          "common_entity_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Common Entity Count",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "left": {
+            "$ref": "#/components/schemas/XrayHeldFund"
+          },
+          "overlap": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "right": {
+            "$ref": "#/components/schemas/XrayHeldFund"
+          }
+        },
+        "required": [
+          "id",
+          "left",
+          "right",
+          "overlap",
+          "common_entity_count"
+        ],
+        "title": "XrayOverlapPair",
+        "type": "object"
+      },
+      "XrayOverlapPairsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/XrayContext"
+          },
+          "pairs": {
+            "$ref": "#/components/schemas/XrayPage_XrayOverlapPair_"
+          },
+          "selected_fund_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 32,
+            "minItems": 2,
+            "title": "Selected Fund Ids",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/XrayPortfolioSummary"
+          },
+          "view": {
+            "const": "pairs",
+            "title": "View",
+            "type": "string"
+          }
+        },
+        "required": [
+          "context",
+          "summary",
+          "selected_fund_ids",
+          "pairs",
+          "view"
+        ],
+        "title": "XrayOverlapPairsResponse",
+        "type": "object"
+      },
+      "XrayPage_XrayCommonEntity_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/XrayCommonEntity"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "XrayPage[XrayCommonEntity]",
+        "type": "object"
+      },
+      "XrayPage_XrayExposureRow_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/XrayExposureRow"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "XrayPage[XrayExposureRow]",
+        "type": "object"
+      },
+      "XrayPage_XrayHeldFund_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/XrayHeldFund"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "XrayPage[XrayHeldFund]",
+        "type": "object"
+      },
+      "XrayPage_XrayOverlapPair_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/XrayOverlapPair"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "XrayPage[XrayOverlapPair]",
+        "type": "object"
+      },
+      "XrayPage_XrayPathRow_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/XrayPathRow"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "XrayPage[XrayPathRow]",
+        "type": "object"
+      },
+      "XrayPathClassification": {
+        "additionalProperties": false,
+        "properties": {
+          "bucket_key": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9._:/-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bucket Key"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "decision_key": {
+            "anyOf": [
+              {
+                "maxLength": 512,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9._:/-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Key"
+          },
+          "dimension": {
+            "enum": [
+              "company",
+              "sector",
+              "industry",
+              "country",
+              "region",
+              "currency"
+            ],
+            "title": "Dimension",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_fx",
+                  "incomplete_valuation",
+                  "zero_denominator",
+                  "missing_mapping",
+                  "missing_source",
+                  "source_gap",
+                  "ambiguous_source",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "source_remainder",
+                  "depth_limit",
+                  "path_limit",
+                  "proof_limit",
+                  "cycle",
+                  "partial_basis",
+                  "unconfigured",
+                  "inconclusive_lower_bound",
+                  "reconciliation_difference"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "dimension",
+          "bucket_key",
+          "decision_key",
+          "reason",
+          "confidence"
+        ],
+        "title": "XrayPathClassification",
+        "type": "object"
+      },
+      "XrayPathRow": {
+        "additionalProperties": false,
+        "properties": {
+          "absolute_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "classification": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/XrayPathClassification"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "explicit_cash": {
+            "title": "Explicit Cash",
+            "type": "boolean"
+          },
+          "fund_edges": {
+            "items": {
+              "$ref": "#/components/schemas/XrayFundEdge"
+            },
+            "maxItems": 4,
+            "title": "Fund Edges",
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "identity_decision_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 256,
+            "title": "Identity Decision Ids",
+            "type": "array"
+          },
+          "instrument_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Id"
+          },
+          "key": {
+            "maxLength": 512,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9._:/-]+$",
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 300,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "normalized_known_weight": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/XrayRatioMetric"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "relative_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "reporting_value": {
+            "$ref": "#/components/schemas/XrayMoneyMetric"
+          },
+          "residuals": {
+            "items": {
+              "$ref": "#/components/schemas/XrayResidual"
+            },
+            "maxItems": 16,
+            "title": "Residuals",
+            "type": "array"
+          },
+          "root": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/XrayPositionRoot"
+              },
+              {
+                "$ref": "#/components/schemas/XrayCashRoot"
+              }
+            ],
+            "title": "Root"
+          },
+          "root_key": {
+            "maxLength": 512,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9._:/-]+$",
+            "title": "Root Key",
+            "type": "string"
+          },
+          "source_reference_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 256,
+            "title": "Source Reference Ids",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/XraySourceReference"
+            },
+            "maxItems": 256,
+            "title": "Sources",
+            "type": "array"
+          },
+          "unresolved_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_fx",
+                  "incomplete_valuation",
+                  "zero_denominator",
+                  "missing_mapping",
+                  "missing_source",
+                  "source_gap",
+                  "ambiguous_source",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "source_remainder",
+                  "depth_limit",
+                  "path_limit",
+                  "proof_limit",
+                  "cycle",
+                  "partial_basis",
+                  "unconfigured",
+                  "inconclusive_lower_bound",
+                  "reconciliation_difference"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unresolved Reason"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "root_key",
+          "root",
+          "instrument_id",
+          "entity_id",
+          "name",
+          "explicit_cash",
+          "unresolved_reason",
+          "fund_edges",
+          "reporting_value",
+          "absolute_weight",
+          "relative_weight",
+          "normalized_known_weight",
+          "classification",
+          "identity_decision_ids",
+          "source_reference_ids",
+          "sources",
+          "residuals",
+          "quality",
+          "confidence"
+        ],
+        "title": "XrayPathRow",
+        "type": "object"
+      },
+      "XrayPathsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/XrayContext"
+          },
+          "dimension_residuals": {
+            "items": {
+              "$ref": "#/components/schemas/XrayResidual"
+            },
+            "maxItems": 8,
+            "title": "Dimension Residuals",
+            "type": "array"
+          },
+          "dimension_summary": {
+            "$ref": "#/components/schemas/XrayDimensionSummary"
+          },
+          "normalized_known_only": {
+            "title": "Normalized Known Only",
+            "type": "boolean"
+          },
+          "paths": {
+            "$ref": "#/components/schemas/XrayPage_XrayPathRow_"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/XrayPortfolioSummary"
+          },
+          "view": {
+            "const": "paths",
+            "title": "View",
+            "type": "string"
+          }
+        },
+        "required": [
+          "context",
+          "summary",
+          "dimension_summary",
+          "dimension_residuals",
+          "normalized_known_only",
+          "paths",
+          "view"
+        ],
+        "title": "XrayPathsResponse",
+        "type": "object"
+      },
+      "XrayPolicyReference": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "calculation",
+              "provider_selection",
+              "identity",
+              "classification",
+              "freshness",
+              "quality",
+              "traversal",
+              "threshold"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "id",
+          "version"
+        ],
+        "title": "XrayPolicyReference",
+        "type": "object"
+      },
+      "XrayPortfolioSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "cash_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "company_known_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "duplicated_exposure": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "hhi": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "quality_coverage": {
+            "$ref": "#/components/schemas/XrayQualityCoverage"
+          },
+          "thresholds": {
+            "items": {
+              "$ref": "#/components/schemas/XrayThresholdConclusion"
+            },
+            "maxItems": 52,
+            "title": "Thresholds",
+            "type": "array"
+          },
+          "top_concentrations": {
+            "items": {
+              "$ref": "#/components/schemas/XrayTopConcentration"
+            },
+            "maxItems": 50,
+            "title": "Top Concentrations",
+            "type": "array"
+          },
+          "total": {
+            "$ref": "#/components/schemas/XrayMoneyMetric"
+          },
+          "unresolved_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          }
+        },
+        "required": [
+          "total",
+          "company_known_weight",
+          "cash_weight",
+          "unresolved_weight",
+          "duplicated_exposure",
+          "top_concentrations",
+          "hhi",
+          "thresholds",
+          "quality_coverage"
+        ],
+        "title": "XrayPortfolioSummary",
+        "type": "object"
+      },
+      "XrayPositionRoot": {
+        "additionalProperties": false,
+        "properties": {
+          "instrument_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Instrument Id",
+            "type": "string"
+          },
+          "listing_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Listing Id"
+          },
+          "position_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Position Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "position_id",
+          "instrument_id",
+          "listing_id"
+        ],
+        "title": "XrayPositionRoot",
+        "type": "object"
+      },
+      "XrayQualityCoverage": {
+        "additionalProperties": false,
+        "properties": {
+          "direct_portfolio_value": {
+            "$ref": "#/components/schemas/XrayMoneyMetric"
+          },
+          "direct_portfolio_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "inferred_mapping_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Inferred Mapping Count",
+            "type": "integer"
+          },
+          "inferred_value": {
+            "$ref": "#/components/schemas/XrayMoneyMetric"
+          },
+          "inferred_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "root_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Root Count",
+            "type": "integer"
+          },
+          "stale_value": {
+            "$ref": "#/components/schemas/XrayMoneyMetric"
+          },
+          "stale_weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          },
+          "valued_root_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Valued Root Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "root_count",
+          "valued_root_count",
+          "direct_portfolio_value",
+          "direct_portfolio_weight",
+          "inferred_mapping_count",
+          "inferred_value",
+          "inferred_weight",
+          "stale_value",
+          "stale_weight"
+        ],
+        "title": "XrayQualityCoverage",
+        "type": "object"
+      },
+      "XrayRatioMetric": {
+        "additionalProperties": false,
+        "properties": {
+          "availability": {
+            "enum": [
+              "available",
+              "unavailable"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "bound": {
+            "enum": [
+              "exact",
+              "lower_bound"
+            ],
+            "title": "Bound",
+            "type": "string"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "positive_below_quantum": {
+            "title": "Positive Below Quantum",
+            "type": "boolean"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_fx",
+                  "incomplete_valuation",
+                  "zero_denominator",
+                  "missing_mapping",
+                  "missing_source",
+                  "source_gap",
+                  "ambiguous_source",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "source_remainder",
+                  "depth_limit",
+                  "path_limit",
+                  "proof_limit",
+                  "cycle",
+                  "partial_basis",
+                  "unconfigured",
+                  "inconclusive_lower_bound",
+                  "reconciliation_difference"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "source_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Source Count",
+            "type": "integer"
+          },
+          "source_omitted_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Source Omitted Count",
+            "type": "integer"
+          },
+          "source_reference_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 64,
+            "title": "Source Reference Ids",
+            "type": "array"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "reason",
+          "quality",
+          "bound",
+          "availability",
+          "confidence",
+          "source_reference_ids",
+          "source_count",
+          "source_omitted_count",
+          "value",
+          "positive_below_quantum"
+        ],
+        "title": "XrayRatioMetric",
+        "type": "object"
+      },
+      "XrayResidual": {
+        "additionalProperties": false,
+        "properties": {
+          "child_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Child Count",
+            "type": "integer"
+          },
+          "consumer_key": {
+            "maxLength": 512,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9._:/-]+$",
+            "title": "Consumer Key",
+            "type": "string"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "key": {
+            "maxLength": 512,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9._:/-]+$",
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "money_partition",
+              "weight_partition",
+              "parent_child",
+              "unit_parent_child",
+              "direct_indirect"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "parent_separately_rounded": {
+            "title": "Parent Separately Rounded",
+            "type": "boolean"
+          },
+          "value": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "value",
+          "currency",
+          "kind",
+          "consumer_key",
+          "child_count",
+          "parent_separately_rounded"
+        ],
+        "title": "XrayResidual",
+        "type": "object"
+      },
+      "XraySourceReference": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "first_observed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Observed At"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "valuation",
+              "fx",
+              "broker_fx",
+              "fund_definition",
+              "fund_mapping",
+              "constituents",
+              "identity",
+              "relationship",
+              "classification",
+              "threshold",
+              "reconciliation"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "license_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Version Id"
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id"
+          },
+          "provider_name": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "minLength": 1,
+                "pattern": "^[^\\x00]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Name"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "source_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source At"
+          },
+          "subject_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Subject Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "subject_id",
+          "content_digest",
+          "source_at",
+          "first_observed_at",
+          "provider_id",
+          "provider_name",
+          "license_version_id",
+          "confidence",
+          "quality"
+        ],
+        "title": "XraySourceReference",
+        "type": "object"
+      },
+      "XrayThresholdConclusion": {
+        "additionalProperties": false,
+        "properties": {
+          "bound": {
+            "enum": [
+              "exact",
+              "lower_bound"
+            ],
+            "title": "Bound",
+            "type": "string"
+          },
+          "breached": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Breached"
+          },
+          "metric": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Metric",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_fx",
+                  "incomplete_valuation",
+                  "zero_denominator",
+                  "missing_mapping",
+                  "missing_source",
+                  "source_gap",
+                  "ambiguous_source",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "source_remainder",
+                  "depth_limit",
+                  "path_limit",
+                  "proof_limit",
+                  "cycle",
+                  "partial_basis",
+                  "unconfigured",
+                  "inconclusive_lower_bound",
+                  "reconciliation_difference"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "metric",
+          "breached",
+          "reason",
+          "bound"
+        ],
+        "title": "XrayThresholdConclusion",
+        "type": "object"
+      },
+      "XrayTopConcentration": {
+        "additionalProperties": false,
+        "properties": {
+          "count": {
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Count",
+            "type": "integer"
+          },
+          "entity_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Entity Ids",
+            "type": "array"
+          },
+          "weight": {
+            "$ref": "#/components/schemas/XrayRatioMetric"
+          }
+        },
+        "required": [
+          "count",
+          "entity_ids",
+          "weight"
+        ],
+        "title": "XrayTopConcentration",
+        "type": "object"
+      },
+      "XrayWarning": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "enum": [
+              "source_date_mismatch",
+              "stale_source",
+              "estimated_source",
+              "partial_source",
+              "unreconciled_value",
+              "missing_input",
+              "unknown_confidence",
+              "bounded_traversal",
+              "ambiguous_evidence"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "path_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Path Count",
+            "type": "integer"
+          },
+          "path_keys": {
+            "items": {
+              "maxLength": 512,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:/-]+$",
+              "type": "string"
+            },
+            "maxItems": 64,
+            "title": "Path Keys",
+            "type": "array"
+          },
+          "path_omitted_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Path Omitted Count",
+            "type": "integer"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_fx",
+                  "incomplete_valuation",
+                  "zero_denominator",
+                  "missing_mapping",
+                  "missing_source",
+                  "source_gap",
+                  "ambiguous_source",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "source_remainder",
+                  "depth_limit",
+                  "path_limit",
+                  "proof_limit",
+                  "cycle",
+                  "partial_basis",
+                  "unconfigured",
+                  "inconclusive_lower_bound",
+                  "reconciliation_difference"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "source_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Source Count",
+            "type": "integer"
+          },
+          "source_omitted_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Source Omitted Count",
+            "type": "integer"
+          },
+          "source_reference_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 64,
+            "title": "Source Reference Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "code",
+          "reason",
+          "source_reference_ids",
+          "source_count",
+          "source_omitted_count",
+          "path_keys",
+          "path_count",
+          "path_omitted_count"
+        ],
+        "title": "XrayWarning",
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -12447,6 +15146,413 @@
         "summary": "Get Drift Analysis",
         "tags": [
           "planning"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/effective-exposure": {
+      "get": {
+        "operationId": "get_effective_exposure",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_cutoff_at",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "Source Cutoff At",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "reporting_currency",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "title": "Reporting Currency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "run_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "view",
+            "required": false,
+            "schema": {
+              "default": "exposures",
+              "enum": [
+                "exposures",
+                "paths",
+                "held_funds"
+              ],
+              "title": "View",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Defaults to company for exposure and path views.",
+            "in": "query",
+            "name": "dimension",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "company",
+                    "sector",
+                    "industry",
+                    "country",
+                    "region",
+                    "currency"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Defaults to company for exposure and path views.",
+              "title": "Dimension"
+            }
+          },
+          {
+            "description": "Defaults to false for exposure and path views.",
+            "in": "query",
+            "name": "normalized_known_only",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Defaults to false for exposure and path views.",
+              "title": "Normalized Known Only"
+            }
+          },
+          {
+            "in": "query",
+            "name": "exposure_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Exposure Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/XrayEffectiveExposureResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Effective Exposure",
+        "tags": [
+          "xray"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/etf-overlap": {
+      "get": {
+        "operationId": "get_etf_overlap",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_cutoff_at",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "Source Cutoff At",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "reporting_currency",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "title": "Reporting Currency",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "run_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fund_ids",
+            "required": true,
+            "schema": {
+              "items": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "maxItems": 32,
+              "minItems": 2,
+              "title": "Fund Ids",
+              "type": "array"
+            }
+          },
+          {
+            "in": "query",
+            "name": "view",
+            "required": false,
+            "schema": {
+              "default": "pairs",
+              "enum": [
+                "pairs",
+                "common_entities"
+              ],
+              "title": "View",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "left_fund_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Left Fund Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "right_fund_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Right Fund Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/XrayEtfOverlapResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Etf Overlap",
+        "tags": [
+          "xray"
         ]
       }
     },
@@ -15101,6 +18207,213 @@
         "summary": "List Connections",
         "tags": [
           "connections"
+        ]
+      }
+    },
+    "/api/v1/constituent-snapshots/{id}": {
+      "get": {
+        "operationId": "get_constituent_snapshot",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Account Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "run_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/XrayConstituentSnapshotHeader"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Constituent Snapshot",
+        "tags": [
+          "xray"
+        ]
+      }
+    },
+    "/api/v1/constituent-snapshots/{id}/holdings": {
+      "get": {
+        "operationId": "list_constituent_holdings",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Account Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "run_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/XrayConstituentHoldingPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Constituent Holdings",
+        "tags": [
+          "xray"
         ]
       }
     },

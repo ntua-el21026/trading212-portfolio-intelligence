@@ -56,6 +56,12 @@ class CollectionSnapshotResource(StrEnum):
     BENCHMARK_DEFINITIONS_NAME = "benchmark_defs_name"
     BENCHMARK_DEFINITIONS_CREATED = "benchmark_defs_created"
     BENCHMARK_VERSIONS = "benchmark_versions"
+    XRAY_EXPOSURES = "xray_exposures"
+    XRAY_PATHS = "xray_paths"
+    XRAY_HELD_FUNDS = "xray_held_funds"
+    XRAY_PAIRS = "xray_pairs"
+    XRAY_COMMON_ENTITIES = "xray_common_entities"
+    CONSTITUENT_HOLDINGS = "constituent_holdings"
     HISTORICAL_PERFORMANCE = "historical_performance"
     HISTORICAL_CASH_FLOWS = "historical_cash_flows"
     COMPOSITE_BENCHMARK_POINTS = "composite_benchmark_points"
@@ -68,6 +74,12 @@ class CollectionSnapshotResource(StrEnum):
 
 
 _SORT_SPECIFICATIONS = {
+    CollectionSnapshotResource.XRAY_EXPOSURES: "ordinal_asc",
+    CollectionSnapshotResource.XRAY_PATHS: "ordinal_asc",
+    CollectionSnapshotResource.XRAY_HELD_FUNDS: "ordinal_asc",
+    CollectionSnapshotResource.XRAY_PAIRS: "ordinal_asc",
+    CollectionSnapshotResource.XRAY_COMMON_ENTITIES: "ordinal_asc",
+    CollectionSnapshotResource.CONSTITUENT_HOLDINGS: "ordinal_asc",
     CollectionSnapshotResource.HISTORICAL_PERFORMANCE: "ordinal_asc",
     CollectionSnapshotResource.HISTORICAL_CASH_FLOWS: "ordinal_asc",
     CollectionSnapshotResource.COMPOSITE_BENCHMARK_POINTS: "ordinal_asc",
@@ -102,6 +114,12 @@ _SORT_SPECIFICATIONS = {
 }
 _OPTIONAL_ACCOUNT_RESOURCES = frozenset(
     {
+        CollectionSnapshotResource.XRAY_EXPOSURES,
+        CollectionSnapshotResource.XRAY_PATHS,
+        CollectionSnapshotResource.XRAY_HELD_FUNDS,
+        CollectionSnapshotResource.XRAY_PAIRS,
+        CollectionSnapshotResource.XRAY_COMMON_ENTITIES,
+        CollectionSnapshotResource.CONSTITUENT_HOLDINGS,
         CollectionSnapshotResource.COMPOSITE_BENCHMARK_POINTS,
         CollectionSnapshotResource.MARKET_SOURCE_STATUS,
         CollectionSnapshotResource.BENCHMARK_SOURCE_STATUS,
@@ -121,6 +139,11 @@ _OPTIONAL_ACCOUNT_RESOURCES = frozenset(
 )
 _ACCOUNT_RESOURCES = frozenset(
     {
+        CollectionSnapshotResource.XRAY_EXPOSURES,
+        CollectionSnapshotResource.XRAY_PATHS,
+        CollectionSnapshotResource.XRAY_HELD_FUNDS,
+        CollectionSnapshotResource.XRAY_PAIRS,
+        CollectionSnapshotResource.XRAY_COMMON_ENTITIES,
         CollectionSnapshotResource.HISTORICAL_PERFORMANCE,
         CollectionSnapshotResource.HISTORICAL_CASH_FLOWS,
         CollectionSnapshotResource.CONTRIBUTION_PLANS,
@@ -250,6 +273,42 @@ class CollectionSnapshotStore:
         *,
         limit: int,
     ) -> CollectionSnapshotPage:
+        return self._materialize(definition, ordered_record_ids, limit=limit)
+
+    def materialize_generated(
+        self,
+        definition: CollectionSnapshotDefinition,
+        *,
+        exact_total: int,
+        create_records: Callable[[UUID], Iterable[UUID]],
+        limit: int,
+    ) -> CollectionSnapshotPage:
+        """Reserve the complete membership before creating collection-owned payloads.
+
+        The callback receives the already allocated collection ID inside the same
+        savepoint. Any count mismatch rolls back its payloads and all membership.
+        """
+        if type(exact_total) is not int or not 0 <= exact_total <= self._max_active_members:
+            raise CollectionSnapshotCapacityError()
+        if not callable(create_records):
+            raise ValueError("A bounded collection record factory is required.")
+        return self._materialize(
+            definition,
+            (),
+            limit=limit,
+            expected_total=exact_total,
+            create_records=create_records,
+        )
+
+    def _materialize(
+        self,
+        definition: CollectionSnapshotDefinition,
+        ordered_record_ids: Iterable[UUID] | Callable[[], Iterable[UUID]],
+        *,
+        limit: int,
+        expected_total: int | None = None,
+        create_records: Callable[[UUID], Iterable[UUID]] | None = None,
+    ) -> CollectionSnapshotPage:
         """Persist one immutable ordered membership set and return its first page."""
 
         page_limit = _page_limit(limit)
@@ -267,6 +326,8 @@ class CollectionSnapshotStore:
         ):
             raise CollectionSnapshotCapacityError()
         available_member_capacity = self._max_active_members - active_member_count
+        if expected_total is not None and expected_total > available_member_capacity:
+            raise CollectionSnapshotCapacityError()
         # Keep the capacity lock outside the savepoint so catching an overflow
         # cannot release it before the caller's surrounding transaction finishes.
         with self._session.begin_nested():
@@ -286,7 +347,13 @@ class CollectionSnapshotStore:
             )
             self._session.add(snapshot)
             self._session.flush()
-            source = ordered_record_ids() if callable(ordered_record_ids) else ordered_record_ids
+            source = (
+                create_records(snapshot.id)
+                if create_records is not None
+                else ordered_record_ids()
+                if callable(ordered_record_ids)
+                else ordered_record_ids
+            )
             iterator = iter(source)
             exact_total = 0
             while True:
@@ -313,6 +380,8 @@ class CollectionSnapshotStore:
                     ],
                 )
                 exact_total += len(batch)
+            if expected_total is not None and expected_total != exact_total:
+                raise ValueError("Generated collection membership does not match its reservation.")
             snapshot.exact_total = exact_total
             self._session.flush()
             value = _snapshot_value(snapshot)
@@ -379,13 +448,23 @@ class CollectionSnapshotStore:
         )
 
     def _active_capacity(self, owner_id: UUID, *, now: datetime) -> tuple[int, int]:
+        from .xray_run_models import XrayCollectionBindingModel
+
+        retained_xray = (
+            select(XrayCollectionBindingModel.id)
+            .where(
+                XrayCollectionBindingModel.collection_id == CollectionQuerySnapshotModel.id,
+                XrayCollectionBindingModel.owner_id == owner_id,
+            )
+            .exists()
+        )
         snapshot_count, member_count = self._session.execute(
             select(
                 func.count(CollectionQuerySnapshotModel.id),
                 func.coalesce(func.sum(CollectionQuerySnapshotModel.exact_total), 0),
             ).where(
                 CollectionQuerySnapshotModel.owner_id == owner_id,
-                CollectionQuerySnapshotModel.expires_at > now,
+                (CollectionQuerySnapshotModel.expires_at > now) | retained_xray,
             )
         ).one()
         return int(snapshot_count), int(member_count)
@@ -491,10 +570,21 @@ def cleanup_expired_collection_snapshots(session: Session, *, batch_size: int = 
 
     if isinstance(batch_size, bool) or not 1 <= batch_size <= 1_000:
         raise ValueError("cleanup batch size must be between 1 and 1000")
+    # X-ray projections can contain licensed payloads and must be removed by
+    # their bounded participant before this ordinary snapshot deletion path.
+    from .xray_run_models import XrayCollectionBindingModel
+
+    retained_xray = (
+        select(XrayCollectionBindingModel.id)
+        .where(
+            XrayCollectionBindingModel.collection_id == CollectionQuerySnapshotModel.id,
+        )
+        .exists()
+    )
     expired_ids = tuple(
         session.scalars(
             select(CollectionQuerySnapshotModel.id)
-            .where(CollectionQuerySnapshotModel.expires_at <= func.now())
+            .where(CollectionQuerySnapshotModel.expires_at <= func.now(), ~retained_xray)
             .order_by(
                 CollectionQuerySnapshotModel.expires_at,
                 CollectionQuerySnapshotModel.id,

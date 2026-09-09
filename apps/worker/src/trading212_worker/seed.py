@@ -54,13 +54,16 @@ async def seed_materialized_synthetic(database_url: str, *, app_environment: str
 
 
 async def seed_complete_synthetic(database_url: str, *, app_environment: str) -> None:
-    """Seed the original regression portfolio and separate historical scenarios."""
+    """Seed separate regression, historical and X-ray scenarios through real ingestion."""
+    from .xray_seed import seed_xray_scenario
+
     await seed_materialized_synthetic(database_url, app_environment=app_environment)
     engine = create_database_engine(database_url)
     try:
         await seed_historical_scenarios(
             create_session_factory(engine), app_environment=app_environment
         )
+        await seed_xray_scenario(create_session_factory(engine), app_environment=app_environment)
     finally:
         engine.dispose()
 

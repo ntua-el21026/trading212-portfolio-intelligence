@@ -82,6 +82,9 @@ def _error(request: Request, status_code: int, code: str, message: str) -> JSONR
 
 
 class BoundedTargetRoute(APIRoute):
+    def permits_repeated_query(self, key: str) -> bool:
+        return False
+
     def get_route_handler(self) -> Callable[[Request], Coroutine[Any, Any, Response]]:
         handler = super().get_route_handler()
 
@@ -104,7 +107,8 @@ class BoundedTargetRoute(APIRoute):
             # parameters rather than letting transport order choose the command.
             keys = list(request.query_params.keys())
             if (keys and not self.dependant.query_params) or any(
-                len(request.query_params.getlist(key)) != 1 for key in keys
+                len(request.query_params.getlist(key)) != 1 and not self.permits_repeated_query(key)
+                for key in keys
             ):
                 return _error(request, 422, "VALIDATION_FAILED", "The request is invalid.")
 

@@ -201,6 +201,7 @@ class ReplayInstrumentEnrichmentProvider:
         if isinstance(window, ports.SourceFailure):
             return window
         return ports.ClassificationPage(
+            request=request,
             provenance=context.provenance(effective_at=FIXTURE_KNOWN_AT, first_observed_at=failure),
             observations=observations[window.start : window.stop],
             continuation=window.continuation,
@@ -253,6 +254,7 @@ class ReplayETFConstituentProvider:
                 for state in ConstituentState
             }
         return ports.ConstituentPage(
+            request=request,
             provenance=context.provenance(effective_at=FIXTURE_KNOWN_AT, first_observed_at=failure),
             effective_at=FIXTURE_KNOWN_AT,
             holdings=holdings[window.start : window.stop],

@@ -33,7 +33,7 @@ async def test_tool_discovery_is_exact_typed_bounded_and_annotated() -> None:
     tools = await runtime.server.list_tools()
 
     assert tuple(tool.name for tool in tools) == FROZEN_TOOL_NAMES
-    assert len(tools) == 19
+    assert len(tools) == 21
     for tool in tools:
         descriptor = tool.model_dump(mode="json", by_alias=True, exclude_none=True)
         assert descriptor["inputSchema"]["type"] == "object"
@@ -89,6 +89,8 @@ async def test_snapshot_widget_is_preserved_and_only_declared_tools_add_resource
             "create_contribution_plan",
             "get_performance_summary",
             "get_benchmark_comparison",
+            "get_effective_exposure",
+            "get_etf_overlap",
         }:
             assert "ui" not in descriptor["_meta"]
             assert "openai/outputTemplate" not in descriptor["_meta"]

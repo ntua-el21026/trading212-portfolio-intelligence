@@ -6,9 +6,8 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   // A flaky browser assertion is a failed Phase 1 evidence gate, including in CI.
   retries: 0,
-  // Bound route-compilation concurrency so Next dev HMR cannot replace a page
-  // between an interaction and its same-origin request on smaller CI runners.
-  workers: process.env.CI ? 2 : 4,
+  // Keep browser and route-compilation work serial on the local laptop and CI.
+  workers: 1,
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: "http://127.0.0.1:3000",

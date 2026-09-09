@@ -759,3 +759,11 @@ export type {
   HistoricalClientOptions,
   HistoricalReadOptions,
 } from "./historical-transport";
+
+export * from "./xray.generated";
+export { XrayApiError } from "./xray-transport";
+export type {
+  XrayApiResponse,
+  XrayClientOptions,
+  XrayReadOptions,
+} from "./xray-transport";

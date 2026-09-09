@@ -58,6 +58,7 @@ from trading212_application.services import (
 from trading212_application.sources import SourceService, SourceServiceError
 from trading212_application.targets import TargetService, TargetServiceError
 from trading212_application.views import Page
+from trading212_application.xray import XrayService
 from trading212_domain.errors import DomainError
 from trading212_observability import (
     AuthenticationMethod,
@@ -122,6 +123,7 @@ from .schemas import (
 )
 from .source_routes import register_source_routes
 from .target_routes import register_target_routes
+from .xray_routes import register_xray_routes
 
 SESSION_COOKIE = "t212pi_session"
 CORRELATION_HEADER = "X-Correlation-ID"
@@ -148,6 +150,7 @@ class ApiContext:
     planning_service: PlanningService | None
     source_service: SourceService | None
     historical_service: PerformanceIntelligenceService | None
+    xray_service: XrayService | None
     sessions: SessionManager
     local_authenticator: LocalSyntheticAuthenticator | None
     bearer_authenticator: BearerAuthenticator | None
@@ -165,6 +168,7 @@ def create_app(
     planning_service: PlanningService | None = None,
     source_service: SourceService | None = None,
     historical_service: PerformanceIntelligenceService | None = None,
+    xray_service: XrayService | None = None,
     session_manager: SessionManager | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -195,6 +199,7 @@ def create_app(
             default_planning,
             default_sources,
             default_historical,
+            default_xray,
             default_readiness,
         ) = _local_runtime_defaults(
             security_settings,
@@ -205,6 +210,7 @@ def create_app(
         planning_service = planning_service or default_planning
         source_service = source_service or default_sources
         historical_service = historical_service or default_historical
+        xray_service = xray_service or default_xray
     else:
         portfolio_service = service
         default_readiness = _ready
@@ -225,6 +231,7 @@ def create_app(
         planning_service=planning_service,
         source_service=source_service,
         historical_service=historical_service,
+        xray_service=xray_service,
         sessions=sessions,
         local_authenticator=local_authenticator,
         bearer_authenticator=bearer_authenticator,
@@ -272,6 +279,7 @@ def create_app(
     register_planning_routes(application, _principal, _context)
     register_source_routes(application, _principal, _context)
     register_historical_routes(application, _principal, _context)
+    register_xray_routes(application, _principal, _context)
     _install_openapi_contract(application)
     return application
 
@@ -287,11 +295,13 @@ def _local_runtime_defaults(
     PlanningService,
     SourceService,
     PerformanceIntelligenceService,
+    XrayService,
     Callable[[], Awaitable[bool]],
 ]:
     from trading212_persistence.historical_service import PostgresHistoricalService
     from trading212_persistence.planning_service import PostgresPlanningService
     from trading212_persistence.source_service import PostgresSourceService
+    from trading212_persistence.xray_service import PostgresXrayService
 
     database_url = os.environ.get("DATABASE_URL")
     if database_url is None:
@@ -346,6 +356,12 @@ def _local_runtime_defaults(
         ),
         PostgresHistoricalService(
             sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=settings.cursor_ttl_seconds,
+        ),
+        PostgresXrayService(
+            sessions=sessions,
             clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
             cursor_ttl_seconds=settings.cursor_ttl_seconds,

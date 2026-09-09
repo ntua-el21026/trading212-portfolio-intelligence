@@ -85,9 +85,33 @@ The clean exact-source `make validate` passed in 1165.723 seconds: 1,346 isolate
 
 Exact pushed-source CI passed: Quality `34272112673`, Documentation `34272112714`, Security `34272112661`. Eight source/history/image scans passed under their retained scanner policies. Fresh runtime attempt 003 passed in 170.757 seconds: six historical HTTP reads, four MCP reads, configured web journeys and identical retained rows across all 101 inventoried tables after all seven services stopped/restarted. Task containers, volume and network were removed, with cleanup verified. Migration head is `20260907_0012`; the implemented inventory is 66 HTTP operations and 19 MCP tools; Trading 212 remains the exact ten GET-only capabilities.
 
-See [runtime](docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json), [security](docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json) and [compatibility](docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json). Phase 2 remains `in_progress`: four of ten packages (40%), eleven of 29 local rows and eighteen of 40 scenarios complete. P2-05 through P2-10 and Phase 3 remain `not_started`; no final Phase 2 release SHA is claimed.
+See [runtime](docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json), [security](docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json) and [compatibility](docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json). Phase 2 remains `in_progress`: four of ten packages (40%), eleven of 29 local rows and eighteen of 40 scenarios complete. P2-05 is `in_progress`; P2-06 through P2-10 and Phase 3 remain `not_started`. No final Phase 2 release SHA is claimed.
 
-Source-backed known P2-08 limitations remain: the normal complete seed has three accounts, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.
+P2-05 implementation is being integrated from synchronized authority SHA
+`0ebbfa29253f418084835335eb2ee66f1b898679`; see the
+[implementation record](docs/implementation/P2_05_PORTFOLIO_XRAY.md).
+Working-tree verification passed formatting, lint, strict typing, 223 web unit
+tests and all Python layers. The migration inventory assertion was corrected to
+include the new revision, after which all 12 migration tests passed. The remaining
+gate passed in 1,519.445 seconds: 1,642 isolated plus 225 service/migration tests,
+88% combined statement/branch coverage, all 76 browser checks, documentation,
+security checks, native/web builds and six container builds. Source was unchanged
+during that gate. Focused cases cover exact arithmetic, real 40-fund discovery,
+independent 496-pair selections, sourced FX gaps, cleanup liveness and both deferred
+publication seals. Screenshot review corrected two unstyled X-ray buttons using
+the shared UI component. Final review then added storage-permission and source-expiry
+checks at new run/projection/collection publication boundaries; all nine dedicated
+PostgreSQL regressions passed, followed by all 54 X-ray integration cases in
+447.68 seconds and strict mypy across 389 files. The subsequent affected gate
+passed 279 selected unit/property/contract tests, 100 security tests, six X-ray
+browser checks, all static/docs checks, native/web builds, Semgrep and six container
+builds with unchanged source in 247.142 seconds. These are working-tree observations; exact committed-source
+validation, CI, security/image scans and fresh runtime acceptance remain required.
+The housekeeping policy requires serial verification, one reused task Compose
+project, and removal of disposable artifacts at stage boundaries while retaining
+source and acceptance evidence.
+
+Source-backed known P2-08 limitations remain: the complete seed now includes four accounts with the X-ray fixture, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.
 
 Phase 3 remains `not_started`.
 
@@ -127,7 +151,7 @@ than fabricated.
 
 ## Next action
 
-Proceed to P2-05 after its authority synchronization, then P2-06 through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+Complete P2-05 under accepted ADR-0017, then proceed to P2-06 through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo
@@ -180,3 +204,7 @@ because those external resources were not supplied.
 - `docs/implementation/PHASE_1_IMPLEMENTATION_REPORT.md`
 - `docs/implementation/PHASE_1_SCENARIO_EVIDENCE.md`
 - `VALIDATION_REPORT.md`
+
+## P2-05 implementation in progress
+
+Accepted authority `0ebbfa29253f418084835335eb2ee66f1b898679` precedes the X-ray implementation. Provider pages now retain complete typed request echoes; exact domain/calculation, persistence, API/web/MCP integration and verification are in progress. P2-05 has no acceptance claim. Four packages remain complete (40%); P2-06 through P2-10 and Phase 3 remain not_started.

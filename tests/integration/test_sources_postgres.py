@@ -1102,3 +1102,117 @@ def test_series_cannot_relabel_a_different_provider_instrument_key(
         assert count(sessions, MarketSourceSeriesModel, case.principal.owner_id) == 1
 
     asyncio.run(scenario())
+
+
+def test_source_expiry_resumes_physical_batches_without_premature_completion(
+    sources_database: tuple[Engine, sessionmaker[Session]],
+) -> None:
+    from trading212_persistence.source_models import (
+        SourceExpiryEventModel,
+        SourceRetentionWorkModel,
+    )
+    from trading212_persistence.source_retention import SourcePurgeBudget
+    from trading212_persistence.source_retention_service import expire_source_payloads
+
+    _, sessions = sources_database
+
+    async def scenario() -> None:
+        case = await source_case(sessions, retention_days=1)
+        snapshot = await ingest(case)
+        owner = UUID(case.principal.owner_id)
+        before = count(sessions, PriceObservationModel, case.principal.owner_id)
+        assert before > 1
+        case.now[0] += timedelta(days=2)
+        budget = SourcePurgeBudget(rows_removed=1)
+        with sessions.begin() as session:
+            assert expire_source_payloads(session, at=case.now[0], limit=1, budget=budget) == 0
+        assert budget.rows_removed == 0
+        assert count(sessions, PriceObservationModel, case.principal.owner_id) == before - 1
+        with sessions() as session:
+            pending = session.scalar(
+                select(SourceRetentionWorkModel).where(
+                    SourceRetentionWorkModel.owner_id == owner,
+                    SourceRetentionWorkModel.price_snapshot_id == UUID(snapshot.id),
+                )
+            )
+            assert pending is not None and pending.phase == "observations"
+            assert pending.removed_observation_count == 1 and pending.completed_at is None
+            assert (
+                session.scalar(
+                    select(SourceExpiryEventModel.id).where(
+                        SourceExpiryEventModel.price_snapshot_id == UUID(snapshot.id),
+                    )
+                )
+                is None
+            )
+        with pytest.raises(app.SourceServiceError) as denied:
+            await case.service.get_price_snapshot(case.principal, snapshot.id)
+        assert denied.value.code is app.SourceServiceErrorCode.ACCESS_DENIED
+        # A new service call/new allowance resumes the persisted phase and count.
+        assert await case.service.expire_source_snapshots(limit=1) == 1
+        with sessions() as session:
+            event = session.scalar(
+                select(SourceExpiryEventModel).where(
+                    SourceExpiryEventModel.price_snapshot_id == UUID(snapshot.id),
+                )
+            )
+            work = session.scalar(
+                select(SourceRetentionWorkModel).where(
+                    SourceRetentionWorkModel.price_snapshot_id == UUID(snapshot.id),
+                )
+            )
+            assert event is not None and event.removed_observation_count == before
+            assert work is not None and work.phase == "complete"
+            assert work.completed_at == event.removed_at
+        assert await case.service.expire_source_snapshots(limit=1) == 0
+
+    asyncio.run(scenario())
+
+
+def test_pending_source_work_cannot_authorize_premature_expiry_or_rewind(
+    sources_database: tuple[Engine, sessionmaker[Session]],
+) -> None:
+    from trading212_persistence.source_models import (
+        SourceExpiryEventModel,
+        SourceRetentionWorkModel,
+    )
+    from trading212_persistence.source_retention import SourcePurgeBudget
+    from trading212_persistence.source_retention_service import expire_source_payloads
+
+    _, sessions = sources_database
+
+    async def scenario() -> None:
+        case = await source_case(sessions, retention_days=1)
+        snapshot = await ingest(case)
+        owner = UUID(case.principal.owner_id)
+        case.now[0] += timedelta(days=2)
+        with sessions.begin() as session:
+            assert (
+                expire_source_payloads(
+                    session, at=case.now[0], limit=1, budget=SourcePurgeBudget(rows_removed=1)
+                )
+                == 0
+            )
+        with pytest.raises(IntegrityError), sessions.begin() as session:
+            session.add(
+                SourceExpiryEventModel(
+                    owner_id=owner,
+                    price_snapshot_id=UUID(snapshot.id),
+                    removed_at=case.now[0],
+                    removed_observation_count=1,
+                    content_digest=source_snapshot_digest(snapshot),
+                    reason="retention_removed",
+                    created_at=case.now[0],
+                )
+            )
+            session.flush()
+        with pytest.raises(IntegrityError), sessions.begin() as session:
+            session.execute(
+                update(SourceRetentionWorkModel)
+                .where(SourceRetentionWorkModel.price_snapshot_id == UUID(snapshot.id))
+                .values(phase="copies", removed_observation_count=0)
+            )
+        assert count(sessions, PriceObservationModel, case.principal.owner_id) > 0
+        assert await case.service.expire_source_snapshots(limit=1) == 1
+
+    asyncio.run(scenario())
