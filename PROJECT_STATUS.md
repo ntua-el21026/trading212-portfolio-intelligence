@@ -131,6 +131,14 @@ The database CI timeout is now 40 minutes: the failed run spent over 15 minutes
 before any X-ray case could execute. Application behavior and dependencies are
 unchanged; corrected-source acceptance remains pending.
 
+Candidate `c84ecee2278a1f32d41c2e9640692001fae6fcf8` passed the complete CI
+Python coverage gate (1,642 isolated and 234 service tests, 88% coverage),
+documentation and security. Browser CI reached 73 passes before its 20-minute
+job limit cancelled the final three mobile X-ray checks. That job now allows
+40 minutes while retaining serial execution and existing test timeouts. The
+[timeout record](docs/implementation/evidence/phase-2-p2-05-c84ecee-incomplete-browser.json)
+preserves the successful layers and incomplete gate. P2-05 remains in progress.
+
 Source-backed known P2-08 limitations remain: the complete seed now includes four accounts with the X-ray fixture, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.
 
 Phase 3 remains `not_started`.

@@ -181,3 +181,19 @@ then 188 service coverage cases before interruption. It has no full-gate pass.
 The [retained failure](evidence/phase-2-p2-05-b2b0466-failed-quality.json) keeps
 the actual CI and partial local outcomes. Full corrected-source acceptance is
 still required before closing P2-05.
+
+## Serial browser CI budget
+
+Candidate `c84ecee2278a1f32d41c2e9640692001fae6fcf8` passed documentation,
+security and complete Python CI coverage: 1,642 isolated cases, 234 service cases
+and 88% combined statement/branch coverage. Browser CI completed 73 checks, then
+the 20-minute job limit cancelled the final three mobile X-ray cases. GitHub's
+timeout annotation and the incomplete transcript are retained in the
+[candidate record](evidence/phase-2-p2-05-c84ecee-incomplete-browser.json).
+
+The browser job now allows 40 minutes for serial execution. Test selection,
+per-test timeouts, retry policy and worker count are unchanged. The local full
+gate was deliberately interrupted after 224 service coverage passes to avoid
+remaining work on the superseded candidate. Its completed layers are retained,
+without claiming a full-gate pass. The corrected commit still requires complete
+immutable-source acceptance.

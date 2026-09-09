@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.0.0",
+  "recorded_at": "2026-09-09T11:47:27.440211+00:00",
+  "affected_commit": "c84ecee2278a1f32d41c2e9640692001fae6fcf8",
+  "package_acceptance": "not_accepted",
+  "workflow": {
+    "id": 34344676052,
+    "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34344676052",
+    "conclusion": "cancelled",
+    "incomplete_job_id": 102443336176,
+    "incomplete_job": "playwright-chromium",
+    "github_annotation": "The job has exceeded the maximum execution time of 20m0s"
+  },
+  "browser_observation": {
+    "completed_suite_pass_counts": [
+      44,
+      3,
+      3,
+      1,
+      1,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3
+    ],
+    "completed_browser_pass_count": 73,
+    "incomplete_suite": "xray.spec.ts / api-chromium-mobile (3 started tests; no completed result)",
+    "full_log": {
+      "file": "34344676052-102443336176-cancelled-job.log",
+      "sha256": "c053b3f9da396710b01c99eb0386c66a58849d183f333c477d09dce7d6241a92"
+    },
+    "annotations": {
+      "file": "34344676052-102443336176-annotations.json",
+      "sha256": "2e8edfdacee21a28ddf5d8183d071b6fcc2b9f1f52575fc089de4ee0089d06e3"
+    },
+    "excerpt": {
+      "file": "34344676052-102443336176-timeout-excerpt.log",
+      "sha256": "ae60bd53f07c090fe0752f461c5f3fc4a76ab4906db9960a4330d05d50a883ee",
+      "full_log_lines": [
+        3020,
+        3059
+      ]
+    }
+  },
+  "completed_ci_python": {
+    "isolated_passed": 1642,
+    "isolated_duration_seconds": 318.15,
+    "service_passed": 234,
+    "service_duration_seconds": 1154.11,
+    "combined_statement_branch_coverage_percent": 88,
+    "log": "34344676052-102443336148-passed-postgres-job.log",
+    "log_sha256": "26a05563d7114df67a69922f164b42c57e9d6d248b2a3763ed5dc035e516a5f6"
+  },
+  "ci_final_states": {
+    "quality": "cancelled",
+    "documentation": "success",
+    "security": "success",
+    "record_sha256": "1dbd6f4d9990de2406eb03e06c7bc53a7a3caf96204600dd72707ee1fa4880c2"
+  },
+  "correction": {
+    "job_timeout_minutes_before": 20,
+    "job_timeout_minutes_after": 40,
+    "scope": "Allow the existing serial browser suite to finish within a bounded CI job. Application code, test selection, per-test timeouts, retry policy and worker count are unchanged."
+  },
+  "interrupted_local_gate": {
+    "name": "p205-exact-full-03",
+    "exit_code": 2,
+    "duration_seconds": 1622.307,
+    "source_unchanged": true,
+    "record_sha256": "0be4507d3e5e328cf1fbedd325c196483d673bdd9421999c54358ef7ebe7dd1e",
+    "log_sha256": "02b2a5cde25c63f32f0ae392af31824a1f9e2aff56ec266ad79f439235a950eb",
+    "reason": "Intentionally interrupted after the confirmed CI browser timeout to correct that budget before remaining validation.",
+    "completed_layers": {
+      "python_unit": 1394,
+      "web_unit": 223,
+      "property": 34,
+      "contract": 114,
+      "integration": 219,
+      "migrations": 12,
+      "security": 100,
+      "isolated_coverage": 1642
+    },
+    "partial_service_coverage": {
+      "passed_before_interrupt": 224,
+      "complete": false
+    },
+    "disposable_test_databases_after_exit": 0
+  },
+  "corrected_source_acceptance": "pending complete exact-source local gate, CI, security/image scans and fresh runtime"
+}
