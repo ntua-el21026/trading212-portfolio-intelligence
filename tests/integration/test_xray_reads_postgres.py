@@ -71,7 +71,9 @@ def xray_read_case() -> Iterator[XrayReadCase]:
     )
     with psycopg.connect(admin, autocommit=True) as connection:
         connection.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))
-    url = parsed.set(database=name).render_as_string(hide_password=False)
+    url = parsed.set(drivername="postgresql+psycopg", database=name).render_as_string(
+        hide_password=False
+    )
     engine = None
     try:
         cfg = Config("alembic.ini")

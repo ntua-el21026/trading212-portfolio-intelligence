@@ -120,6 +120,17 @@ was deliberately interrupted after 176 integration passes; completed layers and
 interruption evidence are retained, with no full-gate acceptance claimed. The
 corrected candidate requires fresh exact-source validation, CI, scans and runtime.
 
+Candidate `b2b0466cc150ac14cd3893fd823a7b84b084d7d9` passed security,
+documentation and browser CI, but all 54 X-ray integration cases failed during
+fixture setup: a bare PostgreSQL URL selected the uninstalled psycopg2 driver.
+The fixture now explicitly selects the installed psycopg driver, matching the
+existing historical fixture. Its real migration/seed/read regression passed
+with both URL forms. The interrupted local full gate remains unaccepted; see the
+[retained CI failure](docs/implementation/evidence/phase-2-p2-05-b2b0466-failed-quality.json).
+The database CI timeout is now 40 minutes: the failed run spent over 15 minutes
+before any X-ray case could execute. Application behavior and dependencies are
+unchanged; corrected-source acceptance remains pending.
+
 Source-backed known P2-08 limitations remain: the complete seed now includes four accounts with the X-ray fixture, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.
 
 Phase 3 remains `not_started`.

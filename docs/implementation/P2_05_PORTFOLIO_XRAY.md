@@ -159,3 +159,25 @@ before correction. No full-gate acceptance is claimed for that attempt. See the
 [retained finding and correction](evidence/phase-2-p2-05-b9b75ec-failed-security.json).
 The corrected commit still requires all exact-source gates and fresh runtime
 acceptance.
+
+## CI database fixture correction
+
+Candidate `b2b0466cc150ac14cd3893fd823a7b84b084d7d9` passed documentation,
+security and browser CI. Its database coverage job passed 1,642 isolated tests
+and 180 service tests, then reported 54 X-ray fixture setup errors. The fixture
+retained CI's bare `postgresql://` URL, causing Alembic to select the uninstalled
+psycopg2 driver. It now normalizes the disposable URL to `postgresql+psycopg`,
+as the existing historical fixture does. No application or dependency changed.
+The real migration/seed/read regression passed separately with both URL forms.
+The database CI job now allows 40 minutes for the expanded coverage workload.
+Its failed run spent 317.19 seconds on isolated tests and 595.18 seconds on the
+service stage while all 54 X-ray cases failed during setup. Those stages alone
+leave less than five minutes of the former 20-minute budget for the X-ray cases.
+Test commands and the coverage threshold are unchanged.
+
+The local exact gate was deliberately interrupted after diagnosis. It completed
+219 integration, 12 migration, 100 security and 1,642 isolated coverage tests,
+then 188 service coverage cases before interruption. It has no full-gate pass.
+The [retained failure](evidence/phase-2-p2-05-b2b0466-failed-quality.json) keeps
+the actual CI and partial local outcomes. Full corrected-source acceptance is
+still required before closing P2-05.

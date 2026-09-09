@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0.0",
+  "recorded_at": "2026-09-09T11:13:49.888772+00:00",
+  "affected_commit": "b2b0466cc150ac14cd3893fd823a7b84b084d7d9",
+  "package_acceptance": "not_accepted",
+  "failed_workflow": {
+    "id": 34342232435,
+    "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34342232435",
+    "conclusion": "failure",
+    "job_id": 102435578779,
+    "failed_gate": "postgres-migrations-and-integration",
+    "failed_step": "Run complete service-backed Python coverage gate"
+  },
+  "observed_ci_failure": {
+    "isolated_passed": 1642,
+    "integration_passed": 180,
+    "integration_deselected": 1642,
+    "integration_setup_errors": 54,
+    "integration_duration_seconds": "595.18",
+    "error": "ModuleNotFoundError: No module named 'psycopg2'",
+    "first_repository_stack_frame": "tests/integration/test_xray_reads_postgres.py:79",
+    "full_log": {
+      "file": "34342232435-102435578779-failed-job.log",
+      "sha256": "4a729af17132395ea94109da50ff3cf3a690d78895555d496d1bb3a078931d4a"
+    },
+    "excerpt": {
+      "file": "34342232435-102435578779-failure-excerpt.log",
+      "sha256": "54485615fcf043c208a5e42009c8d1ef9dbe0db73ab3e7a58148b12823db76f3",
+      "full_log_lines": [
+        [
+          730,
+          787
+        ],
+        [
+          4055,
+          4063
+        ]
+      ]
+    }
+  },
+  "ci_final_states": {
+    "quality": "failure",
+    "documentation": "success",
+    "security": "success",
+    "browser_job": "success",
+    "record_sha256": "dd79f715802033581195e8500c07c4884bb9667bc4dadf8771129b272eed6fe0"
+  },
+  "root_cause": "The X-ray test fixture passed the environment URL unchanged to Alembic. CI supplies a bare postgresql:// URL, selecting SQLAlchemy psycopg2 even though this workspace installs psycopg. All 54 X-ray cases failed during setup before their assertions.",
+  "correction": "Normalize the disposable database URL to postgresql+psycopg, matching the existing historical fixture. No application code or dependency change.",
+  "focused_verification": [
+    {
+      "input": "bare_postgresql_url",
+      "command": "uv run pytest tests/integration/test_xray_reads_postgres.py::test_real_snapshot_values_and_full_path_provenance_survive_new_service",
+      "result": "passed",
+      "passed": 1,
+      "log": "root-p205-bare-url-regression.log",
+      "log_sha256": "0b7ca9a8f07fd8a779d0ba8006f95cc749f290a42b2966296022c46252ff2f58",
+      "source_binding": "working_tree_after_driver_normalization"
+    },
+    {
+      "input": "explicit_psycopg_url",
+      "command": "uv run pytest tests/integration/test_xray_reads_postgres.py::test_real_snapshot_values_and_full_path_provenance_survive_new_service",
+      "result": "passed",
+      "passed": 1,
+      "log": "root-p205-explicit-driver-regression.log",
+      "log_sha256": "9d977ffa089d01cbf852656a1c6b8e97bdb2ed8d9973e67651348895f34b4d93",
+      "source_binding": "working_tree_after_driver_normalization"
+    }
+  ],
+  "interrupted_local_gate": {
+    "name": "p205-exact-full-02",
+    "exit_code": 2,
+    "duration_seconds": 1282.918,
+    "source_unchanged": true,
+    "record_sha256": "f0ea954388ee394e7ad9edbe06b6cfd97827221fab67896b058cb5319afe4047",
+    "log_sha256": "353c729d0e3b372f26804bc96127407100d51c5127253d4d71ecd054db52d788",
+    "reason": "Intentionally stopped after the independent CI failure was diagnosed, to avoid remaining expensive validation on a candidate needing correction.",
+    "completed_layers": {
+      "python_unit": 1394,
+      "web_unit": 223,
+      "property": 34,
+      "contract": 114,
+      "integration": 219,
+      "migrations": 12,
+      "security": 100,
+      "isolated_coverage": 1642
+    },
+    "partial_service_coverage": {
+      "passed_before_interrupt": 188,
+      "complete": false
+    },
+    "disposable_test_databases_after_exit": 0
+  },
+  "corrected_source_acceptance": "pending full immutable-source local gate, CI, security/image scans and fresh runtime",
+  "ci_timeout_adjustment": {
+    "job": "postgres-migrations-and-integration",
+    "previous_minutes": 20,
+    "minutes": 40,
+    "observed_isolated_seconds": 317.19,
+    "observed_service_stage_seconds": 595.18,
+    "xray_cases_that_did_not_execute": 54,
+    "reason": "Provide bounded time for the enlarged full coverage workload after fixing fixture setup. The recorded CI failure itself was the missing driver, not a timeout. Test commands and coverage threshold are unchanged."
+  }
+}
