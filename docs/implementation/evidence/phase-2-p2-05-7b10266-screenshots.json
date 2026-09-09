@@ -1,0 +1,97 @@
+{
+  "files": [
+    {
+      "file": "t212-p2-05-api-chromium-desktop-xray-effective.png",
+      "height": 3785,
+      "observed_mtime_utc": "2026-09-09T12:57:41.926538+00:00",
+      "project": "api-chromium-desktop",
+      "scene": "effective",
+      "sha256": "5bbeec705bf07b32c2ee10fb6b2259bfdd00ff1229dcde7733ca6e1cf889f677",
+      "width": 1280
+    },
+    {
+      "file": "t212-p2-05-api-chromium-desktop-xray-overlap.png",
+      "height": 3602,
+      "observed_mtime_utc": "2026-09-09T12:57:46.646740+00:00",
+      "project": "api-chromium-desktop",
+      "scene": "overlap",
+      "sha256": "dff2c40b0c6444e26c221b27d58d5deb6ad0ca7e9a03b537e179227564aaad67",
+      "width": 1280
+    },
+    {
+      "file": "t212-p2-05-api-chromium-desktop-xray-source.png",
+      "height": 925,
+      "observed_mtime_utc": "2026-09-09T12:57:44.222641+00:00",
+      "project": "api-chromium-desktop",
+      "scene": "source",
+      "sha256": "d6722ee4ef014e936b393d751aa20ea35a472874907d2a8bbdcca32341e6fbe4",
+      "width": 1280
+    },
+    {
+      "file": "t212-p2-05-api-chromium-mobile-xray-effective.png",
+      "height": 9844,
+      "observed_mtime_utc": "2026-09-09T12:58:05.910515+00:00",
+      "project": "api-chromium-mobile",
+      "scene": "effective",
+      "sha256": "bdc23d3543a21318eb2ea37750a6b9d0635c6e427c0898380fb59437cc00a2b8",
+      "width": 864
+    },
+    {
+      "file": "t212-p2-05-api-chromium-mobile-xray-overlap.png",
+      "height": 9526,
+      "observed_mtime_utc": "2026-09-09T12:58:10.622741+00:00",
+      "project": "api-chromium-mobile",
+      "scene": "overlap",
+      "sha256": "d2a723a6e498b76124ff7b43cdbf18df1e36103eb6d3c697245848c14321116b",
+      "width": 864
+    },
+    {
+      "file": "t212-p2-05-api-chromium-mobile-xray-source.png",
+      "height": 2302,
+      "observed_mtime_utc": "2026-09-09T12:58:08.310629+00:00",
+      "project": "api-chromium-mobile",
+      "scene": "source",
+      "sha256": "97d6a51714124a045658e02f9c02dfce2fef9dcdd2e0d77cb7de7f8d2d033090",
+      "width": 864
+    },
+    {
+      "file": "t212-p2-05-chromium-desktop-xray-widget.png",
+      "height": 1020,
+      "observed_mtime_utc": "2026-09-09T12:51:11.034098+00:00",
+      "project": "chromium-desktop",
+      "scene": "widget",
+      "sha256": "1914a21c7c72e8416f398c293796b79408b0d34496805008b6a7e849e91f98ef",
+      "width": 1280
+    },
+    {
+      "file": "t212-p2-05-chromium-mobile-xray-widget.png",
+      "height": 3384,
+      "observed_mtime_utc": "2026-09-09T12:51:34.631036+00:00",
+      "project": "chromium-mobile",
+      "scene": "widget",
+      "sha256": "a91df3c7dad37e78635917cdba9a1aafab903ec9df7e5e664021f346c2e38139",
+      "width": 864
+    }
+  ],
+  "gate_log_sha256": "c92047a6723c3880f87cbb5b0aea55c34294add6c5cf305f3e98b21e9f345db7",
+  "gate_record_sha256": "bf2a74c5f78e61148ee846fe976e1e26b8921c3537abeabf10c3d09e80c24df3",
+  "source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+  "validation_scope": "Actual byte hashes, PNG signature/IHDR dimensions and gate mtime; visual conclusions are the supplied root review.",
+  "visual_review": {
+    "all_eight_images_opened": true,
+    "files": [
+      "t212-p2-05-chromium-desktop-xray-widget.png",
+      "t212-p2-05-chromium-mobile-xray-widget.png",
+      "t212-p2-05-api-chromium-desktop-xray-effective.png",
+      "t212-p2-05-api-chromium-desktop-xray-source.png",
+      "t212-p2-05-api-chromium-desktop-xray-overlap.png",
+      "t212-p2-05-api-chromium-mobile-xray-effective.png",
+      "t212-p2-05-api-chromium-mobile-xray-source.png",
+      "t212-p2-05-api-chromium-mobile-xray-overlap.png"
+    ],
+    "note": "Reviewed all eight final-gate PNGs. API desktop/mobile show EUR1000, Alpha560 (200 direct and360 indirect), Beta390, known95%, unresolved5%, duplication41%, HHI0.4657 and overlap50% lower bound with explicit stale/partial states. Atlas source displays its synthetic attribution, dates, license and 90%known/10%unresolved composition. Widget boundary fixtures show long exact decimal strings, missing states and literal adversarial markup. No P2-05 financial display defect was observed. This is not acceptance of shared P2-08/P2-09 UI polish: the desktop global account header still differs from the selected analysis account, mobile fixed navigation overlays the captured form/source table area, the mobile source table extends horizontally, narrow cells wrap awkwardly, and 54 repeated warnings dominate effective/overlap pages. Source table contents are not all visible in the mobile capture; functional paging is covered separately by browser/API checks. These existing presentation follow-ups remain open. Widget fixtures are distinct from the EUR1000 API fixture.",
+    "result": "passed",
+    "reviewed_at_utc": "2026-09-09T13:23:15.603499+00:00",
+    "reviewer": "root"
+  }
+}

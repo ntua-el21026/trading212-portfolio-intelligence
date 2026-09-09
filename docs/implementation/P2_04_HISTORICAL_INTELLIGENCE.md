@@ -1,5 +1,9 @@
 # P2-04 Historical Performance and Income Intelligence
 
+This document preserves the P2-04 acceptance and earlier investigation history.
+Then-current package counts and pending statements below remain historical;
+[current P2-05 scoped acceptance](P2_05_PORTFOLIO_XRAY.md) is recorded separately.
+
 P2-04 is **complete** at exact implementation SHA `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`. Implementation began at `05d01c7a9a9cb6cc3f351c3adbed2036f02b94a9`; P2-03 acceptance remains at `e258f54bb03a958f7847b310ee882b7f4a54686f`. This is scoped package acceptance, not complete Phase 2 release acceptance.
 
 ## Authority and implementation scope

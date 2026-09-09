@@ -9,6 +9,7 @@ export TMPDIR
 LOCAL_DATABASE_URL ?= postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio
 LOCAL_REDIS_URL ?= redis://127.0.0.1:6379/0
 SEMGREP_IMAGE ?= semgrep/semgrep:1.175.0@sha256:b94b53d02fd4a022f9eac4e2af1380f5c3c4c21400e79d3336bdff1d1db5e796
+GITLEAKS_IMAGE := ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
 PYTHON_TARGETS := apps packages scripts tests
 
 .PHONY: help bootstrap check-workspace format format-check lint lint-python lint-web \
@@ -108,6 +109,8 @@ docs-check: ## Validate documentation, links, JSON, YAML contracts, and workspac
 
 security-check: sast-check ## Audit dependencies and run source/secret security gates.
 	$(UV) run python scripts/check_secrets.py
+	@docker image inspect "$(GITLEAKS_IMAGE)" >/dev/null 2>&1 || docker pull "$(GITLEAKS_IMAGE)"
+	$(UV) run python scripts/check_gitleaks_policy.py
 	@set -euo pipefail; audit_file=$$(mktemp); \
 		trap 'rm -f "$$audit_file"' EXIT; \
 		$(UV) export --frozen --all-packages --no-dev --no-emit-workspace --quiet -o "$$audit_file"; \

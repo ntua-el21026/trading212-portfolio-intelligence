@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0.0",
+  "stage": "P2-05",
+  "artifact_kind": "failed_runtime_harness_attempt_not_acceptance",
+  "source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+  "status": "failed",
+  "started_at_utc": "2026-09-09T13:23:48.855244+00:00",
+  "completed_at_utc": "2026-09-09T13:25:12.053867+00:00",
+  "duration_seconds": 83.203183,
+  "runtime_observation_sha256": "d472f2d08de0a95355c8e8e55e695e2a327c712ec46fc3764651289ca6336414",
+  "failure": {
+    "completed_checks": [
+      "bootstrap",
+      "services",
+      "source_binding"
+    ],
+    "details_suppressed": true,
+    "exception_type": "RuntimeError"
+  },
+  "cleanup": {
+    "global_prune": false,
+    "network_count_removed": 1,
+    "services_removed": [
+      "api",
+      "dispatcher",
+      "mcp",
+      "postgres",
+      "redis",
+      "web",
+      "worker"
+    ],
+    "verified_absent": true,
+    "volumes_removed": [
+      "t212pi_stage_a_20260907_postgres-data"
+    ]
+  },
+  "checkout_clean_after": true,
+  "head_after": "7b102663ea193b4668924a7252180731954f4b00",
+  "previous_harness_sha256": "d3df460cb12c4efad6c1b25f9019343b16d157a152ad03ca813d10cc1c0b8781",
+  "corrected_harness_sha256": "17fd85ede601321dc3540203edb1460b17db616ea6cce4c8b4ef484e7dde92cf",
+  "cause": "login performed a request and opened httpx.Client before exercise and synthetic denial entered its context again. Offline MockTransport reproduces RuntimeError: Cannot open a client instance more than once.",
+  "correction": "Use contextlib.closing to close the already-open authenticated client at both call sites.",
+  "offline_reproduction": "Actual MockTransport reproduction raised the exact RuntimeError; closing variant allowed a second request and client.is_closed was true afterward.",
+  "scope": "Harness-only failure before API assertions. Repository application sources and successful exact-source gate/CI/image scans were unchanged. This attempt is not acceptance."
+}

@@ -1,0 +1,1108 @@
+{
+  "acceptance_boundary": {
+    "application_imports_executed": false,
+    "exact_candidate_ci_security_image_gates": "Not run or accepted by this artifact.",
+    "exact_candidate_full_gate": "Not run or accepted by this artifact.",
+    "fresh_runtime_restart_acceptance": false,
+    "historical_ci_passes_are_not_current_candidate_acceptance": true,
+    "network_access_performed": false,
+    "package_acceptance": false,
+    "prior_artifacts_modified": false,
+    "repository_files_modified": false,
+    "source_review_bound_to_candidate": true,
+    "tests_scans_builds_runtime_or_docker_executed": false
+  },
+  "artifact_kind": "additive_browser_ci_budget_correction_compatibility_binding",
+  "candidate_sha": "7b102663ea193b4668924a7252180731954f4b00",
+  "candidate_tree_sha": "526bdd02612f5d76edbf995f129fecd639752416",
+  "comparison_baseline_sha": "0ebbfa29253f418084835335eb2ee66f1b898679",
+  "compatibility_limits": {
+    "broker_ten_get_boundary_unchanged": true,
+    "dependency_or_lock_changes": false,
+    "existing_p208_and_external_license_limits_preserved": true,
+    "financial_method_or_policy_changes": false,
+    "http_and_mcp_contract_changes": false,
+    "http_operations": 70,
+    "mcp_tools": 21,
+    "migration_or_model_changes": false
+  },
+  "correction_review": {
+    "application_and_test_code_unchanged": true,
+    "change_counts": {
+      "A": 1,
+      "M": 4
+    },
+    "changed_file_count": 5,
+    "ci": {
+      "exact_byte_replacement_verified": true,
+      "job_key": "browser",
+      "job_name": "playwright-chromium",
+      "only_workflow_change": true,
+      "path": ".github/workflows/phase-1-ci.yml",
+      "reason": "The retained c84 browser job exceeded its 20-minute job budget after 73 completed passes, with three mobile X-ray cases started and no completed result. The bounded job budget increases without changing test execution policy or coverage.",
+      "test_selection_commands_per_test_timeouts_retries_and_worker_count_unchanged": true,
+      "timeout_minutes_after": 40,
+      "timeout_minutes_before": 20
+    },
+    "committed_blob_delta": [
+      {
+        "change_since_parent": "M",
+        "new_git_blob_oid": "4baa940862b2905aad9cc6038babb2b46f9bf272",
+        "new_sha256": "85449958a309cd46c1265fe5cabdf0329de59a8e1cc092472d62359402d03a50",
+        "old_git_blob_oid": "029a667d909a241dc40183fca07706e21fd296f9",
+        "old_sha256": "a484d793cda28a5499da44ae48a194c7c3a2550ac69684f747422aefe027d127",
+        "path": ".github/workflows/phase-1-ci.yml"
+      },
+      {
+        "change_since_parent": "M",
+        "new_git_blob_oid": "2c97d4e9ac9158dd8615d179f19920c6e0379f1d",
+        "new_sha256": "d0ace32b73dcf261b9376b49acf22c5dec82ecd32b514e9855e2b8f46bfdb229",
+        "old_git_blob_oid": "2eee878f2fbb2439b9442e84b23828e653f943d6",
+        "old_sha256": "d8bdaaaa2318ddb3b9190121b6f8724c05cec9ee72f2d7dcbbf18be9d653f00b",
+        "path": "PROJECT_PROGRESS.json"
+      },
+      {
+        "change_since_parent": "M",
+        "new_git_blob_oid": "b8a72464ddefb9b5fc7bc93834a27f0414548e34",
+        "new_sha256": "021abec56f104b92417ef3eee230887090d0f649c8cc913b1d52180ed00cd519",
+        "old_git_blob_oid": "834a11eb62919fbdac3f539ff00287614b038d9c",
+        "old_sha256": "f093549dcb760c35258e4b1f13de5d4e9a3935f255db2014da0e0b46f22ab890",
+        "path": "PROJECT_STATUS.md"
+      },
+      {
+        "change_since_parent": "M",
+        "new_git_blob_oid": "4b5ed784df93921c09b8f3b269131b49b78e36b6",
+        "new_sha256": "23c3cab48ec04567f1f9318995907b376ff2d323fe2ffa4fe90fde70440f31fe",
+        "old_git_blob_oid": "f3fe8138699007b7dac0dcf8d5cf3b6d4c6486bb",
+        "old_sha256": "f4286ab1539db9b4e95120f9f867400def9a2e9e0ef26336a8e2b1f7230a50da",
+        "path": "docs/implementation/P2_05_PORTFOLIO_XRAY.md"
+      },
+      {
+        "change_since_parent": "A",
+        "new_git_blob_oid": "d6a3d3fad62cde2589c53fbd4e97ccc8a82f3749",
+        "new_sha256": "aee65c0bba6daf3b688e47911a43ae0f15a2f645b67050dee892ee8766ad5396",
+        "path": "docs/implementation/evidence/phase-2-p2-05-c84ecee-incomplete-browser.json"
+      }
+    ],
+    "historical_incomplete_candidate_evidence": {
+      "affected_commit": "c84ecee2278a1f32d41c2e9640692001fae6fcf8",
+      "package_acceptance": "not_accepted",
+      "path": "docs/implementation/evidence/phase-2-p2-05-c84ecee-incomplete-browser.json",
+      "sha256": "aee65c0bba6daf3b688e47911a43ae0f15a2f645b67050dee892ee8766ad5396"
+    },
+    "status": {
+      "docs_review": "Status and P2-05 specification add truthful historical CI and intentionally interrupted local-gate facts. P2-05 remains in progress and corrected-source acceptance remains pending.",
+      "new_updated_at": "2026-09-09T11:47:27.440967+00:00",
+      "old_updated_at": "2026-09-09T11:13:49.889313+00:00",
+      "progress_only_updated_at_changed": true
+    },
+    "unchanged_git_subtrees": [
+      {
+        "git_tree_oid": "222f7733fd1c0f59204f5ad602ff236e77d36ce5",
+        "path": "apps"
+      },
+      {
+        "git_tree_oid": "496ae68f57f35107009cb2e845c941a6b3796b91",
+        "path": "packages"
+      },
+      {
+        "git_tree_oid": "b65b5f093017a55bcdc6791ffda1acde4728942f",
+        "path": "tests"
+      },
+      {
+        "git_tree_oid": "ecac992ccbf48d078b9df7a49106e9ac25fdbf69",
+        "path": "config"
+      },
+      {
+        "git_tree_oid": "4320353214515e9630822f422c91c59f07c88d74",
+        "path": "migrations"
+      },
+      {
+        "git_tree_oid": "fd0939259d174d9269d34aa4ea3d6c0a545de300",
+        "path": "scripts"
+      },
+      {
+        "git_tree_oid": "f8bc6e957c594bbe58d5b0fec8babc1e93db0e5c",
+        "path": "infrastructure"
+      }
+    ]
+  },
+  "created_at_utc": "2026-09-09T11:54:13.922106+00:00",
+  "external_assembler_compatibility": {
+    "expected_sha_file_value": "7b102663ea193b4668924a7252180731954f4b00",
+    "helper_edits": false,
+    "helpers": [
+      {
+        "executed": false,
+        "file": "p205-security/write_portable_evidence.py",
+        "sha256": "b885b8402807a44a58e63a6ab0f2eab2eaefd66e364eb624a86e77508c1bf8d7",
+        "unchanged_from_c84_review": true
+      },
+      {
+        "executed": false,
+        "file": "p205-evidence-candidate/finalize_p205.py",
+        "sha256": "c305335a0ebc8a7233e223571cae5659ff79a638184f35c19204b89c86c5afc5",
+        "unchanged_from_c84_review": true
+      }
+    ],
+    "six_exception_policy": {
+      "active_exception_count": 6,
+      "all_anchored_policy_source_paths_unchanged": [
+        ".gitleaksignore",
+        ".github/workflows/security.yml",
+        "trivy.yaml",
+        "apps/worker/src/trading212_worker/xray_seed.py",
+        "docs/implementation/evidence/phase-2-p2-05-b9b75ec-failed-security.json"
+      ],
+      "exact_active_fingerprints": [
+        "53b74c9b7f95c84a66c3618a91d515388760787a:.env.example:generic-api-key:14",
+        "dfe40f67aa60cb53fbac323e8e3905c4995ef241:PROJECT_STATUS.json:generic-api-key:62",
+        "6dde264e865dd5fdfc8e3116a35b1661a48a68fd:tests/integration/test_virtual_targets.py:generic-api-key:290",
+        "6dde264e865dd5fdfc8e3116a35b1661a48a68fd:tests/integration/test_virtual_targets.py:generic-api-key:298",
+        "05d01c7a9a9cb6cc3f351c3adbed2036f02b94a9:docs/implementation/evidence/phase-2-p2-03-e258f54-compatibility.json:generic-api-key:85",
+        "b9b75ec54fe94fdcec627d8e31ca94700ccb08ad:apps/worker/src/trading212_worker/xray_seed.py:generic-api-key:143"
+      ],
+      "ignore_sha256": "d598cc5d1e3602895c98cdd30b69067c53828c7cfa2e0373c005c405f28a43c2",
+      "reviewed_exception_commit": "b2b0466cc150ac14cd3893fd823a7b84b084d7d9"
+    },
+    "source_only_conclusion": "The helpers are byte-identical to the c84 source review. Candidate SHA is dynamic; the six exception invariants, fixed seed label and historical failed-security evidence remain unchanged. Fresh exact-7b10266 source/build/scan/gate/CI/runtime evidence is still required; no assembler was run here."
+  },
+  "immutable_binding": {
+    "committed_blob_manifest": [
+      {
+        "change": "M",
+        "git_blob_oid": "4baa940862b2905aad9cc6038babb2b46f9bf272",
+        "path": ".github/workflows/phase-1-ci.yml",
+        "sha256": "85449958a309cd46c1265fe5cabdf0329de59a8e1cc092472d62359402d03a50"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "627cb4d9746f05eb2d14210b92b4aed0d58bfa8f",
+        "path": ".github/workflows/security.yml",
+        "sha256": "e0292f8c5c07354661a54b7e77f65867f1af74d53201af6cc9b61b4f4093c5f3"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "2bca025beae6095bb27a56e4937f78327fdb04aa",
+        "path": ".gitleaksignore",
+        "sha256": "d598cc5d1e3602895c98cdd30b69067c53828c7cfa2e0373c005c405f28a43c2"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "43899d8862d1f3f13443e55bea61efd6131604cc",
+        "path": "AGENTS.md",
+        "sha256": "6ac708a5e7b14e980e63e0c63387a7b212d744fff93f440a9202984a313df65d"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "2c97d4e9ac9158dd8615d179f19920c6e0379f1d",
+        "path": "PROJECT_PROGRESS.json",
+        "sha256": "d0ace32b73dcf261b9376b49acf22c5dec82ecd32b514e9855e2b8f46bfdb229"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "b8a72464ddefb9b5fc7bc93834a27f0414548e34",
+        "path": "PROJECT_STATUS.md",
+        "sha256": "021abec56f104b92417ef3eee230887090d0f649c8cc913b1d52180ed00cd519"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "ba78c3e5d8320abdf386fa08242462d7887fc338",
+        "path": "apps/api/src/trading212_api/main.py",
+        "sha256": "e66efd2015b5461a196a5c74ba78784afdf84df76785954efd1908c4a3b3f1e1"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "aef36cde944f8b95ba07da01aac95e65087a9190",
+        "path": "apps/api/src/trading212_api/target_routes.py",
+        "sha256": "e3b4d835fe6e6500cf82f39dbb515c95a561669dfd58a9eba9d26b582162160d"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "24633e7309283ad31eca1d2447f1a08977016cfb",
+        "path": "apps/api/src/trading212_api/xray_routes.py",
+        "sha256": "bbc10b8b5f64b60f61a29780e9ee16bf5c61c721fd0a3cdc268e8876eaa54f6c"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "7d1f97a08545fac7f8b3651d3ce5d9c6a7d9e5ba",
+        "path": "apps/api/src/trading212_api/xray_schemas.py",
+        "sha256": "dc6db6581afb31b6bf7fa2a98f26a05ebac748b28e6e5b197ba7e786d58807c7"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "981d4453ad9629a9c3d4ecd33864a1bea2e73393",
+        "path": "apps/mcp/src/trading212_mcp/schemas.py",
+        "sha256": "21af785e91500e924182a4ede580d773bd053e6f1fd685b040a25deb82353291"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "3541069ddf80822792238e800700825357966793",
+        "path": "apps/mcp/src/trading212_mcp/server.py",
+        "sha256": "c926ef8e4c8eb08d4e1d63bf2ac7f188480de6089c045535a7a23aa815b9894d"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "45022072fb22f5b39063e6d61ba38e0fefe93b2c",
+        "path": "apps/mcp/src/trading212_mcp/xray_gateway.py",
+        "sha256": "a09590feb44c30a4433dd8e4c993ced79db6c8de9ce50a53ecb91bcc9e92c6d7"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "238b2db500353cb4166853a0d4d364a5c39ef67c",
+        "path": "apps/mcp/src/trading212_mcp/xray_schemas.py",
+        "sha256": "22536042ea3ee0f6406f045e96fd418ddf3dea345011bda85a1d72b02dc2e15b"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "18d03d1ca611df213ef4556bb39fda1cd5b9f7bb",
+        "path": "apps/mcp/src/trading212_mcp/xray_tools.py",
+        "sha256": "c5a899aca6e7b9684829f6ef79b9d583488398fe12621a3c0058332f51ee31e4"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "6538ae213fe5247d2c5da96d732b2fcef81bd1b2",
+        "path": "apps/mcp/src/trading212_mcp/xray_widget.py",
+        "sha256": "727bb4cd6c0e0ba308667800b20d3844698993d434e9cc82a8a4b71f3c784281"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "0018c7e8ee77e4ff53e8395825654a36146e58af",
+        "path": "apps/web/app/(portfolio)/xray/page.tsx",
+        "sha256": "a5908085c0ee0ae59b45ab12bffd7cff868f84723075ab15c3d4f02e59ec0ee8"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "31767fa2f591d33483368d56938f8a25f60a73c6",
+        "path": "apps/web/app/(portfolio)/xray/sources/[snapshotId]/page.tsx",
+        "sha256": "173fcdab19a3202a536172a7aaa049b5e3c22b1e35265369e8905fffa4ae8ba4"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "235eed8b073b0979436181427468e6afd1bd60c2",
+        "path": "apps/web/app/styles.css",
+        "sha256": "396c6cd0d80ec5f405a8b827409218a045dbb3ab79e121e4ab8b2b02f74faf9a"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "7341a74e36b2d2211221f0bf3904d2de1a05743d",
+        "path": "apps/web/components/navigation.tsx",
+        "sha256": "c977ac597412f9950b08bf1654bfcc7700235b6a31c3b0b60e4374a11f59b491"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "790b541c992b675b86a62c476f54e50fcdb671a4",
+        "path": "apps/web/components/xray-fund-selection.tsx",
+        "sha256": "d4bf53ddbbf5cc8fb344b01b291aec08b68b23b1165a5759aa02591e82aa51cb"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "dbfe2d84ef84c8ad1a4620d5c789e0b7a5830f83",
+        "path": "apps/web/components/xray-page.tsx",
+        "sha256": "ae72c89dc45cec66f5d1d32cb2abd919bd1ac2fedb91010177235ced9fb17843"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "0885f8e3f0bfba5a70f3c9085e318385df12d34a",
+        "path": "apps/web/components/xray-results.tsx",
+        "sha256": "4eee3b8e6b0c97694db95dc22c23304d4dba216363749cbe4be8018325fdab4b"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "9afab309172d50b8ce8b54e3cdfafb1ed25b2f7b",
+        "path": "apps/web/lib/xray-adapter.ts",
+        "sha256": "68e2774dc0026138d1e71d0db8f5d3fb233870d20e9d0d00af129ad8c3d8c1c6"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "96348cccd851052327d884bb07b529a6b4987621",
+        "path": "apps/web/lib/xray-query.ts",
+        "sha256": "d7b9e12234b540490f1debedd45196509b2961059f81c8efeab9d397fb28531b"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "d9148a5e3d0d8f2ea737dcb09f2aedb67f50907b",
+        "path": "apps/web/playwright.config.ts",
+        "sha256": "4e2d7960454bdfe7abe8b52f2588ac96c2a18756a99ce51c83392d9178d115ca"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "26ef158c830bac69a96a23f6b612e07f545d2ad5",
+        "path": "apps/web/tests/xray-client.test.ts",
+        "sha256": "0a6fc9b45d739ad141c95c2ea6bf0d2a1b15ff9941a47f388ea742a732213703"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "d2f8365ea34c96d31d1ae8031579de92cb96205f",
+        "path": "apps/web/tests/xray-query.test.ts",
+        "sha256": "9546259858e4af1e26247c72293e13da043f0ced5d0ab74fba43bdbf33eed236"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "9cb12fe7e216ab10dce4d6029bab47c2e9551c7f",
+        "path": "apps/web/tests/xray-ui.test.tsx",
+        "sha256": "6462bbb994e0c8a8b2bbb44f546f4303922be7898b775e18a689620cb0b51380"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "c09be774bb390a6a0d21d37382cd2606fc100ba5",
+        "path": "apps/worker/src/trading212_worker/seed.py",
+        "sha256": "7114f790d27e3b80069caeefa8cd9076e860f2c0f0f204e8a8d59c5db0055483"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "44db7b603cf6b923951958ddcfe5101c2a3e1b17",
+        "path": "apps/worker/src/trading212_worker/xray_fixture.py",
+        "sha256": "34bdc7e145e2392874fd5cedd22703f7e20dca2214a92c8de988d5220cbc5d07"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "13a8893676413fe81114875003973fd2e27ed1f9",
+        "path": "apps/worker/src/trading212_worker/xray_provider.py",
+        "sha256": "dd60c0b8f52f89c82311600cf17822e8f21d3810f929e717a8533abc56247d96"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "dad80017d29da6ad18cfb09c2b92f5c0370c3f29",
+        "path": "apps/worker/src/trading212_worker/xray_seed.py",
+        "sha256": "82e6a7584c4a3185ed0338448e8ae018b01a420f2ce6fb418d0c7ae30981f8b1"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "b96ebb0bb6e28b08c7f40b77ca46835f65584ae7",
+        "path": "apps/worker/src/trading212_worker/xray_source_fixture.py",
+        "sha256": "3e474bbb37b80dfe8bd0ee804dc4d15a9e88ad94b2dbf8937766e1bf5f36e5df"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "d2da40437bed7e1820f0c4a641f9df1c9b86c244",
+        "path": "docs/analytics/PHASE_2_METHODS.md",
+        "sha256": "14a3c8dff6ec7ddd22ed0a021a27e1f3cee644b0ace1bf94de56333ae6d920e2"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "4b5ed784df93921c09b8f3b269131b49b78e36b6",
+        "path": "docs/implementation/P2_05_PORTFOLIO_XRAY.md",
+        "sha256": "23c3cab48ec04567f1f9318995907b376ff2d323fe2ffa4fe90fde70440f31fe"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "c5a313a53d71fccffa3c583cd375c2efb9226074",
+        "path": "docs/implementation/PHASE_2_EXECUTION_MANIFEST.md",
+        "sha256": "093ad92c9968a8c16db97ff27976d42f7310f0f9c7d0f47f3aedf2ab82052859"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "8177a47b0267d9d0caf8f64d977c6a82844b8056",
+        "path": "docs/implementation/evidence/phase-2-p2-05-b2b0466-failed-quality.json",
+        "sha256": "6e4238d46208a3e06e5e9210c7c09709b78458633bf1362c5e76e61e3e7d4edc"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "1460d8d2d49a75108d583ed8b069532e2497ff4d",
+        "path": "docs/implementation/evidence/phase-2-p2-05-b9b75ec-failed-security.json",
+        "sha256": "95dfa3a5b946611157c10b762bb28c4594955cc3e45afdc08ed92b4c6f48157b"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "d6a3d3fad62cde2589c53fbd4e97ccc8a82f3749",
+        "path": "docs/implementation/evidence/phase-2-p2-05-c84ecee-incomplete-browser.json",
+        "sha256": "aee65c0bba6daf3b688e47911a43ae0f15a2f645b67050dee892ee8766ad5396"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "971ac7edde0ffd87ef0692ac227bae4dcabf5f37",
+        "path": "migrations/versions/20260909_0013_xray_intelligence.py",
+        "sha256": "96a3ff7b0b258b26dcd7c9451cce3ea4e17b4097ca08d0a35eeb5b64c68ead63"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "e712171330076a4cdeca5189a14656cbd19d1cff",
+        "path": "packages/analytics/src/trading212_analytics/_xray_aggregate.py",
+        "sha256": "0b375c233b3388d039aef1335e6924613847671cf07c3a8e31caee19f43141f1"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "9e5da6f222ceacff1685c221416bacd23f29ff7d",
+        "path": "packages/analytics/src/trading212_analytics/_xray_decimal.py",
+        "sha256": "e2c83a2ed07799e754ed5f2b9c9a443bbba0df866e035472d6e66039fed3db40"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "ca2e25daf76bb37b45aa5a824220f11948487ddd",
+        "path": "packages/analytics/src/trading212_analytics/_xray_graph.py",
+        "sha256": "36cf4abfbdc088912a3ca6048baff5a548c34d4352ab661466c93510f5f5184c"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "0ae3d01ccbba102557b37f2b0c6fd9522b594165",
+        "path": "packages/analytics/src/trading212_analytics/_xray_sources.py",
+        "sha256": "b8e3d120c1638bc2239fff02ee04c9e89eee54f265cafc5364a56011786399d7"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "5f115d36121e31249bbafc710f7fce427bd056e4",
+        "path": "packages/analytics/src/trading212_analytics/_xray_valuation.py",
+        "sha256": "e9766e4f5cdd924f7813eae25a47eab409c0d1333f52d85a27ac013418b25398"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "c4273b67550687a582c3da5bf6ef4f3cba832718",
+        "path": "packages/analytics/src/trading212_analytics/_xray_verify.py",
+        "sha256": "e7a35046190f4978ef2da8e7884825d1d7d40df75438a4a91136918535a353af"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "402dbaa965fb4842487722fa97a61d19f42f2f64",
+        "path": "packages/analytics/src/trading212_analytics/xray.py",
+        "sha256": "db70df89151a98e057cfe95a3b2643cb41559146254bbc210d67e411d710217a"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "4ddb4f61c8ab308232cbbec4b541363e086ab087",
+        "path": "packages/api-contracts/openapi/phase1-v1.json",
+        "sha256": "173be85b667fa32e2c5939eebf0d905289a211e9f6c84e608e2f3ca1d9799888"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "161acc4eb0253f46e9ba4438e61310fb6d056c22",
+        "path": "packages/api-contracts/src/bounded-transport.ts",
+        "sha256": "17bc463f44cf240ae807a88a87156d4162df58f1ffcfa6e70a5864f47a378772"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "8c7aaeec5a56205a3d645de42f40ab1fa8d2bcd1",
+        "path": "packages/api-contracts/src/index.ts",
+        "sha256": "f02837f7b6f38f4dce07ca2788ea34a1c166a8e501d1149b918698b4a36859d7"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "4c4d146ab24dc22c889ae7d6989f49255786b4b7",
+        "path": "packages/api-contracts/src/trading212_api_contracts/typescript.py",
+        "sha256": "ad7e7f51dcc8addcced70573e0433f299b1902015a310f71452dee9c99845fd0"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "4eefa0fecf3612070cc02d9f5b6c2134e2476495",
+        "path": "packages/api-contracts/src/trading212_api_contracts/xray.py",
+        "sha256": "3400321c9753d68d4bc0fc8fe28d5660a2f69803698cf03b61c09d6e309e5334"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "7b9b4cf06ec5e97d1ab8228e3d3b9f78a54e789b",
+        "path": "packages/api-contracts/src/xray-transport.ts",
+        "sha256": "b5f62979acfd856d1031d39e6c98f1f9ba3ce4f4669ea8be3392b07f20399e6b"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "b5e8986d9e06596860117c168600e5168be9fe80",
+        "path": "packages/api-contracts/src/xray.generated.ts",
+        "sha256": "2b3c24ac2477d772c2d4124dbe1ececa82c3b1fb047d5ee8f5d04be145504925"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "23730f7906ae18f3aad4bf88d94be4d56a31c4fb",
+        "path": "packages/application/src/trading212_application/source_providers.py",
+        "sha256": "ce138c55b9e0223b7a1570e5627a15d6cc074cde089aa131e719bbbcc23d505b"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "6c2d8aac8aff0b072eb4c2b7e92f9e8ecee9b952",
+        "path": "packages/application/src/trading212_application/xray.py",
+        "sha256": "c60611a1f8b23e83d61cc2c2dfbb4ca4f91cb74d336a4f3755367277cb5c9f5d"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "5310dfbff65066d0c97311f4b863fe01bb873215",
+        "path": "packages/application/src/trading212_application/xray_ingestion.py",
+        "sha256": "656b932357cf9ba372b9aade398577b4fb19d5e7e6c47fc21ca2687011b4408c"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "f9e78c64eaa8ffa0ef72125cfd0c1b3b157fffd1",
+        "path": "packages/application/src/trading212_application/xray_projection.py",
+        "sha256": "501fd8390de24a19fc8f0e7df541b6181af26c80eaf4398c1d89a2d1957f60db"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "52bbc1bcf91b960a9c57f68b029976e8746e0b90",
+        "path": "packages/domain/src/trading212_domain/xray.py",
+        "sha256": "4d957342b1fd033dc7d7667284b55cae949b8c8ad5cff63102d6c7dd3063e882"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "a15a5f50f2c15bb8021f533d18b125277f578986",
+        "path": "packages/domain/src/trading212_domain/xray_codec.py",
+        "sha256": "b990efd038997cb36b039df081079f9b3ab3da7697b2ff2ecd69049ff99030e7"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "cc5dfb563aa205e6afb120a911ed85401e61f6eb",
+        "path": "packages/domain/src/trading212_domain/xray_result.py",
+        "sha256": "ed8bd963563541d2910578f9a9b7e3de1b7e4cb1f2de476edc1354290ddecad1"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "deaaff3568313e3db5ac773c9535a5b2c3592870",
+        "path": "packages/domain/src/trading212_domain/xray_validation.py",
+        "sha256": "d2f86572545033207599993b649851fdb66d43e15afb1fc1ad9a8860d6795798"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "a4cfe68077caf09635bcc7a85d4f5fa89aaf9723",
+        "path": "packages/persistence/src/trading212_persistence/collection_snapshots.py",
+        "sha256": "a9893ea29f77dacd9e831634470931d06f256e58f95e412eb555793a2472c49e"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "f70f0ca8310d45372b69e19b4dd98efe84d8102e",
+        "path": "packages/persistence/src/trading212_persistence/historical_models.py",
+        "sha256": "74fe8d8e23268152f0797aa791c3dc302ad48b7bff8ee10388159c77f9cb68d8"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "5567bc9a4434d83a8620ee811f501106737ccc24",
+        "path": "packages/persistence/src/trading212_persistence/historical_retention.py",
+        "sha256": "6a89aea728fe520388dacf50652063c3eba5a0a7ace19fff1473d06490b34931"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "3e4f1015099f485d43173f1aef81d0ff2584e0e2",
+        "path": "packages/persistence/src/trading212_persistence/models.py",
+        "sha256": "d224ca233e8fcd949d7da9da7bdcbccd0402b5398cc016ecb18321d83c29ec27"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "d2be2eb30ca076be7b1fa493c59471b7f822bb84",
+        "path": "packages/persistence/src/trading212_persistence/planning_models.py",
+        "sha256": "a0315eccd1ebfa8aec926f2b218e577808130d889658a6cdd520296fb244e78d"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "babaafcc6c37c05cc3cc20e81db99bd2ee37783d",
+        "path": "packages/persistence/src/trading212_persistence/source_ingestion.py",
+        "sha256": "5e3e14dcbcc5f5c29c77bf0acdcf5505ead93f0820b401631d2dbf2291f1e0c3"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "f48ac05c85f0833ebe1e4c0b307526eb240f6745",
+        "path": "packages/persistence/src/trading212_persistence/source_models.py",
+        "sha256": "cc55d9a75f6a26597c1cbe07842388433e94faa3d2dd34fb5ea69f3a06fe5931"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "b048f700af2e9fee4f84f5d013c8f30dc574721a",
+        "path": "packages/persistence/src/trading212_persistence/source_retention.py",
+        "sha256": "3cf7e91fc400e5fb3c838858b10a4c4d6c259bd7c3a682a2927b28dc514197fa"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "88b6fa37b50e85c2f7d2041690c21246305af661",
+        "path": "packages/persistence/src/trading212_persistence/source_retention_service.py",
+        "sha256": "4dc090106193ae7077a1ef0f875d01edf37476fe1ffe59438cdd59d1cc8d4232"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "3a09a9732b747c55ac988ad5183c58c60358a202",
+        "path": "packages/persistence/src/trading212_persistence/source_retention_sql.py",
+        "sha256": "1506d88f281fbbe04c36847a828ff0c72529da4e8bded8f315b892a3ec8f56f4"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "9ddfa3bbb3e910d5717d898378d6f781b76e3c35",
+        "path": "packages/persistence/src/trading212_persistence/xray_base.py",
+        "sha256": "7befbfdcff98ce4ac1fbf03aa341af0742b8b729b820e67a323848ce66a49f78"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "6025f56abf9209ee48b07f7ee75a0ecb97742b0e",
+        "path": "packages/persistence/src/trading212_persistence/xray_capture.py",
+        "sha256": "c70e237e994d63926e20c0b1420745e16d6396549408455efe496a3eb21ffeb9"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "101508aff03fad4c4288df31037f795b619a2780",
+        "path": "packages/persistence/src/trading212_persistence/xray_capture_base.py",
+        "sha256": "ddb70e3ca7d52b4536fb21cffe3bb10a05ec2c8c3581f9fd72a2c1c3880ac1e7"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "b2454b228bb1649d9eb31a00213274d6defd84be",
+        "path": "packages/persistence/src/trading212_persistence/xray_capture_catalog.py",
+        "sha256": "fb72b9650fc40e9ca1d1886b08cfc44dda16a262181c531c28c8e59ef7acf052"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "a1a11d8addddfcf000c3aa698bf01bc316334be8",
+        "path": "packages/persistence/src/trading212_persistence/xray_capture_fx.py",
+        "sha256": "0057dfef81a1cb65e5bd1e16334c81ed55b4819726930d7febbe838ff6f734be"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "43d86799b4a3bdc605177e7c53db2e9306cc0f67",
+        "path": "packages/persistence/src/trading212_persistence/xray_catalog_models.py",
+        "sha256": "816128abfc3184ba5f47d81a118a01892e1f36307367e46c924022ead927b309"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "577e17ae1fd587fcb01d2c8fb892ba2c8809b42b",
+        "path": "packages/persistence/src/trading212_persistence/xray_collections.py",
+        "sha256": "8788718ebda2c99382f21aca89b124ed1a79df9c9d2c886153a51b20424793a3"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "5e4b8627238ed1742d4a880a695ad70c2855ce51",
+        "path": "packages/persistence/src/trading212_persistence/xray_enrichment_retention.py",
+        "sha256": "39ee55bcf73e3f8f31710d8e8fe26d53385acf84d6318d84ab44a992d3799da0"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "effbb0b238857d6f698321f2b6575868e9671ff7",
+        "path": "packages/persistence/src/trading212_persistence/xray_exposure_reads.py",
+        "sha256": "8d4310aa6fe35448e7de4ca018c2d4809734e0332262321ddc94f398eefb086e"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "ac81709c534b49eb1697e401e5ff032b407a262a",
+        "path": "packages/persistence/src/trading212_persistence/xray_ingestion.py",
+        "sha256": "9e21ee1a93303fd3be72fbedb96212a0962778d9f4eff641ebf40315fe75c6df"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "3778c2b59dcbceed97b57c77a290cf5e92001819",
+        "path": "packages/persistence/src/trading212_persistence/xray_ingestion_pages.py",
+        "sha256": "c6155e2eba650ef90e8911f61aabe9db3f33f4025fc44d42416693e67075f690"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "0a4b7e3ff0673cf8569357a7651fd8b23d559afa",
+        "path": "packages/persistence/src/trading212_persistence/xray_ingestion_store.py",
+        "sha256": "18eab8e324adb4c624353377535db19edfda1d11b6d57c1a8587ed9772a5c25a"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "95af48d0017880cefd300cb58e0cb2d10030ea7f",
+        "path": "packages/persistence/src/trading212_persistence/xray_lifecycle_models.py",
+        "sha256": "ef84f06475fa4dd4b1a7ee855c9ebb226eb0b626a79e7139d540e7c1026420e8"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "7666df7863a5862f7dd84d5d015c98b7b5fe8b12",
+        "path": "packages/persistence/src/trading212_persistence/xray_models.py",
+        "sha256": "261635614b7890b673fbfa1c1dbe9f268899419125225fed2aa53afe72a42326"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "2e48517e24e47a75cb48f39d235d288d375e79b6",
+        "path": "packages/persistence/src/trading212_persistence/xray_overlap_reads.py",
+        "sha256": "0736b460804ad270859a7c199af4bc7f8c60ff3111c68b158ccceb7766680e69"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "b6971412e790040cb3023e021f589ade22b5922b",
+        "path": "packages/persistence/src/trading212_persistence/xray_policy_registrations.py",
+        "sha256": "01feb400e80b05e0a9512a9362c481d13bc28599fefffd35e740f606369391cd"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "610d64c0f7f870e9fd6ce15002a8be3be6a5ddda",
+        "path": "packages/persistence/src/trading212_persistence/xray_publication.py",
+        "sha256": "e5a47ed82ad34c5a8ef6c9c980e53320ad559be8f430edcf308a67f326db15a4"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "1407bfb7c287e31d425b3ba305157c03b3b014f2",
+        "path": "packages/persistence/src/trading212_persistence/xray_read_store.py",
+        "sha256": "b1e8728d19ae0a0fa439eb8d29d330f253e26d57fea97cccb2e17265f50e8433"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "73c1397480c4803479b9af61960088c2a45df5e0",
+        "path": "packages/persistence/src/trading212_persistence/xray_registrations.py",
+        "sha256": "0d8caeb7653e6fb50d9f78b987b073f398535bfd22598dd53269c17b61923b33"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "848370b04d6cc3d8f38be8d52f6d3cb5534ae296",
+        "path": "packages/persistence/src/trading212_persistence/xray_retention.py",
+        "sha256": "4951122572d8ddbfbbed3e6fb23180f5d57f6835fe4f623d4da99dbd1102ba7b"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "48828866c5d9da32176d6c65a6633e723b9b3449",
+        "path": "packages/persistence/src/trading212_persistence/xray_run_models.py",
+        "sha256": "1df378d94400f4d03f3c3db7d4d60d7b098ed5173e1028059e8d4807ff23977d"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "e883f1015d884c5b990be34a82b47ce9db179ddd",
+        "path": "packages/persistence/src/trading212_persistence/xray_run_store.py",
+        "sha256": "04cb131e3576da7a2ea5316daaffbc0c071455d5a351e14782696d9b4ae5dec7"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "364eb26da009b6be5d8fcd9b9ccfc2c20012c4da",
+        "path": "packages/persistence/src/trading212_persistence/xray_service.py",
+        "sha256": "5bc7e19b5434c32348d15cd1a18d1e8a4c2c4dd52aa58bb68b416e3331feb8e3"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "ea246b1f17fb4138f8bb9795899d21b262c00956",
+        "path": "packages/persistence/src/trading212_persistence/xray_source_reads.py",
+        "sha256": "20330c6c6585850b4baaf9b1458c21e280329f2e36fd1823870165e85092ffd3"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "21411a59ad1868c6a16d9f1f7adc68e04d91df06",
+        "path": "packages/persistence/src/trading212_persistence/xray_store_contract.py",
+        "sha256": "7ed5183e0fb822ade6eceda1a01b12dd6cafc318b6a6d56b708006df9521f9b8"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "29d626b416911ce9900c55f96db97f5c351bb1de",
+        "path": "packages/persistence/src/trading212_persistence/xray_views.py",
+        "sha256": "6e53f250554b0740ab1afd43a7faebb3405ca7a63f205a2a8e63126b605cabff"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "d1255cebc7c8f90ed3df368d299e8c75be46ba9f",
+        "path": "packages/reference-data/src/trading212_reference_data/replay_enrichment.py",
+        "sha256": "109816917b77f362b4b209fad28c6379daa168ede1c0aa66c097496e7b8e8ddf"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "c5df5ef12f0502dcc2cb653ab778e98a2e37f62b",
+        "path": "packages/reference-data/src/trading212_reference_data/xray_replay.py",
+        "sha256": "c1021c67a3d00accdba6836ed560e0016950c183a2ef2f02aa2ca1207da81ea0"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "953ad7db1644c0829eccba77cdbd77829775c51d",
+        "path": "scripts/generate_api_contract.py",
+        "sha256": "4431ee88830e93343730fecda0a5c2e92024c9b8a82444e36a26ffc9b84a867d"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "7b626c92a36f5aae6b653c4b9a09d5c1526a6a06",
+        "path": "scripts/run_api_backed_e2e.py",
+        "sha256": "c55671fc4bb15f1b62e60a6bc00fc2f4ba19ffceef60fc7f3c24106175e1e2c1"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "726dcbbfdc8cd8d445d1cb333628621388fb6a8d",
+        "path": "scripts/run_api_browser_suites.mjs",
+        "sha256": "82e59de0a81bd17176d2c67f52187278a78a6c0ea5d67bd6c23623a423f23f36"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "c5d79c7bfca37b39077c877a288e29e750b6e981",
+        "path": "tests/contract/test_historical_contract.py",
+        "sha256": "1f0ee4a0c4289cf724db12d2e3e0b1c8da54f6a95e181363fb2b846a24df1294"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "fb1a44f348f317843e82ef5452a38086997023cb",
+        "path": "tests/contract/test_mcp_contract.py",
+        "sha256": "7a9d3321c3413d7d34ac6759e7463ca0d1b0d50d51fff78b070204dba547ce5a"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "31364168bdf76af1d16ca93a59ad6b6f71d8bae9",
+        "path": "tests/contract/test_planning_contract.py",
+        "sha256": "0849cc3fb1bf1e3c8a362795de9495d3a4afc26e4bfa8b2c0045f352a720caf1"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "dd4d4739920170d7a384a041f2ae83f076045596",
+        "path": "tests/contract/test_xray_contract.py",
+        "sha256": "f4572ddb6900ee86c49a397a6795da1f819e04ea2286b606b36d12711ce0a0f0"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "c1af08db12fa94e45dfc036cdbf093326ad6f00a",
+        "path": "tests/e2e/api-web/xray.spec.ts",
+        "sha256": "d36da757e3a488405e1c291ca93bb65e30f8da088ea912d9e1fb3a960372b944"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "1d351cd5aecd3abef926eca062db658720e62148",
+        "path": "tests/e2e/web/xray-widget.spec.ts",
+        "sha256": "ded44a774b66b2848960f95e33b786b56e684264b02ae35ce2bf1a35e51048b5"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "29c55fbe399c1b50c0e7aeab5197ac1877ab420a",
+        "path": "tests/integration/test_collection_query_snapshots.py",
+        "sha256": "3069864515ed20889c22206b2810cc977f91fe9f6d578fd77099bb7670cc2838"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "cbfb3ba7bddf37273e51a1dbc7297598b1196b83",
+        "path": "tests/integration/test_migrations.py",
+        "sha256": "039b61a8ce79da7a964658fb9871bb84a614227d2489c135bc55f7ae291f0f1e"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "f4a8a1ebc8f4584e29971cbaed2f869b008f213d",
+        "path": "tests/integration/test_sources_postgres.py",
+        "sha256": "1fed73c6c6669cf66b079d06b15f1a93a5f48827e4fcf71e12240ef9482ea72d"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "f7f194204b6987c372bbf590deef45a63038dde4",
+        "path": "tests/integration/test_xray_api_postgres.py",
+        "sha256": "b5c263795ebd1aa3cf8db09fd4e898c28aef4cf277a4196f87dd402e143a1257"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "2aa1db010c63e0d14136e661e533a8980d362307",
+        "path": "tests/integration/test_xray_catalog_scope_postgres.py",
+        "sha256": "5d777fa703faa269a2aadb725aa7b241b14e77a3ebfcd2fe8843aefc1404836a"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "8e9b6aa8df5974580d44e1ac7aeb2c7b918f943c",
+        "path": "tests/integration/test_xray_fx_postgres.py",
+        "sha256": "e5a09913bb9520ecd516046be6e82d72cb80d6ad4b0dd19f8677dd6727c10819"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "9a21e923d771edd5939796470f4874ee2001631d",
+        "path": "tests/integration/test_xray_many_funds_postgres.py",
+        "sha256": "55f2cdb7ad31dfca36fb842d3312bca0d60f25b09a15a2eed50e149483f39a50"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "e0970f7ea1c5a3ff5d5d2f9003143d6f062f419b",
+        "path": "tests/integration/test_xray_postgres.py",
+        "sha256": "b178f49fbee651b04dc9eb717f8af44fe4e81c361848d734766d5089ed964a4c"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "f4619150f71bb7f4b774fbe4fe0c04c92417eaf7",
+        "path": "tests/integration/test_xray_reads_postgres.py",
+        "sha256": "a0253bbc22c023957dae641fa5cfea79fb480a76f4bfc51b7bd8ece69db6dff2"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "14064d5744c3f6867cc176ca200daae7162eff3b",
+        "path": "tests/integration/test_xray_store_permission_postgres.py",
+        "sha256": "804ceb89363feb90577a539fa03da7070c02eb33211dbcb634cf06886ade43c1"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "ceef9b1333e92d51c1bc2afe34f4df277e3a939a",
+        "path": "tests/property/test_xray_properties.py",
+        "sha256": "f2190ad828321d23e79b9e98802064c26ee7dc08bf143240ed7f9df3ca570ab9"
+      },
+      {
+        "change": "M",
+        "git_blob_oid": "9a4a7cddb233ddd335a5b621a9b82d40f30cc492",
+        "path": "tests/security/test_mcp_security.py",
+        "sha256": "afb3c04d9250f567983796db02b0707f7913b13b8167cfab49a99895844e5889"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "4f49ef85b0a31a43ad5f87087dd1f6199a93859b",
+        "path": "tests/unit/analytics/test_xray.py",
+        "sha256": "5c7b625a282430717a1c2dc5dcba4378e5b4feae23943034a46b5756a0a46cc7"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "e5d43c60897b3702eb8285fe2c9e67f2f369fa92",
+        "path": "tests/unit/analytics/test_xray_decimal.py",
+        "sha256": "80a2090ae39287c575c4112414e5128c169f7b6ce238687c98cea1c724d6a240"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "e295153135d02e0b4cb0682a8ca5b8698750df2e",
+        "path": "tests/unit/analytics/xray_factories.py",
+        "sha256": "c90411731bbd1467a6e9cc1d6ee936a26010e5e10bb0dbe4d41c9f288d082f40"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "5979f6f69c59dab404eb2954df6cc6d6404dd9b7",
+        "path": "tests/unit/api/test_xray_response_bounds.py",
+        "sha256": "71396c0c4996fa28543fe145f5c02ab9b7b3da49e32d18b58789145def07a12b"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "5edf0e8b13250dc1678c7a13027bce4f0418e138",
+        "path": "tests/unit/api/test_xray_routes.py",
+        "sha256": "de3f5e3e79eeb64f65fac33fef2524a71e0c680a07d0e6bd26e1d7fc0fbce84c"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "08f622875cc7bf410b21f75ce6e7f8feb3c05bec",
+        "path": "tests/unit/api/xray_factories.py",
+        "sha256": "405f94d906c174250dfc4724c4b978a274865dde9d2695a3bb185f0d6a733cd2"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "50f4511da33fdbda0fcc0aff95dd975434eba70c",
+        "path": "tests/unit/domain/test_xray.py",
+        "sha256": "00cab982f5f2e89d0a68c6a59a3f4ade762b6f455a1b0521a9704bc799c2a7a7"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "f853a8eab83adadde5eb1505eefe43c0fc701f5c",
+        "path": "tests/unit/mcp/test_xray_gateway.py",
+        "sha256": "d6765e084147621143c14f3a835a178e34157283e79f56b5cf90850f8ebb973f"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "741ed4d7dd78bbf2865e9426516b40f8a809134c",
+        "path": "tests/unit/test_source_retention_budget.py",
+        "sha256": "b35e52f6ef4c73c51d75f1e5d6e58cd9339e2282a0374d444082f171ab23ef05"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "b7256eaecfe57be6ed00993e18668602cbf7bff6",
+        "path": "tests/unit/test_xray_application_queries.py",
+        "sha256": "f409d5d18e23f2844351e2696af68208fafa30d7a3dc0bee051edf31caea5f79"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "66be06c55a71a4a6becad0242fa42043068f33e7",
+        "path": "tests/unit/test_xray_ingestion_pages.py",
+        "sha256": "efc936cfce1c7b9f6b014112ad4bf9d44776b9ad4bc5843118f8a4c4e0609e65"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "9f4123307884a77c1525abf649f62a48b127e0a3",
+        "path": "tests/unit/test_xray_provider_echo.py",
+        "sha256": "27b48a978f85ff84fe827165f8f0fd871a29673b9934ea4b832a17c361daea03"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "409674668dc37a480fa16642ef9c3b9d5fbdc6a5",
+        "path": "tests/unit/test_xray_public_projection.py",
+        "sha256": "b2a4b0ed58e78e5b2d0c027ee389f454ae3f1bb9546c8895f85f7cce8222cafc"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "c1eaf28d886a49261df478dfb943bca96e99a8e2",
+        "path": "tests/unit/test_xray_query_adapters.py",
+        "sha256": "39be00a8ed3ee2fbcdb8f3c1a597ccdab73793b427d3816d2f2f9fe6c0f9eb66"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "9a2867d42644edd8446415b7d6d5fc638b3f2f0b",
+        "path": "tests/unit/test_xray_synthetic_provider.py",
+        "sha256": "5d18cd14fb86f8443af8d37fbab3c980315702bb6f8c901ed9cc0d7edde9effc"
+      },
+      {
+        "change": "A",
+        "git_blob_oid": "b677d0795a8eb8f5e9e0e065f3ae67158276f465",
+        "path": "tests/unit/test_xray_wire_queries.py",
+        "sha256": "79f1c01ff3bd73bf1478963909c74129759b02d488c9ae98b5e48676fcf56aeb"
+      }
+    ],
+    "committed_net_file_count": 138,
+    "complete_net_path_set_verified": true,
+    "manifest_sha256": "26b3147a91080f6879983861963ac8b5ebd4756ed1a71ef529a0933d5be9d89a",
+    "net_change_counts": {
+      "A": 99,
+      "M": 39
+    },
+    "new_baseline_relative_paths": [
+      "docs/implementation/evidence/phase-2-p2-05-c84ecee-incomplete-browser.json"
+    ],
+    "prior_paths_retained": true,
+    "worktree_independent": true
+  },
+  "inherited_review": {
+    "all_137_prior_committed_blob_hashes_reverified": true,
+    "file": "p205-compatibility-c84ecee.json",
+    "preserved_unmodified": true,
+    "scope": "The c84 fixture correction, b2 security correction, b9 application review and original working-tree review retain their facts and acceptance limits. This additive artifact reviews only the five-path CI budget/status/evidence correction and binds the complete resulting Git manifest.",
+    "sha256": "829bb089a7a41db93af1d5a1b6bae376f907fba22b4b95540c6608201d255a30",
+    "unchanged_reviewed_blob_count": 133,
+    "updated_reviewed_paths": [
+      ".github/workflows/phase-1-ci.yml",
+      "PROJECT_PROGRESS.json",
+      "PROJECT_STATUS.md",
+      "docs/implementation/P2_05_PORTFOLIO_XRAY.md"
+    ]
+  },
+  "observed_retained_ci_evidence": {
+    "acceptance": false,
+    "aggregate_required_gate_conclusion": "failure",
+    "browser": {
+      "completed_passes": 73,
+      "completed_suite_pass_counts": [
+        44,
+        3,
+        3,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3
+      ],
+      "incomplete": true,
+      "job_conclusion": "cancelled",
+      "job_limit_minutes": 20,
+      "last_unfinished_suite": "xray.spec.ts / api-chromium-mobile",
+      "started_without_completed_result": 3
+    },
+    "documentation_conclusion": "success",
+    "files": [
+      {
+        "bytes": 196817,
+        "file": "ci/34344676052-102443336148-passed-postgres-job.log",
+        "sha256": "26a05563d7114df67a69922f164b42c57e9d6d248b2a3763ed5dc035e516a5f6"
+      },
+      {
+        "bytes": 526805,
+        "file": "ci/34344676052-102443336176-cancelled-job.log",
+        "sha256": "c053b3f9da396710b01c99eb0386c66a58849d183f333c477d09dce7d6241a92"
+      },
+      {
+        "bytes": 4052,
+        "file": "ci/34344676052-102443336176-annotations.json",
+        "sha256": "2e8edfdacee21a28ddf5d8183d071b6fcc2b9f1f52575fc089de4ee0089d06e3"
+      },
+      {
+        "bytes": 5311,
+        "file": "ci/34344676052-102443336176-timeout-excerpt.log",
+        "sha256": "ae60bd53f07c090fe0752f461c5f3fc4a76ab4906db9960a4330d05d50a883ee"
+      },
+      {
+        "bytes": 1125,
+        "file": "ci/c84ecee2278a1f32d41c2e9640692001fae6fcf8-incomplete-source-final-observed.json",
+        "sha256": "1dbd6f4d9990de2406eb03e06c7bc53a7a3caf96204600dd72707ee1fa4880c2"
+      },
+      {
+        "bytes": 38955,
+        "file": "ci/34344676052-final-jobs.json",
+        "sha256": "209c6969d2834033041cfc0539f422b7ddc235379baada9f51a724818232c1a0"
+      }
+    ],
+    "local_gate": "The committed record separately preserves intentionally interrupted p205-exact-full-03 and partial service coverage; no local full-gate pass is inferred or newly claimed.",
+    "method": "Read/hash previously retained local logs and metadata; no network or CI execution was performed in this review.",
+    "python": {
+      "combined_statement_branch_coverage_percent": 88,
+      "coverage_log_line": 915,
+      "isolated_log_line": 686,
+      "isolated_passed": 1642,
+      "postgres_job_conclusion": "success",
+      "service_log_line": 728,
+      "service_passed": 234
+    },
+    "quality_workflow_conclusion": "cancelled",
+    "security_conclusion": "success",
+    "source_sha": "c84ecee2278a1f32d41c2e9640692001fae6fcf8",
+    "workflow_id": 34344676052
+  },
+  "parent_correction_sha": "c84ecee2278a1f32d41c2e9640692001fae6fcf8",
+  "schema_version": "1.0.0",
+  "stage": "P2-05",
+  "status": "immutable_source_binding_verified_acceptance_pending"
+}

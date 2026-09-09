@@ -54,9 +54,17 @@ capacity exhausted by repeated earlier-package checks. The production source
 and 64-view quota did not change.
 Migration head is `20260907_0011`; MCP remains 15 tools and Trading 212 ten GET
 capabilities. See [the P2-03 evidence](docs/implementation/evidence/phase-2-p2-03-e258f54.json).
-Phase 2 now has four of ten packages, eleven of 29 local rows and eighteen of 40
-scenarios complete (40%). P2-05 through P2-10 and shared release predicates remain
-required. Real reference provider configuration/licensing remain unavailable.
+P2-05 is **complete** at `7b102663ea193b4668924a7252180731954f4b00`. The [accepted assertion map](docs/implementation/evidence/phase-2-p2-05-7b10266.json) closes P2-XRAY-001/002 and P2-S20 through P2-S23. Phase 2 has five of ten packages (50%), thirteen of 29 local rows and twenty-two of 40 scenarios complete. P2-S34 and P2-S38 remain `in_progress`; report/export parity and the remaining release-wide predicates are outstanding. P2-06 through P2-10 and Phase 3 remain `not_started`.
+
+The clean exact-source `make validate` passed in 2339.747 seconds: 1,642 isolated and 234 service/migration Python tests, 88% combined statement/branch coverage, 223 web unit tests and 76 browser checks without retries. Assertion selectors are source mappings bound to completed test-file observations.
+
+Exact-source CI passed: Quality `34347516142`, Documentation `34347516068`, Security `34347516074`. Eight source/history/image scans passed under the recorded scanner policies. The fresh runtime passed in 146.262241 seconds, preserving identical retained rows across all 167 compared tables and API/MCP replay after all seven services stopped/restarted. Task containers, volumes and networks were removed, with absence verified. All eight exact-gate screenshots received the recorded visual review.
+
+See [runtime](docs/implementation/evidence/phase-2-p2-05-7b10266-runtime.json), [security](docs/implementation/evidence/phase-2-p2-05-7b10266-security.json), [compatibility](docs/implementation/evidence/phase-2-p2-05-7b10266-compatibility.json), [screenshots and visual review](docs/implementation/evidence/phase-2-p2-05-7b10266-screenshots.json) and [observed count derivation](docs/implementation/evidence/phase-2-p2-05-7b10266-counts.json). Earlier failed candidates remain unaccepted. External broker/provider/deployment gates, the documented P2-08 UI follow-ups and the null final Phase 2 release SHA are unchanged.
+
+Real reference provider configuration/licensing remain unavailable.
+
+### Earlier implementation and acceptance history
 P2-04 implementation began at synchronized starting SHA
 `05d01c7a9a9cb6cc3f351c3adbed2036f02b94a9`; scoped acceptance is recorded below. Earlier failed candidates remain unaccepted. Candidate
 `6a2074141d9c7bdd8aa64e1710777d153c4996f5` failed historical browser load
@@ -85,9 +93,9 @@ The clean exact-source `make validate` passed in 1165.723 seconds: 1,346 isolate
 
 Exact pushed-source CI passed: Quality `34272112673`, Documentation `34272112714`, Security `34272112661`. Eight source/history/image scans passed under their retained scanner policies. Fresh runtime attempt 003 passed in 170.757 seconds: six historical HTTP reads, four MCP reads, configured web journeys and identical retained rows across all 101 inventoried tables after all seven services stopped/restarted. Task containers, volume and network were removed, with cleanup verified. Migration head is `20260907_0012`; the implemented inventory is 66 HTTP operations and 19 MCP tools; Trading 212 remains the exact ten GET-only capabilities.
 
-See [runtime](docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json), [security](docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json) and [compatibility](docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json). Phase 2 remains `in_progress`: four of ten packages (40%), eleven of 29 local rows and eighteen of 40 scenarios complete. P2-05 is `in_progress`; P2-06 through P2-10 and Phase 3 remain `not_started`. No final Phase 2 release SHA is claimed.
+See [runtime](docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json), [security](docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json) and [compatibility](docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json). At the P2-04 acceptance boundary, Phase 2 had four of ten packages (40%), eleven of 29 local rows and eighteen of 40 scenarios complete. P2-05 subsequently entered implementation; the current scoped acceptance is recorded above. No final Phase 2 release SHA is claimed.
 
-P2-05 implementation is being integrated from synchronized authority SHA
+P2-05 implementation was integrated from synchronized authority SHA
 `0ebbfa29253f418084835335eb2ee66f1b898679`; see the
 [implementation record](docs/implementation/P2_05_PORTFOLIO_XRAY.md).
 Working-tree verification passed formatting, lint, strict typing, 223 web unit
@@ -105,8 +113,8 @@ PostgreSQL regressions passed, followed by all 54 X-ray integration cases in
 447.68 seconds and strict mypy across 389 files. The subsequent affected gate
 passed 279 selected unit/property/contract tests, 100 security tests, six X-ray
 browser checks, all static/docs checks, native/web builds, Semgrep and six container
-builds with unchanged source in 247.142 seconds. These are working-tree observations; exact committed-source
-validation, CI, security/image scans and fresh runtime acceptance remain required.
+builds with unchanged source in 247.142 seconds. These remain working-tree observations. They did not establish committed-source
+acceptance; the separate final accepted evidence is linked above.
 The housekeeping policy requires serial verification, one reused task Compose
 project, and removal of disposable artifacts at stage boundaries while retaining
 source and acceptance evidence.
@@ -118,7 +126,7 @@ diagnostics are documented in the [failed-candidate record](docs/implementation/
 The corrected local history scan passed all 86 commits. Its exact local full gate
 was deliberately interrupted after 176 integration passes; completed layers and
 interruption evidence are retained, with no full-gate acceptance claimed. The
-corrected candidate requires fresh exact-source validation, CI, scans and runtime.
+corrected candidate still required fresh exact-source validation, CI, scans and runtime at that boundary.
 
 Candidate `b2b0466cc150ac14cd3893fd823a7b84b084d7d9` passed security,
 documentation and browser CI, but all 54 X-ray integration cases failed during
@@ -129,7 +137,7 @@ with both URL forms. The interrupted local full gate remains unaccepted; see the
 [retained CI failure](docs/implementation/evidence/phase-2-p2-05-b2b0466-failed-quality.json).
 The database CI timeout is now 40 minutes: the failed run spent over 15 minutes
 before any X-ray case could execute. Application behavior and dependencies are
-unchanged; corrected-source acceptance remains pending.
+unchanged; corrected-source acceptance was still pending at that boundary.
 
 Candidate `c84ecee2278a1f32d41c2e9640692001fae6fcf8` passed the complete CI
 Python coverage gate (1,642 isolated and 234 service tests, 88% coverage),
@@ -137,7 +145,8 @@ documentation and security. Browser CI reached 73 passes before its 20-minute
 job limit cancelled the final three mobile X-ray checks. That job now allows
 40 minutes while retaining serial execution and existing test timeouts. The
 [timeout record](docs/implementation/evidence/phase-2-p2-05-c84ecee-incomplete-browser.json)
-preserves the successful layers and incomplete gate. P2-05 remains in progress.
+preserves the successful layers and incomplete gate. This candidate remains unaccepted;
+the separately accepted implementation is recorded above.
 
 Source-backed known P2-08 limitations remain: the complete seed now includes four accounts with the X-ray fixture, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.
 
@@ -179,7 +188,7 @@ than fabricated.
 
 ## Next action
 
-Complete P2-05 under accepted ADR-0017, then proceed to P2-06 through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+Begin P2-06, then proceed sequentially through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo
@@ -233,6 +242,10 @@ because those external resources were not supplied.
 - `docs/implementation/PHASE_1_SCENARIO_EVIDENCE.md`
 - `VALIDATION_REPORT.md`
 
-## P2-05 implementation in progress
+## P2-05 scoped acceptance
 
-Accepted authority `0ebbfa29253f418084835335eb2ee66f1b898679` precedes the X-ray implementation. Provider pages now retain complete typed request echoes; exact domain/calculation, persistence, API/web/MCP integration and verification are in progress. P2-05 has no acceptance claim. Four packages remain complete (40%); P2-06 through P2-10 and Phase 3 remain not_started.
+Accepted authority `0ebbfa29253f418084835335eb2ee66f1b898679` preceded implementation.
+P2-05 is complete at `7b102663ea193b4668924a7252180731954f4b00`; see the
+[implementation and accepted evidence](docs/implementation/P2_05_PORTFOLIO_XRAY.md).
+Five packages are complete (50%); S34/S38 remain partial, P2-06 through P2-10 and
+Phase 3 remain `not_started`.

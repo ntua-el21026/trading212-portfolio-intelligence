@@ -1,0 +1,257 @@
+{
+  "artifact_kind": "verified_staged_checksum_false_positive_inventory",
+  "source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+  "rule_id": "jfrog-identity-token",
+  "finding_count": 9,
+  "distinct_checksum_count": 8,
+  "directly_recomputed_distinct_checksums": 7,
+  "runtime_response_digest_distinct_values_with_retained_hash_provenance": 1,
+  "findings": [
+    {
+      "rule_id": "jfrog-identity-token",
+      "file": "docs/implementation/evidence/phase-2-p2-05-7b10266-runtime.json",
+      "line": 2262,
+      "field": "xray_html_sha256",
+      "matched_value": "674467990f1b13605077592f8e2ddf0692efff9ddde8213372c17364516621d2",
+      "staged_blob_sha256": "2ab196f1c97fb04d44743005220b660563aa66338f8c0300a9684c44bd3548b4",
+      "proof": {
+        "kind": "hash_bound_actual_runtime_response_digest_observation",
+        "retained_runtime_path_relative_to_resume": "p205-runtime-candidate/attempt-002-7b102663ea193b4668924a7252180731954f4b00/runtime.json",
+        "retained_runtime_sha256": "2ab196f1c97fb04d44743005220b660563aa66338f8c0300a9684c44bd3548b4",
+        "harness_path_relative_to_resume": "p205-runtime-candidate/acceptance.py",
+        "harness_sha256": "17fd85ede601321dc3540203edb1460b17db616ea6cce4c8b4ef484e7dde92cf",
+        "harness_function": "Harness.web",
+        "harness_line": 527,
+        "calculation": "hashlib.sha256(response.content).hexdigest()",
+        "observed_source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+        "observed_status": "passed",
+        "raw_html_retained": false,
+        "preimage_independently_recomputed": false,
+        "limitation": "Raw HTTP response was not retained. This value is proven to be the documented runtime digest field by the immutable runtime/harness chain and identical copied records; it is not an independently recomputed Git or widget digest."
+      }
+    },
+    {
+      "rule_id": "jfrog-identity-token",
+      "file": "docs/implementation/evidence/phase-2-p2-05-7b10266.json",
+      "line": 1848,
+      "field": "xray_base.py",
+      "matched_value": "7befbfdcff98ce4ac1fbf03aa341af0742b8b729b820e67a323848ce66a49f78",
+      "staged_blob_sha256": "a89625d12c03ffeda2e7e2efe121610814b3ab5246c003671b33793142cf2326",
+      "proof": {
+        "kind": "independently_recomputed_immutable_git_blob_sha256",
+        "source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+        "source_path": "packages/persistence/src/trading212_persistence/xray_base.py",
+        "git_blob_oid": "9ddfa3bbb3e910d5717d898378d6f781b76e3c35",
+        "bytes": 5174,
+        "computed_sha256": "7befbfdcff98ce4ac1fbf03aa341af0742b8b729b820e67a323848ce66a49f78"
+      }
+    },
+    {
+      "rule_id": "jfrog-identity-token",
+      "file": "docs/implementation/evidence/phase-2-p2-05-7b10266.json",
+      "line": 1849,
+      "field": "xray_exposure_reads.py",
+      "matched_value": "8d4310aa6fe35448e7de4ca018c2d4809734e0332262321ddc94f398eefb086e",
+      "staged_blob_sha256": "a89625d12c03ffeda2e7e2efe121610814b3ab5246c003671b33793142cf2326",
+      "proof": {
+        "kind": "independently_recomputed_immutable_git_blob_sha256",
+        "source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+        "source_path": "packages/persistence/src/trading212_persistence/xray_exposure_reads.py",
+        "git_blob_oid": "effbb0b238857d6f698321f2b6575868e9671ff7",
+        "bytes": 15132,
+        "computed_sha256": "8d4310aa6fe35448e7de4ca018c2d4809734e0332262321ddc94f398eefb086e"
+      }
+    },
+    {
+      "rule_id": "jfrog-identity-token",
+      "file": "docs/implementation/evidence/phase-2-p2-05-7b10266.json",
+      "line": 1850,
+      "field": "xray_overlap_reads.py",
+      "matched_value": "0736b460804ad270859a7c199af4bc7f8c60ff3111c68b158ccceb7766680e69",
+      "staged_blob_sha256": "a89625d12c03ffeda2e7e2efe121610814b3ab5246c003671b33793142cf2326",
+      "proof": {
+        "kind": "independently_recomputed_immutable_git_blob_sha256",
+        "source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+        "source_path": "packages/persistence/src/trading212_persistence/xray_overlap_reads.py",
+        "git_blob_oid": "2e48517e24e47a75cb48f39d235d288d375e79b6",
+        "bytes": 16620,
+        "computed_sha256": "0736b460804ad270859a7c199af4bc7f8c60ff3111c68b158ccceb7766680e69"
+      }
+    },
+    {
+      "rule_id": "jfrog-identity-token",
+      "file": "docs/implementation/evidence/phase-2-p2-05-7b10266.json",
+      "line": 1851,
+      "field": "xray_publication.py",
+      "matched_value": "e5a47ed82ad34c5a8ef6c9c980e53320ad559be8f430edcf308a67f326db15a4",
+      "staged_blob_sha256": "a89625d12c03ffeda2e7e2efe121610814b3ab5246c003671b33793142cf2326",
+      "proof": {
+        "kind": "independently_recomputed_immutable_git_blob_sha256",
+        "source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+        "source_path": "packages/persistence/src/trading212_persistence/xray_publication.py",
+        "git_blob_oid": "610d64c0f7f870e9fd6ce15002a8be3be6a5ddda",
+        "bytes": 13060,
+        "computed_sha256": "e5a47ed82ad34c5a8ef6c9c980e53320ad559be8f430edcf308a67f326db15a4"
+      }
+    },
+    {
+      "rule_id": "jfrog-identity-token",
+      "file": "docs/implementation/evidence/phase-2-p2-05-7b10266.json",
+      "line": 1852,
+      "field": "xray_run_store.py",
+      "matched_value": "04cb131e3576da7a2ea5316daaffbc0c071455d5a351e14782696d9b4ae5dec7",
+      "staged_blob_sha256": "a89625d12c03ffeda2e7e2efe121610814b3ab5246c003671b33793142cf2326",
+      "proof": {
+        "kind": "independently_recomputed_immutable_git_blob_sha256",
+        "source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+        "source_path": "packages/persistence/src/trading212_persistence/xray_run_store.py",
+        "git_blob_oid": "e883f1015d884c5b990be34a82b47ce9db179ddd",
+        "bytes": 31595,
+        "computed_sha256": "04cb131e3576da7a2ea5316daaffbc0c071455d5a351e14782696d9b4ae5dec7"
+      }
+    },
+    {
+      "rule_id": "jfrog-identity-token",
+      "file": "docs/implementation/evidence/phase-2-p2-05-7b10266.json",
+      "line": 1853,
+      "field": "xray_source_reads.py",
+      "matched_value": "20330c6c6585850b4baaf9b1458c21e280329f2e36fd1823870165e85092ffd3",
+      "staged_blob_sha256": "a89625d12c03ffeda2e7e2efe121610814b3ab5246c003671b33793142cf2326",
+      "proof": {
+        "kind": "independently_recomputed_immutable_git_blob_sha256",
+        "source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+        "source_path": "packages/persistence/src/trading212_persistence/xray_source_reads.py",
+        "git_blob_oid": "ea246b1f17fb4138f8bb9795899d21b262c00956",
+        "bytes": 11622,
+        "computed_sha256": "20330c6c6585850b4baaf9b1458c21e280329f2e36fd1823870165e85092ffd3"
+      }
+    },
+    {
+      "rule_id": "jfrog-identity-token",
+      "file": "docs/implementation/evidence/phase-2-p2-05-7b10266.json",
+      "line": 1860,
+      "field": "pg-xray-all-store-01.log",
+      "matched_value": "c4aae582b37ab06657d94a1330279df72c24f496f35af30a55fb568912a650fc",
+      "staged_blob_sha256": "a89625d12c03ffeda2e7e2efe121610814b3ab5246c003671b33793142cf2326",
+      "proof": {
+        "kind": "independently_recomputed_retained_execution_log_sha256",
+        "retained_path_relative_to_resume": "p205-persistence-candidate/pg-xray-all-store-01.log",
+        "bytes": 111,
+        "computed_sha256": "c4aae582b37ab06657d94a1330279df72c24f496f35af30a55fb568912a650fc",
+        "recorded_summary": "54 passed in 447.68s; historical focused regression log, not a new execution"
+      }
+    },
+    {
+      "rule_id": "jfrog-identity-token",
+      "file": "docs/implementation/evidence/phase-2-p2-05-7b10266.json",
+      "line": 5401,
+      "field": "xray_html_sha256",
+      "matched_value": "674467990f1b13605077592f8e2ddf0692efff9ddde8213372c17364516621d2",
+      "staged_blob_sha256": "a89625d12c03ffeda2e7e2efe121610814b3ab5246c003671b33793142cf2326",
+      "proof": {
+        "kind": "hash_bound_actual_runtime_response_digest_observation",
+        "retained_runtime_path_relative_to_resume": "p205-runtime-candidate/attempt-002-7b102663ea193b4668924a7252180731954f4b00/runtime.json",
+        "retained_runtime_sha256": "2ab196f1c97fb04d44743005220b660563aa66338f8c0300a9684c44bd3548b4",
+        "harness_path_relative_to_resume": "p205-runtime-candidate/acceptance.py",
+        "harness_sha256": "17fd85ede601321dc3540203edb1460b17db616ea6cce4c8b4ef484e7dde92cf",
+        "harness_function": "Harness.web",
+        "harness_line": 527,
+        "calculation": "hashlib.sha256(response.content).hexdigest()",
+        "observed_source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+        "observed_status": "passed",
+        "raw_html_retained": false,
+        "preimage_independently_recomputed": false,
+        "limitation": "Raw HTTP response was not retained. This value is proven to be the documented runtime digest field by the immutable runtime/harness chain and identical copied records; it is not an independently recomputed Git or widget digest."
+      }
+    }
+  ],
+  "policy_scope_recommendation": "Only the jfrog-identity-token rule, the two exact repository evidence paths, and the eight exact checksum values listed. Use AND semantics between path and checksum if supported and verified; no generic hex/digest pattern, global stopword or whole-file exclusion. Preserve original evidence bytes. Policy configuration remains root-owned and has not been changed by this review.",
+  "redacted_scanner_log_relative_to_resume": "gates/p205-closure-staged-gitleaks-redacted.log",
+  "redacted_scanner_log_sha256": "d8679170b35cfffd006a9e73bd86d893dd01e594dca13c4d8b140b807579d7c2",
+  "limits": "Source/hash verification only. No credential was retrieved or printed. Values are included only after direct recomputation or documented hash-bound runtime provenance verification; no scanner/network/Docker/repository mutation performed.",
+  "original_review_sha256": "8814f022c9d0c5753c6e71941edb5a35eeee3bbc6f00c21baaa6823708033992",
+  "policy": {
+    "configuration": ".gitleaks.toml",
+    "sha256": "5dc50a6be82d35fa669f3984711da7c9f9768e56661042abf4471b4e3c0fb5aa",
+    "scope": "Default rules inherited. Only jfrog-identity-token suppresses exact whole JSON lines containing verified keys/checksums AND the exact two evidence paths. Original evidence bytes remain unchanged.",
+    "official_configuration_reference": "https://github.com/gitleaks/gitleaks/tree/v8.30.1#configuration",
+    "official_rule_reference": "https://github.com/gitleaks/gitleaks/blob/v8.30.1/config/gitleaks.toml",
+    "initial_staged_scan_exit_code": 1,
+    "initial_staged_scan_finding_count": 9,
+    "path_aware_staged_scan_exit_code": 0,
+    "path_aware_staged_scan_log_sha256": "f87238bad0cc59a50f3ba48ef1b8ba6df8c18db1a085f5c522f19bacf1f9e9a7",
+    "full_history_autodiscovery_exit_code": 0,
+    "full_history_log_sha256": "a7b0e078cb972a50b12614944f3a4bae1c134e448760e04b121203f55fed09cd",
+    "observed_mixed_fixture_test": {
+      "result": "passed",
+      "recorded_at_utc": "2026-09-09T13:40:29.674854+00:00",
+      "config_sha256": "5dc50a6be82d35fa669f3984711da7c9f9768e56661042abf4471b4e3c0fb5aa",
+      "scope": "Actual pinned Gitleaks directory scan: approved line/path suppressed; wrong path, field, value and appended field detected; unrelated default GitHub rule retained. All credential-shaped data synthetic.",
+      "cases": {
+        "allowed": {
+          "expected_findings": [],
+          "observed_findings": []
+        },
+        "wrong_path": {
+          "expected_findings": [
+            "jfrog-identity-token"
+          ],
+          "observed_findings": [
+            "jfrog-identity-token"
+          ]
+        },
+        "wrong_field": {
+          "expected_findings": [
+            "jfrog-identity-token"
+          ],
+          "observed_findings": [
+            "jfrog-identity-token"
+          ]
+        },
+        "changed_value": {
+          "expected_findings": [
+            "jfrog-identity-token"
+          ],
+          "observed_findings": [
+            "jfrog-identity-token"
+          ]
+        },
+        "second_field": {
+          "expected_findings": [
+            "jfrog-identity-token"
+          ],
+          "observed_findings": [
+            "jfrog-identity-token"
+          ]
+        },
+        "default_rule": {
+          "expected_findings": [
+            "github-pat"
+          ],
+          "observed_findings": [
+            "github-pat"
+          ]
+        }
+      },
+      "scanner_exit_code": 1,
+      "scanner_exit_one_expected": true,
+      "log_sha256": "1d43d6fc6f2c4cce0098ed714e8e95de9b976fbc800b75eaff7647d6814bf086",
+      "report_sha256": "419f6009ebe42229a5b3b4ed072403fe40d361bd2b9a50eb735ba6b2475c82cc"
+    },
+    "committed_regression_check": {
+      "script": "scripts/check_gitleaks_policy.py",
+      "script_sha256": "be1f60b1c132f7ac6d340975802cac52cc862929289d055a35b01b47d145fd06",
+      "command": "uv run python scripts/check_gitleaks_policy.py",
+      "observed_exit_code": 0,
+      "approved_lines": 9,
+      "detected_negative_cases": 5,
+      "result": "passed",
+      "execution": "One pinned offline container, limited to 1 CPU and 1 GiB, removed on exit; temporary fixtures and redacted findings removed.",
+      "additional_checks": [
+        "uv run ruff check scripts/check_gitleaks_policy.py: passed",
+        "uv run ruff format --check scripts/check_gitleaks_policy.py: passed",
+        "uv run mypy scripts/check_gitleaks_policy.py: passed"
+      ]
+    }
+  }
+}

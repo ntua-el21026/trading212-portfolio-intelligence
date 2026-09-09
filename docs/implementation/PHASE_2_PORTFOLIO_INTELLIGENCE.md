@@ -63,7 +63,9 @@ and Methods section 6: `xray_v1` 1.1.0 / `xray_decimal256_exact_q18_v1`, indepen
 unit/money conservation, deterministic real-root representatives and retained exact
 state. Pair/common projections are collection-owned and physically purge-bounded;
 496 limits one request, not lifetime storage. Four GETs/two MCP reads stay fixed.
-This design amendment does not begin P2-05 implementation or claim test acceptance.
+This design amendment did not begin implementation or claim test acceptance.
+P2-05 subsequently received [scoped exact-source acceptance](P2_05_PORTFOLIO_XRAY.md)
+at `7b102663ea193b4668924a7252180731954f4b00`; the remaining roadmap is unchanged.
 
 ### P2-06 — Reports and exports
 

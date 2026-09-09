@@ -1,10 +1,15 @@
 # P2-05 Portfolio X-ray
 
-P2-05 is **in progress** from accepted authority SHA
-`0ebbfa29253f418084835335eb2ee66f1b898679`. P2-04 remains accepted at
-`2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`. The implementation below has working-tree
-verification; exact committed-source, CI, security/image and fresh-runtime
-acceptance has not yet been recorded. P2-06 through P2-10 and Phase 3 remain not_started.
+P2-05 is **complete** at `7b102663ea193b4668924a7252180731954f4b00`. The [accepted assertion map](evidence/phase-2-p2-05-7b10266.json) closes P2-XRAY-001/002 and P2-S20 through P2-S23. Phase 2 has five of ten packages (50%), thirteen of 29 local rows and twenty-two of 40 scenarios complete. P2-S34 and P2-S38 remain `in_progress`; report/export parity and the remaining release-wide predicates are outstanding. P2-06 through P2-10 and Phase 3 remain `not_started`.
+
+The clean exact-source `make validate` passed in 2339.747 seconds: 1,642 isolated and 234 service/migration Python tests, 88% combined statement/branch coverage, 223 web unit tests and 76 browser checks without retries. Assertion selectors are source mappings bound to completed test-file observations.
+
+Exact-source CI passed: Quality `34347516142`, Documentation `34347516068`, Security `34347516074`. Eight source/history/image scans passed under the recorded scanner policies. The fresh runtime passed in 146.262241 seconds, preserving identical retained rows across all 167 compared tables and API/MCP replay after all seven services stopped/restarted. Task containers, volumes and networks were removed, with absence verified. All eight exact-gate screenshots received the recorded visual review.
+
+See [runtime](evidence/phase-2-p2-05-7b10266-runtime.json), [security](evidence/phase-2-p2-05-7b10266-security.json), [compatibility](evidence/phase-2-p2-05-7b10266-compatibility.json), [screenshots and visual review](evidence/phase-2-p2-05-7b10266-screenshots.json) and [observed count derivation](evidence/phase-2-p2-05-7b10266-counts.json). Earlier failed candidates remain unaccepted. External broker/provider/deployment gates, the documented P2-08 UI follow-ups and the null final Phase 2 release SHA are unchanged.
+
+Accepted authority `0ebbfa29253f418084835335eb2ee66f1b898679` preceded implementation.
+P2-04 remains accepted at `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`.
 
 ## Authority and calculation
 
@@ -134,12 +139,11 @@ strict mypy passed all 389 Python files. A subsequent unchanged-source affected
 gate passed 279 selected unit/property/contract tests, all 100 security tests, all
 six X-ray desktop/mobile browser checks, formatting, lint, typing, documentation,
 native/web builds, Semgrep and all six container builds. Its recorded duration was
-247.142 seconds. Committed-source acceptance remains required.
+247.142 seconds. These development observations did not establish committed-source acceptance.
 
-Full acceptance must bind final source to the complete repository checks,
-security/image scans, all CI workflows and a fresh runtime with immutable database
-comparison across restart. No package or shared scenario is marked complete by
-these development observations.
+The final acceptance linked above separately binds the immutable source to the complete
+repository checks, scans, CI and fresh runtime/restart. These development observations
+remain historical; no failed or interrupted candidate is reclassified as passed.
 
 The documented P2-08 multi-account global header/default Compose configuration
 and full-product mobile presentation follow-ups remain outstanding. Report
@@ -157,8 +161,8 @@ prints redacted finding details. The in-progress exact local gate was deliberate
 interrupted after 176 integration passes to avoid repeating its remaining work
 before correction. No full-gate acceptance is claimed for that attempt. See the
 [retained finding and correction](evidence/phase-2-p2-05-b9b75ec-failed-security.json).
-The corrected commit still requires all exact-source gates and fresh runtime
-acceptance.
+The corrected commit still required all exact-source gates and fresh runtime
+acceptance at that boundary; the failed candidate remains unaccepted.
 
 ## CI database fixture correction
 
@@ -179,8 +183,8 @@ The local exact gate was deliberately interrupted after diagnosis. It completed
 219 integration, 12 migration, 100 security and 1,642 isolated coverage tests,
 then 188 service coverage cases before interruption. It has no full-gate pass.
 The [retained failure](evidence/phase-2-p2-05-b2b0466-failed-quality.json) keeps
-the actual CI and partial local outcomes. Full corrected-source acceptance is
-still required before closing P2-05.
+the actual CI and partial local outcomes. That candidate remains unaccepted;
+complete corrected-source acceptance is recorded separately above.
 
 ## Serial browser CI budget
 
@@ -195,5 +199,33 @@ The browser job now allows 40 minutes for serial execution. Test selection,
 per-test timeouts, retry policy and worker count are unchanged. The local full
 gate was deliberately interrupted after 224 service coverage passes to avoid
 remaining work on the superseded candidate. Its completed layers are retained,
-without claiming a full-gate pass. The corrected commit still requires complete
-immutable-source acceptance.
+without claiming a full-gate pass. Complete immutable-source acceptance for the
+corrected implementation is recorded separately above.
+
+## Fresh-runtime harness correction
+
+Runtime attempt 001 failed before its API assertions because the harness entered
+an already-open authenticated HTTP client a second time. The offline MockTransport
+reproduction confirmed that lifecycle error. Replacing both entries with
+`contextlib.closing` corrected the harness without changing application source.
+[The failed attempt](evidence/phase-2-p2-05-7b10266-failed-runtime-001.json)
+retains its original hashes, failure and verified cleanup; attempt 002 supplies the
+accepted runtime evidence above. Both harness versions and raw observations remain
+in the local evidence archive.
+
+## Evidence checksum scanning
+
+The closure scan identified nine JFrog-pattern matches in X-ray-labelled SHA-256
+fields. Six source hashes and one earlier test-log hash were recomputed; the
+remaining value is the recorded SSR response digest, duplicated in two runtime
+records. Its raw HTML was not retained, so its proof is the retained runtime and
+harness chain. The [review and scanner evidence](evidence/phase-2-p2-05-checksum-scan-review.json)
+documents each occurrence. The repository Gitleaks configuration inherits all
+default rules and limits these exceptions to the exact field/value lines and
+evidence paths. Changed values, fields, paths, appended fields and an unrelated
+default-rule canary remained detectable in a real scanner check.
+
+The committed `scripts/check_gitleaks_policy.py` regression runs in both local
+security validation and CI. Its observed run accepted all nine real evidence
+lines and detected all five negative cases using one capped offline container;
+temporary inputs, findings and the container are removed afterward.

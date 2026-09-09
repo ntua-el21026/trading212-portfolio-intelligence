@@ -1,0 +1,29 @@
+{
+  "artifact_kind": "observed_gate_summary_derivation",
+  "source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+  "gate_log_sha256": "c92047a6723c3880f87cbb5b0aea55c34294add6c5cf305f3e98b21e9f345db7",
+  "gate_record_sha256": "bf2a74c5f78e61148ee846fe976e1e26b8921c3537abeabf10c3d09e80c24df3",
+  "isolated_python_tests_passed": 1642,
+  "service_backed_python_tests_passed": 234,
+  "combined_python_coverage_with_branch_measurement_percent": 88,
+  "web_unit_tests_passed": 223,
+  "browser_tests_passed_locally": 76,
+  "browser_run_passed_counts": [
+    44,
+    3,
+    3,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    3
+  ],
+  "derivation": "Actual complete coverage, Vitest and serial Playwright summaries in the accepted gate transcript; not per-node observations."
+}

@@ -39,8 +39,8 @@ P2-05 entry requires the narrow ADR-0017 and synchronized authorities to be revi
 and applied after P2-04 evidence closure, before dependent code. ADR-0017 fixes
 shared physical row/byte budgets, bounded path proofs and the complete position-
 then-cash real UUID ordering. This authority amendment does not complete evidence;
-P2-05 remains not_started until implementation begins. Phase 3 stays
-not_started. P2-08 owns intelligence-data-quality/company actual-weight enrichment;
+P2-05 has [scoped exact-source acceptance](P2_05_PORTFOLIO_XRAY.md) at
+`7b102663ea193b4668924a7252180731954f4b00`. P2-06 through P2-10 and Phase 3 stay not_started. P2-08 owns intelligence-data-quality/company actual-weight enrichment;
 company target drift still requires a separately pinned entity-target basis.
 
 ## Work-package protocol

@@ -2,7 +2,7 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 through P2-04 complete; 11/29 local rows
+**Implementation acceptance:** In progress; P2-01 through P2-05 complete; 13/29 local rows
 
 **Target release:** `0.2.0`
 
@@ -12,12 +12,14 @@
 
 **P2-03 evidence SHA:** `e258f54bb03a958f7847b310ee882b7f4a54686f`
 
-**P2-04 evidence SHA:** `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`; final Phase 2 release SHA pending
+**P2-04 evidence SHA:** `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`
+
+**P2-05 evidence SHA:** `7b102663ea193b4668924a7252180731954f4b00`; final Phase 2 release SHA pending
 
 The owner assignment authorizes P2-01 through P2-10 after corrected Phase 1
 acceptance at `99df47b6633791c3900a52f46f56d48be922a436`. That SHA proves Stage A;
 it does not prove any Phase 2 behavior. The design contract is accepted while
-P2-01 through P2-04 have passed scoped acceptance; later/shared predicates remain pending or in progress, including partial P2-S34.
+P2-01 through P2-05 have passed scoped acceptance; later/shared predicates remain pending or in progress, including partial P2-S34 and P2-S38.
 
 ## Evidence and state rules
 
@@ -50,8 +52,8 @@ gates, and final release evidence. A design commit cannot close a runtime row.
 | P2-PERF-001 | P2-04 | TWR, MWR and Modified Dietz follow frozen methods, correct external-flow treatment, explicit unavailable roots/coverage and no browser/model financial computation. [Exact-SHA assertion map](evidence/phase-2-p2-04-2a7c89a.json). | 15, 16, 18 | `complete` |
 | P2-PERF-002 | P2-04 | Benchmark composition, calendars/currency alignment, excess/rolling metrics and attribution reconcile to total plus disclosed residual without invented precision. [Exact-SHA assertion map](evidence/phase-2-p2-04-2a7c89a.json). | 15, 17, 18, 34 | `complete` |
 | P2-INC-001 | P2-04 | Dividend/income, fees/taxes and cash-flow views retain original currencies and sourced conversion; purchases/sales are not investment gain. [Exact-SHA assertion map](evidence/phase-2-p2-04-2a7c89a.json). | 16, 19, 34 | `complete` |
-| P2-XRAY-001 | P2-05 | Versioned ETF constituents and explicit entity/share-class/ADR/listing mappings produce direct/indirect/effective exposure without double counting. ADR-0017 Decimal256/Q18 role bounds, exact money/unit conservation, post-carry NUMERIC limits and lowest real-root representative policy are independently verified, including zero money and the global path budget. | 20, 21 | `pending` |
-| P2-XRAY-002 | P2-05 | Overlap, classifications and concentration retain unresolved weight, coverage, confidence, source dates and stale/partial quality. Exact thresholds, lower-bound versus unavailable states, per-dimension normalization and same-run projection parity hold; 496 is per request and collection-owned pair/common retention is capacity/TTL/physical-purge bounded. | 22, 23, 34, 38 | `pending` |
+| P2-XRAY-001 | P2-05 | Versioned ETF constituents and explicit entity/share-class/ADR/listing mappings produce direct/indirect/effective exposure without double counting. ADR-0017 Decimal256/Q18 role bounds, exact money/unit conservation, post-carry NUMERIC limits and lowest real-root representative policy are independently verified, including zero money and the global path budget. [Exact-source assertion map](evidence/phase-2-p2-05-7b10266.json). | 20, 21 | `complete` |
+| P2-XRAY-002 | P2-05 | Overlap, classifications and concentration retain unresolved weight, coverage, confidence, source dates and stale/partial quality. Exact thresholds, lower-bound versus unavailable states, per-dimension normalization and same-run projection parity hold; 496 is per request and collection-owned pair/common retention is capacity/TTL/physical-purge bounded. [Exact-source assertion map](evidence/phase-2-p2-05-7b10266.json). | 22, 23, 34, 38 | `complete` |
 | P2-RPT-001 | P2-06 | Every required report type and PDF/CSV/JSON/XLSX format has a reproducible canonical manifest, shared service values, source/method/quality/license metadata and bounded private artifacts. | 24, 27, 34 | `pending` |
 | P2-RPT-002 | P2-06 | Durable report/export jobs are idempotent, authorized, expiry/cleanup-aware and audited; downloads reauthorize each access; safe filenames/content types and size limits are enforced. | 25, 31, 32, 40 | `pending` |
 | P2-RPT-003 | P2-06 | Rendered PDF and structured/archive export content excludes secrets/signed URLs; CSV/XLSX formula injection and restricted-source export attempts are rejected or safely encoded. | 26, 27 | `pending` |
@@ -133,11 +135,22 @@ The clean exact-source `make validate` passed in 1165.723 seconds: 1,346 isolate
 
 Exact pushed-source CI passed: Quality `34272112673`, Documentation `34272112714`, Security `34272112661`. Eight source/history/image scans passed under their retained scanner policies. Fresh runtime attempt 003 passed in 170.757 seconds: six historical HTTP reads, four MCP reads, configured web journeys and identical retained rows across all 101 inventoried tables after all seven services stopped/restarted. Task containers, volume and network were removed, with cleanup verified. Migration head is `20260907_0012`; the implemented inventory is 66 HTTP operations and 19 MCP tools; Trading 212 remains the exact ten GET-only capabilities.
 
-See [runtime](evidence/phase-2-p2-04-2a7c89a-runtime.json), [security](evidence/phase-2-p2-04-2a7c89a-security.json) and [compatibility](evidence/phase-2-p2-04-2a7c89a-compatibility.json). Phase 2 remains `in_progress`: four of ten packages (40%), eleven of 29 local rows and eighteen of 40 scenarios complete. P2-05 through P2-10 and Phase 3 remain `not_started`; no final Phase 2 release SHA is claimed.
+See [runtime](evidence/phase-2-p2-04-2a7c89a-runtime.json), [security](evidence/phase-2-p2-04-2a7c89a-security.json) and [compatibility](evidence/phase-2-p2-04-2a7c89a-compatibility.json). At this P2-04 acceptance boundary, Phase 2 had four of ten packages (40%), eleven of 29 local rows and eighteen of 40 scenarios complete; later packages and Phase 3 were not_started. Current P2-05 acceptance is recorded below; no final Phase 2 release SHA is claimed.
 
-Source-backed known P2-08 limitations remain: the normal complete seed has three accounts, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.
+Source-backed known P2-08 limitations remain: the complete seed now has four accounts including the X-ray fixture, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.
 P2-05 authority synchronization registers `xray_v1` 1.1.0 and
 `xray_decimal256_exact_q18_v1` under [ADR-0017](../adr/ADR-0017-DECIMAL256-EXACT-XRAY.md).
-It supplies requirements only. P2-XRAY-001/002 and their unexecuted scenario portions
-remain pending; prior scratch arithmetic results are not implementation acceptance.
+That authority synchronization supplied requirements only; prior scratch arithmetic
+results were not implementation acceptance. P2-05 now has the separate exact-source
+acceptance recorded below.
 P2-S34 remains shared with P2-06 report parity; Phase 3 remains not_started.
+
+## P2-05 observed evidence
+
+P2-05 is **complete** at `7b102663ea193b4668924a7252180731954f4b00`. The [accepted assertion map](evidence/phase-2-p2-05-7b10266.json) closes P2-XRAY-001/002 and P2-S20 through P2-S23. Phase 2 has five of ten packages (50%), thirteen of 29 local rows and twenty-two of 40 scenarios complete. P2-S34 and P2-S38 remain `in_progress`; report/export parity and the remaining release-wide predicates are outstanding. P2-06 through P2-10 and Phase 3 remain `not_started`.
+
+The clean exact-source `make validate` passed in 2339.747 seconds: 1,642 isolated and 234 service/migration Python tests, 88% combined statement/branch coverage, 223 web unit tests and 76 browser checks without retries. Assertion selectors are source mappings bound to completed test-file observations.
+
+Exact-source CI passed: Quality `34347516142`, Documentation `34347516068`, Security `34347516074`. Eight source/history/image scans passed under the recorded scanner policies. The fresh runtime passed in 146.262241 seconds, preserving identical retained rows across all 167 compared tables and API/MCP replay after all seven services stopped/restarted. Task containers, volumes and networks were removed, with absence verified. All eight exact-gate screenshots received the recorded visual review.
+
+See [runtime](evidence/phase-2-p2-05-7b10266-runtime.json), [security](evidence/phase-2-p2-05-7b10266-security.json), [compatibility](evidence/phase-2-p2-05-7b10266-compatibility.json), [screenshots and visual review](evidence/phase-2-p2-05-7b10266-screenshots.json) and [observed count derivation](evidence/phase-2-p2-05-7b10266-counts.json). Earlier failed candidates remain unaccepted. External broker/provider/deployment gates, the documented P2-08 UI follow-ups and the null final Phase 2 release SHA are unchanged.

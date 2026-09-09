@@ -4,6 +4,18 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Phase 2 Portfolio X-ray
+
+- Add immutable sourced economic identity, constituents and classifications with
+  exact Decimal256/Q18 exposure, overlap, concentration and provenance proofs.
+- Expose bounded canonical API/web/MCP views with current authorization, separate
+  storage/display permission checks, and bounded physical retention of licensed copies.
+- Accept scoped P2-05 at `7b102663ea193b4668924a7252180731954f4b00` after complete exact-source local validation,
+  three CI workflows, eight security scans, fresh runtime/restart/cleanup and eight
+  reviewed gate screenshots; see the [accepted evidence](docs/implementation/evidence/phase-2-p2-05-7b10266.json).
+  Preserve the failed security/fixture/browser candidates and prior P2-04 acceptance.
+  S34/S38, remaining packages and external release gates stay incomplete.
+
 ### Phase 2 historical intelligence
 
 - Prepare bounded calendar and source-selection indexes within each historical
@@ -204,7 +216,7 @@ Live is disabled and untested, not another Phase 1 gate.
 
 Virtual Pies/targets, contribution optimization, full performance/benchmarks, X-ray, reports, alerts, and premium analytical interfaces.
 
-Status: `in_progress`; P2-01 through P2-04 complete (4/10 packages, 40%). Eleven of 29 local rows and eighteen of 40 scenarios are complete; shared S34 is in progress.
+Status: `in_progress`; P2-01 through P2-05 complete (5/10 packages, 50%). Thirteen of 29 local rows and twenty-two of 40 scenarios are complete; shared S34 and S38 remain in progress.
 
 ### [1.0.0] — Phase 3: Premium Intelligence and Productization
 

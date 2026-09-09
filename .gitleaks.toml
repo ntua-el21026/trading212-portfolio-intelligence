@@ -1,0 +1,34 @@
+# Exact computed evidence checksums, not credentials. See the linked review.
+# docs/implementation/evidence/phase-2-p2-05-checksum-scan-review.json
+title = "Default rules with verified P2-05 evidence checksum exceptions"
+minVersion = "v8.25.0"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "jfrog-identity-token"
+
+[[rules.allowlists]]
+description = "Seven recomputed source/log checksums in the immutable acceptance record"
+condition = "AND"
+regexTarget = "line"
+paths = ['''(?:^|/)docs/implementation/evidence/phase-2-p2-05-7b10266\.json$''']
+regexes = [
+    '''^\s*"packages/persistence/src/trading212_persistence/xray_base\.py": "7befbfdcff98ce4ac1fbf03aa341af0742b8b729b820e67a323848ce66a49f78",?\s*$''',
+    '''^\s*"packages/persistence/src/trading212_persistence/xray_exposure_reads\.py": "8d4310aa6fe35448e7de4ca018c2d4809734e0332262321ddc94f398eefb086e",?\s*$''',
+    '''^\s*"packages/persistence/src/trading212_persistence/xray_overlap_reads\.py": "0736b460804ad270859a7c199af4bc7f8c60ff3111c68b158ccceb7766680e69",?\s*$''',
+    '''^\s*"packages/persistence/src/trading212_persistence/xray_publication\.py": "e5a47ed82ad34c5a8ef6c9c980e53320ad559be8f430edcf308a67f326db15a4",?\s*$''',
+    '''^\s*"packages/persistence/src/trading212_persistence/xray_run_store\.py": "04cb131e3576da7a2ea5316daaffbc0c071455d5a351e14782696d9b4ae5dec7",?\s*$''',
+    '''^\s*"packages/persistence/src/trading212_persistence/xray_source_reads\.py": "20330c6c6585850b4baaf9b1458c21e280329f2e36fd1823870165e85092ffd3",?\s*$''',
+    '''^\s*"p205\-persistence\-candidate/pg\-xray\-all\-store\-01\.log": "c4aae582b37ab06657d94a1330279df72c24f496f35af30a55fb568912a650fc",?\s*$''',
+]
+
+[[rules.allowlists]]
+description = "Observed SSR response checksum in its two hash-bound runtime copies"
+condition = "AND"
+regexTarget = "line"
+paths = ['''(?:^|/)docs/implementation/evidence/phase-2-p2-05-7b10266(?:-runtime)?\.json$''']
+regexes = [
+    '''^\s*"xray_html_sha256": "674467990f1b13605077592f8e2ddf0692efff9ddde8213372c17364516621d2",?\s*$''',
+]

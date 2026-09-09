@@ -1,0 +1,47 @@
+{
+  "work_package": "P2-04",
+  "source_sha": "2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0",
+  "acceptance": "accepted",
+  "accepted_at_utc": "2026-09-08T21:24:08.512562+00:00",
+  "make_validate": "passed",
+  "make_validate_duration_seconds": 1165.723,
+  "isolated_python_tests_passed": 1346,
+  "service_backed_python_tests_passed": 175,
+  "combined_python_coverage_with_branch_measurement_percent": 88,
+  "web_unit_tests_passed": 203,
+  "browser_tests_passed_locally": 66,
+  "supplementary_browser_and_web_build": {
+    "command": "env CI=1 PW_TEST_REPORTER=list T212PI_E2E_TIMINGS=1 make test-e2e build-web",
+    "exit_code": 0,
+    "result": "passed",
+    "duration_seconds": 366.184,
+    "named_browser_cases_passed": 66,
+    "source_unchanged": true,
+    "clean_before_and_after": true
+  },
+  "github_quality_run": 34272112673,
+  "github_quality_result": "passed",
+  "github_documentation_run": 34272112714,
+  "github_documentation_result": "passed",
+  "github_security_run": 34272112661,
+  "github_security_result": "passed",
+  "runtime": "passed",
+  "runtime_attempt": 3,
+  "runtime_duration_seconds": 170.757,
+  "retained_tables_identical": 101,
+  "runtime_cleanup_verified": true,
+  "source_history_image_scans_passed": 8,
+  "artifacts": [
+    "docs/implementation/evidence/phase-2-p2-04-2a7c89a.json",
+    "docs/implementation/evidence/phase-2-p2-04-2a7c89a-runtime.json",
+    "docs/implementation/evidence/phase-2-p2-04-2a7c89a-security.json",
+    "docs/implementation/evidence/phase-2-p2-04-2a7c89a-compatibility.json"
+  ],
+  "failed_runtime_artifacts": [
+    "docs/implementation/evidence/phase-2-p2-04-2a7c89a-failed-runtime-001.json",
+    "docs/implementation/evidence/phase-2-p2-04-2a7c89a-failed-runtime-002.json"
+  ],
+  "unaccepted_browser_artifact": "docs/implementation/evidence/phase-2-p2-04-2a7c89a-unaccepted-browser-observation.json",
+  "known_p208_limitations": "Source-backed known P2-08 limitations remain: the normal complete seed has three accounts, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.",
+  "scope": "Scoped P2-04 synthetic acceptance; full Phase 2 and shared S34 remain incomplete."
+}
