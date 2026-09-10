@@ -77,6 +77,23 @@ def digest(value: object) -> str:
     return hashlib.sha256(canonical_json(value).encode()).hexdigest()
 
 
+def license_view(row: ProviderLicenseVersionModel) -> SourceLicense:
+    """Canonical immutable license fields shared by capture and access checks."""
+    return SourceLicense(
+        id=str(row.id),
+        provider_id=str(row.provider_id),
+        version=row.version,
+        effective_at=row.effective_at,
+        store=LicensePermission(row.store_permission),
+        display=LicensePermission(row.display_permission),
+        report=LicensePermission(row.report_permission),
+        export=LicensePermission(row.export_permission),
+        retention_days=row.retention_days,
+        attribution=row.attribution,
+        evidence_key=row.evidence_key,
+    )
+
+
 def error(code: app.SourceServiceErrorCode) -> app.SourceServiceError:
     return app.SourceServiceError(
         code,
@@ -102,7 +119,18 @@ class SourceStore:
         cursor_ttl_seconds: int = 3600,
         max_active_collection_snapshots_per_owner: int = 64,
         max_active_collection_members_per_owner: int = 250_000,
+        required_copy_use: SourceUse | None = None,
     ) -> None:
+        if required_copy_use is not None and (
+            not isinstance(required_copy_use, SourceUse)
+            or required_copy_use
+            not in {
+                SourceUse.REPORT,
+                SourceUse.EXPORT,
+            }
+        ):
+            raise ValueError("Only fixed report/export copy uses are supported.")
+        self._required_copy_use = required_copy_use
         self._sessions = sessions
         self._clock = clock or (lambda: datetime.now(UTC))
         self._authorizer = Authorizer()
@@ -166,19 +194,7 @@ class SourceStore:
 
     def _license(self, session: Session, owner: UUID, identifier: UUID) -> SourceLicense:
         row = self._owned(session, owner, ProviderLicenseVersionModel, identifier)
-        return SourceLicense(
-            id=str(row.id),
-            provider_id=str(row.provider_id),
-            version=row.version,
-            effective_at=row.effective_at,
-            store=LicensePermission(row.store_permission),
-            display=LicensePermission(row.display_permission),
-            report=LicensePermission(row.report_permission),
-            export=LicensePermission(row.export_permission),
-            retention_days=row.retention_days,
-            attribution=row.attribution,
-            evidence_key=row.evidence_key,
-        )
+        return license_view(row)
 
     def _current_license(
         self, session: Session, owner: UUID, provider: UUID
@@ -204,11 +220,18 @@ class SourceStore:
     ) -> SourceLicense:
         license = self._license(session, owner, license_id)
         current = self._current_license(session, owner, UUID(license.provider_id))
+        # A report uses the same canonical readers, but display permission alone
+        # cannot authorize copying licensed values into a private artifact.
+        uses = (
+            (use,)
+            if self._required_copy_use is None
+            else (use, SourceUse.DISPLAY, SourceUse.STORE, self._required_copy_use)
+        )
         if (
-            not license.permits(use)
+            any(not license.permits(item) for item in uses)
             or license.effective_at > self._now()
             or current is None
-            or not current.permits(use)
+            or any(not current.permits(item) for item in uses)
         ):
             raise error(app.SourceServiceErrorCode.ACCESS_DENIED)
         return license

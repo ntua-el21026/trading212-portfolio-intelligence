@@ -20,6 +20,7 @@ from .planning_schemas import (
     CreateContributionPlanToolResult,
     DriftAnalysisToolResult,
 )
+from .report_schemas import GenerateReportToolResult, ReportListToolResult, ReportStatusToolResult
 from .target_schemas import VirtualPieResult, VirtualPiesResult
 from .xray_schemas import XrayExposureToolResult, XrayOverlapToolResult
 
@@ -420,4 +421,7 @@ RESULT_MODELS = {
     "get_benchmark_comparison": HistoricalBenchmarkToolResult,
     "get_dividend_intelligence": HistoricalDividendToolResult,
     "get_attribution_summary": HistoricalAttributionToolResult,
+    "list_reports": ReportListToolResult,
+    "get_report_status": ReportStatusToolResult,
+    "generate_portfolio_report": GenerateReportToolResult,
 }

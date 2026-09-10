@@ -56,6 +56,9 @@ temp/
 # Private portfolio artifacts
 reports/
 exports/
+!apps/web/app/(portfolio)/reports/
+!apps/web/app/api/reports/
+!apps/web/app/api/exports/
 backups/
 artifacts/private/
 fixtures/private/

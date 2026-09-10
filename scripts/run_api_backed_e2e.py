@@ -29,6 +29,7 @@ from sqlalchemy.orm import Session
 from trading212_analytics.planning import calculate_contribution_plan
 from trading212_api.main import create_app
 from trading212_application.planning_jobs import PlanTaskMessage
+from trading212_application.report_jobs import ExportTaskMessage, ReportTaskMessage
 from trading212_domain import build_synthetic_identity
 from trading212_persistence import (
     PostgresPlanningService,
@@ -36,8 +37,16 @@ from trading212_persistence import (
     create_session_factory,
 )
 from trading212_persistence.models import SourceRecordModel, TransactionModel
+from trading212_persistence.report_job_store import PostgresReportJobStore
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 from trading212_worker.plan_tasks import dispatch_plans_once, execute_plan_message
+from trading212_worker.report_seed import seed_synthetic_report_grants
+from trading212_worker.report_tasks import (
+    dispatch_exports_once,
+    dispatch_reports_once,
+    execute_export_message,
+    execute_report_message,
+)
 from trading212_worker.scenarios import persist_quantity_cash_mismatch_scenario
 from trading212_worker.seed import SEED_TIME, seed_complete_synthetic, seed_materialized_synthetic
 
@@ -218,6 +227,47 @@ async def _deliver_fixture_plans(service: PostgresPlanningService, stopped: asyn
             await asyncio.wait_for(stopped.wait(), timeout=0.25)
 
 
+class _FixtureReportPublisher:
+    """Bounded test transport for the production report dispatcher and consumer."""
+
+    def __init__(self) -> None:
+        self.messages: Queue[ReportTaskMessage] = Queue(maxsize=100)
+
+    async def publish_report(self, message: ReportTaskMessage) -> None:
+        self.messages.put_nowait(message)
+
+
+class _FixtureExportPublisher:
+    """Exports retain their separate typed production task boundary."""
+
+    def __init__(self) -> None:
+        self.messages: Queue[ExportTaskMessage] = Queue(maxsize=100)
+
+    async def publish_export(self, message: ExportTaskMessage) -> None:
+        self.messages.put_nowait(message)
+
+
+async def _deliver_fixture_reports(store: PostgresReportJobStore, stopped: asyncio.Event) -> None:
+    reports, exports = _FixtureReportPublisher(), _FixtureExportPublisher()
+    while not stopped.is_set():
+        await dispatch_reports_once(store, reports, dispatcher_id="browser-fixture")
+        while not reports.messages.empty():
+            try:
+                message = reports.messages.get_nowait()
+            except Empty:
+                break
+            await execute_report_message(store, message, consumer_id="browser-fixture")
+        await dispatch_exports_once(store, exports, dispatcher_id="browser-fixture")
+        while not exports.messages.empty():
+            try:
+                export = exports.messages.get_nowait()
+            except Empty:
+                break
+            await execute_export_message(store, export, consumer_id="browser-fixture")
+        with suppress(TimeoutError):
+            await asyncio.wait_for(stopped.wait(), timeout=0.25)
+
+
 def main() -> None:
     # Direct script launches also need the repository's test-helper namespace.
     sys.path.insert(0, str(_REPOSITORY_ROOT))
@@ -248,6 +298,9 @@ def _serve_fixture(database_url: str) -> None:
     xray = os.environ.get("T212PI_E2E_XRAY", "0")
     if xray not in {"0", "1"}:
         raise RuntimeError("The X-ray browser fixture selector must be 0 or 1.")
+    reports = os.environ.get("T212PI_E2E_REPORTS", "0")
+    if reports not in {"0", "1"}:
+        raise RuntimeError("The reports browser fixture selector must be 0 or 1.")
     migration_config = Config(str(_REPOSITORY_ROOT / "alembic.ini"))
     migration_config.set_main_option("script_location", str(_REPOSITORY_ROOT / "migrations"))
     migration_config.set_main_option("sqlalchemy.url", database_url)
@@ -270,6 +323,10 @@ def _serve_fixture(database_url: str) -> None:
         datetime.now(UTC).replace(microsecond=0),
     )
     try:
+        if reports == "1":
+            seed_synthetic_report_grants(
+                create_session_factory(engine), app_environment="test", at=scenario_time
+            )
         with Session(engine) as session, session.begin():
             persist_quantity_cash_mismatch_scenario(
                 session,
@@ -304,18 +361,23 @@ def _serve_fixture(database_url: str) -> None:
         sessions=create_session_factory(control_engine),
         cursor_signing_key=b"browser-fixture-planning-cursor-key",
     )
+    fixture_reports = PostgresReportJobStore(create_session_factory(control_engine))
     original_lifespan = app.router.lifespan_context
 
     @asynccontextmanager
     async def fixture_lifespan(application: FastAPI) -> AsyncIterator[None]:
         async with original_lifespan(application):
             stopped = asyncio.Event()
-            delivery = asyncio.create_task(_deliver_fixture_plans(fixture_plans, stopped))
             try:
-                yield
+                async with asyncio.TaskGroup() as deliveries:
+                    deliveries.create_task(_deliver_fixture_plans(fixture_plans, stopped))
+                    if reports == "1":
+                        deliveries.create_task(_deliver_fixture_reports(fixture_reports, stopped))
+                    try:
+                        yield
+                    finally:
+                        stopped.set()
             finally:
-                stopped.set()
-                await delivery
                 control_engine.dispose()
 
     app.router.lifespan_context = fixture_lifespan

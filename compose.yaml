@@ -113,7 +113,8 @@ services:
     restart: unless-stopped
     read_only: true
     tmpfs:
-      - /tmp:size=64m,mode=1777
+      # One 192 MiB report workspace plus bounded worker/IPC overhead.
+      - /tmp:size=224m,mode=1777
     security_opt:
       - no-new-privileges:true
     cap_drop:

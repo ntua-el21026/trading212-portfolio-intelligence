@@ -767,3 +767,15 @@ export type {
   XrayClientOptions,
   XrayReadOptions,
 } from "./xray-transport";
+
+export * from "./reports.generated";
+export { ReportApiError } from "./report-transport";
+export type {
+  ReportApiResponse,
+  ReportClientOptions,
+  ReportReadOptions,
+  ReportCommandOptions,
+  ReportGrantOptions,
+  ReportDownloadOptions,
+  ReportArtifactResponse,
+} from "./report-transport";

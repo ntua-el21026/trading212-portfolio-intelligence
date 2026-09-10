@@ -17,6 +17,8 @@ dependencies = [
     "trading212-security==0.1.0",
     "trading212-provider==0.1.0",
     "trading212-reference-data==0.1.0",
+    "reportlab==5.0.1",
+    "xlsxwriter==3.2.9",
 ]
 
 [tool.uv.sources]

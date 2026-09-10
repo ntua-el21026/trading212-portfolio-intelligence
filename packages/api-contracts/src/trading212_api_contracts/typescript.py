@@ -28,7 +28,7 @@ class TargetClientGenerator:
         tag: str = "targets",
         imported_schemas: frozenset[str] = frozenset(),
     ) -> None:
-        if tag not in {"targets", "planning", "sources", "historical", "xray"}:
+        if tag not in {"targets", "planning", "sources", "historical", "xray", "reports"}:
             raise ValueError(
                 "Only fixed target, planning, source, historical and X-ray operations are supported"
             )
@@ -84,7 +84,7 @@ class TargetClientGenerator:
             "pattern",
             "format",
         }
-        if self.tag == "xray":
+        if self.tag in {"xray", "reports"}:
             supported.update({"oneOf", "discriminator"})
         if set(schema) - supported:
             raise ValueError(f"Unsupported target schema fields: {sorted(set(schema) - supported)}")
@@ -107,15 +107,22 @@ class TargetClientGenerator:
                 definition = self.definitions.get(
                     reference.removeprefix("#/components/schemas/"), {}
                 )
-                literal = definition.get("properties", {}).get(key, {}).get("const")
+                selector = definition.get("properties", {}).get(key, {})
+                literals = (
+                    selector.get("enum", [])
+                    if self.tag == "reports" and "enum" in selector
+                    else [selector.get("const")]
+                )
                 if (
-                    not isinstance(literal, str)
-                    or literal in mapping
+                    not literals
+                    or not all(isinstance(value, str) for value in literals)
+                    or any(value in mapping for value in literals)
                     or key not in definition.get("required", [])
                     or definition.get("additionalProperties") is not False
                 ):
                     raise ValueError("Discriminators require distinct required string literals")
-                mapping[literal] = reference
+                for literal in literals:
+                    mapping[literal] = reference
             if discriminator.get("mapping", mapping) != mapping:
                 raise ValueError("Discriminator mapping does not match its branches")
             branches = ", ".join(self.schema(branch) for branch in schema["oneOf"])
@@ -258,6 +265,13 @@ class TargetClientGenerator:
                 '"VALIDATION_FAILED", 422, "The X-ray request is invalid."); '
                 "throw error; }\n"
             )
+        if self.tag == "reports":
+            body_text = (
+                f"try {{ return await {invocation}; }} catch (error) {{ "
+                "if (error instanceof z.ZodError) throw new ReportApiError("
+                '"VALIDATION_FAILED", 422, "The report request is invalid."); '
+                "throw error; }\n"
+            )
         return (
             f"async {name}({', '.join(arguments)}): "
             f"Promise<TargetApiResponse<z.output<typeof {response_schema}>>> {{\n"
@@ -385,3 +399,61 @@ def render_xray_client(contract: dict[str, Any]) -> str:
     return rendered.replace("./target-transport", "./xray-transport").replace(
         "XrayTransport, type", "XrayTransport, XrayApiError, type"
     )
+
+
+class ReportClientGenerator(TargetClientGenerator):
+    """Fixed report methods with separate ephemeral grants and bounded binary downloads."""
+
+    def __init__(self, contract: dict[str, Any]) -> None:
+        super().__init__(contract, tag="reports")
+
+    def operation(self, path: str, method: str, operation: dict[str, Any]) -> str:
+        name = _name(operation["operationId"])
+        if name in {"download_report_artifact", "download_export_artifact"}:
+            family = "reports" if name == "download_report_artifact" else "exports"
+            parent = "report_id" if family == "reports" else "export_id"
+            expected = f"/api/v1/{family}/{{{parent}}}/artifacts/{{artifact_id}}/content"
+            if path != expected or method != "get":
+                raise ValueError("A report binary operation changed its fixed path or method")
+            self.reference("#/components/schemas/ReportArtifactMetadata")
+            return (
+                f"async {name}({parent}: string, artifact_id: string, "
+                "query: {account_id: string}, options: ReportDownloadOptions): "
+                "Promise<ReportArtifactResponse> { "
+                f"return this.#transport.download({_quoted(family)}, {parent}, artifact_id, "
+                "query, options, ReportArtifactMetadataSchema); }"
+            )
+        generated = super().operation(path, method, operation)
+        if name in {"create_report_download_grant", "create_export_download_grant"}:
+            generated = generated.replace(
+                "options: TargetCommandOptions", "options: ReportGrantOptions = {}"
+            )
+        return generated
+
+    def render(self) -> str:
+        rendered = super().render()
+        for name in (
+            "Transport",
+            "ApiClient",
+            "ApiResponse",
+            "ReadOptions",
+            "CommandOptions",
+            "ClientOptions",
+        ):
+            rendered = rendered.replace(f"Target{name}", f"Report{name}")
+        rendered = rendered.replace("./target-transport", "./report-transport")
+        rendered = rendered.replace(
+            "ReportTransport, type", "ReportTransport, ReportApiError, type"
+        )
+        rendered = rendered.replace(
+            'type ReportCommandOptions, type ReportClientOptions } from "./report-transport";',
+            "type ReportCommandOptions, type ReportClientOptions, type ReportGrantOptions, "
+            'type ReportDownloadOptions, type ReportArtifactResponse } from "./report-transport";',
+        )
+        # Grant POSTs use the read-options shape only as an empty transport options bag;
+        # no stable raw token replay or invented idempotency header is introduced.
+        return rendered
+
+
+def render_report_client(contract: dict[str, Any]) -> str:
+    return ReportClientGenerator(contract).render()

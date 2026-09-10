@@ -118,11 +118,12 @@ security-check: sast-check ## Audit dependencies and run source/secret security 
 	$(PNPM) security:dependencies
 
 sast-check: ## Run deterministic private-repository SAST without external uploads.
-	docker run --rm --network=none --read-only --tmpfs /tmp:rw,noexec,nosuid,size=256m \
+	docker run --rm --cpus=1 --memory=1g --memory-swap=1g \
+		--network=none --read-only --tmpfs /tmp:rw,noexec,nosuid,size=256m \
 		--tmpfs /root:rw,noexec,nosuid,size=128m \
 		-v "$(CURDIR):/src:ro" -w /src \
 		$(SEMGREP_IMAGE) \
-		semgrep scan --config .semgrep.yml --error --strict --metrics=off --no-git-ignore \
+		semgrep scan --config .semgrep.yml --error --strict --jobs=1 --metrics=off --no-git-ignore \
 		apps packages scripts
 
 build-python: ## Build every Python workspace distribution.

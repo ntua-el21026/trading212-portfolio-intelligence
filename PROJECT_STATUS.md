@@ -54,7 +54,7 @@ capacity exhausted by repeated earlier-package checks. The production source
 and 64-view quota did not change.
 Migration head is `20260907_0011`; MCP remains 15 tools and Trading 212 ten GET
 capabilities. See [the P2-03 evidence](docs/implementation/evidence/phase-2-p2-03-e258f54.json).
-P2-05 is **complete** at `7b102663ea193b4668924a7252180731954f4b00`. The [accepted assertion map](docs/implementation/evidence/phase-2-p2-05-7b10266.json) closes P2-XRAY-001/002 and P2-S20 through P2-S23. Phase 2 has five of ten packages (50%), thirteen of 29 local rows and twenty-two of 40 scenarios complete. P2-S34 and P2-S38 remain `in_progress`; report/export parity and the remaining release-wide predicates are outstanding. P2-06 through P2-10 and Phase 3 remain `not_started`.
+P2-05 is **complete** at `7b102663ea193b4668924a7252180731954f4b00`. The [accepted assertion map](docs/implementation/evidence/phase-2-p2-05-7b10266.json) closes P2-XRAY-001/002 and P2-S20 through P2-S23. Phase 2 has five of ten packages (50%), thirteen of 29 local rows and twenty-two of 40 scenarios complete. P2-S34 and P2-S38 remain `in_progress`; report/export parity and the remaining release-wide predicates are outstanding. P2-06 is `in_progress`; P2-07 through P2-10 and Phase 3 remain `not_started`.
 
 The clean exact-source `make validate` passed in 2339.747 seconds: 1,642 isolated and 234 service/migration Python tests, 88% combined statement/branch coverage, 223 web unit tests and 76 browser checks without retries. Assertion selectors are source mappings bound to completed test-file observations.
 
@@ -188,7 +188,7 @@ than fabricated.
 
 ## Next action
 
-Begin P2-06, then proceed sequentially through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+Complete P2-06, then proceed sequentially through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo
@@ -247,5 +247,74 @@ because those external resources were not supplied.
 Accepted authority `0ebbfa29253f418084835335eb2ee66f1b898679` preceded implementation.
 P2-05 is complete at `7b102663ea193b4668924a7252180731954f4b00`; see the
 [implementation and accepted evidence](docs/implementation/P2_05_PORTFOLIO_XRAY.md).
-Five packages are complete (50%); S34/S38 remain partial, P2-06 through P2-10 and
-Phase 3 remain `not_started`.
+Five packages are complete (50%); S34/S38 remain partial. P2-06 is in progress;
+P2-07 through P2-10 and Phase 3 remain `not_started`.
+
+## P2-06 implementation in progress
+
+Reports and exports start from synchronized P2-05 closure
+`5ff85b4436ec9be886639e6e2cf0c722fc0c4a73`. The
+[implementation contract](docs/implementation/P2_06_REPORTS_AND_EXPORTS.md) fixes
+bounded canonical capture, durable jobs, private PostgreSQL artifacts, current
+principal/source authorization and the four output formats. Focused canonical,
+renderer, authorization, licensing, privacy and retention checks have passed on
+the uncommitted implementation; full package acceptance is still pending.
+Real PostgreSQL capture now produces the complete annual selection and the
+performance/benchmark selection within the existing limits. Their report
+projection preserves full selected service values, source/license references and
+reported valuation/event provenance; private daily calculation traces remain
+bound by their immutable input/result hashes. A later snapshot retains its actual
+valuation date and an explicit disclosure beside the historical period.
+
+All ten report types passed focused PostgreSQL checks of PDF/CSV/JSON/XLSX
+artifacts, canonical values and manifests. Six focused PostgreSQL lifecycle-audit
+and privacy tests passed, including a genuine TTL deadline, pre-cleanup denial and
+bounded idempotent physical purge. Three standalone export tests passed nine
+real jobs covering seven datasets, both field sets and all three export formats.
+Actual API-backed report and export journeys passed twice each across desktop and
+mobile; the later working remainder gate also exercised their scroll-normalized captures.
+The first full gate passed static checks, 1,650 Python unit tests, 270 web unit
+tests, 34 property tests, 130 contract tests and 41 integration tests before a
+deliberate interruption to address a delayed dispatch callback race found in review.
+Both report and export interleavings reproduced the failure before the guard fix;
+the corrected cases and related dispatch/lifecycle checks then passed (15 tests).
+The restarted run passed all 262 integration tests, including the complete report
+type/format matrix. A migration-policy test still counted tables only through
+0013; adding the 0014 inventory and ancestry assertions corrected that test, and
+all 12 migration tests passed. Production migrations were unchanged by this fix.
+The source-canary gate also caught a literal test marker in the report browser
+test. Constructing the same marker from components preserves the existing negative
+assertion; all 100 security tests then passed with the scanner unchanged.
+The remaining-stage run `p206-working-remainder-04` passed on September 9 in
+2,828.665 seconds with source unchanged throughout the run: 1,914 isolated coverage
+tests, 277 service/migration coverage tests, 88% combined statement/branch coverage,
+86 serial browser checks, documentation/security checks, production builds and all
+six container images. Together with the preceding observations, this verifies the
+working implementation before the subsequent navigation correction; it is not a
+passing clean exact-SHA `make validate` or package acceptance.
+
+The subsequent navigation correction passed 45 focused unit cases and the full
+web unit suite (301 tests across 37 files). Four desktop browser journeys passed
+with ordinary pointer navigation after the sticky sidebar gained vertical
+scrolling; four mobile journeys passed before that sole CSS change to the hidden
+desktop sidebar. The final web lint, typecheck and production build passed.
+The original default-restoration regression, test-selector failure and actual
+sidebar-viewport failure remain recorded alongside their corrections. Root reviewed
+all eight working screenshots, including supplemental control viewports; the
+fixed-footer limitation in long full-page mobile captures remains documented.
+Final-source acceptance images require their own review. The OpenAPI comparison
+preserved all 70 existing operations and added eleven reporting operations.
+
+The PostgreSQL CI job budget is now 90 minutes. The measured local coverage phases
+took 311.56 and 1,796.99 seconds; applying the prior accepted P2-05 local-to-CI phase
+ratios estimates about 69.18 minutes for that CI job. This is a budget estimate,
+not a measured P2-06 CI result. The full test selection and coverage remain unchanged.
+Clean exact-source validation, three exact-source CI jobs,
+image/security scans, fresh Compose acceptance and reviewed final-source screenshots
+and PDF remain outstanding. Validation continues serially in one task Compose project,
+using PostgreSQL alone when sufficient and Redis when required. Inactive generated
+outputs are removed at check boundaries; September 10 cleanup removed 505,727,234
+logical bytes of inactive Next development output after checking for active consumers,
+preserving production outputs, dependencies, source and retained evidence.
+The alerts dataset requires the real P2-07
+producer; it must fail before job creation until that producer exists.

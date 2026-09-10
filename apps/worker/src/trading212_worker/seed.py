@@ -14,6 +14,7 @@ from trading212_persistence.seed import seed_synthetic
 from .historical_seed import seed_historical_scenarios
 from .materializer import PostgresCanonicalMaterializer
 from .postgres_store import PostgresIngestionStore
+from .report_seed import seed_synthetic_report_grants
 from .source_seed import seed_source_scenarios
 from .synthetic import SyntheticIngestionProvider
 from .target_seed import seed_target_scenarios
@@ -64,6 +65,9 @@ async def seed_complete_synthetic(database_url: str, *, app_environment: str) ->
             create_session_factory(engine), app_environment=app_environment
         )
         await seed_xray_scenario(create_session_factory(engine), app_environment=app_environment)
+        seed_synthetic_report_grants(
+            create_session_factory(engine), app_environment=app_environment, at=SEED_TIME
+        )
     finally:
         engine.dispose()
 

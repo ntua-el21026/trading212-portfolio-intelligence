@@ -193,6 +193,7 @@ a {
   top: var(--topbar-height);
   display: flex;
   height: calc(100vh - var(--topbar-height));
+  overflow-y: auto;
   grid-column: 1;
   grid-row: 2;
   flex-direction: column;

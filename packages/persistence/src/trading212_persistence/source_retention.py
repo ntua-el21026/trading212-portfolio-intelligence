@@ -17,7 +17,7 @@ MAX_PURGE_ROWS = 4096
 MAX_PURGE_BYTES = 64 * 1024 * 1024
 MAX_PURGE_BATCH_ROWS = 512
 
-PurgeFamily = Literal["historical", "xray"]
+PurgeFamily = Literal["historical", "xray", "report", "export"]
 
 
 def _count(value: int, maximum: int, field_name: str) -> None:
@@ -60,6 +60,7 @@ class SourcePurgeBudget:
     rows_removed: int = MAX_PURGE_ROWS
     bytes_inspected: int = MAX_PURGE_BYTES
     bytes_removed: int = MAX_PURGE_BYTES
+    artifacts: int = 100
     _captures_seen: set[tuple[PurgeFamily, UUID]] = field(
         default_factory=set, init=False, repr=False
     )
@@ -73,11 +74,14 @@ class SourcePurgeBudget:
             ("rows_removed", MAX_PURGE_ROWS),
             ("bytes_inspected", MAX_PURGE_BYTES),
             ("bytes_removed", MAX_PURGE_BYTES),
+            ("artifacts", 100),
         ):
             _count(getattr(self, name), maximum, name)
 
     def _enter(self, family: PurgeFamily, identifier: UUID, *, capture: bool) -> bool:
-        if family not in ("historical", "xray") or not isinstance(identifier, UUID):
+        if family not in ("historical", "xray", "report", "export") or not isinstance(
+            identifier, UUID
+        ):
             raise ValueError("A typed purge participant is required.")
         seen = self._captures_seen if capture else self._runs_seen
         key = (family, identifier)

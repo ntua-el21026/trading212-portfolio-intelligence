@@ -21,6 +21,7 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from trading212_api_contracts.targets import UUIDString
 from trading212_application.historical import PerformanceIntelligenceService
 from trading212_application.planning import PlanningService
+from trading212_application.reports import ReportService
 from trading212_application.services import PortfolioService, SyntheticPortfolioService
 from trading212_application.targets import TargetService
 from trading212_application.xray import XrayService
@@ -40,6 +41,8 @@ from .historical_gateway import HistoricalMcpGateway
 from .historical_tools import HISTORICAL_TOOL_NAMES, register_historical_tools
 from .planning_gateway import PlanningMcpGateway
 from .planning_tools import PLANNING_TOOL_NAMES, register_planning_tools
+from .report_gateway import ReportMcpGateway
+from .report_tools import REPORT_TOOL_NAMES, register_report_tools
 from .schemas import (
     AccountSummaryResult,
     ActivityTypeFilter,
@@ -76,6 +79,7 @@ FROZEN_TOOL_NAMES = (
     *PLANNING_TOOL_NAMES,
     *HISTORICAL_TOOL_NAMES,
     *XRAY_TOOL_NAMES,
+    *REPORT_TOOL_NAMES,
 )
 
 AccountId = Annotated[
@@ -108,6 +112,7 @@ class McpRuntime:
     planning_service: PlanningService | None = None
     historical_service: PerformanceIntelligenceService | None = None
     xray_service: XrayService | None = None
+    report_service: ReportService | None = None
 
     def asgi_app(self) -> ASGIApp:
         transport_security = TransportSecuritySettings(
@@ -137,6 +142,7 @@ def create_runtime(
     planning_service: PlanningService | None = None,
     historical_service: PerformanceIntelligenceService | None = None,
     xray_service: XrayService | None = None,
+    report_service: ReportService | None = None,
     database_url: str | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -208,6 +214,16 @@ def create_runtime(
 
             xray_service = PostgresXrayService(
                 sessions=create_session_factory(engine),
+                clock=runtime_clock,
+                cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+                cursor_ttl_seconds=security.cursor_ttl_seconds,
+            )
+
+        if report_service is None:
+            from trading212_persistence.report_service import PostgresReportService
+
+            report_service = PostgresReportService(
+                create_session_factory(engine),
                 clock=runtime_clock,
                 cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
                 cursor_ttl_seconds=security.cursor_ttl_seconds,
@@ -306,6 +322,13 @@ def create_runtime(
         XrayMcpGateway(service=xray_service, principals=principal_resolver, clock=runtime_clock),
         widget_domain=transport.widget_domain,
     )
+    register_report_tools(
+        server,
+        ReportMcpGateway(
+            service=report_service, principals=principal_resolver, clock=runtime_clock
+        ),
+        widget_domain=transport.widget_domain,
+    )
     return McpRuntime(
         server=server,
         service=portfolio_service,
@@ -316,6 +339,7 @@ def create_runtime(
         planning_service=planning_service,
         historical_service=historical_service,
         xray_service=xray_service,
+        report_service=report_service,
     )
 
 

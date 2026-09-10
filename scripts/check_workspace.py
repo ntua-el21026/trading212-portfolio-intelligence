@@ -31,9 +31,12 @@ REQUIRED_DIRECT_PYTHON = {
     "pytest": "9.1.1",
     "pytest-asyncio": "1.4.0",
     "pyyaml": "6.0.3",
+    "pypdf": "6.18.0",
+    "reportlab": "5.0.1",
     "ruff": "0.16.5",
     "sqlalchemy": "2.0.52",
     "structlog": "26.1.0",
+    "xlsxwriter": "3.2.9",
 }
 
 REQUIRED_DIRECT_NODE = {

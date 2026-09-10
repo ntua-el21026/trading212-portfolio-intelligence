@@ -5,6 +5,7 @@ import {
   ChartPie,
   CircleDollarSign,
   Clock3,
+  FileText,
   LayoutDashboard,
   ListTree,
   RefreshCw,
@@ -31,6 +32,7 @@ const primaryItems = [
   { href: "/performance", icon: TrendingUp, label: "Performance" },
   { href: "/income", icon: CircleDollarSign, label: "Income" },
   { href: "/xray", icon: ChartPie, label: "X-ray" },
+  { href: "/reports", icon: FileText, label: "Reports" },
 ] as const;
 
 const secondaryItems = [

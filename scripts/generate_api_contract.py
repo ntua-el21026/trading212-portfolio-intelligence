@@ -12,6 +12,7 @@ from trading212_api.main import create_app
 from trading212_api_contracts.typescript import (
     render_historical_client,
     render_planning_client,
+    render_report_client,
     render_source_client,
     render_target_client,
     render_xray_client,
@@ -26,6 +27,7 @@ PLANNING_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/planning.generat
 HISTORICAL_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/historical.generated.ts"
 XRAY_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/xray.generated.ts"
 SOURCE_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/sources.generated.ts"
+REPORT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/reports.generated.ts"
 
 
 def render_contract() -> str:
@@ -61,6 +63,7 @@ def main() -> int:
         (SOURCE_OUTPUT, render_source_client),
         (HISTORICAL_OUTPUT, render_historical_client),
         (XRAY_OUTPUT, render_xray_client),
+        (REPORT_OUTPUT, render_report_client),
     ):
         clients[output] = subprocess.run(  # noqa: S603
             [*package_manager, "exec", "prettier", "--stdin-filepath", str(output)],

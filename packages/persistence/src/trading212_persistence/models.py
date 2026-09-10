@@ -26,6 +26,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from .base import Base, CreatedAtMixin, UpdatedAtMixin, UUIDPrimaryKeyMixin
 from .historical_models import HISTORICAL_MODELS
 from .planning_models import PLANNING_MODELS
+from .report_models import REPORT_MODELS
 from .source_models import SOURCE_MODELS
 from .target_models import TARGET_MODELS
 from .types import ExactNumeric, UTCDateTime
@@ -44,6 +45,7 @@ class PrincipalModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
     __tablename__ = "principals"
     __table_args__ = (
         UniqueConstraint("issuer", "subject", name="uq_principals_issuer_subject"),
+        UniqueConstraint("owner_id", "id", name="uq_principals_owner_id"),
         CheckConstraint("status IN ('active','disabled')", name="status_allowed"),
         Index("ix_principals_owner_status", "owner_id", "status"),
     )
@@ -342,71 +344,82 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         UniqueConstraint("owner_id", "id", name="uq_collection_snapshots_owner_identity"),
         CheckConstraint("schema_version = 1", name="schema_version_supported"),
         CheckConstraint(
-            "resource IN ('activity','dividends','instruments','positions_market_value',"
-            "'positions_weight','positions_ticker','portfolios_name','portfolios_updated',"
-            "'target_versions','target_events','target_nodes','contribution_plans',"
-            "'plan_lines','actual_target_rows','plan_revisions',"
-            "'market_source_status','benchmark_source_status','fx_source_status','price_observations','fx_observations','benchmark_observations','benchmark_defs_name','benchmark_defs_created','benchmark_versions','historical_performance','historical_cash_flows','composite_benchmark_points','xray_exposures','xray_paths','xray_held_funds','xray_pairs','xray_common_entities','constituent_holdings')",
+            (
+                "resource IN ('activity','dividends','instruments',"
+                "'positions_market_value','positions_weight','positions_ticker',"
+                "'portfolios_name','portfolios_updated','target_versions',"
+                "'target_events','target_nodes','contribution_plans','plan_lines',"
+                "'actual_target_rows','plan_revisions','market_source_status',"
+                "'benchmark_source_status','fx_source_status','price_observations',"
+                "'fx_observations','benchmark_observations','benchmark_defs_name',"
+                "'benchmark_defs_created','benchmark_versions','historical_performance',"
+                "'historical_cash_flows','composite_benchmark_points','xray_exposures',"
+                "'xray_paths','xray_held_funds','xray_pairs','xray_common_entities',"
+                "'constituent_holdings','reports','exports')"
+            ),
             name="resource_allowed",
         ),
         CheckConstraint(
-            "(resource IN "
-            "('historical_performance','historical_cash_flows','composite_benchmark_points',"
-            "'xray_exposures','xray_paths','xray_held_funds','xray_pairs',"
-            "'xray_common_entities','constituent_holdings') "
-            "AND sort_specification = 'ordinal_asc') OR "
-            "(resource = 'activity' AND "
-            "sort_specification = 'occurred_at_desc_id_desc') OR "
-            "(resource = 'dividends' AND "
-            "sort_specification = 'paid_on_desc_id_desc') OR "
-            "(resource = 'instruments' AND "
-            "sort_specification = "
-            "'provider_asc_environment_asc_ticker_asc_name_asc_listing_id_asc') OR "
-            "(resource = 'positions_market_value' AND "
-            "sort_specification = 'market_value_desc_ticker_asc_listing_id_asc') OR "
-            "(resource = 'positions_weight' AND "
-            "sort_specification = 'direct_weight_desc_ticker_asc_listing_id_asc') OR "
-            "(resource = 'positions_ticker' AND "
-            "sort_specification = 'ticker_asc_listing_id_asc') OR "
-            "(resource = 'portfolios_name' AND sort_specification = 'name_asc_id_asc') OR "
-            "(resource = 'portfolios_updated' AND "
-            "sort_specification = 'updated_at_desc_id_desc') OR "
-            "(resource = 'target_versions' AND "
-            "sort_specification = 'version_number_desc_id_desc') OR "
-            "(resource = 'target_events' AND sort_specification = 'created_at_desc_id_desc') OR "
-            "(resource = 'target_nodes' AND sort_specification = 'depth_first_order_key') OR "
-            "(resource = 'plan_revisions' AND "
-            "sort_specification = 'revision_number_desc_id_desc') OR "
-            "(resource = 'contribution_plans' AND "
-            "sort_specification = 'created_at_desc_id_desc') OR "
-            "(resource IN ('plan_lines','actual_target_rows','plan_revisions') AND "
-            "sort_specification = 'ordinal_asc') OR "
-            "(resource = 'market_source_status' AND "
-            "sort_specification = 'source_key_asc_id_asc') OR "
-            "(resource = 'benchmark_source_status' AND "
-            "sort_specification = 'source_key_asc_id_asc') OR "
-            "(resource = 'fx_source_status' AND sort_specification = 'base_quote_provider_asc') OR "
-            "(resource = 'price_observations' AND sort_specification = 'ordinal_asc') OR "
-            "(resource = 'fx_observations' AND sort_specification = 'ordinal_asc') OR "
-            "(resource = 'benchmark_observations' AND sort_specification = 'ordinal_asc') OR "
-            "(resource = 'benchmark_defs_name' AND sort_specification = 'name_asc_id_asc') OR "
-            "(resource = 'benchmark_defs_created' AND "
-            "sort_specification = 'created_at_desc_id_desc') OR "
-            "(resource = 'benchmark_versions' AND "
-            "sort_specification = 'version_number_desc_id_desc')",
+            (
+                "(resource IN ('historical_performance','historical_cash_flows',"
+                "'composite_benchmark_points','xray_exposures','xray_paths',"
+                "'xray_held_funds','xray_pairs','xray_common_entities',"
+                "'constituent_holdings') AND sort_specification = 'ordinal_asc') OR "
+                "(resource = 'activity' AND sort_specification = "
+                "'occurred_at_desc_id_desc') OR (resource = 'dividends' AND "
+                "sort_specification = 'paid_on_desc_id_desc') OR (resource = "
+                "'instruments' AND sort_specification = "
+                "'provider_asc_environment_asc_ticker_asc_name_asc_listing_id_asc') OR "
+                "(resource = 'positions_market_value' AND sort_specification = "
+                "'market_value_desc_ticker_asc_listing_id_asc') OR (resource = "
+                "'positions_weight' AND sort_specification = "
+                "'direct_weight_desc_ticker_asc_listing_id_asc') OR (resource = "
+                "'positions_ticker' AND sort_specification = "
+                "'ticker_asc_listing_id_asc') OR (resource = 'portfolios_name' AND "
+                "sort_specification = 'name_asc_id_asc') OR (resource = "
+                "'portfolios_updated' AND sort_specification = "
+                "'updated_at_desc_id_desc') OR (resource = 'target_versions' AND "
+                "sort_specification = 'version_number_desc_id_desc') OR (resource = "
+                "'target_events' AND sort_specification = 'created_at_desc_id_desc') OR "
+                "(resource = 'target_nodes' AND sort_specification = "
+                "'depth_first_order_key') OR (resource = 'plan_revisions' AND "
+                "sort_specification = 'revision_number_desc_id_desc') OR (resource = "
+                "'contribution_plans' AND sort_specification = "
+                "'created_at_desc_id_desc') OR (resource IN ('plan_lines',"
+                "'actual_target_rows','plan_revisions') AND sort_specification = "
+                "'ordinal_asc') OR (resource = 'market_source_status' AND "
+                "sort_specification = 'source_key_asc_id_asc') OR (resource = "
+                "'benchmark_source_status' AND sort_specification = "
+                "'source_key_asc_id_asc') OR (resource = 'fx_source_status' AND "
+                "sort_specification = 'base_quote_provider_asc') OR (resource = "
+                "'price_observations' AND sort_specification = 'ordinal_asc') OR "
+                "(resource = 'fx_observations' AND sort_specification = 'ordinal_asc') "
+                "OR (resource = 'benchmark_observations' AND sort_specification = "
+                "'ordinal_asc') OR (resource = 'benchmark_defs_name' AND "
+                "sort_specification = 'name_asc_id_asc') OR (resource = "
+                "'benchmark_defs_created' AND sort_specification = "
+                "'created_at_desc_id_desc') OR (resource = 'benchmark_versions' AND "
+                "sort_specification = 'version_number_desc_id_desc') OR (resource IN "
+                "('reports','exports') AND sort_specification = "
+                "'created_at_desc_id_desc')"
+            ),
             name="resource_sort_match",
         ),
         CheckConstraint(
-            "((resource IN ('activity','dividends','positions_market_value',"
-            "'positions_weight','positions_ticker','contribution_plans','plan_lines',"
-            "'actual_target_rows','plan_revisions','historical_performance',"
-            "'historical_cash_flows','xray_exposures','xray_paths','xray_held_funds',"
-            "'xray_pairs','xray_common_entities') "
-            "AND broker_account_id IS NOT NULL) OR "
-            "(resource = 'instruments' AND broker_account_id IS NULL) OR "
-            "resource IN ('portfolios_name','portfolios_updated','target_versions',"
-            "'target_events','target_nodes',"
-            "'market_source_status','benchmark_source_status','fx_source_status','price_observations','fx_observations','benchmark_observations','benchmark_defs_name','benchmark_defs_created','benchmark_versions','composite_benchmark_points','constituent_holdings'))",
+            (
+                "((resource IN ('reports','exports','activity','dividends',"
+                "'positions_market_value','positions_weight','positions_ticker',"
+                "'contribution_plans','plan_lines','actual_target_rows','plan_revisions',"
+                "'historical_performance','historical_cash_flows','xray_exposures',"
+                "'xray_paths','xray_held_funds','xray_pairs','xray_common_entities') AND "
+                "broker_account_id IS NOT NULL) OR (resource = 'instruments' AND "
+                "broker_account_id IS NULL) OR resource IN ('portfolios_name',"
+                "'portfolios_updated','target_versions','target_events','target_nodes',"
+                "'market_source_status','benchmark_source_status','fx_source_status',"
+                "'price_observations','fx_observations','benchmark_observations',"
+                "'benchmark_defs_name','benchmark_defs_created','benchmark_versions',"
+                "'composite_benchmark_points','constituent_holdings'))"
+            ),
             name="account_scope_match",
         ),
         CheckConstraint(
@@ -1086,4 +1099,5 @@ ALL_MODELS = (
     *SOURCE_MODELS,
     *HISTORICAL_MODELS,
     *XRAY_MODELS,
+    *REPORT_MODELS,
 )

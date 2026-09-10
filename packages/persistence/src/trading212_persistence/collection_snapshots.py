@@ -44,6 +44,8 @@ class CollectionSnapshotResource(StrEnum):
     TARGET_EVENTS = "target_events"
     TARGET_NODES = "target_nodes"
     CONTRIBUTION_PLANS = "contribution_plans"
+    REPORTS = "reports"
+    EXPORTS = "exports"
     PLAN_REVISIONS = "plan_revisions"
     PLAN_LINES = "plan_lines"
     ACTUAL_TARGET_ROWS = "actual_target_rows"
@@ -98,6 +100,8 @@ _SORT_SPECIFICATIONS = {
     CollectionSnapshotResource.TARGET_EVENTS: "created_at_desc_id_desc",
     CollectionSnapshotResource.TARGET_NODES: "depth_first_order_key",
     CollectionSnapshotResource.CONTRIBUTION_PLANS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.REPORTS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.EXPORTS: "created_at_desc_id_desc",
     CollectionSnapshotResource.PLAN_REVISIONS: "revision_number_desc_id_desc",
     CollectionSnapshotResource.PLAN_LINES: "ordinal_asc",
     CollectionSnapshotResource.ACTUAL_TARGET_ROWS: "ordinal_asc",
@@ -147,6 +151,8 @@ _ACCOUNT_RESOURCES = frozenset(
         CollectionSnapshotResource.HISTORICAL_PERFORMANCE,
         CollectionSnapshotResource.HISTORICAL_CASH_FLOWS,
         CollectionSnapshotResource.CONTRIBUTION_PLANS,
+        CollectionSnapshotResource.REPORTS,
+        CollectionSnapshotResource.EXPORTS,
         CollectionSnapshotResource.PLAN_REVISIONS,
         CollectionSnapshotResource.PLAN_LINES,
         CollectionSnapshotResource.ACTUAL_TARGET_ROWS,

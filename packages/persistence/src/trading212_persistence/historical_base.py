@@ -78,6 +78,7 @@ class HistoricalStoreBase:
         cursor_ttl_seconds: int = 3600,
         max_active_collection_snapshots_per_owner: int = 64,
         max_active_collection_members_per_owner: int = 250_000,
+        required_copy_use: SourceUse | None = None,
     ) -> None:
         self._sessions = sessions
         self._clock = clock or (lambda: datetime.now(UTC))
@@ -89,7 +90,10 @@ class HistoricalStoreBase:
         self._snapshot_quota = max_active_collection_snapshots_per_owner
         self._member_quota = max_active_collection_members_per_owner
         self._sources = PostgresSourceService(
-            sessions=sessions, cursor_signing_key=cursor_signing_key, clock=self._clock
+            sessions=sessions,
+            cursor_signing_key=cursor_signing_key,
+            clock=self._clock,
+            required_copy_use=required_copy_use,
         )
 
     def _now(self) -> datetime:

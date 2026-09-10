@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from . import source_models as sm
 from .historical_retention import purge_source_copies
+from .report_retention import purge_report_source_copies
 from .source_retention import SourcePurgeBudget
 from .source_retention_sql import purge_payload_rows
 from .xray_catalog_models import ConstituentHoldingModel, ConstituentSnapshotModel
@@ -107,6 +108,11 @@ def _expire_snapshot(
         if work.phase == "complete":
             return False
     if work.phase == "copies":
+        kind = str(row.__tablename__).removesuffix("_snapshots")
+        if not purge_report_source_copies(
+            session, owner=row.owner_id, kind=kind, source_id=row.id, at=at, budget=budget
+        ):
+            return False
         if isinstance(row, sm.SourceSnapshotFields) and not purge_source_copies(
             session, row, at=at, budget=budget
         ):

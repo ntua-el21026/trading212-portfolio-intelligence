@@ -18,6 +18,8 @@ class Scope(StrEnum):
     TARGETS_WRITE = "targets:write"
     ANALYTICS_READ = "analytics:read"
     PLANS_WRITE = "plans:write"
+    REPORTS_READ = "reports:read"
+    REPORTS_WRITE = "reports:write"
 
 
 class AuthenticationError(RuntimeError):

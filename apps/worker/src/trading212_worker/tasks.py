@@ -62,6 +62,7 @@ from .postgres_store import (
     RunLeaseBusyError,
 )
 from .rate_coordinator import RedisRateCoordinator
+from .report_tasks import register_report_tasks
 from .synthetic import SyntheticIngestionProvider
 
 _RETRYABLE_CATEGORIES = {
@@ -232,6 +233,7 @@ def create_celery_app(settings: WorkerSettings) -> Celery:
     )
     _register_tasks(application, settings)
     register_planning_task(application, database_url=settings.database_url)
+    register_report_tasks(application, database_url=settings.database_url)
     return application
 
 

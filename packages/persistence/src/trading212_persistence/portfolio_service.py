@@ -1013,10 +1013,11 @@ class PostgresPortfolioService(PortfolioService):
                         market_value=_position_view(
                             item, listing, instrument, snapshot, quality
                         ).market_value,
-                        weight=_weight(item.market_value, snapshot.portfolio_total),
+                        weight=_snapshot_weight(item.market_value, item.currency, snapshot),
                         weight_availability=(
                             Availability.AVAILABLE
-                            if _weight(item.market_value, snapshot.portfolio_total) is not None
+                            if _snapshot_weight(item.market_value, item.currency, snapshot)
+                            is not None
                             else Availability.UNAVAILABLE
                         ),
                     )
@@ -1039,10 +1040,11 @@ class PostgresPortfolioService(PortfolioService):
                                     cash_row.provenance, fallback="snapshot_cash"
                                 ),
                             ),
-                            weight=_weight(cash_row.amount, snapshot.portfolio_total),
+                            weight=_snapshot_weight(cash_row.amount, cash_row.currency, snapshot),
                             weight_availability=(
                                 Availability.AVAILABLE
-                                if _weight(cash_row.amount, snapshot.portfolio_total) is not None
+                                if _snapshot_weight(cash_row.amount, cash_row.currency, snapshot)
+                                is not None
                                 else Availability.UNAVAILABLE
                             ),
                         ),
@@ -2648,7 +2650,7 @@ def _position_view(
                 else "Position unrealized profit/loss coverage is incomplete."
             ),
         ),
-        direct_weight=_weight(item.market_value, snapshot.portfolio_total),
+        direct_weight=_snapshot_weight(item.market_value, item.currency, snapshot),
         quality=quality,
     )
 
@@ -2820,6 +2822,15 @@ def _worst_quality_state(values: Sequence[ViewQuality]) -> ViewQuality:
         ViewQuality.FAILED: 5,
     }
     return max(values or (ViewQuality.PARTIAL,), key=severity.__getitem__)
+
+
+def _snapshot_weight(
+    value: Decimal | None, currency: str, snapshot: PortfolioSnapshotModel
+) -> Decimal | None:
+    # These snapshot rows contain no sourced conversion to reporting currency.
+    if currency != snapshot.reporting_currency:
+        return None
+    return _weight(value, snapshot.portfolio_total)
 
 
 def _weight(value: Decimal | None, total: Decimal | None) -> Decimal | None:

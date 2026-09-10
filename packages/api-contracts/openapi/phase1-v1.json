@@ -294,6 +294,36 @@
         "title": "AllocationResponse",
         "type": "object"
       },
+      "ArtifactGrant": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "token": {
+            "maxLength": 512,
+            "minLength": 32,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "token",
+          "expires_at"
+        ],
+        "title": "ArtifactGrant",
+        "type": "object"
+      },
       "AttributionComponent": {
         "additionalProperties": false,
         "properties": {
@@ -2513,6 +2543,146 @@
         "title": "CreateContributionPlanRequest",
         "type": "object"
       },
+      "CreateExportRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "benchmark_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Benchmark Version Id"
+          },
+          "constituent_snapshot_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constituent Snapshot Id"
+          },
+          "dataset": {
+            "enum": [
+              "positions",
+              "activity",
+              "dividends",
+              "targets",
+              "plans",
+              "performance",
+              "xray",
+              "alerts"
+            ],
+            "title": "Dataset",
+            "type": "string"
+          },
+          "end_date": {
+            "format": "date",
+            "title": "End Date",
+            "type": "string"
+          },
+          "field_set": {
+            "enum": [
+              "standard",
+              "audit"
+            ],
+            "title": "Field Set",
+            "type": "string"
+          },
+          "format": {
+            "enum": [
+              "csv",
+              "json",
+              "xlsx"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "plan_revision_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Revision Id"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          },
+          "target_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Version Id"
+          },
+          "ttl_days": {
+            "default": 7,
+            "maximum": 30.0,
+            "minimum": 1.0,
+            "title": "Ttl Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "account_id",
+          "start_date",
+          "end_date",
+          "source_cutoff_at",
+          "snapshot_id",
+          "reporting_currency",
+          "dataset",
+          "field_set",
+          "format"
+        ],
+        "title": "CreateExportRequest",
+        "type": "object"
+      },
       "CreateTargetVersionRequest": {
         "additionalProperties": false,
         "properties": {
@@ -3090,6 +3260,12 @@
         "title": "DriftAnalysisResult",
         "type": "object"
       },
+      "EmptyReportRequest": {
+        "additionalProperties": false,
+        "properties": {},
+        "title": "EmptyReportRequest",
+        "type": "object"
+      },
       "EmptySourceRequest": {
         "additionalProperties": false,
         "properties": {},
@@ -3100,6 +3276,339 @@
         "additionalProperties": false,
         "properties": {},
         "title": "EmptyTargetRequest",
+        "type": "object"
+      },
+      "ExportJobStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ReportArtifactMetadata"
+            },
+            "maxItems": 1,
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReportPinnedContext"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dataset": {
+            "enum": [
+              "positions",
+              "activity",
+              "dividends",
+              "targets",
+              "plans",
+              "performance",
+              "xray",
+              "alerts"
+            ],
+            "title": "Dataset",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "export_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Export Id",
+            "type": "string"
+          },
+          "failure_code": {
+            "anyOf": [
+              {
+                "enum": [
+                  "invalid_input",
+                  "input_unavailable",
+                  "input_changed",
+                  "access_denied",
+                  "source_restricted",
+                  "limit_exceeded",
+                  "render_failed",
+                  "storage_unavailable",
+                  "publication_unavailable",
+                  "lease_expired",
+                  "attempts_exhausted"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Code"
+          },
+          "field_set": {
+            "enum": [
+              "standard",
+              "audit"
+            ],
+            "title": "Field Set",
+            "type": "string"
+          },
+          "format": {
+            "enum": [
+              "csv",
+              "json",
+              "xlsx"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "manifest_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manifest Digest"
+          },
+          "requested_at": {
+            "format": "date-time",
+            "title": "Requested At",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "expired",
+              "cancelled"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "context",
+          "export_id",
+          "state",
+          "requested_at",
+          "completed_at",
+          "expires_at",
+          "failure_code",
+          "dataset",
+          "field_set",
+          "format",
+          "manifest_digest",
+          "artifacts"
+        ],
+        "title": "ExportJobStatus",
+        "type": "object"
+      },
+      "ExportPage": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExportJobStatus"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 9.223372036854776e+18,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "ExportPage",
+        "type": "object"
+      },
+      "ExportSelection": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "benchmark_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Benchmark Version Id"
+          },
+          "constituent_snapshot_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constituent Snapshot Id"
+          },
+          "dataset": {
+            "enum": [
+              "positions",
+              "activity",
+              "dividends",
+              "targets",
+              "plans",
+              "performance",
+              "xray",
+              "alerts"
+            ],
+            "title": "Dataset",
+            "type": "string"
+          },
+          "end_date": {
+            "format": "date",
+            "title": "End Date",
+            "type": "string"
+          },
+          "field_set": {
+            "enum": [
+              "standard",
+              "audit"
+            ],
+            "title": "Field Set",
+            "type": "string"
+          },
+          "format": {
+            "enum": [
+              "csv",
+              "json",
+              "xlsx"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "plan_revision_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Revision Id"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          },
+          "target_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Version Id"
+          }
+        },
+        "required": [
+          "account_id",
+          "start_date",
+          "end_date",
+          "source_cutoff_at",
+          "snapshot_id",
+          "reporting_currency",
+          "dataset",
+          "field_set",
+          "format"
+        ],
+        "title": "ExportSelection",
         "type": "object"
       },
       "FlattenedTargetNodeResponse": {
@@ -3402,6 +3911,176 @@
           "pairs"
         ],
         "title": "FxSourceStatus",
+        "type": "object"
+      },
+      "GenerateReportRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "benchmark_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Benchmark Version Id"
+          },
+          "constituent_snapshot_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constituent Snapshot Id"
+          },
+          "end_date": {
+            "format": "date",
+            "title": "End Date",
+            "type": "string"
+          },
+          "formats": {
+            "items": {
+              "enum": [
+                "pdf",
+                "csv",
+                "json",
+                "xlsx"
+              ],
+              "type": "string"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Formats",
+            "type": "array"
+          },
+          "plan_revision_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Revision Id"
+          },
+          "report_type": {
+            "enum": [
+              "monthly",
+              "quarterly",
+              "annual",
+              "portfolio_summary",
+              "target_drift",
+              "contribution_plan",
+              "performance_benchmark",
+              "dividend_income",
+              "portfolio_xray",
+              "quality_reconciliation"
+            ],
+            "title": "Report Type",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "sections": {
+            "items": {
+              "enum": [
+                "overview",
+                "allocation",
+                "targets",
+                "drift",
+                "contribution_plan",
+                "performance",
+                "benchmark",
+                "income",
+                "cash_flows",
+                "attribution",
+                "xray",
+                "quality",
+                "activity"
+              ],
+              "type": "string"
+            },
+            "maxItems": 13,
+            "minItems": 1,
+            "title": "Sections",
+            "type": "array"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          },
+          "target_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Version Id"
+          },
+          "template_version": {
+            "const": "report_template_v1",
+            "default": "report_template_v1",
+            "title": "Template Version",
+            "type": "string"
+          },
+          "ttl_days": {
+            "default": 7,
+            "maximum": 30.0,
+            "minimum": 1.0,
+            "title": "Ttl Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "account_id",
+          "start_date",
+          "end_date",
+          "source_cutoff_at",
+          "snapshot_id",
+          "reporting_currency",
+          "report_type",
+          "sections",
+          "formats"
+        ],
+        "title": "GenerateReportRequest",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -7994,6 +8673,3472 @@
           "content"
         ],
         "title": "ReplaceTargetDraftRequest",
+        "type": "object"
+      },
+      "ReportArtifactMetadata": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "byte_length": {
+            "maximum": 10485760.0,
+            "minimum": 1.0,
+            "title": "Byte Length",
+            "type": "integer"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "format": {
+            "enum": [
+              "pdf",
+              "csv",
+              "json",
+              "xlsx"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "mime_type": {
+            "enum": [
+              "application/pdf",
+              "text/csv; charset=utf-8",
+              "application/json",
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ],
+            "title": "Mime Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "artifact_id",
+          "format",
+          "mime_type",
+          "byte_length",
+          "content_digest",
+          "expires_at"
+        ],
+        "title": "ReportArtifactMetadata",
+        "type": "object"
+      },
+      "ReportBooleanCell": {
+        "additionalProperties": false,
+        "properties": {
+          "bound_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bound Key"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^(?:0(?:\\.[0-9]{1,18})?|1(?:\\.0{1,18})?)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "context_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Key"
+          },
+          "coverage_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Key"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "decimal_role": {
+            "title": "Decimal Role",
+            "type": "null"
+          },
+          "kind": {
+            "const": "boolean",
+            "title": "Kind",
+            "type": "string"
+          },
+          "method_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Key"
+          },
+          "method_version": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Version"
+          },
+          "note_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Set Key"
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "enum": [
+                  "observed_provider",
+                  "normalized_provider",
+                  "derived_deterministic",
+                  "estimated",
+                  "unavailable",
+                  "provider",
+                  "derived"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin"
+          },
+          "provenance_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance Set Key"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "enum": [
+                  "fresh",
+                  "stale",
+                  "partial",
+                  "estimated",
+                  "unreconciled",
+                  "failed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
+          },
+          "reason_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Key"
+          },
+          "state": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed",
+              "not_applicable"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "state",
+          "kind",
+          "value"
+        ],
+        "title": "ReportBooleanCell",
+        "type": "object"
+      },
+      "ReportBoundFact": {
+        "additionalProperties": false,
+        "properties": {
+          "family": {
+            "enum": [
+              "snapshot",
+              "activity",
+              "target",
+              "planning",
+              "performance",
+              "benchmark",
+              "income",
+              "cash_flows",
+              "attribution",
+              "xray",
+              "reconciliation",
+              "alerts"
+            ],
+            "title": "Family",
+            "type": "string"
+          },
+          "key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "exact",
+              "lower_bound",
+              "unavailable"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "positive_below_quantum": {
+            "title": "Positive Below Quantum",
+            "type": "boolean"
+          },
+          "quantum": {
+            "anyOf": [
+              {
+                "maxLength": 4096,
+                "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantum"
+          },
+          "rounding": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rounding"
+          }
+        },
+        "required": [
+          "key",
+          "family",
+          "kind",
+          "quantum",
+          "rounding",
+          "positive_below_quantum"
+        ],
+        "title": "ReportBoundFact",
+        "type": "object"
+      },
+      "ReportCell": {
+        "discriminator": {
+          "mapping": {
+            "boolean": "#/components/schemas/ReportBooleanCell",
+            "date": "#/components/schemas/ReportDateCell",
+            "decimal": "#/components/schemas/ReportDecimalCell",
+            "enum": "#/components/schemas/ReportTextCell",
+            "identifier": "#/components/schemas/ReportTextCell",
+            "instant": "#/components/schemas/ReportInstantCell",
+            "integer": "#/components/schemas/ReportIntegerCell",
+            "text": "#/components/schemas/ReportTextCell"
+          },
+          "propertyName": "kind"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ReportTextCell"
+          },
+          {
+            "$ref": "#/components/schemas/ReportDecimalCell"
+          },
+          {
+            "$ref": "#/components/schemas/ReportIntegerCell"
+          },
+          {
+            "$ref": "#/components/schemas/ReportBooleanCell"
+          },
+          {
+            "$ref": "#/components/schemas/ReportDateCell"
+          },
+          {
+            "$ref": "#/components/schemas/ReportInstantCell"
+          }
+        ]
+      },
+      "ReportContext": {
+        "additionalProperties": false,
+        "properties": {
+          "coverage_set_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Coverage Set Key",
+            "type": "string"
+          },
+          "family": {
+            "enum": [
+              "snapshot",
+              "activity",
+              "target",
+              "planning",
+              "performance",
+              "benchmark",
+              "income",
+              "cash_flows",
+              "attribution",
+              "xray",
+              "reconciliation",
+              "alerts"
+            ],
+            "title": "Family",
+            "type": "string"
+          },
+          "key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Key",
+            "type": "string"
+          },
+          "method_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Method Key",
+            "type": "string"
+          },
+          "method_version": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Method Version",
+            "type": "string"
+          },
+          "note_set_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Note Set Key",
+            "type": "string"
+          },
+          "provenance_set_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Provenance Set Key",
+            "type": "string"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reconciliation_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reconciliation Key"
+          },
+          "schema_version": {
+            "const": "1.0.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source At"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "family",
+          "method_key",
+          "method_version",
+          "valuation_at",
+          "source_cutoff_at",
+          "quality",
+          "provenance_set_key",
+          "coverage_set_key",
+          "note_set_key",
+          "source_at",
+          "reconciliation_key",
+          "schema_version"
+        ],
+        "title": "ReportContext",
+        "type": "object"
+      },
+      "ReportCoverageFact": {
+        "additionalProperties": false,
+        "properties": {
+          "family": {
+            "enum": [
+              "snapshot",
+              "activity",
+              "target",
+              "planning",
+              "performance",
+              "benchmark",
+              "income",
+              "cash_flows",
+              "attribution",
+              "xray",
+              "reconciliation",
+              "alerts"
+            ],
+            "title": "Family",
+            "type": "string"
+          },
+          "metric_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Metric Key",
+            "type": "string"
+          },
+          "set_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Set Key",
+            "type": "string"
+          },
+          "value": {
+            "$ref": "#/components/schemas/ReportCell"
+          }
+        },
+        "required": [
+          "set_key",
+          "family",
+          "metric_key",
+          "value"
+        ],
+        "title": "ReportCoverageFact",
+        "type": "object"
+      },
+      "ReportDateCell": {
+        "additionalProperties": false,
+        "properties": {
+          "bound_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bound Key"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^(?:0(?:\\.[0-9]{1,18})?|1(?:\\.0{1,18})?)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "context_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Key"
+          },
+          "coverage_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Key"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "decimal_role": {
+            "title": "Decimal Role",
+            "type": "null"
+          },
+          "kind": {
+            "const": "date",
+            "title": "Kind",
+            "type": "string"
+          },
+          "method_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Key"
+          },
+          "method_version": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Version"
+          },
+          "note_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Set Key"
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "enum": [
+                  "observed_provider",
+                  "normalized_provider",
+                  "derived_deterministic",
+                  "estimated",
+                  "unavailable",
+                  "provider",
+                  "derived"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin"
+          },
+          "provenance_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance Set Key"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "enum": [
+                  "fresh",
+                  "stale",
+                  "partial",
+                  "estimated",
+                  "unreconciled",
+                  "failed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
+          },
+          "reason_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Key"
+          },
+          "state": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed",
+              "not_applicable"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "state",
+          "kind",
+          "value"
+        ],
+        "title": "ReportDateCell",
+        "type": "object"
+      },
+      "ReportDecimalCell": {
+        "additionalProperties": false,
+        "properties": {
+          "bound_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bound Key"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^(?:0(?:\\.[0-9]{1,18})?|1(?:\\.0{1,18})?)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "context_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Key"
+          },
+          "coverage_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Key"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "decimal_role": {
+            "enum": [
+              "money",
+              "quantity",
+              "price",
+              "fx",
+              "ratio",
+              "score",
+              "residual"
+            ],
+            "title": "Decimal Role",
+            "type": "string"
+          },
+          "kind": {
+            "const": "decimal",
+            "title": "Kind",
+            "type": "string"
+          },
+          "method_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Key"
+          },
+          "method_version": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Version"
+          },
+          "note_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Set Key"
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "enum": [
+                  "observed_provider",
+                  "normalized_provider",
+                  "derived_deterministic",
+                  "estimated",
+                  "unavailable",
+                  "provider",
+                  "derived"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin"
+          },
+          "provenance_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance Set Key"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "enum": [
+                  "fresh",
+                  "stale",
+                  "partial",
+                  "estimated",
+                  "unreconciled",
+                  "failed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
+          },
+          "reason_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Key"
+          },
+          "state": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed",
+              "not_applicable"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "maxLength": 4096,
+                "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "state",
+          "kind",
+          "value",
+          "decimal_role"
+        ],
+        "title": "ReportDecimalCell",
+        "type": "object"
+      },
+      "ReportDocumentHeader": {
+        "additionalProperties": false,
+        "properties": {
+          "context_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Context Digest",
+            "type": "string"
+          },
+          "document_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Document Digest",
+            "type": "string"
+          },
+          "document_schema_version": {
+            "const": "1.0.0",
+            "title": "Document Schema Version",
+            "type": "string"
+          },
+          "owner_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "selection": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReportSelection"
+              },
+              {
+                "$ref": "#/components/schemas/ExportSelection"
+              }
+            ],
+            "title": "Selection"
+          },
+          "tables": {
+            "items": {
+              "$ref": "#/components/schemas/ReportTableDescriptor"
+            },
+            "maxItems": 128,
+            "title": "Tables",
+            "type": "array"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "selection",
+          "owner_id",
+          "valuation_at",
+          "context_digest",
+          "tables",
+          "document_digest",
+          "document_schema_version"
+        ],
+        "title": "ReportDocumentHeader",
+        "type": "object"
+      },
+      "ReportFontReference": {
+        "additionalProperties": false,
+        "properties": {
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "license_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "License Digest",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 4096,
+            "pattern": "^[^\\x00]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "version": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "content_digest",
+          "license_digest"
+        ],
+        "title": "ReportFontReference",
+        "type": "object"
+      },
+      "ReportInputPin": {
+        "additionalProperties": false,
+        "properties": {
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "family": {
+            "enum": [
+              "snapshot",
+              "activity",
+              "target",
+              "planning",
+              "performance",
+              "benchmark",
+              "income",
+              "cash_flows",
+              "attribution",
+              "xray",
+              "reconciliation",
+              "alerts"
+            ],
+            "title": "Family",
+            "type": "string"
+          },
+          "method_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Key"
+          },
+          "method_version": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Version"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "role": {
+            "enum": [
+              "snapshot",
+              "input",
+              "result",
+              "calculation",
+              "policy",
+              "target_version",
+              "plan_revision",
+              "benchmark_version",
+              "source",
+              "mapping",
+              "license",
+              "calendar",
+              "event_revision",
+              "reconciliation"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "subject_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Subject Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "family",
+          "role",
+          "subject_id",
+          "content_digest",
+          "parent_id",
+          "method_key",
+          "method_version"
+        ],
+        "title": "ReportInputPin",
+        "type": "object"
+      },
+      "ReportInstantCell": {
+        "additionalProperties": false,
+        "properties": {
+          "bound_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bound Key"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^(?:0(?:\\.[0-9]{1,18})?|1(?:\\.0{1,18})?)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "context_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Key"
+          },
+          "coverage_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Key"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "decimal_role": {
+            "title": "Decimal Role",
+            "type": "null"
+          },
+          "kind": {
+            "const": "instant",
+            "title": "Kind",
+            "type": "string"
+          },
+          "method_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Key"
+          },
+          "method_version": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Version"
+          },
+          "note_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Set Key"
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "enum": [
+                  "observed_provider",
+                  "normalized_provider",
+                  "derived_deterministic",
+                  "estimated",
+                  "unavailable",
+                  "provider",
+                  "derived"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin"
+          },
+          "provenance_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance Set Key"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "enum": [
+                  "fresh",
+                  "stale",
+                  "partial",
+                  "estimated",
+                  "unreconciled",
+                  "failed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
+          },
+          "reason_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Key"
+          },
+          "state": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed",
+              "not_applicable"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "state",
+          "kind",
+          "value"
+        ],
+        "title": "ReportInstantCell",
+        "type": "object"
+      },
+      "ReportIntegerCell": {
+        "additionalProperties": false,
+        "properties": {
+          "bound_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bound Key"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^(?:0(?:\\.[0-9]{1,18})?|1(?:\\.0{1,18})?)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "context_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Key"
+          },
+          "coverage_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Key"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "decimal_role": {
+            "title": "Decimal Role",
+            "type": "null"
+          },
+          "kind": {
+            "const": "integer",
+            "title": "Kind",
+            "type": "string"
+          },
+          "method_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Key"
+          },
+          "method_version": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Version"
+          },
+          "note_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Set Key"
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "enum": [
+                  "observed_provider",
+                  "normalized_provider",
+                  "derived_deterministic",
+                  "estimated",
+                  "unavailable",
+                  "provider",
+                  "derived"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin"
+          },
+          "provenance_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance Set Key"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "enum": [
+                  "fresh",
+                  "stale",
+                  "partial",
+                  "estimated",
+                  "unreconciled",
+                  "failed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
+          },
+          "reason_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Key"
+          },
+          "state": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed",
+              "not_applicable"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "maximum": 9.223372036854776e+18,
+                "minimum": -9.223372036854776e+18,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "state",
+          "kind",
+          "value"
+        ],
+        "title": "ReportIntegerCell",
+        "type": "object"
+      },
+      "ReportJobStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ReportArtifactMetadata"
+            },
+            "maxItems": 4,
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReportPinnedContext"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "failure_code": {
+            "anyOf": [
+              {
+                "enum": [
+                  "invalid_input",
+                  "input_unavailable",
+                  "input_changed",
+                  "access_denied",
+                  "source_restricted",
+                  "limit_exceeded",
+                  "render_failed",
+                  "storage_unavailable",
+                  "publication_unavailable",
+                  "lease_expired",
+                  "attempts_exhausted"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Code"
+          },
+          "formats": {
+            "items": {
+              "enum": [
+                "pdf",
+                "csv",
+                "json",
+                "xlsx"
+              ],
+              "type": "string"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Formats",
+            "type": "array"
+          },
+          "job_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "manifest_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manifest Digest"
+          },
+          "report_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Id"
+          },
+          "report_type": {
+            "enum": [
+              "monthly",
+              "quarterly",
+              "annual",
+              "portfolio_summary",
+              "target_drift",
+              "contribution_plan",
+              "performance_benchmark",
+              "dividend_income",
+              "portfolio_xray",
+              "quality_reconciliation"
+            ],
+            "title": "Report Type",
+            "type": "string"
+          },
+          "requested_at": {
+            "format": "date-time",
+            "title": "Requested At",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "expired",
+              "cancelled"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "context",
+          "job_id",
+          "report_id",
+          "state",
+          "requested_at",
+          "completed_at",
+          "expires_at",
+          "failure_code",
+          "report_type",
+          "formats",
+          "manifest_digest",
+          "artifacts"
+        ],
+        "title": "ReportJobStatus",
+        "type": "object"
+      },
+      "ReportLicenseReference": {
+        "additionalProperties": false,
+        "properties": {
+          "attribution": {
+            "maxLength": 4096,
+            "pattern": "^[^\\x00]*$",
+            "title": "Attribution",
+            "type": "string"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "license_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "License Digest",
+            "type": "string"
+          },
+          "pinned_display": {
+            "enum": [
+              "allowed",
+              "denied",
+              "unknown"
+            ],
+            "title": "Pinned Display",
+            "type": "string"
+          },
+          "pinned_export": {
+            "enum": [
+              "allowed",
+              "denied",
+              "unknown"
+            ],
+            "title": "Pinned Export",
+            "type": "string"
+          },
+          "pinned_report": {
+            "enum": [
+              "allowed",
+              "denied",
+              "unknown"
+            ],
+            "title": "Pinned Report",
+            "type": "string"
+          },
+          "pinned_store": {
+            "enum": [
+              "allowed",
+              "denied",
+              "unknown"
+            ],
+            "title": "Pinned Store",
+            "type": "string"
+          },
+          "provider_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Provider Id",
+            "type": "string"
+          },
+          "valid_from": {
+            "format": "date-time",
+            "title": "Valid From",
+            "type": "string"
+          },
+          "version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version_id",
+          "provider_id",
+          "license_digest",
+          "attribution",
+          "pinned_store",
+          "pinned_display",
+          "pinned_report",
+          "pinned_export",
+          "valid_from",
+          "expires_at"
+        ],
+        "title": "ReportLicenseReference",
+        "type": "object"
+      },
+      "ReportManifest": {
+        "additionalProperties": false,
+        "properties": {
+          "bindings": {
+            "items": {
+              "$ref": "#/components/schemas/ReportInputPin"
+            },
+            "maxItems": 256,
+            "title": "Bindings",
+            "type": "array"
+          },
+          "bounds": {
+            "items": {
+              "$ref": "#/components/schemas/ReportBoundFact"
+            },
+            "maxItems": 100000,
+            "title": "Bounds",
+            "type": "array"
+          },
+          "contexts": {
+            "items": {
+              "$ref": "#/components/schemas/ReportContext"
+            },
+            "maxItems": 100000,
+            "title": "Contexts",
+            "type": "array"
+          },
+          "coverage": {
+            "items": {
+              "$ref": "#/components/schemas/ReportCoverageFact"
+            },
+            "maxItems": 100000,
+            "title": "Coverage",
+            "type": "array"
+          },
+          "document": {
+            "$ref": "#/components/schemas/ReportDocumentHeader"
+          },
+          "escaping_version": {
+            "const": "report_csv_text_v1",
+            "title": "Escaping Version",
+            "type": "string"
+          },
+          "license_references": {
+            "items": {
+              "$ref": "#/components/schemas/ReportLicenseReference"
+            },
+            "maxItems": 100000,
+            "title": "License References",
+            "type": "array"
+          },
+          "method": {
+            "const": "report_manifest_v1",
+            "title": "Method",
+            "type": "string"
+          },
+          "method_version": {
+            "const": "1.0.0",
+            "title": "Method Version",
+            "type": "string"
+          },
+          "note_memberships": {
+            "items": {
+              "$ref": "#/components/schemas/ReportNoteMembership"
+            },
+            "maxItems": 100000,
+            "title": "Note Memberships",
+            "type": "array"
+          },
+          "notes": {
+            "items": {
+              "$ref": "#/components/schemas/ReportNote"
+            },
+            "maxItems": 100000,
+            "title": "Notes",
+            "type": "array"
+          },
+          "proof_relations": {
+            "items": {
+              "$ref": "#/components/schemas/ReportProofRelation"
+            },
+            "maxItems": 100000,
+            "title": "Proof Relations",
+            "type": "array"
+          },
+          "reconciliation": {
+            "items": {
+              "$ref": "#/components/schemas/ReportReconciliationBinding"
+            },
+            "maxItems": 100000,
+            "title": "Reconciliation",
+            "type": "array"
+          },
+          "renderer_profile": {
+            "$ref": "#/components/schemas/ReportRendererProfile"
+          },
+          "source_memberships": {
+            "items": {
+              "$ref": "#/components/schemas/ReportSourceMembership"
+            },
+            "maxItems": 100000,
+            "title": "Source Memberships",
+            "type": "array"
+          },
+          "source_references": {
+            "items": {
+              "$ref": "#/components/schemas/ReportSourceReference"
+            },
+            "maxItems": 100000,
+            "title": "Source References",
+            "type": "array"
+          }
+        },
+        "required": [
+          "document",
+          "renderer_profile",
+          "bindings",
+          "contexts",
+          "source_references",
+          "source_memberships",
+          "note_memberships",
+          "license_references",
+          "coverage",
+          "bounds",
+          "notes",
+          "proof_relations",
+          "reconciliation",
+          "method",
+          "method_version",
+          "escaping_version"
+        ],
+        "title": "ReportManifest",
+        "type": "object"
+      },
+      "ReportNote": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Code",
+            "type": "string"
+          },
+          "family": {
+            "enum": [
+              "snapshot",
+              "activity",
+              "target",
+              "planning",
+              "performance",
+              "benchmark",
+              "income",
+              "cash_flows",
+              "attribution",
+              "xray",
+              "reconciliation",
+              "alerts"
+            ],
+            "title": "Family",
+            "type": "string"
+          },
+          "key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "warning",
+              "assumption",
+              "limitation",
+              "unavailable_reason",
+              "reconciliation"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "related_provenance_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Related Provenance Set Key"
+          },
+          "text": {
+            "maxLength": 4096,
+            "pattern": "^[^\\x00]*$",
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "kind",
+          "family",
+          "code",
+          "text",
+          "related_provenance_set_key"
+        ],
+        "title": "ReportNote",
+        "type": "object"
+      },
+      "ReportNoteMembership": {
+        "additionalProperties": false,
+        "properties": {
+          "note_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Note Key",
+            "type": "string"
+          },
+          "note_set_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Note Set Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "note_set_key",
+          "note_key"
+        ],
+        "title": "ReportNoteMembership",
+        "type": "object"
+      },
+      "ReportPage": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReportJobStatus"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 9.223372036854776e+18,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "ReportPage",
+        "type": "object"
+      },
+      "ReportPinnedContext": {
+        "additionalProperties": false,
+        "properties": {
+          "document_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Document Digest",
+            "type": "string"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "pins": {
+            "items": {
+              "$ref": "#/components/schemas/ReportInputPin"
+            },
+            "maxItems": 256,
+            "title": "Pins",
+            "type": "array"
+          },
+          "profile_version": {
+            "const": "report_sections_v1",
+            "title": "Profile Version",
+            "type": "string"
+          },
+          "quality": {
+            "$ref": "#/components/schemas/ReportQualitySummary"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "valuation_at",
+          "source_cutoff_at",
+          "reporting_currency",
+          "input_digest",
+          "document_digest",
+          "profile_version",
+          "schema_version",
+          "pins",
+          "quality"
+        ],
+        "title": "ReportPinnedContext",
+        "type": "object"
+      },
+      "ReportProofRelation": {
+        "additionalProperties": false,
+        "properties": {
+          "row": {
+            "$ref": "#/components/schemas/ReportRow"
+          },
+          "table": {
+            "enum": [
+              "benchmark_composite",
+              "benchmark_components",
+              "benchmark_component_members",
+              "benchmark_observations",
+              "historical_options",
+              "historical_warning_coverage",
+              "xray_direct_positions",
+              "xray_fund_entities",
+              "xray_path_weights",
+              "xray_members",
+              "xray_policy",
+              "xray_policy_components",
+              "xray_policy_limits",
+              "xray_taxonomies",
+              "xray_threshold_policy",
+              "plan_input_header",
+              "plan_valuation",
+              "plan_valuation_positions",
+              "plan_valuation_cash",
+              "plan_fx",
+              "plan_options",
+              "plan_input_members",
+              "plan_listing_preferences",
+              "plan_holding_constraints",
+              "plan_allocation_constraints",
+              "plan_node_identities",
+              "plan_catalog_instruments",
+              "plan_catalog_listings",
+              "plan_source_details",
+              "plan_effective_constraints",
+              "snapshot_totals",
+              "positions",
+              "allocation_buckets",
+              "target_nodes",
+              "target_holdings",
+              "target_constraints",
+              "drift_rows",
+              "drift_totals",
+              "plan_summary",
+              "plan_lines",
+              "plan_objectives",
+              "plan_relations",
+              "performance_summary",
+              "performance_points",
+              "performance_periods",
+              "benchmark_summary",
+              "benchmark_points",
+              "benchmark_periods",
+              "income_summary",
+              "income_components",
+              "income_totals",
+              "income_periods",
+              "income_reporting_periods",
+              "cash_flow_summary",
+              "cash_flow_totals",
+              "cash_flow_periods",
+              "cash_flow_events",
+              "attribution_summary",
+              "attribution_components",
+              "attribution_effects",
+              "xray_summary",
+              "xray_quality",
+              "xray_dimensions",
+              "xray_exposures",
+              "xray_paths",
+              "xray_held_funds",
+              "xray_overlap_pairs",
+              "xray_overlap_entities",
+              "xray_concentrations",
+              "xray_concentration_members",
+              "xray_thresholds",
+              "xray_residuals",
+              "xray_path_relations",
+              "reconciliation",
+              "reconciliation_issues",
+              "coverage",
+              "notes",
+              "activity",
+              "historical_use_consumers",
+              "historical_observation_uses",
+              "historical_evidence_uses",
+              "historical_missing_uses",
+              "historical_use_candidates",
+              "historical_conversion_uses",
+              "historical_conversion_legs",
+              "historical_event_memberships",
+              "xray_selections",
+              "xray_selection_evidence",
+              "xray_source_uses",
+              "xray_fund_edges",
+              "xray_path_classifications",
+              "xray_classification_decisions",
+              "xray_classification_memberships",
+              "dividends",
+              "contexts",
+              "source_references",
+              "source_memberships",
+              "note_memberships",
+              "license_references",
+              "coverage_facts",
+              "bound_facts",
+              "bindings",
+              "reconciliation_bindings",
+              "historical_source_details",
+              "historical_source_parents",
+              "historical_event_identities",
+              "xray_valuation_roots",
+              "xray_broker_fx",
+              "xray_licensed_fx",
+              "xray_fx_legs",
+              "xray_dependency_identities",
+              "target_exclusions",
+              "historical_anchor_reconciliation",
+              "historical_reconciliation_lines",
+              "historical_reconciliation_anchors",
+              "xray_reconciliation",
+              "xray_warning_paths"
+            ],
+            "title": "Table",
+            "type": "string"
+          }
+        },
+        "required": [
+          "table",
+          "row"
+        ],
+        "title": "ReportProofRelation",
+        "type": "object"
+      },
+      "ReportQualitySummary": {
+        "additionalProperties": false,
+        "properties": {
+          "availability": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "evaluated_at": {
+            "format": "date-time",
+            "title": "Evaluated At",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "warning_count": {
+            "maximum": 9.223372036854776e+18,
+            "minimum": 0.0,
+            "title": "Warning Count",
+            "type": "integer"
+          },
+          "warning_omitted_count": {
+            "maximum": 9.223372036854776e+18,
+            "minimum": 0.0,
+            "title": "Warning Omitted Count",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/ReportNote"
+            },
+            "maxItems": 64,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "state",
+          "availability",
+          "evaluated_at",
+          "warnings",
+          "warning_count",
+          "warning_omitted_count"
+        ],
+        "title": "ReportQualitySummary",
+        "type": "object"
+      },
+      "ReportReconciliationBinding": {
+        "additionalProperties": false,
+        "properties": {
+          "absent": {
+            "title": "Absent",
+            "type": "boolean"
+          },
+          "content_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Digest"
+          },
+          "key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Key",
+            "type": "string"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          }
+        },
+        "required": [
+          "key",
+          "absent",
+          "run_id",
+          "content_digest"
+        ],
+        "title": "ReportReconciliationBinding",
+        "type": "object"
+      },
+      "ReportRendererProfile": {
+        "additionalProperties": false,
+        "properties": {
+          "accessibility_profile_version": {
+            "const": "report_visual_accessibility_v1",
+            "title": "Accessibility Profile Version",
+            "type": "string"
+          },
+          "chart_order_version": {
+            "const": "report_chart_order_v1",
+            "title": "Chart Order Version",
+            "type": "string"
+          },
+          "fonts": {
+            "items": {
+              "$ref": "#/components/schemas/ReportFontReference"
+            },
+            "maxItems": 2,
+            "title": "Fonts",
+            "type": "array"
+          },
+          "locale": {
+            "const": "en-GB",
+            "title": "Locale",
+            "type": "string"
+          },
+          "profile_version": {
+            "const": "report_render_v1",
+            "title": "Profile Version",
+            "type": "string"
+          },
+          "renderer_versions": {
+            "items": {
+              "$ref": "#/components/schemas/ReportRendererVersion"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Renderer Versions",
+            "type": "array"
+          },
+          "template_version": {
+            "const": "report_template_v1",
+            "title": "Template Version",
+            "type": "string"
+          },
+          "timezone": {
+            "const": "UTC",
+            "title": "Timezone",
+            "type": "string"
+          }
+        },
+        "required": [
+          "renderer_versions",
+          "fonts",
+          "profile_version",
+          "template_version",
+          "locale",
+          "timezone",
+          "chart_order_version",
+          "accessibility_profile_version"
+        ],
+        "title": "ReportRendererProfile",
+        "type": "object"
+      },
+      "ReportRendererVersion": {
+        "additionalProperties": false,
+        "properties": {
+          "format": {
+            "enum": [
+              "pdf",
+              "csv",
+              "json",
+              "xlsx"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "version": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "format",
+          "name",
+          "version"
+        ],
+        "title": "ReportRendererVersion",
+        "type": "object"
+      },
+      "ReportRow": {
+        "additionalProperties": false,
+        "properties": {
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/ReportCell"
+            },
+            "maxItems": 64,
+            "minItems": 1,
+            "title": "Cells",
+            "type": "array"
+          },
+          "context_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Context Key",
+            "type": "string"
+          },
+          "key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "context_key",
+          "cells"
+        ],
+        "title": "ReportRow",
+        "type": "object"
+      },
+      "ReportSelection": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "benchmark_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Benchmark Version Id"
+          },
+          "constituent_snapshot_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constituent Snapshot Id"
+          },
+          "end_date": {
+            "format": "date",
+            "title": "End Date",
+            "type": "string"
+          },
+          "formats": {
+            "items": {
+              "enum": [
+                "pdf",
+                "csv",
+                "json",
+                "xlsx"
+              ],
+              "type": "string"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Formats",
+            "type": "array"
+          },
+          "plan_revision_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Revision Id"
+          },
+          "report_type": {
+            "enum": [
+              "monthly",
+              "quarterly",
+              "annual",
+              "portfolio_summary",
+              "target_drift",
+              "contribution_plan",
+              "performance_benchmark",
+              "dividend_income",
+              "portfolio_xray",
+              "quality_reconciliation"
+            ],
+            "title": "Report Type",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "sections": {
+            "items": {
+              "enum": [
+                "overview",
+                "allocation",
+                "targets",
+                "drift",
+                "contribution_plan",
+                "performance",
+                "benchmark",
+                "income",
+                "cash_flows",
+                "attribution",
+                "xray",
+                "quality",
+                "activity"
+              ],
+              "type": "string"
+            },
+            "maxItems": 13,
+            "minItems": 1,
+            "title": "Sections",
+            "type": "array"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          },
+          "target_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Version Id"
+          },
+          "template_version": {
+            "const": "report_template_v1",
+            "default": "report_template_v1",
+            "title": "Template Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "start_date",
+          "end_date",
+          "source_cutoff_at",
+          "snapshot_id",
+          "reporting_currency",
+          "report_type",
+          "sections",
+          "formats"
+        ],
+        "title": "ReportSelection",
+        "type": "object"
+      },
+      "ReportSourceMembership": {
+        "additionalProperties": false,
+        "properties": {
+          "provenance_set_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Provenance Set Key",
+            "type": "string"
+          },
+          "source_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Source Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "provenance_set_key",
+          "source_key"
+        ],
+        "title": "ReportSourceMembership",
+        "type": "object"
+      },
+      "ReportSourceReference": {
+        "additionalProperties": false,
+        "properties": {
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "first_observed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Observed At"
+          },
+          "key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "broker_source_record",
+              "broker_source_occurrence",
+              "ingestion_run",
+              "portfolio_snapshot",
+              "snapshot_position",
+              "snapshot_cash",
+              "calculation",
+              "activity_revision",
+              "activity_coverage",
+              "reconciliation",
+              "target_version",
+              "plan_revision",
+              "historical_input",
+              "historical_result",
+              "xray_input",
+              "xray_result",
+              "price_snapshot",
+              "fx_snapshot",
+              "fx_observation",
+              "fx_coverage_gap",
+              "benchmark",
+              "constituent_snapshot",
+              "constituent_holding",
+              "identity",
+              "classification",
+              "fund_mapping",
+              "mapping",
+              "taxonomy",
+              "policy",
+              "calendar",
+              "license",
+              "opening",
+              "corporate_action",
+              "source_coverage",
+              "historical_evidence",
+              "fund_definition",
+              "price_observation",
+              "reconciliation_discrepancy",
+              "entity_evidence_version",
+              "entity_evidence_reference",
+              "relationship",
+              "classification_snapshot",
+              "classification_assignment",
+              "historical_classification",
+              "benchmark_version"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "license_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Version Id"
+          },
+          "mapping_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mapping Version Id"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id"
+          },
+          "source_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source At"
+          },
+          "subject_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Subject Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "kind",
+          "subject_id",
+          "content_digest",
+          "parent_id",
+          "source_at",
+          "first_observed_at",
+          "provider_id",
+          "license_version_id",
+          "mapping_version_id"
+        ],
+        "title": "ReportSourceReference",
+        "type": "object"
+      },
+      "ReportTableDescriptor": {
+        "additionalProperties": false,
+        "properties": {
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "dataset": {
+            "anyOf": [
+              {
+                "enum": [
+                  "positions",
+                  "activity",
+                  "dividends",
+                  "targets",
+                  "plans",
+                  "performance",
+                  "xray",
+                  "alerts"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dataset"
+          },
+          "reason_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Key"
+          },
+          "row_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Row Count",
+            "type": "integer"
+          },
+          "schema_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Schema Digest",
+            "type": "string"
+          },
+          "section": {
+            "anyOf": [
+              {
+                "enum": [
+                  "overview",
+                  "allocation",
+                  "targets",
+                  "drift",
+                  "contribution_plan",
+                  "performance",
+                  "benchmark",
+                  "income",
+                  "cash_flows",
+                  "attribution",
+                  "xray",
+                  "quality",
+                  "activity"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Section"
+          },
+          "state": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "table": {
+            "enum": [
+              "benchmark_composite",
+              "benchmark_components",
+              "benchmark_component_members",
+              "benchmark_observations",
+              "historical_options",
+              "historical_warning_coverage",
+              "xray_direct_positions",
+              "xray_fund_entities",
+              "xray_path_weights",
+              "xray_members",
+              "xray_policy",
+              "xray_policy_components",
+              "xray_policy_limits",
+              "xray_taxonomies",
+              "xray_threshold_policy",
+              "plan_input_header",
+              "plan_valuation",
+              "plan_valuation_positions",
+              "plan_valuation_cash",
+              "plan_fx",
+              "plan_options",
+              "plan_input_members",
+              "plan_listing_preferences",
+              "plan_holding_constraints",
+              "plan_allocation_constraints",
+              "plan_node_identities",
+              "plan_catalog_instruments",
+              "plan_catalog_listings",
+              "plan_source_details",
+              "plan_effective_constraints",
+              "snapshot_totals",
+              "positions",
+              "allocation_buckets",
+              "target_nodes",
+              "target_holdings",
+              "target_constraints",
+              "drift_rows",
+              "drift_totals",
+              "plan_summary",
+              "plan_lines",
+              "plan_objectives",
+              "plan_relations",
+              "performance_summary",
+              "performance_points",
+              "performance_periods",
+              "benchmark_summary",
+              "benchmark_points",
+              "benchmark_periods",
+              "income_summary",
+              "income_components",
+              "income_totals",
+              "income_periods",
+              "income_reporting_periods",
+              "cash_flow_summary",
+              "cash_flow_totals",
+              "cash_flow_periods",
+              "cash_flow_events",
+              "attribution_summary",
+              "attribution_components",
+              "attribution_effects",
+              "xray_summary",
+              "xray_quality",
+              "xray_dimensions",
+              "xray_exposures",
+              "xray_paths",
+              "xray_held_funds",
+              "xray_overlap_pairs",
+              "xray_overlap_entities",
+              "xray_concentrations",
+              "xray_concentration_members",
+              "xray_thresholds",
+              "xray_residuals",
+              "xray_path_relations",
+              "reconciliation",
+              "reconciliation_issues",
+              "coverage",
+              "notes",
+              "activity",
+              "historical_use_consumers",
+              "historical_observation_uses",
+              "historical_evidence_uses",
+              "historical_missing_uses",
+              "historical_use_candidates",
+              "historical_conversion_uses",
+              "historical_conversion_legs",
+              "historical_event_memberships",
+              "xray_selections",
+              "xray_selection_evidence",
+              "xray_source_uses",
+              "xray_fund_edges",
+              "xray_path_classifications",
+              "xray_classification_decisions",
+              "xray_classification_memberships",
+              "dividends",
+              "contexts",
+              "source_references",
+              "source_memberships",
+              "note_memberships",
+              "license_references",
+              "coverage_facts",
+              "bound_facts",
+              "bindings",
+              "reconciliation_bindings",
+              "historical_source_details",
+              "historical_source_parents",
+              "historical_event_identities",
+              "xray_valuation_roots",
+              "xray_broker_fx",
+              "xray_licensed_fx",
+              "xray_fx_legs",
+              "xray_dependency_identities",
+              "target_exclusions",
+              "historical_anchor_reconciliation",
+              "historical_reconciliation_lines",
+              "historical_reconciliation_anchors",
+              "xray_reconciliation",
+              "xray_warning_paths"
+            ],
+            "title": "Table",
+            "type": "string"
+          }
+        },
+        "required": [
+          "table",
+          "schema_digest",
+          "row_count",
+          "content_digest",
+          "section",
+          "dataset",
+          "state",
+          "reason_key"
+        ],
+        "title": "ReportTableDescriptor",
+        "type": "object"
+      },
+      "ReportTextCell": {
+        "additionalProperties": false,
+        "properties": {
+          "bound_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bound Key"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^(?:0(?:\\.[0-9]{1,18})?|1(?:\\.0{1,18})?)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "context_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Key"
+          },
+          "coverage_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Key"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "decimal_role": {
+            "title": "Decimal Role",
+            "type": "null"
+          },
+          "kind": {
+            "enum": [
+              "text",
+              "identifier",
+              "enum"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "method_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Key"
+          },
+          "method_version": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Version"
+          },
+          "note_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note Set Key"
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "enum": [
+                  "observed_provider",
+                  "normalized_provider",
+                  "derived_deterministic",
+                  "estimated",
+                  "unavailable",
+                  "provider",
+                  "derived"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin"
+          },
+          "provenance_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provenance Set Key"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "enum": [
+                  "fresh",
+                  "stale",
+                  "partial",
+                  "estimated",
+                  "unreconciled",
+                  "failed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
+          },
+          "reason_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Key"
+          },
+          "state": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed",
+              "not_applicable"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "maxLength": 4096,
+                "pattern": "^[^\\x00]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "state",
+          "kind",
+          "value"
+        ],
+        "title": "ReportTextCell",
         "type": "object"
       },
       "ReturnMetricResponse": {
@@ -18866,6 +23011,504 @@
         ]
       }
     },
+    "/api/v1/exports": {
+      "get": {
+        "operationId": "list_portfolio_exports",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "queued",
+                    "running",
+                    "succeeded",
+                    "failed",
+                    "expired",
+                    "cancelled"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "const": "all",
+                  "type": "string"
+                }
+              ],
+              "default": "all",
+              "title": "State"
+            }
+          },
+          {
+            "in": "query",
+            "name": "dataset",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "positions",
+                    "activity",
+                    "dividends",
+                    "targets",
+                    "plans",
+                    "performance",
+                    "xray",
+                    "alerts"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "const": "all",
+                  "type": "string"
+                }
+              ],
+              "default": "all",
+              "title": "Dataset"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "const": "created_desc",
+              "default": "created_desc",
+              "title": "Sort",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Portfolio Exports",
+        "tags": [
+          "reports"
+        ]
+      },
+      "post": {
+        "operationId": "create_portfolio_export",
+        "parameters": [
+          {
+            "description": "Required with a session cookie and configured trusted Origin.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJobStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Portfolio Export",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/exports/{export_id}": {
+      "get": {
+        "operationId": "get_export_status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "export_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Export Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJobStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Export Status",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/exports/{export_id}/artifacts/{artifact_id}/content": {
+      "get": {
+        "operationId": "download_export_artifact",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "export_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Export Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "artifact_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Artifact Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Short-lived supplementary grant; ordinary authentication remains required.",
+            "in": "header",
+            "name": "X-Artifact-Grant",
+            "required": true,
+            "schema": {
+              "maxLength": 512,
+              "minLength": 32,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "application/pdf": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "text/csv; charset=utf-8": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "A verified private artifact of at most 10 MiB."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Download Export Artifact",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/exports/{export_id}/artifacts/{artifact_id}/grants": {
+      "post": {
+        "operationId": "create_export_download_grant",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "export_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Export Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "artifact_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Artifact Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Required with a session cookie and configured trusted Origin.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmptyReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtifactGrant"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Export Download Grant",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
     "/api/v1/fx-snapshots/{snapshot_id}": {
       "get": {
         "operationId": "get_fx_snapshot",
@@ -19459,6 +24102,614 @@
         "summary": "Get Refresh Run",
         "tags": [
           "synchronization"
+        ]
+      }
+    },
+    "/api/v1/report-jobs": {
+      "post": {
+        "operationId": "generate_portfolio_report",
+        "parameters": [
+          {
+            "description": "Required with a session cookie and configured trusted Origin.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportJobStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Generate Portfolio Report",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/report-jobs/{job_id}": {
+      "get": {
+        "operationId": "get_report_status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportJobStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Report Status",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports": {
+      "get": {
+        "operationId": "list_reports",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "queued",
+                    "running",
+                    "succeeded",
+                    "failed",
+                    "expired",
+                    "cancelled"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "const": "all",
+                  "type": "string"
+                }
+              ],
+              "default": "all",
+              "title": "State"
+            }
+          },
+          {
+            "in": "query",
+            "name": "report_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "monthly",
+                    "quarterly",
+                    "annual",
+                    "portfolio_summary",
+                    "target_drift",
+                    "contribution_plan",
+                    "performance_benchmark",
+                    "dividend_income",
+                    "portfolio_xray",
+                    "quality_reconciliation"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "const": "all",
+                  "type": "string"
+                }
+              ],
+              "default": "all",
+              "title": "Report Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "const": "created_desc",
+              "default": "created_desc",
+              "title": "Sort",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Reports",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{report_id}": {
+      "get": {
+        "operationId": "get_report_manifest",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Report Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportManifest"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Report Manifest",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{report_id}/artifacts/{artifact_id}/content": {
+      "get": {
+        "operationId": "download_report_artifact",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Report Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "artifact_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Artifact Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Short-lived supplementary grant; ordinary authentication remains required.",
+            "in": "header",
+            "name": "X-Artifact-Grant",
+            "required": true,
+            "schema": {
+              "maxLength": 512,
+              "minLength": 32,
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "application/pdf": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              },
+              "text/csv; charset=utf-8": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "A verified private artifact of at most 10 MiB."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Download Report Artifact",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/v1/reports/{report_id}/artifacts/{artifact_id}/grants": {
+      "post": {
+        "operationId": "create_report_download_grant",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Report Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "artifact_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Artifact Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Required with a session cookie and configured trusted Origin.",
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmptyReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtifactGrant"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Report Download Grant",
+        "tags": [
+          "reports"
         ]
       }
     },

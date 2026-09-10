@@ -52,6 +52,12 @@ from trading212_persistence.target_service import PostgresTargetService
 from trading212_security.settings import RuntimeEnvironment
 
 from .plan_tasks import CeleryPlanPublisher, dispatch_plans_once
+from .report_tasks import (
+    CeleryExportPublisher,
+    CeleryReportPublisher,
+    dispatch_exports_once,
+    dispatch_reports_once,
+)
 
 _LOGGER = logging.getLogger("trading212_worker.outbox_dispatcher")
 _PUBLISH_ERROR_CODE = "broker_publish_failed"
@@ -1363,6 +1369,38 @@ def main(argv: Sequence[str] | None = None) -> int:
             sessions=create_session_factory(engine), cursor_signing_key=secrets.token_bytes(32)
         )
         plan_publisher = CeleryPlanPublisher(celery)
+        from trading212_persistence.report_job_store import PostgresReportJobStore
+
+        report_store = PostgresReportJobStore(create_session_factory(engine))
+        report_publisher = CeleryReportPublisher(celery)
+        export_publisher = CeleryExportPublisher(celery)
+
+        async def dispatch_reports() -> None:
+            for queue, export in (("report_dispatch", False), ("export_dispatch", True)):
+                with metrics.duration.labels(operation=queue).time():
+                    result = (
+                        await dispatch_exports_once(
+                            report_store,
+                            export_publisher,
+                            dispatcher_id=settings.dispatcher_id,
+                            limit=settings.batch_size,
+                        )
+                        if export
+                        else await dispatch_reports_once(
+                            report_store,
+                            report_publisher,
+                            dispatcher_id=settings.dispatcher_id,
+                            limit=settings.batch_size,
+                        )
+                    )
+                for outcome, count in (
+                    ("success", result.published),
+                    ("failure", result.deferred),
+                    ("fenced", result.fenced),
+                ):
+                    metrics.queue_delivery_attempts.labels(queue=queue, outcome=outcome).inc(count)
+                metrics.queue_delivery_failures.labels(queue=queue).inc(result.deferred)
+            await report_store.expire_report_artifacts(limit=100)
 
         async def dispatch_plans() -> None:
             with metrics.duration.labels(operation="plan_dispatch").time():
@@ -1392,6 +1430,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             dispatcher.dispatch_once()
             asyncio.run(target_service.activate_due_versions(limit=settings.batch_size))
             asyncio.run(dispatch_plans())
+            asyncio.run(dispatch_reports())
             return 0
         stopped = Event()
 
@@ -1420,6 +1459,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                     asyncio.run(dispatch_plans())
                 except Exception:
                     _LOGGER.error("plan_outbox_cycle_failed")
+                try:
+                    asyncio.run(dispatch_reports())
+                except Exception:
+                    _LOGGER.error("report_outbox_cycle_failed")
                 stopped.wait(settings.poll_interval_seconds)
         return 0
     finally:

@@ -140,7 +140,7 @@ async def test_wrong_owner_result_and_private_service_error_are_not_disclosed() 
 async def test_registry_exposes_exact_scopes_and_network_isolated_resource() -> None:
     server = runtime(AsyncMock(spec=app.XrayService))
     tools = {tool.name: tool for tool in await server.list_tools()}
-    assert len(tools) == 21
+    assert len(tools) == 24
     for name in ("get_effective_exposure", "get_etf_overlap"):
         tool = tools[name]
         assert tool.annotations is not None and tool.annotations.read_only_hint is True

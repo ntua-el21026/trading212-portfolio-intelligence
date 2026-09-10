@@ -23,7 +23,7 @@ regressions. The current design closure does not claim a Phase 2 capability work
 | P2-03 | [Typed market/FX/benchmark inputs, immutable snapshots, licensing and replay](P2_03_REFERENCE_SOURCES.md) | Revision/gap/cutoff/FX tests, provider isolation and explicit configuration states |
 | P2-04 | Historical performance, benchmark, attribution, dividends and cash flows | Flow separation, period/currency alignment, reference returns and residual/coverage tests |
 | P2-05 | [Economic identity, constituents, effective exposure and overlap](P2_05_PORTFOLIO_XRAY.md) under [ADR-0017](../adr/ADR-0017-DECIMAL256-EXACT-XRAY.md), xray_v1 1.1.0 | Independent Decimal256/Q18 money/unit and representative-root proofs; two ETFs/direct holding/share classes/ADR/unresolved/stale fixtures; licensed, bounded projection/purge and same-run canonical parity |
-| P2-06 | Private durable reports and PDF/CSV/JSON/XLSX exports | Canonical manifest, format validity, injection, authorization, expiry, licensing and restart tests |
+| P2-06 | [Private durable reports and PDF/CSV/JSON/XLSX exports](P2_06_REPORTS_AND_EXPORTS.md) | Canonical manifest, format validity, injection, authorization, expiry, licensing and restart tests |
 | P2-07 | Versioned rules, scheduled evaluation, deduplication/cooldown, event feed and delivery state | All rule families, acknowledgments/resolution, quality suppression, SSRF negatives and recovery |
 | P2-08 | Complete analytical web information architecture and interactions | API-backed desktop/mobile, URL/back-forward, pagination, accessibility, visual and parity evidence |
 | P2-09 | Complete 25-tool MCP registry and high-value accessible resources | Exact schemas/scopes/annotations, two durable idempotent commands, cross-owner/CSP and canonical parity |
@@ -40,7 +40,9 @@ and applied after P2-04 evidence closure, before dependent code. ADR-0017 fixes
 shared physical row/byte budgets, bounded path proofs and the complete position-
 then-cash real UUID ordering. This authority amendment does not complete evidence;
 P2-05 has [scoped exact-source acceptance](P2_05_PORTFOLIO_XRAY.md) at
-`7b102663ea193b4668924a7252180731954f4b00`. P2-06 through P2-10 and Phase 3 stay not_started. P2-08 owns intelligence-data-quality/company actual-weight enrichment;
+`7b102663ea193b4668924a7252180731954f4b00`. P2-06 is in progress from synchronized
+`5ff85b4436ec9be886639e6e2cf0c722fc0c4a73`; exact-source acceptance remains pending.
+P2-07 through P2-10 and Phase 3 stay not_started. P2-08 owns intelligence-data-quality/company actual-weight enrichment;
 company target drift still requires a separately pinned entity-target basis.
 
 ## Work-package protocol
