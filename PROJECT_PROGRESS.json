@@ -3033,7 +3033,6 @@
         "actual_capture": "All ten report types passed focused real PostgreSQL worker/download checks for all four formats, canonical values and manifest parity. These working-tree observations precede final lifecycle-audit regression checks and are not package acceptance.",
         "pending": [
           "clean exact-source make validate for the final implementation SHA",
-          "three successful exact-source GitHub Actions runs",
           "six-image build binding and eight actual source/history/image scans",
           "fresh exact-source Compose runtime acceptance and verified cleanup",
           "actual final-gate screenshot and fresh runtime PDF visual review"
@@ -3449,7 +3448,101 @@
             },
             "replacement_exact_source_acceptance": "pending"
           }
+        },
+        "pdf_context_candidate": {
+          "source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+          "state": "unaccepted_pdf_visible_cell_context_mismatch_despite_passed_local_automated_gates",
+          "acceptance_claim": false,
+          "local_full_gate": {
+            "result": "passed",
+            "duration_seconds": 4808.569,
+            "isolated_coverage": 1922,
+            "service_coverage": 277,
+            "coverage_percent": 88,
+            "web_unit": 301,
+            "browser": 90
+          },
+          "scans": {
+            "source_history_image_count": 8,
+            "result": "passed"
+          },
+          "runtime": {
+            "result": "passed",
+            "duration_seconds": 167.514469,
+            "privacy_tables": 186,
+            "privacy_rows": 8061,
+            "task_container_volume_network_cleanup": "passed"
+          },
+          "visual_review": {
+            "browser_images_opened": 8,
+            "pdf_pages_opened": [1, 2, 3, 9, 13, 14],
+            "pdf_pages_total": 14,
+            "result": "failed_visible_cell_context_review",
+            "finding": "A reconciliation boolean retains its own canonical cell context, but the PDF prints only the snapshot row default as its source. Coverage and inline proof appendices also omit nondecimal cell context overrides. Captured values and attachment remain intact."
+          },
+          "record": {
+            "file": "p206-exact-a2f2e3c-correction-01.json",
+            "sha256": "3dc645c25d58afcb0440458bd12c9a7901a28ee8e93fe98c5004301e9544e90c"
+          },
+          "correction": {
+            "state": "focused_verified_working_correction",
+            "scope": "PDF presentation resolves explicit differing cell contexts for all kinds and labels the row context as a default, including coverage and inline proof appendices. No canonical capture, financial method, value or metric metadata inheritance change.",
+            "replacement_exact_source_acceptance": "pending",
+            "red": {
+              "new_regression_cases_failed": 3
+            },
+            "green": {
+              "affected_unit_cases_passed": 26,
+              "real_postgres_four_format_case_passed": 1,
+              "security_cases_passed": 100,
+              "semgrep_findings": 0,
+              "python_typecheck_files": 468
+            },
+            "verification": {
+              "file": "p206-pdf-context-precommit-verification.json",
+              "sha256": "1d442ab9c2174e23c74fbd381bf250fb549b029ac5a591a32298f6b395b9ac89"
+            }
+          }
+        },
+        "resource_housekeeping": {
+          "latest_boundary": {
+            "logical_file_bytes_removed": 495021938,
+            "allocated_file_bytes_removed": 498982912,
+            "obsolete_build_records_removed": 12,
+            "record": {
+              "file": "housekeeping/p206-a2f2e3c-obsolete-artifacts-cleanup-execution-01.json",
+              "sha256": "e4a3bb00d7b1666ce14d40da089c500cd9f4d7a2cb1caaddb626f2e41f427a8a"
+            }
+          }
         }
+      },
+      "ci_deferral": {
+        "status": "deferred_by_owner",
+        "authorized_at_source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+        "recorded_at_utc": "2026-09-10T12:49:51.175758+00:00",
+        "scope": "Continue the remaining Phase2 implementation and local verification without requiring GitHub Actions while account limits block execution. Verify GitHub Actions later when limits reset.",
+        "owner_instruction_verbatim": "No, proceed with the implementation without guthub actions. We will verify them when limits reset. I dont want to pay more, so for now ignore them.",
+        "local_validation_required": true,
+        "verification_after_limits_reset": "pending",
+        "ci_pass_claim": false,
+        "billing_or_spending_changes_authorized": false,
+        "original_owner_decision": {
+          "file": "owner-ci-deferral-20260910.json",
+          "sha256": "9273a51af64a6ecf5e3934fff5a71182c22434aca29bdd1c0cdbf66221c8f73a"
+        },
+        "historical_startup_failure": {
+          "source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+          "quality_run": 34478450252,
+          "security_run": 34478450202,
+          "documentation_run": 34478450265,
+          "executed_steps": 0,
+          "result": "all_three_failed_before_execution_account_restriction",
+          "record": {
+            "file": "p206-ci-a2f2e3c/startup-failure-receipt.json",
+            "sha256": "d8b06d26289bb1862ddc8f3e5f7a1084511788d4c93551319730e4feedbee154"
+          }
+        },
+        "record_location": "Original hash-bound records retained in the task evidence root; relative file names are external evidence references."
       }
     },
     "phase_3": {

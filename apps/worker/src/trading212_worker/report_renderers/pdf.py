@@ -27,8 +27,8 @@ from trading212_domain.reports import (
     ReportTableKey,
 )
 
-from .common import METRIC_COLUMNS, display_cell, metric_metadata, rows
-from .pdf_manifest import attach_manifest, render_manifest_appendix
+from .common import METRIC_COLUMNS, metric_metadata, rows
+from .pdf_manifest import attach_manifest, display_contextual_cell, render_manifest_appendix
 from .profile import ASSETS, verify_fonts
 from .text import label
 
@@ -218,7 +218,7 @@ def render_pdf(
             compact_proof = descriptor.section is None and descriptor.dataset is None
             proof_fields = []
             for column, cell in zip(table_schema(descriptor.table).columns, row.cells, strict=True):
-                field = f"{label(column.key)}: {display_cell(cell)}"
+                field = f"{label(column.key)}: {display_contextual_cell(cell, row.context_key)}"
                 metadata = "; ".join(
                     f"{label(name)}: {value}"
                     for name, value in zip(
@@ -238,7 +238,7 @@ def render_pdf(
                 # Every fixed proof column remains visible; shared context fields
                 # are referenced once per record instead of adding empty space.
                 layout.text(" | ".join(proof_fields), size=8, indent=10)
-            layout.text(f"Source context: {row.context_key}", size=8, indent=10)
+            layout.text(f"Default row context: {row.context_key}", size=8, indent=10)
     manifest_digest = attach_manifest(layout.pdf, document.manifest, guard)
     render_manifest_appendix(layout, document.manifest, manifest_digest)
     layout.heading("Reading and reuse", key="limitations")

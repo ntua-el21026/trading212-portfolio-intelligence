@@ -529,6 +529,10 @@ Context reconciliation links resolve an actual captured binding, including expli
 absence bindings. Duplicate license-version or reconciliation identities are rejected.
 CSV, XLSX and PDF resolve this declared inheritance for presentation; canonical JSON
 retains the compact cells and complete named contexts, allowing exact reconstruction.
+PDF labels the row context as the default and prints any differing explicit cell
+context beside its value, including nondecimal values and inline proof rows. The
+coverage appendix prints each fact's explicit cell context. This source-context
+resolution is independent of decimal-only metric metadata inheritance.
 
 ## 5. Complete family adapters and honest overlap scope
 

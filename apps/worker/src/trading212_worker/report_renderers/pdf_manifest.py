@@ -17,13 +17,21 @@ from reportlab.pdfbase.pdfdoc import (  # type: ignore[import-untyped]
 from trading212_application.reports import ReportRenderError, ReportRenderGuard
 from trading212_domain.report_manifest import encode_report_manifest
 from trading212_domain.report_schema import table_schema
-from trading212_domain.reports import ReportFailureCode, ReportManifest
+from trading212_domain.reports import ReportCell, ReportFailureCode, ReportManifest
 from trading212_domain.values import decimal_string
 
 from .common import METRIC_COLUMNS, display_cell, metric_metadata
 from .text import label
 
 MANIFEST_FILENAME = "report-manifest.json"
+
+
+def display_contextual_cell(cell: ReportCell, row_context: str | None = None) -> str:
+    """Keep an explicit context beside its value, including nondecimal scalars."""
+    value = display_cell(cell)
+    if cell.context_key is not None and cell.context_key != row_context:
+        return f"{value} [context: {cell.context_key}]"
+    return value
 
 
 class ManifestLayout(Protocol):
@@ -153,7 +161,8 @@ def _contexts(layout: ManifestLayout, manifest: ReportManifest) -> None:
     contexts = {context.key: context for context in manifest.contexts}
     for fact in manifest.coverage:
         layout.text(
-            f"{fact.set_key} | {fact.family.value} | {fact.metric_key}: {display_cell(fact.value)}"
+            f"{fact.set_key} | {fact.family.value} | {fact.metric_key}: "
+            f"{display_contextual_cell(fact.value)}"
         )
         metadata = metric_metadata(fact.value, contexts.get(fact.value.context_key or ""))
         details = "; ".join(
@@ -264,9 +273,12 @@ def render_manifest_appendix(layout: ManifestLayout, manifest: ReportManifest, d
         for relation in manifest.proof_relations:
             row = relation.row
             layout.text(f"{relation.table.value} | {row.key}", bold=True)
-            layout.text(f"Source context: {row.context_key}", size=8)
+            layout.text(f"Default row context: {row.context_key}", size=8)
             for column, cell in zip(table_schema(relation.table).columns, row.cells, strict=True):
-                layout.text(f"{label(column.key)}: {display_cell(cell)}", size=8)
+                layout.text(
+                    f"{label(column.key)}: {display_contextual_cell(cell, row.context_key)}",
+                    size=8,
+                )
                 metadata = metric_metadata(cell, contexts[cell.context_key or row.context_key])
                 for key, value in zip(METRIC_COLUMNS, metadata, strict=True):
                     if value:

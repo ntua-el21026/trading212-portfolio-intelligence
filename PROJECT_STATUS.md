@@ -386,12 +386,48 @@ The PostgreSQL CI job budget is now 90 minutes. The measured local coverage phas
 took 311.56 and 1,796.99 seconds; applying the prior accepted P2-05 local-to-CI phase
 ratios estimates about 69.18 minutes for that CI job. This is a budget estimate,
 not a measured P2-06 CI result. The full test selection and coverage remain unchanged.
-The corrected candidate still requires clean exact-source validation, three successful
-CI workflows, image/security scans, fresh Compose acceptance and reviewed final-source
-screenshots and PDF. Validation continues serially in one task Compose project,
+The corrected candidate still requires clean exact-source local validation,
+image/security scans, fresh Compose acceptance and reviewed final-source screenshots
+and PDF. On September 10 the owner deferred GitHub Actions for the remaining Phase 2
+work until account limits reset, with no additional payment. CI remains unverified;
+all local gates remain required. Validation continues serially in one task Compose project,
 using PostgreSQL alone when sufficient and Redis when required. Inactive generated
 outputs are removed at check boundaries; September 10 cleanup removed 505,727,234
 logical bytes of inactive Next development output after checking for active consumers,
 preserving production outputs, dependencies, source and retained evidence.
 The alerts dataset requires the real P2-07
 producer; it must fail before job creation until that producer exists.
+
+Candidate `a2f2e3c533e6079766beac90f3f97279c622de40` passed its clean exact-source
+`make validate` in 4,808.569 seconds: 1,658 Python unit, 301 web unit, 34 property,
+130 contract, 262 integration, 12 migration and 100 security tests, followed by
+1,922 isolated and 277 service coverage tests (88% combined coverage) and 90 browser
+checks. All eight security scans and fresh runtime acceptance passed; restart,
+authorization, expiry and privacy checks covered 186 tables and 8,061 rows. Its seven
+task containers and disposable volume/network were removed and their absence verified.
+
+The snapshot-quality correction is visible in the fresh PDF. That candidate remains
+**unaccepted** because page 3 prints the snapshot row context as the source of a
+reconciliation boolean whose canonical cell context is different. The renderer also
+omits cell context in coverage and inline proof appendices. The correction exposes
+explicit differing cell contexts for all kinds and labels the row context as the
+default; canonical capture, values and financial methods remain unchanged. All three
+new cases failed against the original renderer and passed after correction; the full
+affected PDF/renderer suite passed 26 tests. A real PostgreSQL report job passed all
+four formats. Formatting, lint, strict mypy across 468 files, architecture, generated
+contracts, documentation, 100 security tests and Semgrep (zero findings) passed.
+Corrected-source acceptance remains pending. The passed automated evidence and
+failed visual observation are retained separately.
+
+At that source, Quality `34478450252`, Security `34478450202` and Documentation
+`34478450265` failed before any steps because of the account payment/spending-limit
+restriction. The owner explicitly instructed continued implementation without Actions
+until limits reset. That Phase 2 decision is recorded independently of candidate
+validation in both machine status files; these startup failures are historical records,
+not evidence that later source revisions ran CI.
+
+This boundary removed 495,021,938 logical file bytes (498,982,912 allocated file
+bytes) of inactive Next development output and an obsolete source extraction
+verified against its retained archive, plus exactly 12 obsolete P2-06 build records.
+Current images, current build records, dependencies and evidence were preserved.
+One PostgreSQL container is reused for the corrected-source verification.

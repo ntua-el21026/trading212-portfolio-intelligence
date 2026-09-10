@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-08T19:29:27.673544+00:00",
+  "updated_at": "2026-09-10T14:22:49.284057+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -83,7 +83,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "P2-04_historical_intelligence_exact_acceptance",
+  "next_gate": "P2-06_reports_exports_exact_local_acceptance",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -252,5 +252,33 @@
       "artifact": "docs/implementation/evidence/phase-2-p2-04-4aa1e23-failed-quality.json",
       "correction": "Prepare bounded calculation-local calendar/source-selection indexes and read the existing sealed canonical composite directly for source detail, preserving canonical financial evidence, all authorization/license checks and unchanged deadlines. Corrected exact-source acceptance remains required."
     }
-  ]
+  ],
+  "phase_2_ci_deferral": {
+    "status": "deferred_by_owner",
+    "authorized_at_source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+    "recorded_at_utc": "2026-09-10T12:49:51.175758+00:00",
+    "scope": "Continue the remaining Phase2 implementation and local verification without requiring GitHub Actions while account limits block execution. Verify GitHub Actions later when limits reset.",
+    "owner_instruction_verbatim": "No, proceed with the implementation without guthub actions. We will verify them when limits reset. I dont want to pay more, so for now ignore them.",
+    "local_validation_required": true,
+    "verification_after_limits_reset": "pending",
+    "ci_pass_claim": false,
+    "billing_or_spending_changes_authorized": false,
+    "original_owner_decision": {
+      "file": "owner-ci-deferral-20260910.json",
+      "sha256": "9273a51af64a6ecf5e3934fff5a71182c22434aca29bdd1c0cdbf66221c8f73a"
+    },
+    "historical_startup_failure": {
+      "source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+      "quality_run": 34478450252,
+      "security_run": 34478450202,
+      "documentation_run": 34478450265,
+      "executed_steps": 0,
+      "result": "all_three_failed_before_execution_account_restriction",
+      "record": {
+        "file": "p206-ci-a2f2e3c/startup-failure-receipt.json",
+        "sha256": "d8b06d26289bb1862ddc8f3e5f7a1084511788d4c93551319730e4feedbee154"
+      }
+    },
+    "record_location": "Original hash-bound records retained in the task evidence root; relative file names are external evidence references."
+  }
 }

@@ -6,6 +6,11 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Phase 2 reporting
 
+- Correct PDF source labels for cells with an explicit context different from their
+  row default, including nondecimal coverage and inline proof values. Canonical
+  captured provenance remains intact; corrected-source acceptance is pending.
+- Record the owner's Phase 2 GitHub Actions deferral until account limits reset,
+  retaining full local verification and historical startup failures without a CI pass claim.
 - Preserve effective snapshot quality on numeric report/export positions, prices and
   allocation weights, including cash, while retaining stronger intrinsic degradation.
   The correction leaves amounts and previously sealed artifacts unchanged. The prior

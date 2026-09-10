@@ -10,6 +10,7 @@ import pytest
 from pypdf import PdfReader
 from pypdf.generic import ArrayObject, DictionaryObject, IndirectObject
 from trading212_domain import reports as r
+from trading212_domain.enums import QualityState
 from trading212_domain.report_manifest import (
     build_report_chunk,
     encode_report_manifest,
@@ -346,3 +347,161 @@ def test_pdf_attachment_has_no_actions_annotations_or_external_file_reference(
             pending.extend(item.values())
         elif isinstance(item, ArrayObject):
             pending.extend(item)
+
+
+def _mixed_context_document(cell: r.ReportCell, metric_key: str) -> ReportFixture:
+    value = _rich_document()
+    context = replace(
+        value.manifest.contexts[0],
+        key="context.reconciliation",
+        family=r.ReportFamily.RECONCILIATION,
+        method_key="snapshot_reconciliation",
+        quality=QualityState.UNRECONCILED,
+        provenance_set_key="sources.reconciliation",
+        coverage_set_key="coverage.reconciliation",
+        note_set_key="notes.reconciliation",
+    )
+    fact = r.ReportCoverageFact(
+        set_key=context.coverage_set_key,
+        family=context.family,
+        metric_key=metric_key,
+        value=cell,
+    )
+    row = r.ReportRow(
+        key="coverage.reconciliation.metric",
+        context_key="context.snapshot",
+        cells=(
+            r.ReportCell(kind=r.CellKind.ENUM, value=context.family.value),
+            r.ReportCell(kind=r.CellKind.ENUM, value=metric_key),
+            cell,
+        ),
+    )
+    inherited = replace(
+        row,
+        key="coverage.snapshot.metric",
+        cells=(
+            r.ReportCell(kind=r.CellKind.ENUM, value=r.ReportFamily.SNAPSHOT.value),
+            r.ReportCell(kind=r.CellKind.ENUM, value="complete"),
+            r.ReportCell(kind=r.CellKind.BOOLEAN, value=True),
+        ),
+    )
+    inline = r.ReportProofRelation(
+        table=r.ReportTableKey.COVERAGE_FACTS,
+        row=replace(
+            row,
+            key="inline.reconciliation.metric",
+            cells=(
+                r.ReportCell(kind=r.CellKind.IDENTIFIER, value=context.coverage_set_key),
+                row.cells[0],
+                r.ReportCell(kind=r.CellKind.IDENTIFIER, value=metric_key),
+                cell,
+            ),
+        ),
+    )
+    proof = replace(
+        value.capture.proof,
+        contexts=(*value.capture.proof.contexts, context),
+        coverage=(*value.capture.proof.coverage, fact),
+        proof_relations=(inline,),
+    )
+    proof_digest = sha256(encode_report_proof(proof)).hexdigest()
+    table = r.ReportTableKey.COVERAGE
+    rows = (row, inherited)
+    header = replace(
+        value.header,
+        context_digest=proof_digest,
+        tables=tuple(
+            replace(item, row_count=len(rows), content_digest=report_table_digest(table, rows))
+            if item.table is table
+            else item
+            for item in value.header.tables
+        ),
+    )
+    header = replace(header, document_digest=report_document_digest(header))
+    value = replace(
+        value,
+        chunks=(*value.chunks, build_report_chunk(table, 0, rows)),
+        capture=replace(
+            value.capture,
+            header=header,
+            proof=proof,
+            proof_digest=proof_digest,
+            chunk_count=value.capture.chunk_count + 1,
+        ),
+    )
+    return replace(
+        value,
+        capture=replace(
+            value.capture,
+            canonical_byte_length=sum(len(chunk.canonical_bytes) for chunk in value.chunks)
+            + len(encode_report_manifest(value.manifest)),
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    ("cell", "metric_key", "displayed"),
+    [
+        (
+            r.ReportCell(
+                kind=r.CellKind.BOOLEAN, value=False, context_key="context.reconciliation"
+            ),
+            "complete",
+            "false",
+        ),
+        (
+            r.ReportCell(kind=r.CellKind.INTEGER, value=0, context_key="context.reconciliation"),
+            "row_count",
+            "0",
+        ),
+        (
+            r.ReportCell(
+                kind=r.CellKind.DECIMAL,
+                value=Decimal("0.75"),
+                decimal_role=r.DecimalRole.RATIO,
+                context_key="context.reconciliation",
+            ),
+            "covered_weight",
+            "0.75",
+        ),
+    ],
+    ids=("boolean-false", "integer-zero", "decimal-ratio"),
+)
+def test_pdf_renders_exact_cell_context_beside_mixed_family_values(
+    cell: r.ReportCell, metric_key: str, displayed: str
+) -> None:
+    value = _mixed_context_document(cell, metric_key)
+    manifest_bytes = encode_report_manifest(value.manifest)
+    chunk_bytes = tuple(chunk.canonical_bytes for chunk in value.chunks)
+    reader = _render(value)
+    text = " ".join(" ".join(page.extract_text() for page in reader.pages).split())
+    body = text.split("Record: coverage.reconciliation.metric", 1)[1].split(
+        "Record: coverage.snapshot.metric", 1
+    )[0]
+    assert f"Metric: {displayed} [context: context.reconciliation]" in body
+    assert "Default row context: context.snapshot" in body
+    assert "Source context: context.snapshot" not in body
+    if cell.kind is r.CellKind.DECIMAL:
+        assert "Quality: unreconciled" in body
+        assert "Method key: snapshot_reconciliation" in body
+    else:
+        assert "Quality:" not in body and "Method key:" not in body
+    inherited = text.split("Record: coverage.snapshot.metric", 1)[1].split("Notes", 1)[0]
+    assert "Metric: true Default row context: context.snapshot" in inherited
+    assert "[context:" not in inherited
+    coverage = text.split("Coverage and numerical bounds", 1)[1].split(
+        "Warnings, assumptions and missing values", 1
+    )[0]
+    assert (
+        f"coverage.reconciliation | reconciliation | {metric_key}: "
+        f"{displayed} [context: context.reconciliation]"
+    ) in coverage
+    inline = text.split("Additional canonical evidence", 1)[1].split(
+        "Rendering and reproducibility", 1
+    )[0]
+    assert f"Value: {displayed} [context: context.reconciliation]" in inline
+    assert "Default row context: context.snapshot" in inline
+    assert "Source context: context.snapshot" not in inline
+    assert encode_report_manifest(value.manifest) == manifest_bytes
+    assert tuple(chunk.canonical_bytes for chunk in value.chunks) == chunk_bytes
+    assert dict(reader.attachments) == {"report-manifest.json": [manifest_bytes]}
