@@ -54,11 +54,15 @@ capacity exhausted by repeated earlier-package checks. The production source
 and 64-view quota did not change.
 Migration head is `20260907_0011`; MCP remains 15 tools and Trading 212 ten GET
 capabilities. See [the P2-03 evidence](docs/implementation/evidence/phase-2-p2-03-e258f54.json).
-P2-05 is **complete** at `7b102663ea193b4668924a7252180731954f4b00`. The [accepted assertion map](docs/implementation/evidence/phase-2-p2-05-7b10266.json) closes P2-XRAY-001/002 and P2-S20 through P2-S23. Phase 2 has five of ten packages (50%), thirteen of 29 local rows and twenty-two of 40 scenarios complete. P2-S34 and P2-S38 remain `in_progress`; report/export parity and the remaining release-wide predicates are outstanding. P2-06 is `in_progress`; P2-07 through P2-10 and Phase 3 remain `not_started`.
+P2-05 remains complete at `7b102663ea193b4668924a7252180731954f4b00`; its retained acceptance is unchanged.
 
-The clean exact-source `make validate` passed in 2339.747 seconds: 1,642 isolated and 234 service/migration Python tests, 88% combined statement/branch coverage, 223 web unit tests and 76 browser checks without retries. Assertion selectors are source mappings bound to completed test-file observations.
+P2-06 has scoped local acceptance at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. GitHub Actions is deferred by explicit owner instruction; no CI pass is claimed. The complete required local gates, exact source bindings and deferred startup observations are retained in the P206 acceptance evidence. Remaining Phase 2 implementation continues under that recorded deferral until the owner resumes CI verification.
 
-Exact-source CI passed: Quality `34347516142`, Documentation `34347516068`, Security `34347516074`. Eight source/history/image scans passed under the recorded scanner policies. The fresh runtime passed in 146.262241 seconds, preserving identical retained rows across all 167 compared tables and API/MCP replay after all seven services stopped/restarted. Task containers, volumes and networks were removed, with absence verified. All eight exact-gate screenshots received the recorded visual review.
+Phase 2 has six of ten packages (60%), sixteen of 29 local rows and twenty-six of 40 scenarios complete. S34/S38 and other shared predicates remain partial; P2-07 through P2-10 and Phase 3 remain `not_started`. [P206 local assertion map](docs/implementation/evidence/phase-2-p2-06-9e39767.json).
+
+For the historically accepted P205, the clean exact-source `make validate` passed in 2339.747 seconds: 1,642 isolated and 234 service/migration Python tests, 88% combined statement/branch coverage, 223 web unit tests and 76 browser checks without retries. Assertion selectors are source mappings bound to completed test-file observations.
+
+P205 exact-source CI passed: Quality `34347516142`, Documentation `34347516068`, Security `34347516074`. Eight source/history/image scans passed under the recorded scanner policies. The fresh runtime passed in 146.262241 seconds, preserving identical retained rows across all 167 compared tables and API/MCP replay after all seven services stopped/restarted. Task containers, volumes and networks were removed, with absence verified. All eight exact-gate screenshots received the recorded visual review.
 
 See [runtime](docs/implementation/evidence/phase-2-p2-05-7b10266-runtime.json), [security](docs/implementation/evidence/phase-2-p2-05-7b10266-security.json), [compatibility](docs/implementation/evidence/phase-2-p2-05-7b10266-compatibility.json), [screenshots and visual review](docs/implementation/evidence/phase-2-p2-05-7b10266-screenshots.json) and [observed count derivation](docs/implementation/evidence/phase-2-p2-05-7b10266-counts.json). Earlier failed candidates remain unaccepted. External broker/provider/deployment gates, the documented P2-08 UI follow-ups and the null final Phase 2 release SHA are unchanged.
 
@@ -188,7 +192,7 @@ than fabricated.
 
 ## Next action
 
-Complete P2-06, then proceed sequentially through P2-10 under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+Start P2-07, then proceed sequentially through P2-10 with required local verification and the retained owner CI deferral under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo
@@ -247,10 +251,19 @@ because those external resources were not supplied.
 Accepted authority `0ebbfa29253f418084835335eb2ee66f1b898679` preceded implementation.
 P2-05 is complete at `7b102663ea193b4668924a7252180731954f4b00`; see the
 [implementation and accepted evidence](docs/implementation/P2_05_PORTFOLIO_XRAY.md).
-Five packages are complete (50%); S34/S38 remain partial. P2-06 is in progress;
-P2-07 through P2-10 and Phase 3 remain `not_started`.
+At the P2-05 closure boundary, five packages were complete (50%) and P2-06 was in progress. This is historical scope; current P206 local acceptance and the owner CI deferral are recorded above.
 
-## P2-06 implementation in progress
+## P2-06 scoped local acceptance
+
+P2-06 has scoped local acceptance at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. GitHub Actions is deferred by explicit owner instruction; no CI pass is claimed. The complete required local gates, exact source bindings and deferred startup observations are retained in the P206 acceptance evidence. Remaining Phase 2 implementation continues under that recorded deferral until the owner resumes CI verification.
+
+Observed gate totals are taken from the [finalized evidence](docs/implementation/evidence/phase-2-p2-06-9e39767.json), not estimates or earlier candidates: 1925 isolated Python tests, 277 service-backed tests, 301 web unit tests, 90 serial browser checks, and 88% combined coverage. Runtime, cleanup, images, scanners and actual screenshot/PDF review retain their exact recorded scope. Alerts export still requires P207.
+
+Post-verification housekeeping removed 28 obsolete Buildx records and 514,771,216 logical bytes of inactive development output and archive-equivalent scan extracts. Six obsolete image IDs were already absent. Current images, accepted evidence, archives and required dependencies were preserved; the task stack is absent. The scoped execution receipt has SHA256 `0f0945a22d189f7dd0575c63ddfda4ca7100ddb454708fffbc5b98c78d71385c`.
+
+## P2-06 historical implementation observations
+
+The following working and superseded-candidate observations are retained history, not current pending gates or replacement acceptance proof.
 
 Reports and exports start from synchronized P2-05 closure
 `5ff85b4436ec9be886639e6e2cf0c722fc0c4a73`. The
@@ -386,7 +399,7 @@ The PostgreSQL CI job budget is now 90 minutes. The measured local coverage phas
 took 311.56 and 1,796.99 seconds; applying the prior accepted P2-05 local-to-CI phase
 ratios estimates about 69.18 minutes for that CI job. This is a budget estimate,
 not a measured P2-06 CI result. The full test selection and coverage remain unchanged.
-The corrected candidate still requires clean exact-source local validation,
+At that historical correction boundary, the candidate still required clean exact-source local validation,
 image/security scans, fresh Compose acceptance and reviewed final-source screenshots
 and PDF. On September 10 the owner deferred GitHub Actions for the remaining Phase 2
 work until account limits reset, with no additional payment. CI remains unverified;
@@ -416,7 +429,7 @@ new cases failed against the original renderer and passed after correction; the 
 affected PDF/renderer suite passed 26 tests. A real PostgreSQL report job passed all
 four formats. Formatting, lint, strict mypy across 468 files, architecture, generated
 contracts, documentation, 100 security tests and Semgrep (zero findings) passed.
-Corrected-source acceptance remains pending. The passed automated evidence and
+At that pre-9e39767 boundary, corrected-source acceptance remained pending. The passed automated evidence and
 failed visual observation are retained separately.
 
 At that source, Quality `34478450252`, Security `34478450202` and Documentation

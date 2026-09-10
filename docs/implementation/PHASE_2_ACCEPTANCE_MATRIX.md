@@ -2,7 +2,7 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 through P2-05 complete; 13/29 local rows
+**Implementation acceptance:** In progress; P2-01 through P2-06 locally complete; 16/29 local rows; remaining Phase 2 CI deferred by owner
 
 **Target release:** `0.2.0`
 
@@ -16,10 +16,18 @@
 
 **P2-05 evidence SHA:** `7b102663ea193b4668924a7252180731954f4b00`; final Phase 2 release SHA pending
 
+**P2-06 local evidence SHA:** `9e39767b408b38203d88d6e5b41bf0bc1265adfb`; GitHub Actions deferred, not passed; final Phase 2 release SHA remains pending. [Evidence](evidence/phase-2-p2-06-9e39767.json).
+
 The owner assignment authorizes P2-01 through P2-10 after corrected Phase 1
 acceptance at `99df47b6633791c3900a52f46f56d48be922a436`. That SHA proves Stage A;
 it does not prove any Phase 2 behavior. The design contract is accepted while
-P2-01 through P2-05 have passed scoped acceptance; later/shared predicates remain pending or in progress, including partial P2-S34 and P2-S38.
+P2-01 through P2-05 retain their accepted evidence; P206 has scoped local acceptance with owner-deferred CI. Later/shared predicates remain pending or in progress, including partial P2-S34 and P2-S38.
+
+## Current owner-authorized CI exception
+
+P2-06 has scoped local acceptance at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. GitHub Actions is deferred by explicit owner instruction; no CI pass is claimed. The complete required local gates, exact source bindings and deferred startup observations are retained in the P206 acceptance evidence. Remaining Phase 2 implementation continues under that recorded deferral until the owner resumes CI verification.
+
+Normal exact-source CI requirements remain the default. This dated exception changes only their current prerequisite status, preserves every required local gate and remains explicitly outstanding for verification after owner resumption.
 
 ## Evidence and state rules
 
@@ -54,9 +62,9 @@ gates, and final release evidence. A design commit cannot close a runtime row.
 | P2-INC-001 | P2-04 | Dividend/income, fees/taxes and cash-flow views retain original currencies and sourced conversion; purchases/sales are not investment gain. [Exact-SHA assertion map](evidence/phase-2-p2-04-2a7c89a.json). | 16, 19, 34 | `complete` |
 | P2-XRAY-001 | P2-05 | Versioned ETF constituents and explicit entity/share-class/ADR/listing mappings produce direct/indirect/effective exposure without double counting. ADR-0017 Decimal256/Q18 role bounds, exact money/unit conservation, post-carry NUMERIC limits and lowest real-root representative policy are independently verified, including zero money and the global path budget. [Exact-source assertion map](evidence/phase-2-p2-05-7b10266.json). | 20, 21 | `complete` |
 | P2-XRAY-002 | P2-05 | Overlap, classifications and concentration retain unresolved weight, coverage, confidence, source dates and stale/partial quality. Exact thresholds, lower-bound versus unavailable states, per-dimension normalization and same-run projection parity hold; 496 is per request and collection-owned pair/common retention is capacity/TTL/physical-purge bounded. [Exact-source assertion map](evidence/phase-2-p2-05-7b10266.json). | 22, 23, 34, 38 | `complete` |
-| P2-RPT-001 | P2-06 | Every required report type and PDF/CSV/JSON/XLSX format has a reproducible canonical manifest, shared service values, source/method/quality/license metadata and bounded private artifacts. | 24, 27, 34 | `in_progress` |
-| P2-RPT-002 | P2-06 | Durable report/export jobs are idempotent, authorized, expiry/cleanup-aware and audited; downloads reauthorize each access; safe filenames/content types and size limits are enforced. | 25, 31, 32, 40 | `in_progress` |
-| P2-RPT-003 | P2-06 | Rendered PDF and structured/archive export content excludes secrets/signed URLs; CSV/XLSX formula injection and restricted-source export attempts are rejected or safely encoded. | 26, 27 | `in_progress` |
+| P2-RPT-001 | P2-06 | Every required report type and PDF/CSV/JSON/XLSX format has a reproducible canonical manifest, shared service values, source/method/quality/license metadata and bounded private artifacts. [Local exact-source assertion map](evidence/phase-2-p2-06-9e39767.json). | 24, 27, 34 | `complete` |
+| P2-RPT-002 | P2-06 | Durable report/export jobs are idempotent, authorized, expiry/cleanup-aware and audited; downloads reauthorize each access; safe filenames/content types and size limits are enforced. [Local exact-source assertion map](evidence/phase-2-p2-06-9e39767.json). | 25, 31, 32, 40 | `complete` |
+| P2-RPT-003 | P2-06 | Rendered PDF and structured/archive export content excludes secrets/signed URLs; CSV/XLSX formula injection and restricted-source export attempts are rejected or safely encoded. [Local exact-source assertion map](evidence/phase-2-p2-06-9e39767.json). | 26, 27 | `complete` |
 | P2-ALT-001 | P2-07 | Immutable versioned rules cover every approved portfolio/data/report family with deterministic input snapshots, quality gating and no trading signals. | 28, 38 | `pending` |
 | P2-ALT-002 | P2-07 | Scheduling, event deduplication, cooldown, acknowledgment/resolution, safe retry/dead-letter and in-app history survive concurrent workers/restart. | 28, 29, 31, 40 | `pending` |
 | P2-ALT-003 | P2-07 | Optional email/webhook ports are unavailable when unconfigured; configured destinations are verified, bounded, HTTPS-only outside test mode and protected against SSRF/DNS rebinding/redirects. | 30, 31, 37 | `pending` |
@@ -145,9 +153,9 @@ results were not implementation acceptance. P2-05 now has the separate exact-sou
 acceptance recorded below.
 P2-S34 remains shared with P2-06 report parity; Phase 3 remains not_started.
 
-## P2-05 observed evidence
+## P2-05 historical observed evidence
 
-P2-05 is **complete** at `7b102663ea193b4668924a7252180731954f4b00`. The [accepted assertion map](evidence/phase-2-p2-05-7b10266.json) closes P2-XRAY-001/002 and P2-S20 through P2-S23. Phase 2 has five of ten packages (50%), thirteen of 29 local rows and twenty-two of 40 scenarios complete. P2-S34 and P2-S38 remain `in_progress`; report/export parity and the remaining release-wide predicates are outstanding. P2-06 through P2-10 and Phase 3 remain `not_started`.
+At the P205 closure boundary: P2-05 is **complete** at `7b102663ea193b4668924a7252180731954f4b00`. The [accepted assertion map](evidence/phase-2-p2-05-7b10266.json) closes P2-XRAY-001/002 and P2-S20 through P2-S23. Phase 2 has five of ten packages (50%), thirteen of 29 local rows and twenty-two of 40 scenarios complete. P2-S34 and P2-S38 remain `in_progress`; report/export parity and the remaining release-wide predicates are outstanding. P2-06 through P2-10 and Phase 3 remain `not_started`.
 
 The clean exact-source `make validate` passed in 2339.747 seconds: 1,642 isolated and 234 service/migration Python tests, 88% combined statement/branch coverage, 223 web unit tests and 76 browser checks without retries. Assertion selectors are source mappings bound to completed test-file observations.
 
@@ -155,9 +163,17 @@ Exact-source CI passed: Quality `34347516142`, Documentation `34347516068`, Secu
 
 See [runtime](evidence/phase-2-p2-05-7b10266-runtime.json), [security](evidence/phase-2-p2-05-7b10266-security.json), [compatibility](evidence/phase-2-p2-05-7b10266-compatibility.json), [screenshots and visual review](evidence/phase-2-p2-05-7b10266-screenshots.json) and [observed count derivation](evidence/phase-2-p2-05-7b10266-counts.json). Earlier failed candidates remain unaccepted. External broker/provider/deployment gates, the documented P2-08 UI follow-ups and the null final Phase 2 release SHA are unchanged.
 
-## P2-06 implementation state
+## P2-06 scoped local acceptance
 
-P2-06 is in progress from synchronized `5ff85b4436ec9be886639e6e2cf0c722fc0c4a73`.
+P2-06 has scoped local acceptance at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. GitHub Actions is deferred by explicit owner instruction; no CI pass is claimed. The complete required local gates, exact source bindings and deferred startup observations are retained in the P206 acceptance evidence. Remaining Phase 2 implementation continues under that recorded deferral until the owner resumes CI verification.
+
+The [finalized local artifact](evidence/phase-2-p2-06-9e39767.json) closes only the P206-owned rows and scenarios. Current totals are 16/29 local rows and 26/40 scenarios. Reporting contributes partial evidence to shared scenarios; later packages remain pending.
+
+### Historical P206 implementation observations
+
+The following earlier development observations and requirements are retained as history. They are not a new CI obligation during owner deferral or replacement exact-source acceptance evidence.
+
+P2-06 began from synchronized `5ff85b4436ec9be886639e6e2cf0c722fc0c4a73`.
 The [implementation contract](P2_06_REPORTS_AND_EXPORTS.md) describes the current
 working implementation. The September 9 working remainder gate passed 1,914 isolated
 and 277 service/migration coverage tests at 88%, 86 serial browser checks and the
@@ -169,7 +185,5 @@ per viewport, with final web lint/typecheck/build passing. The mobile run preced
 only the CSS correction to its hidden desktop sidebar; final-source validation
 and visual review remain separate. Root reviewed the eight working screenshots
 with their documented full-page mobile capture limitation.
-No P2-RPT row is accepted before final-source repository validation, CI, scans,
-runtime acceptance and visual review. The accepted totals remain thirteen rows and
-twenty-two scenarios.
+At that earlier boundary, no P2-RPT row was accepted and totals remained thirteen rows and twenty-two scenarios. Current local acceptance uses the complete corrected-source local gates, scans, runtime and visual review, with the separately retained owner CI deferral.
 P2-07 through P2-10 and Phase 3 remain `not_started`.

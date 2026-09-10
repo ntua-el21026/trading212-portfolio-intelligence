@@ -2,7 +2,7 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 through P2-05 complete; 22/40 complete
+**Implementation acceptance:** In progress; P2-01 through P2-06 locally complete; 26/40 complete; remaining Phase 2 CI deferred by owner
 
 **P2-01 evidence SHA:** `ecc75154397c8f9d7532fa2df8576846b60bae7c`
 
@@ -14,12 +14,20 @@
 
 **P2-05 evidence SHA:** `7b102663ea193b4668924a7252180731954f4b00`; final Phase 2 release SHA pending
 
+**P2-06 local evidence SHA:** `9e39767b408b38203d88d6e5b41bf0bc1265adfb`; GitHub Actions deferred, not passed; final Phase 2 release SHA remains pending. [Evidence](evidence/phase-2-p2-06-9e39767.json).
+
 **Authority:** Owner assignment, Phase 2 execution manifest and acceptance matrix
 
 All forty owner-required scenarios are preserved below. Each row defines the
 required executable predicate; pending rows remain requirements without claimed
-execution. P2-S01 through P2-S11 and P2-S13 through P2-S23 have exact tests and retained evidence. Phase 1 acceptance at
+execution. P2-S01 through P2-S11 and P2-S13 through P2-S27 have exact tests and retained evidence; S24–27 use the recorded local acceptance scope with owner-deferred CI. Phase 1 acceptance at
 `99df47b6633791c3900a52f46f56d48be922a436` is prerequisite evidence only.
+
+## Current owner-authorized CI exception
+
+P2-06 has scoped local acceptance at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. GitHub Actions is deferred by explicit owner instruction; no CI pass is claimed. The complete required local gates, exact source bindings and deferred startup observations are retained in the P206 acceptance evidence. Remaining Phase 2 implementation continues under that recorded deferral until the owner resumes CI verification.
+
+Normal exact-source CI requirements remain the default. This dated exception changes only their current prerequisite status, preserves every required local gate and remains explicitly outstanding for verification after owner resumption.
 
 ## Mandatory predicates
 
@@ -48,21 +56,21 @@ execution. P2-S01 through P2-S11 and P2-S13 through P2-S23 have exact tests and 
 | P2-S21 | Consolidate documented share classes/ADR exposure correctly. | P2-05 | Dated sourced share-class/ADR mappings consolidate economic exposure; ambiguous/unsupported mappings retain unresolved weight and never guess by ticker. Preserve original monetary roots, sourced FX and receipt semantics; no listing-currency/issuer inference or representative monetary backfill. | `tests/unit/analytics/test_xray.py::test_receipt_ratio_is_evidence_and_never_multiplies_already_valued_money`; [full assertion map and exact-source evidence](evidence/phase-2-p2-05-7b10266.json) | `complete` |
 | P2-S22 | Report ETF overlap and unresolved constituent weight explicitly. | P2-05 | Reference ETF overlap reconciles common/residual/unresolved weight and exposes exclusions without renormalizing unknown constituents into certainty. Lowest real position-root representatives include zero values; incomplete unit bases yield computable lower bounds. Same-run pair projections retain exact summaries across Page/Top/subsets and expire under charged collection ownership. | `tests/integration/test_xray_reads_postgres.py::test_page_size_normalization_and_mcp_top_preserve_run_and_exact_pair`; [full assertion map and exact-source evidence](evidence/phase-2-p2-05-7b10266.json) | `complete` |
 | P2-S23 | Degrade X-ray quality for stale constituent snapshots. | P2-05 | Stale/partial ETF constituent snapshots affect coverage/confidence/source dates and effective-quality output at the requested cutoff. Enforce trusted first knowledge/effective cutoff and actual subject/page-chain binding; current license/expiry denial precedes decode/reuse/304 and bounded physical purge. | `tests/unit/analytics/test_xray.py::test_source_warnings_and_confidence_use_pinned_evaluation_time`; [full assertion map and exact-source evidence](evidence/phase-2-p2-05-7b10266.json) | `complete` |
-| P2-S24 | Generate a deterministic report manifest from canonical inputs. | P2-06 | Identical authorized canonical inputs yield an identical manifest hash and table/chart values; operational PDF metadata is separately disclosed. | Working implementation; exact-source acceptance pending | `in_progress` |
-| P2-S25 | Enforce report owner authorization and expiry. | P2-06 | Other-owner, mismatched-account, expired/deleted/revoked artifacts are denied on every lookup/download; expiry cleanup is bounded and idempotent. | Working implementation; exact-source acceptance pending | `in_progress` |
-| P2-S26 | Prove reports contain no secret or provider signed URL. | P2-06 | Inject synthetic runtime/provider/export-URL component canaries; inspect manifests, rendered PDF text/metadata, CSV/JSON and expanded XLSX parts plus logs/traces. | Working implementation; exact-source acceptance pending | `in_progress` |
-| P2-S27 | Produce safe CSV/JSON/XLSX exports without formula injection. | P2-06 | Adversarial cell prefixes, whitespace/control prefixes and unsafe filenames produce safe CSV/XLSX cell types/escaping and strict typed JSON; no formula executes. | Working implementation; exact-source acceptance pending | `in_progress` |
+| P2-S24 | Generate a deterministic report manifest from canonical inputs. | P2-06 | Identical authorized canonical inputs yield an identical manifest hash and table/chart values; operational PDF metadata is separately disclosed. | `tests/unit/domain/test_reports.py::test_proof_order_canonicalizes_and_source_changes_change_manifest`; [full exact-source local assertion map](evidence/phase-2-p2-06-9e39767.json); CI deferred by owner | `complete` |
+| P2-S25 | Enforce report owner authorization and expiry. | P2-06 | Other-owner, mismatched-account, expired/deleted/revoked artifacts are denied on every lookup/download; expiry cleanup is bounded and idempotent. | `tests/integration/test_report_ttl_postgres.py::test_natural_report_ttl_denies_before_bounded_idempotent_physical_cleanup`; `tests/integration/test_report_postgres.py::test_current_reader_is_independent_of_the_disabled_job_initiator`; [full exact-source local assertion map](evidence/phase-2-p2-06-9e39767.json); CI deferred by owner | `complete` |
+| P2-S26 | Prove reports contain no secret or provider signed URL. | P2-06 | Inject synthetic runtime/provider/export-URL component canaries; inspect manifests, rendered PDF text/metadata, CSV/JSON and expanded XLSX parts plus logs/traces. | `tests/integration/test_report_privacy_postgres.py::test_four_actual_formats_and_audits_exclude_private_source_and_grant_canaries`; [full exact-source local assertion map](evidence/phase-2-p2-06-9e39767.json); CI deferred by owner | `complete` |
+| P2-S27 | Produce safe CSV/JSON/XLSX exports without formula injection. | P2-06 | Adversarial cell prefixes, whitespace/control prefixes and unsafe filenames produce safe CSV/XLSX cell types/escaping and strict typed JSON; no formula executes. | `tests/unit/worker/test_report_text.py::test_formula_initiators_are_neutralized_without_dropping_original_text`; `tests/unit/worker/test_private_report_renderers.py::test_xlsx_contains_only_explicit_text_without_formulas_or_external_links`; [full exact-source local assertion map](evidence/phase-2-p2-06-9e39767.json); CI deferred by owner | `complete` |
 | P2-S28 | Evaluate a drift alert once and deduplicate repeated identical evaluations. | P2-07 | Same rule-version/input snapshot/window under repeated/concurrent evaluation creates one event and one delivery intent. | Not recorded / none | `pending` |
 | P2-S29 | Enforce cooldown and acknowledgment transitions. | P2-07 | Controlled UTC clock covers cooldown edges and owner-authorized acknowledge/resolve transitions, optimistic concurrency and unchanged historical rule versions. | Not recorded / none | `pending` |
 | P2-S30 | Reject webhook destinations resolving to private or metadata addresses. | P2-07 | Local fake DNS/transport tests deny loopback/private/link-local/metadata/reserved IPv4/IPv6, rebinding and redirects before disallowed dispatch. | Not recorded / none | `pending` |
-| P2-S31 | Preserve alert and report jobs across worker/dispatcher restart. | P2-06/P2-07 | Atomic enqueue/publication/consumer crash windows, duplicate delivery and worker/dispatcher restart preserve original report/alert jobs and artifacts/events. | Not recorded / none | `pending` |
-| P2-S32 | Deny cross-owner API access. | P2-01–09 | Authenticated owner/account cross-products and missing scopes deny all new list/detail/command/download endpoints without existence/secret disclosure. | Not recorded / none | `pending` |
+| P2-S31 | Preserve alert and report jobs across worker/dispatcher restart. | P2-06/P2-07 | Atomic enqueue/publication/consumer crash windows, duplicate delivery and worker/dispatcher restart preserve original report/alert jobs and artifacts/events. | [partial P206 local evidence](evidence/phase-2-p2-06-9e39767.json); reporting scope only, remaining shared predicates pending | `in_progress` |
+| P2-S32 | Deny cross-owner API access. | P2-01–09 | Authenticated owner/account cross-products and missing scopes deny all new list/detail/command/download endpoints without existence/secret disclosure. | [partial P206 local evidence](evidence/phase-2-p2-06-9e39767.json); reporting scope only, remaining shared predicates pending | `in_progress` |
 | P2-S33 | Deny cross-owner MCP access. | P2-09 | All 25 tools reject cross-owner/account and missing-scope invocations; invalid IDs and unknown fields fail before unauthorized services or providers run. | Not recorded / none | `pending` |
-| P2-S34 | Preserve API, web, MCP, and report canonical value parity. | P2-01–09 | Same owner/account, snapshot/target/source revisions, cutoff/currency/method/parameters produce equal canonical Decimal values across service/API/rendered web/MCP/report. X-ray additionally pins numeric/traversal policies and representative paths; compare canonical semantic bytes including exact state while excluding derived self-digest/generated envelopes. Report parity remains P2-06. | `tests/contract/test_historical_contract.py::test_comparison_widget_has_valid_hash_csp_safe_dom_and_no_network_or_financial_math`; [partial historical API/web/MCP evidence](evidence/phase-2-p2-04-2a7c89a.json); report/export and remaining shared scope pending; not a complete scenario; [partial X-ray evidence](evidence/phase-2-p2-05-7b10266.json); remaining release-wide/report scope pending; not a complete scenario | `in_progress` |
+| P2-S34 | Preserve API, web, MCP, and report canonical value parity. | P2-01–09 | Same owner/account, snapshot/target/source revisions, cutoff/currency/method/parameters produce equal canonical Decimal values across service/API/rendered web/MCP/report. X-ray additionally pins numeric/traversal policies and representative paths; compare canonical semantic bytes including exact state while excluding derived self-digest/generated envelopes. Report parity remains P2-06. | `tests/contract/test_historical_contract.py::test_comparison_widget_has_valid_hash_csp_safe_dom_and_no_network_or_financial_math`; [partial historical API/web/MCP evidence](evidence/phase-2-p2-04-2a7c89a.json); remaining shared scope pending; not a complete scenario; [partial X-ray evidence](evidence/phase-2-p2-05-7b10266.json); remaining release-wide scope pending; not a complete scenario; [partial P206 local evidence](evidence/phase-2-p2-06-9e39767.json); reporting scope only, remaining shared predicates pending | `in_progress` |
 | P2-S35 | Preserve all Phase 1 mandatory scenarios. | P2-10 | Rerun every Phase 1 mandatory predicate including 14a/14b/14c, 2505/>10000 collection traversal, hard-capacity concurrency and export-URL minimization. | Not recorded / none | `pending` |
 | P2-S36 | Preserve the exact ten-capability Trading 212 GET-only registry. | P2-03/P2-10 | Registry-count/static architecture checks and transport-spy negatives preserve all ten exact GET templates and reject every unknown method/path/parameter. | Not recorded / none | `pending` |
 | P2-S37 | Prove no Phase 2 workflow can place, modify, or cancel a broker order. | P2-10 | Exercise plan/report/alert/provider/web/MCP workflows with sealed broker spies; no place/amend/cancel/Pie/transfer/generic execution API or task is reachable. | Not recorded / none | `pending` |
-| P2-S38 | Prove all output states distinguish fresh, stale, partial, unavailable, unreconciled, and failed. | P2-01–10 | Parameterized service/API/web/MCP/report fixtures preserve fresh/stale/partial/unavailable/unreconciled/failed, plus estimated/unsupported when applicable, without zero substitution. X-ray distinguishes disjoint exact zero, partial zero lower bound, sub-Q18 positive unknown, unavailable unit basis and inconclusive partial threshold. | [partial X-ray evidence](evidence/phase-2-p2-05-7b10266.json); remaining release-wide/report scope pending; not a complete scenario | `in_progress` |
+| P2-S38 | Prove all output states distinguish fresh, stale, partial, unavailable, unreconciled, and failed. | P2-01–10 | Parameterized service/API/web/MCP/report fixtures preserve fresh/stale/partial/unavailable/unreconciled/failed, plus estimated/unsupported when applicable, without zero substitution. X-ray distinguishes disjoint exact zero, partial zero lower bound, sub-Q18 positive unknown, unavailable unit basis and inconclusive partial threshold. | [partial X-ray evidence](evidence/phase-2-p2-05-7b10266.json); remaining release-wide scope pending; not a complete scenario; [partial P206 local evidence](evidence/phase-2-p2-06-9e39767.json); reporting scope only, remaining shared predicates pending | `in_progress` |
 | P2-S39 | Prove desktop/mobile accessibility and no horizontal overflow. | P2-08/P2-09 | Desktop/mobile API-backed Playwright and accessibility assertions cover keyboard/focus, labels, text alternatives, reduced motion, errors, 18 experiences and versioned widgets. | Not recorded / none | `pending` |
 | P2-S40 | Preserve state through full Compose restart without duplicate economic, plan, report, or alert records. | P2-10 | Observe all services stopped, retain volume identity, restart and compare exact economic/plan/report/alert counts, immutable hashes, parity, queue readiness and no duplicate logical work. | Not recorded / none | `pending` |
 
@@ -163,9 +171,9 @@ See [runtime](evidence/phase-2-p2-04-2a7c89a-runtime.json), [security](evidence/
 
 P2-S34 has no completed evidence key in PROJECT_PROGRESS.json. Its partial historical evidence does not close report/export parity. P2-S38/P2-S39 and other release-wide predicates retain their existing states.
 
-## P2-05 observed evidence
+## P2-05 historical observed evidence
 
-P2-05 is **complete** at `7b102663ea193b4668924a7252180731954f4b00`. The [accepted assertion map](evidence/phase-2-p2-05-7b10266.json) closes P2-XRAY-001/002 and P2-S20 through P2-S23. Phase 2 has five of ten packages (50%), thirteen of 29 local rows and twenty-two of 40 scenarios complete. P2-S34 and P2-S38 remain `in_progress`; report/export parity and the remaining release-wide predicates are outstanding. P2-06 through P2-10 and Phase 3 remain `not_started`.
+At the P205 closure boundary: P2-05 is **complete** at `7b102663ea193b4668924a7252180731954f4b00`. The [accepted assertion map](evidence/phase-2-p2-05-7b10266.json) closes P2-XRAY-001/002 and P2-S20 through P2-S23. Phase 2 has five of ten packages (50%), thirteen of 29 local rows and twenty-two of 40 scenarios complete. P2-S34 and P2-S38 remain `in_progress`; report/export parity and the remaining release-wide predicates are outstanding. P2-06 through P2-10 and Phase 3 remain `not_started`.
 
 The clean exact-source `make validate` passed in 2339.747 seconds: 1,642 isolated and 234 service/migration Python tests, 88% combined statement/branch coverage, 223 web unit tests and 76 browser checks without retries. Assertion selectors are source mappings bound to completed test-file observations.
 
@@ -173,9 +181,17 @@ Exact-source CI passed: Quality `34347516142`, Documentation `34347516068`, Secu
 
 See [runtime](evidence/phase-2-p2-05-7b10266-runtime.json), [security](evidence/phase-2-p2-05-7b10266-security.json), [compatibility](evidence/phase-2-p2-05-7b10266-compatibility.json), [screenshots and visual review](evidence/phase-2-p2-05-7b10266-screenshots.json) and [observed count derivation](evidence/phase-2-p2-05-7b10266-counts.json). Earlier failed candidates remain unaccepted. External broker/provider/deployment gates, the documented P2-08 UI follow-ups and the null final Phase 2 release SHA are unchanged.
 
-## P2-06 implementation state
+## P2-06 scoped local acceptance
 
-P2-S24 through P2-S27 are in progress under the
+P2-06 has scoped local acceptance at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. GitHub Actions is deferred by explicit owner instruction; no CI pass is claimed. The complete required local gates, exact source bindings and deferred startup observations are retained in the P206 acceptance evidence. Remaining Phase 2 implementation continues under that recorded deferral until the owner resumes CI verification.
+
+The [finalized local artifact](evidence/phase-2-p2-06-9e39767.json) closes only the P206-owned rows and scenarios. Current totals are 16/29 local rows and 26/40 scenarios. Reporting contributes partial evidence to shared scenarios; later packages remain pending.
+
+### Historical P206 implementation observations
+
+The following earlier development observations and requirements are retained as history. They are not a new CI obligation during owner deferral or replacement exact-source acceptance evidence.
+
+P2-S24 through P2-S27 were developed under the
 [report implementation contract](P2_06_REPORTS_AND_EXPORTS.md). The working remainder
 gate passed all 86 serial browser checks alongside 1,914 isolated and 277
 service/migration coverage tests at 88% and the remaining documentation/security/build
@@ -185,7 +201,6 @@ unit tests, four desktop and four mobile browser journeys, and final web
 lint/typecheck/build. The mobile result precedes only the hidden desktop-sidebar
 CSS change. Root reviewed eight working screenshots with a documented full-page
 mobile capture limitation; immutable acceptance images require their own review.
-Clean exact-source repository validation, CI, scans,
-fresh runtime assertions and reviewed screenshots/PDF remain required. Shared restart,
+At that development boundary, clean exact-source validation, CI, scans, fresh runtime and screenshot/PDF review were still pending. Current accepted local proof and the distinct owner CI deferral are recorded above. Shared restart,
 parity and output-state scenarios retain their outstanding release-wide scope.
 P2-07 through P2-10 and Phase 3 remain `not_started`.

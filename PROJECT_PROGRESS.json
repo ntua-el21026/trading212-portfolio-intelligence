@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-10T12:43:13.078210+00:00",
+  "updated_at": "2026-09-10T16:05:33.647538+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -130,48 +130,107 @@
       "name": "Portfolio Intelligence",
       "release": "0.2.0",
       "status": "in_progress",
-      "progress_percent": 50,
+      "progress_percent": 60,
       "design_closure": "accepted",
       "candidate_validation": {
-        "work_package": "P2-05",
-        "source_sha": "7b102663ea193b4668924a7252180731954f4b00",
-        "acceptance": "accepted",
-        "accepted_at_utc": "2026-09-09T13:31:39.958501+00:00",
-        "make_validate": "passed",
-        "make_validate_duration_seconds": 2339.747,
-        "isolated_python_tests_passed": 1642,
-        "service_backed_python_tests_passed": 234,
-        "combined_python_coverage_with_branch_measurement_percent": 88,
-        "web_unit_tests_passed": 223,
-        "browser_tests_passed_locally": 76,
-        "github_quality_run": 34347516142,
-        "github_quality_result": "passed",
-        "github_documentation_run": 34347516068,
-        "github_documentation_result": "passed",
-        "github_security_run": 34347516074,
-        "github_security_result": "passed",
-        "runtime": "passed",
-        "runtime_duration_seconds": 146.262241,
-        "runtime_observation_sha256": "2ab196f1c97fb04d44743005220b660563aa66338f8c0300a9684c44bd3548b4",
-        "retained_tables_identical": 167,
-        "runtime_cleanup_verified": true,
-        "source_history_image_scans_passed": 8,
-        "reviewed_screenshots": 8,
+        "acceptance": "accepted_locally_with_ci_deferred",
+        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+        "accepted_at_utc": "2026-09-10T16:05:33.647538+00:00",
+        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-06-9e39767-implementation-history.json",
         "artifacts": [
-          "docs/implementation/evidence/phase-2-p2-05-7b10266.json",
-          "docs/implementation/evidence/phase-2-p2-05-7b10266-runtime.json",
-          "docs/implementation/evidence/phase-2-p2-05-7b10266-security.json",
-          "docs/implementation/evidence/phase-2-p2-05-7b10266-compatibility.json",
-          "docs/implementation/evidence/phase-2-p2-05-7b10266-screenshots.json",
-          "docs/implementation/evidence/phase-2-p2-05-7b10266-counts.json"
+          "docs/implementation/evidence/phase-2-p2-06-9e39767.json"
         ],
-        "previous_accepted_candidate_validation_artifact": "docs/implementation/evidence/phase-2-p2-04-2a7c89a-candidate-validation-snapshot.json",
+        "build_images": {
+          "api": "sha256:b349e2645bad917f185d579c2ae95092620a963c3c11d388564dc38b9fa4f72a",
+          "mcp": "sha256:e2078119956e79ede7a5509da9ef9c660ead196ee69e71334eedf9816de0916a",
+          "postgres": "sha256:89e7f09728de3257044f986f07ad26be6a51a71c4d705365e009ea7f4e97b35c",
+          "redis": "sha256:e35511469dca8d8ecd319f0cc78ee16fbd1b43c56f85abeba6c032325f6aa79e",
+          "web": "sha256:d37f6ec82d4da1b1a8a14861dbf7860535c4d372be2d28689710ac3ef4caeec2",
+          "worker": "sha256:6574836bb14e1d9ecb14d9fd5f9b9cf4dba313596bdd6b79d220394df02957e2"
+        },
+        "ci_source_ancestry": {
+          "authorized_source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+          "current_source_sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+          "relationship": "descendant",
+          "verification": "git_merge_base_is_ancestor_exit_0"
+        },
+        "ci_state": "deferred_by_owner",
+        "ci_verified": false,
+        "current_ci_observation": {
+          "actual_run_state": "unknown",
+          "historical_attempts_for_this_source": false,
+          "observation_state": "not_queried_after_owner_decision",
+          "observed_post_decision_runs": [],
+          "source_sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+          "state": "deferred_by_owner"
+        },
+        "gate_log_sha256": "76c82e0f80d8d7d9d0afbdb37bc7f28d9535caba0be58a879655f5cb0b051f98",
+        "gate_record_sha256": "d86950db93da9f8679497ea823beeb30edbf8659eef0797f9a12b4f7fb2c014c",
+        "historical_ci_attempts": [
+          {
+            "attempt": 1,
+            "conclusion": "failure",
+            "createdAt": "2026-09-10T12:44:42Z",
+            "databaseId": 34478450265,
+            "event": "push",
+            "headBranch": "main",
+            "headSha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+            "status": "completed",
+            "updatedAt": "2026-09-10T12:44:47Z",
+            "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34478450265",
+            "workflowName": "Documentation baseline validation"
+          },
+          {
+            "attempt": 1,
+            "conclusion": "failure",
+            "createdAt": "2026-09-10T12:44:42Z",
+            "databaseId": 34478450252,
+            "event": "push",
+            "headBranch": "main",
+            "headSha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+            "status": "completed",
+            "updatedAt": "2026-09-10T12:44:55Z",
+            "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34478450252",
+            "workflowName": "Phase 1 quality gates"
+          },
+          {
+            "attempt": 1,
+            "conclusion": "failure",
+            "createdAt": "2026-09-10T12:44:42Z",
+            "databaseId": 34478450202,
+            "event": "push",
+            "headBranch": "main",
+            "headSha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+            "status": "completed",
+            "updatedAt": "2026-09-10T12:44:54Z",
+            "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34478450202",
+            "workflowName": "Security and dependency gates"
+          }
+        ],
+        "historical_ci_source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
         "known_p208_limitations": "The configured synthetic runtime does not establish default unconfigured multi-account UI acceptance. Route/global-header account consistency, sticky-header section positioning, mobile labels/table presentation and remaining P2-08/S39 scope stay outstanding. The earlier P2-04 snapshot retains its original account-count and runtime observations.",
-        "scope": "Scoped synthetic P2-05 acceptance only; shared S34/S38, later packages and full Phase 2 remain incomplete.",
-        "runtime_attempt": 2,
-        "failed_runtime_artifacts": [
-          "docs/implementation/evidence/phase-2-p2-05-7b10266-failed-runtime-001.json"
-        ]
+        "make_validate": "passed",
+        "observed_gate_counts": {
+          "browser_run_passed_counts": [
+            50, 3, 3, 1, 1, 2, 2, 2, 2, 4, 4, 2, 2, 3, 3, 3, 3
+          ],
+          "browser_tests_passed_locally": 90,
+          "combined_python_coverage_with_branch_measurement_percent": 88,
+          "derivation": "Actual complete coverage, Vitest and serial Playwright summaries in the accepted gate transcript; not per-node observations.",
+          "isolated_python_tests_passed": 1925,
+          "service_backed_python_tests_passed": 277,
+          "web_unit_tests_passed": 301
+        },
+        "pdf_review_observation_sha256": "598710ad69f0c4c197a8a700b95bb1cb16345a9a46ec4983c257768a3442edfe",
+        "previous_accepted_candidate_validation_artifact": "docs/implementation/evidence/phase-2-p2-05-7b10266-candidate-before-p206.json",
+        "runtime": "passed",
+        "runtime_cleanup_verified": true,
+        "runtime_observation_sha256": "16ba28a312513a0f9586b5420f3ab973ab983e2c8066f2131f75cf67dbf52e22",
+        "scope": "P206 and seven assigned acceptance/scenario rows only; remaining Phase 2 is not complete.",
+        "screenshots_observation_sha256": "67efec5f21361a030457f8e9eec92802fe0fa66cfe103ab5cb7d0cae2cae0789",
+        "security_observation_sha256": "c51ea89674021de508369bb3e373060f79a85fd600db3ca02228ca07504063f3",
+        "source_sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+        "work_package": "P2-06"
       },
       "work_packages": {
         "P2-01": "complete",
@@ -179,7 +238,7 @@
         "P2-03": "complete",
         "P2-04": "complete",
         "P2-05": "complete",
-        "P2-06": "in_progress",
+        "P2-06": "complete",
         "P2-07": "not_started",
         "P2-08": "not_started",
         "P2-09": "not_started",
@@ -188,9 +247,9 @@
       "acceptance": {
         "status": "in_progress",
         "locally_executable_rows_total": 29,
-        "locally_executable_rows_complete": 13,
+        "locally_executable_rows_complete": 16,
         "mandatory_scenarios_total": 40,
-        "mandatory_scenarios_complete": 22,
+        "mandatory_scenarios_complete": 26,
         "release_evidence_sha": null,
         "evidence": {
           "P2-S01": {
@@ -2914,6 +2973,457 @@
               "docs/implementation/evidence/phase-2-p2-05-7b10266-screenshots.json",
               "docs/implementation/evidence/phase-2-p2-05-7b10266-counts.json"
             ]
+          },
+          "P2-06": {
+            "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-06-9e39767.json"
+            ],
+            "ci_state": "deferred_by_owner",
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              }
+            ],
+            "sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+            "test_nodes": [
+              "tests/integration/test_migrations.py::test_migration_is_current_and_downgrade_policy_is_explicit",
+              "tests/integration/test_report_dispatch_postgres.py::test_completed_job_ignores_late_final_publication_failure_and_acknowledgment",
+              "tests/integration/test_report_exports_postgres.py::test_activity_dividends_performance_and_targets_exports_match_canonical_producers",
+              "tests/integration/test_report_exports_postgres.py::test_plan_export_uses_a_real_finalized_revision_and_complete_audit_operands",
+              "tests/integration/test_report_exports_postgres.py::test_positions_and_xray_exports_include_real_values_and_all_three_formats",
+              "tests/integration/test_report_postgres.py::test_actual_source_proof_rejects_missing_licenses_and_unbound_children",
+              "tests/integration/test_report_postgres.py::test_artifact_grants_are_supplemental_bounded_and_immutable",
+              "tests/integration/test_report_postgres.py::test_canonical_report_survives_new_service_and_private_download",
+              "tests/integration/test_report_postgres.py::test_capture_cannot_commit_unsealed",
+              "tests/integration/test_report_postgres.py::test_current_reader_is_independent_of_the_disabled_job_initiator",
+              "tests/integration/test_report_postgres.py::test_current_source_permission_denies_before_payload_read",
+              "tests/integration/test_report_postgres.py::test_disabled_initiator_is_rejected_on_worker_claim",
+              "tests/integration/test_report_postgres.py::test_expiry_purges_all_copies_with_shared_budget_and_keeps_safe_tombstones",
+              "tests/integration/test_report_postgres.py::test_export_permission_is_rechecked_for_the_actual_xray_sources",
+              "tests/integration/test_report_postgres.py::test_future_effective_license_denial_after_render_prevents_publication",
+              "tests/integration/test_report_postgres.py::test_idempotency_preserves_pins_and_rejects_semantic_change",
+              "tests/integration/test_report_postgres.py::test_missing_durable_grants_rejects_before_capture",
+              "tests/integration/test_report_postgres.py::test_partial_manifest_and_heartbeat_fence_changes_cannot_commit",
+              "tests/integration/test_report_postgres.py::test_report_history_cursor_keeps_stable_membership_and_rechecks_current_grants",
+              "tests/integration/test_report_postgres.py::test_source_retention_removes_report_copies_before_source_completion",
+              "tests/integration/test_report_postgres.py::test_standalone_export_is_a_real_durable_job_and_alerts_is_rejected",
+              "tests/integration/test_report_postgres.py::test_worker_reclaim_increments_fence_and_old_claim_cannot_publish",
+              "tests/integration/test_report_privacy_postgres.py::test_four_actual_formats_and_audits_exclude_private_source_and_grant_canaries",
+              "tests/integration/test_report_references_postgres.py::test_unresolved_streamed_cell_proof_rolls_back_before_dispatch",
+              "tests/integration/test_report_source_retention_postgres.py::test_historical_price_fx_expiry_removes_report_bytes_with_shared_budget",
+              "tests/integration/test_report_ttl_postgres.py::test_natural_report_ttl_denies_before_bounded_idempotent_physical_cleanup",
+              "tests/integration/test_report_type_matrix_postgres.py::test_contribution_plan_report_uses_a_real_finalized_revision",
+              "tests/integration/test_report_type_matrix_postgres.py::test_historical_report_type_matrix",
+              "tests/integration/test_report_type_matrix_postgres.py::test_snapshot_and_xray_report_types",
+              "tests/security/test_export_url_artifacts.py::test_export_url_canary_absent_from_retained_source_and_available_artifacts",
+              "tests/unit/domain/test_reports.py::test_chunk_partition_does_not_change_table_semantics",
+              "tests/unit/domain/test_reports.py::test_every_report_type_requires_its_actual_sections_and_references",
+              "tests/unit/domain/test_reports.py::test_financial_cells_reject_floats_bool_nonfinite_and_excess_scale",
+              "tests/unit/domain/test_reports.py::test_historical_coverage_base_requires_actual_complete_measure_triplet",
+              "tests/unit/domain/test_reports.py::test_manifest_and_capture_roundtrip_bind_the_same_canonical_sources",
+              "tests/unit/domain/test_reports.py::test_manifest_rejects_duplicate_license_and_reconciliation_identity",
+              "tests/unit/domain/test_reports.py::test_manifest_rejects_header_schema_profile_and_binding_tampering",
+              "tests/unit/domain/test_reports.py::test_manifest_rejects_unresolved_cell_references_before_sealing",
+              "tests/unit/domain/test_reports.py::test_manifest_rejects_unresolved_note_provenance_and_context_reconciliation",
+              "tests/unit/domain/test_reports.py::test_manifest_table_unavailable_reason_must_resolve",
+              "tests/unit/domain/test_reports.py::test_proof_order_canonicalizes_and_source_changes_change_manifest",
+              "tests/unit/domain/test_reports.py::test_reference_resolution_preserves_declared_empty_and_shared_sets",
+              "tests/unit/domain/test_reports.py::test_zero_missing_partial_and_exact_decimal_encoding_remain_distinct",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_attribution_capture_retains_exact_effects_and_full_selected_options",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_cash_flow_capture_preserves_external_signs_whole_window_totals_and_event_ids",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_composite_snapshot_binding_preserves_actual_header_or_explicit_absence",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_dividend_capture_keeps_zero_missing_gross_correction_and_exact_source_identity",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_monthly_and_annual_public_performance_and_provenance_are_complete_and_bounded",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_public_trace_keeps_event_fx_and_boundary_legs_without_mutating_daily_run",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_single_fund_capture_keeps_entity_aggregates_path_dimensions_and_actual_policy",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_unavailable_original_cash_retains_its_known_native_currency",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_xray_capture_includes_every_pair_beyond_public_subset_and_fits_manifest",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_xray_capture_keeps_original_broker_currency_and_saved_operand_without_conversion",
+              "tests/unit/persistence/test_report_capture_plan_input.py::test_default_and_explicit_empty_eligibility_remain_distinct",
+              "tests/unit/persistence/test_report_capture_plan_input.py::test_full_plan_result_uses_distinct_writers_for_target_and_effective_constraints",
+              "tests/unit/persistence/test_report_capture_plan_input.py::test_mismatched_saved_input_digest_rejects_before_any_operand_copy",
+              "tests/unit/persistence/test_report_capture_plan_input.py::test_saved_original_money_fx_and_every_option_are_typed_and_hash_bound",
+              "tests/unit/persistence/test_report_errors.py::test_domain_errors_keep_bound_identity_and_hide_private_detail",
+              "tests/unit/persistence/test_report_snapshot_period.py::test_retrospective_period_keeps_the_actual_later_snapshot_valuation",
+              "tests/unit/persistence/test_report_snapshot_period.py::test_snapshot_or_requested_cutoff_cannot_introduce_future_knowledge",
+              "tests/unit/persistence/test_report_snapshot_quality.py::test_fresh_rows_do_not_upgrade_a_partial_snapshot_or_its_weight_denominator",
+              "tests/unit/persistence/test_report_snapshot_quality.py::test_snapshot_age_boundary_applies_to_all_position_and_cash_numeric_cells",
+              "tests/unit/persistence/test_report_snapshot_quality.py::test_snapshot_quality_does_not_turn_unavailable_values_into_zero_or_remove_real_zero",
+              "tests/unit/persistence/test_report_snapshot_quality.py::test_stale_snapshot_never_upgrades_stronger_intrinsic_row_degradation",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_analytics_precede_complete_proof_without_changing_manifest",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_attachment_has_no_actions_annotations_or_external_file_reference",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_embeds_exact_canonical_manifest_bytes_with_fixed_name_and_mime",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_provenance_is_readable_complete_and_does_not_print_raw_json",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_renders_exact_cell_context_beside_mixed_family_values",
+              "tests/unit/worker/test_private_report_renderers.py::test_csv_round_trip_manifest_formula_text_quotes_unicode_and_missing_values",
+              "tests/unit/worker/test_private_report_renderers.py::test_every_format_checks_artifact_capacity_and_closes_buffer",
+              "tests/unit/worker/test_private_report_renderers.py::test_every_format_preserves_effective_metric_metadata",
+              "tests/unit/worker/test_private_report_renderers.py::test_json_preserves_exact_cells_full_manifest_and_explicit_unavailable_states",
+              "tests/unit/worker/test_private_report_renderers.py::test_pdf_discloses_an_outside_period_snapshot_before_showing_totals",
+              "tests/unit/worker/test_private_report_renderers.py::test_renderer_refuses_missing_changed_or_corrupt_canonical_rows",
+              "tests/unit/worker/test_private_report_renderers.py::test_renderer_rejects_changed_profile_before_any_artifact_byte",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_contains_only_explicit_text_without_formulas_or_external_links",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_interruption_removes_private_scratch",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_never_interprets_literal_rich_xml_or_injected_cells",
+              "tests/unit/worker/test_report_proof_fragments.py::test_proof_fragments_reconstruct_all_rows_schema_and_hashes",
+              "tests/unit/worker/test_report_tasks.py::test_cancelled_child_and_spawn_failure_remove_owned_workspace",
+              "tests/unit/worker/test_report_tasks.py::test_dispatch_failure_returns_to_persistent_retry_without_celery_retry",
+              "tests/unit/worker/test_report_tasks.py::test_orphan_recovery_preserves_live_and_unrelated_workspaces",
+              "tests/unit/worker/test_report_tasks.py::test_real_renderer_child_returns_canonical_artifact_and_removes_scratch",
+              "tests/unit/worker/test_report_tasks.py::test_second_format_failure_never_publishes_first_format",
+              "tests/unit/worker/test_report_tasks.py::test_unclaimed_delivery_never_opens_document",
+              "tests/unit/worker/test_report_tasks.py::test_worker_publishes_all_requested_formats_once_then_closes_document",
+              "tests/unit/worker/test_report_text.py::test_formula_initiators_are_neutralized_without_dropping_original_text",
+              "tests/unit/worker/test_report_text.py::test_initial_spreadsheet_control_characters_are_neutralized",
+              "tests/unit/worker/test_report_text.py::test_safe_text_remains_unchanged"
+            ]
+          },
+          "P2-RPT-001": {
+            "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-06-9e39767.json"
+            ],
+            "ci_state": "deferred_by_owner",
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              }
+            ],
+            "sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+            "test_nodes": [
+              "tests/integration/test_report_exports_postgres.py::test_activity_dividends_performance_and_targets_exports_match_canonical_producers",
+              "tests/integration/test_report_exports_postgres.py::test_plan_export_uses_a_real_finalized_revision_and_complete_audit_operands",
+              "tests/integration/test_report_exports_postgres.py::test_positions_and_xray_exports_include_real_values_and_all_three_formats",
+              "tests/integration/test_report_postgres.py::test_actual_source_proof_rejects_missing_licenses_and_unbound_children",
+              "tests/integration/test_report_postgres.py::test_canonical_report_survives_new_service_and_private_download",
+              "tests/integration/test_report_postgres.py::test_capture_cannot_commit_unsealed",
+              "tests/integration/test_report_postgres.py::test_current_source_permission_denies_before_payload_read",
+              "tests/integration/test_report_postgres.py::test_export_permission_is_rechecked_for_the_actual_xray_sources",
+              "tests/integration/test_report_postgres.py::test_future_effective_license_denial_after_render_prevents_publication",
+              "tests/integration/test_report_postgres.py::test_idempotency_preserves_pins_and_rejects_semantic_change",
+              "tests/integration/test_report_postgres.py::test_partial_manifest_and_heartbeat_fence_changes_cannot_commit",
+              "tests/integration/test_report_postgres.py::test_standalone_export_is_a_real_durable_job_and_alerts_is_rejected",
+              "tests/integration/test_report_references_postgres.py::test_unresolved_streamed_cell_proof_rolls_back_before_dispatch",
+              "tests/integration/test_report_source_retention_postgres.py::test_historical_price_fx_expiry_removes_report_bytes_with_shared_budget",
+              "tests/integration/test_report_type_matrix_postgres.py::test_contribution_plan_report_uses_a_real_finalized_revision",
+              "tests/integration/test_report_type_matrix_postgres.py::test_historical_report_type_matrix",
+              "tests/integration/test_report_type_matrix_postgres.py::test_snapshot_and_xray_report_types",
+              "tests/unit/domain/test_reports.py::test_chunk_partition_does_not_change_table_semantics",
+              "tests/unit/domain/test_reports.py::test_every_report_type_requires_its_actual_sections_and_references",
+              "tests/unit/domain/test_reports.py::test_financial_cells_reject_floats_bool_nonfinite_and_excess_scale",
+              "tests/unit/domain/test_reports.py::test_historical_coverage_base_requires_actual_complete_measure_triplet",
+              "tests/unit/domain/test_reports.py::test_manifest_and_capture_roundtrip_bind_the_same_canonical_sources",
+              "tests/unit/domain/test_reports.py::test_manifest_rejects_duplicate_license_and_reconciliation_identity",
+              "tests/unit/domain/test_reports.py::test_manifest_rejects_header_schema_profile_and_binding_tampering",
+              "tests/unit/domain/test_reports.py::test_manifest_rejects_unresolved_cell_references_before_sealing",
+              "tests/unit/domain/test_reports.py::test_manifest_rejects_unresolved_note_provenance_and_context_reconciliation",
+              "tests/unit/domain/test_reports.py::test_manifest_table_unavailable_reason_must_resolve",
+              "tests/unit/domain/test_reports.py::test_proof_order_canonicalizes_and_source_changes_change_manifest",
+              "tests/unit/domain/test_reports.py::test_reference_resolution_preserves_declared_empty_and_shared_sets",
+              "tests/unit/domain/test_reports.py::test_zero_missing_partial_and_exact_decimal_encoding_remain_distinct",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_attribution_capture_retains_exact_effects_and_full_selected_options",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_cash_flow_capture_preserves_external_signs_whole_window_totals_and_event_ids",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_composite_snapshot_binding_preserves_actual_header_or_explicit_absence",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_dividend_capture_keeps_zero_missing_gross_correction_and_exact_source_identity",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_monthly_and_annual_public_performance_and_provenance_are_complete_and_bounded",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_public_trace_keeps_event_fx_and_boundary_legs_without_mutating_daily_run",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_single_fund_capture_keeps_entity_aggregates_path_dimensions_and_actual_policy",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_unavailable_original_cash_retains_its_known_native_currency",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_xray_capture_includes_every_pair_beyond_public_subset_and_fits_manifest",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_xray_capture_keeps_original_broker_currency_and_saved_operand_without_conversion",
+              "tests/unit/persistence/test_report_capture_plan_input.py::test_default_and_explicit_empty_eligibility_remain_distinct",
+              "tests/unit/persistence/test_report_capture_plan_input.py::test_full_plan_result_uses_distinct_writers_for_target_and_effective_constraints",
+              "tests/unit/persistence/test_report_capture_plan_input.py::test_mismatched_saved_input_digest_rejects_before_any_operand_copy",
+              "tests/unit/persistence/test_report_capture_plan_input.py::test_saved_original_money_fx_and_every_option_are_typed_and_hash_bound",
+              "tests/unit/persistence/test_report_snapshot_period.py::test_retrospective_period_keeps_the_actual_later_snapshot_valuation",
+              "tests/unit/persistence/test_report_snapshot_period.py::test_snapshot_or_requested_cutoff_cannot_introduce_future_knowledge",
+              "tests/unit/persistence/test_report_snapshot_quality.py::test_fresh_rows_do_not_upgrade_a_partial_snapshot_or_its_weight_denominator",
+              "tests/unit/persistence/test_report_snapshot_quality.py::test_snapshot_age_boundary_applies_to_all_position_and_cash_numeric_cells",
+              "tests/unit/persistence/test_report_snapshot_quality.py::test_snapshot_quality_does_not_turn_unavailable_values_into_zero_or_remove_real_zero",
+              "tests/unit/persistence/test_report_snapshot_quality.py::test_stale_snapshot_never_upgrades_stronger_intrinsic_row_degradation",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_analytics_precede_complete_proof_without_changing_manifest",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_attachment_has_no_actions_annotations_or_external_file_reference",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_embeds_exact_canonical_manifest_bytes_with_fixed_name_and_mime",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_provenance_is_readable_complete_and_does_not_print_raw_json",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_renders_exact_cell_context_beside_mixed_family_values",
+              "tests/unit/worker/test_private_report_renderers.py::test_csv_round_trip_manifest_formula_text_quotes_unicode_and_missing_values",
+              "tests/unit/worker/test_private_report_renderers.py::test_every_format_checks_artifact_capacity_and_closes_buffer",
+              "tests/unit/worker/test_private_report_renderers.py::test_every_format_preserves_effective_metric_metadata",
+              "tests/unit/worker/test_private_report_renderers.py::test_json_preserves_exact_cells_full_manifest_and_explicit_unavailable_states",
+              "tests/unit/worker/test_private_report_renderers.py::test_pdf_discloses_an_outside_period_snapshot_before_showing_totals",
+              "tests/unit/worker/test_private_report_renderers.py::test_renderer_refuses_missing_changed_or_corrupt_canonical_rows",
+              "tests/unit/worker/test_private_report_renderers.py::test_renderer_rejects_changed_profile_before_any_artifact_byte",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_contains_only_explicit_text_without_formulas_or_external_links",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_interruption_removes_private_scratch",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_never_interprets_literal_rich_xml_or_injected_cells",
+              "tests/unit/worker/test_report_proof_fragments.py::test_proof_fragments_reconstruct_all_rows_schema_and_hashes"
+            ]
+          },
+          "P2-RPT-002": {
+            "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-06-9e39767.json"
+            ],
+            "ci_state": "deferred_by_owner",
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              }
+            ],
+            "sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+            "test_nodes": [
+              "tests/integration/test_migrations.py::test_migration_is_current_and_downgrade_policy_is_explicit",
+              "tests/integration/test_report_dispatch_postgres.py::test_completed_job_ignores_late_final_publication_failure_and_acknowledgment",
+              "tests/integration/test_report_exports_postgres.py::test_activity_dividends_performance_and_targets_exports_match_canonical_producers",
+              "tests/integration/test_report_exports_postgres.py::test_plan_export_uses_a_real_finalized_revision_and_complete_audit_operands",
+              "tests/integration/test_report_exports_postgres.py::test_positions_and_xray_exports_include_real_values_and_all_three_formats",
+              "tests/integration/test_report_postgres.py::test_actual_source_proof_rejects_missing_licenses_and_unbound_children",
+              "tests/integration/test_report_postgres.py::test_artifact_grants_are_supplemental_bounded_and_immutable",
+              "tests/integration/test_report_postgres.py::test_canonical_report_survives_new_service_and_private_download",
+              "tests/integration/test_report_postgres.py::test_capture_cannot_commit_unsealed",
+              "tests/integration/test_report_postgres.py::test_current_reader_is_independent_of_the_disabled_job_initiator",
+              "tests/integration/test_report_postgres.py::test_current_source_permission_denies_before_payload_read",
+              "tests/integration/test_report_postgres.py::test_disabled_initiator_is_rejected_on_worker_claim",
+              "tests/integration/test_report_postgres.py::test_expiry_purges_all_copies_with_shared_budget_and_keeps_safe_tombstones",
+              "tests/integration/test_report_postgres.py::test_export_permission_is_rechecked_for_the_actual_xray_sources",
+              "tests/integration/test_report_postgres.py::test_future_effective_license_denial_after_render_prevents_publication",
+              "tests/integration/test_report_postgres.py::test_idempotency_preserves_pins_and_rejects_semantic_change",
+              "tests/integration/test_report_postgres.py::test_missing_durable_grants_rejects_before_capture",
+              "tests/integration/test_report_postgres.py::test_partial_manifest_and_heartbeat_fence_changes_cannot_commit",
+              "tests/integration/test_report_postgres.py::test_report_history_cursor_keeps_stable_membership_and_rechecks_current_grants",
+              "tests/integration/test_report_postgres.py::test_source_retention_removes_report_copies_before_source_completion",
+              "tests/integration/test_report_postgres.py::test_standalone_export_is_a_real_durable_job_and_alerts_is_rejected",
+              "tests/integration/test_report_postgres.py::test_worker_reclaim_increments_fence_and_old_claim_cannot_publish",
+              "tests/integration/test_report_source_retention_postgres.py::test_historical_price_fx_expiry_removes_report_bytes_with_shared_budget",
+              "tests/integration/test_report_ttl_postgres.py::test_natural_report_ttl_denies_before_bounded_idempotent_physical_cleanup",
+              "tests/unit/persistence/test_report_errors.py::test_domain_errors_keep_bound_identity_and_hide_private_detail",
+              "tests/unit/worker/test_report_tasks.py::test_cancelled_child_and_spawn_failure_remove_owned_workspace",
+              "tests/unit/worker/test_report_tasks.py::test_dispatch_failure_returns_to_persistent_retry_without_celery_retry",
+              "tests/unit/worker/test_report_tasks.py::test_orphan_recovery_preserves_live_and_unrelated_workspaces",
+              "tests/unit/worker/test_report_tasks.py::test_real_renderer_child_returns_canonical_artifact_and_removes_scratch",
+              "tests/unit/worker/test_report_tasks.py::test_second_format_failure_never_publishes_first_format",
+              "tests/unit/worker/test_report_tasks.py::test_unclaimed_delivery_never_opens_document",
+              "tests/unit/worker/test_report_tasks.py::test_worker_publishes_all_requested_formats_once_then_closes_document"
+            ]
+          },
+          "P2-RPT-003": {
+            "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-06-9e39767.json"
+            ],
+            "ci_state": "deferred_by_owner",
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              }
+            ],
+            "sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+            "test_nodes": [
+              "tests/integration/test_report_exports_postgres.py::test_activity_dividends_performance_and_targets_exports_match_canonical_producers",
+              "tests/integration/test_report_exports_postgres.py::test_plan_export_uses_a_real_finalized_revision_and_complete_audit_operands",
+              "tests/integration/test_report_exports_postgres.py::test_positions_and_xray_exports_include_real_values_and_all_three_formats",
+              "tests/integration/test_report_postgres.py::test_actual_source_proof_rejects_missing_licenses_and_unbound_children",
+              "tests/integration/test_report_postgres.py::test_current_source_permission_denies_before_payload_read",
+              "tests/integration/test_report_postgres.py::test_export_permission_is_rechecked_for_the_actual_xray_sources",
+              "tests/integration/test_report_postgres.py::test_future_effective_license_denial_after_render_prevents_publication",
+              "tests/integration/test_report_privacy_postgres.py::test_four_actual_formats_and_audits_exclude_private_source_and_grant_canaries",
+              "tests/security/test_export_url_artifacts.py::test_export_url_canary_absent_from_retained_source_and_available_artifacts",
+              "tests/unit/persistence/test_report_errors.py::test_domain_errors_keep_bound_identity_and_hide_private_detail",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_analytics_precede_complete_proof_without_changing_manifest",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_attachment_has_no_actions_annotations_or_external_file_reference",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_embeds_exact_canonical_manifest_bytes_with_fixed_name_and_mime",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_provenance_is_readable_complete_and_does_not_print_raw_json",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_renders_exact_cell_context_beside_mixed_family_values",
+              "tests/unit/worker/test_private_report_renderers.py::test_csv_round_trip_manifest_formula_text_quotes_unicode_and_missing_values",
+              "tests/unit/worker/test_private_report_renderers.py::test_every_format_checks_artifact_capacity_and_closes_buffer",
+              "tests/unit/worker/test_private_report_renderers.py::test_every_format_preserves_effective_metric_metadata",
+              "tests/unit/worker/test_private_report_renderers.py::test_json_preserves_exact_cells_full_manifest_and_explicit_unavailable_states",
+              "tests/unit/worker/test_private_report_renderers.py::test_pdf_discloses_an_outside_period_snapshot_before_showing_totals",
+              "tests/unit/worker/test_private_report_renderers.py::test_renderer_refuses_missing_changed_or_corrupt_canonical_rows",
+              "tests/unit/worker/test_private_report_renderers.py::test_renderer_rejects_changed_profile_before_any_artifact_byte",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_contains_only_explicit_text_without_formulas_or_external_links",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_interruption_removes_private_scratch",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_never_interprets_literal_rich_xml_or_injected_cells",
+              "tests/unit/worker/test_report_text.py::test_formula_initiators_are_neutralized_without_dropping_original_text",
+              "tests/unit/worker/test_report_text.py::test_initial_spreadsheet_control_characters_are_neutralized",
+              "tests/unit/worker/test_report_text.py::test_safe_text_remains_unchanged"
+            ]
+          },
+          "P2-S24": {
+            "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-06-9e39767.json"
+            ],
+            "ci_state": "deferred_by_owner",
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              }
+            ],
+            "sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+            "test_nodes": [
+              "tests/integration/test_report_exports_postgres.py::test_activity_dividends_performance_and_targets_exports_match_canonical_producers",
+              "tests/integration/test_report_exports_postgres.py::test_plan_export_uses_a_real_finalized_revision_and_complete_audit_operands",
+              "tests/integration/test_report_exports_postgres.py::test_positions_and_xray_exports_include_real_values_and_all_three_formats",
+              "tests/integration/test_report_postgres.py::test_canonical_report_survives_new_service_and_private_download",
+              "tests/integration/test_report_postgres.py::test_capture_cannot_commit_unsealed",
+              "tests/integration/test_report_postgres.py::test_idempotency_preserves_pins_and_rejects_semantic_change",
+              "tests/integration/test_report_postgres.py::test_partial_manifest_and_heartbeat_fence_changes_cannot_commit",
+              "tests/integration/test_report_postgres.py::test_standalone_export_is_a_real_durable_job_and_alerts_is_rejected",
+              "tests/integration/test_report_references_postgres.py::test_unresolved_streamed_cell_proof_rolls_back_before_dispatch",
+              "tests/integration/test_report_type_matrix_postgres.py::test_contribution_plan_report_uses_a_real_finalized_revision",
+              "tests/integration/test_report_type_matrix_postgres.py::test_historical_report_type_matrix",
+              "tests/integration/test_report_type_matrix_postgres.py::test_snapshot_and_xray_report_types",
+              "tests/unit/domain/test_reports.py::test_chunk_partition_does_not_change_table_semantics",
+              "tests/unit/domain/test_reports.py::test_every_report_type_requires_its_actual_sections_and_references",
+              "tests/unit/domain/test_reports.py::test_financial_cells_reject_floats_bool_nonfinite_and_excess_scale",
+              "tests/unit/domain/test_reports.py::test_historical_coverage_base_requires_actual_complete_measure_triplet",
+              "tests/unit/domain/test_reports.py::test_manifest_and_capture_roundtrip_bind_the_same_canonical_sources",
+              "tests/unit/domain/test_reports.py::test_manifest_rejects_duplicate_license_and_reconciliation_identity",
+              "tests/unit/domain/test_reports.py::test_manifest_rejects_header_schema_profile_and_binding_tampering",
+              "tests/unit/domain/test_reports.py::test_manifest_rejects_unresolved_cell_references_before_sealing",
+              "tests/unit/domain/test_reports.py::test_manifest_rejects_unresolved_note_provenance_and_context_reconciliation",
+              "tests/unit/domain/test_reports.py::test_manifest_table_unavailable_reason_must_resolve",
+              "tests/unit/domain/test_reports.py::test_proof_order_canonicalizes_and_source_changes_change_manifest",
+              "tests/unit/domain/test_reports.py::test_reference_resolution_preserves_declared_empty_and_shared_sets",
+              "tests/unit/domain/test_reports.py::test_zero_missing_partial_and_exact_decimal_encoding_remain_distinct",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_attribution_capture_retains_exact_effects_and_full_selected_options",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_cash_flow_capture_preserves_external_signs_whole_window_totals_and_event_ids",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_composite_snapshot_binding_preserves_actual_header_or_explicit_absence",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_dividend_capture_keeps_zero_missing_gross_correction_and_exact_source_identity",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_monthly_and_annual_public_performance_and_provenance_are_complete_and_bounded",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_public_trace_keeps_event_fx_and_boundary_legs_without_mutating_daily_run",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_single_fund_capture_keeps_entity_aggregates_path_dimensions_and_actual_policy",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_unavailable_original_cash_retains_its_known_native_currency",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_xray_capture_includes_every_pair_beyond_public_subset_and_fits_manifest",
+              "tests/unit/persistence/test_report_canonical_capture.py::test_xray_capture_keeps_original_broker_currency_and_saved_operand_without_conversion",
+              "tests/unit/persistence/test_report_capture_plan_input.py::test_default_and_explicit_empty_eligibility_remain_distinct",
+              "tests/unit/persistence/test_report_capture_plan_input.py::test_full_plan_result_uses_distinct_writers_for_target_and_effective_constraints",
+              "tests/unit/persistence/test_report_capture_plan_input.py::test_mismatched_saved_input_digest_rejects_before_any_operand_copy",
+              "tests/unit/persistence/test_report_capture_plan_input.py::test_saved_original_money_fx_and_every_option_are_typed_and_hash_bound",
+              "tests/unit/persistence/test_report_snapshot_period.py::test_retrospective_period_keeps_the_actual_later_snapshot_valuation",
+              "tests/unit/persistence/test_report_snapshot_period.py::test_snapshot_or_requested_cutoff_cannot_introduce_future_knowledge",
+              "tests/unit/persistence/test_report_snapshot_quality.py::test_fresh_rows_do_not_upgrade_a_partial_snapshot_or_its_weight_denominator",
+              "tests/unit/persistence/test_report_snapshot_quality.py::test_snapshot_age_boundary_applies_to_all_position_and_cash_numeric_cells",
+              "tests/unit/persistence/test_report_snapshot_quality.py::test_snapshot_quality_does_not_turn_unavailable_values_into_zero_or_remove_real_zero",
+              "tests/unit/persistence/test_report_snapshot_quality.py::test_stale_snapshot_never_upgrades_stronger_intrinsic_row_degradation",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_analytics_precede_complete_proof_without_changing_manifest",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_attachment_has_no_actions_annotations_or_external_file_reference",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_embeds_exact_canonical_manifest_bytes_with_fixed_name_and_mime",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_provenance_is_readable_complete_and_does_not_print_raw_json",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_renders_exact_cell_context_beside_mixed_family_values",
+              "tests/unit/worker/test_private_report_renderers.py::test_csv_round_trip_manifest_formula_text_quotes_unicode_and_missing_values",
+              "tests/unit/worker/test_private_report_renderers.py::test_every_format_checks_artifact_capacity_and_closes_buffer",
+              "tests/unit/worker/test_private_report_renderers.py::test_every_format_preserves_effective_metric_metadata",
+              "tests/unit/worker/test_private_report_renderers.py::test_json_preserves_exact_cells_full_manifest_and_explicit_unavailable_states",
+              "tests/unit/worker/test_private_report_renderers.py::test_pdf_discloses_an_outside_period_snapshot_before_showing_totals",
+              "tests/unit/worker/test_private_report_renderers.py::test_renderer_refuses_missing_changed_or_corrupt_canonical_rows",
+              "tests/unit/worker/test_private_report_renderers.py::test_renderer_rejects_changed_profile_before_any_artifact_byte",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_contains_only_explicit_text_without_formulas_or_external_links",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_interruption_removes_private_scratch",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_never_interprets_literal_rich_xml_or_injected_cells",
+              "tests/unit/worker/test_report_proof_fragments.py::test_proof_fragments_reconstruct_all_rows_schema_and_hashes"
+            ]
+          },
+          "P2-S25": {
+            "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-06-9e39767.json"
+            ],
+            "ci_state": "deferred_by_owner",
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              }
+            ],
+            "sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+            "test_nodes": [
+              "tests/integration/test_report_dispatch_postgres.py::test_completed_job_ignores_late_final_publication_failure_and_acknowledgment",
+              "tests/integration/test_report_postgres.py::test_actual_source_proof_rejects_missing_licenses_and_unbound_children",
+              "tests/integration/test_report_postgres.py::test_artifact_grants_are_supplemental_bounded_and_immutable",
+              "tests/integration/test_report_postgres.py::test_current_reader_is_independent_of_the_disabled_job_initiator",
+              "tests/integration/test_report_postgres.py::test_current_source_permission_denies_before_payload_read",
+              "tests/integration/test_report_postgres.py::test_disabled_initiator_is_rejected_on_worker_claim",
+              "tests/integration/test_report_postgres.py::test_expiry_purges_all_copies_with_shared_budget_and_keeps_safe_tombstones",
+              "tests/integration/test_report_postgres.py::test_export_permission_is_rechecked_for_the_actual_xray_sources",
+              "tests/integration/test_report_postgres.py::test_future_effective_license_denial_after_render_prevents_publication",
+              "tests/integration/test_report_postgres.py::test_missing_durable_grants_rejects_before_capture",
+              "tests/integration/test_report_postgres.py::test_report_history_cursor_keeps_stable_membership_and_rechecks_current_grants",
+              "tests/integration/test_report_postgres.py::test_source_retention_removes_report_copies_before_source_completion",
+              "tests/integration/test_report_postgres.py::test_worker_reclaim_increments_fence_and_old_claim_cannot_publish",
+              "tests/integration/test_report_source_retention_postgres.py::test_historical_price_fx_expiry_removes_report_bytes_with_shared_budget",
+              "tests/integration/test_report_ttl_postgres.py::test_natural_report_ttl_denies_before_bounded_idempotent_physical_cleanup",
+              "tests/unit/worker/test_report_tasks.py::test_cancelled_child_and_spawn_failure_remove_owned_workspace",
+              "tests/unit/worker/test_report_tasks.py::test_dispatch_failure_returns_to_persistent_retry_without_celery_retry",
+              "tests/unit/worker/test_report_tasks.py::test_orphan_recovery_preserves_live_and_unrelated_workspaces",
+              "tests/unit/worker/test_report_tasks.py::test_real_renderer_child_returns_canonical_artifact_and_removes_scratch",
+              "tests/unit/worker/test_report_tasks.py::test_second_format_failure_never_publishes_first_format",
+              "tests/unit/worker/test_report_tasks.py::test_unclaimed_delivery_never_opens_document",
+              "tests/unit/worker/test_report_tasks.py::test_worker_publishes_all_requested_formats_once_then_closes_document"
+            ]
+          },
+          "P2-S26": {
+            "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-06-9e39767.json"
+            ],
+            "ci_state": "deferred_by_owner",
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              }
+            ],
+            "sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+            "test_nodes": [
+              "tests/integration/test_report_privacy_postgres.py::test_four_actual_formats_and_audits_exclude_private_source_and_grant_canaries",
+              "tests/security/test_export_url_artifacts.py::test_export_url_canary_absent_from_retained_source_and_available_artifacts",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_analytics_precede_complete_proof_without_changing_manifest",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_attachment_has_no_actions_annotations_or_external_file_reference",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_embeds_exact_canonical_manifest_bytes_with_fixed_name_and_mime",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_provenance_is_readable_complete_and_does_not_print_raw_json",
+              "tests/unit/worker/test_pdf_manifest.py::test_pdf_renders_exact_cell_context_beside_mixed_family_values"
+            ]
+          },
+          "P2-S27": {
+            "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-06-9e39767.json"
+            ],
+            "ci_state": "deferred_by_owner",
+            "commands": [
+              {
+                "command": "make validate",
+                "exit_code": 0
+              }
+            ],
+            "sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+            "test_nodes": [
+              "tests/integration/test_report_exports_postgres.py::test_activity_dividends_performance_and_targets_exports_match_canonical_producers",
+              "tests/integration/test_report_exports_postgres.py::test_plan_export_uses_a_real_finalized_revision_and_complete_audit_operands",
+              "tests/integration/test_report_exports_postgres.py::test_positions_and_xray_exports_include_real_values_and_all_three_formats",
+              "tests/unit/worker/test_private_report_renderers.py::test_csv_round_trip_manifest_formula_text_quotes_unicode_and_missing_values",
+              "tests/unit/worker/test_private_report_renderers.py::test_every_format_checks_artifact_capacity_and_closes_buffer",
+              "tests/unit/worker/test_private_report_renderers.py::test_every_format_preserves_effective_metric_metadata",
+              "tests/unit/worker/test_private_report_renderers.py::test_json_preserves_exact_cells_full_manifest_and_explicit_unavailable_states",
+              "tests/unit/worker/test_private_report_renderers.py::test_pdf_discloses_an_outside_period_snapshot_before_showing_totals",
+              "tests/unit/worker/test_private_report_renderers.py::test_renderer_refuses_missing_changed_or_corrupt_canonical_rows",
+              "tests/unit/worker/test_private_report_renderers.py::test_renderer_rejects_changed_profile_before_any_artifact_byte",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_contains_only_explicit_text_without_formulas_or_external_links",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_interruption_removes_private_scratch",
+              "tests/unit/worker/test_private_report_renderers.py::test_xlsx_never_interprets_literal_rich_xml_or_injected_cells",
+              "tests/unit/worker/test_report_proof_fragments.py::test_proof_fragments_reconstruct_all_rows_schema_and_hashes",
+              "tests/unit/worker/test_report_text.py::test_formula_initiators_are_neutralized_without_dropping_original_text",
+              "tests/unit/worker/test_report_text.py::test_initial_spreadsheet_control_characters_are_neutralized",
+              "tests/unit/worker/test_report_text.py::test_safe_text_remains_unchanged"
+            ]
           }
         }
       },
@@ -3025,524 +3535,72 @@
           "correction": "Corrected and accepted at f78c9d2917c3ce8c93f9ae5631390c59616abc82; the original candidate remains unaccepted."
         }
       ],
-      "implementation_in_progress": {
-        "work_package": "P2-06",
-        "state": "unaccepted_working_tree",
-        "starting_sha": "5ff85b4436ec9be886639e6e2cf0c722fc0c4a73",
-        "focused_verification": "Canonical capture, renderers, authorization, licensing, privacy and retention have passing focused observations. Six final lifecycle-audit/privacy PostgreSQL cases include genuine natural TTL denial and bounded idempotent physical cleanup. The later working remainder gate passed coverage, browser, documentation/security and build stages; clean exact-source package acceptance remains pending.",
-        "actual_capture": "All ten report types passed focused real PostgreSQL worker/download checks for all four formats, canonical values and manifest parity. These working-tree observations precede final lifecycle-audit regression checks and are not package acceptance.",
-        "pending": [
-          "clean exact-source make validate for the final implementation SHA",
-          "six-image build binding and eight actual source/history/image scans",
-          "fresh exact-source Compose runtime acceptance and verified cleanup",
-          "actual final-gate screenshot and fresh runtime PDF visual review"
-        ],
-        "resource_policy": "Serial verification in one task Compose project; one PostgreSQL container while sufficient; remove inactive task outputs at verification boundaries.",
-        "actual_exports": "Three focused PostgreSQL tests passed nine real export jobs covering seven backed datasets, both field sets and JSON/CSV/XLSX. Alerts remains unavailable before P2-07.",
-        "actual_browser": "Four focused API-backed report/export journeys and 86 pre-navigation working-gate browser checks passed. After the navigation correction, four final desktop journeys passed with ordinary pointer navigation and four mobile journeys passed before only the CSS change to its hidden desktop sidebar. Final-source acceptance and visual review remain pending.",
-        "interrupted_validation": "The first full working-tree make validate passed static checks, 1650 Python unit, 270 web unit, 34 property, 130 contract and 41 integration tests, then was deliberately interrupted with source unchanged to address a delayed terminal-job dispatch callback race identified by read-only review. This is not a passing full gate.",
-        "dispatch_race_regression": "Both report/export late eighth-publication-failure interleavings failed on unfixed production. A terminal-state guard preserves completed jobs and historical outboxes without inventing acknowledgments; the new regressions and related worker/lifecycle checks passed together (15 tests). The later working remainder gate passed; clean final-source acceptance remains pending.",
-        "integration_and_migration_observations": "The restarted full working-tree run passed all 262 integration tests, including the ten-type/four-format matrix, then failed one migration inventory assertion which omitted 0014. Only the test inventory and 0014 ancestry assertions changed; all 12 migration tests then passed, plus focused format/lint/type checks. The subsequent working remainder gate passed coverage/browser/security/build stages. The immutable final-source full gate remains pending.",
-        "source_canary_observation": "The remaining-stage security gate found a literal forbidden test marker in the new browser spec. Constructing the same marker from components matches existing browser fixtures and preserves the negative assertion/scanner. All 100 security tests passed after this test-only correction.",
-        "working_remainder_validation": {
-          "id": "p206-working-remainder-04",
-          "source_binding": "unaccepted_working_tree",
-          "baseline_sha": "5ff85b4436ec9be886639e6e2cf0c722fc0c4a73",
-          "command": [
-            "make",
-            "test-coverage",
-            "test-e2e",
-            "docs-check",
-            "security-check",
-            "build",
-            "container-build"
-          ],
-          "started_at_utc": "2026-09-09T18:26:18.102319+00:00",
-          "completed_at_utc": "2026-09-09T19:13:26.624376+00:00",
-          "duration_seconds": 2828.665,
-          "result": "passed",
-          "exit_code": 0,
-          "source_unchanged": true,
-          "isolated_coverage_tests_passed": 1914,
-          "isolated_coverage_duration_seconds": 311.56,
-          "service_migration_coverage_tests_passed": 277,
-          "service_migration_coverage_duration_seconds": 1796.99,
-          "combined_statement_branch_coverage_percent": 88,
-          "coverage_statements": 40588,
-          "coverage_missing_statements": 3504,
-          "coverage_branches": 11026,
-          "coverage_partial_branches": 2320,
-          "browser_tests_passed": 86,
-          "browser_summary_counts": [
-            50, 3, 3, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3
-          ],
-          "browser_count_derivation": "Sum the 17 completed ordinary Playwright summaries; exclude duplicate GitHub notice summaries.",
-          "remaining_stages_passed": [
-            "docs-check",
-            "security-check",
-            "build",
-            "container-build"
-          ],
-          "container_images_built": 6,
-          "retained_gate_record": "gates/p206-working-remainder-04.json",
-          "retained_log": "gates/p206-working-remainder-04.log",
-          "log_sha256": "451377908dd41f6ffce52cba3ace2be51016fe5ff8175dbb011dc595a4fc70b3",
-          "acceptance_claim": false,
-          "limitation": "Unaccepted working source before the subsequent navigation correction and CI timeout change; not a clean exact-SHA make validate. Prior failed/interrupted gate records remain separate."
-        },
-        "ci_postgres_budget": {
-          "workflow": ".github/workflows/phase-1-ci.yml",
-          "job": "postgres",
-          "previous_timeout_minutes": 40,
-          "timeout_minutes": 90,
-          "state": "applied_to_unaccepted_working_tree",
-          "estimated_job_minutes": 69.18,
-          "estimate_basis": "P206 observed local isolated/service coverage durations scaled by the corresponding prior accepted P205 local-to-CI phase ratios, with observed prior setup/cleanup overhead.",
-          "estimate_is_measured_p206_ci": false,
-          "test_selection_and_coverage_unchanged": true,
-          "retained_assessment": "p206-ci-timeout-budget-02.json",
-          "assessment_sha256": "f4d3a9a40f0d3276d39aa9b250ca4fea34a71d19e5923c3da2d478499cebf74c"
-        },
-        "latest_scoped_housekeeping": {
-          "observed_at_utc": "2026-09-10T09:22:19.931623+00:00",
-          "path": "apps/web/.next/dev",
-          "active_consumers": [],
-          "removed_logical_bytes": 505727234,
-          "removed_allocated_bytes": 507727872,
-          "remaining_bytes": 0,
-          "preserved": [
-            "production build outputs",
-            "dependencies",
-            "source",
-            "retained evidence"
-          ],
-          "retained_receipt": "housekeeping/p206-remainder04-dev-cleanup.json",
-          "receipt_sha256": "9ae32d1815bda21d5852a3f7e3f7707538b2eaa77d8c88c9837fb0f53fcbaea9"
-        },
-        "navigation_correction": {
-          "source_binding": "unaccepted_working_tree",
-          "focused_unit_tests_passed": 45,
-          "web_unit_tests_passed": 301,
-          "web_unit_files_passed": 37,
-          "web_unit_duration_seconds": 25.55,
-          "desktop_browser_tests_passed": 4,
-          "desktop_browser_duration_seconds": 31.6,
-          "desktop_scope": "Final navigation and sidebar CSS with ordinary pointer activation.",
-          "mobile_browser_tests_passed": 4,
-          "mobile_browser_duration_seconds": 38.7,
-          "mobile_scope": "Actual mobile menu pointer activation; precedes only overflow-y:auto on the desktop sidebar, which is hidden at this breakpoint.",
-          "final_checks_passed": [
-            "web lint",
-            "web typecheck",
-            "production web build"
-          ],
-          "failed_history_preserved": [
-            "original default-restoration regression",
-            "controlled coalescing fixture mismatch",
-            "test-only TypeScript compatibility errors",
-            "accessible selector mismatch",
-            "actual sidebar viewport failure"
-          ],
-          "retained_receipt": "p206-navigation-change/final-working-review.json",
-          "receipt_sha256": "d11a891a747cf71b29f6de353645ec79fabea3fd57a1e64ecb038150da4b5ac3",
-          "working_screenshots": {
-            "file": "p206-browser-working/navigation-final-20260910T094543Z/screenshots.json",
-            "sha256": "c95880d7a876834e43dfca7f4cd0db127d618ef47a2ea9aec587c7f38dec712a"
-          },
-          "working_screenshot_review": {
-            "result": "reviewed_with_documented_full_page_capture_limitation",
-            "images_opened": 8,
-            "record": {
-              "file": "p206-browser-working/navigation-final-20260910T094543Z/root-working-review.json",
-              "sha256": "27ff2011b5d236f6fc42ad58d44deb15cae1acd27959e8a6df4f41ca24c908b4"
-            },
-            "scope": "Working images only; final exact-source screenshot review remains required."
-          },
-          "acceptance_claim": false
-        },
-        "source_assertion_inventory": {
-          "file": "p206-acceptance-assertions-v8.json",
-          "sha256": "910367142bd69ec2c6d4b17e353aae9c1791e38ce9c8534ef7185a3ff537498c",
-          "python_function_selectors": 85,
-          "python_test_files": 20,
-          "web_source_selectors": 15,
-          "source_files": 26,
-          "production_source_files": 44,
-          "validation": "Current file hashes and source selector existence checked with stdlib only; no test execution inferred.",
-          "acceptance_claim": false,
-          "previous_inventory_preserved": [
-            "p206-acceptance-assertions-v4.json",
-            "p206-acceptance-assertions-v5.json",
-            "p206-acceptance-assertions-v6.json",
-            "p206-acceptance-assertions-v7.json"
-          ]
-        },
-        "working_openapi_compatibility": {
-          "existing_operations": 70,
-          "changed_existing_operations": 0,
-          "added_operations": 11,
-          "current_operations": 81,
-          "record": {
-            "file": "p206-openapi-compatibility-01.json",
-            "sha256": "b21ce3e5628c2842cda70dade7e36ae15e77fa0654fc025d9171a1546842cfbd"
-          },
-          "source_binding": "unaccepted_working_tree"
-        },
-        "implementation_candidate": {
-          "source_sha": "8636ab4be5a3801d126246cc66322355b65b69b4",
-          "state": "unaccepted_ci_failure_and_interrupted_exact_gate",
-          "ci_observed_at_utc": "2026-09-10T10:02:16+00:00",
-          "ci": {
-            "documentation": {
-              "run_id": 34463544398,
-              "status": "completed",
-              "conclusion": "success",
-              "record": {
-                "file": "p206-ci-8636ab4/20260910T100216Z-docs.json",
-                "sha256": "331596ba31ebd929a568f114da778aca175bf89998ac153b546d5dae7f44bc42"
-              }
-            },
-            "security": {
-              "run_id": 34463544422,
-              "status": "completed",
-              "conclusion": "success",
-              "record": {
-                "file": "p206-ci-8636ab4/20260910T100216Z-security.json",
-                "sha256": "24f9e06bb2d4f8b8527bd207289eae2a6455d5c9ba19a5e287199157af00a477"
-              }
-            },
-            "quality": {
-              "run_id": 34463544455,
-              "status": "in_progress_at_observation",
-              "conclusion": null,
-              "record": {
-                "file": "p206-ci-8636ab4/20260910T100216Z-quality.json",
-                "sha256": "b460cdae73673e00c1da800621815cea93250762b823af19227b4a65daeb31e1"
-              },
-              "failed_job_id": 102826721764,
-              "failed_job": "node-unit",
-              "web_tests_passed": 300,
-              "web_tests_failed": 1,
-              "cause": "The test using a 2 MiB +1 byte Uint8Array deep-equality assertion took 6773ms and exceeded the unchanged 5000ms test timeout. Navigation tests passed.",
-              "failure_record": {
-                "file": "p206-ci-8636ab4/node-unit-failure.json",
-                "sha256": "15778f43b7fb4e11093b260fd086d2bb538cadec09b1b256c7497bb398b19688"
-              }
-            }
-          },
-          "exact_gate": {
-            "id": "p206-exact-8636ab4-validate-01",
-            "result": "failed",
-            "exit_code": 2,
-            "duration_seconds": 217.295,
-            "source_unchanged": true,
-            "termination": "deliberate SIGINT of inspected integration pytest; fixture cleanup completed",
-            "python_unit_tests_passed": 1650,
-            "web_unit_tests_passed": 301,
-            "property_tests_passed": 34,
-            "contract_tests_passed": 130,
-            "partial_integration_tests_passed": 32,
-            "partial_integration_deselected": 1929,
-            "partial_integration_duration_seconds": 74.79,
-            "gate_record": {
-              "file": "gates/p206-exact-8636ab4-validate-01.json",
-              "sha256": "9bd711c76ede84920d9c51bb3b52dad4c12d51bd2be12f7e543ab93f0ad4a47b"
-            },
-            "interruption_record": {
-              "file": "gates/p206-exact-8636ab4-interruption.json",
-              "sha256": "11db57a966d98449183e9d93ecd2a4569a5b6f8057d9650c2c98759a534fdbbe"
-            }
-          },
-          "correction": {
-            "state": "focused_verified_unaccepted_working_test_correction",
-            "scope": "Test-only native full-byte equality, preserving actual 2 MiB +1 payload, all auth/stream/digest assertions, production code and default timeout.",
-            "file": "apps/web/tests/report-client.test.ts",
-            "sha256": "1597f035c8f37462aa39bad3a4a024862715ef09abf353fb10ff61f0f048344a",
-            "observed_local": {
-              "logical_cpus": 1,
-              "original_focused_passed": 1,
-              "original_focused_skipped": 16,
-              "original_large_test_ms": 2676,
-              "original_ci_timeout_reproduced_locally": false,
-              "corrected_file_passed": 17,
-              "corrected_file_duration_seconds": 0.528,
-              "corrected_large_test_ms": 9,
-              "all_web_passed": 301,
-              "all_web_files": 37,
-              "all_web_duration_seconds": 29.88,
-              "lint": "passed",
-              "typecheck": "passed"
-            },
-            "verification_record": {
-              "file": "p206-report-client-comparison/verification.json",
-              "sha256": "6d4b6222b13f5f9f0bafed0aaf9b6d1f9fec915f22a45bd01876cc1859c7acef"
-            },
-            "candidate_correction_record": {
-              "file": "p206-exact-8636ab4-correction-01.json",
-              "sha256": "f5e0f36cbaf48badaef9fed286f15fc1a42a0815289deee56df947b2eefa957f"
-            },
-            "replacement_exact_source_acceptance": "pending"
-          },
-          "acceptance_claim": false
-        },
-        "browser_navigation_candidate": {
-          "source_sha": "e145229491cddff37c58eb86eef7cf120b1956c7",
-          "state": "unaccepted_ci_browser_failure_and_interrupted_exact_gate",
-          "ci": {
-            "quality_run_id": 34464507609,
-            "failed_browser_job_id": 102830066079,
-            "failed_project": "api-chromium-mobile",
-            "failed_assertion": "Invalid report selection absent after 5000ms",
-            "query_iteration": "not recorded in CI log",
-            "artifacts_available": false,
-            "node_unit_passed": 301,
-            "documentation_run_id": 34464507525,
-            "documentation_conclusion": "success",
-            "security_run_id": 34464507575,
-            "security_conclusion": "success",
-            "failure_record": {
-              "file": "p206-ci-e145229/playwright-failure.json",
-              "sha256": "e72d1b1eccc5e838e39ecc13de7162ec718324228f48e0b03000bb839d11b637"
-            }
-          },
-          "exact_gate": {
-            "id": "p206-exact-e145229-validate-01",
-            "result": "failed",
-            "exit_code": 2,
-            "duration_seconds": 1579.701,
-            "source_unchanged": true,
-            "termination": "deliberate SIGINT of isolated coverage pytest after complete integration, migration and security layers",
-            "python_unit_passed": 1650,
-            "web_unit_passed": 301,
-            "property_passed": 34,
-            "contract_passed": 130,
-            "integration_passed": 262,
-            "integration_seconds": 1367.22,
-            "migration_passed": 12,
-            "security_passed": 100,
-            "partial_isolated_coverage_passed": 629,
-            "coverage_complete": false,
-            "gate_record": {
-              "file": "gates/p206-exact-e145229-validate-01.json",
-              "sha256": "18cc8319a65f74d9e0139a820833ea0d67c4952be954c03fbe6038857f45791f"
-            },
-            "interruption_record": {
-              "file": "gates/p206-exact-e145229-interruption.json",
-              "sha256": "a8b58662280db2252fc2eb9ce69eea2aa34fd2a92ef0182ce2341ba133f35237"
-            }
-          },
-          "correction": {
-            "state": "focused_verified_unaccepted_working_test_correction",
-            "scope": "Observe native history readiness and actual report/export form transitions before each invalid URL; preserve every rejection and recovery assertion and existing timeouts/retries. Label each invalid-query test step.",
-            "original_mobile_passed": 1,
-            "original_ci_failure_reproduced_locally": false,
-            "diagnosis": "Source-supported initialization-race hypothesis; CI provided no trace or DOM to establish its root cause.",
-            "desktop_passed": 4,
-            "desktop_seconds": 40.0,
-            "mobile_passed": 4,
-            "mobile_seconds": 39.6,
-            "prettier": "passed",
-            "web_lint": "passed",
-            "web_typecheck": "passed",
-            "verification_record": {
-              "file": "p206-report-navigation-readiness/verification.json",
-              "sha256": "80586b2ef6e524c94757f1f14441d17bc9dbb9c8b10403c416dd3330c2c31b0d"
-            },
-            "candidate_correction_record": {
-              "file": "p206-exact-e145229-correction-01.json",
-              "sha256": "218f1a491da8efdc2ed28442cd350796e505218788af8a6a1d1fadbe17aa5281"
-            },
-            "replacement_exact_source_acceptance": "pending"
-          },
-          "acceptance_claim": false
-        },
-        "housekeeping_observations": {
-          "docker_cache": {
-            "obsolete_cache_records_removed": 24,
-            "docker_reported_reclaimed": "4.906GB",
-            "exact_bytes": null,
-            "obsolete_build_history_records_removed": 44,
-            "record": {
-              "file": "p206-housekeeping-cleanup-20260910T095004Z/receipt.json",
-              "sha256": "3ff1460d484fc660ab6f5aaa89746378058a6b83b1041e8804d73eb745f0d767"
-            }
-          },
-          "latest_browser_cleanup": {
-            "successful_traces_removed": 6,
-            "trace_bytes_removed": 19938678,
-            "inactive_next_dev_logical_bytes_removed": 209401131,
-            "record": {
-              "file": "p206-report-navigation-readiness/cleanup-receipt.json",
-              "sha256": "e4ae8cb10c3b75f3646f94a515a1cdfb9d4238caac1bc41d48fb88874900d28f"
-            }
-          },
-          "exact_gate_boundary": {
-            "logical_file_bytes_removed": 521701768,
-            "allocated_file_bytes_removed": 525402112,
-            "scope": "Inactive Next dev output, redundant accepted P205 extracted source verified against retained tar, one obsolete task pyc. Accepted evidence, archive, source and dependencies preserved.",
-            "record": {
-              "file": "housekeeping/p206-exact-93ce926-generated-cleanup.json",
-              "sha256": "fe7c85b031fad4e914db73832c9ac004f919aac0a7447a6e5d61bb6f436d750a"
-            }
-          }
-        },
-        "pdf_quality_candidate": {
-          "source_sha": "93ce926bce4d3f1f35137dd4ee0b1f14d88fd0bc",
-          "state": "unaccepted_pdf_quality_overstatement_despite_passed_automated_gates",
-          "acceptance_claim": false,
-          "local_full_gate": {
-            "result": "passed",
-            "duration_seconds": 4395.367,
-            "isolated_coverage": 1914,
-            "service_coverage": 277,
-            "coverage_percent": 88,
-            "web_unit": 301,
-            "browser": 90
-          },
-          "ci": {
-            "quality": 34468332521,
-            "documentation": 34468332516,
-            "security": 34468332475,
-            "all_conclusions": "success"
-          },
-          "scans": {
-            "source_history_image_count": 8,
-            "result": "passed"
-          },
-          "runtime": {
-            "result": "passed",
-            "duration_seconds": 169.889905,
-            "privacy_tables": 186,
-            "privacy_rows": 8061,
-            "task_container_volume_network_cleanup": "passed"
-          },
-          "visual_review": {
-            "browser_images_opened": 8,
-            "pdf_pages_opened": [1, 2, 3, 9, 13, 14],
-            "pdf_pages_total": 14,
-            "finding": "Four snapshot report capture sites override effective stale snapshot quality with stored fresh position/cash quality, including derived allocation weights. Values and currencies are unchanged; numeric quality is overstated.",
-            "result": "failed_quality_metadata_review"
-          },
-          "record": {
-            "file": "p206-exact-93ce926-correction-01.json",
-            "sha256": "ade4a5c42cae3fbf66bea96d879a056cfcb42c416a268869d96235ce873020b3"
-          },
-          "correction": {
-            "state": "focused_verified_working_correction",
-            "scope": "Four numeric capture sites compose intrinsic and effective snapshot quality under existing severity; no financial arithmetic, method or public schema change.",
-            "red": {
-              "failed": 3,
-              "passed": 5
-            },
-            "green": {
-              "new_regression_cases_passed": 8,
-              "affected_unit_cases_passed": 34,
-              "real_postgres_four_format_case_passed": 1,
-              "security_cases_passed": 100,
-              "semgrep_findings": 0,
-              "python_typecheck_files": 468
-            },
-            "verification": {
-              "file": "p206-snapshot-quality-precommit-verification.json",
-              "sha256": "32bebfc4de7f3ca9d3f63974c58d1c6db578a972d4b1c933244817d1823272a0"
-            },
-            "replacement_exact_source_acceptance": "pending"
-          }
-        },
-        "pdf_context_candidate": {
-          "source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
-          "state": "unaccepted_pdf_visible_cell_context_mismatch_despite_passed_local_automated_gates",
-          "acceptance_claim": false,
-          "local_full_gate": {
-            "result": "passed",
-            "duration_seconds": 4808.569,
-            "isolated_coverage": 1922,
-            "service_coverage": 277,
-            "coverage_percent": 88,
-            "web_unit": 301,
-            "browser": 90
-          },
-          "scans": {
-            "source_history_image_count": 8,
-            "result": "passed"
-          },
-          "runtime": {
-            "result": "passed",
-            "duration_seconds": 167.514469,
-            "privacy_tables": 186,
-            "privacy_rows": 8061,
-            "task_container_volume_network_cleanup": "passed"
-          },
-          "visual_review": {
-            "browser_images_opened": 8,
-            "pdf_pages_opened": [1, 2, 3, 9, 13, 14],
-            "pdf_pages_total": 14,
-            "result": "failed_visible_cell_context_review",
-            "finding": "A reconciliation boolean retains its own canonical cell context, but the PDF prints only the snapshot row default as its source. Coverage and inline proof appendices also omit nondecimal cell context overrides. Captured values and attachment remain intact."
-          },
-          "record": {
-            "file": "p206-exact-a2f2e3c-correction-01.json",
-            "sha256": "3dc645c25d58afcb0440458bd12c9a7901a28ee8e93fe98c5004301e9544e90c"
-          },
-          "correction": {
-            "state": "focused_verified_working_correction",
-            "scope": "PDF presentation resolves explicit differing cell contexts for all kinds and labels the row context as a default, including coverage and inline proof appendices. No canonical capture, financial method, value or metric metadata inheritance change.",
-            "replacement_exact_source_acceptance": "pending",
-            "red": {
-              "new_regression_cases_failed": 3
-            },
-            "green": {
-              "affected_unit_cases_passed": 26,
-              "real_postgres_four_format_case_passed": 1,
-              "security_cases_passed": 100,
-              "semgrep_findings": 0,
-              "python_typecheck_files": 468
-            },
-            "verification": {
-              "file": "p206-pdf-context-precommit-verification.json",
-              "sha256": "1d442ab9c2174e23c74fbd381bf250fb549b029ac5a591a32298f6b395b9ac89"
-            }
-          }
-        },
-        "resource_housekeeping": {
-          "latest_boundary": {
-            "logical_file_bytes_removed": 495021938,
-            "allocated_file_bytes_removed": 498982912,
-            "obsolete_build_records_removed": 12,
-            "record": {
-              "file": "housekeeping/p206-a2f2e3c-obsolete-artifacts-cleanup-execution-01.json",
-              "sha256": "e4a3bb00d7b1666ce14d40da089c500cd9f4d7a2cb1caaddb626f2e41f427a8a"
-            }
-          }
-        }
-      },
       "ci_deferral": {
-        "status": "deferred_by_owner",
         "authorized_at_source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
-        "recorded_at_utc": "2026-09-10T12:49:51.175758+00:00",
-        "scope": "Continue the remaining Phase2 implementation and local verification without requiring GitHub Actions while account limits block execution. Verify GitHub Actions later when limits reset.",
-        "owner_instruction_verbatim": "No, proceed with the implementation without guthub actions. We will verify them when limits reset. I dont want to pay more, so for now ignore them.",
-        "local_validation_required": true,
-        "verification_after_limits_reset": "pending",
-        "ci_pass_claim": false,
         "billing_or_spending_changes_authorized": false,
+        "ci_pass_claim": false,
+        "current_acceptance_ci": {
+          "artifact": "docs/implementation/evidence/phase-2-p2-06-9e39767.json",
+          "current_observation_pointer": "/ci/current_source",
+          "finalized_artifact_sha256": "f206c73040d0e5eb3eb80d9434101990b638ba6c8987460f65b385adfd715692",
+          "historical_runs_pointer": "/ci/historical_runs",
+          "source_ancestry_pointer": "/ci/source_ancestry",
+          "source_sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb"
+        },
+        "finalized_owner_decision": {
+          "artifact": "docs/implementation/evidence/phase-2-p2-06-9e39767.json",
+          "json_pointer": "/ci/owner_decision",
+          "original_source_sha256": "9273a51af64a6ecf5e3934fff5a71182c22434aca29bdd1c0cdbf66221c8f73a"
+        },
+        "historical_startup_failure": {
+          "documentation_run": 34478450265,
+          "executed_steps": 0,
+          "finalized_record": {
+            "artifact": "docs/implementation/evidence/phase-2-p2-06-9e39767.json",
+            "json_pointer": "/ci/startup_failure",
+            "original_source_sha256": "d8b06d26289bb1862ddc8f3e5f7a1084511788d4c93551319730e4feedbee154"
+          },
+          "quality_run": 34478450252,
+          "record": {
+            "file": "p206-ci-a2f2e3c/startup-failure-receipt.json",
+            "sha256": "d8b06d26289bb1862ddc8f3e5f7a1084511788d4c93551319730e4feedbee154"
+          },
+          "result": "all_three_failed_before_execution_account_restriction",
+          "security_run": 34478450202,
+          "source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40"
+        },
+        "local_validation_required": true,
         "original_owner_decision": {
           "file": "owner-ci-deferral-20260910.json",
           "sha256": "9273a51af64a6ecf5e3934fff5a71182c22434aca29bdd1c0cdbf66221c8f73a"
         },
-        "historical_startup_failure": {
-          "source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
-          "quality_run": 34478450252,
-          "security_run": 34478450202,
-          "documentation_run": 34478450265,
-          "executed_steps": 0,
-          "result": "all_three_failed_before_execution_account_restriction",
-          "record": {
-            "file": "p206-ci-a2f2e3c/startup-failure-receipt.json",
-            "sha256": "d8b06d26289bb1862ddc8f3e5f7a1084511788d4c93551319730e4feedbee154"
-          }
-        },
-        "record_location": "Original hash-bound records retained in the task evidence root; relative file names are external evidence references."
+        "owner_instruction_verbatim": "No, proceed with the implementation without guthub actions. We will verify them when limits reset. I dont want to pay more, so for now ignore them.",
+        "portable_binding_note": "Existing file names/hash pairs retain their external historical meaning. The finalized main artifact contains portable projections; original_source_sha256 binds raw external bytes, not transformed embedded JSON. No raw private-path CI files are copied.",
+        "record_location": "Original hash-bound records retained in the task evidence root; relative file names are external evidence references.",
+        "recorded_at_utc": "2026-09-10T12:49:51.175758+00:00",
+        "scope": "Continue the remaining Phase2 implementation and local verification without requiring GitHub Actions while account limits block execution. Verify GitHub Actions later when limits reset.",
+        "status": "deferred_by_owner",
+        "verification_after_limits_reset": "pending"
+      },
+      "implementation_history": [
+        {
+          "artifact": "docs/implementation/evidence/phase-2-p2-06-9e39767-implementation-history.json",
+          "sha256": "c0833d7203f220557f3d7eea5136408cacb83ffe233522fe71cdce92093267db",
+          "source_sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+          "work_package": "P2-06"
+        }
+      ],
+      "post_p206_housekeeping": {
+        "result": "passed",
+        "receipt_sha256": "0f0945a22d189f7dd0575c63ddfda4ca7100ddb454708fffbc5b98c78d71385c",
+        "obsolete_build_records_removed": 28,
+        "obsolete_image_ids_already_absent": 6,
+        "images_deleted": 0,
+        "logical_file_bytes_removed": 514771216,
+        "allocated_file_and_directory_bytes_removed": 522256384,
+        "task_stack_verified_absent": true,
+        "current_images_records_and_accepted_evidence_preserved": true,
+        "global_prune_used": false
       }
     },
     "phase_3": {

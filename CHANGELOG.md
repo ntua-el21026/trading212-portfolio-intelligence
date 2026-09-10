@@ -6,16 +6,19 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Phase 2 reporting
 
+- Accept P206 locally at `9e39767b408b38203d88d6e5b41bf0bc1265adfb` with complete exact-source local gates, scans, runtime/restart/cleanup and scoped screenshot/PDF review. GitHub Actions remains explicitly deferred by the owner across remaining Phase 2; the three startup failures are preserved and no CI pass is claimed. See the [retained assertion map](docs/implementation/evidence/phase-2-p2-06-9e39767.json).
+- Deliver ten report types across PDF/CSV/JSON/XLSX and seven backed standalone export datasets through bounded private jobs/downloads; alerts export awaits P207.
+
 - Correct PDF source labels for cells with an explicit context different from their
   row default, including nondecimal coverage and inline proof values. Canonical
-  captured provenance remains intact; corrected-source acceptance is pending.
+  captured provenance remains intact; corrected 9e39767 local acceptance is recorded above with CI explicitly deferred.
 - Record the owner's Phase 2 GitHub Actions deferral until account limits reset,
   retaining full local verification and historical startup failures without a CI pass claim.
 - Preserve effective snapshot quality on numeric report/export positions, prices and
   allocation weights, including cash, while retaining stronger intrinsic degradation.
   The correction leaves amounts and previously sealed artifacts unchanged. The prior
   candidate passed automated gates but remains unaccepted after the PDF review found
-  overstated freshness; corrected-source acceptance is required.
+  overstated freshness; corrected 9e39767 local acceptance is recorded above with CI explicitly deferred.
 
 ### Phase 2 Portfolio X-ray
 
@@ -229,7 +232,7 @@ Live is disabled and untested, not another Phase 1 gate.
 
 Virtual Pies/targets, contribution optimization, full performance/benchmarks, X-ray, reports, alerts, and premium analytical interfaces.
 
-Status: `in_progress`; P2-01 through P2-05 complete (5/10 packages, 50%). Thirteen of 29 local rows and twenty-two of 40 scenarios are complete; shared S34 and S38 remain in progress.
+Status: `in_progress`; P2-01 through P2-06 locally complete (6/10 packages, 60%). Sixteen of 29 local rows and twenty-six of 40 scenarios are complete; shared S34 and S38 remain in progress. GitHub Actions is deferred by the owner across remaining Phase 2; required local verification continues.
 
 ### [1.0.0] — Phase 3: Premium Intelligence and Productization
 

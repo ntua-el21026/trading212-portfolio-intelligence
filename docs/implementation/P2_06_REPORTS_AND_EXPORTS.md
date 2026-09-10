@@ -1,9 +1,6 @@
 # P2-06 Reports and Exports
 
-**Specification:** implementation contract. **Implementation:** in progress; no accepted
-P2-06 package result is claimed by this document. P2-05 closure was pushed
-at `5ff85b4436ec9be886639e6e2cf0c722fc0c4a73`. P2-05 application acceptance is pinned to
-`7b102663ea193b4668924a7252180731954f4b00`; its evidence is separate.
+**Specification:** implementation contract. **Implementation:** scoped local acceptance at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`; GitHub Actions is explicitly deferred by the owner, not passed. P205 historical evidence remains separate. See the [P206 exact-source local assertion map](evidence/phase-2-p2-06-9e39767.json) and the acceptance scope below.
 
 This contract implements the owner's continuing Phase 2 assignment under the
 [design authority order](../DESIGN_INDEX.md), [ADR-0014](../adr/ADR-0014-PRIVATE-REPRODUCIBLE-REPORTS.md),
@@ -16,12 +13,18 @@ choices left open by those authorities without relaxing their limits or broker b
 All analytical data comes from the same canonical application/analytics families used
 by API and MCP. Trading 212 retains exactly its ten approved GET capabilities.
 
-Scope is a working vertical for ten report types, four report formats, seven currently
+Scope is an implemented vertical for ten report types, four report formats, seven currently
 backed standalone datasets, two field sets and three standalone formats, including
 private generation/status/manifest/download through API, web and MCP where authorized.
 The fixed eighth export dataset, `alerts`, is assigned to the real P2-07 producer below;
 that release obligation is not claimed complete by a P2-06 placeholder. P2-08/P2-09 do
 not defer functioning P2-06 interfaces, and P2-10 owns the final release-wide restart gate.
+
+## Scoped local acceptance and CI deferral
+
+P2-06 has scoped local acceptance at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. GitHub Actions is deferred by explicit owner instruction; no CI pass is claimed. The complete required local gates, exact source bindings and deferred startup observations are retained in the P206 acceptance evidence. Remaining Phase 2 implementation continues under that recorded deferral until the owner resumes CI verification.
+
+The [finalized artifact](evidence/phase-2-p2-06-9e39767.json) closes P2-RPT-001/002/003 and S24–27 only. Ten report types across four formats, seven backed standalone datasets and the tested field-set/format matrix retain their actual assertion and execution scope. Prior development observations below remain historical. No all-page visual review, PDF/UA certification or operational PDF byte identity is inferred.
 
 ## 1. Ownership and smallest implementation surface
 
@@ -1336,7 +1339,7 @@ scenario complete from reporting-only tests.
 - Product/runtime: desktop/mobile generation, status, manifest, authenticated download
   and unavailable/failed/expired states; original job/input/manifest/artifact identity
   across worker/dispatcher restart without duplicate finalized work. Run meaningful
-  focused checks, full required gates and actual CI/scans/runtime at the final source.
+  focused checks, full required local gates and scans/runtime at the final source; actual CI is temporarily deferred under the explicit owner decision above.
 
 Verification remains serial on the laptop. Reuse one task Compose project and start
 only required services, using one container when sufficient. Remove inspected task-
@@ -1352,8 +1355,7 @@ interruption, migration-test inventory correction and source-canary fixture corr
 those failed records remain preserved. This run precedes the final navigation correction
 and is not clean exact-SHA acceptance. The PostgreSQL CI budget is 90 minutes, informed
 by measured local coverage and an estimated 69.18-minute CI job using prior accepted
-phase ratios; no tests or coverage were removed. Final-source validation, CI/scans,
-fresh runtime/cleanup and actual screenshot/PDF review remain required.
+phase ratios; no tests or coverage were removed. At that historical development boundary, final-source validation, CI/scans, fresh runtime/cleanup and screenshot/PDF review were still pending. Current local acceptance and the distinct CI deferral are recorded above.
 
 The later default-restoration/coalesced-history correction passed 45 focused unit
 cases and all 301 web unit tests. Four real desktop browser journeys passed after

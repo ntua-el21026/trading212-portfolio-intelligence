@@ -1,0 +1,530 @@
+{
+  "captured_from_source_sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+  "json_pointer": "/phases/phase_2/implementation_in_progress",
+  "kind": "unchanged_historical_status_projection",
+  "schema_version": "1.0.0",
+  "source_file": "PROJECT_PROGRESS.json",
+  "source_file_sha256": "5060a4544122654ea396ebf11338f8978ae746bf6682cf3cc1e11580705068b6",
+  "value": {
+    "actual_browser": "Four focused API-backed report/export journeys and 86 pre-navigation working-gate browser checks passed. After the navigation correction, four final desktop journeys passed with ordinary pointer navigation and four mobile journeys passed before only the CSS change to its hidden desktop sidebar. Final-source acceptance and visual review remain pending.",
+    "actual_capture": "All ten report types passed focused real PostgreSQL worker/download checks for all four formats, canonical values and manifest parity. These working-tree observations precede final lifecycle-audit regression checks and are not package acceptance.",
+    "actual_exports": "Three focused PostgreSQL tests passed nine real export jobs covering seven backed datasets, both field sets and JSON/CSV/XLSX. Alerts remains unavailable before P2-07.",
+    "browser_navigation_candidate": {
+      "acceptance_claim": false,
+      "ci": {
+        "artifacts_available": false,
+        "documentation_conclusion": "success",
+        "documentation_run_id": 34464507525,
+        "failed_assertion": "Invalid report selection absent after 5000ms",
+        "failed_browser_job_id": 102830066079,
+        "failed_project": "api-chromium-mobile",
+        "failure_record": {
+          "file": "p206-ci-e145229/playwright-failure.json",
+          "sha256": "e72d1b1eccc5e838e39ecc13de7162ec718324228f48e0b03000bb839d11b637"
+        },
+        "node_unit_passed": 301,
+        "quality_run_id": 34464507609,
+        "query_iteration": "not recorded in CI log",
+        "security_conclusion": "success",
+        "security_run_id": 34464507575
+      },
+      "correction": {
+        "candidate_correction_record": {
+          "file": "p206-exact-e145229-correction-01.json",
+          "sha256": "218f1a491da8efdc2ed28442cd350796e505218788af8a6a1d1fadbe17aa5281"
+        },
+        "desktop_passed": 4,
+        "desktop_seconds": 40.0,
+        "diagnosis": "Source-supported initialization-race hypothesis; CI provided no trace or DOM to establish its root cause.",
+        "mobile_passed": 4,
+        "mobile_seconds": 39.6,
+        "original_ci_failure_reproduced_locally": false,
+        "original_mobile_passed": 1,
+        "prettier": "passed",
+        "replacement_exact_source_acceptance": "pending",
+        "scope": "Observe native history readiness and actual report/export form transitions before each invalid URL; preserve every rejection and recovery assertion and existing timeouts/retries. Label each invalid-query test step.",
+        "state": "focused_verified_unaccepted_working_test_correction",
+        "verification_record": {
+          "file": "p206-report-navigation-readiness/verification.json",
+          "sha256": "80586b2ef6e524c94757f1f14441d17bc9dbb9c8b10403c416dd3330c2c31b0d"
+        },
+        "web_lint": "passed",
+        "web_typecheck": "passed"
+      },
+      "exact_gate": {
+        "contract_passed": 130,
+        "coverage_complete": false,
+        "duration_seconds": 1579.701,
+        "exit_code": 2,
+        "gate_record": {
+          "file": "gates/p206-exact-e145229-validate-01.json",
+          "sha256": "18cc8319a65f74d9e0139a820833ea0d67c4952be954c03fbe6038857f45791f"
+        },
+        "id": "p206-exact-e145229-validate-01",
+        "integration_passed": 262,
+        "integration_seconds": 1367.22,
+        "interruption_record": {
+          "file": "gates/p206-exact-e145229-interruption.json",
+          "sha256": "a8b58662280db2252fc2eb9ce69eea2aa34fd2a92ef0182ce2341ba133f35237"
+        },
+        "migration_passed": 12,
+        "partial_isolated_coverage_passed": 629,
+        "property_passed": 34,
+        "python_unit_passed": 1650,
+        "result": "failed",
+        "security_passed": 100,
+        "source_unchanged": true,
+        "termination": "deliberate SIGINT of isolated coverage pytest after complete integration, migration and security layers",
+        "web_unit_passed": 301
+      },
+      "source_sha": "e145229491cddff37c58eb86eef7cf120b1956c7",
+      "state": "unaccepted_ci_browser_failure_and_interrupted_exact_gate"
+    },
+    "ci_postgres_budget": {
+      "assessment_sha256": "f4d3a9a40f0d3276d39aa9b250ca4fea34a71d19e5923c3da2d478499cebf74c",
+      "estimate_basis": "P206 observed local isolated/service coverage durations scaled by the corresponding prior accepted P205 local-to-CI phase ratios, with observed prior setup/cleanup overhead.",
+      "estimate_is_measured_p206_ci": false,
+      "estimated_job_minutes": 69.18,
+      "job": "postgres",
+      "previous_timeout_minutes": 40,
+      "retained_assessment": "p206-ci-timeout-budget-02.json",
+      "state": "applied_to_unaccepted_working_tree",
+      "test_selection_and_coverage_unchanged": true,
+      "timeout_minutes": 90,
+      "workflow": ".github/workflows/phase-1-ci.yml"
+    },
+    "dispatch_race_regression": "Both report/export late eighth-publication-failure interleavings failed on unfixed production. A terminal-state guard preserves completed jobs and historical outboxes without inventing acknowledgments; the new regressions and related worker/lifecycle checks passed together (15 tests). The later working remainder gate passed; clean final-source acceptance remains pending.",
+    "focused_verification": "Canonical capture, renderers, authorization, licensing, privacy and retention have passing focused observations. Six final lifecycle-audit/privacy PostgreSQL cases include genuine natural TTL denial and bounded idempotent physical cleanup. The later working remainder gate passed coverage, browser, documentation/security and build stages; clean exact-source package acceptance remains pending.",
+    "housekeeping_observations": {
+      "docker_cache": {
+        "docker_reported_reclaimed": "4.906GB",
+        "exact_bytes": null,
+        "obsolete_build_history_records_removed": 44,
+        "obsolete_cache_records_removed": 24,
+        "record": {
+          "file": "p206-housekeeping-cleanup-20260910T095004Z/receipt.json",
+          "sha256": "3ff1460d484fc660ab6f5aaa89746378058a6b83b1041e8804d73eb745f0d767"
+        }
+      },
+      "exact_gate_boundary": {
+        "allocated_file_bytes_removed": 525402112,
+        "logical_file_bytes_removed": 521701768,
+        "record": {
+          "file": "housekeeping/p206-exact-93ce926-generated-cleanup.json",
+          "sha256": "fe7c85b031fad4e914db73832c9ac004f919aac0a7447a6e5d61bb6f436d750a"
+        },
+        "scope": "Inactive Next dev output, redundant accepted P205 extracted source verified against retained tar, one obsolete task pyc. Accepted evidence, archive, source and dependencies preserved."
+      },
+      "latest_browser_cleanup": {
+        "inactive_next_dev_logical_bytes_removed": 209401131,
+        "record": {
+          "file": "p206-report-navigation-readiness/cleanup-receipt.json",
+          "sha256": "e4ae8cb10c3b75f3646f94a515a1cdfb9d4238caac1bc41d48fb88874900d28f"
+        },
+        "successful_traces_removed": 6,
+        "trace_bytes_removed": 19938678
+      }
+    },
+    "implementation_candidate": {
+      "acceptance_claim": false,
+      "ci": {
+        "documentation": {
+          "conclusion": "success",
+          "record": {
+            "file": "p206-ci-8636ab4/20260910T100216Z-docs.json",
+            "sha256": "331596ba31ebd929a568f114da778aca175bf89998ac153b546d5dae7f44bc42"
+          },
+          "run_id": 34463544398,
+          "status": "completed"
+        },
+        "quality": {
+          "cause": "The test using a 2 MiB +1 byte Uint8Array deep-equality assertion took 6773ms and exceeded the unchanged 5000ms test timeout. Navigation tests passed.",
+          "conclusion": null,
+          "failed_job": "node-unit",
+          "failed_job_id": 102826721764,
+          "failure_record": {
+            "file": "p206-ci-8636ab4/node-unit-failure.json",
+            "sha256": "15778f43b7fb4e11093b260fd086d2bb538cadec09b1b256c7497bb398b19688"
+          },
+          "record": {
+            "file": "p206-ci-8636ab4/20260910T100216Z-quality.json",
+            "sha256": "b460cdae73673e00c1da800621815cea93250762b823af19227b4a65daeb31e1"
+          },
+          "run_id": 34463544455,
+          "status": "in_progress_at_observation",
+          "web_tests_failed": 1,
+          "web_tests_passed": 300
+        },
+        "security": {
+          "conclusion": "success",
+          "record": {
+            "file": "p206-ci-8636ab4/20260910T100216Z-security.json",
+            "sha256": "24f9e06bb2d4f8b8527bd207289eae2a6455d5c9ba19a5e287199157af00a477"
+          },
+          "run_id": 34463544422,
+          "status": "completed"
+        }
+      },
+      "ci_observed_at_utc": "2026-09-10T10:02:16+00:00",
+      "correction": {
+        "candidate_correction_record": {
+          "file": "p206-exact-8636ab4-correction-01.json",
+          "sha256": "f5e0f36cbaf48badaef9fed286f15fc1a42a0815289deee56df947b2eefa957f"
+        },
+        "file": "apps/web/tests/report-client.test.ts",
+        "observed_local": {
+          "all_web_duration_seconds": 29.88,
+          "all_web_files": 37,
+          "all_web_passed": 301,
+          "corrected_file_duration_seconds": 0.528,
+          "corrected_file_passed": 17,
+          "corrected_large_test_ms": 9,
+          "lint": "passed",
+          "logical_cpus": 1,
+          "original_ci_timeout_reproduced_locally": false,
+          "original_focused_passed": 1,
+          "original_focused_skipped": 16,
+          "original_large_test_ms": 2676,
+          "typecheck": "passed"
+        },
+        "replacement_exact_source_acceptance": "pending",
+        "scope": "Test-only native full-byte equality, preserving actual 2 MiB +1 payload, all auth/stream/digest assertions, production code and default timeout.",
+        "sha256": "1597f035c8f37462aa39bad3a4a024862715ef09abf353fb10ff61f0f048344a",
+        "state": "focused_verified_unaccepted_working_test_correction",
+        "verification_record": {
+          "file": "p206-report-client-comparison/verification.json",
+          "sha256": "6d4b6222b13f5f9f0bafed0aaf9b6d1f9fec915f22a45bd01876cc1859c7acef"
+        }
+      },
+      "exact_gate": {
+        "contract_tests_passed": 130,
+        "duration_seconds": 217.295,
+        "exit_code": 2,
+        "gate_record": {
+          "file": "gates/p206-exact-8636ab4-validate-01.json",
+          "sha256": "9bd711c76ede84920d9c51bb3b52dad4c12d51bd2be12f7e543ab93f0ad4a47b"
+        },
+        "id": "p206-exact-8636ab4-validate-01",
+        "interruption_record": {
+          "file": "gates/p206-exact-8636ab4-interruption.json",
+          "sha256": "11db57a966d98449183e9d93ecd2a4569a5b6f8057d9650c2c98759a534fdbbe"
+        },
+        "partial_integration_deselected": 1929,
+        "partial_integration_duration_seconds": 74.79,
+        "partial_integration_tests_passed": 32,
+        "property_tests_passed": 34,
+        "python_unit_tests_passed": 1650,
+        "result": "failed",
+        "source_unchanged": true,
+        "termination": "deliberate SIGINT of inspected integration pytest; fixture cleanup completed",
+        "web_unit_tests_passed": 301
+      },
+      "source_sha": "8636ab4be5a3801d126246cc66322355b65b69b4",
+      "state": "unaccepted_ci_failure_and_interrupted_exact_gate"
+    },
+    "integration_and_migration_observations": "The restarted full working-tree run passed all 262 integration tests, including the ten-type/four-format matrix, then failed one migration inventory assertion which omitted 0014. Only the test inventory and 0014 ancestry assertions changed; all 12 migration tests then passed, plus focused format/lint/type checks. The subsequent working remainder gate passed coverage/browser/security/build stages. The immutable final-source full gate remains pending.",
+    "interrupted_validation": "The first full working-tree make validate passed static checks, 1650 Python unit, 270 web unit, 34 property, 130 contract and 41 integration tests, then was deliberately interrupted with source unchanged to address a delayed terminal-job dispatch callback race identified by read-only review. This is not a passing full gate.",
+    "latest_scoped_housekeeping": {
+      "active_consumers": [],
+      "observed_at_utc": "2026-09-10T09:22:19.931623+00:00",
+      "path": "apps/web/.next/dev",
+      "preserved": [
+        "production build outputs",
+        "dependencies",
+        "source",
+        "retained evidence"
+      ],
+      "receipt_sha256": "9ae32d1815bda21d5852a3f7e3f7707538b2eaa77d8c88c9837fb0f53fcbaea9",
+      "remaining_bytes": 0,
+      "removed_allocated_bytes": 507727872,
+      "removed_logical_bytes": 505727234,
+      "retained_receipt": "housekeeping/p206-remainder04-dev-cleanup.json"
+    },
+    "navigation_correction": {
+      "acceptance_claim": false,
+      "desktop_browser_duration_seconds": 31.6,
+      "desktop_browser_tests_passed": 4,
+      "desktop_scope": "Final navigation and sidebar CSS with ordinary pointer activation.",
+      "failed_history_preserved": [
+        "original default-restoration regression",
+        "controlled coalescing fixture mismatch",
+        "test-only TypeScript compatibility errors",
+        "accessible selector mismatch",
+        "actual sidebar viewport failure"
+      ],
+      "final_checks_passed": [
+        "web lint",
+        "web typecheck",
+        "production web build"
+      ],
+      "focused_unit_tests_passed": 45,
+      "mobile_browser_duration_seconds": 38.7,
+      "mobile_browser_tests_passed": 4,
+      "mobile_scope": "Actual mobile menu pointer activation; precedes only overflow-y:auto on the desktop sidebar, which is hidden at this breakpoint.",
+      "receipt_sha256": "d11a891a747cf71b29f6de353645ec79fabea3fd57a1e64ecb038150da4b5ac3",
+      "retained_receipt": "p206-navigation-change/final-working-review.json",
+      "source_binding": "unaccepted_working_tree",
+      "web_unit_duration_seconds": 25.55,
+      "web_unit_files_passed": 37,
+      "web_unit_tests_passed": 301,
+      "working_screenshot_review": {
+        "images_opened": 8,
+        "record": {
+          "file": "p206-browser-working/navigation-final-20260910T094543Z/root-working-review.json",
+          "sha256": "27ff2011b5d236f6fc42ad58d44deb15cae1acd27959e8a6df4f41ca24c908b4"
+        },
+        "result": "reviewed_with_documented_full_page_capture_limitation",
+        "scope": "Working images only; final exact-source screenshot review remains required."
+      },
+      "working_screenshots": {
+        "file": "p206-browser-working/navigation-final-20260910T094543Z/screenshots.json",
+        "sha256": "c95880d7a876834e43dfca7f4cd0db127d618ef47a2ea9aec587c7f38dec712a"
+      }
+    },
+    "pdf_context_candidate": {
+      "acceptance_claim": false,
+      "correction": {
+        "green": {
+          "affected_unit_cases_passed": 26,
+          "python_typecheck_files": 468,
+          "real_postgres_four_format_case_passed": 1,
+          "security_cases_passed": 100,
+          "semgrep_findings": 0
+        },
+        "red": {
+          "new_regression_cases_failed": 3
+        },
+        "replacement_exact_source_acceptance": "pending",
+        "scope": "PDF presentation resolves explicit differing cell contexts for all kinds and labels the row context as a default, including coverage and inline proof appendices. No canonical capture, financial method, value or metric metadata inheritance change.",
+        "state": "focused_verified_working_correction",
+        "verification": {
+          "file": "p206-pdf-context-precommit-verification.json",
+          "sha256": "1d442ab9c2174e23c74fbd381bf250fb549b029ac5a591a32298f6b395b9ac89"
+        }
+      },
+      "local_full_gate": {
+        "browser": 90,
+        "coverage_percent": 88,
+        "duration_seconds": 4808.569,
+        "isolated_coverage": 1922,
+        "result": "passed",
+        "service_coverage": 277,
+        "web_unit": 301
+      },
+      "record": {
+        "file": "p206-exact-a2f2e3c-correction-01.json",
+        "sha256": "3dc645c25d58afcb0440458bd12c9a7901a28ee8e93fe98c5004301e9544e90c"
+      },
+      "runtime": {
+        "duration_seconds": 167.514469,
+        "privacy_rows": 8061,
+        "privacy_tables": 186,
+        "result": "passed",
+        "task_container_volume_network_cleanup": "passed"
+      },
+      "scans": {
+        "result": "passed",
+        "source_history_image_count": 8
+      },
+      "source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+      "state": "unaccepted_pdf_visible_cell_context_mismatch_despite_passed_local_automated_gates",
+      "visual_review": {
+        "browser_images_opened": 8,
+        "finding": "A reconciliation boolean retains its own canonical cell context, but the PDF prints only the snapshot row default as its source. Coverage and inline proof appendices also omit nondecimal cell context overrides. Captured values and attachment remain intact.",
+        "pdf_pages_opened": [
+          1,
+          2,
+          3,
+          9,
+          13,
+          14
+        ],
+        "pdf_pages_total": 14,
+        "result": "failed_visible_cell_context_review"
+      }
+    },
+    "pdf_quality_candidate": {
+      "acceptance_claim": false,
+      "ci": {
+        "all_conclusions": "success",
+        "documentation": 34468332516,
+        "quality": 34468332521,
+        "security": 34468332475
+      },
+      "correction": {
+        "green": {
+          "affected_unit_cases_passed": 34,
+          "new_regression_cases_passed": 8,
+          "python_typecheck_files": 468,
+          "real_postgres_four_format_case_passed": 1,
+          "security_cases_passed": 100,
+          "semgrep_findings": 0
+        },
+        "red": {
+          "failed": 3,
+          "passed": 5
+        },
+        "replacement_exact_source_acceptance": "pending",
+        "scope": "Four numeric capture sites compose intrinsic and effective snapshot quality under existing severity; no financial arithmetic, method or public schema change.",
+        "state": "focused_verified_working_correction",
+        "verification": {
+          "file": "p206-snapshot-quality-precommit-verification.json",
+          "sha256": "32bebfc4de7f3ca9d3f63974c58d1c6db578a972d4b1c933244817d1823272a0"
+        }
+      },
+      "local_full_gate": {
+        "browser": 90,
+        "coverage_percent": 88,
+        "duration_seconds": 4395.367,
+        "isolated_coverage": 1914,
+        "result": "passed",
+        "service_coverage": 277,
+        "web_unit": 301
+      },
+      "record": {
+        "file": "p206-exact-93ce926-correction-01.json",
+        "sha256": "ade4a5c42cae3fbf66bea96d879a056cfcb42c416a268869d96235ce873020b3"
+      },
+      "runtime": {
+        "duration_seconds": 169.889905,
+        "privacy_rows": 8061,
+        "privacy_tables": 186,
+        "result": "passed",
+        "task_container_volume_network_cleanup": "passed"
+      },
+      "scans": {
+        "result": "passed",
+        "source_history_image_count": 8
+      },
+      "source_sha": "93ce926bce4d3f1f35137dd4ee0b1f14d88fd0bc",
+      "state": "unaccepted_pdf_quality_overstatement_despite_passed_automated_gates",
+      "visual_review": {
+        "browser_images_opened": 8,
+        "finding": "Four snapshot report capture sites override effective stale snapshot quality with stored fresh position/cash quality, including derived allocation weights. Values and currencies are unchanged; numeric quality is overstated.",
+        "pdf_pages_opened": [
+          1,
+          2,
+          3,
+          9,
+          13,
+          14
+        ],
+        "pdf_pages_total": 14,
+        "result": "failed_quality_metadata_review"
+      }
+    },
+    "pending": [
+      "clean exact-source make validate for the final implementation SHA",
+      "six-image build binding and eight actual source/history/image scans",
+      "fresh exact-source Compose runtime acceptance and verified cleanup",
+      "actual final-gate screenshot and fresh runtime PDF visual review"
+    ],
+    "resource_housekeeping": {
+      "latest_boundary": {
+        "allocated_file_bytes_removed": 498982912,
+        "logical_file_bytes_removed": 495021938,
+        "obsolete_build_records_removed": 12,
+        "record": {
+          "file": "housekeeping/p206-a2f2e3c-obsolete-artifacts-cleanup-execution-01.json",
+          "sha256": "e4a3bb00d7b1666ce14d40da089c500cd9f4d7a2cb1caaddb626f2e41f427a8a"
+        }
+      }
+    },
+    "resource_policy": "Serial verification in one task Compose project; one PostgreSQL container while sufficient; remove inactive task outputs at verification boundaries.",
+    "source_assertion_inventory": {
+      "acceptance_claim": false,
+      "file": "p206-acceptance-assertions-v8.json",
+      "previous_inventory_preserved": [
+        "p206-acceptance-assertions-v4.json",
+        "p206-acceptance-assertions-v5.json",
+        "p206-acceptance-assertions-v6.json",
+        "p206-acceptance-assertions-v7.json"
+      ],
+      "production_source_files": 44,
+      "python_function_selectors": 85,
+      "python_test_files": 20,
+      "sha256": "910367142bd69ec2c6d4b17e353aae9c1791e38ce9c8534ef7185a3ff537498c",
+      "source_files": 26,
+      "validation": "Current file hashes and source selector existence checked with stdlib only; no test execution inferred.",
+      "web_source_selectors": 15
+    },
+    "source_canary_observation": "The remaining-stage security gate found a literal forbidden test marker in the new browser spec. Constructing the same marker from components matches existing browser fixtures and preserves the negative assertion/scanner. All 100 security tests passed after this test-only correction.",
+    "starting_sha": "5ff85b4436ec9be886639e6e2cf0c722fc0c4a73",
+    "state": "unaccepted_working_tree",
+    "work_package": "P2-06",
+    "working_openapi_compatibility": {
+      "added_operations": 11,
+      "changed_existing_operations": 0,
+      "current_operations": 81,
+      "existing_operations": 70,
+      "record": {
+        "file": "p206-openapi-compatibility-01.json",
+        "sha256": "b21ce3e5628c2842cda70dade7e36ae15e77fa0654fc025d9171a1546842cfbd"
+      },
+      "source_binding": "unaccepted_working_tree"
+    },
+    "working_remainder_validation": {
+      "acceptance_claim": false,
+      "baseline_sha": "5ff85b4436ec9be886639e6e2cf0c722fc0c4a73",
+      "browser_count_derivation": "Sum the 17 completed ordinary Playwright summaries; exclude duplicate GitHub notice summaries.",
+      "browser_summary_counts": [
+        50,
+        3,
+        3,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3
+      ],
+      "browser_tests_passed": 86,
+      "combined_statement_branch_coverage_percent": 88,
+      "command": [
+        "make",
+        "test-coverage",
+        "test-e2e",
+        "docs-check",
+        "security-check",
+        "build",
+        "container-build"
+      ],
+      "completed_at_utc": "2026-09-09T19:13:26.624376+00:00",
+      "container_images_built": 6,
+      "coverage_branches": 11026,
+      "coverage_missing_statements": 3504,
+      "coverage_partial_branches": 2320,
+      "coverage_statements": 40588,
+      "duration_seconds": 2828.665,
+      "exit_code": 0,
+      "id": "p206-working-remainder-04",
+      "isolated_coverage_duration_seconds": 311.56,
+      "isolated_coverage_tests_passed": 1914,
+      "limitation": "Unaccepted working source before the subsequent navigation correction and CI timeout change; not a clean exact-SHA make validate. Prior failed/interrupted gate records remain separate.",
+      "log_sha256": "451377908dd41f6ffce52cba3ace2be51016fe5ff8175dbb011dc595a4fc70b3",
+      "remaining_stages_passed": [
+        "docs-check",
+        "security-check",
+        "build",
+        "container-build"
+      ],
+      "result": "passed",
+      "retained_gate_record": "gates/p206-working-remainder-04.json",
+      "retained_log": "gates/p206-working-remainder-04.log",
+      "service_migration_coverage_duration_seconds": 1796.99,
+      "service_migration_coverage_tests_passed": 277,
+      "source_binding": "unaccepted_working_tree",
+      "source_unchanged": true,
+      "started_at_utc": "2026-09-09T18:26:18.102319+00:00"
+    }
+  },
+  "value_sha256": "52323d171ef8ccec87282b317cd6eb3e3a85ba99e2d8179c463af8b8b87de4f7"
+}

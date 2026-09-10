@@ -76,6 +76,8 @@ at `7b102663ea193b4668924a7252180731954f4b00`; the remaining roadmap is unchange
 - exact parity with canonical API calculations;
 - accountant-oriented activity worksheet without tax-advice claims.
 
+[P206 local acceptance](evidence/phase-2-p2-06-9e39767.json) is bound to `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. GitHub Actions is deferred by the owner for remaining Phase 2; required local verification and all product boundaries remain. The alerts export producer remains P207 scope.
+
 ### P2-07 — Alerts and rules engine
 
 - versioned rules for drift, concentration, cash, data freshness, reconciliation, dividend/activity, and provider failure;

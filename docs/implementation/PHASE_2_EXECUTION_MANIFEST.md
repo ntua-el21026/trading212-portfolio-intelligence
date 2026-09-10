@@ -40,8 +40,7 @@ and applied after P2-04 evidence closure, before dependent code. ADR-0017 fixes
 shared physical row/byte budgets, bounded path proofs and the complete position-
 then-cash real UUID ordering. This authority amendment does not complete evidence;
 P2-05 has [scoped exact-source acceptance](P2_05_PORTFOLIO_XRAY.md) at
-`7b102663ea193b4668924a7252180731954f4b00`. P2-06 is in progress from synchronized
-`5ff85b4436ec9be886639e6e2cf0c722fc0c4a73`; exact-source acceptance remains pending.
+`7b102663ea193b4668924a7252180731954f4b00`. P2-06 has [scoped local acceptance](evidence/phase-2-p2-06-9e39767.json) at `9e39767b408b38203d88d6e5b41bf0bc1265adfb` following synchronized P205 closure. Its complete required local evidence is accepted with GitHub Actions explicitly deferred by the owner; no CI pass is claimed. The retained deferral remains active across remaining Phase 2 packages until owner resumption.
 P2-07 through P2-10 and Phase 3 stay not_started. P2-08 owns intelligence-data-quality/company actual-weight enrichment;
 company target drift still requires a separately pinned entity-target basis.
 

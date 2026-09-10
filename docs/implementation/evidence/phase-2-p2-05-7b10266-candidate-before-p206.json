@@ -1,0 +1,50 @@
+{
+  "captured_from_source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+  "json_pointer": "/phases/phase_2/candidate_validation",
+  "kind": "unchanged_historical_status_projection",
+  "schema_version": "1.0.0",
+  "source_file": "PROJECT_PROGRESS.json",
+  "source_file_sha256": "f9099c4c328ba19e91db273266f81e1a7e63adeb06dbb9eb4d9a3177f25f935d",
+  "value": {
+    "acceptance": "accepted",
+    "accepted_at_utc": "2026-09-09T13:31:39.958501+00:00",
+    "artifacts": [
+      "docs/implementation/evidence/phase-2-p2-05-7b10266.json",
+      "docs/implementation/evidence/phase-2-p2-05-7b10266-runtime.json",
+      "docs/implementation/evidence/phase-2-p2-05-7b10266-security.json",
+      "docs/implementation/evidence/phase-2-p2-05-7b10266-compatibility.json",
+      "docs/implementation/evidence/phase-2-p2-05-7b10266-screenshots.json",
+      "docs/implementation/evidence/phase-2-p2-05-7b10266-counts.json"
+    ],
+    "browser_tests_passed_locally": 76,
+    "combined_python_coverage_with_branch_measurement_percent": 88,
+    "failed_runtime_artifacts": [
+      "docs/implementation/evidence/phase-2-p2-05-7b10266-failed-runtime-001.json"
+    ],
+    "github_documentation_result": "passed",
+    "github_documentation_run": 34347516068,
+    "github_quality_result": "passed",
+    "github_quality_run": 34347516142,
+    "github_security_result": "passed",
+    "github_security_run": 34347516074,
+    "isolated_python_tests_passed": 1642,
+    "known_p208_limitations": "The configured synthetic runtime does not establish default unconfigured multi-account UI acceptance. Route/global-header account consistency, sticky-header section positioning, mobile labels/table presentation and remaining P2-08/S39 scope stay outstanding. The earlier P2-04 snapshot retains its original account-count and runtime observations.",
+    "make_validate": "passed",
+    "make_validate_duration_seconds": 2339.747,
+    "previous_accepted_candidate_validation_artifact": "docs/implementation/evidence/phase-2-p2-04-2a7c89a-candidate-validation-snapshot.json",
+    "retained_tables_identical": 167,
+    "reviewed_screenshots": 8,
+    "runtime": "passed",
+    "runtime_attempt": 2,
+    "runtime_cleanup_verified": true,
+    "runtime_duration_seconds": 146.262241,
+    "runtime_observation_sha256": "2ab196f1c97fb04d44743005220b660563aa66338f8c0300a9684c44bd3548b4",
+    "scope": "Scoped synthetic P2-05 acceptance only; shared S34/S38, later packages and full Phase 2 remain incomplete.",
+    "service_backed_python_tests_passed": 234,
+    "source_history_image_scans_passed": 8,
+    "source_sha": "7b102663ea193b4668924a7252180731954f4b00",
+    "web_unit_tests_passed": 223,
+    "work_package": "P2-05"
+  },
+  "value_sha256": "267abba8f6ce13e8da1d16d61b3f14f478e4769697c0c8aea490aa1aa83a54d9"
+}

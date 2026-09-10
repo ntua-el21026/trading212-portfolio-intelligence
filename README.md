@@ -49,7 +49,7 @@ API, web, workers, reports, and MCP tools share the same canonical domain, autho
 | Phase | Release | Outcome | Status |
 |---|---:|---|---|
 | 1. Trusted Foundation | `0.1.0` | Monorepo, domain/persistence, GET-only Trading 212 ingestion, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, CI and operations | Implementation complete; 24 local acceptance rows complete; external gates remain |
-| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 through P2-05 complete, 5/10 packages (50%) |
+| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 through P2-06 locally complete, 6/10 packages (60%); CI temporarily deferred by owner |
 | 3. Premium Intelligence & Productization | `1.0.0` | Advanced risk/scenarios/projections/goals, research cockpit, rich ChatGPT UI, PWA polish, premium providers and production hardening | Not started |
 
 ## Phase 1 technical baseline
@@ -97,9 +97,7 @@ records this increment's evidence boundary.
 
 P2-04 historical performance, benchmark, attribution, income and cash-flow intelligence has [scoped exact-source acceptance](docs/implementation/P2_04_HISTORICAL_INTELLIGENCE.md) at `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`. P2-05 now has [scoped X-ray acceptance](docs/implementation/P2_05_PORTFOLIO_XRAY.md)
 at `7b102663ea193b4668924a7252180731954f4b00`: exact direct/indirect exposure, licensed sources, overlap and
-canonical API/web/MCP projections. Phase 2 has thirteen of 29 local rows and
-twenty-two of 40 scenarios complete. S34/S38 remain partial; P2-06 through P2-10
-and shared report/release predicates remain required.
+canonical API/web/MCP projections. P206 adds private canonical reports and exports with [scoped local acceptance](docs/implementation/evidence/phase-2-p2-06-9e39767.json) at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. Phase 2 has sixteen of 29 local rows and twenty-six of 40 scenarios complete. S34/S38 remain partial; P207–P210 and shared release predicates remain required. GitHub Actions is deferred by explicit owner instruction across remaining Phase 2 until the owner resumes verification; no current CI pass is claimed. The alerts export dataset still requires P207.
 
 Source-backed known P2-08 limitations remain: the complete seed now has four accounts including the X-ray fixture, but Compose does not forward the documented T212PI_ACCOUNT_ID setting to web; unconfigured multi-account overview startup is not accepted. The accepted runtime used an explicit baseline-account scratch override. The global header must respect the authorized route account. Sticky-header section positioning, readable mobile labels and table presentation remain P2-08/S39 follow-up work. Configured runtime acceptance does not prove default unconfigured multi-account UI behavior.
 

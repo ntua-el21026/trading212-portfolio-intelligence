@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-10T14:22:49.284057+00:00",
+  "updated_at": "2026-09-10T16:05:33.647538+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -83,7 +83,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "P2-06_reports_exports_exact_local_acceptance",
+  "next_gate": "P2-07_alerts_and_rules_implementation_with_owner_deferred_ci",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -159,6 +159,13 @@
       "sha": "e258f54bb03a958f7847b310ee882b7f4a54686f",
       "status": "complete",
       "artifact": "docs/implementation/evidence/phase-2-p2-03-e258f54.json"
+    },
+    "P2-06": {
+      "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+      "artifact": "docs/implementation/evidence/phase-2-p2-06-9e39767.json",
+      "ci_state": "deferred_by_owner",
+      "sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+      "status": "complete"
     }
   },
   "phase_2_failed_candidate_history": [
@@ -254,31 +261,50 @@
     }
   ],
   "phase_2_ci_deferral": {
-    "status": "deferred_by_owner",
     "authorized_at_source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
-    "recorded_at_utc": "2026-09-10T12:49:51.175758+00:00",
-    "scope": "Continue the remaining Phase2 implementation and local verification without requiring GitHub Actions while account limits block execution. Verify GitHub Actions later when limits reset.",
-    "owner_instruction_verbatim": "No, proceed with the implementation without guthub actions. We will verify them when limits reset. I dont want to pay more, so for now ignore them.",
-    "local_validation_required": true,
-    "verification_after_limits_reset": "pending",
-    "ci_pass_claim": false,
     "billing_or_spending_changes_authorized": false,
+    "ci_pass_claim": false,
+    "current_acceptance_ci": {
+      "artifact": "docs/implementation/evidence/phase-2-p2-06-9e39767.json",
+      "current_observation_pointer": "/ci/current_source",
+      "finalized_artifact_sha256": "f206c73040d0e5eb3eb80d9434101990b638ba6c8987460f65b385adfd715692",
+      "historical_runs_pointer": "/ci/historical_runs",
+      "source_ancestry_pointer": "/ci/source_ancestry",
+      "source_sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb"
+    },
+    "finalized_owner_decision": {
+      "artifact": "docs/implementation/evidence/phase-2-p2-06-9e39767.json",
+      "json_pointer": "/ci/owner_decision",
+      "original_source_sha256": "9273a51af64a6ecf5e3934fff5a71182c22434aca29bdd1c0cdbf66221c8f73a"
+    },
+    "historical_startup_failure": {
+      "documentation_run": 34478450265,
+      "executed_steps": 0,
+      "finalized_record": {
+        "artifact": "docs/implementation/evidence/phase-2-p2-06-9e39767.json",
+        "json_pointer": "/ci/startup_failure",
+        "original_source_sha256": "d8b06d26289bb1862ddc8f3e5f7a1084511788d4c93551319730e4feedbee154"
+      },
+      "quality_run": 34478450252,
+      "record": {
+        "file": "p206-ci-a2f2e3c/startup-failure-receipt.json",
+        "sha256": "d8b06d26289bb1862ddc8f3e5f7a1084511788d4c93551319730e4feedbee154"
+      },
+      "result": "all_three_failed_before_execution_account_restriction",
+      "security_run": 34478450202,
+      "source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40"
+    },
+    "local_validation_required": true,
     "original_owner_decision": {
       "file": "owner-ci-deferral-20260910.json",
       "sha256": "9273a51af64a6ecf5e3934fff5a71182c22434aca29bdd1c0cdbf66221c8f73a"
     },
-    "historical_startup_failure": {
-      "source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
-      "quality_run": 34478450252,
-      "security_run": 34478450202,
-      "documentation_run": 34478450265,
-      "executed_steps": 0,
-      "result": "all_three_failed_before_execution_account_restriction",
-      "record": {
-        "file": "p206-ci-a2f2e3c/startup-failure-receipt.json",
-        "sha256": "d8b06d26289bb1862ddc8f3e5f7a1084511788d4c93551319730e4feedbee154"
-      }
-    },
-    "record_location": "Original hash-bound records retained in the task evidence root; relative file names are external evidence references."
+    "owner_instruction_verbatim": "No, proceed with the implementation without guthub actions. We will verify them when limits reset. I dont want to pay more, so for now ignore them.",
+    "portable_binding_note": "Existing file names/hash pairs retain their external historical meaning. The finalized main artifact contains portable projections; original_source_sha256 binds raw external bytes, not transformed embedded JSON. No raw private-path CI files are copied.",
+    "record_location": "Original hash-bound records retained in the task evidence root; relative file names are external evidence references.",
+    "recorded_at_utc": "2026-09-10T12:49:51.175758+00:00",
+    "scope": "Continue the remaining Phase2 implementation and local verification without requiring GitHub Actions while account limits block execution. Verify GitHub Actions later when limits reset.",
+    "status": "deferred_by_owner",
+    "verification_after_limits_reset": "pending"
   }
 }
