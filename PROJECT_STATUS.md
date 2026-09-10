@@ -325,6 +325,32 @@ all 301 web tests then passed in 29.88 seconds, followed by lint and typecheck.
 The failed CI log and interrupted gate are preserved. Replacement exact-source
 acceptance remains pending.
 
+Candidate `e145229491cddff37c58eb86eef7cf120b1956c7` passed all 301 CI web unit
+tests and its Documentation and Security workflows, but its mobile report-navigation
+test failed in Quality run `34464507609`: the invalid-selection notice was absent
+at the unchanged five-second assertion deadline. CI retained no trace or query
+iteration. Native browser history can be changed before Next installs its client
+history bridge; this is a source-supported setup-race hypothesis, not a proved
+CI root cause. The original local mobile test passed and did not reproduce it.
+
+The local exact-source gate passed 1,650 Python unit, 301 web unit, 34 property,
+130 contract, 262 integration, 12 migration and 100 security tests. It was then
+deliberately interrupted during isolated coverage, ending with exit 2 after
+1,579.701 seconds and clean unchanged source; 629 coverage tests had passed.
+Neither completed coverage nor full validation is claimed for that run.
+The browser test now observes the native history bridge and verifies real
+report/export form transitions before each of the four invalid URL cases,
+with per-query step labels and every rejection/recovery assertion preserved.
+The corrected full report suite passed all four tests on desktop (40.0 seconds)
+and mobile (39.6 seconds); Prettier, web lint and web typecheck passed.
+Replacement exact-source acceptance remains pending.
+
+Scoped cleanup removed 24 inspected obsolete Docker cache records (Docker reported
+4.906 GB reclaimed) and 44 obsolete build records. The latest browser boundary
+removed six successful traces (19,938,678 bytes) and 209,401,131 logical bytes of
+inactive Next development output after checking active consumers. Retained receipts
+bind these removals to the inspected task artifacts; no host-disk compaction is claimed.
+
 The PostgreSQL CI job budget is now 90 minutes. The measured local coverage phases
 took 311.56 and 1,796.99 seconds; applying the prior accepted P2-05 local-to-CI phase
 ratios estimates about 69.18 minutes for that CI job. This is a budget estimate,

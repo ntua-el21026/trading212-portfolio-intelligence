@@ -3162,8 +3162,8 @@
           "acceptance_claim": false
         },
         "source_assertion_inventory": {
-          "file": "p206-acceptance-assertions-v7.json",
-          "sha256": "66a28b60514d8f6c1e738afc9d04b74d2d8c79c8cd5a224cbfdbe6bfb99332c4",
+          "file": "p206-acceptance-assertions-v8.json",
+          "sha256": "910367142bd69ec2c6d4b17e353aae9c1791e38ce9c8534ef7185a3ff537498c",
           "python_function_selectors": 85,
           "python_test_files": 20,
           "web_source_selectors": 15,
@@ -3174,7 +3174,8 @@
           "previous_inventory_preserved": [
             "p206-acceptance-assertions-v4.json",
             "p206-acceptance-assertions-v5.json",
-            "p206-acceptance-assertions-v6.json"
+            "p206-acceptance-assertions-v6.json",
+            "p206-acceptance-assertions-v7.json"
           ]
         },
         "working_openapi_compatibility": {
@@ -3284,6 +3285,98 @@
             "replacement_exact_source_acceptance": "pending"
           },
           "acceptance_claim": false
+        },
+        "browser_navigation_candidate": {
+          "source_sha": "e145229491cddff37c58eb86eef7cf120b1956c7",
+          "state": "unaccepted_ci_browser_failure_and_interrupted_exact_gate",
+          "ci": {
+            "quality_run_id": 34464507609,
+            "failed_browser_job_id": 102830066079,
+            "failed_project": "api-chromium-mobile",
+            "failed_assertion": "Invalid report selection absent after 5000ms",
+            "query_iteration": "not recorded in CI log",
+            "artifacts_available": false,
+            "node_unit_passed": 301,
+            "documentation_run_id": 34464507525,
+            "documentation_conclusion": "success",
+            "security_run_id": 34464507575,
+            "security_conclusion": "success",
+            "failure_record": {
+              "file": "p206-ci-e145229/playwright-failure.json",
+              "sha256": "e72d1b1eccc5e838e39ecc13de7162ec718324228f48e0b03000bb839d11b637"
+            }
+          },
+          "exact_gate": {
+            "id": "p206-exact-e145229-validate-01",
+            "result": "failed",
+            "exit_code": 2,
+            "duration_seconds": 1579.701,
+            "source_unchanged": true,
+            "termination": "deliberate SIGINT of isolated coverage pytest after complete integration, migration and security layers",
+            "python_unit_passed": 1650,
+            "web_unit_passed": 301,
+            "property_passed": 34,
+            "contract_passed": 130,
+            "integration_passed": 262,
+            "integration_seconds": 1367.22,
+            "migration_passed": 12,
+            "security_passed": 100,
+            "partial_isolated_coverage_passed": 629,
+            "coverage_complete": false,
+            "gate_record": {
+              "file": "gates/p206-exact-e145229-validate-01.json",
+              "sha256": "18cc8319a65f74d9e0139a820833ea0d67c4952be954c03fbe6038857f45791f"
+            },
+            "interruption_record": {
+              "file": "gates/p206-exact-e145229-interruption.json",
+              "sha256": "a8b58662280db2252fc2eb9ce69eea2aa34fd2a92ef0182ce2341ba133f35237"
+            }
+          },
+          "correction": {
+            "state": "focused_verified_unaccepted_working_test_correction",
+            "scope": "Observe native history readiness and actual report/export form transitions before each invalid URL; preserve every rejection and recovery assertion and existing timeouts/retries. Label each invalid-query test step.",
+            "original_mobile_passed": 1,
+            "original_ci_failure_reproduced_locally": false,
+            "diagnosis": "Source-supported initialization-race hypothesis; CI provided no trace or DOM to establish its root cause.",
+            "desktop_passed": 4,
+            "desktop_seconds": 40.0,
+            "mobile_passed": 4,
+            "mobile_seconds": 39.6,
+            "prettier": "passed",
+            "web_lint": "passed",
+            "web_typecheck": "passed",
+            "verification_record": {
+              "file": "p206-report-navigation-readiness/verification.json",
+              "sha256": "80586b2ef6e524c94757f1f14441d17bc9dbb9c8b10403c416dd3330c2c31b0d"
+            },
+            "candidate_correction_record": {
+              "file": "p206-exact-e145229-correction-01.json",
+              "sha256": "218f1a491da8efdc2ed28442cd350796e505218788af8a6a1d1fadbe17aa5281"
+            },
+            "replacement_exact_source_acceptance": "pending"
+          },
+          "acceptance_claim": false
+        },
+        "housekeeping_observations": {
+          "docker_cache": {
+            "obsolete_cache_records_removed": 24,
+            "docker_reported_reclaimed": "4.906GB",
+            "exact_bytes": null,
+            "obsolete_build_history_records_removed": 44,
+            "record": {
+              "file": "p206-housekeeping-cleanup-20260910T095004Z/receipt.json",
+              "sha256": "3ff1460d484fc660ab6f5aaa89746378058a6b83b1041e8804d73eb745f0d767"
+            }
+          },
+          "latest_browser_cleanup": {
+            "successful_traces_removed": 6,
+            "trace_bytes_removed": 19938678,
+            "inactive_next_dev_logical_bytes_removed": 209401131,
+            "record": {
+              "file": "p206-report-navigation-readiness/cleanup-receipt.json",
+              "sha256": "e4ae8cb10c3b75f3646f94a515a1cdfb9d4238caac1bc41d48fb88874900d28f"
+            }
+          }
         }
       }
     },

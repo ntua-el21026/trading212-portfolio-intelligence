@@ -214,6 +214,15 @@ test("invalid client navigation displays a bounded selection error and restores 
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  await page.addInitScript(() => {
+    const push = window.history.pushState;
+    const replace = window.history.replaceState;
+    Object.defineProperty(window, "__reportHistoryReady", {
+      get: () =>
+        window.history.pushState !== push &&
+        window.history.replaceState !== replace,
+    });
+  });
   await page.goto("/reports");
   for (const query of [
     "kind=unsafe-selector",
@@ -221,26 +230,60 @@ test("invalid client navigation displays a bounded selection error and restores 
     "kind=report&kind=export",
     "start_date=2026-09-08&end_date=2026-09-07",
   ]) {
-    await page.evaluate(
-      (search) => window.history.pushState(null, "", `/reports?${search}`),
-      query,
-    );
-    await expect(
-      page.getByText("Invalid report selection", { exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Generate report", exact: true }),
-    ).toHaveCount(0);
-    expect(await page.getByRole("main").innerText()).not.toContain(
-      "unsafe-selector",
-    );
-    await page
-      .getByRole("link", { name: "Reset the report selection", exact: true })
-      .click();
-    await expect(page).toHaveURL("http://127.0.0.1:3001/reports");
-    await expect(
-      page.getByRole("button", { name: "Generate report", exact: true }),
-    ).toBeEnabled();
+    await test.step(`Invalid selection: ${query}`, async () => {
+      // Observe Next's native-history bridge before exercising live form
+      // behavior; SSR-visible controls alone do not establish hydration.
+      await expect
+        .poll(() =>
+          page.evaluate(
+            () =>
+              (window as Window & { __reportHistoryReady?: boolean })
+                .__reportHistoryReady === true,
+          ),
+        )
+        .toBe(true);
+      const output = page.getByRole("combobox", {
+        name: "Output",
+        exact: true,
+      });
+      await output.selectOption("export");
+      await expect(
+        page.getByRole("combobox", { name: "Dataset", exact: true }),
+      ).toBeVisible();
+      await expect(page).toHaveURL(
+        (url) => url.searchParams.get("kind") === "export",
+      );
+      await output.selectOption("report");
+      await expect(
+        page.getByRole("combobox", { name: "Report type", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("combobox", { name: "Dataset", exact: true }),
+      ).toBeHidden();
+      await expect(page).toHaveURL(
+        (url) => url.searchParams.get("kind") === "report",
+      );
+      await page.evaluate(
+        (search) => window.history.pushState(null, "", `/reports?${search}`),
+        query,
+      );
+      await expect(
+        page.getByText("Invalid report selection", { exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Generate report", exact: true }),
+      ).toHaveCount(0);
+      expect(await page.getByRole("main").innerText()).not.toContain(
+        "unsafe-selector",
+      );
+      await page
+        .getByRole("link", { name: "Reset the report selection", exact: true })
+        .click();
+      await expect(page).toHaveURL("http://127.0.0.1:3001/reports");
+      await expect(
+        page.getByRole("button", { name: "Generate report", exact: true }),
+      ).toBeEnabled();
+    });
   }
   await presentation(page);
   expect(errors).toEqual([]);
