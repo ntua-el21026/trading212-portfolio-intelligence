@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-10T09:53:24.895615+00:00",
+  "updated_at": "2026-09-10T10:07:18.918198+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -3162,18 +3162,19 @@
           "acceptance_claim": false
         },
         "source_assertion_inventory": {
-          "file": "p206-acceptance-assertions-v6.json",
-          "sha256": "a51eab5e3a179955700ec12f1ddf6a04c3900f6be32b1a2e7e9657e060160042",
+          "file": "p206-acceptance-assertions-v7.json",
+          "sha256": "66a28b60514d8f6c1e738afc9d04b74d2d8c79c8cd5a224cbfdbe6bfb99332c4",
           "python_function_selectors": 85,
           "python_test_files": 20,
-          "web_source_selectors": 14,
-          "source_files": 25,
+          "web_source_selectors": 15,
+          "source_files": 26,
           "production_source_files": 44,
           "validation": "Current file hashes and source selector existence checked with stdlib only; no test execution inferred.",
           "acceptance_claim": false,
           "previous_inventory_preserved": [
             "p206-acceptance-assertions-v4.json",
-            "p206-acceptance-assertions-v5.json"
+            "p206-acceptance-assertions-v5.json",
+            "p206-acceptance-assertions-v6.json"
           ]
         },
         "working_openapi_compatibility": {
@@ -3186,6 +3187,103 @@
             "sha256": "b21ce3e5628c2842cda70dade7e36ae15e77fa0654fc025d9171a1546842cfbd"
           },
           "source_binding": "unaccepted_working_tree"
+        },
+        "implementation_candidate": {
+          "source_sha": "8636ab4be5a3801d126246cc66322355b65b69b4",
+          "state": "unaccepted_ci_failure_and_interrupted_exact_gate",
+          "ci_observed_at_utc": "2026-09-10T10:02:16+00:00",
+          "ci": {
+            "documentation": {
+              "run_id": 34463544398,
+              "status": "completed",
+              "conclusion": "success",
+              "record": {
+                "file": "p206-ci-8636ab4/20260910T100216Z-docs.json",
+                "sha256": "331596ba31ebd929a568f114da778aca175bf89998ac153b546d5dae7f44bc42"
+              }
+            },
+            "security": {
+              "run_id": 34463544422,
+              "status": "completed",
+              "conclusion": "success",
+              "record": {
+                "file": "p206-ci-8636ab4/20260910T100216Z-security.json",
+                "sha256": "24f9e06bb2d4f8b8527bd207289eae2a6455d5c9ba19a5e287199157af00a477"
+              }
+            },
+            "quality": {
+              "run_id": 34463544455,
+              "status": "in_progress_at_observation",
+              "conclusion": null,
+              "record": {
+                "file": "p206-ci-8636ab4/20260910T100216Z-quality.json",
+                "sha256": "b460cdae73673e00c1da800621815cea93250762b823af19227b4a65daeb31e1"
+              },
+              "failed_job_id": 102826721764,
+              "failed_job": "node-unit",
+              "web_tests_passed": 300,
+              "web_tests_failed": 1,
+              "cause": "The test using a 2 MiB +1 byte Uint8Array deep-equality assertion took 6773ms and exceeded the unchanged 5000ms test timeout. Navigation tests passed.",
+              "failure_record": {
+                "file": "p206-ci-8636ab4/node-unit-failure.json",
+                "sha256": "15778f43b7fb4e11093b260fd086d2bb538cadec09b1b256c7497bb398b19688"
+              }
+            }
+          },
+          "exact_gate": {
+            "id": "p206-exact-8636ab4-validate-01",
+            "result": "failed",
+            "exit_code": 2,
+            "duration_seconds": 217.295,
+            "source_unchanged": true,
+            "termination": "deliberate SIGINT of inspected integration pytest; fixture cleanup completed",
+            "python_unit_tests_passed": 1650,
+            "web_unit_tests_passed": 301,
+            "property_tests_passed": 34,
+            "contract_tests_passed": 130,
+            "partial_integration_tests_passed": 32,
+            "partial_integration_deselected": 1929,
+            "partial_integration_duration_seconds": 74.79,
+            "gate_record": {
+              "file": "gates/p206-exact-8636ab4-validate-01.json",
+              "sha256": "9bd711c76ede84920d9c51bb3b52dad4c12d51bd2be12f7e543ab93f0ad4a47b"
+            },
+            "interruption_record": {
+              "file": "gates/p206-exact-8636ab4-interruption.json",
+              "sha256": "11db57a966d98449183e9d93ecd2a4569a5b6f8057d9650c2c98759a534fdbbe"
+            }
+          },
+          "correction": {
+            "state": "focused_verified_unaccepted_working_test_correction",
+            "scope": "Test-only native full-byte equality, preserving actual 2 MiB +1 payload, all auth/stream/digest assertions, production code and default timeout.",
+            "file": "apps/web/tests/report-client.test.ts",
+            "sha256": "1597f035c8f37462aa39bad3a4a024862715ef09abf353fb10ff61f0f048344a",
+            "observed_local": {
+              "logical_cpus": 1,
+              "original_focused_passed": 1,
+              "original_focused_skipped": 16,
+              "original_large_test_ms": 2676,
+              "original_ci_timeout_reproduced_locally": false,
+              "corrected_file_passed": 17,
+              "corrected_file_duration_seconds": 0.528,
+              "corrected_large_test_ms": 9,
+              "all_web_passed": 301,
+              "all_web_files": 37,
+              "all_web_duration_seconds": 29.88,
+              "lint": "passed",
+              "typecheck": "passed"
+            },
+            "verification_record": {
+              "file": "p206-report-client-comparison/verification.json",
+              "sha256": "6d4b6222b13f5f9f0bafed0aaf9b6d1f9fec915f22a45bd01876cc1859c7acef"
+            },
+            "candidate_correction_record": {
+              "file": "p206-exact-8636ab4-correction-01.json",
+              "sha256": "f5e0f36cbaf48badaef9fed286f15fc1a42a0815289deee56df947b2eefa957f"
+            },
+            "replacement_exact_source_acceptance": "pending"
+          },
+          "acceptance_claim": false
         }
       }
     },

@@ -1,4 +1,5 @@
 // @vitest-environment node
+import { Buffer } from "node:buffer";
 import { createHash } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
 import {
@@ -92,7 +93,9 @@ describe("private report transport", () => {
       { account_id: account },
       { grantToken: token, metadata: item },
     );
-    expect(result.content).toEqual(bytes);
+    expect(
+      Buffer.compare(Buffer.from(result.content), Buffer.from(bytes)),
+    ).toBe(0);
     expect(result.filename).toBe(`portfolio-artifact-${artifact}.json`);
     const [url, init] = fetchImpl.mock.calls[0] as unknown as [
       URL,

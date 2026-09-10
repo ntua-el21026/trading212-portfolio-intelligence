@@ -257,8 +257,8 @@ Reports and exports start from synchronized P2-05 closure
 [implementation contract](docs/implementation/P2_06_REPORTS_AND_EXPORTS.md) fixes
 bounded canonical capture, durable jobs, private PostgreSQL artifacts, current
 principal/source authorization and the four output formats. Focused canonical,
-renderer, authorization, licensing, privacy and retention checks have passed on
-the uncommitted implementation; full package acceptance is still pending.
+renderer, authorization, licensing, privacy and retention checks passed before
+the implementation candidate was committed; full package acceptance is still pending.
 Real PostgreSQL capture now produces the complete annual selection and the
 performance/benchmark selection within the existing limits. Their report
 projection preserves full selected service values, source/license references and
@@ -304,6 +304,26 @@ all eight working screenshots, including supplemental control viewports; the
 fixed-footer limitation in long full-page mobile captures remains documented.
 Final-source acceptance images require their own review. The OpenAPI comparison
 preserved all 70 existing operations and added eleven reporting operations.
+
+Implementation candidate `8636ab4be5a3801d126246cc66322355b65b69b4` was committed
+and pushed but remains unaccepted. Its exact-source CI node-unit job passed 300
+tests and timed out one 2 MiB + 1 byte artifact comparison at 6,773 ms against
+the unchanged 5,000 ms default; navigation tests passed. Documentation run
+`34463544398` and Security run `34463544422` succeeded. Quality run `34463544455`
+was still running at the recorded observation, with that node-unit job failed;
+no overall Quality success is claimed.
+
+The local exact-source gate was deliberately interrupted to correct the expensive
+test assertion, ending with exit 2 after 217.295 seconds and source unchanged.
+It had passed 1,650 Python unit, 301 web unit, 34 property and 130 contract tests;
+32 integration tests passed before the clean interruption (74.79 seconds).
+The test-only correction retains the complete artifact and every security assertion,
+using native full-byte comparison without increasing the timeout. On one local CPU,
+the original test passed in 2,676 ms; that local run did not reproduce the CI timeout.
+After correction, all 17 client tests passed, with the large-artifact test at 9 ms;
+all 301 web tests then passed in 29.88 seconds, followed by lint and typecheck.
+The failed CI log and interrupted gate are preserved. Replacement exact-source
+acceptance remains pending.
 
 The PostgreSQL CI job budget is now 90 minutes. The measured local coverage phases
 took 311.56 and 1,796.99 seconds; applying the prior accepted P2-05 local-to-CI phase
