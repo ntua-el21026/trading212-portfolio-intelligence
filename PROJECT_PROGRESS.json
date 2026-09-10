@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-10T10:07:18.918198+00:00",
+  "updated_at": "2026-09-10T12:43:13.078210+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -3376,6 +3376,78 @@
               "file": "p206-report-navigation-readiness/cleanup-receipt.json",
               "sha256": "e4ae8cb10c3b75f3646f94a515a1cdfb9d4238caac1bc41d48fb88874900d28f"
             }
+          },
+          "exact_gate_boundary": {
+            "logical_file_bytes_removed": 521701768,
+            "allocated_file_bytes_removed": 525402112,
+            "scope": "Inactive Next dev output, redundant accepted P205 extracted source verified against retained tar, one obsolete task pyc. Accepted evidence, archive, source and dependencies preserved.",
+            "record": {
+              "file": "housekeeping/p206-exact-93ce926-generated-cleanup.json",
+              "sha256": "fe7c85b031fad4e914db73832c9ac004f919aac0a7447a6e5d61bb6f436d750a"
+            }
+          }
+        },
+        "pdf_quality_candidate": {
+          "source_sha": "93ce926bce4d3f1f35137dd4ee0b1f14d88fd0bc",
+          "state": "unaccepted_pdf_quality_overstatement_despite_passed_automated_gates",
+          "acceptance_claim": false,
+          "local_full_gate": {
+            "result": "passed",
+            "duration_seconds": 4395.367,
+            "isolated_coverage": 1914,
+            "service_coverage": 277,
+            "coverage_percent": 88,
+            "web_unit": 301,
+            "browser": 90
+          },
+          "ci": {
+            "quality": 34468332521,
+            "documentation": 34468332516,
+            "security": 34468332475,
+            "all_conclusions": "success"
+          },
+          "scans": {
+            "source_history_image_count": 8,
+            "result": "passed"
+          },
+          "runtime": {
+            "result": "passed",
+            "duration_seconds": 169.889905,
+            "privacy_tables": 186,
+            "privacy_rows": 8061,
+            "task_container_volume_network_cleanup": "passed"
+          },
+          "visual_review": {
+            "browser_images_opened": 8,
+            "pdf_pages_opened": [1, 2, 3, 9, 13, 14],
+            "pdf_pages_total": 14,
+            "finding": "Four snapshot report capture sites override effective stale snapshot quality with stored fresh position/cash quality, including derived allocation weights. Values and currencies are unchanged; numeric quality is overstated.",
+            "result": "failed_quality_metadata_review"
+          },
+          "record": {
+            "file": "p206-exact-93ce926-correction-01.json",
+            "sha256": "ade4a5c42cae3fbf66bea96d879a056cfcb42c416a268869d96235ce873020b3"
+          },
+          "correction": {
+            "state": "focused_verified_working_correction",
+            "scope": "Four numeric capture sites compose intrinsic and effective snapshot quality under existing severity; no financial arithmetic, method or public schema change.",
+            "red": {
+              "failed": 3,
+              "passed": 5
+            },
+            "green": {
+              "new_regression_cases_passed": 8,
+              "affected_unit_cases_passed": 34,
+              "real_postgres_four_format_case_passed": 1,
+              "security_cases_passed": 100,
+              "semgrep_findings": 0,
+              "python_typecheck_files": 468
+            },
+            "verification": {
+              "file": "p206-snapshot-quality-precommit-verification.json",
+              "sha256": "32bebfc4de7f3ca9d3f63974c58d1c6db578a972d4b1c933244817d1823272a0"
+            },
+            "replacement_exact_source_acceptance": "pending"
           }
         }
       }

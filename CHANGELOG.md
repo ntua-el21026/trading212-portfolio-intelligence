@@ -4,6 +4,14 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Phase 2 reporting
+
+- Preserve effective snapshot quality on numeric report/export positions, prices and
+  allocation weights, including cash, while retaining stronger intrinsic degradation.
+  The correction leaves amounts and previously sealed artifacts unchanged. The prior
+  candidate passed automated gates but remains unaccepted after the PDF review found
+  overstated freshness; corrected-source acceptance is required.
+
 ### Phase 2 Portfolio X-ray
 
 - Add immutable sourced economic identity, constituents and classifications with

@@ -505,6 +505,16 @@ context when omitted. Capture removes an explicit value only when it exactly equ
 the referenced context; method name and version are compared and omitted together.
 Metric-specific coverage keys and all differing metadata remain explicit. Origin and
 confidence have no context default. Nondecimal cells do not inherit metric metadata.
+
+Snapshot position and cash numeric cells combine their stored intrinsic quality with
+the snapshot's existing effective quality at the requested source cutoff. Use the
+established severity ordering, including for prices and allocation weights whose
+denominator is the snapshot total. A stored fresh row cannot override an aged snapshot;
+a stronger intrinsic degradation remains visible. This corrects metadata propagation
+without changing amounts, availability, origins, freshness thresholds or method versions.
+Previously sealed captures remain immutable. Independent historical, planning, X-ray
+and reconciliation families retain their own pinned quality.
+
 Before sealing, both streamed rows and inline proof/coverage cells resolve every
 row/cell context, unavailable reason, bound, and explicit provenance/note set against
 the captured proof. Context-declared sets remain valid when empty; shared references

@@ -9,6 +9,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from trading212_application import reports as app
+from trading212_application.views import ViewQuality
 from trading212_domain import reports as r
 from trading212_domain.enums import QualityState
 from trading212_domain.report_schema import report_tables
@@ -30,6 +31,7 @@ from .portfolio_service import (
     _snapshot_view,
     _snapshot_weight,
     _warning_text,
+    _worst_quality_state,
 )
 from .report_authorization import ReportAuthorization
 from .report_base import report_error
@@ -61,6 +63,11 @@ def selected_snapshot(
     ):
         raise report_error(app.ReportServiceErrorCode.VALIDATION_FAILED)
     return snapshot
+
+
+def _snapshot_cell_quality(intrinsic: str, effective_snapshot: ViewQuality) -> QualityState:
+    # Stored row quality cannot upgrade the snapshot or its weight denominator.
+    return QualityState(_worst_quality_state((ViewQuality(intrinsic), effective_snapshot)).value)
 
 
 def capture_portfolio(
@@ -285,7 +292,7 @@ def capture_portfolio(
                 r.ReportTableKey.POSITIONS,
                 key=f"position.{position.id}",
                 currency=CurrencyCode(position.currency),
-                quality=QualityState(position.quality_state),
+                quality=_snapshot_cell_quality(position.quality_state, quality.state),
                 origins={
                     metric: r.ReportMetricOrigin(position.value_origin)
                     for metric in (
@@ -322,7 +329,7 @@ def capture_portfolio(
                             text="The pinned position does not provide a current price.",
                         ),
                         context_key=context.key,
-                        quality=QualityState(position.quality_state),
+                        quality=_snapshot_cell_quality(position.quality_state, quality.state),
                         coverage_key=context.coverage_set_key,
                         method_key=context.method_key,
                         method_version=context.method_version,
@@ -368,7 +375,7 @@ def capture_portfolio(
                 r.ReportTableKey.ALLOCATION_BUCKETS,
                 key=f"allocation.position.{position.id}",
                 currency=CurrencyCode(position.currency),
-                quality=QualityState(position.quality_state),
+                quality=_snapshot_cell_quality(position.quality_state, quality.state),
                 origins={
                     "value": r.ReportMetricOrigin(position.value_origin),
                     "weight": r.ReportMetricOrigin.DERIVED_DETERMINISTIC,
@@ -398,7 +405,7 @@ def capture_portfolio(
                 r.ReportTableKey.ALLOCATION_BUCKETS,
                 key=f"allocation.cash.{cash.id}",
                 currency=CurrencyCode(cash.currency),
-                quality=QualityState(cash.quality_state),
+                quality=_snapshot_cell_quality(cash.quality_state, quality.state),
                 origins={
                     "value": r.ReportMetricOrigin(cash.value_origin),
                     "weight": r.ReportMetricOrigin.DERIVED_DETERMINISTIC,

@@ -6,7 +6,7 @@
 
 **Implementation authority:** `main`
 
-**Updated:** 2026-09-09
+**Updated:** 2026-09-10
 
 ## Current state
 
@@ -345,6 +345,37 @@ The corrected full report suite passed all four tests on desktop (40.0 seconds)
 and mobile (39.6 seconds); Prettier, web lint and web typecheck passed.
 Replacement exact-source acceptance remains pending.
 
+Candidate `93ce926bce4d3f1f35137dd4ee0b1f14d88fd0bc` passed its clean exact-source
+`make validate` in 4,395.367 seconds, including 1,914 isolated and 277 service-backed
+coverage tests, 88% combined coverage, 301 web unit tests and all 90 browser checks.
+Quality `34468332521`, Documentation `34468332516` and Security `34468332475` all
+succeeded; all eight source/history/image scans passed. Fresh runtime acceptance
+passed in 169.889905 seconds, including restart parity, authorization, expiry and
+privacy checks across 186 tables and 8,061 rows. Its seven task containers and
+disposable PostgreSQL volume/network were removed with absence verified.
+
+That candidate remains **unaccepted**. Root reviewed eight browser images and six
+pages of the actual 14-page PDF. The PDF exposed a metadata defect: numeric position
+and allocation cells overrode the effective stale snapshot quality with their stored
+fresh row quality, including weights derived from the stale total. Arithmetic and
+currencies were unchanged. The four capture sites now combine intrinsic row quality
+with the existing effective snapshot quality. Other analytical families
+retain their own pinned quality; they must not inherit the snapshot's age wholesale.
+The passing automated evidence and failed PDF review are preserved separately.
+
+The new capture regression reproduced three failures before the correction and passed
+all eight cases afterward. The affected capture/renderer suite passed 34 tests, and a
+real PostgreSQL portfolio-summary job passed all four artifact-format checks. Formatting,
+lint, strict mypy across 468 files, architecture, generated contracts, documentation,
+100 security tests and Semgrep (zero findings, exit 0) passed on unchanged working
+source. These are focused correction results; replacement exact-source acceptance
+remains pending.
+
+At this boundary, scoped file cleanup removed 521,701,768 logical bytes
+(525,402,112 allocated file bytes): inactive Next development output, a redundant
+P2-05 extracted-source copy verified against its retained archive, and one obsolete
+task bytecode file. Source, dependencies, accepted evidence and the archive remain.
+
 Scoped cleanup removed 24 inspected obsolete Docker cache records (Docker reported
 4.906 GB reclaimed) and 44 obsolete build records. The latest browser boundary
 removed six successful traces (19,938,678 bytes) and 209,401,131 logical bytes of
@@ -355,9 +386,9 @@ The PostgreSQL CI job budget is now 90 minutes. The measured local coverage phas
 took 311.56 and 1,796.99 seconds; applying the prior accepted P2-05 local-to-CI phase
 ratios estimates about 69.18 minutes for that CI job. This is a budget estimate,
 not a measured P2-06 CI result. The full test selection and coverage remain unchanged.
-Clean exact-source validation, three exact-source CI jobs,
-image/security scans, fresh Compose acceptance and reviewed final-source screenshots
-and PDF remain outstanding. Validation continues serially in one task Compose project,
+The corrected candidate still requires clean exact-source validation, three successful
+CI workflows, image/security scans, fresh Compose acceptance and reviewed final-source
+screenshots and PDF. Validation continues serially in one task Compose project,
 using PostgreSQL alone when sufficient and Redis when required. Inactive generated
 outputs are removed at check boundaries; September 10 cleanup removed 505,727,234
 logical bytes of inactive Next development output after checking for active consumers,
