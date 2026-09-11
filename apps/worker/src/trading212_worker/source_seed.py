@@ -7,10 +7,17 @@ from collections.abc import Awaitable, Callable
 from dataclasses import replace
 from datetime import datetime, timedelta
 from decimal import Decimal
+from uuid import UUID
 
 from sqlalchemy.orm import Session, sessionmaker
 from trading212_application import source_providers as ports
 from trading212_application import sources as app
+from trading212_application.provider_observations import (
+    ObservedBenchmarkProvider,
+    ObservedFxReferenceProvider,
+    ObservedInstrumentEnrichmentProvider,
+    ObservedMarketPriceHistoryProvider,
+)
 from trading212_application.source_ingestion import (
     SourceInstrumentMapping,
     SourceProviderRegistration,
@@ -30,6 +37,7 @@ from trading212_domain.sources import (
     SourceSeriesKind,
 )
 from trading212_domain.values import CurrencyCode
+from trading212_persistence.provider_observation_store import PostgresProviderOutcomeObserver
 from trading212_reference_data.replay import (
     ReplayBenchmarkProvider,
     ReplayContext,
@@ -52,6 +60,8 @@ from trading212_reference_data.synthetic import (
     synthetic_series,
 )
 from trading212_security.principals import Principal, Scope
+
+from .synthetic_grants import seed_synthetic_grants
 
 
 async def collect_source_pages[T](
@@ -102,6 +112,12 @@ async def seed_source_scenarios(
         authenticated_at=at - timedelta(minutes=1),
         expires_at=at + timedelta(hours=1),
     )
+    seed_synthetic_grants(
+        sessions,
+        app_environment=app_environment,
+        at=at,
+        scopes=principal.scopes,
+    )
     service = PostgresSourceService(
         sessions=sessions,
         cursor_signing_key=hashlib.sha256(b"synthetic-source-seed-cursors-v1").digest(),
@@ -148,6 +164,9 @@ async def seed_source_scenarios(
         listing_id=str(identity.listing.id),
     )
     context = ReplayContext(license=license, series=series, clock=lambda: at)
+    observer = PostgresProviderOutcomeObserver(
+        sessions=sessions, principal=principal, provider_id=UUID(PROVIDER_ID), clock=lambda: at
+    )
     if not isinstance(context.data, SyntheticData):
         raise RuntimeError("synthetic reference fixture did not decode")
     await service.register_source_calendar(
@@ -157,7 +176,10 @@ async def seed_source_scenarios(
         correlation_id=prefix,
     )
     identifier = SourceIdentifier(kind=SourceIdentifierKind.ISIN, value="XS0000000001")
-    resolution = await ReplayInstrumentEnrichmentProvider(context).resolve_instrument(
+    enrichment = ObservedInstrumentEnrichmentProvider(
+        ReplayInstrumentEnrichmentProvider(context), observer
+    )
+    resolution = await enrichment.resolve_instrument(
         ports.InstrumentResolutionRequest(identifier=identifier, source_cutoff_at=at)
     )
     if (
@@ -204,11 +226,13 @@ async def seed_source_scenarios(
             price_request = ports.PriceHistoryRequest(
                 series=item, period=FIXTURE_PERIOD, source_cutoff_at=at
             )
-            price_provider = ReplayMarketPriceHistoryProvider(item_context)
+            price_provider = ObservedMarketPriceHistoryProvider(
+                ReplayMarketPriceHistoryProvider(item_context), observer
+            )
 
             async def fetch_price(
                 cursor: str | None,
-                provider: ReplayMarketPriceHistoryProvider = price_provider,
+                provider: ObservedMarketPriceHistoryProvider = price_provider,
                 request: ports.PriceHistoryRequest = price_request,
             ) -> ports.PriceHistoryPage | ports.SourceFailure:
                 return await provider.get_price_history(replace(request, continuation=cursor))
@@ -231,11 +255,13 @@ async def seed_source_scenarios(
             benchmark_request = ports.BenchmarkSeriesRequest(
                 series=item, period=FIXTURE_PERIOD, source_cutoff_at=at
             )
-            benchmark_provider = ReplayBenchmarkProvider(item_context)
+            benchmark_provider = ObservedBenchmarkProvider(
+                ReplayBenchmarkProvider(item_context), observer
+            )
 
             async def fetch_benchmark(
                 cursor: str | None,
-                provider: ReplayBenchmarkProvider = benchmark_provider,
+                provider: ObservedBenchmarkProvider = benchmark_provider,
                 request: ports.BenchmarkSeriesRequest = benchmark_request,
             ) -> ports.BenchmarkSeriesPage | ports.SourceFailure:
                 return await provider.get_series(replace(request, continuation=cursor))
@@ -266,7 +292,7 @@ async def seed_source_scenarios(
         period=FIXTURE_PERIOD,
         source_cutoff_at=at,
     )
-    fx_provider = ReplayFxReferenceProvider(context)
+    fx_provider = ObservedFxReferenceProvider(ReplayFxReferenceProvider(context), observer)
     fx_pages = await collect_source_pages(
         lambda cursor: fx_provider.get_rates(replace(fx_request, continuation=cursor)),
         page_type=ports.FxRatePage,
@@ -280,7 +306,9 @@ async def seed_source_scenarios(
     action_request = ports.CorporateActionsRequest(
         series=series[0], period=FIXTURE_PERIOD, source_cutoff_at=at
     )
-    price_provider = ReplayMarketPriceHistoryProvider(context)
+    price_provider = ObservedMarketPriceHistoryProvider(
+        ReplayMarketPriceHistoryProvider(context), observer
+    )
     action_pages = await collect_source_pages(
         lambda cursor: price_provider.get_corporate_actions(
             replace(action_request, continuation=cursor)

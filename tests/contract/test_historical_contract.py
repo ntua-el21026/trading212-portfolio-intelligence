@@ -37,7 +37,7 @@ def test_exact_six_historical_get_routes_leave_existing_performance_summary() ->
         )
     }
     assert "/api/v1/accounts/{account_id}/performance/summary" in contract["paths"]
-    assert sum(len(methods) for methods in contract["paths"].values()) == 81
+    assert sum(len(methods) for methods in contract["paths"].values()) == 94
     assert contract == json.loads(
         (ROOT / "packages/api-contracts/openapi/phase1-v1.json").read_text()
     )
@@ -48,7 +48,7 @@ async def test_exact_four_historical_tools_have_frozen_scopes_fields_annotations
 ):
     server = create_runtime().server
     tools = await server.list_tools()
-    assert len(tools) == 24 and tuple(tool.name for tool in tools[15:19]) == HISTORICAL_TOOL_NAMES
+    assert len(tools) == 25 and tuple(tool.name for tool in tools[15:19]) == HISTORICAL_TOOL_NAMES
     common = {"account_id", "start_date", "end_date", "source_cutoff_at", "reporting_currency"}
     extras = (
         {"method", "frequency"},

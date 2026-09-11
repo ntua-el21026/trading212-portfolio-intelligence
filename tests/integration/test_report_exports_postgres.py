@@ -298,7 +298,7 @@ def test_positions_and_xray_exports_include_real_values_and_all_three_formats(
         )
         assert report.manifest.license_references
         with pytest.raises(DomainError):
-            replace(selection, dataset=r.ExportDataset.ALERTS)
+            replace(selection, dataset=r.ExportDataset.ALERTS, constituent_snapshot_id=uuid4())
 
     asyncio.run(run())
 

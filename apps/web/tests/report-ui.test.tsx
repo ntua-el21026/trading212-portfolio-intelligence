@@ -91,11 +91,12 @@ describe("report selection and retained status", () => {
     await user.selectOptions(screen.getByLabelText("Output"), "export");
     expect(
       screen.getByLabelText("Dataset").querySelectorAll("option"),
-    ).toHaveLength(7);
+    ).toHaveLength(8);
     expect(
       screen.getByLabelText("Format").querySelectorAll("option"),
     ).toHaveLength(3);
-    expect(screen.getByLabelText("Dataset")).not.toHaveTextContent("Alerts");
+    await user.selectOptions(screen.getByLabelText("Dataset"), "alerts");
+    expect(screen.getByLabelText("Dataset")).toHaveValue("alerts");
     expect(screen.getByLabelText("Format")).not.toHaveTextContent("PDF");
   });
   it("shows partial quality and warning counts while preventing expired downloads", async () => {

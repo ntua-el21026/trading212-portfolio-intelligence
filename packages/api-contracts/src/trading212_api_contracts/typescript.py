@@ -28,7 +28,7 @@ class TargetClientGenerator:
         tag: str = "targets",
         imported_schemas: frozenset[str] = frozenset(),
     ) -> None:
-        if tag not in {"targets", "planning", "sources", "historical", "xray", "reports"}:
+        if tag not in {"targets", "planning", "sources", "historical", "xray", "reports", "alerts"}:
             raise ValueError(
                 "Only fixed target, planning, source, historical and X-ray operations are supported"
             )
@@ -84,7 +84,7 @@ class TargetClientGenerator:
             "pattern",
             "format",
         }
-        if self.tag in {"xray", "reports"}:
+        if self.tag in {"xray", "reports", "alerts"}:
             supported.update({"oneOf", "discriminator"})
         if set(schema) - supported:
             raise ValueError(f"Unsupported target schema fields: {sorted(set(schema) - supported)}")
@@ -322,6 +322,48 @@ class TargetClientGenerator:
 
 def render_target_client(contract: dict[str, Any]) -> str:
     return TargetClientGenerator(contract).render()
+
+
+def render_alert_client(contract: dict[str, Any]) -> str:
+    """Generate exactly the thirteen admitted alert operations and closed metric union."""
+    expected = {
+        ("get", "/api/v1/alert-rules", "list_alert_rules"),
+        ("post", "/api/v1/alert-rules", "create_alert_rule"),
+        ("get", "/api/v1/alert-rules/{rule_id}", "get_alert_rule"),
+        ("post", "/api/v1/alert-rules/{rule_id}/versions", "create_alert_rule_version"),
+        ("post", "/api/v1/alert-rules/{rule_id}/activate", "activate_alert_rule"),
+        ("post", "/api/v1/alert-rules/{rule_id}/pause", "pause_alert_rule"),
+        ("post", "/api/v1/alert-rules/{rule_id}/archive", "archive_alert_rule"),
+        ("get", "/api/v1/alert-events", "list_alert_events"),
+        ("get", "/api/v1/alert-events/{event_id}", "get_alert_event"),
+        ("post", "/api/v1/alert-events/{event_id}/acknowledgments", "acknowledge_alert_event"),
+        ("post", "/api/v1/alert-events/{event_id}/resolve", "resolve_alert_event"),
+        ("get", "/api/v1/accounts/{account_id}/alert-summary", "get_alert_summary"),
+        ("get", "/api/v1/notification-destinations", "list_notification_destinations"),
+    }
+    actual = {
+        (method, path, operation["operationId"])
+        for path, methods in contract["paths"].items()
+        for method, operation in methods.items()
+        if "alerts" in operation.get("tags", [])
+    }
+    if actual != expected:
+        raise ValueError("The fixed alert operation inventory differs.")
+    source = TargetClientGenerator(contract, tag="sources")
+    source.render()
+    rendered = TargetClientGenerator(
+        contract, tag="alerts", imported_schemas=frozenset(source.rendered)
+    ).render()
+    for name in (
+        "Transport",
+        "ApiClient",
+        "ApiResponse",
+        "ReadOptions",
+        "CommandOptions",
+        "ClientOptions",
+    ):
+        rendered = rendered.replace(f"Target{name}", f"Alert{name}")
+    return rendered.replace("./target-transport", "./alert-transport")
 
 
 def render_planning_client(contract: dict[str, Any]) -> str:

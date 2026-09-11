@@ -459,6 +459,7 @@ class HistoricalSourceReference:
         "target_version",
         "classification_evidence",
         "historical_evidence",
+        "activity_revision_evidence",
         "ingestion_run",
     ]
     id: str
@@ -488,6 +489,7 @@ class HistoricalSourceReference:
             "target_version",
             "classification_evidence",
             "historical_evidence",
+            "activity_revision_evidence",
             "ingestion_run",
         }:
             fail_validation("Unsupported historical source kind.", field="kind")

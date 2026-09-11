@@ -191,6 +191,7 @@ class ReportSourceKind(StrEnum):
     CORPORATE_ACTION = "corporate_action"
     SOURCE_COVERAGE = "source_coverage"
     HISTORICAL_EVIDENCE = "historical_evidence"
+    ACTIVITY_REVISION_EVIDENCE = "activity_revision_evidence"
     FUND_DEFINITION = "fund_definition"
     PRICE_OBSERVATION = "price_observation"
     RECONCILIATION_DISCREPANCY = "reconciliation_discrepancy"
@@ -453,8 +454,6 @@ class ExportSelection(ReportRecord):
     def __post_init__(self) -> None:
         ReportRecord.__post_init__(self)
         _selection_window(self.start_date, self.end_date)
-        if self.dataset is ExportDataset.ALERTS:
-            fail_validation("The canonical alerts export producer is unavailable.", field="dataset")
         for name, allowed in (
             ("target_version_id", {ExportDataset.TARGETS, ExportDataset.PLANS}),
             ("plan_revision_id", {ExportDataset.PLANS}),
@@ -618,6 +617,21 @@ class ReportRendererProfile(ReportRecord):
 
 
 class ReportTableKey(StrEnum):
+    ALERT_EVENTS = "alert_events"
+    ALERT_EVALUATIONS = "alert_evaluations"
+    ALERT_OBSERVATIONS = "alert_observations"
+    ALERT_RULE_VERSIONS = "alert_rule_versions"
+    ALERT_PREDICATES = "alert_predicates"
+    ALERT_RULE_DESTINATIONS = "alert_rule_destinations"
+    ALERT_ACKNOWLEDGMENTS = "alert_acknowledgments"
+    ALERT_NOTIFICATIONS = "alert_notifications"
+    ALERT_TRANSITIONS = "alert_transitions"
+    ALERT_SOURCE_REFERENCES = "alert_source_references"
+    ALERT_CANONICAL_BINDINGS = "alert_canonical_bindings"
+    ALERT_CONTEXT_DETAILS = "alert_context_details"
+    ALERT_CONTEXT_MEMBERS = "alert_context_members"
+    ALERT_FX_CONVERSIONS = "alert_fx_conversions"
+    ALERT_FX_LEGS = "alert_fx_legs"
     BENCHMARK_COMPOSITE = "benchmark_composite"
     BENCHMARK_COMPONENTS = "benchmark_components"
     BENCHMARK_COMPONENT_MEMBERS = "benchmark_component_members"
@@ -992,6 +1006,8 @@ class ReportCaptureSummary(ReportRecord):
     proof: ReportProof
     proof_digest: str
     renderer_profile: ReportRendererProfile
+    # Derived copies may have a shorter lawful lifetime than their physical sources.
+    copy_expires_at: datetime | None = None
 
     def __post_init__(self) -> None:
         ReportRecord.__post_init__(self)

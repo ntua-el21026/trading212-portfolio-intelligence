@@ -10,6 +10,7 @@ from trading212_application.ingestion import IngestionCoordinator, RunMode, RunS
 from trading212_domain import build_synthetic_identity
 from trading212_persistence import create_database_engine, create_session_factory
 from trading212_persistence.seed import seed_synthetic
+from trading212_security.principals import Scope
 
 from .historical_seed import seed_historical_scenarios
 from .materializer import PostgresCanonicalMaterializer
@@ -17,6 +18,7 @@ from .postgres_store import PostgresIngestionStore
 from .report_seed import seed_synthetic_report_grants
 from .source_seed import seed_source_scenarios
 from .synthetic import SyntheticIngestionProvider
+from .synthetic_grants import seed_synthetic_grants
 from .target_seed import seed_target_scenarios
 
 SEED_TIME = datetime(2026, 8, 31, 12, 0, tzinfo=UTC)
@@ -67,6 +69,12 @@ async def seed_complete_synthetic(database_url: str, *, app_environment: str) ->
         await seed_xray_scenario(create_session_factory(engine), app_environment=app_environment)
         seed_synthetic_report_grants(
             create_session_factory(engine), app_environment=app_environment, at=SEED_TIME
+        )
+        seed_synthetic_grants(
+            create_session_factory(engine),
+            app_environment=app_environment,
+            at=SEED_TIME,
+            scopes=frozenset({Scope.ALERTS_READ, Scope.ALERTS_WRITE}),
         )
     finally:
         engine.dispose()

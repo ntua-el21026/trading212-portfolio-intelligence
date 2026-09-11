@@ -295,9 +295,10 @@ class HistoricalDependencyModel(HistoricalOwned):
         owner_fk("target_version_id", "target_versions"),
         owner_fk("classification_id", "historical_classification_evidence"),
         owner_fk("registered_evidence_id", "historical_evidence_sets"),
+        owner_fk("activity_revision_evidence_id", "activity_revision_evidence"),
         CheckConstraint("num_nonnulls(input_id,evidence_id)=1", name="parent_xor"),
         CheckConstraint(
-            "num_nonnulls(ingestion_run_id,source_record_id,source_occurrence_id,portfolio_snapshot_id,calculation_run_id,reconciliation_run_id,price_snapshot_id,fx_snapshot_id,action_snapshot_id,benchmark_snapshot_id,mapping_id,calendar_id,license_version_id,benchmark_version_id,target_version_id,classification_id,registered_evidence_id)=1",
+            "num_nonnulls(ingestion_run_id,source_record_id,source_occurrence_id,portfolio_snapshot_id,calculation_run_id,reconciliation_run_id,price_snapshot_id,fx_snapshot_id,action_snapshot_id,benchmark_snapshot_id,mapping_id,calendar_id,license_version_id,benchmark_version_id,target_version_id,classification_id,registered_evidence_id,activity_revision_evidence_id)=1",
             name="source_xor",
         ),
     )
@@ -333,6 +334,7 @@ class HistoricalDependencyModel(HistoricalOwned):
     target_version_id: Mapped[UUID | None] = mapped_column()
     classification_id: Mapped[UUID | None] = mapped_column()
     registered_evidence_id: Mapped[UUID | None] = mapped_column()
+    activity_revision_evidence_id: Mapped[UUID | None] = mapped_column()
 
 
 class HistoricalEventModel(HistoricalOwned):

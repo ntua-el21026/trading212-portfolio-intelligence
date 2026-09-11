@@ -275,12 +275,8 @@ def test_every_registered_table_is_closed_and_backed_exports_exist() -> None:
         assert 1 <= len(schema.columns) <= 64
         assert len({column.key for column in schema.columns}) == len(schema.columns)
     for dataset in r.ExportDataset:
-        if dataset is r.ExportDataset.ALERTS:
-            with pytest.raises(DomainError):
-                dataset_tables(dataset, r.ExportFieldSet.STANDARD)
-        else:
-            for field_set in r.ExportFieldSet:
-                assert dataset_tables(dataset, field_set)
+        for field_set in r.ExportFieldSet:
+            assert dataset_tables(dataset, field_set)
     with pytest.raises(DomainError):
         table_schema(cast(Any, "arbitrary"))
 

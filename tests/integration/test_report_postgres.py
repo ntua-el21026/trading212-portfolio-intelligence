@@ -618,7 +618,7 @@ def test_standalone_export_is_a_real_durable_job_and_alerts_is_rejected(
         )
         assert result.state is ReportJobState.SUCCEEDED and len(result.artifacts) == 1
         with pytest.raises(DomainError) as error:
-            replace(selection, dataset=ExportDataset.ALERTS)
+            replace(selection, dataset=ExportDataset.ALERTS, target_version_id=uuid4())
         assert error.value.code is ErrorCode.VALIDATION_FAILED
         with case.base.sessions() as session:
             assert session.scalar(select(func.count()).select_from(ExportJobModel)) == 1

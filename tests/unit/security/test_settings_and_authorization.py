@@ -81,6 +81,8 @@ def test_scope_registry_contains_no_execution_capability() -> None:
         "plans:write",
         "reports:read",
         "reports:write",
+        "alerts:read",
+        "alerts:write",
     }
     assert all("trade" not in scope.value for scope in Scope)
 
@@ -131,6 +133,8 @@ async def test_synthetic_auth_is_local_only_and_explicit() -> None:
         Scope.PLANS_WRITE,
         Scope.REPORTS_READ,
         Scope.REPORTS_WRITE,
+        Scope.ALERTS_READ,
+        Scope.ALERTS_WRITE,
     } <= principal.scopes
 
 
@@ -139,6 +143,28 @@ async def test_synthetic_auth_is_local_only_and_explicit() -> None:
     [(Scope.TARGETS_WRITE, Scope.TARGETS_READ), (Scope.TARGETS_READ, Scope.TARGETS_WRITE)],
 )
 def test_target_read_and_write_scopes_are_independent(granted: Scope, denied: Scope) -> None:
+    principal = _principal(scopes=frozenset({granted}))
+    authorizer = Authorizer()
+    authorizer.require_scope(principal, granted, now=NOW)
+    with pytest.raises(AuthorizationError, match="access denied"):
+        authorizer.require_scope(principal, denied, now=NOW)
+
+
+@pytest.mark.parametrize(
+    "granted,denied",
+    [
+        (Scope.ALERTS_READ, Scope.ALERTS_WRITE),
+        (Scope.ALERTS_WRITE, Scope.ALERTS_READ),
+        (Scope.ALERTS_WRITE, Scope.ANALYTICS_READ),
+        (Scope.ALERTS_WRITE, Scope.ACTIVITY_READ),
+        (Scope.ALERTS_WRITE, Scope.TARGETS_READ),
+        (Scope.ALERTS_READ, Scope.REPORTS_READ),
+        (Scope.ALERTS_WRITE, Scope.PORTFOLIO_REFRESH),
+    ],
+)
+def test_alert_scopes_never_imply_material_source_or_command_grants(
+    granted: Scope, denied: Scope
+) -> None:
     principal = _principal(scopes=frozenset({granted}))
     authorizer = Authorizer()
     authorizer.require_scope(principal, granted, now=NOW)

@@ -30,4 +30,46 @@ def test_reference_namespace_is_not_a_broad_transport_exception(tmp_path: Path) 
     import ast
 
     findings = broker_boundary._transport_import_findings(path, ast.parse("import httpx\n"))
-    assert len(findings) == 1 and "only the sealed provider client" in findings[0]
+    assert len(findings) == 1 and "narrowly named broker or alert adapter" in findings[0]
+
+
+def test_alert_adapter_exception_is_exact_and_keeps_httpx_denied() -> None:
+    import ast
+
+    owner = broker_boundary.ALERT_WEBHOOK_OWNER
+    assert (
+        broker_boundary._transport_import_findings(
+            owner, ast.parse("import http.client\nimport socket\n")
+        )
+        == []
+    )
+    assert broker_boundary._transport_import_findings(owner, ast.parse("import httpx\n"))
+    sibling = owner.with_name("other_webhook.py")
+    assert (
+        len(
+            broker_boundary._transport_import_findings(
+                sibling, ast.parse("import http.client\nimport socket\n")
+            )
+        )
+        == 2
+    )
+    assert broker_boundary._transport_import_findings(
+        sibling, ast.parse("import asyncio\nasyncio.open_connection('example.org',443)\n")
+    )
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "from asyncio import open_connection as connect\nconnect('example.org',443)",
+        "from asyncio.streams import open_connection\nopen_connection('example.org',443)",
+        "from asyncio import *",
+        "from http import client as transport\ntransport.HTTPSConnection('example.org')",
+        "from urllib import request as transport\ntransport.urlopen('https://example.org')",
+    ],
+)
+def test_aliased_stream_imports_do_not_bypass_transport_ownership(source: str) -> None:
+    import ast
+
+    sibling = broker_boundary.ALERT_WEBHOOK_OWNER.with_name("other_webhook.py")
+    assert broker_boundary._transport_import_findings(sibling, ast.parse(source))

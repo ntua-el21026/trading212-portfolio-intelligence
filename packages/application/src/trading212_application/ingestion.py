@@ -15,19 +15,9 @@ from enum import StrEnum
 from types import MappingProxyType
 from typing import Protocol, TypeVar
 
+from trading212_domain.ingestion import IngestionCapability as IngestionCapability
+
 _Awaited = TypeVar("_Awaited")
-
-
-class IngestionCapability(StrEnum):
-    INSTRUMENTS = "metadata_instruments"
-    EXCHANGES = "metadata_exchanges"
-    ACCOUNT = "account_summary"
-    POSITIONS = "portfolio_positions"
-    PENDING_ORDERS = "pending_orders"
-    HISTORICAL_ORDERS = "historical_orders"
-    TRANSACTIONS = "historical_transactions"
-    DIVIDENDS = "historical_dividends"
-    EXPORT_METADATA = "historical_exports"
 
 
 class RefreshScope(StrEnum):

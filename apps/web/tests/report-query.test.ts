@@ -42,7 +42,7 @@ describe("report selection URLs", () => {
     { formats: "html" },
     { sections: "overview,arbitrary" },
     { start_date: "2026-09-08", end_date: "2026-09-07" },
-    { dataset: "alerts" },
+    { dataset: "unknown" },
   ])("rejects unsupported selectors without reflecting them", (input) => {
     expect(() => parseReportQuery(input)).toThrow(/report/);
     try {
@@ -51,10 +51,10 @@ describe("report selection URLs", () => {
       expect(String(error)).not.toContain("canary");
     }
   });
-  it("offers all report profiles and the seven implemented datasets with mandatory quality", () => {
+  it("offers all report profiles and the eight implemented datasets with mandatory quality", () => {
     expect(REPORT_TYPES).toHaveLength(10);
-    expect(EXPORT_DATASETS).toHaveLength(7);
-    expect(EXPORT_DATASETS).not.toContain("alerts");
+    expect(EXPORT_DATASETS).toHaveLength(8);
+    expect(EXPORT_DATASETS).toContain("alerts");
     for (const type of REPORT_TYPES)
       expect(REQUIRED_SECTIONS[type]).toContain("quality");
     expect(REQUIRED_SECTIONS.portfolio_xray).toContain("xray");

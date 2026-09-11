@@ -10,6 +10,7 @@ from pathlib import Path
 
 from trading212_api.main import create_app
 from trading212_api_contracts.typescript import (
+    render_alert_client,
     render_historical_client,
     render_planning_client,
     render_report_client,
@@ -28,6 +29,7 @@ HISTORICAL_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/historical.gen
 XRAY_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/xray.generated.ts"
 SOURCE_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/sources.generated.ts"
 REPORT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/reports.generated.ts"
+ALERT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/alerts.generated.ts"
 
 
 def render_contract() -> str:
@@ -64,6 +66,7 @@ def main() -> int:
         (HISTORICAL_OUTPUT, render_historical_client),
         (XRAY_OUTPUT, render_xray_client),
         (REPORT_OUTPUT, render_report_client),
+        (ALERT_OUTPUT, render_alert_client),
     ):
         clients[output] = subprocess.run(  # noqa: S603
             [*package_manager, "exec", "prettier", "--stdin-filepath", str(output)],

@@ -13,7 +13,9 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: "http://127.0.0.1:3001",
-    trace: "retain-on-failure",
+    // Authenticated traces retain cookies and request headers. Keep visual failure evidence only.
+    trace: "off",
+    screenshot: "only-on-failure",
   },
   projects: [
     {

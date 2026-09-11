@@ -14,6 +14,7 @@ from trading212_domain.sources import SourceUse
 
 from .report_authorization import ReportAuthorization
 from .report_builder import ReportBuilder
+from .report_capture_alerts import capture_alerts
 from .report_capture_planning import capture_planning
 from .report_capture_portfolio import capture_portfolio, selected_snapshot
 from .report_capture_quality import capture_quality, capture_quality_tables
@@ -49,10 +50,7 @@ class PostgresReportCapture:
         *,
         sink: ReportCaptureSink,
     ) -> r.ReportCaptureSummary:
-        if (
-            self._source_use is not r.ReportSourceUse.EXPORT
-            or selection.dataset is r.ExportDataset.ALERTS
-        ):
+        if self._source_use is not r.ReportSourceUse.EXPORT:
             fail_validation(
                 "The export dataset or source-use contract is unavailable.", field="dataset"
             )
@@ -106,6 +104,7 @@ class PostgresReportCapture:
             cursor_signing_key=self._cursor_key,
             source_use=SourceUse(self._source_use.value),
         )
+        capture_alerts(builder, self._session, self._authorization, clock=self._clock)
         capture_quality_tables(builder)
         builder.complete_proof_tables()
         if set(builder.descriptors) != set(report_tables(selection)) | builder.proof_table_keys:

@@ -33,7 +33,7 @@ async def test_tool_discovery_is_exact_typed_bounded_and_annotated() -> None:
     tools = await runtime.server.list_tools()
 
     assert tuple(tool.name for tool in tools) == FROZEN_TOOL_NAMES
-    assert len(tools) == 24
+    assert len(tools) == 25
     for tool in tools:
         descriptor = tool.model_dump(mode="json", by_alias=True, exclude_none=True)
         assert descriptor["inputSchema"]["type"] == "object"

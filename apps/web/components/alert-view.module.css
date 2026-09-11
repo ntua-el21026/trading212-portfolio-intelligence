@@ -1,0 +1,154 @@
+.surface {
+  min-width: 0;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  overflow-wrap: anywhere;
+}
+
+.surface pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+  min-width: 0;
+  margin-block: 1rem;
+}
+
+.form label {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+  color: var(--color-navy-soft);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.form input,
+.form select,
+.form textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.75rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0.3rem;
+  background: var(--color-surface);
+  color: var(--color-navy);
+  padding: 0.6rem 0.7rem;
+  font-weight: 400;
+}
+
+.form input[readonly],
+.form textarea[readonly],
+.form input:disabled,
+.form select:disabled,
+.form textarea:disabled {
+  background: var(--color-surface-subtle);
+  color: var(--color-muted);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  gap: 1rem;
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.fields legend {
+  padding-block: 0.5rem;
+  font-weight: 650;
+}
+
+.wide {
+  grid-column: 1 / -1;
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+
+.form label.choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form input[type="checkbox"] {
+  width: 1.1rem;
+  min-height: 1.1rem;
+  padding: 0;
+  accent-color: var(--color-emerald);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.35fr) minmax(0, 1fr);
+  gap: 0.5rem 1rem;
+}
+
+.facts dt {
+  font-weight: 600;
+}
+.facts dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.entry {
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.entry:last-child {
+  border-bottom: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-block: 1rem;
+}
+
+.navigation p {
+  margin: 0;
+}
+
+.navigation a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 0.3rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.navigation a[aria-current="page"] {
+  border-color: var(--color-emerald);
+  color: var(--color-emerald-dark);
+}
+
+@media (max-width: 40rem) {
+  .facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .facts dd {
+    margin-bottom: 0.75rem;
+  }
+}

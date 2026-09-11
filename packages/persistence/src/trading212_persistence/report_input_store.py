@@ -314,6 +314,8 @@ class ReportInputSink:
                 )
             )
         deadlines = [self.row.expires_at]
+        if summary.copy_expires_at is not None:
+            deadlines.append(summary.copy_expires_at)
         deadlines.extend(dep.expires_at for dep in dependencies if dep.expires_at is not None)
         deadlines.extend(
             license.expires_at

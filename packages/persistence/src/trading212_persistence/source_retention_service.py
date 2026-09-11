@@ -10,6 +10,7 @@ from sqlalchemy import Table, select, text, tuple_
 from sqlalchemy.orm import Session
 
 from . import source_models as sm
+from .alert_retention import purge_alert_source_copies
 from .historical_retention import purge_source_copies
 from .report_retention import purge_report_source_copies
 from .source_retention import SourcePurgeBudget
@@ -109,6 +110,10 @@ def _expire_snapshot(
             return False
     if work.phase == "copies":
         kind = str(row.__tablename__).removesuffix("_snapshots")
+        if not purge_alert_source_copies(
+            session, owner=row.owner_id, kind=kind, source_id=row.id, at=at, budget=budget
+        ):
+            return False
         if not purge_report_source_copies(
             session, owner=row.owner_id, kind=kind, source_id=row.id, at=at, budget=budget
         ):

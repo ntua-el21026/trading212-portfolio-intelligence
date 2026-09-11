@@ -44,6 +44,11 @@ class CollectionSnapshotResource(StrEnum):
     TARGET_EVENTS = "target_events"
     TARGET_NODES = "target_nodes"
     CONTRIBUTION_PLANS = "contribution_plans"
+    ALERT_RULES = "alert_rules"
+    ALERT_VERSIONS = "alert_versions"
+    ALERT_EVENTS = "alert_events"
+    ALERT_EVALUATIONS = "alert_evaluations"
+    NOTIFICATION_DESTINATIONS = "notification_destinations"
     REPORTS = "reports"
     EXPORTS = "exports"
     PLAN_REVISIONS = "plan_revisions"
@@ -100,6 +105,11 @@ _SORT_SPECIFICATIONS = {
     CollectionSnapshotResource.TARGET_EVENTS: "created_at_desc_id_desc",
     CollectionSnapshotResource.TARGET_NODES: "depth_first_order_key",
     CollectionSnapshotResource.CONTRIBUTION_PLANS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.ALERT_RULES: "created_at_desc_id_desc",
+    CollectionSnapshotResource.ALERT_VERSIONS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.ALERT_EVENTS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.ALERT_EVALUATIONS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.NOTIFICATION_DESTINATIONS: "created_at_desc_id_desc",
     CollectionSnapshotResource.REPORTS: "created_at_desc_id_desc",
     CollectionSnapshotResource.EXPORTS: "created_at_desc_id_desc",
     CollectionSnapshotResource.PLAN_REVISIONS: "revision_number_desc_id_desc",
@@ -151,6 +161,11 @@ _ACCOUNT_RESOURCES = frozenset(
         CollectionSnapshotResource.HISTORICAL_PERFORMANCE,
         CollectionSnapshotResource.HISTORICAL_CASH_FLOWS,
         CollectionSnapshotResource.CONTRIBUTION_PLANS,
+        CollectionSnapshotResource.ALERT_RULES,
+        CollectionSnapshotResource.ALERT_VERSIONS,
+        CollectionSnapshotResource.ALERT_EVENTS,
+        CollectionSnapshotResource.ALERT_EVALUATIONS,
+        CollectionSnapshotResource.NOTIFICATION_DESTINATIONS,
         CollectionSnapshotResource.REPORTS,
         CollectionSnapshotResource.EXPORTS,
         CollectionSnapshotResource.PLAN_REVISIONS,

@@ -779,3 +779,12 @@ export type {
   ReportDownloadOptions,
   ReportArtifactResponse,
 } from "./report-transport";
+
+export * from "./alerts.generated";
+export { AlertApiError } from "./alert-transport";
+export type {
+  AlertApiResponse,
+  AlertClientOptions,
+  AlertReadOptions,
+  AlertCommandOptions,
+} from "./alert-transport";

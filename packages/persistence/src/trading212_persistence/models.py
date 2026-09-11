@@ -23,9 +23,12 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
+from .activity_revision_models import ActivityRevisionEvidenceModel
+from .alert_models import ALERT_MODELS
 from .base import Base, CreatedAtMixin, UpdatedAtMixin, UUIDPrimaryKeyMixin
 from .historical_models import HISTORICAL_MODELS
 from .planning_models import PLANNING_MODELS
+from .provider_observation_models import PROVIDER_OBSERVATION_MODELS
 from .report_models import REPORT_MODELS
 from .source_models import SOURCE_MODELS
 from .target_models import TARGET_MODELS
@@ -355,7 +358,7 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
                 "'benchmark_defs_created','benchmark_versions','historical_performance',"
                 "'historical_cash_flows','composite_benchmark_points','xray_exposures',"
                 "'xray_paths','xray_held_funds','xray_pairs','xray_common_entities',"
-                "'constituent_holdings','reports','exports')"
+                "'constituent_holdings','reports','exports','alert_rules','alert_versions','alert_events','alert_evaluations','notification_destinations')"
             ),
             name="resource_allowed",
         ),
@@ -400,14 +403,16 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
                 "'benchmark_defs_created' AND sort_specification = "
                 "'created_at_desc_id_desc') OR (resource = 'benchmark_versions' AND "
                 "sort_specification = 'version_number_desc_id_desc') OR (resource IN "
-                "('reports','exports') AND sort_specification = "
+                "('reports','exports','alert_rules','alert_versions','alert_events',"
+                "'alert_evaluations','notification_destinations') AND sort_specification = "
                 "'created_at_desc_id_desc')"
             ),
             name="resource_sort_match",
         ),
         CheckConstraint(
             (
-                "((resource IN ('reports','exports','activity','dividends',"
+                "((resource IN ('alert_rules','alert_versions','alert_events','alert_evaluations',"
+                "'notification_destinations','reports','exports','activity','dividends',"
                 "'positions_market_value','positions_weight','positions_ticker',"
                 "'contribution_plans','plan_lines','actual_target_rows','plan_revisions',"
                 "'historical_performance','historical_cash_flows','xray_exposures',"
@@ -1100,4 +1105,7 @@ ALL_MODELS = (
     *HISTORICAL_MODELS,
     *XRAY_MODELS,
     *REPORT_MODELS,
+    *ALERT_MODELS,
+    ActivityRevisionEvidenceModel,
+    *PROVIDER_OBSERVATION_MODELS,
 )

@@ -25,6 +25,7 @@ from trading212_security.principals import Authorizer, Principal, Scope
 from . import historical_models as hm
 from . import models as legacy
 from . import source_models as sm
+from .activity_revision_models import ActivityRevisionEvidenceModel
 from .source_service import PostgresSourceService
 from .target_models import TargetVersionModel
 
@@ -65,6 +66,7 @@ REFERENCE_MODELS = {
     "target_version": (TargetVersionModel, "target_version_id"),
     "classification_evidence": (hm.HistoricalClassificationModel, "classification_id"),
     "historical_evidence": (hm.HistoricalEvidenceModel, "registered_evidence_id"),
+    "activity_revision_evidence": (ActivityRevisionEvidenceModel, "activity_revision_evidence_id"),
 }
 
 
@@ -232,6 +234,9 @@ class HistoricalStoreBase:
             self._sources._permit(session, owner, row.license_version_id, SourceUse.DISPLAY)
         elif isinstance(row, hm.HistoricalEvidenceModel):
             first = effective = row.first_observed_at
+        elif isinstance(row, ActivityRevisionEvidenceModel):
+            first = effective = row.first_observed_at
+            parent_ids = (str(row.new_source_record_id), str(row.superseded_source_record_id))
         return domain.HistoricalSourceReference(
             kind=cast(Any, kind),
             id=str(identifier),

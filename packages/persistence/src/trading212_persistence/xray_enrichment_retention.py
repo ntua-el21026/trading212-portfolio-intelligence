@@ -169,6 +169,7 @@ def expire_enrichment_payloads(
             elif not budget.inspect(rows=1):
                 return completed
             if work.phase == "copies":
+                from .alert_retention import purge_alert_source_copies
                 from .report_retention import purge_report_source_copies
 
                 kind = {
@@ -177,6 +178,15 @@ def expire_enrichment_payloads(
                     "fund_definition_id": "fund_definition",
                     "fund_mapping_id": "fund_mapping",
                 }[reference]
+                if not purge_alert_source_copies(
+                    session,
+                    owner=source.owner_id,
+                    kind=kind,
+                    source_id=source.id,
+                    at=at,
+                    budget=budget,
+                ):
+                    continue
                 if not purge_report_source_copies(
                     session,
                     owner=source.owner_id,

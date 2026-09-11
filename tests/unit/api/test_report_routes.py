@@ -12,6 +12,7 @@ from fastapi import FastAPI
 from trading212_api.main import create_app
 from trading212_application import reports as app
 from trading212_application.services import SyntheticPortfolioService
+from trading212_domain import reports as domain
 from trading212_security.principals import Principal, Scope
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 from trading212_security.tokens import LOCAL_SYNTHETIC_OWNER_ID
@@ -27,6 +28,7 @@ SCOPES = frozenset(
         Scope.ANALYTICS_READ,
         Scope.ACTIVITY_READ,
         Scope.TARGETS_READ,
+        Scope.ALERTS_READ,
     }
 )
 
@@ -225,19 +227,63 @@ async def test_invalid_status_precedes_304_and_invalid_digest_precedes_bytes() -
     assert download.content not in content.content
 
 
-async def test_unsupported_alerts_export_fails_before_durable_service() -> None:
-    application, service = _app()
+def _alerts_export_body() -> dict[str, object]:
     body = {
         key: value
         for key, value in BODY.items()
         if key not in {"report_type", "sections", "formats"}
     }
     body.update(dataset="alerts", field_set="standard", format="json")
+    return body
+
+
+async def test_backed_alerts_export_dispatches_exact_typed_selection_and_identity() -> None:
+    application, service = _app()
+    queued = job()
+    service.create_export.return_value = app.ExportJobStatus(
+        account_id=queued.account_id,
+        context=queued.context,
+        export_id=UUID(JOB),
+        state=domain.ReportJobState.QUEUED,
+        requested_at=queued.requested_at,
+        expires_at=queued.expires_at,
+        dataset=domain.ExportDataset.ALERTS,
+        field_set=domain.ExportFieldSet.STANDARD,
+        format=domain.ExportFormat.JSON,
+    )
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(application), base_url=ORIGIN
     ) as client:
-        response = await client.post("/api/v1/exports", json=body, headers=_headers())
-    assert response.status_code == 422
+        response = await client.post(
+            "/api/v1/exports", json=_alerts_export_body(), headers=_headers()
+        )
+    assert response.status_code == 202 and response.json()["dataset"] == "alerts"
+    assert response.json()["context"]["input_digest"] == "a" * 64
+    service.create_export.assert_awaited_once()
+    principal, command = service.create_export.await_args.args
+    assert isinstance(principal, Principal) and Scope.ALERTS_READ in principal.scopes
+    assert isinstance(command, app.CreateExportCommand)
+    assert command.idempotency_key == "report:one"
+    assert command.selection.account_id == UUID(ACCOUNT)
+    assert command.selection.dataset is domain.ExportDataset.ALERTS
+    assert command.selection.field_set is domain.ExportFieldSet.STANDARD
+    assert command.selection.format is domain.ExportFormat.JSON
+    assert command.selection.snapshot_id == UUID(str(BODY["snapshot_id"]))
+
+
+@pytest.mark.parametrize(
+    "missing",
+    [Scope.PORTFOLIO_READ, Scope.REPORTS_WRITE, Scope.ANALYTICS_READ, Scope.ALERTS_READ],
+)
+async def test_alerts_export_missing_scope_fails_before_durable_service(missing: Scope) -> None:
+    application, service = _app(SCOPES - {missing})
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(application), base_url=ORIGIN
+    ) as client:
+        response = await client.post(
+            "/api/v1/exports", json=_alerts_export_body(), headers=_headers()
+        )
+    assert response.status_code == 403
     service.create_export.assert_not_awaited()
 
 

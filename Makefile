@@ -53,6 +53,7 @@ lint-web: ## Run all workspace ESLint checks.
 architecture-check: ## Enforce package direction and the sealed Trading 212 GET-only boundary.
 	$(UV) run python scripts/check_architecture.py
 	$(UV) run python scripts/check_trading212_boundary.py
+	$(UV) run python scripts/check_alert_webhook_contract.py
 
 lint: lint-python lint-web architecture-check ## Run all language and architecture linters.
 

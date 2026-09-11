@@ -38,6 +38,8 @@ REPORT_SCOPES = (
     "'configuration:read','targets:read','targets:write','plans:write',"
     "'reports:read','reports:write'"
 )
+ALL_DELEGATION_SCOPES = REPORT_SCOPES + ",'alerts:read','alerts:write'"
+
 REPORT_FAILURES = (
     "'invalid_input','input_unavailable','input_changed','access_denied',"
     "'source_restricted','limit_exceeded','render_failed','storage_unavailable',"
@@ -48,7 +50,7 @@ REPORT_FAILURES = (
 class PrincipalScopeGrantModel(Base):
     __tablename__ = "principal_scope_grants"
     __table_args__ = (
-        CheckConstraint(f"scope IN ({REPORT_SCOPES})", name="scope_allowed"),
+        CheckConstraint(f"scope IN ({ALL_DELEGATION_SCOPES})", name="scope_allowed"),
         CheckConstraint("expires_at IS NULL OR expires_at > granted_at", name="expiry_order"),
         CheckConstraint("revoked_at IS NULL OR revoked_at >= granted_at", name="revoke_order"),
     )

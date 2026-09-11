@@ -35,6 +35,7 @@ export const EXPORT_DATASETS = [
   "plans",
   "performance",
   "xray",
+  "alerts",
 ] as const;
 export const REPORT_STATES = [
   "all",

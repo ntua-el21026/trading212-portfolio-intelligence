@@ -301,6 +301,9 @@ def _serve_fixture(database_url: str) -> None:
     reports = os.environ.get("T212PI_E2E_REPORTS", "0")
     if reports not in {"0", "1"}:
         raise RuntimeError("The reports browser fixture selector must be 0 or 1.")
+    alerts = os.environ.get("T212PI_E2E_ALERTS", "0")
+    if alerts not in {"0", "1"}:
+        raise RuntimeError("The alerts browser fixture selector must be 0 or 1.")
     migration_config = Config(str(_REPOSITORY_ROOT / "alembic.ini"))
     migration_config.set_main_option("script_location", str(_REPOSITORY_ROOT / "migrations"))
     migration_config.set_main_option("sqlalchemy.url", database_url)
@@ -323,7 +326,7 @@ def _serve_fixture(database_url: str) -> None:
         datetime.now(UTC).replace(microsecond=0),
     )
     try:
-        if reports == "1":
+        if reports == "1" or alerts == "1":
             seed_synthetic_report_grants(
                 create_session_factory(engine), app_environment="test", at=scenario_time
             )
@@ -340,6 +343,10 @@ def _serve_fixture(database_url: str) -> None:
                 listing_id=identity.listing.id,
                 as_of=scenario_time,
             )
+        if alerts == "1":
+            from scripts.api_e2e_alerts import seed_alert_browser_scenario
+
+            asyncio.run(seed_alert_browser_scenario(create_session_factory(engine)))
     finally:
         engine.dispose()
 
@@ -371,7 +378,7 @@ def _serve_fixture(database_url: str) -> None:
             try:
                 async with asyncio.TaskGroup() as deliveries:
                     deliveries.create_task(_deliver_fixture_plans(fixture_plans, stopped))
-                    if reports == "1":
+                    if reports == "1" or alerts == "1":
                         deliveries.create_task(_deliver_fixture_reports(fixture_reports, stopped))
                     try:
                         yield

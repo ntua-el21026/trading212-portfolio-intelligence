@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Bell,
   BriefcaseBusiness,
   ChartPie,
   CircleDollarSign,
@@ -33,6 +34,7 @@ const primaryItems = [
   { href: "/income", icon: CircleDollarSign, label: "Income" },
   { href: "/xray", icon: ChartPie, label: "X-ray" },
   { href: "/reports", icon: FileText, label: "Reports" },
+  { href: "/alerts", icon: Bell, label: "Alerts" },
 ] as const;
 
 const secondaryItems = [

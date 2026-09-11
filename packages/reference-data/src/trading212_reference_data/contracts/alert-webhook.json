@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "capability": "deliver_alert",
+  "method": "POST",
+  "path": "/v1/alerts",
+  "origins": [],
+  "credential_namespace": "notifications/webhook/",
+  "connect_timeout_seconds": 5,
+  "read_timeout_seconds": 5,
+  "total_timeout_seconds": 15,
+  "max_request_bytes": 65536,
+  "max_response_bytes": 65536,
+  "max_header_bytes": 8192,
+  "consumer_attempts": 4,
+  "redirects": false,
+  "environment_proxies": false,
+  "payload_fields": ["delivery_id", "event_id", "rule_id", "rule_version_id"],
+  "source_license_policy": "no_financial_or_provider_content"
+}

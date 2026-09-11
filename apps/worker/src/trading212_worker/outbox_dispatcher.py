@@ -51,6 +51,7 @@ from trading212_persistence.refresh_semantics import (
 from trading212_persistence.target_service import PostgresTargetService
 from trading212_security.settings import RuntimeEnvironment
 
+from .alert_tasks import CeleryAlertPublisher, dispatch_alerts_once, dispatch_notifications_once
 from .plan_tasks import CeleryPlanPublisher, dispatch_plans_once
 from .report_tasks import (
     CeleryExportPublisher,
@@ -1375,6 +1376,50 @@ def main(argv: Sequence[str] | None = None) -> int:
         report_publisher = CeleryReportPublisher(celery)
         export_publisher = CeleryExportPublisher(celery)
 
+        from trading212_persistence.alert_job_store import PostgresAlertJobStore
+        from trading212_persistence.alert_retention import expire_alert_payloads
+        from trading212_persistence.notification_store import PostgresAlertNotificationStore
+
+        alert_sessions = create_session_factory(engine)
+        alert_key = secrets.token_bytes(32)
+        alert_store = PostgresAlertJobStore(alert_sessions, cursor_signing_key=alert_key)
+        notification_store = PostgresAlertNotificationStore(
+            alert_sessions, cursor_signing_key=alert_key
+        )
+        alert_publisher = CeleryAlertPublisher(celery)
+
+        async def dispatch_alerts() -> None:
+            await alert_store.admit_due_evaluations(limit=100)
+            for queue, notification in (
+                ("alert_dispatch", False),
+                ("notification_dispatch", True),
+            ):
+                with metrics.duration.labels(operation=queue).time():
+                    result = (
+                        await dispatch_notifications_once(
+                            notification_store,
+                            alert_publisher,
+                            dispatcher_id=settings.dispatcher_id,
+                            limit=settings.batch_size,
+                        )
+                        if notification
+                        else await dispatch_alerts_once(
+                            alert_store,
+                            alert_publisher,
+                            dispatcher_id=settings.dispatcher_id,
+                            limit=settings.batch_size,
+                        )
+                    )
+                for outcome, count in (
+                    ("success", result.published),
+                    ("failure", result.deferred),
+                    ("fenced", result.fenced),
+                ):
+                    metrics.queue_delivery_attempts.labels(queue=queue, outcome=outcome).inc(count)
+                metrics.queue_delivery_failures.labels(queue=queue).inc(result.deferred)
+            with alert_sessions() as session, session.begin():
+                expire_alert_payloads(session, at=datetime.now(UTC), limit=100)
+
         async def dispatch_reports() -> None:
             for queue, export in (("report_dispatch", False), ("export_dispatch", True)):
                 with metrics.duration.labels(operation=queue).time():
@@ -1431,6 +1476,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             asyncio.run(target_service.activate_due_versions(limit=settings.batch_size))
             asyncio.run(dispatch_plans())
             asyncio.run(dispatch_reports())
+            asyncio.run(dispatch_alerts())
             return 0
         stopped = Event()
 
@@ -1463,6 +1509,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                     asyncio.run(dispatch_reports())
                 except Exception:
                     _LOGGER.error("report_outbox_cycle_failed")
+                try:
+                    asyncio.run(dispatch_alerts())
+                except Exception:
+                    _LOGGER.error("alert_outbox_cycle_failed")
                 stopped.wait(settings.poll_interval_seconds)
         return 0
     finally:

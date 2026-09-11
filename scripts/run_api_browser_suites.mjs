@@ -44,6 +44,7 @@ function run(arguments_, fixture) {
         T212PI_E2E_HISTORICAL: fixture === "historical.spec.ts" ? "1" : "0",
         T212PI_E2E_XRAY: fixture === "xray.spec.ts" ? "1" : "0",
         T212PI_E2E_REPORTS: fixture === "reports.spec.ts" ? "1" : "0",
+        T212PI_E2E_ALERTS: fixture === "alerts.spec.ts" ? "1" : "0",
       },
       stdio: "inherit",
       shell: false,

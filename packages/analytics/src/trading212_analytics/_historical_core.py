@@ -168,26 +168,192 @@ def projection_boundaries(
     return tuple(at for at in daily if at.day == 1 or at == value.selection.window.end_at)
 
 
+def event_revision_key(event: d.HistoricalEvent) -> str:
+    """The canonical economic identity used by revision selection and trusted attestations."""
+    return (
+        key("fill", event.order_key, event.fill_key)
+        if isinstance(event, d.HistoricalExecution)
+        else key("dividend", event.dividend_key)
+        if isinstance(event, d.HistoricalDividend)
+        else event.identity.economic_key
+    )
+
+
+def _attested_revision_edges(
+    events: tuple[d.HistoricalEvent, ...], sources: tuple[d.HistoricalSourceReference, ...]
+) -> dict[str, tuple[str, datetime]]:
+    """Validate explicit retained edges independently of raw provider revision fields."""
+    if len(events) > d.MAX_HISTORICAL_EVENTS or len(sources) > d.MAX_HISTORICAL_SOURCES:
+        raise DomainError(ErrorCode.INPUT_BOUND_EXCEEDED, "Historical revision capacity exceeded.")
+    proofs = tuple(source for source in sources if source.kind == "activity_revision_evidence")
+    if not proofs:
+        return {}
+    by_source = {event.identity.source_record_id: event for event in events}
+    by_revision = {event.identity.revision_id: event for event in events}
+    if len(by_source) != len(events) or len(by_revision) != len(events):
+        fail_validation("Historical revision source identity is duplicated.")
+    edges: dict[str, tuple[str, datetime]] = {}
+    proof_ids: set[str] = set()
+    for proof in proofs:
+        if len(proof.parent_ids) != 2 or proof.semantic_digest is None or proof.id in proof_ids:
+            fail_validation("Historical revision proof lacks its exact source parents.")
+        proof_ids.add(proof.id)
+        new_id, old_id = proof.parent_ids
+        new, old = by_source.get(new_id), by_source.get(old_id)
+        if (
+            new is None
+            or old is None
+            or new_id == old_id
+            or new_id in edges
+            or event_revision_key(new) != event_revision_key(old)
+            or new.identity.supersedes_revision_id not in (None, old.identity.revision_id)
+            or (isinstance(new, d.HistoricalDividend) and new.correction_of not in (None, old_id))
+        ):
+            fail_validation("Historical revision proof has conflicting source parents.")
+        edges[new_id] = (old_id, proof.first_observed_at)
+    # Reject cycles reachable from proofs, including through native edges. Native
+    # groups without proofs keep the selector's established behavior.
+    parents = {
+        source_id: parent.identity.source_record_id
+        for source_id, event in by_source.items()
+        if (parent := by_revision.get(event.identity.supersedes_revision_id or "")) is not None
+        and event_revision_key(parent) == event_revision_key(event)
+    }
+    parents.update({source_id: edge[0] for source_id, edge in edges.items()})
+    visited: set[str] = set()
+    for source_id in edges:
+        path: set[str] = set()
+        current = source_id
+        while current in parents and current not in visited:
+            if current in path:
+                fail_validation("Historical revision proof has a cycle.")
+            path.add(current)
+            current = parents[current]
+        visited.update(path)
+    return edges
+
+
+def revision_first_eligible_at(
+    events: tuple[d.HistoricalEvent, ...],
+    sources: tuple[d.HistoricalSourceReference, ...],
+    *,
+    cutoff: datetime,
+) -> dict[str, datetime]:
+    """Actual source knowledge plus only the validated ancestry establishing a winner.
+
+    This operational eligibility projection does not rewrite raw event knowledge.
+    Memoized iterative traversal visits each retained edge at most once.
+    """
+    edges = _attested_revision_edges(events, sources)
+    by_source = {event.identity.source_record_id: event for event in events}
+    if not edges:
+        return {
+            source_id: event.identity.first_observed_at for source_id, event in by_source.items()
+        }
+    by_revision = {event.identity.revision_id: event for event in events}
+    parents: dict[str, str] = {}
+    proof_times: dict[str, datetime] = {}
+    for event in events:
+        source_id = event.identity.source_record_id
+        native = by_revision.get(event.identity.supersedes_revision_id or "")
+        if native is not None and event_revision_key(native) == event_revision_key(event):
+            parents[source_id] = native.identity.source_record_id
+        attested = edges.get(source_id)
+        # A redundant attestation cannot postpone an already native correction.
+        if attested is not None and attested[1] <= cutoff and native is None:
+            parents[source_id] = attested[0]
+            proof_times[source_id] = max(
+                attested[1],
+                event.identity.first_observed_at,
+                by_source[attested[0]].identity.first_observed_at,
+            )
+    # Memoize only proof dependency times. Raw/native observation times keep their
+    # existing meaning, even if an unrelated native parent was learned later.
+    inherited: dict[str, datetime | None] = {}
+    for source_id in by_source:
+        current = source_id
+        path: list[str] = []
+        seen: set[str] = set()
+        while current not in inherited:
+            if current in seen:
+                # Proof-connected cycles were rejected above. An unrelated
+                # native cycle remains the canonical selector's ambiguity.
+                for member in path:
+                    inherited[member] = None
+                break
+            seen.add(current)
+            path.append(current)
+            if current not in parents:
+                break
+            current = parents[current]
+        for current in reversed(path):
+            parent = parents.get(current)
+            times = tuple(
+                at
+                for at in (proof_times.get(current), inherited.get(parent or ""))
+                if at is not None
+            )
+            inherited[current] = max(times) if times else None
+    result: dict[str, datetime] = {}
+    for source_id, event in by_source.items():
+        proof_at = inherited[source_id]
+        # A proof-backed correction becomes eligible only once both its identity
+        # and economic applicability are known. Do not change native-only timing.
+        result[source_id] = (
+            max(event.identity.first_observed_at, event.identity.economic_at, proof_at)
+            if proof_at is not None
+            else event.identity.first_observed_at
+        )
+    return result
+
+
 def selected_events(
     value: d.HistoricalInput, cutoff: datetime
 ) -> tuple[tuple[d.HistoricalEvent, ...], bool]:
+    return selected_event_revisions(value.event_candidates, cutoff, revision_sources=value.sources)
+
+
+@financial
+def selected_event_revisions(
+    events: tuple[d.HistoricalEvent, ...],
+    cutoff: datetime,
+    *,
+    revision_sources: tuple[d.HistoricalSourceReference, ...] = (),
+) -> tuple[tuple[d.HistoricalEvent, ...], bool]:
     """Order changes only with a provider revision order or explicit supersession."""
+    edges = _attested_revision_edges(events, revision_sources)
+    by_source = {event.identity.source_record_id: event for event in events}
+    attested_groups = {
+        event_revision_key(by_source[source_id])
+        for source_id, edge in edges.items()
+        if edge[1] <= cutoff and by_source[source_id].identity.supersedes_revision_id is None
+    }
     groups: dict[str, list[d.HistoricalEvent]] = defaultdict(list)
-    for event in value.event_candidates:
-        if event.identity.first_observed_at <= cutoff and event.identity.economic_at <= cutoff:
-            economic_key = (
-                key("fill", event.order_key, event.fill_key)
-                if isinstance(event, d.HistoricalExecution)
-                else key("dividend", event.dividend_key)
-                if isinstance(event, d.HistoricalDividend)
-                else event.identity.economic_key
+    for event in events:
+        edge = edges.get(event.identity.source_record_id)
+        if edge is not None and edge[1] <= cutoff and event.identity.supersedes_revision_id is None:
+            parent = by_source[edge[0]]
+            event = replace(
+                event,
+                identity=replace(
+                    event.identity, supersedes_revision_id=parent.identity.revision_id
+                ),
             )
-            groups[economic_key].append(event)
+            if isinstance(event, d.HistoricalDividend):
+                event = replace(event, correction_of=edge[0])
+        if event.identity.first_observed_at <= cutoff and (
+            event.identity.economic_at <= cutoff or event_revision_key(event) in attested_groups
+        ):
+            groups[event_revision_key(event)].append(event)
     selected: list[d.HistoricalEvent] = []
     ambiguous = False
     for candidates in groups.values():
         superseded = {item.identity.supersedes_revision_id for item in candidates}
         candidates = [item for item in candidates if item.identity.revision_id not in superseded]
+        if not candidates:
+            # A supersession cycle provides no winning economic revision.
+            ambiguous = True
+            continue
         if all(item.identity.revision_sequence is not None for item in candidates):
             sequence = max(
                 item.identity.revision_sequence
@@ -218,7 +384,7 @@ def selected_events(
             ambiguous = True
             continue
         chosen = min(candidates, key=lambda item: item.identity.revision_id)
-        if chosen.identity.record_state == "reported":
+        if chosen.identity.record_state == "reported" and chosen.identity.economic_at <= cutoff:
             selected.append(chosen)
     ordered = tuple(
         sorted(

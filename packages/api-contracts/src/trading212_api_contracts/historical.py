@@ -294,6 +294,7 @@ class HistoricalSourceReference(HistoricalSchema):
         "classification_evidence",
         "historical_evidence",
         "ingestion_run",
+        "activity_revision_evidence",
     ]
     id: UUIDString
     effective_at: AwareInstant

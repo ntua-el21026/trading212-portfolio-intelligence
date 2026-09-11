@@ -106,6 +106,7 @@ export const HistoricalSourceReferenceSchema = z.strictObject({
     "classification_evidence",
     "historical_evidence",
     "ingestion_run",
+    "activity_revision_evidence",
   ]),
   original_fingerprint: z
     .union([z.string().regex(new RegExp("^[0-9a-f]{64}$")), z.null()])

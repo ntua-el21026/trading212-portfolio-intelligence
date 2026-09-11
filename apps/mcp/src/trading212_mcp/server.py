@@ -19,6 +19,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from trading212_api_contracts.targets import UUIDString
+from trading212_application.alerts import AlertService
 from trading212_application.historical import PerformanceIntelligenceService
 from trading212_application.planning import PlanningService
 from trading212_application.reports import ReportService
@@ -35,6 +36,8 @@ from trading212_security.principals import Scope as PortfolioScope
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 from trading212_security.tokens import BearerAuthenticator
 
+from .alert_gateway import AlertMcpGateway
+from .alert_tools import ALERT_TOOL_NAMES, register_alert_tools
 from .auth import PrincipalResolver, SharedTokenVerifier
 from .gateway import PortfolioMcpGateway
 from .historical_gateway import HistoricalMcpGateway
@@ -80,6 +83,7 @@ FROZEN_TOOL_NAMES = (
     *HISTORICAL_TOOL_NAMES,
     *XRAY_TOOL_NAMES,
     *REPORT_TOOL_NAMES,
+    *ALERT_TOOL_NAMES,
 )
 
 AccountId = Annotated[
@@ -113,6 +117,7 @@ class McpRuntime:
     historical_service: PerformanceIntelligenceService | None = None
     xray_service: XrayService | None = None
     report_service: ReportService | None = None
+    alert_service: AlertService | None = None
 
     def asgi_app(self) -> ASGIApp:
         transport_security = TransportSecuritySettings(
@@ -143,6 +148,7 @@ def create_runtime(
     historical_service: PerformanceIntelligenceService | None = None,
     xray_service: XrayService | None = None,
     report_service: ReportService | None = None,
+    alert_service: AlertService | None = None,
     database_url: str | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -223,6 +229,16 @@ def create_runtime(
             from trading212_persistence.report_service import PostgresReportService
 
             report_service = PostgresReportService(
+                create_session_factory(engine),
+                clock=runtime_clock,
+                cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+                cursor_ttl_seconds=security.cursor_ttl_seconds,
+            )
+
+        if alert_service is None:
+            from trading212_persistence.alert_service import PostgresAlertService
+
+            alert_service = PostgresAlertService(
                 create_session_factory(engine),
                 clock=runtime_clock,
                 cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
@@ -329,6 +345,10 @@ def create_runtime(
         ),
         widget_domain=transport.widget_domain,
     )
+    register_alert_tools(
+        server,
+        AlertMcpGateway(service=alert_service, principals=principal_resolver, clock=runtime_clock),
+    )
     return McpRuntime(
         server=server,
         service=portfolio_service,
@@ -340,6 +360,7 @@ def create_runtime(
         historical_service=historical_service,
         xray_service=xray_service,
         report_service=report_service,
+        alert_service=alert_service,
     )
 
 

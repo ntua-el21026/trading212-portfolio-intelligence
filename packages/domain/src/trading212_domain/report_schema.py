@@ -22,6 +22,206 @@ from .reports import (
 
 # Each tuple is a literal ordered schema. Codes are decoded only from this module.
 _COLUMNS: dict[ReportTableKey, tuple[tuple[str, str], ...]] = {
+    ReportTableKey.ALERT_EVENTS: (
+        ("event_id", "id"),
+        ("evaluation_id", "id"),
+        ("rule_id", "id"),
+        ("rule_version_id", "id"),
+        ("family", "enum"),
+        ("severity", "enum"),
+        ("occurred_at", "utc"),
+        ("recorded_at", "utc"),
+        ("episode_state", "enum"),
+        ("resolved_at", "utc?"),
+        ("resolution_reason", "enum?"),
+        ("correction_of", "id?"),
+        ("episode_ordinal", "int?"),
+        ("event_identity", "id?"),
+        ("event_revision_id", "id?"),
+        ("deduplication_digest", "id"),
+        ("notification_state", "enum"),
+    ),
+    ReportTableKey.ALERT_EVALUATIONS: (
+        ("evaluation_id", "id"),
+        ("job_id", "id"),
+        ("input_id", "id"),
+        ("rule_id", "id"),
+        ("rule_version_id", "id"),
+        ("input_digest", "id"),
+        ("result_digest", "id"),
+        ("rule_content_digest", "id"),
+        ("scheduled_for", "utc"),
+        ("source_cutoff_at", "utc"),
+        ("evaluated_at", "utc"),
+        ("recorded_at", "utc"),
+        ("execution_intent", "enum"),
+        ("outcome", "enum"),
+        ("decision", "bool?"),
+        ("reason", "enum?"),
+        ("reproducibility", "enum"),
+        ("expires_at", "utc"),
+        ("method_key", "id"),
+        ("method_version", "id"),
+        ("schema_version", "id?"),
+        ("window_start_at", "utc?"),
+        ("window_end_at", "utc?"),
+        ("newly_known_revisions", "bool?"),
+        ("active_interval_id", "id?"),
+    ),
+    ReportTableKey.ALERT_OBSERVATIONS: (
+        ("evaluation_id", "id"),
+        ("event_identity", "id?"),
+        ("revision_id", "id?"),
+        ("correction_of", "id?"),
+        ("metric", "enum"),
+        ("kind", "enum"),
+        ("observed", "N"),
+        ("observed_currency", "enum?"),
+        ("availability", "enum"),
+        ("bound", "enum"),
+        ("positive_below_quantum", "bool"),
+        ("decision", "bool?"),
+        ("outcome", "enum"),
+        ("reason", "enum?"),
+        ("deduplication_digest", "id?"),
+        ("economic_at", "utc?"),
+        ("first_eligible_at", "utc?"),
+        ("instrument_id", "id?"),
+        ("activity_kind", "enum?"),
+        ("capability_family", "enum?"),
+        ("report_type", "enum?"),
+        ("report_outcome", "enum?"),
+        ("net_amount", "M?"),
+    ),
+    ReportTableKey.ALERT_RULE_VERSIONS: (
+        ("rule_version_id", "id"),
+        ("rule_id", "id"),
+        ("account_id", "id"),
+        ("version_number", "int"),
+        ("created_at", "utc"),
+        ("content_digest", "id"),
+        ("name", "text"),
+        ("severity", "enum"),
+        ("quality_policy", "enum"),
+        ("cooldown_seconds", "int"),
+        ("source_policy_version_id", "id?"),
+        ("remediation", "text"),
+        ("schedule_kind", "enum"),
+        ("anchor_at", "utc?"),
+        ("interval_seconds", "int?"),
+        ("minute_utc", "int?"),
+    ),
+    ReportTableKey.ALERT_PREDICATES: (
+        ("rule_version_id", "id"),
+        ("family", "enum"),
+        ("metric", "enum"),
+        ("comparison", "enum?"),
+        ("threshold", "N?"),
+        ("currency", "enum?"),
+        ("target_version_id", "id?"),
+        ("frontier_depth", "int?"),
+        ("group_node_id", "id?"),
+        ("holding_id", "id?"),
+        ("include_cash", "bool?"),
+        ("top_n", "int?"),
+        ("entity_id", "id?"),
+        ("left_fund_id", "id?"),
+        ("right_fund_id", "id?"),
+        ("source_family", "enum?"),
+        ("domain", "enum?"),
+        ("source_id", "id?"),
+        ("calendar_version_id", "id?"),
+        ("discrepancy_severity", "enum?"),
+        ("provider_id", "id?"),
+        ("window_seconds", "int?"),
+        ("capability_family", "enum?"),
+        ("instrument_id", "id?"),
+        ("minimum_net_amount", "M?"),
+        ("activity_kind", "enum?"),
+        ("report_type", "enum?"),
+        ("outcome", "enum?"),
+    ),
+    ReportTableKey.ALERT_RULE_DESTINATIONS: (
+        ("rule_version_id", "id"),
+        ("destination_id", "id"),
+    ),
+    ReportTableKey.ALERT_ACKNOWLEDGMENTS: (
+        ("acknowledgment_id", "id"),
+        ("event_id", "id"),
+        ("principal_id", "id"),
+        ("acknowledged_at", "utc"),
+        ("note", "text?"),
+    ),
+    ReportTableKey.ALERT_NOTIFICATIONS: (
+        ("notification_id", "id"),
+        ("event_id", "id"),
+        ("created_at", "utc"),
+        ("eligibility", "enum"),
+    ),
+    ReportTableKey.ALERT_TRANSITIONS: (
+        ("transition_id", "id"),
+        ("event_id", "id"),
+        ("evaluation_id", "id?"),
+        ("principal_id", "id?"),
+        ("sequence", "int"),
+        ("kind", "enum"),
+        ("reason", "enum?"),
+        ("occurred_at", "utc"),
+        ("note", "text?"),
+    ),
+    ReportTableKey.ALERT_SOURCE_REFERENCES: (
+        ("evaluation_id", "id"),
+        ("original_key", "id"),
+        ("source_key", "id"),
+        ("expires_at", "utc?"),
+    ),
+    ReportTableKey.ALERT_CANONICAL_BINDINGS: (
+        ("evaluation_id", "id"),
+        ("family", "enum"),
+        ("role", "enum"),
+        ("subject_id", "id"),
+        ("content_digest", "id"),
+        ("parent_id", "id?"),
+        ("method_key", "id?"),
+        ("method_version", "id?"),
+        ("numeric_policy_version", "id?"),
+    ),
+    ReportTableKey.ALERT_CONTEXT_DETAILS: (
+        ("evaluation_id", "id"),
+        ("original_key", "id"),
+        ("context_key", "id"),
+        ("reporting_currency", "enum?"),
+        ("reconciliation_id", "id?"),
+    ),
+    ReportTableKey.ALERT_CONTEXT_MEMBERS: (
+        ("context_key", "id"),
+        ("role", "enum"),
+        ("ordinal", "int"),
+        ("note_key", "id?"),
+        ("source_key", "id"),
+    ),
+    ReportTableKey.ALERT_FX_CONVERSIONS: (
+        ("evaluation_id", "id"),
+        ("ordinal", "int"),
+        ("original", "M"),
+        ("reporting_currency", "enum"),
+        ("converted", "M"),
+        ("reason", "enum?"),
+    ),
+    ReportTableKey.ALERT_FX_LEGS: (
+        ("evaluation_id", "id"),
+        ("conversion_ordinal", "int"),
+        ("ordinal", "int"),
+        ("base", "enum"),
+        ("quote", "enum"),
+        ("rate", "D(fx)"),
+        ("source_key", "id"),
+        ("snapshot_id", "id"),
+        ("provider_id", "id"),
+        ("observed_at", "utc"),
+        ("inverse", "bool"),
+        ("reason", "enum?"),
+    ),
     ReportTableKey.BENCHMARK_COMPOSITE: (
         ("benchmark_version_id", "id"),
         ("definition_id", "id?"),
@@ -1203,8 +1403,8 @@ _SECTION_TABLES: dict[ReportSection, tuple[ReportTableKey, ...]] = {
 
 
 def _column(key: str, code: str) -> ReportColumn:
-    if code == "N":
-        return ReportColumn(key=key, kind=None)
+    if code in {"N", "N?"}:
+        return ReportColumn(key=key, kind=None, optional=code.endswith("?"))
     optional = code.endswith("?")
     code = code.removesuffix("?")
     kinds = {
@@ -1263,6 +1463,25 @@ def section_tables(section: ReportSection) -> tuple[ReportTableKey, ...]:
     return _SECTION_TABLES[section]
 
 
+ALERT_EXPORT_TABLES = (
+    ReportTableKey.ALERT_EVENTS,
+    ReportTableKey.ALERT_EVALUATIONS,
+    ReportTableKey.ALERT_OBSERVATIONS,
+    ReportTableKey.ALERT_RULE_VERSIONS,
+    ReportTableKey.ALERT_PREDICATES,
+    ReportTableKey.ALERT_RULE_DESTINATIONS,
+    ReportTableKey.ALERT_ACKNOWLEDGMENTS,
+    ReportTableKey.ALERT_NOTIFICATIONS,
+    ReportTableKey.ALERT_TRANSITIONS,
+    ReportTableKey.ALERT_SOURCE_REFERENCES,
+    ReportTableKey.ALERT_CANONICAL_BINDINGS,
+    ReportTableKey.ALERT_CONTEXT_DETAILS,
+    ReportTableKey.ALERT_CONTEXT_MEMBERS,
+    ReportTableKey.ALERT_FX_CONVERSIONS,
+    ReportTableKey.ALERT_FX_LEGS,
+)
+
+
 _DATASET_SECTIONS = {
     ExportDataset.POSITIONS: (ReportSection.ALLOCATION, ReportSection.OVERVIEW),
     ExportDataset.ACTIVITY: (ReportSection.ACTIVITY,),
@@ -1274,13 +1493,11 @@ _DATASET_SECTIONS = {
 
 
 def dataset_tables(dataset: ExportDataset, field_set: ExportFieldSet) -> tuple[ReportTableKey, ...]:
-    if (
-        type(dataset) is not ExportDataset
-        or type(field_set) is not ExportFieldSet
-        or dataset is ExportDataset.ALERTS
-    ):
+    if type(dataset) is not ExportDataset or type(field_set) is not ExportFieldSet:
         fail_validation("Canonical export dataset is unavailable.", field="dataset")
-    if dataset is ExportDataset.DIVIDENDS:
+    if dataset is ExportDataset.ALERTS:
+        selected = set(ALERT_EXPORT_TABLES)
+    elif dataset is ExportDataset.DIVIDENDS:
         selected = {ReportTableKey.DIVIDENDS}
     else:
         selected = {

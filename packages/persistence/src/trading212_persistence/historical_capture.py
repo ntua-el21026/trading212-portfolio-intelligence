@@ -9,6 +9,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
+from trading212_analytics._historical_core import event_revision_key
 from trading212_application import historical as app
 from trading212_domain import historical as d
 from trading212_domain.historical_serialization import (
@@ -29,6 +30,7 @@ from trading212_security.principals import Principal, Scope
 from . import historical_models as hm
 from . import models as lm
 from . import source_models as sm
+from .activity_revision_store import capture_activity_revisions
 from .historical_base import digest, encoded, error
 from .historical_evidence import HistoricalEvidenceRegistrationStore
 from .historical_normalization import normalize_record
@@ -322,22 +324,51 @@ class HistoricalCaptureStore(HistoricalEvidenceRegistrationStore):
                 .limit(10001)
             )
         }
-        events = []
-        for source_record in records:
-            event = normalize_record(
-                source_record, occurrences.get(source_record.id), tuple(mapping_rows)
+        candidates = tuple(
+            event
+            for source_record in records
+            if (
+                event := normalize_record(
+                    source_record, occurrences.get(source_record.id), tuple(mapping_rows)
+                )
             )
-            if event is None or event.identity.economic_at >= window.end_at:
-                continue
-            events.append(event)
-            raw = reference("broker_source_record", source_record.id)
+            is not None
+        )
+        # A correction can move an old event beyond the period. Select complete
+        # economic groups before applying proof or resolving ambiguity; unrelated
+        # later groups remain outside this immutable capture.
+        relevant = {
+            event_revision_key(event)
+            for event in candidates
+            if event.identity.economic_at < window.end_at
+        }
+        events = [event for event in candidates if event_revision_key(event) in relevant]
+        for event in events:
+            source_id = UUID(event.identity.source_record_id)
+            raw = reference("broker_source_record", source_id)
             references[(raw.kind, raw.id)] = replace(
                 raw,
                 effective_at=event.identity.economic_at,
                 derived_projection_digest=digest(event),
             )
-            if source_record.id in occurrences:
-                reference("broker_source_occurrence", occurrences[source_record.id].id)
+            if source_id in occurrences:
+                reference("broker_source_occurrence", occurrences[source_id].id)
+        revised_events, revision_proofs = capture_activity_revisions(
+            session,
+            owner_id=owner,
+            account_id=account,
+            events=tuple(events),
+            cutoff=window.source_cutoff_at,
+        )
+        events = list(revised_events)
+        for proof in revision_proofs:
+            reference("activity_revision_evidence", proof.registration.id)
+        for event in events:
+            source_key = ("broker_source_record", event.identity.source_record_id)
+            if source_key in references:
+                references[source_key] = replace(
+                    references[source_key], derived_projection_digest=digest(event)
+                )
         instruments: dict[str, d.HistoricalInstrument] = {}
         for series_row in series_rows:
             if (

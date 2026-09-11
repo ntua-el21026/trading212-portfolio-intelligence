@@ -12,6 +12,10 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session, sessionmaker
 from trading212_application import source_providers as ports
 from trading212_application.ingestion import IngestionCoordinator, RunMode, RunStatus
+from trading212_application.provider_observations import (
+    ObservedClassificationProvider,
+    ObservedETFConstituentProvider,
+)
 from trading212_application.source_ingestion import SourceProviderRegistration
 from trading212_application.sources import ProviderConfigurationState
 from trading212_application.xray_ingestion import (
@@ -29,12 +33,14 @@ from trading212_persistence.models import (
     ListingModel,
     PortfolioSnapshotModel,
 )
+from trading212_persistence.provider_observation_store import PostgresProviderOutcomeObserver
 from trading212_persistence.source_service import PostgresSourceService
 from trading212_security.principals import Principal, Scope
 
 from .materializer import PostgresCanonicalMaterializer
 from .postgres_store import PostgresIngestionStore
 from .source_seed import collect_source_pages
+from .synthetic_grants import seed_synthetic_grants
 from .xray_fixture import (
     XRAY_ACCOUNT_ID,
     XRAY_AT,
@@ -49,6 +55,7 @@ from .xray_provider import SyntheticXrayBrokerProvider
 from .xray_source_fixture import xray_entities, xray_license, xray_replay
 
 XRAY_CURSOR_KEY = hashlib.sha256(b"synthetic-xray-seed-cursors-v1").digest()
+XRAY_POLICY = "synthetic-xray-v1"
 
 
 def _identity(sessions: sessionmaker[Session]) -> None:
@@ -81,6 +88,12 @@ async def seed_xray_scenario(
     from trading212_persistence.xray_service import PostgresXrayService
 
     _identity(sessions)
+    seed_synthetic_grants(
+        sessions,
+        app_environment=app_environment,
+        at=XRAY_AT,
+        scopes=frozenset({Scope.ANALYTICS_READ, Scope.TARGETS_WRITE, Scope.PORTFOLIO_READ}),
+    )
     identity = build_synthetic_identity()
     owner = str(identity.owner.id)
     principal = Principal(
@@ -140,7 +153,7 @@ async def seed_xray_scenario(
         principal,
         XRAY_ACCOUNT_ID,
         XrayPolicyRegistration(
-            key="synthetic-xray-v1",
+            key=XRAY_POLICY,
             effective_at=XRAY_EFFECTIVE,
             policy=synthetic_xray_policy(),
             taxonomies=tuple(
@@ -161,6 +174,14 @@ async def seed_xray_scenario(
         principal, xray_entities(), idempotency_key=f"{prefix}:entities", correlation_id=prefix
     )
     provider = xray_replay(owner)
+    observer = PostgresProviderOutcomeObserver(
+        sessions=sessions,
+        principal=principal,
+        provider_id=UUID(XRAY_PROVIDER_ID),
+        clock=lambda: XRAY_AT,
+    )
+    constituents_provider = ObservedETFConstituentProvider(provider, observer)
+    classifications_provider = ObservedClassificationProvider(provider, observer)
     result = {
         "account_id": XRAY_ACCOUNT_ID,
         "source_cutoff_at": XRAY_AT.isoformat(),
@@ -213,7 +234,9 @@ async def seed_xray_scenario(
         ) -> ports.ConstituentPage | ports.SourceFailure:
             from dataclasses import replace
 
-            return await provider.get_constituents(replace(request, continuation=cursor))
+            return await constituents_provider.get_constituents(
+                replace(request, continuation=cursor)
+            )
 
         pages = await collect_source_pages(
             fetch,
@@ -247,7 +270,9 @@ async def seed_xray_scenario(
         ) -> ports.ClassificationPage | ports.SourceFailure:
             from dataclasses import replace
 
-            return await provider.get_classifications(replace(request, continuation=cursor))
+            return await classifications_provider.get_classifications(
+                replace(request, continuation=cursor)
+            )
 
         pages_classifications = await collect_source_pages(
             fetch_classifications,

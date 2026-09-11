@@ -71,6 +71,7 @@ _SOURCE_KINDS: dict[str, r.ReportSourceKind] = {
     "target_version": r.ReportSourceKind.TARGET_VERSION,
     "classification_evidence": r.ReportSourceKind.HISTORICAL_CLASSIFICATION,
     "historical_evidence": r.ReportSourceKind.HISTORICAL_EVIDENCE,
+    "activity_revision_evidence": r.ReportSourceKind.ACTIVITY_REVISION_EVIDENCE,
 }
 
 type HistoricalRow = (

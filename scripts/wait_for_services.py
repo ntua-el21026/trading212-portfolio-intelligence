@@ -5,12 +5,13 @@ from __future__ import annotations
 
 import argparse
 import os
-import socket
 import time
 from collections.abc import Callable
-from urllib.parse import urlsplit
 
 import psycopg
+from redis import Redis, RedisError
+from redis.backoff import NoBackoff
+from redis.retry import Retry
 
 DEFAULT_POSTGRES_URL = "postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio"
 DEFAULT_REDIS_URL = "redis://127.0.0.1:6379/0"
@@ -32,16 +33,16 @@ def postgres_ready() -> bool:
 
 def redis_ready() -> bool:
     """Return whether the optional local Redis endpoint responds to PING."""
-    parsed = urlsplit(os.environ.get("REDIS_URL", DEFAULT_REDIS_URL))
-    if parsed.scheme != "redis" or parsed.hostname is None:
-        return False
     try:
-        with socket.create_connection((parsed.hostname, parsed.port or 6379), timeout=2) as client:
-            client.sendall(b"*1\r\n$4\r\nPING\r\n")
-            response = client.recv(64)
-    except OSError:
+        with Redis.from_url(
+            os.environ.get("REDIS_URL", DEFAULT_REDIS_URL),
+            socket_connect_timeout=2,
+            socket_timeout=2,
+            retry=Retry(NoBackoff(), 0),
+        ) as client:
+            return client.ping() is True
+    except (RedisError, ValueError, OSError):
         return False
-    return response == b"+PONG\r\n"
 
 
 def wait_until(name: str, check: Callable[[], bool], deadline: float) -> None:

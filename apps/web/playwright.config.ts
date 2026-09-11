@@ -11,7 +11,9 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: "http://127.0.0.1:3000",
-    trace: "retain-on-failure",
+    // Session cookies and request headers must not be retained in traces.
+    trace: "off",
+    screenshot: "only-on-failure",
   },
   projects: [
     {

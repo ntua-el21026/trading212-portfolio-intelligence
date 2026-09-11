@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+import secrets
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -41,9 +42,11 @@ from trading212_persistence.refresh_semantics import (
 from trading212_provider.client import Trading212Client
 from trading212_provider.configuration import BrokerEnvironment, Trading212Settings
 from trading212_provider.ingestion_adapter import Trading212IngestionAdapter
+from trading212_reference_data.alert_webhook import ConfiguredAlertWebhook
 from trading212_security.secrets import EnvironmentSecretProvider, SecretResolutionError
 from trading212_security.settings import CredentialBackend, RuntimeEnvironment, SecuritySettings
 
+from .alert_tasks import register_alert_tasks
 from .credentials import SecretReferenceCredentialProvider
 from .materializer import PostgresCanonicalMaterializer
 from .outbox_dispatcher import (
@@ -234,6 +237,12 @@ def create_celery_app(settings: WorkerSettings) -> Celery:
     _register_tasks(application, settings)
     register_planning_task(application, database_url=settings.database_url)
     register_report_tasks(application, database_url=settings.database_url)
+    register_alert_tasks(
+        application,
+        database_url=settings.database_url,
+        cursor_signing_key=secrets.token_bytes(32),
+        notification_port=ConfiguredAlertWebhook(),
+    )
     return application
 
 

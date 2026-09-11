@@ -21,8 +21,9 @@ from trading212_domain.report_manifest import (
     report_document_digest,
 )
 from trading212_domain.report_profile import renderer_profile
-from trading212_domain.report_schema import table_schema, validate_report_row
+from trading212_domain.report_schema import dataset_tables, table_schema, validate_report_row
 from trading212_domain.sources import SourceAvailability
+from trading212_domain.values import require_utc
 
 
 class _ProofTable:
@@ -30,6 +31,7 @@ class _ProofTable:
 
     def __init__(self, table: r.ReportTableKey) -> None:
         self.table = table
+        self.dataset: r.ExportDataset | None = None
         self.schema = encode_report_schema(table_schema(table))
         self.digest = sha256()
         self.digest.update(len(self.schema).to_bytes(8, "big"))
@@ -71,12 +73,20 @@ class ReportBuilder:
         self._pending_proof_bytes = 0
         self.byte_length = 0
         self.chunk_count = 0
+        self.copy_expires_at: datetime | None = None
         self._empty_proof_bytes = len(encode_report_proof(r.ReportProof()))
         self._proof_bytes = self._empty_proof_bytes
 
     def _reserve(self, part: r.ReportProof) -> None:
         self._proof_bytes += len(encode_report_proof(part)) - self._empty_proof_bytes + 1
         r.report_limit(self._proof_bytes <= r.MAX_REPORT_MANIFEST_BYTES, "proof_bytes")
+
+    def limit_copy_expiry(self, deadline: datetime) -> None:
+        """A new private artifact cannot extend an upstream derived payload's retention."""
+        deadline = require_utc(deadline)
+        self.copy_expires_at = (
+            deadline if self.copy_expires_at is None else min(self.copy_expires_at, deadline)
+        )
 
     @property
     def proof_table_keys(self) -> frozenset[r.ReportTableKey]:
@@ -99,6 +109,34 @@ class ReportBuilder:
     def add_proof(self, relation: r.ReportProofRelation) -> None:
         """Stream complete fixed-schema proof rows; the manifest binds their descriptors."""
         table, row = relation.table, relation.row
+        self._append_row(table, row)
+
+    def append_dataset_row(self, table: r.ReportTableKey, row: r.ReportRow | None) -> None:
+        """Fan one canonical input into bounded selected dataset tables, including empties."""
+        selection = self.selection
+        if not isinstance(selection, r.ExportSelection) or table not in dataset_tables(
+            selection.dataset, selection.field_set
+        ):
+            fail_validation("Report dataset table is not selected.", field="table")
+        if table in self.descriptors:
+            fail_validation("Report table was already captured.", field="table")
+        writer = self._proof_tables.get(table)
+        if writer is None:
+            writer = _ProofTable(table)
+            writer.dataset = selection.dataset
+            self._proof_tables[table] = writer
+        elif writer.dataset is not selection.dataset:
+            fail_validation("Report table metadata conflicts.", field="table")
+        if row is not None:
+            self._append_row(table, row, dataset=selection.dataset)
+
+    def _append_row(
+        self,
+        table: r.ReportTableKey,
+        row: r.ReportRow,
+        *,
+        dataset: r.ExportDataset | None = None,
+    ) -> None:
         validate_report_row(table, row)
         if table in self.descriptors:
             fail_validation("Report table was already captured.", field="table")
@@ -106,6 +144,8 @@ class ReportBuilder:
         if writer is None:
             writer = _ProofTable(table)
             self._proof_tables[table] = writer
+        if writer.dataset is not dataset:
+            fail_validation("Report table metadata conflicts.", field="table")
         if row.key in writer.keys:
             fail_validation("Report proof identity is duplicated.", field="proof")
         payload = encode_report_row(row)
@@ -135,6 +175,7 @@ class ReportBuilder:
             self._flush_proof(writer)
             self.descriptors[table] = r.ReportTableDescriptor(
                 table=table,
+                dataset=writer.dataset,
                 schema_digest=sha256(writer.schema).hexdigest(),
                 row_count=writer.count,
                 content_digest=writer.digest.hexdigest(),
@@ -327,6 +368,7 @@ class ReportBuilder:
             proof=proof,
             proof_digest=proof_digest,
             renderer_profile=renderer_profile(formats),
+            copy_expires_at=self.copy_expires_at,
         )
         total = self.byte_length + len(encode_report_manifest(build_report_manifest(capture)))
         r.report_limit(total <= r.MAX_REPORT_DOCUMENT_BYTES, "document_bytes")

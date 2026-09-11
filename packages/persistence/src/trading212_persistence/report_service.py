@@ -19,7 +19,6 @@ from trading212_application.queries import (
 from trading212_application.views import Page
 from trading212_domain.report_manifest import decode_report_manifest, encode_report_selection
 from trading212_domain.reports import (
-    ExportDataset,
     ReportManifest,
     ReportSelection,
     ReportSourceUse,
@@ -109,8 +108,6 @@ class PostgresReportService(ReportStore):
     async def create_export(
         self, principal: Principal, command: app.CreateExportCommand
     ) -> app.ExportJobStatus:
-        if command.selection.dataset is ExportDataset.ALERTS:
-            raise report_error(app.ReportServiceErrorCode.VALIDATION_FAILED)
         return cast(app.ExportJobStatus, await self._generate(principal, command))
 
     async def _generate(

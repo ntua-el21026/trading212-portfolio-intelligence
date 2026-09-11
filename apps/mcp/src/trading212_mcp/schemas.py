@@ -8,6 +8,7 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from .alert_schemas import AlertSummaryToolResult
 from .historical_schemas import (
     HistoricalAttributionToolResult,
     HistoricalBenchmarkToolResult,
@@ -424,4 +425,5 @@ RESULT_MODELS = {
     "list_reports": ReportListToolResult,
     "get_report_status": ReportStatusToolResult,
     "generate_portfolio_report": GenerateReportToolResult,
+    "get_alert_summary": AlertSummaryToolResult,
 }

@@ -31,6 +31,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text as sql_text
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import Response as StarletteResponse
+from trading212_application.alerts import AlertService
 from trading212_application.historical import HistoricalServiceError, PerformanceIntelligenceService
 from trading212_application.ingestion import (
     RefreshScope,
@@ -93,6 +94,7 @@ from trading212_security.sessions import InMemorySessionStore, SessionManager
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 from trading212_security.tokens import BearerAuthenticator, LocalSyntheticAuthenticator
 
+from .alert_routes import register_alert_routes
 from .historical_routes import register_historical_routes
 from .planning_routes import register_planning_routes
 from .refresh_queue import PostgresRefreshQueue
@@ -154,6 +156,7 @@ class ApiContext:
     historical_service: PerformanceIntelligenceService | None
     xray_service: XrayService | None
     report_service: ReportService | None
+    alert_service: AlertService | None
     sessions: SessionManager
     local_authenticator: LocalSyntheticAuthenticator | None
     bearer_authenticator: BearerAuthenticator | None
@@ -173,6 +176,7 @@ def create_app(
     historical_service: PerformanceIntelligenceService | None = None,
     xray_service: XrayService | None = None,
     report_service: ReportService | None = None,
+    alert_service: AlertService | None = None,
     session_manager: SessionManager | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -205,6 +209,7 @@ def create_app(
             default_historical,
             default_xray,
             default_reports,
+            default_alerts,
             default_readiness,
         ) = _local_runtime_defaults(
             security_settings,
@@ -217,6 +222,7 @@ def create_app(
         historical_service = historical_service or default_historical
         xray_service = xray_service or default_xray
         report_service = report_service or default_reports
+        alert_service = alert_service or default_alerts
     else:
         portfolio_service = service
         default_readiness = _ready
@@ -239,6 +245,7 @@ def create_app(
         historical_service=historical_service,
         xray_service=xray_service,
         report_service=report_service,
+        alert_service=alert_service,
         sessions=sessions,
         local_authenticator=local_authenticator,
         bearer_authenticator=bearer_authenticator,
@@ -288,6 +295,7 @@ def create_app(
     register_historical_routes(application, _principal, _context)
     register_xray_routes(application, _principal, _context)
     register_report_routes(application, _principal, _context)
+    register_alert_routes(application, _principal, _context)
     _install_openapi_contract(application)
     return application
 
@@ -305,8 +313,10 @@ def _local_runtime_defaults(
     PerformanceIntelligenceService,
     XrayService,
     ReportService,
+    AlertService,
     Callable[[], Awaitable[bool]],
 ]:
+    from trading212_persistence.alert_service import PostgresAlertService
     from trading212_persistence.historical_service import PostgresHistoricalService
     from trading212_persistence.planning_service import PostgresPlanningService
     from trading212_persistence.report_service import PostgresReportService
@@ -377,6 +387,12 @@ def _local_runtime_defaults(
             cursor_ttl_seconds=settings.cursor_ttl_seconds,
         ),
         PostgresReportService(
+            sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=settings.cursor_ttl_seconds,
+        ),
+        PostgresAlertService(
             sessions,
             clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,

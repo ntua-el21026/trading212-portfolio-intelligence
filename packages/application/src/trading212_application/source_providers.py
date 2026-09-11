@@ -429,13 +429,16 @@ class BenchmarkProvider(Protocol):
     ) -> BenchmarkSeriesPage | SourceFailure: ...
 
 
-class InstrumentEnrichmentProvider(Protocol):
-    async def resolve_instrument(
-        self, request: InstrumentResolutionRequest
-    ) -> InstrumentResolutionResult | SourceFailure: ...
+class ClassificationProvider(Protocol):
     async def get_classifications(
         self, request: ClassificationRequest
     ) -> ClassificationPage | SourceFailure: ...
+
+
+class InstrumentEnrichmentProvider(ClassificationProvider, Protocol):
+    async def resolve_instrument(
+        self, request: InstrumentResolutionRequest
+    ) -> InstrumentResolutionResult | SourceFailure: ...
 
 
 class ETFConstituentProvider(Protocol):

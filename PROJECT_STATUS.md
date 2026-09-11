@@ -6,7 +6,7 @@
 
 **Implementation authority:** `main`
 
-**Updated:** 2026-09-10
+**Updated:** 2026-09-11
 
 ## Current state
 
@@ -58,7 +58,32 @@ P2-05 remains complete at `7b102663ea193b4668924a7252180731954f4b00`; its retain
 
 P2-06 has scoped local acceptance at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. GitHub Actions is deferred by explicit owner instruction; no CI pass is claimed. The complete required local gates, exact source bindings and deferred startup observations are retained in the P206 acceptance evidence. Remaining Phase 2 implementation continues under that recorded deferral until the owner resumes CI verification.
 
-Phase 2 has six of ten packages (60%), sixteen of 29 local rows and twenty-six of 40 scenarios complete. S34/S38 and other shared predicates remain partial; P2-07 through P2-10 and Phase 3 remain `not_started`. [P206 local assertion map](docs/implementation/evidence/phase-2-p2-06-9e39767.json).
+Phase 2 has six of ten packages (60%), sixteen of 29 local rows and twenty-six of 40 scenarios complete. S34/S38 and other shared predicates remain partial; P2-07 is `in_progress`; P2-08 through P2-10 and Phase 3 remain `not_started`. [P206 local assertion map](docs/implementation/evidence/phase-2-p2-06-9e39767.json).
+
+P2-07's full working-tree `make validate` passed in 5,242.552 seconds with
+unchanged source: 1,988 Python unit, 36 property, 148 contract, 307 integration,
+12 migration and 157 security tests; 345 web unit and 100 browser checks.
+Combined coverage is 88%, and documentation, dependency audits, builds and six
+runtime-image package-manager checks passed. The later review identified a
+lifecycle replay authorization gap and temporal activity-proof edge cases.
+The lifecycle correction passed all 22 focused PostgreSQL cases, Ruff and mypy.
+The temporal correction passed 185 historical, alert, contract and PostgreSQL
+regressions, plus Ruff and mypy. Actual failing regressions reproduce earlier-cutoff
+ambiguity, late-chain eligibility and future-payment arrival before their fixes.
+Raw observation times remain immutable; proof timing and economic eligibility are
+separate. Earlier test-fixture failures remain classified in retained receipts.
+A WSL restart interrupted the
+first corrected lifecycle run; its incomplete log is retained separately from
+the subsequent successful run. Earlier focused timeout/revision and browser
+evidence remains separate. No P2-07 acceptance is claimed: clean immutable
+validation, source/image scans and fresh runtime recovery evidence remain pending.
+GitHub Actions remains deferred by owner instruction.
+
+At the completed gate boundary, 544,194,011 bytes of inactive development output
+and obsolete raw browser traces were removed after checking consumers and
+retained evidence. Redis was removed when no longer needed. The existing task
+PostgreSQL container is reused for focused checks; source, dependencies, accepted
+evidence, failure records and production build output were preserved.
 
 For the historically accepted P205, the clean exact-source `make validate` passed in 2339.747 seconds: 1,642 isolated and 234 service/migration Python tests, 88% combined statement/branch coverage, 223 web unit tests and 76 browser checks without retries. Assertion selectors are source mappings bound to completed test-file observations.
 
@@ -192,7 +217,7 @@ than fabricated.
 
 ## Next action
 
-Start P2-07, then proceed sequentially through P2-10 with required local verification and the retained owner CI deferral under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+Complete P2-07, then proceed sequentially through P2-10 with required local verification and the retained owner CI deferral under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo
@@ -444,3 +469,16 @@ bytes) of inactive Next development output and an obsolete source extraction
 verified against its retained archive, plus exactly 12 obsolete P2-06 build records.
 Current images, current build records, dependencies and evidence were preserved.
 One PostgreSQL container is reused for the corrected-source verification.
+
+## P2-07 implementation in progress
+
+The [alerts implementation contract](docs/implementation/P2_07_ALERTS_AND_RULES.md) starts from P206 closure `2cdb409`. Rule/domain, persistence, public interfaces and canonical capture are implemented and undergoing full local validation. The final capture correction retains complete relevant revision groups, filters unrelated activity before quality/FX checks, and preserves canonical linked cash-effect deduplication. Complete-ledger coverage remains explicit. Package acceptance is pending; the owner CI deferral continues, and six packages remain locally accepted.
+
+Review interrupted the second working gate after 260 integration checks passed;
+that incomplete run is not acceptance evidence. Corrected regressions now cover
+delivery timeouts with bounded retries and truthful terminal worker outcomes,
+mapped order-fill revision identities, and date corrections crossing a historical
+period boundary. The focused notification command passed 14 tests and the shared
+revision command passed seven tests, following observed pre-fix failures. Full
+local validation is restarting against the corrected working tree; clean-commit
+validation, runtime/scans and final artifact review remain required.

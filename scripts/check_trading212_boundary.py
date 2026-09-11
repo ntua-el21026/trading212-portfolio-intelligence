@@ -10,6 +10,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PROVIDER_ROOT = ROOT / "packages/trading212/src/trading212_provider"
 TRANSPORT_OWNER = PROVIDER_ROOT / "client.py"
+ALERT_WEBHOOK_OWNER = (
+    ROOT / "packages/reference-data/src/trading212_reference_data/alert_webhook.py"
+)
 ORIGIN_OWNER = PROVIDER_ROOT / "configuration.py"
 ORIGIN_CONTRACT = PROVIDER_ROOT / "contracts/trading212-read-allowlist.yaml"
 ORIGIN_OWNERS = frozenset({ORIGIN_OWNER, ORIGIN_CONTRACT})
@@ -39,7 +42,8 @@ _EXCLUDED_PARTS = {
     "test-results",
     "tests",
 }
-_TRANSPORT_IMPORTS = {"aiohttp", "http.client", "httpx", "requests", "urllib.request"}
+_TRANSPORT_IMPORTS = {"aiohttp", "http.client", "httpx", "requests", "urllib.request", "socket"}
+_STREAM_FACTORIES = {"open_connection", "create_connection", "create_datagram_endpoint"}
 _MUTATING_METHODS = {"delete", "patch", "post", "put"}
 _MUTATING_LITERALS = {method.upper() for method in _MUTATING_METHODS}
 _FORBIDDEN_PATH_FRAGMENTS = (
@@ -83,7 +87,9 @@ def _production_text_files() -> list[Path]:
 def _import_name(node: ast.Import | ast.ImportFrom) -> set[str]:
     if isinstance(node, ast.Import):
         return {alias.name for alias in node.names}
-    return {node.module} if node.module is not None else set()
+    if node.module is None:
+        return set()
+    return {node.module, *(f"{node.module}.{alias.name}" for alias in node.names)}
 
 
 def _transport_import_findings(path: Path, tree: ast.AST) -> list[str]:
@@ -98,11 +104,40 @@ def _transport_import_findings(path: Path, tree: ast.AST) -> list[str]:
                     for transport in _TRANSPORT_IMPORTS
                 )
                 and path != TRANSPORT_OWNER
+                and not (
+                    path == ALERT_WEBHOOK_OWNER
+                    and any(
+                        imported == allowed or imported.startswith(f"{allowed}.")
+                        for allowed in {"http.client", "socket"}
+                    )
+                )
             ):
                 findings.append(
                     f"{path.relative_to(ROOT)} imports outbound transport {imported}; "
-                    "only the sealed provider client may own provider transport"
+                    "transport belongs only to its narrowly named broker or alert adapter"
                 )
+        if (
+            isinstance(node, ast.ImportFrom)
+            and node.module is not None
+            and (node.module == "asyncio" or node.module.startswith("asyncio."))
+            and any(alias.name in _STREAM_FACTORIES or alias.name == "*" for alias in node.names)
+            and path != ALERT_WEBHOOK_OWNER
+        ):
+            findings.append(
+                f"{path.relative_to(ROOT)}:{node.lineno} imports an unapproved "
+                "outbound stream connection factory"
+            )
+    for node in ast.walk(tree):
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr in _STREAM_FACTORIES
+            and path != ALERT_WEBHOOK_OWNER
+        ):
+            findings.append(
+                f"{path.relative_to(ROOT)}:{node.lineno} contains an unapproved "
+                "outbound stream connection"
+            )
     return findings
 
 

@@ -308,6 +308,10 @@ def register_report_routes(
         if body.dataset in {"activity", "dividends"}:
             sections.add("activity")
         section_scopes(request, principal, sections)
+        if body.dataset == "alerts":
+            Authorizer().require_scope(
+                principal, Scope.ALERTS_READ, now=context_provider(request).clock()
+            )
         key = _IDEMPOTENCY.validate_python(request.headers.get("x-idempotency-key"))
         result = await reports.create_export(principal, export_command(body, key))
         return report_response(request, result, wire.ExportJobStatus, status_code=202)
