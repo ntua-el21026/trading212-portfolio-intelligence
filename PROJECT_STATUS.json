@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-11T08:00:33.300136+00:00",
+  "updated_at": "2026-09-11",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -83,7 +83,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "P2-07_alerts_and_rules_implementation_with_owner_deferred_ci",
+  "next_gate": "P2-07_corrected_commit_exact_validation_with_owner_deferred_ci",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -258,6 +258,20 @@
       ],
       "artifact": "docs/implementation/evidence/phase-2-p2-04-4aa1e23-failed-quality.json",
       "correction": "Prepare bounded calculation-local calendar/source-selection indexes and read the existing sealed canonical composite directly for source detail, preserving canonical financial evidence, all authorization/license checks and unchanged deadlines. Corrected exact-source acceptance remains required."
+    },
+    {
+      "work_package": "P2-07",
+      "source_sha": "0d7aa9bd4eccb987f2485c35f57b809ddedd2900",
+      "acceptance": "failed_candidate",
+      "local_exact_validation": "passed",
+      "local_runtime": "passed",
+      "local_source_scan": "passed",
+      "local_image_scans_passed": 6,
+      "local_history_scan": "failed",
+      "historical_findings": 13,
+      "artifact": "docs/implementation/evidence/phase-2-p2-07-0d7aa9b-failed-security.json",
+      "correction": "Only exact reviewed historical fingerprints for noncredential report note/source identities are added; the accepted P206 evidence remains unchanged. Corrected exact-source acceptance is pending.",
+      "github_actions": "deferred_by_owner"
     }
   ],
   "phase_2_ci_deferral": {
@@ -312,7 +326,7 @@
     "status": "in_progress",
     "specification": "docs/implementation/P2_07_ALERTS_AND_RULES.md",
     "acceptance_claim": false,
-    "local_validation": "working_full_gate_and_focused_corrections_passed_pending_immutable_gate",
+    "local_validation": "immutable_0d7_gates_and_runtime_passed_history_scan_failed_corrected_commit_pending",
     "focused_correction_evidence": [
       {
         "external_record": "p207-notification-timeout-proof.json",
@@ -344,6 +358,37 @@
       "source_unchanged": true,
       "scope": "pre_final_review_corrections_unaccepted_working_tree"
     },
-    "review_corrections_pending": []
+    "review_corrections_pending": [],
+    "immutable_candidate_observation": {
+      "source_sha": "0d7aa9bd4eccb987f2485c35f57b809ddedd2900",
+      "acceptance": "not_accepted",
+      "make_validate": {
+        "external_record": "gates/p207-immutable-validate-01.json",
+        "sha256": "fee69befebe5e8fd93376ac7e93010d280b1e1c722255a1dce70edc10f71282a",
+        "result": "passed",
+        "duration_seconds": 5268.546
+      },
+      "runtime": {
+        "external_record": "p207-runtime-0d7aa9b-01/runtime.json",
+        "sha256": "075fd4307bc6da08b3f90a625fd67d0afaae954c01e16db34c7d378e3f1fcab1",
+        "result": "passed",
+        "duration_seconds": 256.499932,
+        "scoped_cleanup": "passed"
+      },
+      "security": {
+        "history": "failed_13_verified_noncredential_historical_report_identifiers",
+        "source": "passed",
+        "immutable_images_passed": 6,
+        "failed_evidence": "docs/implementation/evidence/phase-2-p2-07-0d7aa9b-failed-security.json"
+      },
+      "visual_review": {
+        "screenshots_opened": 6,
+        "pdf_pages_opened": [1, 3, 6, 14],
+        "pdf_page_count": 14,
+        "scope": "reviewed_images_and_sample_pages_only"
+      },
+      "next_gate": "corrected_commit_exact_validation_scans_runtime_and_visual_review",
+      "github_actions": "deferred_by_owner"
+    }
   }
 }

@@ -34,3 +34,28 @@ dfe40f67aa60cb53fbac323e8e3905c4995ef241:PROJECT_STATUS.json:generic-api-key:62
 # Review trigger: revalidate on every Gitleaks upgrade, policy fixture changes,
 # and by 2026-12-01.
 b9b75ec54fe94fdcec627d8e31ca94700ccb08ad:apps/worker/src/trading212_worker/xray_seed.py:generic-api-key:143
+
+# Owner: repository owner and designated security reviewer.
+# Reason/scope: these 13 exact historical P2-06 evidence fingerprints are
+# public report note/provenance identifiers derived from pinned position and
+# reconciliation record UUIDs. Exact values and containing records match the
+# retained synthetic runtime receipt and the typed producers/record bindings;
+# they are not credentials or credential derivatives. See classification in
+# docs/implementation/evidence/phase-2-p2-07-0d7aa9b-failed-security.json.
+# Scope is only the listed commit/path/rule/line fingerprints; no general
+# report-key pattern, rule or evidence-directory suppression is introduced.
+# Review trigger: revalidate on every Gitleaks upgrade, a producer/record-binding
+# or evidence change, any new finding, and by 2026-12-01.
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:4570
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:4722
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:4928
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:5135
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:5323
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:5683
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:6284
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:6436
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:6642
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:6849
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:7037
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:8834
+2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:11481

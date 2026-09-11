@@ -1,0 +1,360 @@
+{
+  "schema_version": "1.0.0",
+  "recorded_at_utc": "2026-09-11T10:39:06.937Z",
+  "affected_commit": "0d7aa9bd4eccb987f2485c35f57b809ddedd2900",
+  "tree": "380338b8b0a5e1ef79aa9dfe3a2891cc9267d97b",
+  "result": "failed",
+  "package_acceptance": "not_accepted",
+  "evidence_kind": "local_failed_security_gate",
+  "execution_provenance": "Existing ROOT execution receipts read and hashed; classification task performed no scanner execution.",
+  "failed_gate": {
+    "name": "repository_history_secret_scan",
+    "tool": "Gitleaks 8.30.1",
+    "image": "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f",
+    "history_ref": "0d7aa9bd4eccb987f2485c35f57b809ddedd2900",
+    "metadata_reachable_commits": 98,
+    "log_reported_scanned_commits": 97,
+    "commit_count_note": "Counts are retained as observed; no cause for their difference is inferred.",
+    "existing_ignore_sha256": "d598cc5d1e3602895c98cdd30b69067c53828c7cfa2e0373c005c405f28a43c2",
+    "config_sha256": "5dc50a6be82d35fa669f3984711da7c9f9768e56661042abf4471b4e3c0fb5aa",
+    "findings": 13,
+    "initial": {
+      "started_at_utc": "2026-09-11T10:24:27.382945+00:00",
+      "exit_code": 1,
+      "duration_seconds": 12.779,
+      "result": {
+        "path": "${RESUME_ROOT}/p207-security-candidate/gitleaks-result.json",
+        "sha256": "9e3f2954d8e2ce606b23edd33e9ca26cc3a6e64d3668ff1512b3fc4340c4f812"
+      },
+      "log": {
+        "path": "${RESUME_ROOT}/p207-security-candidate/gitleaks.log",
+        "sha256": "e295ec0ea4043a7416b50f6b45d7d923db51d5d8d250b565822118f7bda66953"
+      }
+    },
+    "diagnostic": {
+      "started_at_utc": "2026-09-11T10:25:51.202325+00:00",
+      "exit_code": 1,
+      "duration_seconds": 12.785,
+      "result": {
+        "path": "${RESUME_ROOT}/p207-security-candidate/gitleaks-diagnostic-result.json",
+        "sha256": "1fcc228f5816bbd63051d9c02655430431d22a56653e9f858536f8fbdd756b8b"
+      },
+      "log": {
+        "path": "${RESUME_ROOT}/p207-security-candidate/gitleaks-diagnostic.log",
+        "sha256": "622031b7ee28e1fba5077fef2d79562f2a10a116c8fd7eca53e225e7320d0927"
+      },
+      "redacted_report": {
+        "path": "${RESUME_ROOT}/p207-security-candidate/gitleaks-diagnostic-redacted.json",
+        "sha256": "58ad7d4217f79f120c00bde07db63394cd82bb3229fa8fbf947d89341a15b7eb"
+      },
+      "locations": {
+        "path": "${RESUME_ROOT}/p207-security-candidate/gitleaks-diagnostic-locations.json",
+        "sha256": "0ccc6b0b0e290b833f41809c65558148c5cd03bee4c62aee26dfc0ff8abb9f54"
+      }
+    }
+  },
+  "other_observed_scans": {
+    "tool": "Trivy 0.74.0",
+    "policy": {
+      "severity": [
+        "HIGH",
+        "CRITICAL"
+      ],
+      "ignore_unfixed": true,
+      "config_sha256": "28494fcd8c095d145d36e177ba11f8fb279a6d1996ca343c516784540bed0703"
+    },
+    "source": {
+      "outcome": "passed",
+      "scanners": [
+        "vuln",
+        "secret",
+        "misconfig",
+        "license"
+      ],
+      "started_at_utc": "2026-09-11T10:24:40.161177+00:00",
+      "exit_code": 0,
+      "duration_seconds": 7.839,
+      "result": {
+        "path": "${RESUME_ROOT}/p207-security-candidate/trivy-fs-result.json",
+        "sha256": "6a6f43ba8d7cc2927fa83b5e7dad3fdec8f3aa549039e196bb40eebd641256f4"
+      },
+      "log": {
+        "path": "${RESUME_ROOT}/p207-security-candidate/trivy-fs.log",
+        "sha256": "9dde2ccee5017d0642c1fefc59d535787fa9aade42f7c86a389dbbab1d2b2025"
+      }
+    },
+    "images": [
+      {
+        "name": "api",
+        "image_id": "sha256:813f3174b69c47c3ff1a811e00e8c43495159e6d40ae299ab7bf29bcf91f8e19",
+        "outcome": "passed",
+        "scanners": [
+          "vuln",
+          "secret"
+        ],
+        "started_at_utc": "2026-09-11T10:26:24.347943+00:00",
+        "exit_code": 0,
+        "duration_seconds": 2.12,
+        "result": {
+          "path": "${RESUME_ROOT}/p207-security-candidate/image-api-result.json",
+          "sha256": "d6876a9eba862ca4bd1d5f8e1e55c78161b0b8784806cb9712ce8f8ac6f1e51b"
+        },
+        "log": {
+          "path": "${RESUME_ROOT}/p207-security-candidate/image-api.log",
+          "sha256": "f0304c3e404553f97a34bf7ecb2d89505ce9d2d4fae68404c1403bf65b95ff26"
+        }
+      },
+      {
+        "name": "worker",
+        "image_id": "sha256:bb56b6c5f76d86a22c34bd74b127df726a819e5abfef16c9914316133248f34b",
+        "outcome": "passed",
+        "scanners": [
+          "vuln",
+          "secret"
+        ],
+        "started_at_utc": "2026-09-11T10:26:26.468118+00:00",
+        "exit_code": 0,
+        "duration_seconds": 2.471,
+        "result": {
+          "path": "${RESUME_ROOT}/p207-security-candidate/image-worker-result.json",
+          "sha256": "6d0aa91044632701edf6f91298d2d861153aabe01773669bed6c3e280cab0a12"
+        },
+        "log": {
+          "path": "${RESUME_ROOT}/p207-security-candidate/image-worker.log",
+          "sha256": "8fd5d8a0dbd09c5c0fcb65943d343f77f31c27b487740f7b66fb1a45023fea5c"
+        }
+      },
+      {
+        "name": "mcp",
+        "image_id": "sha256:d25cbf342ef49f2ca5b896d5e4e45eb94bb03dd566f50eb86de8b86f3340f774",
+        "outcome": "passed",
+        "scanners": [
+          "vuln",
+          "secret"
+        ],
+        "started_at_utc": "2026-09-11T10:26:28.939427+00:00",
+        "exit_code": 0,
+        "duration_seconds": 1.819,
+        "result": {
+          "path": "${RESUME_ROOT}/p207-security-candidate/image-mcp-result.json",
+          "sha256": "e1b87152670c5faaf4cd1d0dbdaf345b0336445393b2dd28789f377e3ff2f12a"
+        },
+        "log": {
+          "path": "${RESUME_ROOT}/p207-security-candidate/image-mcp.log",
+          "sha256": "2b6f299406f8a081bd25ce233945172a7872c5518cb4734cfb3ff5556f496f22"
+        }
+      },
+      {
+        "name": "web",
+        "image_id": "sha256:eb63918d1e232a66870e8b713afa2f38bb932aaed8b8f6dda323c4990d6e9a21",
+        "outcome": "passed",
+        "scanners": [
+          "vuln",
+          "secret"
+        ],
+        "started_at_utc": "2026-09-11T10:26:30.757562+00:00",
+        "exit_code": 0,
+        "duration_seconds": 1.267,
+        "result": {
+          "path": "${RESUME_ROOT}/p207-security-candidate/image-web-result.json",
+          "sha256": "adb13b312af3b3b75cb649d10dd5116ad5d0978a609999a488a18429acb7b09d"
+        },
+        "log": {
+          "path": "${RESUME_ROOT}/p207-security-candidate/image-web.log",
+          "sha256": "c82a05e9404a56e08543745c32746d8851d7d0386b52961ae110a9771b214692"
+        }
+      },
+      {
+        "name": "postgres",
+        "image_id": "sha256:038946b55c76bb0ac28eb77ee6814a9c8becfd60bcac5920c0893320b4dd791b",
+        "outcome": "passed",
+        "scanners": [
+          "vuln",
+          "secret"
+        ],
+        "started_at_utc": "2026-09-11T10:26:32.024847+00:00",
+        "exit_code": 0,
+        "duration_seconds": 0.164,
+        "result": {
+          "path": "${RESUME_ROOT}/p207-security-candidate/image-postgres-result.json",
+          "sha256": "840837fc5cb965e28efaef4f8a115346f0bed6d6062a77f609471368c41ada55"
+        },
+        "log": {
+          "path": "${RESUME_ROOT}/p207-security-candidate/image-postgres.log",
+          "sha256": "f09995d02444d0e4f33f3261e73e982484f8bc5de51237bb65f20265eb5d8b4b"
+        }
+      },
+      {
+        "name": "redis",
+        "image_id": "sha256:4b61bb6a9488d5053a9f6a9c1c7ceb92208f3b8a734f4c4cf8a10fdcfe18b1ff",
+        "outcome": "passed",
+        "scanners": [
+          "vuln",
+          "secret"
+        ],
+        "started_at_utc": "2026-09-11T10:26:32.189446+00:00",
+        "exit_code": 0,
+        "duration_seconds": 0.114,
+        "result": {
+          "path": "${RESUME_ROOT}/p207-security-candidate/image-redis-result.json",
+          "sha256": "c789911a331d32af14bfd96d3c40103168a66007a3ec1fb6b3ad5d6d1ece9e28"
+        },
+        "log": {
+          "path": "${RESUME_ROOT}/p207-security-candidate/image-redis.log",
+          "sha256": "d554a9cc928741bf99b12d5f725cc58d770b6b3d97453633e6b9a75150cab047"
+        }
+      }
+    ],
+    "observation_limit": "Exit-zero passes apply to the recorded tools, databases and configured severity/unfixed policy; they do not establish absence of all vulnerabilities or secrets. Trivy reports are table output in the bound logs."
+  },
+  "bindings": {
+    "scan_metadata": {
+      "path": "${RESUME_ROOT}/p207-security-candidate/metadata.json",
+      "sha256": "61713c4881c7f52b797bb757616ab41033ad5f97d24750b94bb53deafa672025"
+    },
+    "tool_versions": {
+      "path": "${RESUME_ROOT}/p207-security-candidate/tool-versions.json",
+      "sha256": "e5102e6ac1ce7dd7a64022e499f1513a559dccbc693f466c55d721fdc3d6cb23"
+    },
+    "source_results": {
+      "path": "${RESUME_ROOT}/p207-security-candidate/source-results.json",
+      "sha256": "5f475a9ad232b6aa922b2db4536b1147aa49a2cd2a05c8dc3cec2d5eb80c9577"
+    },
+    "image_results": {
+      "path": "${RESUME_ROOT}/p207-security-candidate/image-results.json",
+      "sha256": "37f20886fdf4424aae75b03fb109738ab8c537d03f2ed093dbdaf3507e166f92"
+    },
+    "source_database": {
+      "path": "${RESUME_ROOT}/p207-security-candidate/source-trivy-db-metadata.json",
+      "sha256": "ded17de680fd77fbf91cbd1c5815e1014e77bfc934369d22d41b7f167e7167d8"
+    },
+    "source_policy_database": {
+      "path": "${RESUME_ROOT}/p207-security-candidate/source-trivy-policy-metadata.json",
+      "sha256": "b49af3ff225a2a407b55bbc3fc204a80a96d0ba7c4c1cbeca40ab553873fa3ae"
+    },
+    "image_database": {
+      "path": "${RESUME_ROOT}/p207-security-candidate/trivy-db-metadata.json",
+      "sha256": "ded17de680fd77fbf91cbd1c5815e1014e77bfc934369d22d41b7f167e7167d8"
+    },
+    "image_policy_database": {
+      "path": "${RESUME_ROOT}/p207-security-candidate/trivy-policy-metadata.json",
+      "sha256": "b49af3ff225a2a407b55bbc3fc204a80a96d0ba7c4c1cbeca40ab553873fa3ae"
+    },
+    "source_archive_sha256": "4659f42d3b97e66cc6f80886eed0917938a28c8dc5a5eb07d9a31f8e498e15d5"
+  },
+  "classification": {
+    "rule": "generic-api-key",
+    "historical_commit": "2cdb4095eabcf0db92370becfa9952004583e776",
+    "file": "docs/implementation/evidence/phase-2-p2-06-9e39767.json",
+    "evidence_sha256": "f206c73040d0e5eb3eb80d9434101990b638ba6c8987460f65b385adfd715692",
+    "conclusion": "Verified noncredential report note/provenance identifiers from pinned record UUIDs; no credential or credential derivative is present in the exact 13 matches.",
+    "verification": "Every flagged containing object equals its original P206 runtime object. Typed position subject/parent IDs and reconciliation run IDs/content digests agree across report bindings, provenance and status pins. Producers construct report identifiers, not authentication, signing or provider credentials.",
+    "retained_runtime_sha256": "16ba28a312513a0f9586b5420f3ab973ab983e2c8066f2131f75cf67dbf52e22",
+    "retained_harness_sha256": "2c834a5aa255e228c3252e58eb82d4a4739c10f3fa184baee3d00efb19afbddd",
+    "groups": [
+      {
+        "kind": "missing_price_note",
+        "lines": [
+          4570,
+          4722,
+          5323,
+          5683,
+          6284,
+          6436,
+          7037
+        ],
+        "identity_pointer": "/runtime/checks/reports/observed/main/manifest/source_references/14",
+        "note_pointer": "/runtime/checks/reports/observed/main/manifest/notes/9"
+      },
+      {
+        "kind": "reconciliation_main",
+        "lines": [
+          4928,
+          5135,
+          6642,
+          6849
+        ],
+        "identity_pointer": "/runtime/checks/reports/observed/main/manifest/source_references/12",
+        "binding_pointer": "/runtime/checks/reports/observed/main/manifest/reconciliation/0"
+      },
+      {
+        "kind": "reconciliation_mcp",
+        "lines": [
+          8834,
+          11481
+        ],
+        "identity_pointer": "/runtime/checks/reports/observed/mcp/manifest/source_references/42",
+        "binding_pointer": "/runtime/checks/reports/observed/mcp/manifest/reconciliation/0"
+      }
+    ],
+    "source_commit": "0d7aa9bd4eccb987f2485c35f57b809ddedd2900",
+    "source_pointers": [
+      {
+        "id": "missing_price_note",
+        "path": "packages/persistence/src/trading212_persistence/report_capture_portfolio.py",
+        "start_line": 271,
+        "end_line": 363,
+        "sha256": "ff8c66ce211b2d9ef9320a764dbc70a5fb40e5d202126f4c7a46bfd23c9d533f"
+      },
+      {
+        "id": "note_memberships",
+        "path": "packages/persistence/src/trading212_persistence/report_capture_common.py",
+        "start_line": 26,
+        "end_line": 46,
+        "sha256": "4a51f30411444fb9c997f4954021fb9d3005d4138d2ac8c8d4d5a2de7c9f99e3"
+      },
+      {
+        "id": "typed_relations",
+        "path": "packages/persistence/src/trading212_persistence/report_builder.py",
+        "start_line": 209,
+        "end_line": 236,
+        "sha256": "243b7a918c63fcfcf6c1d9359bd5cd9e47719cf8b861e060078ffd90ad14618c"
+      },
+      {
+        "id": "reconciliation_provenance",
+        "path": "packages/persistence/src/trading212_persistence/report_capture_quality.py",
+        "start_line": 29,
+        "end_line": 116,
+        "sha256": "ef6c663a9aebe35f02518ea571c61b083c701c4855f3e9e0629dbc4bb3851f58"
+      },
+      {
+        "id": "status_warning_projection",
+        "path": "packages/persistence/src/trading212_persistence/report_input_store.py",
+        "start_line": 253,
+        "end_line": 268,
+        "sha256": "986d54393947216e9e8f5a0ec1b2332334a3974b37c755dfb07463c32a134d07"
+      },
+      {
+        "id": "public_wire",
+        "path": "packages/api-contracts/src/trading212_api_contracts/reports.py",
+        "start_line": 799,
+        "end_line": 819,
+        "sha256": "6379cbb196bfd473d2dcd73cc0a7c007a467668e7655abf0162aba083cbbe682"
+      },
+      {
+        "id": "public_manifest",
+        "path": "packages/domain/src/trading212_domain/report_manifest.py",
+        "start_line": 567,
+        "end_line": 588,
+        "sha256": "0020a5e3bb7949d1ae6b4b4d947d490a3d918e6d9fe3e25112c26a55a5a3804e"
+      }
+    ]
+  },
+  "correction": {
+    "state": "prepared_not_integrated",
+    "scope": "Append only the 13 reported commit/path/rule/line fingerprints to .gitleaksignore; preserve all six existing entries and accepted P206 evidence bytes.",
+    "owner": "Repository owner and designated security reviewer",
+    "review_triggers": [
+      "Gitleaks upgrade",
+      "producer, record-binding or evidence change",
+      "new finding",
+      "2026-12-01"
+    ],
+    "corrected_scan": "not_executed",
+    "new_immutable_gate": "required_after_committed_source_change"
+  },
+  "github_actions": {
+    "state": "deferred_by_owner",
+    "claim": "No Actions execution or success is claimed; no Actions or billing operation was performed for this record."
+  }
+}

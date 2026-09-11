@@ -474,11 +474,19 @@ One PostgreSQL container is reused for the corrected-source verification.
 
 The [alerts implementation contract](docs/implementation/P2_07_ALERTS_AND_RULES.md) starts from P206 closure `2cdb409`. Rule/domain, persistence, public interfaces and canonical capture are implemented and undergoing full local validation. The final capture correction retains complete relevant revision groups, filters unrelated activity before quality/FX checks, and preserves canonical linked cash-effect deduplication. Complete-ledger coverage remains explicit. Package acceptance is pending; the owner CI deferral continues, and six packages remain locally accepted.
 
-Review interrupted the second working gate after 260 integration checks passed;
-that incomplete run is not acceptance evidence. Corrected regressions now cover
-delivery timeouts with bounded retries and truthful terminal worker outcomes,
-mapped order-fill revision identities, and date corrections crossing a historical
-period boundary. The focused notification command passed 14 tests and the shared
-revision command passed seven tests, following observed pre-fix failures. Full
-local validation is restarting against the corrected working tree; clean-commit
-validation, runtime/scans and final artifact review remain required.
+Exact candidate 0d7aa9bd4eccb987f2485c35f57b809ddedd2900 passed clean
+make validate in 5,268.546 seconds, including 2,352 isolated and 338 service
+coverage tests, 88% coverage, 345 web unit tests, 100 browser checks, dependency
+checks and six image builds/probes. Its fresh runtime passed in 256.500 seconds:
+the same pending alert recovered after actual Redis message loss, all seven
+services restarted, and authorization, expiry and privacy checks passed.
+The task containers and disposable volume/network were removed afterward.
+
+That candidate remains unaccepted: the complete-history Gitleaks scan reported
+13 findings in the previously retained P2-06 evidence. Trivy source and all six
+immutable-image scans passed. The exact historical report identifier findings
+are classified in
+[the failed-security record](docs/implementation/evidence/phase-2-p2-07-0d7aa9b-failed-security.json).
+The correction preserves the accepted P2-06 evidence and existing exception
+fingerprints. A corrected-commit full gate, scans, runtime and artifact review
+remain required. Six packages remain accepted; GitHub Actions stays deferred.
