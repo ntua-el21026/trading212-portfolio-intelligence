@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "work_package": "P2-07",
+  "source_sha": "0df988ce4fb785c44d28868d9936d2dbae18c99d",
+  "acceptance": "failed_candidate",
+  "recorded_at_utc": "2026-09-11T12:12:22.418077+00:00",
+  "make_validate": {
+    "command": [
+      "make",
+      "validate"
+    ],
+    "result": "failed",
+    "exit_code": 2,
+    "duration_seconds": 4600.42,
+    "started_at_utc": "2026-09-11T10:44:36.795234+00:00",
+    "completed_at_utc": "2026-09-11T12:01:16.998437+00:00",
+    "source_unchanged": false,
+    "external_record": "gates/p207-immutable-validate-02.json",
+    "sha256": "78b785f0d2025dcf8122328caa0970d8107dc529a46f21564cb7230fcda4a7ce",
+    "log_sha256": "0a6bf4cafa35333f5d91a872bcaf5c0d3cb1b3796dbdf0fa7a641e372dbe1a19"
+  },
+  "browser_failure": {
+    "test": "tests/e2e/api-web/alerts.spec.ts::inspects an actual captured event and separately acknowledges and resolves it",
+    "project": "api-chromium-desktop",
+    "assertion": "All non-checkbox form controls have height at least 44 CSS pixels.",
+    "observed_failure": [
+      "TEXTAREA"
+    ],
+    "measured_height_retained": null,
+    "failure_screenshot_sha256": "f650a004ca5b14c99fc81fd1aa55f58412a7bb48b6b2a619cfa8de980ddb2061",
+    "failure_context_sha256": "b2eed2784ec666810ceb42d67d5da296542041348681cd7bf23061d14b7c033a",
+    "visual_observation": "The failure screenshot taken after the assertion shows the resolved revision and a correctly sized review textarea. It does not establish the DOM geometry at assertion time."
+  },
+  "passed_layers_before_failure": {
+    "isolated_python_coverage_cases": 2352,
+    "database_coverage_cases": 338,
+    "combined_python_coverage_percent": 88,
+    "demo_browser_cases": 50,
+    "api_alert_desktop_cases": 4
+  },
+  "source_after_failure": {
+    "only_modified_file": "apps/web/next-env.d.ts",
+    "change": "Next development generated .next/dev/types imports instead of .next/types imports.",
+    "verified_original_bytes_restored_after_process_exit": true,
+    "gate_receipt_preserved": true
+  },
+  "diagnosis": {
+    "confirmed_test_gap": "Backend durability and a disabled Resolve button did not establish that the refreshed event revision had committed; pending commands disable the same control.",
+    "transient_layout_cause": "inferred_not_reproduced",
+    "diagnostic_follow_up": "One isolated and five desktop cases passed with failure-detail instrumentation and unchanged assertions; these do not replace the failed gate."
+  },
+  "correction": {
+    "scope": "browser test synchronization only",
+    "behavior": "Require the exact acknowledged and resolved server revisions to be visible, and the review control to be enabled after each refreshed state, before advancing or measuring layout.",
+    "layout_threshold_unchanged": true,
+    "automatic_retries": 0,
+    "product_code_changed": false,
+    "browser_source_sha256": "3728934a16981f22150c79de1109af8c3515cbd375d9176b74f516488a367165",
+    "focused_working_tree_logs": {
+      "desktop": {
+        "external_record": "p207-alert-browser-diagnosis-01/corrected-desktop.log",
+        "sha256": "ad086a75f829e57624e2721eb9ef17de9c5fa98e6e043a7913c26d311bf2fb3e",
+        "passed": 5
+      },
+      "mobile": {
+        "external_record": "p207-alert-browser-diagnosis-01/corrected-mobile.log",
+        "sha256": "7f1ed54b7cc41630d87358a92fe12626ae2edc1d86e7108c532218139e0d98c8",
+        "passed": 5
+      }
+    },
+    "immutable_acceptance": "pending"
+  },
+  "github_actions": "deferred_by_owner"
+}

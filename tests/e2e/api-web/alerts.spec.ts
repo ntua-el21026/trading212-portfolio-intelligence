@@ -256,6 +256,20 @@ test("inspects an actual captured event and separately acknowledges and resolves
     await (await request.get(`${api}/alert-events/${event.id}`)).json(),
   );
   expect(stored.episode_state).toBe("open");
+  // A durable API write can finish before the refreshed React tree commits.
+  // Disabled buttons also represent a pending command, not just a saved state.
+  const eventPanel = page.locator(".ui-surface").filter({
+    has: page.getByRole("heading", {
+      name: "Alert event · Warning",
+      exact: true,
+    }),
+  });
+  await expect(
+    eventPanel.getByText("Open · Acknowledged · revision " + stored.revision, {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(eventPanel.getByLabel("Review note (optional)")).toBeEnabled();
   await page
     .getByRole("button", { name: "Resolve event", exact: true })
     .click();
@@ -274,6 +288,14 @@ test("inspects an actual captured event and separately acknowledges and resolves
   expect(stored.acknowledgment).not.toBeNull();
   expect(stored.evaluation.input_digest).toBe(event.evaluation.input_digest);
   expect(stored.evaluation.result_digest).toBe(event.evaluation.result_digest);
+  await expect(
+    eventPanel.getByText(
+      "Resolved · Acknowledged · revision " + stored.revision,
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await expect(eventPanel.getByLabel("Review note (optional)")).toBeVisible();
+  await expect(eventPanel.getByLabel("Review note (optional)")).toBeEnabled();
   await expect(
     page.getByRole("button", { name: "Resolve event", exact: true }),
   ).toBeDisabled();

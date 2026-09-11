@@ -3547,6 +3547,15 @@
           "artifact": "docs/implementation/evidence/phase-2-p2-07-0d7aa9b-failed-security.json",
           "correction": "Only exact reviewed historical fingerprints for noncredential report note/source identities are added; the accepted P206 evidence remains unchanged. Corrected exact-source acceptance is pending.",
           "github_actions": "deferred_by_owner"
+        },
+        {
+          "work_package": "P2-07",
+          "source_sha": "0df988ce4fb785c44d28868d9936d2dbae18c99d",
+          "acceptance": "failed_candidate",
+          "local_exact_validation": "failed_browser_layout_assertion",
+          "artifact": "docs/implementation/evidence/phase-2-p2-07-0df988c-failed-browser.json",
+          "correction": "Await the exact rendered event revisions and completed form transition; the original minimum control height assertion remains unchanged. Fresh immutable acceptance remains pending.",
+          "github_actions": "deferred_by_owner"
         }
       ],
       "ci_deferral": {
@@ -3622,7 +3631,7 @@
         "starting_sha": "2cdb4095eabcf0db92370becfa9952004583e776",
         "specification": "docs/implementation/P2_07_ALERTS_AND_RULES.md",
         "acceptance_claim": false,
-        "local_validation": "immutable_0d7_gates_and_runtime_passed_history_scan_failed_corrected_commit_pending",
+        "local_validation": "immutable_0df_failed_browser_corrected_working_browser_passed_exact_acceptance_pending",
         "github_actions": "deferred_by_owner",
         "focused_correction_evidence": [
           {
@@ -3656,7 +3665,7 @@
           "scope": "pre_final_review_corrections_unaccepted_working_tree"
         },
         "review_corrections_pending": [],
-        "immutable_candidate_observation": {
+        "previous_immutable_candidate_observation": {
           "source_sha": "0d7aa9bd4eccb987f2485c35f57b809ddedd2900",
           "acceptance": "not_accepted",
           "make_validate": {
@@ -3683,6 +3692,37 @@
             "pdf_pages_opened": [1, 3, 6, 14],
             "pdf_page_count": 14,
             "scope": "reviewed_images_and_sample_pages_only"
+          },
+          "next_gate": "corrected_commit_exact_validation_scans_runtime_and_visual_review",
+          "github_actions": "deferred_by_owner"
+        },
+        "immutable_candidate_observation": {
+          "source_sha": "0df988ce4fb785c44d28868d9936d2dbae18c99d",
+          "acceptance": "not_accepted",
+          "make_validate": {
+            "command": ["make", "validate"],
+            "result": "failed",
+            "exit_code": 2,
+            "duration_seconds": 4600.42,
+            "started_at_utc": "2026-09-11T10:44:36.795234+00:00",
+            "completed_at_utc": "2026-09-11T12:01:16.998437+00:00",
+            "source_unchanged": false,
+            "external_record": "gates/p207-immutable-validate-02.json",
+            "sha256": "78b785f0d2025dcf8122328caa0970d8107dc529a46f21564cb7230fcda4a7ce",
+            "log_sha256": "0a6bf4cafa35333f5d91a872bcaf5c0d3cb1b3796dbdf0fa7a641e372dbe1a19"
+          },
+          "failed_evidence": "docs/implementation/evidence/phase-2-p2-07-0df988c-failed-browser.json",
+          "focused_browser_correction": {
+            "desktop": {
+              "external_record": "p207-alert-browser-diagnosis-01/corrected-desktop.log",
+              "sha256": "ad086a75f829e57624e2721eb9ef17de9c5fa98e6e043a7913c26d311bf2fb3e",
+              "passed": 5
+            },
+            "mobile": {
+              "external_record": "p207-alert-browser-diagnosis-01/corrected-mobile.log",
+              "sha256": "7f1ed54b7cc41630d87358a92fe12626ae2edc1d86e7108c532218139e0d98c8",
+              "passed": 5
+            }
           },
           "next_gate": "corrected_commit_exact_validation_scans_runtime_and_visual_review",
           "github_actions": "deferred_by_owner"

@@ -490,3 +490,19 @@ are classified in
 The correction preserves the accepted P2-06 evidence and existing exception
 fingerprints. A corrected-commit full gate, scans, runtime and artifact review
 remain required. Six packages remain accepted; GitHub Actions stays deferred.
+
+The corrected security candidate 0df988ce4fb785c44d28868d9936d2dbae18c99d
+remains unaccepted: its full local gate stopped after 4,600.420 seconds at an
+Alerts browser minimum-height assertion. The 2,352 isolated and 338 database
+coverage cases passed with 88% coverage; 50 demo browser cases and four Alerts
+cases passed before the suite reported failure. The [failed-browser record](docs/implementation/evidence/phase-2-p2-07-0df988c-failed-browser.json)
+retains the observation separately from earlier successful candidates.
+
+The browser correction waits for the exact saved event revisions and the
+completed form transition before measuring layout; pending disabled buttons
+alone did not prove that the refreshed UI was ready. The original minimum-height
+assertion and zero-retry policy remain intact. All five Alerts cases passed on
+desktop and all five passed on mobile after the correction. These focused working
+results do not accept P2-07. Fresh immutable validation, security scans, runtime
+and artifact review remain pending. Only the shared PostgreSQL container remains
+running for browser checks; idle Redis was removed. GitHub Actions stays deferred.
