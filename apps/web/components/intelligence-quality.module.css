@@ -1,0 +1,40 @@
+.panel {
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+.panel h2,
+.panel h3 {
+  margin: 0;
+  font: 650 1.1rem/1.4 var(--font-ui);
+}
+.panel p {
+  margin: 0;
+  line-height: 1.55;
+}
+.panel :global(.collection-filters) {
+  padding: 0 0 1rem;
+}
+.metadata {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+.metadata > div {
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 0.35rem;
+  padding: 0.75rem;
+  background: var(--color-canvas);
+}
+.metadata dd {
+  overflow-wrap: anywhere;
+}
+.panel table caption {
+  padding: 0.6rem 0;
+  text-align: left;
+  color: var(--color-muted);
+}

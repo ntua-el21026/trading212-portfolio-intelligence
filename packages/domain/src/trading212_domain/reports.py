@@ -376,6 +376,7 @@ class ReportSelection(ReportRecord):
     plan_revision_id: UUID | None = None
     benchmark_version_id: UUID | None = None
     constituent_snapshot_id: UUID | None = None
+    xray_run_id: UUID | None = None
     template_version: str = REPORT_TEMPLATE_VERSION
 
     def __post_init__(self) -> None:
@@ -389,6 +390,8 @@ class ReportSelection(ReportRecord):
         if self.template_version != REPORT_TEMPLATE_VERSION:
             fail_validation("Report template is unsupported.", field="template_version")
         selected = set(self.sections)
+        if self.xray_run_id is not None and ReportSection.DRIFT not in selected:
+            fail_validation("Company actuals require a drift section.", field="xray_run_id")
         wants_target = bool(
             selected & {ReportSection.TARGETS, ReportSection.DRIFT, ReportSection.CONTRIBUTION_PLAN}
         )
@@ -450,6 +453,7 @@ class ExportSelection(ReportRecord):
     plan_revision_id: UUID | None = None
     benchmark_version_id: UUID | None = None
     constituent_snapshot_id: UUID | None = None
+    xray_run_id: UUID | None = None
 
     def __post_init__(self) -> None:
         ReportRecord.__post_init__(self)
@@ -463,6 +467,13 @@ class ExportSelection(ReportRecord):
             value = getattr(self, name)
             if value is not None and self.dataset not in allowed:
                 fail_validation("An export reference is irrelevant.", field=name)
+        if self.xray_run_id is not None and not (
+            self.dataset is ExportDataset.TARGETS
+            or (self.dataset is ExportDataset.PLANS and self.field_set is ExportFieldSet.AUDIT)
+        ):
+            fail_validation(
+                "Company actuals require target or plan-audit rows.", field="xray_run_id"
+            )
         if self.dataset is ExportDataset.TARGETS and self.target_version_id is None:
             fail_validation("A target version is required.", field="target_version_id")
         if self.dataset is ExportDataset.PLANS and self.plan_revision_id is None:
@@ -749,6 +760,8 @@ class ReportTableKey(StrEnum):
     HISTORICAL_RECONCILIATION_ANCHORS = "historical_reconciliation_anchors"
     XRAY_RECONCILIATION = "xray_reconciliation"
     XRAY_WARNING_PATHS = "xray_warning_paths"
+    PLANNING_COMPANY_ACTUALS_V1 = "planning_company_actuals_v1"
+    PLANNING_COMPANY_BASIS_V1 = "planning_company_basis_v1"
 
 
 class ReportRowOrder(StrEnum):

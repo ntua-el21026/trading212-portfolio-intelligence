@@ -30,6 +30,7 @@ SOURCE_OPERATIONS = {
     "create_benchmark_definition": "post",
     "create_benchmark_version": "post",
     "archive_benchmark_definition": "post",
+    "get_intelligence_data_quality": "get",
 }
 
 
@@ -41,6 +42,7 @@ def _contract() -> dict[str, Any]:
 
 
 def test_exact_fourteen_source_operations_are_bounded_private_and_separate_from_broker() -> None:
+    # Keep the accepted historical selector; P208 adds only the fixed quality GET.
     contract = _contract()
     operations = {
         operation["operationId"]: (method, operation)
@@ -54,7 +56,12 @@ def test_exact_fourteen_source_operations_are_bounded_private_and_separate_from_
         parameters = {item["name"]: item for item in operation["parameters"]}
         assert not {"url", "method", "path", "provider_url", "owner_id"} & parameters.keys()
         if method == "get":
-            assert "If-None-Match" in parameters
+            if name == "get_intelligence_data_quality":
+                # Current usability is always rechecked; this read has no 304 path.
+                assert "If-None-Match" not in parameters
+                assert set(parameters) == {"account_id", "analytics_kind", "cursor", "limit"}
+            else:
+                assert "If-None-Match" in parameters
             if "limit" in parameters:
                 assert parameters["limit"]["schema"]["maximum"] == 100
                 assert parameters["limit"]["schema"]["default"] == 25
@@ -71,7 +78,7 @@ def test_source_client_generation_is_deterministic_and_keeps_old_clients_separat
     rendered = render_source_client(contract)
     assert rendered == render_source_client(copy.deepcopy(contract))
     assert all(f"async {name}(" in rendered for name in SOURCE_OPERATIONS)
-    assert rendered.count("async ") == 14
+    assert rendered.count("async ") == 15
     assert "z.any(" not in rendered and "z.unknown(" not in rendered
     assert "SourceApiError" in rendered and "instanceof z.ZodError" in rendered
     for render in (render_target_client, render_planning_client):

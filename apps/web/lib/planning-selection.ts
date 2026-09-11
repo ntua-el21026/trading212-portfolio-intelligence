@@ -6,6 +6,7 @@ import { z } from "zod";
 import { firstSearchParam, readOpaqueCursor } from "./collection-query";
 import { planningClients } from "./planning-adapter";
 import { targetData } from "./target-adapter";
+import { resolveAccountSelection } from "./account-selection";
 
 export type PlanningSearch = Record<string, string | string[] | undefined>;
 
@@ -33,12 +34,20 @@ export function planningHref(
 export async function loadPlanningSelection(query: PlanningSearch) {
   const clients = await planningClients();
   const accounts = await clients.portfolio.listAccounts();
-  const accountId =
-    planningUuid(query.account) ??
-    process.env.T212PI_ACCOUNT_ID ??
-    accounts[0]?.id;
-  const account = accounts.find((item) => item.id === accountId);
-  if (!account) return { clients, accounts, account: null, selection: null };
+  const accountSelection = resolveAccountSelection(
+    accounts,
+    query.account,
+    process.env.T212PI_ACCOUNT_ID,
+  );
+  const account = accountSelection.account;
+  if (!account)
+    return {
+      clients,
+      accounts,
+      accountSelection,
+      account: null,
+      selection: null,
+    };
   const requestedPie = planningUuid(query.pie);
   const requestedVersion = planningUuid(query.version);
   const requestedSnapshot = planningUuid(query.snapshot);
@@ -103,6 +112,7 @@ export async function loadPlanningSelection(query: PlanningSearch) {
   return {
     clients,
     accounts,
+    accountSelection,
     account,
     selection: { browse, pies, pie, versions, version, snapshots, snapshot },
   };

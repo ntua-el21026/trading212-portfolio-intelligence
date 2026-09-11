@@ -8,7 +8,7 @@ import type {
   SourceSeries,
 } from "@trading212/api-contracts";
 import { Notice, Surface } from "@trading212/ui";
-import Link from "next/link";
+import Link from "./navigation-intent";
 import { formatDateTime, titleCase } from "../lib/format";
 
 export function SourceLicenseDetails({

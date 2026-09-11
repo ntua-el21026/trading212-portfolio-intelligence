@@ -16,9 +16,9 @@ from pydantic import ValidationError
 from trading212_api_contracts import planning as wire
 from trading212_application import planning as application
 from trading212_application.queries import CollectionSnapshotCapacityError, CursorValidationError
+from trading212_application.xray_projection import xray_public_primitive
 from trading212_domain import planning as domain
 from trading212_domain.errors import DomainError
-from trading212_domain.serialization import to_primitive
 from trading212_domain.values import CurrencyCode, Money
 from trading212_security.principals import (
     AuthenticationError,
@@ -279,7 +279,9 @@ class PlanningMcpGateway:
 
 def _payload[T: wire.PlanningSchema](value: object, schema: type[T]) -> T:
     try:
-        return schema.model_validate(wire.canonical_planning_payload(to_primitive(value), schema))
+        return schema.model_validate(
+            wire.canonical_planning_payload(xray_public_primitive(value), schema)
+        )
     except (KeyError, TypeError, ValueError):
         raise _InvalidResult() from None
 

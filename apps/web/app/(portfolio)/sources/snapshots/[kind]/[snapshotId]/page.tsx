@@ -1,4 +1,10 @@
-import Link from "next/link";
+import Link from "../../../../../../components/navigation-intent";
+import type { ReactNode } from "react";
+import {
+  AccountRequired,
+  AccountView,
+} from "../../../../../../components/account-context";
+import { loadSelectedAccount } from "../../../../../../lib/api-adapter";
 import { notFound } from "next/navigation";
 import {
   SourceApiError,
@@ -39,10 +45,29 @@ export default async function SourceSnapshotPage({
   const snapshotId = planningUuid(rawId);
   if (!snapshotId) notFound();
   const query = await searchParams;
-  const accountId = planningUuid(query.account);
+  // An absent account is an owner-wide source read, not a preferred account.
+  const accountSelection =
+    query.account === undefined
+      ? null
+      : await loadSelectedAccount(query.account);
+  if (accountSelection && !accountSelection.account)
+    return <AccountRequired selection={accountSelection} />;
+  const accountId = accountSelection?.account?.id;
+  const withScope = (content: ReactNode) =>
+    accountId ? (
+      <AccountView accountId={accountId}>{content}</AccountView>
+    ) : (
+      <>
+        <Notice title="Owner-wide source">
+          This retained source is shown for its owner without a portfolio
+          account selection.
+        </Notice>
+        {content}
+      </>
+    );
   const { sources } = await sourceClients();
   const result = await sourceResult(async () => {
-    const details = { account_id: accountId };
+    const details = accountId ? { account_id: accountId } : {};
     const pageQuery = {
       ...details,
       limit: 25,
@@ -102,19 +127,21 @@ export default async function SourceSnapshotPage({
   });
   if (!result.ok) {
     if (result.code === "NOT_FOUND") notFound();
-    return <Notice title="Source data is unavailable">{result.message}</Notice>;
+    return withScope(
+      <Notice title="Source data is unavailable">{result.message}</Notice>,
+    );
   }
   if (result.data.type === "composite") {
-    return (
+    return withScope(
       <CompositeSourceDetails
         header={result.data.header}
         observations={result.data.observations}
         accountId={accountId}
-      />
+      />,
     );
   }
   const { header, series, observations } = result.data;
-  return (
+  return withScope(
     <div className="page-stack source-page">
       <PageHeader
         title={`${titleCase(kind)} source snapshot`}
@@ -206,6 +233,6 @@ export default async function SourceSnapshotPage({
           nextCursor={observations.next_cursor}
         />
       </Surface>
-    </div>
+    </div>,
   );
 }

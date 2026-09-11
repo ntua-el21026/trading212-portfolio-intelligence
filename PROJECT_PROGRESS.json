@@ -241,7 +241,7 @@
         "P2-05": "complete",
         "P2-06": "complete",
         "P2-07": "complete",
-        "P2-08": "not_started",
+        "P2-08": "in_progress",
         "P2-09": "not_started",
         "P2-10": "not_started"
       },
@@ -4414,14 +4414,13 @@
         "global_prune_used": false
       },
       "current_implementation": {
-        "work_package": "P2-07",
-        "status": "complete",
-        "source_sha": "03c3c5b0b8182aadaaf48ec29131ab7fe83095a7",
-        "acceptance_claim": true,
-        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
-        "artifact": "docs/implementation/evidence/phase-2-p2-07-03c3c5b.json",
-        "github_actions": "deferred_by_owner",
-        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-07-03c3c5b-implementation-history.json"
+        "work_package": "P2-08",
+        "status": "in_progress",
+        "starting_sha": "7d3a5f59f30fe934953c7e3ab27d8e6ae48c1ca1",
+        "specification": "docs/implementation/P2_08_ANALYTICAL_WEB_EXPERIENCE.md",
+        "acceptance_claim": false,
+        "local_validation": "Working validation: 534 web unit tests passed; broad coverage attempt had 2474 isolated passes and 376 PostgreSQL passes with one report-fixture clock failure. The corrected shared operational clock passed all 11 company-report/artifact cases under coverage; unchanged financial cutoff/license/expiry assertions. All remaining static, documentation, dependency/security, generated-contract and six-image build checks passed. The 88% working coverage aggregate includes the preserved failed attempt and focused correction; fresh immutable make validate and reviewed browser evidence remain required.",
+        "scope": "Account navigation and command isolation, exact accessible financial presentation, intelligence quality projection, company actual-weight and report source binding, and all eighteen analytical experiences."
       }
     },
     "phase_3": {

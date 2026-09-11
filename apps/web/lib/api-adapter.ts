@@ -16,6 +16,12 @@ import {
 } from "@trading212/api-contracts";
 import Decimal from "decimal.js";
 import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
+
+import {
+  resolveAccountSelection,
+  type AccountParameter,
+} from "./account-selection";
 
 import type {
   DemoViewState,
@@ -64,32 +70,26 @@ async function apiClient(): Promise<PortfolioApiClient> {
   return new PortfolioApiClient(options);
 }
 
-function chooseAccountId(accounts: Account[]): string {
-  if (accounts.length === 0) {
-    throw new Error("No portfolio account is available for this principal.");
-  }
+export const loadAvailableAccounts = cache(async (): Promise<Account[]> => {
+  await requireWebAccess();
+  if (isExplicitDemoMode()) return [getDemoPortfolio().summary.account];
+  return (await apiClient()).listAccounts();
+});
 
-  const preferred = process.env.T212PI_ACCOUNT_ID?.trim();
-  if (preferred) {
-    const account = accounts.find(({ id }) => id === preferred);
-    if (!account) {
-      throw new Error(
-        "The configured portfolio account is not available to this principal.",
-      );
-    }
-    return account.id;
-  }
-
-  if (accounts.length !== 1) {
-    throw new Error(
-      "Multiple portfolio accounts are available; configure T212PI_ACCOUNT_ID explicitly.",
-    );
-  }
-  return accounts[0].id;
+export async function loadSelectedAccount(requested?: AccountParameter) {
+  return resolveAccountSelection(
+    await loadAvailableAccounts(),
+    requested,
+    process.env.T212PI_ACCOUNT_ID,
+  );
 }
 
-async function accountIdFor(client: PortfolioApiClient): Promise<string> {
-  return chooseAccountId(await client.listAccounts());
+async function requiredAccountId(
+  requested?: AccountParameter,
+): Promise<string> {
+  const selection = await loadSelectedAccount(requested);
+  if (!selection.account) notFound();
+  return selection.account.id;
 }
 
 export function readDemoViewState(
@@ -110,13 +110,15 @@ export function readDemoViewState(
     : "default";
 }
 
-async function authorizedClientAndAccount(): Promise<{
+async function authorizedClientAndAccount(
+  requested?: AccountParameter,
+): Promise<{
   accountId: string;
   client: PortfolioApiClient;
 }> {
   await requireWebAccess();
   const client = await apiClient();
-  return { accountId: await accountIdFor(client), client };
+  return { accountId: await requiredAccountId(requested), client };
 }
 
 function demoCollectionPage<Item>(
@@ -222,19 +224,26 @@ function boundedDirectAllocation(
 }
 
 export const loadPortfolioContext = cache(
-  async (state: DemoViewState = "default"): Promise<PortfolioContext> => {
-    await requireWebAccess();
+  async (
+    state: DemoViewState = "default",
+    requestedAccount?: AccountParameter,
+  ): Promise<PortfolioContext> => {
+    await requiredAccountId(requestedAccount);
     if (isExplicitDemoMode()) {
       return { summary: getDemoPortfolio(state).summary };
     }
-    const { accountId, client } = await authorizedClientAndAccount();
+    const { accountId, client } =
+      await authorizedClientAndAccount(requestedAccount);
     return { summary: await client.getSummary(accountId) };
   },
 );
 
 export const loadOverview = cache(
-  async (state: DemoViewState = "default"): Promise<OverviewBundle> => {
-    await requireWebAccess();
+  async (
+    state: DemoViewState = "default",
+    requestedAccount?: AccountParameter,
+  ): Promise<OverviewBundle> => {
+    await requiredAccountId(requestedAccount);
     if (isExplicitDemoMode()) {
       const bundle = getDemoPortfolio(state);
       const orderedPositions = [...bundle.positions.items].sort(
@@ -256,7 +265,8 @@ export const loadOverview = cache(
         summary: bundle.summary,
       };
     }
-    const { accountId, client } = await authorizedClientAndAccount();
+    const { accountId, client } =
+      await authorizedClientAndAccount(requestedAccount);
     const [summary, positions, allocation, reconciliation] = await Promise.all([
       client.getSummary(accountId),
       client.listPositions(accountId, { limit: 5, sort: "market_value_desc" }),
@@ -270,8 +280,9 @@ export const loadOverview = cache(
 export async function loadHoldingsPage(
   query: HoldingsQuery,
   state: DemoViewState = "default",
+  requestedAccount?: AccountParameter,
 ): Promise<{ positions: Page<Position>; summary: OverviewBundle["summary"] }> {
-  await requireWebAccess();
+  await requiredAccountId(requestedAccount);
   if (isExplicitDemoMode()) {
     const bundle = getDemoPortfolio(state);
     let items = [...bundle.positions.items];
@@ -320,7 +331,8 @@ export async function loadHoldingsPage(
       summary: bundle.summary,
     };
   }
-  const { accountId, client } = await authorizedClientAndAccount();
+  const { accountId, client } =
+    await authorizedClientAndAccount(requestedAccount);
   const [summary, positions] = await Promise.all([
     client.getSummary(accountId),
     client.listPositions(accountId, { ...query, limit: 50 }),
@@ -331,8 +343,9 @@ export async function loadHoldingsPage(
 export async function loadActivityPage(
   query: ActivityQuery,
   state: DemoViewState = "default",
+  requestedAccount?: AccountParameter,
 ): Promise<{ activity: Page<Activity>; quality: QualityResponse }> {
-  await requireWebAccess();
+  await requiredAccountId(requestedAccount);
   if (isExplicitDemoMode()) {
     const bundle = getDemoPortfolio(state);
     const items = bundle.activity.items
@@ -361,7 +374,8 @@ export async function loadActivityPage(
       quality: bundle.quality,
     };
   }
-  const { accountId, client } = await authorizedClientAndAccount();
+  const { accountId, client } =
+    await authorizedClientAndAccount(requestedAccount);
   const [activity, qualitySummary] = await Promise.all([
     client.listTransactions(accountId, {
       ...query,
@@ -377,8 +391,9 @@ export async function loadActivityPage(
 export async function loadDividendsPage(
   query: DividendQuery,
   state: DemoViewState = "default",
+  requestedAccount?: AccountParameter,
 ): Promise<DividendBundle> {
-  await requireWebAccess();
+  await requiredAccountId(requestedAccount);
   if (isExplicitDemoMode()) {
     const bundle = getDemoPortfolio(state);
     const items = bundle.dividends.items
@@ -403,7 +418,8 @@ export async function loadDividendsPage(
       summary: bundle.summary,
     };
   }
-  const { accountId, client } = await authorizedClientAndAccount();
+  const { accountId, client } =
+    await authorizedClientAndAccount(requestedAccount);
   const [summary, dividends, qualitySummary] = await Promise.all([
     client.getSummary(accountId),
     client.listDividends(accountId, { ...query, limit: 50 }),
@@ -415,8 +431,9 @@ export async function loadDividendsPage(
 export async function loadSnapshotsPage(
   cursor: string | null,
   state: DemoViewState = "default",
+  requestedAccount?: AccountParameter,
 ): Promise<{ quality: QualityResponse; snapshots: Page<Snapshot> }> {
-  await requireWebAccess();
+  await requiredAccountId(requestedAccount);
   if (isExplicitDemoMode()) {
     const bundle = getDemoPortfolio(state);
     const snapshots = [...bundle.snapshots.items].sort(
@@ -434,7 +451,8 @@ export async function loadSnapshotsPage(
       ),
     };
   }
-  const { accountId, client } = await authorizedClientAndAccount();
+  const { accountId, client } =
+    await authorizedClientAndAccount(requestedAccount);
   const [snapshots, qualitySummary] = await Promise.all([
     client.listSnapshots(accountId, { cursor, limit: 50 }),
     client.getQuality(accountId),
@@ -443,8 +461,11 @@ export async function loadSnapshotsPage(
 }
 
 export const loadAllocation = cache(
-  async (state: DemoViewState = "default"): Promise<AllocationBundle> => {
-    await requireWebAccess();
+  async (
+    state: DemoViewState = "default",
+    requestedAccount?: AccountParameter,
+  ): Promise<AllocationBundle> => {
+    await requiredAccountId(requestedAccount);
     if (isExplicitDemoMode()) {
       const bundle = getDemoPortfolio(state);
       return {
@@ -452,7 +473,8 @@ export const loadAllocation = cache(
         summary: bundle.summary,
       };
     }
-    const { accountId, client } = await authorizedClientAndAccount();
+    const { accountId, client } =
+      await authorizedClientAndAccount(requestedAccount);
     const [summary, allocation] = await Promise.all([
       client.getSummary(accountId),
       client.getAllocation(accountId, { limit: 50 }),
@@ -465,8 +487,9 @@ export const loadQualityView = cache(
   async (
     cursor: string | null,
     state: DemoViewState = "default",
+    requestedAccount?: AccountParameter,
   ): Promise<QualityBundle> => {
-    await requireWebAccess();
+    await requiredAccountId(requestedAccount);
     if (isExplicitDemoMode()) {
       const bundle = getDemoPortfolio(state);
       return {
@@ -486,7 +509,8 @@ export const loadQualityView = cache(
         summary: bundle.summary,
       };
     }
-    const { accountId, client } = await authorizedClientAndAccount();
+    const { accountId, client } =
+      await authorizedClientAndAccount(requestedAccount);
     const [summary, reconciliation, discrepancies, qualitySummary] =
       await Promise.all([
         client.getSummary(accountId),
@@ -507,13 +531,16 @@ export const loadQualityView = cache(
 );
 
 export const loadSynchronization = cache(
-  async (): Promise<SynchronizationBundle> => {
-    await requireWebAccess();
+  async (
+    requestedAccount?: AccountParameter,
+  ): Promise<SynchronizationBundle> => {
+    await requiredAccountId(requestedAccount);
     if (isExplicitDemoMode()) {
       const bundle = getDemoPortfolio();
       return { quality: bundle.quality, summary: bundle.summary };
     }
-    const { accountId, client } = await authorizedClientAndAccount();
+    const { accountId, client } =
+      await authorizedClientAndAccount(requestedAccount);
     const [summary, qualitySummary] = await Promise.all([
       client.getSummary(accountId),
       client.getQuality(accountId),
@@ -522,41 +549,45 @@ export const loadSynchronization = cache(
   },
 );
 
-export const loadSettings = cache(async (): Promise<SettingsBundle> => {
-  await requireWebAccess();
-  if (isExplicitDemoMode()) {
-    const bundle = getDemoPortfolio();
-    return {
-      connections: [
-        {
-          credential_state: "not_configured",
-          environment: "synthetic",
-          id: "synthetic-demo-connection",
-          last_successful_refresh_at: bundle.summary.account.last_refresh_at,
-          provider: "synthetic",
-          read_only: true,
-          state: "connected_read_only",
-          status: "active",
-        },
-      ],
-      summary: bundle.summary,
-    };
-  }
-  const { accountId, client } = await authorizedClientAndAccount();
-  const [summary, connections] = await Promise.all([
-    client.getSummary(accountId),
-    client.listConnections(),
-  ]);
-  return { connections, summary };
-});
+export const loadSettings = cache(
+  async (requestedAccount?: AccountParameter): Promise<SettingsBundle> => {
+    await requiredAccountId(requestedAccount);
+    if (isExplicitDemoMode()) {
+      const bundle = getDemoPortfolio();
+      return {
+        connections: [
+          {
+            credential_state: "not_configured",
+            environment: "synthetic",
+            id: "synthetic-demo-connection",
+            last_successful_refresh_at: bundle.summary.account.last_refresh_at,
+            provider: "synthetic",
+            read_only: true,
+            state: "connected_read_only",
+            status: "active",
+          },
+        ],
+        summary: bundle.summary,
+      };
+    }
+    const { accountId, client } =
+      await authorizedClientAndAccount(requestedAccount);
+    const [summary, connections] = await Promise.all([
+      client.getSummary(accountId),
+      client.listConnections(),
+    ]);
+    return { connections, summary };
+  },
+);
 
 export async function loadPosition(
   positionId: string,
+  requestedAccount?: AccountParameter,
 ): Promise<PositionResponse | null> {
   if (!/^[A-Za-z0-9._:-]{1,255}$/.test(positionId)) {
     return null;
   }
-  await requireWebAccess();
+  await requiredAccountId(requestedAccount);
   if (isExplicitDemoMode()) {
     return (
       getDemoPortfolio().positions.items.find(
@@ -565,11 +596,16 @@ export async function loadPosition(
     );
   }
   const client = await apiClient();
-  return client.getPosition(await accountIdFor(client), positionId);
+  return client.getPosition(
+    await requiredAccountId(requestedAccount),
+    positionId,
+  );
 }
 
-export async function requestRefresh(): Promise<RefreshRunResponse> {
-  await requireWebAccess();
+export async function requestRefresh(
+  accountId: string,
+): Promise<RefreshRunResponse> {
+  await requiredAccountId(accountId);
   if (isExplicitDemoMode()) {
     return {
       ...demoRefreshRun,
@@ -578,10 +614,28 @@ export async function requestRefresh(): Promise<RefreshRunResponse> {
     };
   }
   const client = await apiClient();
-  return client.refresh(await accountIdFor(client), {
+  return client.refresh(accountId, {
     idempotencyKey: randomUUID(),
     scope: "all",
     mode: "incremental",
     createSnapshot: true,
   });
+}
+
+export async function loadRefreshRun(
+  accountId: string,
+  runId: string,
+): Promise<RefreshRunResponse> {
+  await requiredAccountId(accountId);
+  const run = isExplicitDemoMode()
+    ? runId === demoRefreshRun.id
+      ? {
+          ...demoRefreshRun,
+          capabilities: [...demoRefreshRun.capabilities],
+          warnings: [...demoRefreshRun.warnings],
+        }
+      : null
+    : await (await apiClient()).getRefreshRun(runId);
+  if (!run || run.account_id !== accountId) notFound();
+  return run;
 }

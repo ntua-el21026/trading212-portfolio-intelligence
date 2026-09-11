@@ -1,4 +1,11 @@
-import { render, screen, within } from "@testing-library/react";
+import { render as renderView, screen, within } from "@testing-library/react";
+import type { ReactNode } from "react";
+import { AccountProvider } from "../components/account-context";
+import {
+  resolveAccountSelection,
+  type AccountParameter,
+} from "../lib/account-selection";
+import { getDemoPortfolio } from "../lib/demo-data";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -42,6 +49,18 @@ vi.mock("../lib/source-adapter", async () => {
   };
 });
 vi.mock("../lib/auth", () => ({ requireWebAccess: mocks.access }));
+vi.mock("../lib/api-adapter", () => ({
+  loadSelectedAccount: async (requested?: AccountParameter) =>
+    resolveAccountSelection(await mocks.accounts(), requested),
+}));
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => "/sources",
+  useRouter: () => ({ push: vi.fn() }),
+  notFound: () => {
+    throw new Error("Not found");
+  },
+}));
 vi.mock("../lib/planning-selection", () => ({
   planningUuid: (value: string | string[] | undefined) =>
     Array.isArray(value) ? value[0] : value,
@@ -60,10 +79,16 @@ vi.mock("../components/benchmark-form", () => ({
 const id = "40000000-0000-4000-8000-000000000001";
 const at = "2026-08-31T12:00:00Z";
 const account = {
+  ...getDemoPortfolio().summary.account,
   id,
   display_name: "Owned account",
   reporting_currency: "EUR",
 };
+function render(content: ReactNode) {
+  return renderView(
+    <AccountProvider accounts={[account]}>{content}</AccountProvider>,
+  );
+}
 const definition: BenchmarkDefinitionSummary = {
   id,
   name: "Owned benchmark",
@@ -239,6 +264,7 @@ describe("source pages use authorized source results", () => {
       state: "all",
       cursor: "signed_next",
     });
+    expect(screen.getByText("Owner-wide benchmarks")).toBeVisible();
     expect(mocks.market).not.toHaveBeenCalled();
     expect(mocks.benchmark).not.toHaveBeenCalled();
     expect(mocks.definitions).toHaveBeenCalledWith({
@@ -363,6 +389,31 @@ describe("source pages use authorized source results", () => {
         benchmark: mocks.benchmarkHeader,
       }[kind];
       expect(headerOperation).toHaveBeenCalledWith(id, { account_id: id });
+    },
+  );
+  it.each([
+    { requested: "" },
+    { requested: "not-an-account" },
+    { requested: [id, id] },
+  ])(
+    "never treats an explicit invalid account as owner-wide benchmark access",
+    async ({ requested }) => {
+      mocks.accounts.mockResolvedValue([]);
+      render(
+        await SourcesPage({
+          searchParams: Promise.resolve({
+            kind: "definitions",
+            account: requested,
+          }),
+        }),
+      );
+      expect(screen.getByText("Account unavailable")).toBeVisible();
+      expect(
+        screen.queryByText("Owner-wide benchmarks"),
+      ).not.toBeInTheDocument();
+      expect(mocks.definitions).not.toHaveBeenCalled();
+      expect(mocks.market).not.toHaveBeenCalled();
+      expect(mocks.benchmark).not.toHaveBeenCalled();
     },
   );
 });

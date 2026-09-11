@@ -391,6 +391,19 @@ export const CreateExportRequestSchema = z.strictObject({
     ])
     .optional(),
   ttl_days: z.number().int().min(1.0).max(30.0).optional(),
+  xray_run_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
 });
 export type CreateExportRequest = z.infer<typeof CreateExportRequestSchema>;
 export const get_export_statusQuerySchema = z.strictObject({
@@ -545,6 +558,19 @@ export const GenerateReportRequestSchema = z.strictObject({
     .optional(),
   template_version: z.literal("report_template_v1").optional(),
   ttl_days: z.number().int().min(1.0).max(30.0).optional(),
+  xray_run_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
 });
 export type GenerateReportRequest = z.infer<typeof GenerateReportRequestSchema>;
 export const ReportJobStatusSchema = z.strictObject({
@@ -1772,6 +1798,19 @@ export const ReportSelectionSchema = z.strictObject({
     ])
     .optional(),
   template_version: z.literal("report_template_v1").optional(),
+  xray_run_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
 });
 export type ReportSelection = z.infer<typeof ReportSelectionSchema>;
 export const ExportSelectionSchema = z.strictObject({
@@ -1847,6 +1886,19 @@ export const ExportSelectionSchema = z.strictObject({
   source_cutoff_at: z.string().datetime({ offset: true }),
   start_date: z.string().date(),
   target_version_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
+  xray_run_id: z
     .union([
       z
         .string()
@@ -1981,6 +2033,8 @@ export const ReportTableDescriptorSchema = z.strictObject({
     "attribution_summary",
     "attribution_components",
     "attribution_effects",
+    "planning_company_actuals_v1",
+    "planning_company_basis_v1",
     "xray_summary",
     "xray_quality",
     "xray_dimensions",
@@ -2192,6 +2246,8 @@ export const ReportProofRelationSchema = z.strictObject({
     "attribution_summary",
     "attribution_components",
     "attribution_effects",
+    "planning_company_actuals_v1",
+    "planning_company_basis_v1",
     "xray_summary",
     "xray_quality",
     "xray_dimensions",

@@ -38,6 +38,7 @@ from trading212_application.ingestion import (
     RunMode,
     capabilities_for_scope,
 )
+from trading212_application.intelligence_quality import IntelligenceDataQualityService
 from trading212_application.planning import PlanningService, PlanningServiceError
 from trading212_application.queries import (
     ActivityQuery,
@@ -96,6 +97,7 @@ from trading212_security.tokens import BearerAuthenticator, LocalSyntheticAuthen
 
 from .alert_routes import register_alert_routes
 from .historical_routes import register_historical_routes
+from .intelligence_quality_routes import register_intelligence_quality_routes
 from .planning_routes import register_planning_routes
 from .refresh_queue import PostgresRefreshQueue
 from .report_routes import register_report_routes
@@ -154,6 +156,7 @@ class ApiContext:
     planning_service: PlanningService | None
     source_service: SourceService | None
     historical_service: PerformanceIntelligenceService | None
+    intelligence_quality_service: IntelligenceDataQualityService | None
     xray_service: XrayService | None
     report_service: ReportService | None
     alert_service: AlertService | None
@@ -174,6 +177,7 @@ def create_app(
     planning_service: PlanningService | None = None,
     source_service: SourceService | None = None,
     historical_service: PerformanceIntelligenceService | None = None,
+    intelligence_quality_service: IntelligenceDataQualityService | None = None,
     xray_service: XrayService | None = None,
     report_service: ReportService | None = None,
     alert_service: AlertService | None = None,
@@ -207,6 +211,7 @@ def create_app(
             default_planning,
             default_sources,
             default_historical,
+            default_intelligence_quality,
             default_xray,
             default_reports,
             default_alerts,
@@ -220,6 +225,7 @@ def create_app(
         planning_service = planning_service or default_planning
         source_service = source_service or default_sources
         historical_service = historical_service or default_historical
+        intelligence_quality_service = intelligence_quality_service or default_intelligence_quality
         xray_service = xray_service or default_xray
         report_service = report_service or default_reports
         alert_service = alert_service or default_alerts
@@ -243,6 +249,7 @@ def create_app(
         planning_service=planning_service,
         source_service=source_service,
         historical_service=historical_service,
+        intelligence_quality_service=intelligence_quality_service,
         xray_service=xray_service,
         report_service=report_service,
         alert_service=alert_service,
@@ -293,6 +300,7 @@ def create_app(
     register_planning_routes(application, _principal, _context)
     register_source_routes(application, _principal, _context)
     register_historical_routes(application, _principal, _context)
+    register_intelligence_quality_routes(application, _principal, _context)
     register_xray_routes(application, _principal, _context)
     register_report_routes(application, _principal, _context)
     register_alert_routes(application, _principal, _context)
@@ -311,6 +319,7 @@ def _local_runtime_defaults(
     PlanningService,
     SourceService,
     PerformanceIntelligenceService,
+    IntelligenceDataQualityService,
     XrayService,
     ReportService,
     AlertService,
@@ -318,6 +327,9 @@ def _local_runtime_defaults(
 ]:
     from trading212_persistence.alert_service import PostgresAlertService
     from trading212_persistence.historical_service import PostgresHistoricalService
+    from trading212_persistence.intelligence_quality_service import (
+        PostgresIntelligenceDataQualityService,
+    )
     from trading212_persistence.planning_service import PostgresPlanningService
     from trading212_persistence.report_service import PostgresReportService
     from trading212_persistence.source_service import PostgresSourceService
@@ -375,6 +387,12 @@ def _local_runtime_defaults(
             cursor_ttl_seconds=settings.cursor_ttl_seconds,
         ),
         PostgresHistoricalService(
+            sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=settings.cursor_ttl_seconds,
+        ),
+        PostgresIntelligenceDataQualityService(
             sessions,
             clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,

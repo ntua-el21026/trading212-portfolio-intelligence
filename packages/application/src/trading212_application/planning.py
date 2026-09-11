@@ -19,11 +19,13 @@ from trading212_domain.planning import (
     PlanOutcome,
     planning_id,
 )
+from trading212_domain.planning_company import PlanningCompanyBinding
 from trading212_domain.values import CurrencyCode
 from trading212_security.principals import Principal
 
 from .targets import TargetPageQuery, target_etag
 from .views import Page
+from .xray import XrayContext
 
 
 class PlanJobState(StrEnum):
@@ -65,6 +67,7 @@ class ActualVsTargetQuery(TargetPageQuery):
     target_version_id: str
     reporting_currency: CurrencyCode
     node_id: str | None = None
+    xray_run_id: str | None = None
 
     def __post_init__(self) -> None:
         TargetPageQuery.__post_init__(self)
@@ -76,6 +79,8 @@ class ActualVsTargetQuery(TargetPageQuery):
         )
         if self.node_id is not None:
             planning_id(self.node_id, "node_id")
+        if self.xray_run_id is not None:
+            planning_id(self.xray_run_id, "xray_run_id")
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -86,6 +91,7 @@ class DriftAnalysisQuery:
     reporting_currency: CurrencyCode
     basis: DriftBasis = DriftBasis.DIRECT
     top_n: int = 25
+    xray_run_id: str | None = None
 
     def __post_init__(self) -> None:
         _pins(
@@ -94,6 +100,8 @@ class DriftAnalysisQuery:
             self.target_version_id,
             self.reporting_currency,
         )
+        if self.xray_run_id is not None:
+            planning_id(self.xray_run_id, "xray_run_id")
         if not isinstance(self.basis, DriftBasis):
             raise ValueError("Invalid drift basis.")
         if (
@@ -181,6 +189,9 @@ class ActualVsTargetResult:
     content_digest: str
     target_identities: tuple[PlanningNodeIdentity, ...]
     node_id: str | None = None
+    company_basis: PlanningCompanyBinding | None = None
+    company_context: XrayContext | None = None
+    projection_digest: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -196,6 +207,9 @@ class DriftAnalysisResult:
     eligible_rows: int
     omitted_rows: int
     content_digest: str
+    company_basis: PlanningCompanyBinding | None = None
+    company_context: XrayContext | None = None
+    projection_digest: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

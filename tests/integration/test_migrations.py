@@ -187,7 +187,7 @@ def test_empty_to_head_is_idempotent_and_matches_metadata(database_engine: Engin
     expected = set(Base.metadata.tables)
     assert actual == expected
     with database_engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260910_0015"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260911_0016"
 
 
 def test_export_url_cleanup_is_scoped_null_safe_and_repeatable(database_engine: Engine) -> None:
@@ -670,6 +670,7 @@ def test_migration_is_current_and_downgrade_policy_is_explicit(database_engine: 
     xray_revision = Path("migrations/versions/20260909_0013_xray_intelligence.py").read_text()
     report_revision = Path("migrations/versions/20260909_0014_private_reports.py").read_text()
     alert_revision = Path("migrations/versions/20260910_0015_alerts.py").read_text()
+    quality_revision = Path("migrations/versions/20260911_0016_intelligence_quality.py").read_text()
     assert revision.count("op.drop_table(") + metadata_revision.count(
         "op.drop_table("
     ) + occurrence_revision.count("op.drop_table(") + outbox_revision.count(
@@ -680,9 +681,11 @@ def test_migration_is_current_and_downgrade_policy_is_explicit(database_engine: 
         "op.drop_table("
     ) + historical_revision.count("op.drop_table(") + xray_revision.count(
         "op.drop_table("
-    ) + report_revision.count("op.drop_table(") + alert_revision.count("op.drop_table(") == len(
-        Base.metadata.tables
-    )
+    ) + report_revision.count("op.drop_table(") + alert_revision.count(
+        "op.drop_table("
+    ) + quality_revision.count("op.drop_table(") == len(Base.metadata.tables)
+    assert 'revision = "20260911_0016"' in quality_revision
+    assert 'down_revision = "20260910_0015"' in quality_revision
     assert 'revision = "20260910_0015"' in alert_revision
     assert 'down_revision = "20260909_0014"' in alert_revision
     assert 'revision = "20260909_0013"' in xray_revision

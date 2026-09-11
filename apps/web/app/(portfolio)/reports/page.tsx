@@ -1,4 +1,9 @@
-import Link from "next/link";
+import {
+  AccountRequired,
+  AccountView,
+} from "../../../components/account-context";
+import { resolveAccountSelection } from "../../../lib/account-selection";
+import Link from "../../../components/navigation-intent";
 import { Button, Notice, Surface } from "@trading212/ui";
 import {
   ReportApiError,
@@ -193,21 +198,13 @@ async function renderReportPage(
   query: ReportQuery,
 ) {
   const accounts = await clients.portfolio.listAccounts();
-  const account =
-    accounts.find((item) => item.id === query.account) ??
-    (query.account ? undefined : accounts[0]);
-  if (!account)
-    return (
-      <div className="page-stack">
-        <PageHeader
-          title="Reports"
-          description="Private reports and exports with saved source provenance."
-        />
-        <Notice title="No authorized account">
-          Select an available account before creating a report.
-        </Notice>
-      </div>
-    );
+  const accountSelection = resolveAccountSelection(
+    accounts,
+    query.account,
+    process.env.T212PI_ACCOUNT_ID,
+  );
+  const account = accountSelection.account;
+  if (!account) return <AccountRequired selection={accountSelection} />;
   const snapshots = await clients.portfolio.listSnapshots(account.id, {
     limit: 25,
     cursor: query.snapshots_cursor,
@@ -301,168 +298,167 @@ async function renderReportPage(
     ).values(),
   ];
   return (
-    <div className="page-stack">
-      <PageHeader
-        title="Reports"
-        description="Generate private reports and dataset exports from immutable portfolio sources."
-      />
-      <Surface>
-        <h2>Account and valuation snapshot</h2>
-        <form method="get" action="/reports" className="target-form">
-          <label>
-            <span>Account</span>
-            <select name="account" defaultValue={account.id}>
-              {accounts.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.display_name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Button type="submit" variant="secondary">
-            Choose account
-          </Button>
-        </form>
-        <form method="get" action="/reports" className="target-form">
-          <input type="hidden" name="account" value={account.id} />
-          <input type="hidden" name="kind" value={query.kind} />
-          <label>
-            <span>Valuation snapshot</span>
-            <select name="snapshot" defaultValue={snapshot?.id} required>
-              {knownSnapshots.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {formatDateTime(item.valuation_at)} ·{" "}
-                  {item.reporting_currency} · {item.data_quality.state}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Button
-            type="submit"
-            variant="secondary"
-            disabled={!knownSnapshots.length}
-          >
-            Choose snapshot
-          </Button>
-        </form>
-        {snapshots.next_cursor ? (
-          <Link
-            prefetch={false}
-            href={reportHref({
-              account: account.id,
-              snapshots_cursor: snapshots.next_cursor,
-            })}
-          >
-            Browse more snapshots
-          </Link>
-        ) : null}
-      </Surface>
-      {snapshot ? (
-        <ReportSelectionForm
-          key={`${account.id}:${snapshot.id}`}
-          accountId={account.id}
-          snapshot={snapshot}
-          initial={query}
-          choices={options}
-          canCreate={canCreate}
-          defaultCutoff={new Date().toISOString()}
+    <AccountView accountId={account.id}>
+      <div className="page-stack">
+        <PageHeader
+          title="Reports"
+          description="Generate private reports and dataset exports from immutable portfolio sources."
         />
-      ) : (
-        <Notice title="No valuation snapshot">
-          Create a portfolio snapshot before requesting a report.
-        </Notice>
-      )}
-      {failure ? (
-        <Notice title="Report access unavailable" tone="danger">
-          <p>{failure}</p>
-          {query.cursor ? (
-            <Link href={reportHref({ ...query, cursor: undefined })}>
-              Return to first page
+        <Surface>
+          <h2>Account and valuation snapshot</h2>
+          <form method="get" action="/reports" className="target-form">
+            <label>
+              <span>Account</span>
+              <select name="account" defaultValue={account.id}>
+                {accounts.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.display_name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Button type="submit" variant="secondary">
+              Choose account
+            </Button>
+          </form>
+          <form method="get" action="/reports" className="target-form">
+            <input type="hidden" name="account" value={account.id} />
+            <input type="hidden" name="kind" value={query.kind} />
+            <label>
+              <span>Valuation snapshot</span>
+              <select name="snapshot" defaultValue={snapshot?.id} required>
+                {knownSnapshots.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {formatDateTime(item.valuation_at)} ·{" "}
+                    {item.reporting_currency} · {item.data_quality.state}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Button
+              type="submit"
+              variant="secondary"
+              disabled={!knownSnapshots.length}
+            >
+              Choose snapshot
+            </Button>
+          </form>
+          {snapshots.next_cursor ? (
+            <Link
+              prefetch={false}
+              href={reportHref({
+                account: account.id,
+                snapshots_cursor: snapshots.next_cursor,
+              })}
+            >
+              Browse more snapshots
             </Link>
           ) : null}
-        </Notice>
-      ) : null}
-      {selected ? (
-        <>
-          <ReportJobStatusCard
-            key={"job_id" in selected ? selected.job_id : selected.export_id}
-            job={selected}
+        </Surface>
+        {snapshot ? (
+          <ReportSelectionForm
+            key={`${account.id}:${snapshot.id}`}
+            accountId={account.id}
+            snapshot={snapshot}
+            initial={query}
+            choices={options}
+            canCreate={canCreate}
+            defaultCutoff={new Date().toISOString()}
           />
-          <ReportArtifacts job={selected} />
-        </>
-      ) : null}
-      {manifest ? <ReportManifestCard manifest={manifest} /> : null}
-      {canRead ? (
-        <>
-          <Surface>
-            <h2>Browse saved jobs</h2>
-            <form method="get" action="/reports" className="target-form">
-              <input type="hidden" name="account" value={account.id} />
-              {snapshot ? (
-                <input type="hidden" name="snapshot" value={snapshot.id} />
-              ) : null}
-              <label>
-                <span>History</span>
-                <select name="kind" defaultValue={query.kind}>
-                  <option value="report">Reports</option>
-                  <option value="export">Exports</option>
-                </select>
-              </label>
-              <label>
-                <span>Job state</span>
-                <select name="state" defaultValue={query.state}>
-                  {REPORT_STATES.map((state) => (
-                    <option key={state} value={state}>
-                      {titleCase(state)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                <span>Report type filter</span>
-                <select name="history_type" defaultValue={query.history_type}>
-                  {["all", ...REPORT_TYPES].map((type) => (
-                    <option key={type} value={type}>
-                      {titleCase(type)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                <span>Dataset filter</span>
-                <select
-                  name="history_dataset"
-                  defaultValue={query.history_dataset}
-                >
-                  {["all", ...EXPORT_DATASETS].map((dataset) => (
-                    <option key={dataset} value={dataset}>
-                      {titleCase(dataset)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <Button type="submit" variant="secondary">
-                Apply history filters
-              </Button>
-            </form>
-          </Surface>
-          {history ? (
-            <ReportHistory
-              history={history}
-              query={query}
-              accountId={account.id}
+        ) : (
+          <Notice title="No valuation snapshot">
+            Create a portfolio snapshot before requesting a report.
+          </Notice>
+        )}
+        {failure ? (
+          <Notice title="Report access unavailable" tone="danger">
+            <p>{failure}</p>
+            {query.cursor ? (
+              <Link href={reportHref({ ...query, cursor: undefined })}>
+                Return to first page
+              </Link>
+            ) : null}
+          </Notice>
+        ) : null}
+        {selected ? (
+          <>
+            <ReportJobStatusCard
+              key={"job_id" in selected ? selected.job_id : selected.export_id}
+              job={selected}
             />
-          ) : null}
-        </>
-      ) : (
-        <Notice title="History requires report read access">
-          Creation permission does not grant report retrieval or download
-          permission.
-        </Notice>
-      )}
-      <p className="muted">
-        Alerts exports become available when alert history is supported.
-      </p>
-    </div>
+            <ReportArtifacts job={selected} />
+          </>
+        ) : null}
+        {manifest ? <ReportManifestCard manifest={manifest} /> : null}
+        {canRead ? (
+          <>
+            <Surface>
+              <h2>Browse saved jobs</h2>
+              <form method="get" action="/reports" className="target-form">
+                <input type="hidden" name="account" value={account.id} />
+                {snapshot ? (
+                  <input type="hidden" name="snapshot" value={snapshot.id} />
+                ) : null}
+                <label>
+                  <span>History</span>
+                  <select name="kind" defaultValue={query.kind}>
+                    <option value="report">Reports</option>
+                    <option value="export">Exports</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Job state</span>
+                  <select name="state" defaultValue={query.state}>
+                    {REPORT_STATES.map((state) => (
+                      <option key={state} value={state}>
+                        {titleCase(state)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Report type filter</span>
+                  <select name="history_type" defaultValue={query.history_type}>
+                    {["all", ...REPORT_TYPES].map((type) => (
+                      <option key={type} value={type}>
+                        {titleCase(type)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Dataset filter</span>
+                  <select
+                    name="history_dataset"
+                    defaultValue={query.history_dataset}
+                  >
+                    {["all", ...EXPORT_DATASETS].map((dataset) => (
+                      <option key={dataset} value={dataset}>
+                        {titleCase(dataset)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <Button type="submit" variant="secondary">
+                  Apply history filters
+                </Button>
+              </form>
+            </Surface>
+            {history ? (
+              <ReportHistory
+                history={history}
+                query={query}
+                accountId={account.id}
+              />
+            ) : null}
+          </>
+        ) : (
+          <Notice title="History requires report read access">
+            Creation permission does not grant report retrieval or download
+            permission.
+          </Notice>
+        )}
+      </div>
+    </AccountView>
   );
 }

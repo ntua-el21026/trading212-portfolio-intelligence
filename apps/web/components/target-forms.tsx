@@ -1,6 +1,8 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useNavigationVersionRef } from "./navigation-intent";
+
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type {
   Account,
@@ -21,10 +23,26 @@ type WithoutIdentity<T> = T extends unknown
 export type TargetCommandInput = WithoutIdentity<TargetActionCommand>;
 
 export function useTargetCommand() {
+  const navigationRef = useNavigationVersionRef();
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<TargetActionResult | null>(null);
   const identities = useRef(new Map<string, string>());
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  const stale: TargetActionResult = {
+    ok: false,
+    code: "SELECTION_CHANGED",
+    message:
+      "The request belongs to a previous view. Inspect its saved state in that portfolio.",
+    fields: [],
+  };
   async function run(command: TargetCommandInput) {
+    const generation = navigationRef.current;
     const fingerprint = JSON.stringify(command);
     const idempotencyKey =
       identities.current.get(fingerprint) ?? crypto.randomUUID();
@@ -36,6 +54,8 @@ export function useTargetCommand() {
         ...command,
         idempotency_key: idempotencyKey,
       });
+      if (!mounted.current || navigationRef.current !== generation)
+        return stale;
       setResult(next);
       if (next.ok) {
         identities.current.delete(fingerprint);
@@ -49,10 +69,12 @@ export function useTargetCommand() {
           "The request could not be completed. Your edits are preserved; retry when the service is available.",
         fields: [],
       };
+      if (!mounted.current || navigationRef.current !== generation)
+        return stale;
       setResult(next);
       return next;
     } finally {
-      setPending(false);
+      if (mounted.current) setPending(false);
     }
   }
   return { pending, result, run };
@@ -98,13 +120,19 @@ export function TargetCommandFeedback({
 export function CreatePieForm({
   accounts,
   sourceVersionId,
-}: Readonly<{ accounts: Account[]; sourceVersionId?: string }>) {
+  initialAccountId,
+}: Readonly<{
+  accounts: Account[];
+  sourceVersionId?: string;
+  initialAccountId: string | null;
+}>) {
   const action = useTargetCommand();
   const router = useRouter();
-  const [accountId, setAccountId] = useState(accounts[0]?.id ?? "");
+  const [accountId, setAccountId] = useState(initialAccountId ?? "");
   const selected = accounts.find((account) => account.id === accountId);
   const [currency, setCurrency] = useState(
-    accounts[0]?.reporting_currency ?? "EUR",
+    accounts.find((item) => item.id === initialAccountId)?.reporting_currency ??
+      "EUR",
   );
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -120,54 +148,62 @@ export function CreatePieForm({
     });
     if (result.ok && result.kind === "portfolio")
       router.push(
-        `/pies/${result.value.id}${sourceVersionId ? `?clone=${sourceVersionId}` : ""}`,
+        `/pies/${result.value.id}?account=${result.value.account_id ?? "template"}${sourceVersionId ? `&clone=${sourceVersionId}` : ""}`,
       );
   }
   return (
-    <Surface>
+    <Surface className="target-editor-panel">
       <h2>Create a Pie</h2>
       <p className="muted">
         Define a private target for an account, or save a reusable template.
       </p>
-      <form className="target-form" onSubmit={submit}>
-        <label>
-          Name
-          <input name="name" required maxLength={120} autoComplete="off" />
-        </label>
-        <label>
-          Account
-          <select
-            value={accountId}
-            onChange={(event) => setAccountId(event.target.value)}
-          >
-            {accounts.map((account) => (
-              <option key={account.id} value={account.id}>
-                {account.display_name} · {account.reporting_currency}
-              </option>
-            ))}
-            <option value="">Template · no account</option>
-          </select>
-        </label>
-        <label>
-          Reporting currency
-          <input
-            value={selected?.reporting_currency ?? currency}
-            onChange={(event) => setCurrency(event.target.value.toUpperCase())}
-            readOnly={Boolean(selected)}
-            required
-            pattern="[A-Z]{3}"
-            maxLength={3}
-          />
-        </label>
-        <label className="target-form__wide">
-          Description
-          <textarea name="description" maxLength={2000} rows={2} />
-        </label>
-        <div className="target-actions">
-          <Button type="submit" disabled={action.pending}>
-            {action.pending ? "Creating…" : "Create Pie"}
-          </Button>
-        </div>
+      <form onSubmit={submit}>
+        <fieldset
+          className="target-form target-fieldset"
+          disabled={action.pending}
+        >
+          <legend>New Pie details</legend>
+          <label>
+            Name
+            <input name="name" required maxLength={120} autoComplete="off" />
+          </label>
+          <label>
+            Account
+            <select
+              value={accountId}
+              onChange={(event) => setAccountId(event.target.value)}
+            >
+              {accounts.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {account.display_name} · {account.reporting_currency}
+                </option>
+              ))}
+              <option value="">Template · no account</option>
+            </select>
+          </label>
+          <label>
+            Reporting currency
+            <input
+              value={selected?.reporting_currency ?? currency}
+              onChange={(event) =>
+                setCurrency(event.target.value.toUpperCase())
+              }
+              readOnly={Boolean(selected)}
+              required
+              pattern="[A-Z]{3}"
+              maxLength={3}
+            />
+          </label>
+          <label className="target-form__wide">
+            Description
+            <textarea name="description" maxLength={2000} rows={2} />
+          </label>
+          <div className="target-actions">
+            <Button type="submit" disabled={action.pending}>
+              {action.pending ? "Creating…" : "Create Pie"}
+            </Button>
+          </div>
+        </fieldset>
       </form>
       <TargetCommandFeedback result={action.result} />
     </Surface>
@@ -278,7 +314,9 @@ export function CreateVersionForm({
       },
     });
     if (result.ok && result.kind === "version")
-      router.push(`/pies/${portfolio.id}?version=${result.value.id}`);
+      router.push(
+        `/pies/${portfolio.id}?account=${portfolio.account_id ?? "template"}&version=${result.value.id}`,
+      );
   }
   return (
     <form className="target-form" onSubmit={submit}>

@@ -27,6 +27,7 @@ from .activity_revision_models import ActivityRevisionEvidenceModel
 from .alert_models import ALERT_MODELS
 from .base import Base, CreatedAtMixin, UpdatedAtMixin, UUIDPrimaryKeyMixin
 from .historical_models import HISTORICAL_MODELS
+from .intelligence_quality_models import INTELLIGENCE_QUALITY_MODELS
 from .planning_models import PLANNING_MODELS
 from .provider_observation_models import PROVIDER_OBSERVATION_MODELS
 from .report_models import REPORT_MODELS
@@ -348,7 +349,7 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         CheckConstraint("schema_version = 1", name="schema_version_supported"),
         CheckConstraint(
             (
-                "resource IN ('activity','dividends','instruments',"
+                "resource IN ('intelligence_quality_sources','activity','dividends','instruments',"
                 "'positions_market_value','positions_weight','positions_ticker',"
                 "'portfolios_name','portfolios_updated','target_versions',"
                 "'target_events','target_nodes','contribution_plans','plan_lines',"
@@ -364,7 +365,8 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         ),
         CheckConstraint(
             (
-                "(resource IN ('historical_performance','historical_cash_flows',"
+                "(resource IN ('intelligence_quality_sources','historical_performance',"
+                "'historical_cash_flows',"
                 "'composite_benchmark_points','xray_exposures','xray_paths',"
                 "'xray_held_funds','xray_pairs','xray_common_entities',"
                 "'constituent_holdings') AND sort_specification = 'ordinal_asc') OR "
@@ -411,7 +413,8 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         ),
         CheckConstraint(
             (
-                "((resource IN ('alert_rules','alert_versions','alert_events','alert_evaluations',"
+                "((resource IN ('intelligence_quality_sources','alert_rules','alert_versions',"
+                "'alert_events','alert_evaluations',"
                 "'notification_destinations','reports','exports','activity','dividends',"
                 "'positions_market_value','positions_weight','positions_ticker',"
                 "'contribution_plans','plan_lines','actual_target_rows','plan_revisions',"
@@ -1103,6 +1106,7 @@ ALL_MODELS = (
     *PLANNING_MODELS,
     *SOURCE_MODELS,
     *HISTORICAL_MODELS,
+    *INTELLIGENCE_QUALITY_MODELS,
     *XRAY_MODELS,
     *REPORT_MODELS,
     *ALERT_MODELS,

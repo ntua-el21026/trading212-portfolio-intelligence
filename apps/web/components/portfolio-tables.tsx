@@ -1,4 +1,7 @@
-import Link from "next/link";
+import { NumberValue } from "./number-value";
+import Link from "./navigation-intent";
+
+import { accountHref } from "../lib/account-selection";
 
 import type {
   ActivityResponse,
@@ -9,18 +12,22 @@ import type {
 import {
   formatDate,
   formatDateTime,
-  formatDecimal,
-  formatMoney,
   formatPercent,
   titleCase,
 } from "../lib/format";
-import { QualityStatus } from "./financial";
+import { MoneyValue, QualityStatus } from "./financial";
 
 export function PositionsTable({
   positions,
-}: Readonly<{ positions: PositionResponse[] }>) {
+  accountId,
+}: Readonly<{ positions: PositionResponse[]; accountId: string }>) {
   return (
-    <div className="table-scroll">
+    <div
+      className="table-scroll"
+      role="region"
+      aria-label="Direct portfolio holdings"
+      tabIndex={0}
+    >
       <table className="data-table data-table--roomy">
         <caption className="ui-visually-hidden">
           Direct portfolio holdings
@@ -41,30 +48,52 @@ export function PositionsTable({
           {positions.map((position) => (
             <tr key={position.id}>
               <th scope="row">
-                <Link href={`/holdings/${encodeURIComponent(position.id)}`}>
+                <Link
+                  href={accountHref(
+                    `/holdings/${encodeURIComponent(position.id)}`,
+                    accountId,
+                  )}
+                >
                   <strong>{position.ticker}</strong>
                   <span>{position.name}</span>
                 </Link>
               </th>
               <td>{titleCase(position.instrument_type)}</td>
-              <td>{formatDecimal(position.quantity)}</td>
               <td>
-                {formatMoney(position.current_price)}{" "}
-                {position.trading_currency}
+                <NumberValue value={position.quantity} minimumDigits={0} />
               </td>
               <td>
-                {formatMoney(position.provider_cost_basis.value)}{" "}
-                {position.provider_cost_basis.reporting_currency}
+                {position.current_price === null ? (
+                  "Unavailable"
+                ) : (
+                  <NumberValue
+                    value={position.current_price}
+                    unit={position.trading_currency}
+                  />
+                )}
               </td>
               <td>
-                {formatMoney(position.market_value.value)}{" "}
-                {position.market_value.reporting_currency}
+                <MoneyValue
+                  metric={position.provider_cost_basis}
+                  showCurrency
+                />
               </td>
               <td>
-                {formatMoney(position.provider_unrealized_profit_loss.value)}{" "}
-                {position.provider_unrealized_profit_loss.reporting_currency}
+                <MoneyValue metric={position.market_value} showCurrency />
               </td>
-              <td>{formatPercent(position.direct_weight)}</td>
+              <td>
+                <MoneyValue
+                  metric={position.provider_unrealized_profit_loss}
+                  showCurrency
+                />
+              </td>
+              <td>
+                <span
+                  title={`Canonical ratio: ${position.direct_weight ?? "Unavailable"}`}
+                >
+                  {formatPercent(position.direct_weight)}
+                </span>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -77,7 +106,12 @@ export function ActivityTable({
   activity,
 }: Readonly<{ activity: ActivityResponse[] }>) {
   return (
-    <div className="table-scroll">
+    <div
+      className="table-scroll"
+      role="region"
+      aria-label="Canonical portfolio activity"
+      tabIndex={0}
+    >
       <table className="data-table data-table--roomy">
         <caption className="ui-visually-hidden">
           Canonical portfolio activity
@@ -104,11 +138,14 @@ export function ActivityTable({
               <td>{item.ticker ?? "—"}</td>
               <td>{titleCase(item.direction)}</td>
               <td>
-                {item.quantity === null ? "—" : formatDecimal(item.quantity)}
+                {item.quantity === null ? (
+                  "Unavailable"
+                ) : (
+                  <NumberValue value={item.quantity} minimumDigits={0} />
+                )}
               </td>
               <td>
-                {formatMoney(item.amount.value)}{" "}
-                {item.amount.reporting_currency}
+                <MoneyValue metric={item.amount} showCurrency />
               </td>
               <td>
                 <QualityStatus quality={item.data_quality} />
@@ -125,7 +162,12 @@ export function DividendsTable({
   dividends,
 }: Readonly<{ dividends: DividendResponse[] }>) {
   return (
-    <div className="table-scroll">
+    <div
+      className="table-scroll"
+      role="region"
+      aria-label="Canonical dividend records"
+      tabIndex={0}
+    >
       <table className="data-table data-table--roomy">
         <caption className="ui-visually-hidden">
           Canonical dividend records
@@ -146,18 +188,21 @@ export function DividendsTable({
             <tr key={item.id}>
               <td>{formatDate(item.paid_on)}</td>
               <th scope="row">{item.ticker}</th>
-              <td>{formatDecimal(item.quantity)}</td>
               <td>
-                {formatMoney(item.gross_amount.value)}{" "}
-                {item.gross_amount.reporting_currency}
+                {item.quantity === null ? (
+                  "Unavailable"
+                ) : (
+                  <NumberValue value={item.quantity} minimumDigits={0} />
+                )}
               </td>
               <td>
-                {formatMoney(item.withholding_tax.value)}{" "}
-                {item.withholding_tax.reporting_currency}
+                <MoneyValue metric={item.gross_amount} showCurrency />
               </td>
               <td>
-                {formatMoney(item.net_amount.value)}{" "}
-                {item.net_amount.reporting_currency}
+                <MoneyValue metric={item.withholding_tax} showCurrency />
+              </td>
+              <td>
+                <MoneyValue metric={item.net_amount} showCurrency />
               </td>
               <td>
                 <QualityStatus quality={item.data_quality} />
@@ -174,7 +219,12 @@ export function SnapshotsTable({
   snapshots,
 }: Readonly<{ snapshots: SnapshotResponse[] }>) {
   return (
-    <div className="table-scroll">
+    <div
+      className="table-scroll"
+      role="region"
+      aria-label="Immutable portfolio snapshots"
+      tabIndex={0}
+    >
       <table className="data-table data-table--roomy">
         <caption className="ui-visually-hidden">
           Immutable portfolio snapshots
@@ -196,20 +246,16 @@ export function SnapshotsTable({
               <th scope="row">{formatDateTime(snapshot.valuation_at)}</th>
               <td>{formatDateTime(snapshot.source_cutoff_at)}</td>
               <td>
-                {formatMoney(snapshot.total_value.value)}{" "}
-                {snapshot.total_value.reporting_currency}
+                <MoneyValue metric={snapshot.total_value} showCurrency />
               </td>
               <td>
-                {formatMoney(snapshot.cash_value.value)}{" "}
-                {snapshot.cash_value.reporting_currency}
+                <MoneyValue metric={snapshot.cash_value} showCurrency />
               </td>
               <td>
-                {formatMoney(snapshot.invested_value.value)}{" "}
-                {snapshot.invested_value.reporting_currency}
+                <MoneyValue metric={snapshot.invested_value} showCurrency />
               </td>
               <td>
-                {formatMoney(snapshot.net_contributions.value)}{" "}
-                {snapshot.net_contributions.reporting_currency}
+                <MoneyValue metric={snapshot.net_contributions} showCurrency />
               </td>
               <td>
                 <QualityStatus quality={snapshot.data_quality} />

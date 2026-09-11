@@ -9,6 +9,21 @@ import {
 import { getDemoPortfolio } from "../lib/demo-data";
 
 describe("canonical metric currencies", () => {
+  it("keeps a missing dividend quantity distinct from canonical zero", () => {
+    const dividend = getDemoPortfolio().dividends.items[0]!;
+    const view = render(
+      <DividendsTable dividends={[{ ...dividend, quantity: null }]} />,
+    );
+    expect(screen.getByText("Unavailable")).toBeVisible();
+    view.rerender(
+      <DividendsTable dividends={[{ ...dividend, quantity: "0" }]} />,
+    );
+    expect(screen.queryByText("Unavailable")).not.toBeInTheDocument();
+    expect(
+      view.container.querySelector('[data-canonical-value="0"]'),
+    ).toHaveAttribute("title", "0");
+  });
+
   it("renders each metric's declared currency instead of assuming EUR", () => {
     const bundle = getDemoPortfolio();
     const position = bundle.positions.items[0]!;
@@ -18,6 +33,7 @@ describe("canonical metric currencies", () => {
     render(
       <>
         <PositionsTable
+          accountId={bundle.summary.account.id}
           positions={[
             {
               ...position,

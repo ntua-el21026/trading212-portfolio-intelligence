@@ -10,7 +10,21 @@
 
 ## Current state
 
-P2-07 has scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`: versioned alert rules, immutable scheduled evaluation, event deduplication/cooldown, authorized lifecycle/history, bounded delivery and canonical alerts exports. Phase 2 is in progress: 7/10 packages (70%), 19/29 local rows and 30/40 scenarios complete. S31 includes both report/alert durable recovery and actual Redis-loss republication of the same pending alert input. Shared API/DATA/SEC/OPS and S32/S34/S38 predicates remain partial; P2-08 through P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred and unverified; no CI pass or final Phase 2 release is claimed.
+P2-08 implementation has started from P207 closure `7d3a5f59f30fe934953c7e3ab27d8e6ae48c1ca1`. Account navigation, analytical presentation, company exposure/report binding and intelligence-quality changes are integrated for validation. Contracts have been generated; no P208 acceptance is claimed. Seven packages remain locally accepted. GitHub Actions stays owner-deferred, and P209/P210 remain required.
+
+P2-08 working validation now has 534 passing web unit tests and completed static,
+documentation, dependency/security, generated-contract and six-image build checks.
+A broad coverage attempt passed 2,474 isolated and 376 PostgreSQL cases but exposed
+one frozen report-fixture clock: PostgreSQL correctly rejected an expired worker
+lease. The fixture now advances its operational clock while retaining explicit
+financial cutoffs and future expiry times. All 11 company-report/artifact cases
+then passed under coverage in 330.70 seconds with assertions unchanged. The 88%
+working coverage aggregate includes the failed attempt and focused correction;
+it is not a fresh successful full coverage run. Completed three-viewport followups
+cover intelligence/workspace/X-ray and historical account links. Immutable
+full validation and reviewed acceptance evidence remain pending.
+
+P2-07 has scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`: versioned alert rules, immutable scheduled evaluation, event deduplication/cooldown, authorized lifecycle/history, bounded delivery and canonical alerts exports. Phase 2 is in progress: 7/10 packages (70%), 19/29 local rows and 30/40 scenarios complete. S31 includes both report/alert durable recovery and actual Redis-loss republication of the same pending alert input. Shared API/DATA/SEC/OPS and S32/S34/S38 predicates remain partial; At the P207 acceptance boundary, P2-08 through P2-10 and Phase 3 were `not_started`. GitHub Actions is owner-deferred and unverified; no CI pass or final Phase 2 release is claimed.
 
 Actual completed gate summaries record 2352 isolated and 338 service-backed Python tests, 88% combined Python coverage with branch measurement, 345 web unit tests and 100 local browser checks. The full gate took 5416.926 seconds; fresh runtime took 256.28724 seconds. All six immutable images and the exact source/history scans passed; all seven runtime services restarted and scoped cleanup verified absence.
 

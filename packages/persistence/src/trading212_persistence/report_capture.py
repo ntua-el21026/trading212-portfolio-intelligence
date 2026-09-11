@@ -15,6 +15,7 @@ from trading212_domain.sources import SourceUse
 from .report_authorization import ReportAuthorization
 from .report_builder import ReportBuilder
 from .report_capture_alerts import capture_alerts
+from .report_capture_company import prepare_company_copy
 from .report_capture_planning import capture_planning
 from .report_capture_portfolio import capture_portfolio, selected_snapshot
 from .report_capture_quality import capture_quality, capture_quality_tables
@@ -78,6 +79,15 @@ class PostgresReportCapture:
         )
         capture_portfolio(builder, self._session, snapshot)
         capture_quality(builder, self._session, snapshot)
+        company = prepare_company_copy(
+            builder,
+            self._session,
+            self._authorization,
+            sessions=self._sessions,
+            clock=self._clock,
+            cursor_signing_key=self._cursor_key,
+            source_use=SourceUse(self._source_use.value),
+        )
         capture_planning(
             builder,
             self._session,
@@ -85,6 +95,7 @@ class PostgresReportCapture:
             sessions=self._sessions,
             clock=self._clock,
             cursor_signing_key=self._cursor_key,
+            company=company,
         )
         capture_historical(
             builder,
@@ -95,15 +106,16 @@ class PostgresReportCapture:
             cursor_signing_key=self._cursor_key,
             source_use=SourceUse(self._source_use.value),
         )
-        capture_xray(
-            builder,
-            self._session,
-            self._authorization,
-            sessions=self._sessions,
-            clock=self._clock,
-            cursor_signing_key=self._cursor_key,
-            source_use=SourceUse(self._source_use.value),
-        )
+        if company is None:
+            capture_xray(
+                builder,
+                self._session,
+                self._authorization,
+                sessions=self._sessions,
+                clock=self._clock,
+                cursor_signing_key=self._cursor_key,
+                source_use=SourceUse(self._source_use.value),
+            )
         capture_alerts(builder, self._session, self._authorization, clock=self._clock)
         capture_quality_tables(builder)
         builder.complete_proof_tables()

@@ -22,6 +22,40 @@ from .reports import (
 
 # Each tuple is a literal ordered schema. Codes are decoded only from this module.
 _COLUMNS: dict[ReportTableKey, tuple[tuple[str, str], ...]] = {
+    ReportTableKey.PLANNING_COMPANY_ACTUALS_V1: (
+        ("row_key", "id"),
+        ("entity_id", "id?"),
+        ("actual_weight", "R?"),
+        ("selection_reason", "enum"),
+        ("semantics", "enum"),
+        ("drift_reason", "enum"),
+        ("identity_count", "int"),
+        ("path_count", "int"),
+        ("proof_digest", "id?"),
+        ("projection_digest", "id"),
+    ),
+    ReportTableKey.PLANNING_COMPANY_BASIS_V1: (
+        ("version", "id"),
+        ("projection_digest", "id"),
+        ("planning_run_id", "id"),
+        ("planning_input_digest", "id"),
+        ("planning_content_digest", "id"),
+        ("valuation_digest", "id"),
+        ("xray_run_id", "id"),
+        ("xray_input_id", "id"),
+        ("xray_input_digest", "id"),
+        ("xray_content_digest", "id"),
+        ("account_id", "id"),
+        ("snapshot_id", "id"),
+        ("reporting_currency", "enum"),
+        ("valuation_at", "utc"),
+        ("source_cutoff_at", "utc"),
+        ("policy_id", "id"),
+        ("policy_digest", "id"),
+        ("method", "id"),
+        ("method_version", "id"),
+        ("numeric_policy", "id"),
+    ),
     ReportTableKey.ALERT_EVENTS: (
         ("event_id", "id"),
         ("evaluation_id", "id"),
@@ -1510,8 +1544,28 @@ def dataset_tables(dataset: ExportDataset, field_set: ExportFieldSet) -> tuple[R
     return tuple(table for table in ReportTableKey if table in selected)
 
 
+COMPANY_REPORT_TABLES = frozenset(
+    {
+        ReportTableKey.PLANNING_COMPANY_ACTUALS_V1,
+        ReportTableKey.PLANNING_COMPANY_BASIS_V1,
+        ReportTableKey.XRAY_SUMMARY,
+        ReportTableKey.XRAY_QUALITY,
+        ReportTableKey.XRAY_DIMENSIONS,
+        ReportTableKey.XRAY_EXPOSURES,
+        ReportTableKey.XRAY_PATHS,
+    }
+)
+
+
 def report_tables(selection: ReportSelection | ExportSelection) -> tuple[ReportTableKey, ...]:
-    if isinstance(selection, ExportSelection):
-        return dataset_tables(selection.dataset, selection.field_set)
-    selected = {table for section in selection.sections for table in section_tables(section)}
+    selected = (
+        set(dataset_tables(selection.dataset, selection.field_set))
+        if isinstance(selection, ExportSelection)
+        else {table for section in selection.sections for table in section_tables(section)}
+    )
+    if selection.xray_run_id is not None:
+        # Additive, explicitly pinned actuals. Existing table schemas/order and
+        # absent-pin selections are unchanged, including plan postweights.
+        selected.update(COMPANY_REPORT_TABLES)
+        selected.add(ReportTableKey.DRIFT_ROWS)
     return tuple(table for table in ReportTableKey if table in selected)

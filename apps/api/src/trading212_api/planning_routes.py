@@ -105,7 +105,7 @@ def register_planning_routes(
                 reporting_currency=CurrencyCode(query.reporting_currency),
             ),
         )
-        return planning_response(request, value, wire.ActualVsTargetResult)
+        return planning_response(request, value, wire.ActualVsTargetResult, conditional=True)
 
     @router.get(
         "/accounts/{account_id}/drift",
@@ -127,7 +127,7 @@ def register_planning_routes(
                 basis=DriftBasis(query.basis),
             ),
         )
-        return planning_response(request, value, wire.DriftAnalysisResult)
+        return planning_response(request, value, wire.DriftAnalysisResult, conditional=True)
 
     @router.post(
         "/contribution-plans",

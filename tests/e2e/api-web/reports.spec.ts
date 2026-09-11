@@ -1,3 +1,4 @@
+import { keyboardClearance } from "./accessibility";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import {
@@ -24,6 +25,7 @@ async function selectedSnapshot(request: APIRequestContext) {
   return snapshotDetailSchema.parse(await response.json());
 }
 async function presentation(page: Page) {
+  await keyboardClearance(page);
   expect(
     await page.evaluate(
       () =>
@@ -131,6 +133,9 @@ test("report navigation restores edited defaults through the sidebar and browser
   const accountBefore = await page
     .getByRole("combobox", { name: "Account", exact: true })
     .inputValue();
+  expect(accountBefore).toBe(account);
+  const defaultUrl = new URL("/reports", page.url());
+  defaultUrl.searchParams.set("account", accountBefore);
   const snapshotBefore = await page
     .getByRole("combobox", { name: "Valuation snapshot", exact: true })
     .inputValue();
@@ -161,7 +166,7 @@ test("report navigation restores edited defaults through the sidebar and browser
   await expect(cutoff).toHaveValue(typed);
   const edited = page.url();
   await reportsLink(page);
-  await expect(page).toHaveURL("http://127.0.0.1:3001/reports");
+  await expect(page).toHaveURL(defaultUrl.href);
   await expect(
     page.getByRole("combobox", { name: "Account", exact: true }),
   ).toHaveValue(accountBefore);
@@ -201,7 +206,7 @@ test("report navigation restores edited defaults through the sidebar and browser
   ).toHaveValue("audit");
   await expect(cutoff).toHaveValue(typed);
   await page.goForward();
-  await expect(page).toHaveURL("http://127.0.0.1:3001/reports");
+  await expect(page).toHaveURL(defaultUrl.href);
   await expect(
     page.getByRole("combobox", { name: "Output", exact: true }),
   ).toHaveValue("report");

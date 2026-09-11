@@ -1,6 +1,8 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useNavigationVersionRef } from "./navigation-intent";
+
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type {
   BenchmarkContent,
@@ -27,6 +29,14 @@ export function BenchmarkForm({
   accountId?: string;
 }>) {
   const router = useRouter();
+  const navigationRef = useNavigationVersionRef();
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
   const version = initial?.selected_version;
   const preferred =
     sources.find((item) => item.basis === "total_return") ?? sources[0];
@@ -64,6 +74,7 @@ export function BenchmarkForm({
               definition_id: initial!.definition.id,
               if_match: initial!.definition.revision_etag,
             };
+    const generation = navigationRef.current;
     const fingerprint = JSON.stringify(command);
     const idempotencyKey =
       identity.current.get(fingerprint) ?? crypto.randomUUID();
@@ -75,6 +86,7 @@ export function BenchmarkForm({
         ...command,
         idempotency_key: idempotencyKey,
       });
+      if (!mounted.current || navigationRef.current !== generation) return;
       setResult(next);
       if (next.ok) {
         identity.current.delete(fingerprint);
@@ -88,13 +100,14 @@ export function BenchmarkForm({
         router.refresh();
       }
     } catch {
+      if (!mounted.current || navigationRef.current !== generation) return;
       setResult({
         ok: false,
         code: "SOURCES_UNAVAILABLE",
         message: "The benchmark could not be saved. Your inputs are preserved.",
       });
     } finally {
-      setPending(false);
+      if (mounted.current) setPending(false);
     }
   }
   async function submit(event: FormEvent<HTMLFormElement>) {

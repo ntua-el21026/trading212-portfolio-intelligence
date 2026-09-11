@@ -1,3 +1,4 @@
+import { keyboardClearance } from "./accessibility";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
@@ -10,6 +11,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function assertAccessibleTargetPage(page: Page): Promise<void> {
+  await keyboardClearance(page);
   const issues = await page.evaluate(() => {
     const violations: string[] = [];
     const ids = [...document.querySelectorAll<HTMLElement>("[id]")]
@@ -83,12 +85,20 @@ test("durable target editor preserves errors and completes version lifecycle", a
     .getByLabel("Description", { exact: true })
     .fill("Synthetic browser acceptance target");
   await page.getByRole("button", { name: "Create Pie", exact: true }).click();
-  await expect(page).toHaveURL(/\/pies\/[0-9a-f-]{36}$/);
+  await expect(page).toHaveURL(
+    (url) =>
+      /^\/pies\/[0-9a-f-]{36}$/u.test(url.pathname) &&
+      url.searchParams.get("account") === "template",
+  );
   await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
   await page
     .getByRole("button", { name: "Create draft version", exact: true })
     .click();
-  await expect(page).toHaveURL(/\?version=[0-9a-f-]{36}$/);
+  await expect(page).toHaveURL(
+    (url) =>
+      /^[0-9a-f-]{36}$/u.test(url.searchParams.get("version") ?? "") &&
+      url.searchParams.get("account") === "template",
+  );
   await page.getByRole("button", { name: "Add cash", exact: true }).click();
   const cashWeight = page.getByRole("textbox", { name: "Weight for EUR cash" });
   await cashWeight.fill("1e0");
@@ -219,6 +229,11 @@ test("target pagination retains membership while a new Pie is created", async ({
     name: new RegExp(`^${prefix} \\d{2}$`),
   });
   await expect(matching).toHaveCount(25);
+  await assertAccessibleTargetPage(page);
+  await page.screenshot({
+    path: join(tmpdir(), `t212-p2-08-${testInfo.project.name}-pies.png`),
+    fullPage: false,
+  });
   const first = await matching.allTextContents();
   await expect(
     page.getByText(

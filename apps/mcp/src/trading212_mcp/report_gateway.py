@@ -263,6 +263,7 @@ def report_command(value: wire.McpGenerateReportRequest) -> application.Generate
             sections=tuple(domain.ReportSection(item) for item in value.sections),
             formats=(domain.ReportFormat(value.format),),
             target_version_id=UUID(value.target_version_id) if value.target_version_id else None,
+            xray_run_id=UUID(value.xray_run_id) if value.xray_run_id else None,
             plan_revision_id=UUID(value.plan_revision_id) if value.plan_revision_id else None,
             benchmark_version_id=UUID(value.benchmark_version_id)
             if value.benchmark_version_id

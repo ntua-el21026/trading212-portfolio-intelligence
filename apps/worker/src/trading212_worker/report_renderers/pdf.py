@@ -16,7 +16,7 @@ from trading212_application.reports import (
     ReportRenderError,
     ReportRenderGuard,
 )
-from trading212_domain.report_schema import section_tables, table_schema
+from trading212_domain.report_schema import COMPANY_REPORT_TABLES, section_tables, table_schema
 from trading212_domain.reports import (
     MAX_REPORT_PDF_PAGES,
     ExportDataset,
@@ -41,10 +41,14 @@ _TEXT_WIDTH = _WIDTH - 2 * _MARGIN
 
 def _analytical_order(descriptor: ReportTableDescriptor) -> tuple[int, int]:
     if descriptor.section is not None:
-        return (
-            tuple(ReportSection).index(descriptor.section),
-            section_tables(descriptor.section).index(descriptor.table),
-        )
+        tables = section_tables(descriptor.section)
+        if descriptor.section is ReportSection.DRIFT:
+            # Explicit company pins add analytical tables to drift without changing
+            # legacy section selections or any canonical report bytes.
+            tables += tuple(table for table in ReportTableKey if table in COMPANY_REPORT_TABLES)
+        if descriptor.table not in tables:
+            raise ReportRenderError(ReportFailureCode.INVALID_INPUT)
+        return (tuple(ReportSection).index(descriptor.section), tables.index(descriptor.table))
     if descriptor.dataset is not None:
         return (
             len(ReportSection) + tuple(ExportDataset).index(descriptor.dataset),

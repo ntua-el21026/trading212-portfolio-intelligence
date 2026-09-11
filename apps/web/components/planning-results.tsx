@@ -1,3 +1,4 @@
+import { CompanyWeight } from "./planning-company";
 import { formatPlanningMoney } from "../lib/planning-format";
 import type {
   PlanningDriftRow,
@@ -150,10 +151,12 @@ export function DriftTable({
   rows,
   caption,
   basis = "direct",
+  showCompany = false,
 }: Readonly<{
   rows: PlanningDriftRow[];
   caption: string;
   basis?: "direct" | "effective";
+  showCompany?: boolean;
 }>) {
   if (!rows.length)
     return <p className="muted">No rows are available for this selection.</p>;
@@ -174,6 +177,7 @@ export function DriftTable({
             <th scope="col">
               {basis === "direct" ? "Actual direct" : "Effective"}
             </th>
+            {showCompany ? <th scope="col">Company actual</th> : null}
             <th scope="col">Signed drift</th>
             <th scope="col">Absolute drift</th>
             <th scope="col">Relative drift</th>
@@ -192,6 +196,29 @@ export function DriftTable({
                     ? titleCase(row.classification)
                     : "Classification unavailable"}
                 </span>
+                {row.listing_id || row.instrument_id ? (
+                  <details className="planning-holding-identity">
+                    <summary>Holding identity</summary>
+                    <dl>
+                      {row.listing_id ? (
+                        <div>
+                          <dt>Listing</dt>
+                          <dd>
+                            <code>{row.listing_id}</code>
+                          </dd>
+                        </div>
+                      ) : null}
+                      {row.instrument_id ? (
+                        <div>
+                          <dt>Instrument</dt>
+                          <dd>
+                            <code>{row.instrument_id}</code>
+                          </dd>
+                        </div>
+                      ) : null}
+                    </dl>
+                  </details>
+                ) : null}
               </th>
               <td>
                 {row.actual_value
@@ -206,12 +233,21 @@ export function DriftTable({
                     : undefined
                 }
               >
-                {formatPercent(
-                  basis === "direct"
-                    ? row.actual_direct_weight
-                    : row.effective_weight,
+                {basis === "effective" && row.company ? (
+                  <CompanyWeight value={row.company} />
+                ) : (
+                  formatPercent(
+                    basis === "direct"
+                      ? row.actual_direct_weight
+                      : row.effective_weight,
+                  )
                 )}
               </td>
+              {showCompany ? (
+                <td>
+                  <CompanyWeight value={row.company} />
+                </td>
+              ) : null}
               <td>{formatPercent(row.signed_drift)}</td>
               <td>{formatPercent(row.absolute_drift)}</td>
               <td

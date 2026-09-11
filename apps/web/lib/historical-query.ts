@@ -66,6 +66,7 @@ const querySchema = z.strictObject({
   capture: z.string().uuid().optional(),
   cursor: z.string().nullable(),
   benchmarks_cursor: z.string().nullable(),
+  targets_cursor: z.string().nullable().optional(),
   top: z.number().int().min(1).max(50),
   limit: z.number().int().min(1).max(100),
   flows: z.enum(["show", "hide"]),
@@ -170,6 +171,7 @@ export function readHistoricalQuery(
       capture: values.capture,
       cursor: readOpaqueCursor(values.cursor),
       benchmarks_cursor: readOpaqueCursor(values.benchmarks_cursor),
+      targets_cursor: readOpaqueCursor(values.targets_cursor),
       top: values.top ? Number(values.top) : 25,
       limit: values.limit ? Number(values.limit) : 25,
       flows: values.flows ?? "show",
@@ -214,6 +216,7 @@ export function historicalHref(
         ![
           "cursor",
           "benchmarks_cursor",
+          "targets_cursor",
           "top",
           "limit",
           "capture",
@@ -223,6 +226,12 @@ export function historicalHref(
   ) {
     if (!("capture" in changes)) values.capture = undefined;
     if (!("cursor" in changes)) values.cursor = null;
+  }
+  if (changed.includes("account")) {
+    values.benchmarks_cursor = null;
+    values.targets_cursor = null;
+    values.target = undefined;
+    values.benchmark = undefined;
   }
   const parameters = new URLSearchParams();
   for (const [key, value] of Object.entries(values)) {

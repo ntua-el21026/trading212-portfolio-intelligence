@@ -26,6 +26,7 @@ from trading212_domain.xray_codec import decode_xray_input, encode_xray_policy
 from . import source_models as sm
 from . import xray_catalog_models as cm
 from .historical_base import digest
+from .planning_company_store import SelectedCompanyBasis
 from .report_authorization import ReportAuthorization
 from .report_builder import ReportBuilder
 from .report_capture_common import ReportValue, capture_note, capture_row, capture_table
@@ -710,9 +711,10 @@ def capture_xray(
     clock: Callable[[], datetime],
     cursor_signing_key: bytes,
     source_use: SourceUse,
-) -> None:
+    selected: SelectedCompanyBasis | None = None,
+) -> r.ReportContext | None:
     if r.ReportTableKey.XRAY_SUMMARY not in report_tables(builder.selection):
-        return
+        return None
     if source_use not in (SourceUse.REPORT, SourceUse.EXPORT):
         fail_validation("A report/export copy permission is required.", field="source_use")
     authorization.check(session, now=clock())
@@ -728,12 +730,24 @@ def capture_xray(
         source_cutoff_at=builder.selection.source_cutoff_at,
         currency=app.ExplicitCurrency(reporting_currency=builder.selection.reporting_currency),
     )
-    handle = service._resolve_xray_run(session, principal, authorization.account_id, request)
-    result = service._load_xray_result(session, principal, authorization.account_id, handle)
-    _, capture, _ = service._authorized_rows(
-        session, principal, authorization.account_id, handle.run_id
-    )
-    value = decode_xray_input(capture.canonical_input)
+    if selected is None:
+        if builder.selection.xray_run_id is not None:
+            fail_validation(
+                "The selected company run must be authorized explicitly.", field="xray_run_id"
+            )
+        handle = service._resolve_xray_run(session, principal, authorization.account_id, request)
+        result = service._load_xray_result(session, principal, authorization.account_id, handle)
+        _, capture, _ = service._authorized_rows(
+            session, principal, authorization.account_id, handle.run_id
+        )
+        value = decode_xray_input(capture.canonical_input)
+    else:
+        if builder.selection.xray_run_id != selected.handle.run_id:
+            fail_validation("The report company run pin differs.", field="xray_run_id")
+        # prepare_company_copy authorized the full bytes in this transaction,
+        # with DISPLAY/STORE and the exact REPORT/EXPORT copy permission.
+        handle, value, result = selected.handle, selected.value, selected.result
+        service._authorized_rows(session, principal, authorization.account_id, handle.run_id)
     constituent = builder.selection.constituent_snapshot_id
     if constituent is not None and not any(
         item.reference.kind is d.XrayReferenceKind.CONSTITUENT_SNAPSHOT
@@ -825,3 +839,4 @@ def capture_xray(
         builder, context, value, result, instrument_name=instrument_name, entity_name=entity_name
     )
     authorization.check(session, now=clock())
+    return context

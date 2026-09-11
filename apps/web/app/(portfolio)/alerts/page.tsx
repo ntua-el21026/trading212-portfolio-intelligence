@@ -1,4 +1,10 @@
-import Link from "next/link";
+import {
+  AccountRequired,
+  AccountSelect,
+  AccountView,
+} from "../../../components/account-context";
+import { resolveAccountSelection } from "../../../lib/account-selection";
+import Link from "../../../components/navigation-intent";
 import { Button, Notice, Surface } from "@trading212/ui";
 import {
   AlertApiError,
@@ -113,18 +119,13 @@ export default async function AlertsPage({
 async function renderAlerts(query: AlertQuery, canWrite: boolean) {
   const clients = await alertClients();
   const accounts = await clients.portfolio.listAccounts();
-  const account = query.account
-    ? accounts.find((item) => item.id === query.account)
-    : accounts[0];
-  if (!account)
-    return (
-      <div className="page-stack">
-        <PageHeader title="Alerts" description={description} />
-        <Notice title="No authorized account">
-          Choose an available account before reading or creating alerts.
-        </Notice>
-      </div>
-    );
+  const accountSelection = resolveAccountSelection(
+    accounts,
+    query.account,
+    process.env.T212PI_ACCOUNT_ID,
+  );
+  const account = accountSelection.account;
+  if (!account) return <AccountRequired selection={accountSelection} />;
   const selected = { ...query, account: account.id };
   let list: AlertRulePage | AlertEventPage | undefined;
   let listError: unknown;
@@ -213,254 +214,250 @@ async function renderAlerts(query: AlertQuery, canWrite: boolean) {
     summaryError = error;
   }
   return (
-    <div className="page-stack">
-      <PageHeader title="Alerts" description={description} />
-      <Surface className={styles.surface}>
-        <form
-          action="/alerts"
-          className={styles.form}
-          aria-label="Alert filters"
-        >
-          <label>
-            Account
-            <select name="account" defaultValue={account.id}>
-              {accounts.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.display_name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            View
-            <select name="view" defaultValue={query.view}>
-              <option value="rules">Rules and evaluations</option>
-              <option value="events">Alert history</option>
-            </select>
-          </label>
-          {query.view === "rules" ? (
-            <>
-              <label>
-                Rule state
-                <select name="rule_state" defaultValue={query.rule_state}>
-                  {["all", ...ALERT_RULE_STATES].map((value) => (
-                    <option key={value} value={value}>
-                      {titleCase(value)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Family filter
-                <select name="family" defaultValue={query.family}>
-                  {["all", ...ALERT_FAMILIES].map((value) => (
-                    <option key={value} value={value}>
-                      {titleCase(value)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </>
-          ) : (
-            <>
-              <label>
-                Event state
-                <select name="event_state" defaultValue={query.event_state}>
-                  {["all", "open", "resolved"].map((value) => (
-                    <option key={value} value={value}>
-                      {titleCase(value)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Severity filter
-                <select name="severity" defaultValue={query.severity}>
-                  {["all", ...ALERT_SEVERITIES].map((value) => (
-                    <option key={value} value={value}>
-                      {titleCase(value)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Rule ID filter (optional)
-                <input
-                  name="rule"
-                  defaultValue={query.rule ?? ""}
-                  maxLength={36}
-                />
-              </label>
-              <label>
-                History start date
-                <input
-                  type="date"
-                  name="start_date"
-                  defaultValue={query.start_date ?? ""}
-                />
-              </label>
-              <label>
-                History end date
-                <input
-                  type="date"
-                  name="end_date"
-                  defaultValue={query.end_date ?? ""}
-                />
-              </label>
-            </>
-          )}
-          <Button type="submit">Apply alert filters</Button>
-        </form>
-        <nav className={styles.navigation} aria-label="Alert views">
-          <Link href={alertHref({ account: account.id, view: "rules" })}>
-            Rules and evaluations
-          </Link>
-          <Link href={alertHref({ account: account.id, view: "events" })}>
-            Alert history
-          </Link>
-          <Link href={alertHref({ account: account.id, view: "rules" })}>
-            New rule
-          </Link>
-        </nav>
-      </Surface>
-      {summary ? (
+    <AccountView accountId={account.id}>
+      <div className="page-stack">
+        <PageHeader title="Alerts" description={description} />
         <Surface className={styles.surface}>
-          <h2>Current alert summary</h2>
-          <p>
-            All severities and states as of{" "}
-            {formatDateTime(summary.source_cutoff_at)}. Acknowledgment overlaps
-            open and resolved states.
-          </p>
-          <dl className={styles.facts}>
-            <dt>Total events</dt>
-            <dd>{summary.counts.total_count}</dd>
-            <dt>Open</dt>
-            <dd>{summary.counts.open_count}</dd>
-            <dt>Resolved</dt>
-            <dd>{summary.counts.resolved_count}</dd>
-            <dt>Acknowledged</dt>
-            <dd>{summary.counts.acknowledged_count}</dd>
-          </dl>
-          <p>
-            {summary.returned_count} recent events sampled;{" "}
-            {summary.omitted_count} omitted from the sample. History provides
-            complete pagination.
-          </p>
-        </Surface>
-      ) : (
-        <Failure error={summaryError} />
-      )}
-      {list ? (
-        <Surface className={styles.surface}>
-          <h2>{query.view === "rules" ? "Saved rules" : "Alert history"}</h2>
-          {list.items.length === 0 ? (
-            <Notice title="No matching records">
-              No stored records match these filters. Empty history does not
-              claim a successful evaluation.
-            </Notice>
-          ) : (
-            list.items.map((item) => (
-              <article className={styles.entry} key={item.id}>
-                {"latest_version" in item ? (
-                  <>
-                    <h3>
-                      <Link
-                        href={alertHref({
-                          ...selected,
-                          rule: item.id,
-                          evaluation_cursor: undefined,
-                          version_cursor: undefined,
-                        })}
-                      >
-                        {item.latest_version.definition.name}
-                      </Link>
-                    </h3>
-                    <p>
-                      {titleCase(item.lifecycle)} ·{" "}
-                      {titleCase(
-                        item.latest_version.definition.predicate.metric,
-                      )}{" "}
-                      · latest version {item.latest_version.version_number} ·
-                      active version{" "}
-                      {item.active_version?.version_number ?? "none"}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <h3>
-                      <Link href={alertHref({ ...selected, event: item.id })}>
-                        {titleCase(item.severity)} ·{" "}
-                        {formatDateTime(item.occurred_at)}
-                      </Link>
-                    </h3>
-                    <p>
-                      {titleCase(item.episode_state)} ·{" "}
-                      {item.acknowledgment
-                        ? "Acknowledged"
-                        : "Not acknowledged"}{" "}
-                      · {titleCase(item.evaluation.outcome)} · delivery{" "}
-                      {titleCase(item.delivery.notification_state)}
-                    </p>
-                  </>
-                )}
-              </article>
-            ))
-          )}
-          <nav
-            className={styles.navigation}
-            aria-label="Alert collection pagination"
+          <form
+            action="/alerts"
+            className={styles.form}
+            aria-label="Alert filters"
           >
-            <p>
-              {list.items.length} records on this page / {list.total} matching
-              records.
-            </p>
-            {list.next_cursor ? (
-              <Link
-                prefetch={false}
-                href={alertHref({ ...selected, cursor: list.next_cursor })}
-              >
-                Next alert page
-              </Link>
+            <label>
+              Account
+              <AccountSelect label="Account" name="account" />
+            </label>
+            <label>
+              View
+              <select name="view" defaultValue={query.view}>
+                <option value="rules">Rules and evaluations</option>
+                <option value="events">Alert history</option>
+              </select>
+            </label>
+            {query.view === "rules" ? (
+              <>
+                <label>
+                  Rule state
+                  <select name="rule_state" defaultValue={query.rule_state}>
+                    {["all", ...ALERT_RULE_STATES].map((value) => (
+                      <option key={value} value={value}>
+                        {titleCase(value)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Family filter
+                  <select name="family" defaultValue={query.family}>
+                    {["all", ...ALERT_FAMILIES].map((value) => (
+                      <option key={value} value={value}>
+                        {titleCase(value)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </>
             ) : (
-              <p>End of collection.</p>
+              <>
+                <label>
+                  Event state
+                  <select name="event_state" defaultValue={query.event_state}>
+                    {["all", "open", "resolved"].map((value) => (
+                      <option key={value} value={value}>
+                        {titleCase(value)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Severity filter
+                  <select name="severity" defaultValue={query.severity}>
+                    {["all", ...ALERT_SEVERITIES].map((value) => (
+                      <option key={value} value={value}>
+                        {titleCase(value)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Rule ID filter (optional)
+                  <input
+                    name="rule"
+                    defaultValue={query.rule ?? ""}
+                    maxLength={36}
+                  />
+                </label>
+                <label>
+                  History start date
+                  <input
+                    type="date"
+                    name="start_date"
+                    defaultValue={query.start_date ?? ""}
+                  />
+                </label>
+                <label>
+                  History end date
+                  <input
+                    type="date"
+                    name="end_date"
+                    defaultValue={query.end_date ?? ""}
+                  />
+                </label>
+              </>
             )}
+            <Button type="submit">Apply alert filters</Button>
+          </form>
+          <nav className={styles.navigation} aria-label="Alert views">
+            <Link href={alertHref({ account: account.id, view: "rules" })}>
+              Rules and evaluations
+            </Link>
+            <Link href={alertHref({ account: account.id, view: "events" })}>
+              Alert history
+            </Link>
+            <Link href={alertHref({ account: account.id, view: "rules" })}>
+              New rule
+            </Link>
           </nav>
         </Surface>
-      ) : (
-        <Failure error={listError} />
-      )}
-      {detailError ? <Failure error={detailError} /> : null}
-      {rule ? (
-        <AlertRulePanel rule={rule} query={selected} canWrite={canWrite} />
-      ) : null}
-      {event ? <AlertEventPanel event={event} canWrite={canWrite} /> : null}
-      {destinationError ? <Failure error={destinationError} /> : null}
-      {query.view === "rules" && (!query.rule || rule) && destinations ? (
-        <>
-          {destinations.next_cursor ? (
-            <Notice title="Destination list continues">
-              Showing {destinations.items.length} of {destinations.total}{" "}
-              configured destination records.{" "}
-              <Link
-                href={alertHref({
-                  ...selected,
-                  destination_cursor: destinations.next_cursor,
-                })}
-              >
-                Next destination page
-              </Link>
-            </Notice>
-          ) : null}
-          <AlertEditor
-            key={`${account.id}:${rule?.latest_version.id ?? "new"}:${query.destination_cursor ?? "first"}`}
-            accountId={account.id}
-            rule={rule}
-            destinations={destinations.items}
-            now={new Date().toISOString()}
-            canWrite={canWrite}
-          />
-        </>
-      ) : null}
-    </div>
+        {summary ? (
+          <Surface className={styles.surface}>
+            <h2>Current alert summary</h2>
+            <p>
+              All severities and states as of{" "}
+              {formatDateTime(summary.source_cutoff_at)}. Acknowledgment
+              overlaps open and resolved states.
+            </p>
+            <dl className={styles.facts}>
+              <dt>Total events</dt>
+              <dd>{summary.counts.total_count}</dd>
+              <dt>Open</dt>
+              <dd>{summary.counts.open_count}</dd>
+              <dt>Resolved</dt>
+              <dd>{summary.counts.resolved_count}</dd>
+              <dt>Acknowledged</dt>
+              <dd>{summary.counts.acknowledged_count}</dd>
+            </dl>
+            <p>
+              {summary.returned_count} recent events sampled;{" "}
+              {summary.omitted_count} omitted from the sample. History provides
+              complete pagination.
+            </p>
+          </Surface>
+        ) : (
+          <Failure error={summaryError} />
+        )}
+        {list ? (
+          <Surface className={styles.surface}>
+            <h2>{query.view === "rules" ? "Saved rules" : "Alert history"}</h2>
+            {list.items.length === 0 ? (
+              <Notice title="No matching records">
+                No stored records match these filters. Empty history does not
+                claim a successful evaluation.
+              </Notice>
+            ) : (
+              list.items.map((item) => (
+                <article className={styles.entry} key={item.id}>
+                  {"latest_version" in item ? (
+                    <>
+                      <h3>
+                        <Link
+                          href={alertHref({
+                            ...selected,
+                            rule: item.id,
+                            evaluation_cursor: undefined,
+                            version_cursor: undefined,
+                          })}
+                        >
+                          {item.latest_version.definition.name}
+                        </Link>
+                      </h3>
+                      <p>
+                        {titleCase(item.lifecycle)} ·{" "}
+                        {titleCase(
+                          item.latest_version.definition.predicate.metric,
+                        )}{" "}
+                        · latest version {item.latest_version.version_number} ·
+                        active version{" "}
+                        {item.active_version?.version_number ?? "none"}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <h3>
+                        <Link href={alertHref({ ...selected, event: item.id })}>
+                          {titleCase(item.severity)} ·{" "}
+                          {formatDateTime(item.occurred_at)}
+                        </Link>
+                      </h3>
+                      <p>
+                        {titleCase(item.episode_state)} ·{" "}
+                        {item.acknowledgment
+                          ? "Acknowledged"
+                          : "Not acknowledged"}{" "}
+                        · {titleCase(item.evaluation.outcome)} · delivery{" "}
+                        {titleCase(item.delivery.notification_state)}
+                      </p>
+                    </>
+                  )}
+                </article>
+              ))
+            )}
+            <nav
+              className={styles.navigation}
+              aria-label="Alert collection pagination"
+            >
+              <p>
+                {list.items.length} records on this page / {list.total} matching
+                records.
+              </p>
+              {list.next_cursor ? (
+                <Link
+                  prefetch={false}
+                  href={alertHref({ ...selected, cursor: list.next_cursor })}
+                >
+                  Next alert page
+                </Link>
+              ) : (
+                <p>End of collection.</p>
+              )}
+            </nav>
+          </Surface>
+        ) : (
+          <Failure error={listError} />
+        )}
+        {detailError ? <Failure error={detailError} /> : null}
+        {rule ? (
+          <AlertRulePanel rule={rule} query={selected} canWrite={canWrite} />
+        ) : null}
+        {event ? <AlertEventPanel event={event} canWrite={canWrite} /> : null}
+        {destinationError ? <Failure error={destinationError} /> : null}
+        {query.view === "rules" && (!query.rule || rule) && destinations ? (
+          <>
+            {destinations.next_cursor ? (
+              <Notice title="Destination list continues">
+                Showing {destinations.items.length} of {destinations.total}{" "}
+                configured destination records.{" "}
+                <Link
+                  href={alertHref({
+                    ...selected,
+                    destination_cursor: destinations.next_cursor,
+                  })}
+                >
+                  Next destination page
+                </Link>
+              </Notice>
+            ) : null}
+            <AlertEditor
+              key={`${account.id}:${rule?.latest_version.id ?? "new"}:${query.destination_cursor ?? "first"}`}
+              accountId={account.id}
+              rule={rule}
+              destinations={destinations.items}
+              now={new Date().toISOString()}
+              canWrite={canWrite}
+            />
+          </>
+        ) : null}
+      </div>
+    </AccountView>
   );
 }

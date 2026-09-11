@@ -83,7 +83,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "P2-08_ordered_implementation_with_owner_deferred_ci",
+  "next_gate": "P2-08_focused_validation_and_complete_analytical_experience",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -338,13 +338,12 @@
     "verification_after_limits_reset": "pending"
   },
   "current_work_package": {
-    "id": "P2-07",
-    "status": "complete",
-    "source_sha": "03c3c5b0b8182aadaaf48ec29131ab7fe83095a7",
-    "acceptance_claim": true,
-    "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
-    "artifact": "docs/implementation/evidence/phase-2-p2-07-03c3c5b.json",
+    "id": "P2-08",
+    "status": "in_progress",
+    "starting_sha": "7d3a5f59f30fe934953c7e3ab27d8e6ae48c1ca1",
+    "specification": "docs/implementation/P2_08_ANALYTICAL_WEB_EXPERIENCE.md",
+    "acceptance_claim": false,
     "github_actions": "deferred_by_owner",
-    "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-07-03c3c5b-implementation-history.json"
+    "local_validation": "Focused static checks, 525 web unit tests, 26 PDF renderer tests, real company report/export artifact checks and three-viewport company/quality/reduced-motion checks passed. Complete immutable acceptance remains pending."
   }
 }

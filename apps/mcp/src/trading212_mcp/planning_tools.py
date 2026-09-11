@@ -85,6 +85,7 @@ def register_planning_tools(
         reporting_currency: CurrencyString,
         context: Context[Any, Any],
         node_id: UUIDString | None = None,
+        xray_run_id: UUIDString | None = None,
         cursor: Cursor | None = None,
         limit: Annotated[StrictInt, Field(ge=1, le=100)] = 25,
     ) -> CallToolResult:
@@ -96,6 +97,7 @@ def register_planning_tools(
                 target_version_id=target_version_id,
                 reporting_currency=reporting_currency,
                 node_id=node_id,
+                xray_run_id=xray_run_id,
                 cursor=cursor,
                 limit=limit,
             ),
@@ -107,9 +109,9 @@ def register_planning_tools(
         title="Read allocation drift",
         description=(
             "Read a bounded ranked sample with full-universe drift totals, immutable "
-            "inputs and explicit quality. Effective company exposure is unavailable "
-            "until supported canonical sources exist. No provider access or job "
-            "creation."
+            "inputs and explicit quality. An optional retained X-ray run supplies full "
+            "company actual weights; listing targets do not define company drift. "
+            "No provider access or job creation."
         ),
         annotations=reads,
         meta=_metadata(scopes),
@@ -123,6 +125,7 @@ def register_planning_tools(
         reporting_currency: CurrencyString,
         context: Context[Any, Any],
         basis: Literal["direct", "effective"] = "direct",
+        xray_run_id: UUIDString | None = None,
         top_n: Annotated[StrictInt, Field(ge=1, le=50)] = 25,
     ) -> CallToolResult:
         return await gateway.get_drift_analysis(
@@ -133,6 +136,7 @@ def register_planning_tools(
                 target_version_id=target_version_id,
                 reporting_currency=reporting_currency,
                 basis=basis,
+                xray_run_id=xray_run_id,
                 top_n=top_n,
             ),
             context=context,

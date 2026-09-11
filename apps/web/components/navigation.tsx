@@ -14,8 +14,11 @@ import {
   ShieldCheck,
   TrendingUp,
 } from "lucide-react";
-import Link from "next/link";
+import Link from "./navigation-intent";
 import { usePathname } from "next/navigation";
+
+import { accountHref } from "../lib/account-selection";
+import { useAccountSelection } from "./account-context";
 
 const primaryItems = [
   { href: "/", icon: LayoutDashboard, label: "Overview" },
@@ -55,6 +58,7 @@ function isCurrent(pathname: string, href: string): boolean {
 
 export function DesktopNavigation() {
   const pathname = usePathname();
+  const { selection } = useAccountSelection();
   return (
     <nav aria-label="Portfolio" className="side-navigation">
       <ul>
@@ -62,9 +66,10 @@ export function DesktopNavigation() {
           <li key={href}>
             <Link
               prefetch={false}
+              aria-label={label}
               aria-current={isCurrent(pathname, href) ? "page" : undefined}
               className="nav-link"
-              href={href}
+              href={accountHref(href, selection.account?.id ?? null)}
             >
               <Icon aria-hidden="true" size={19} strokeWidth={1.7} />
               <span>{label}</span>
@@ -77,9 +82,10 @@ export function DesktopNavigation() {
           <li key={href}>
             <Link
               prefetch={false}
+              aria-label={label}
               aria-current={isCurrent(pathname, href) ? "page" : undefined}
               className="nav-link"
-              href={href}
+              href={accountHref(href, selection.account?.id ?? null)}
             >
               <Icon aria-hidden="true" size={19} strokeWidth={1.7} />
               <span>{label}</span>
@@ -93,14 +99,16 @@ export function DesktopNavigation() {
 
 export function MobileNavigation() {
   const pathname = usePathname();
+  const { selection } = useAccountSelection();
   return (
     <nav aria-label="Primary" className="mobile-navigation">
       {mobileItems.map(({ href, icon: Icon, label }) => (
         <Link
           prefetch={false}
+          aria-label={label}
           aria-current={isCurrent(pathname, href) ? "page" : undefined}
           className="mobile-nav-link"
-          href={href}
+          href={accountHref(href, selection.account?.id ?? null)}
           key={href}
         >
           <Icon aria-hidden="true" size={22} strokeWidth={1.7} />
@@ -113,6 +121,7 @@ export function MobileNavigation() {
 
 export function MobileSectionNavigation() {
   const pathname = usePathname();
+  const { selection } = useAccountSelection();
   return (
     <details className="mobile-section-navigation">
       <summary>All sections</summary>
@@ -121,7 +130,8 @@ export function MobileSectionNavigation() {
           <Link
             prefetch={false}
             key={href}
-            href={href}
+            href={accountHref(href, selection.account?.id ?? null)}
+            aria-label={label}
             aria-current={isCurrent(pathname, href) ? "page" : undefined}
             onClick={(event) => {
               const menu = event.currentTarget.closest("details");

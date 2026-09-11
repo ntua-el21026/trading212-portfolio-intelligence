@@ -69,9 +69,14 @@ def _field_names(value: r.ReportRecord) -> tuple[str, ...]:
         field.name
         for field in fields(value)
         if not (
-            type(value) is r.ReportCell
-            and field.name in _OPTIONAL_CELL_FIELDS
-            and getattr(value, field.name) is None
+            getattr(value, field.name) is None
+            and (
+                (type(value) is r.ReportCell and field.name in _OPTIONAL_CELL_FIELDS)
+                or (
+                    type(value) in (r.ReportSelection, r.ExportSelection)
+                    and field.name == "xray_run_id"
+                )
+            )
         )
     )
 
@@ -223,9 +228,23 @@ def _decode(value: JsonValue, annotation: object) -> object:
         return tuple(_decode(item, get_args(annotation)[0]) for item in value)
     if isinstance(annotation, type) and annotation in _RECORDS:
         names = {item.name for item in fields(annotation)}
-        optional = _OPTIONAL_CELL_FIELDS if annotation is r.ReportCell else frozenset()
+        optional = (
+            _OPTIONAL_CELL_FIELDS
+            if annotation is r.ReportCell
+            else frozenset({"xray_run_id"})
+            if annotation in (r.ReportSelection, r.ExportSelection)
+            else frozenset()
+        )
         if type(value) is not dict or not names - optional <= set(value) <= names:
             fail_validation("Report record fields differ from its schema.", field="record")
+        # Legacy exact fields or the explicit present-pin fields only. A null
+        # present pin is noncanonical, never an alias for the legacy encoding.
+        if (
+            annotation in (r.ReportSelection, r.ExportSelection)
+            and "xray_run_id" in value
+            and value["xray_run_id"] is None
+        ):
+            fail_validation("A present company run pin must be a UUID.", field="xray_run_id")
         hints = r._record_hints(annotation)
         result = {
             name: _decode(item, hints[name])

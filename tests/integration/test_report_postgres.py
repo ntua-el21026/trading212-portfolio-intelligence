@@ -157,11 +157,12 @@ async def finish(case: ReportCase, job: app.ReportJobStatus) -> app.ReportJobSta
             capture_id=row.input_id,
             input_digest=row.input_digest,
         )
-    assert (
-        await execute_report_message(case.jobs, message, consumer_id="report-test")
-        is ReportExecutionState.COMPLETED
+    state = await execute_report_message(case.jobs, message, consumer_id="report-test")
+    status = await case.service.get_report_status(case.principal, case.account_id, job.job_id)
+    assert state is ReportExecutionState.COMPLETED, (
+        f"Report worker returned {state.value}; failure code: {status.failure_code}"
     )
-    return await case.service.get_report_status(case.principal, case.account_id, job.job_id)
+    return status
 
 
 def test_canonical_report_survives_new_service_and_private_download(

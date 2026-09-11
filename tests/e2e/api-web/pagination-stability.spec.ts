@@ -26,14 +26,14 @@ async function assertAccessibleDocument(page: Page): Promise<void> {
     for (const table of document.querySelectorAll("table")) {
       if (!table.querySelector("caption")) issues.push("table without caption");
     }
-    for (const control of document.querySelectorAll("input, select")) {
-      if (!control.closest("label") && !control.getAttribute("aria-label")) {
-        issues.push("form control without label");
-      }
-    }
     return issues;
   });
   expect(violations).toEqual([]);
+  for (const control of await page.locator("input, select").all()) {
+    if (await control.isVisible()) {
+      await expect(control).toHaveAccessibleName(/\S/u);
+    }
+  }
 }
 
 test("a newer inserted activity does not duplicate or skip the active cursor traversal", async ({

@@ -4,6 +4,19 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Phase 2 analytical web experience (in progress)
+
+- Add shared account selection, durable analytical links, history navigation and
+  protection against stale command continuations replacing a newer route.
+- Preserve exact financial values and source details with accessible snapshot
+  charts, table alternatives, reduced motion and keyboard-visible table controls.
+- Add the bounded nine-family intelligence quality read and migration 0016 for
+  temporary selection/source identities, with current scope and retention checks.
+- Project explicitly pinned full-portfolio company actuals alongside direct target
+  drift; preserve non-additive semantics and exact report/export source bindings.
+- Correct reconciliation reference ordering and optional company PDF table order.
+  P208 acceptance and P209/P210 remain pending; GitHub Actions stays owner-deferred.
+
 ### Phase 2 alerts and rules
 
 - P2-07 has scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`: versioned alert rules, immutable scheduled evaluation, event deduplication/cooldown, authorized lifecycle/history, bounded delivery and canonical alerts exports. Phase 2 is in progress: 7/10 packages (70%), 19/29 local rows and 30/40 scenarios complete. S31 includes both report/alert durable recovery and actual Redis-loss republication of the same pending alert input. Shared API/DATA/SEC/OPS and S32/S34/S38 predicates remain partial; P2-08 through P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred and unverified; no CI pass or final Phase 2 release is claimed.

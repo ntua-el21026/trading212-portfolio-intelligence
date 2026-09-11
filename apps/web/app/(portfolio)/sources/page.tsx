@@ -1,4 +1,9 @@
-import Link from "next/link";
+import {
+  AccountRequired,
+  AccountView,
+} from "../../../components/account-context";
+import { resolveAccountSelection } from "../../../lib/account-selection";
+import Link from "../../../components/navigation-intent";
 import { Button, Notice, Surface } from "@trading212/ui";
 import { PageHeader } from "../../../components/page-header";
 import { CollectionPagination } from "../../../components/collection-pagination";
@@ -15,7 +20,6 @@ import {
 import { requireWebAccess } from "../../../lib/auth";
 import {
   planningHref,
-  planningUuid,
   type PlanningSearch,
 } from "../../../lib/planning-selection";
 import {
@@ -45,13 +49,25 @@ export default async function SourcesPage({
   const query = await searchParams;
   const clients = await sourceClients();
   const accounts = await clients.portfolio.listAccounts();
-  const accountId = planningUuid(query.account) ?? accounts[0]?.id;
-  const account = accounts.find((item) => item.id === accountId);
+  const accountSelection = resolveAccountSelection(
+    accounts,
+    query.account,
+    process.env.T212PI_ACCOUNT_ID,
+  );
+  const account = accountSelection.account;
   const kind = readEnumParam(
     query.kind,
     new Set(["market", "fx", "benchmark", "definitions"] as const),
     "market",
   );
+  // Benchmark definitions remain owner-private when the owner has no accounts.
+  // An explicitly invalid account must never enter this absent-account branch.
+  const ownerWideDefinitions =
+    kind === "definitions" &&
+    query.account === undefined &&
+    accounts.length === 0;
+  if (!account && !ownerWideDefinitions)
+    return <AccountRequired selection={accountSelection} />;
   const search = readBoundedSearch(query.search);
   const cursor = readOpaqueCursor(query.cursor);
   const basis = readEnumParam(
@@ -273,7 +289,7 @@ export default async function SourcesPage({
       </Link>
     </Notice>
   );
-  return (
+  const page = (
     <div className="page-stack source-page">
       <PageHeader
         title="Sources and benchmarks"
@@ -350,7 +366,18 @@ export default async function SourcesPage({
           <Button type="submit">Apply filters</Button>
         </form>
       </Surface>
+      {ownerWideDefinitions ? (
+        <Notice title="Owner-wide benchmarks">
+          These saved benchmark definitions belong to this owner without a
+          portfolio account selection.
+        </Notice>
+      ) : null}
       {content}
     </div>
+  );
+  return account ? (
+    <AccountView accountId={account.id}>{page}</AccountView>
+  ) : (
+    page
   );
 }

@@ -1,4 +1,10 @@
-import Link from "next/link";
+import Link from "../../../../../components/navigation-intent";
+import type { ReactNode } from "react";
+import {
+  AccountRequired,
+  AccountView,
+} from "../../../../../components/account-context";
+import { loadSelectedAccount } from "../../../../../lib/api-adapter";
 import { z } from "zod";
 import { Notice, Surface } from "@trading212/ui";
 import {
@@ -45,7 +51,16 @@ export default async function Page({
         </Notice>
       </div>
     );
-  const parsed = querySchema.safeParse(await searchParams);
+  const search = await searchParams;
+  // Owner-wide diagnostics need neither an account lookup nor a synthetic run.
+  const accountSelection =
+    search.account === undefined
+      ? null
+      : await loadSelectedAccount(search.account);
+  if (accountSelection && !accountSelection.account)
+    return <AccountRequired selection={accountSelection} />;
+  const accountId = accountSelection?.account?.id;
+  const parsed = querySchema.safeParse(search);
   const snapshot = z
     .string()
     .uuid()
@@ -64,11 +79,23 @@ export default async function Page({
       </div>
     );
   const query = parsed.data;
+  const withScope = (content: ReactNode) =>
+    accountId ? (
+      <AccountView accountId={accountId}>{content}</AccountView>
+    ) : (
+      <>
+        <Notice title="Owner-wide source">
+          This retained source is shown for its owner without a portfolio
+          account or X-ray run selection.
+        </Notice>
+        {content}
+      </>
+    );
   const clients = await xrayClients();
   let source: XrayConstituentSnapshotHeader;
   let holdings: XrayConstituentHoldingPage;
   try {
-    const scope = { account_id: query.account, run_id: query.run };
+    const scope = accountId ? { account_id: accountId, run_id: query.run } : {};
     source = xrayData(
       await clients.xray.get_constituent_snapshot(snapshot.data, scope),
     );
@@ -81,21 +108,21 @@ export default async function Page({
     );
   } catch (error) {
     if (!(error instanceof XrayApiError)) throw error;
-    return (
+    return withScope(
       <div className="page-stack xray-page">
         {header}
         <Notice title="Source unavailable">{error.message}</Notice>
-      </div>
+      </div>,
     );
   }
   const href = (cursor?: string) => {
     const values = new URLSearchParams();
-    if (query.account) values.set("account", query.account);
+    if (accountId) values.set("account", accountId);
     if (query.run) values.set("run", query.run);
     if (cursor) values.set("cursor", cursor);
     return `/xray/sources/${encodeURIComponent(source.id)}?${values}`;
   };
-  return (
+  return withScope(
     <div className="page-stack xray-page">
       {header}
       <Surface>
@@ -187,6 +214,6 @@ export default async function Page({
           ) : null}
         </nav>
       </Surface>
-    </div>
+    </div>,
   );
 }

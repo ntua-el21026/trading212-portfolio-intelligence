@@ -1,5 +1,7 @@
 "use client";
 
+import { useNavigationVersionRef } from "./navigation-intent";
+
 import {
   createContext,
   useContext,
@@ -42,6 +44,7 @@ export function useAlertTransition() {
 
 function useAlertCommand() {
   const router = useRouter();
+  const navigationRef = useNavigationVersionRef();
   const [pending, startChange] = useAlertTransition();
   const [feedback, setFeedback] = useState<AlertActionResult | null>(null);
   const mounted = useRef(true);
@@ -53,6 +56,7 @@ function useAlertCommand() {
     };
   }, []);
   function execute(command: Record<string, unknown>) {
+    const generation = navigationRef.current;
     if (pending) return;
     const signature = JSON.stringify(command);
     if (retry.current?.signature !== signature)
@@ -63,7 +67,7 @@ function useAlertCommand() {
         ...command,
         idempotency_key: key,
       });
-      if (!mounted.current) return;
+      if (!mounted.current || navigationRef.current !== generation) return;
       setFeedback(result);
       if (result.ok) startChange(() => router.refresh());
     });

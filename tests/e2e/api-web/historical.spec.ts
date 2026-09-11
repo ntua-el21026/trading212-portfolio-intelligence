@@ -1,3 +1,4 @@
+import { keyboardClearance } from "./accessibility";
 import {
   expect,
   test,
@@ -56,6 +57,7 @@ function errors(page: Page) {
 }
 
 async function presentation(page: Page) {
+  await keyboardClearance(page);
   const overflow = await page.evaluate(() => {
     const width = document.documentElement.clientWidth;
     return [...document.querySelectorAll<HTMLElement>(".historical-page *")]
@@ -378,6 +380,9 @@ test("performance charts preserve canonical values, exact replay and bounded ser
       .first()
       .locator("[title]"),
   ).toHaveAttribute("title", `${ending.amount} ${ending.currency}`);
+  await expect(
+    page.getByRole("link", { name: "data quality", exact: true }),
+  ).toHaveAttribute("href", "/quality?account=" + annual);
   await showSection(page, "Value and return history");
   await presentation(page);
   await page.screenshot({
@@ -595,6 +600,11 @@ test("benchmark and group attribution keep published source identities and sourc
       );
   }
   await presentation(page);
+  await showSection(page, "Contribution by selected grouping");
+  await page.screenshot({
+    path: `/tmp/t212-p2-08-${testInfo.project.name}-attribution.png`,
+    fullPage: false,
+  });
   expect(failures).toEqual([]);
 });
 
@@ -621,6 +631,9 @@ test("income retains native totals and grouped results while the cash-flow timel
   await expect(
     page.getByRole("img", { name: "Income by period" }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "data quality", exact: true }),
+  ).toHaveAttribute("href", "/quality?account=" + annual);
   await showSection(page, "Income by original currency");
   await presentation(page);
   await page.screenshot({

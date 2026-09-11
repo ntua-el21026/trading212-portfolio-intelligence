@@ -1,3 +1,4 @@
+import { keyboardClearance } from "./accessibility";
 import { expect, test, type Page } from "@playwright/test";
 import {
   snapshotDetailSchema,
@@ -16,6 +17,7 @@ function href(extra: Record<string, string> = {}) {
   return `/xray?${new URLSearchParams({ account, cutoff, currency: "EUR", ...extra })}`;
 }
 async function presentation(page: Page) {
+  await keyboardClearance(page);
   expect(
     await page.evaluate(
       () =>

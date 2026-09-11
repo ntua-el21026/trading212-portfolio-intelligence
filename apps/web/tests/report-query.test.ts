@@ -43,6 +43,8 @@ describe("report selection URLs", () => {
     { sections: "overview,arbitrary" },
     { start_date: "2026-09-08", end_date: "2026-09-07" },
     { dataset: "unknown" },
+    { xray_run_id: "invalid" },
+    { xray_run_id: ["00000000-0000-4000-8000-000000000001"] },
   ])("rejects unsupported selectors without reflecting them", (input) => {
     expect(() => parseReportQuery(input)).toThrow(/report/);
     try {
@@ -50,6 +52,20 @@ describe("report selection URLs", () => {
     } catch (error) {
       expect(String(error)).not.toContain("canary");
     }
+  });
+  it("retains an explicit company run without inventing one for an old selection", () => {
+    const pin = "00000000-0000-4000-8000-000000000005";
+    const selected = parseReportQuery({
+      report_type: "target_drift",
+      xray_run_id: pin,
+    });
+    const restored = parseReportQuery(
+      Object.fromEntries(
+        new URL(reportHref(selected), "https://portfolio.example").searchParams,
+      ),
+    );
+    expect(restored.xray_run_id).toBe(pin);
+    expect(Object.hasOwn(parseReportQuery({}), "xray_run_id")).toBe(false);
   });
   it("offers all report profiles and the eight implemented datasets with mandatory quality", () => {
     expect(REPORT_TYPES).toHaveLength(10);
@@ -73,6 +89,7 @@ describe("report selection URLs", () => {
     ["plan_revision_id", "00000000-0000-4000-8000-000000000002"],
     ["benchmark_version_id", "00000000-0000-4000-8000-000000000003"],
     ["constituent_snapshot_id", "00000000-0000-4000-8000-000000000004"],
+    ["xray_run_id", "00000000-0000-4000-8000-000000000005"],
     ["formats", "csv,json"],
     ["sections", "xray"],
     ["field_set", "audit"],

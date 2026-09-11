@@ -1,5 +1,5 @@
 import { ArrowRight, LockKeyhole, ShieldCheck } from "lucide-react";
-import Link from "next/link";
+import Link from "./navigation-intent";
 
 export function SignInPanel({
   demoEnabled,

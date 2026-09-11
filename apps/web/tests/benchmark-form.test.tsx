@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type {
@@ -201,5 +201,44 @@ describe("benchmark version editing", () => {
       `/sources/benchmarks/${id}?account=${accountId}&version=${id}`,
     );
     expect(mocks.refresh).toHaveBeenCalledOnce();
+  });
+
+  it("does not navigate or replace edits when a previous account's publication finishes", async () => {
+    const user = userEvent.setup();
+    let complete!: (value: {
+      ok: true;
+      value: BenchmarkDefinitionDetail;
+    }) => void;
+    mocks.command.mockReturnValue(
+      new Promise((resolve) => {
+        complete = resolve;
+      }),
+    );
+    const first = render(
+      <BenchmarkForm
+        sources={[source]}
+        effectiveAt={at}
+        initial={initial}
+        accountId={id}
+      />,
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Publish benchmark version" }),
+    );
+    first.unmount();
+    render(
+      <BenchmarkForm
+        sources={[source]}
+        effectiveAt={at}
+        accountId="40000000-0000-4000-8000-000000000009"
+      />,
+    );
+    const name = screen.getByRole("textbox", { name: "Name" });
+    await user.type(name, "Second account unsaved benchmark");
+    await act(async () => complete({ ok: true, value: initial }));
+    expect(mocks.push).not.toHaveBeenCalled();
+    expect(mocks.refresh).not.toHaveBeenCalled();
+    expect(name).toHaveValue("Second account unsaved benchmark");
+    expect(screen.queryByText("Changes saved.")).not.toBeInTheDocument();
   });
 });

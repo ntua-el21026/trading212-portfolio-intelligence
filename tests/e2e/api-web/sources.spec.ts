@@ -1,3 +1,4 @@
+import { keyboardClearance } from "./accessibility";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
@@ -15,6 +16,7 @@ test.beforeEach(async ({ page, request }) => {
 });
 
 async function presentation(page: Page) {
+  await keyboardClearance(page);
   expect(
     await page.evaluate(
       () =>

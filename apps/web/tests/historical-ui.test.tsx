@@ -1,5 +1,7 @@
+import { AccountProvider } from "../components/account-context";
+import { getDemoPortfolio } from "../lib/demo-data";
 import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type {
   CurrencyCashFlowTotals,
   HistoricalMoneyMetric,
@@ -19,6 +21,13 @@ import {
   formatHistoricalDecimal,
   formatHistoricalPercent,
 } from "../lib/historical-format";
+
+vi.mock("next/navigation", () => ({
+  useSearchParams: () =>
+    new URLSearchParams({ account: "d778f930-9d2e-4f47-b24f-5b1fa99c6eee" }),
+  usePathname: () => "/performance",
+  useRouter: () => ({ push: vi.fn() }),
+}));
 
 function money(amount: string | null, currency = "EUR"): HistoricalMoneyMetric {
   return {
@@ -180,16 +189,26 @@ describe("historical value and selection presentation", () => {
   });
   it("retains UTC microseconds in the form and discards stale capture/cursor on filter submission", () => {
     const { container } = render(
-      <HistoricalSelectionForm
-        pathname="/performance"
-        query={query}
-        accounts={[{ id: account, label: "Owned account" }]}
-        benchmarks={[]}
-        benchmarkTotal={0}
-        nextBenchmarkCursor={null}
-        targets={[]}
-        targetTotal={0}
-      />,
+      <AccountProvider
+        accounts={[
+          {
+            ...getDemoPortfolio().summary.account,
+            id: account,
+            display_name: "Owned account",
+          },
+        ]}
+      >
+        <HistoricalSelectionForm
+          pathname="/performance"
+          query={query}
+          accounts={[{ id: account, label: "Owned account" }]}
+          benchmarks={[]}
+          benchmarkTotal={0}
+          nextBenchmarkCursor={null}
+          targets={[]}
+          targetTotal={0}
+        />
+      </AccountProvider>,
     );
     expect(screen.getByLabelText(/^Knowledge cutoff \(UTC\)/)).toHaveValue(
       "2026-08-31T12:34:56.123456Z",

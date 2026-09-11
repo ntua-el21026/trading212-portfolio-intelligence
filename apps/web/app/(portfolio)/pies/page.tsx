@@ -1,4 +1,12 @@
-import Link from "next/link";
+import {
+  AccountRequired,
+  AccountView,
+} from "../../../components/account-context";
+import {
+  isPrivateTemplateSelection,
+  resolveAccountSelection,
+} from "../../../lib/account-selection";
+import Link from "../../../components/navigation-intent";
 import { ChartPie } from "lucide-react";
 import { EmptyState, Notice, StatusPill, Surface } from "@trading212/ui";
 import { z } from "zod";
@@ -57,14 +65,22 @@ export default async function PiesPage({
     portfolio.listAccounts(),
     template ? targets.get_target_version(template).then(targetData) : null,
   ]);
-  const accountScope = z
-    .union([z.literal("template"), z.string().uuid()])
-    .parse(
-      firstSearchParam(params.account) ??
-        (template
-          ? "template"
-          : (process.env.T212PI_ACCOUNT_ID ?? accounts[0]?.id ?? "template")),
-    );
+  const templateScope = isPrivateTemplateSelection(
+    "/pies",
+    params.account,
+    accounts.length,
+    Boolean(template),
+  );
+  const accountSelection = resolveAccountSelection(
+    accounts,
+    params.account,
+    process.env.T212PI_ACCOUNT_ID,
+  );
+  if (!templateScope && !accountSelection.account)
+    return <AccountRequired selection={accountSelection} />;
+  const accountScope = templateScope
+    ? "template"
+    : accountSelection.account!.id;
   const response = await targets.list_virtual_portfolios({
     state,
     sort,
@@ -75,105 +91,116 @@ export default async function PiesPage({
   });
   const page = targetData(response);
   return (
-    <div className="page-stack">
-      <PageHeader
-        title="Pies"
-        description="Set portfolio targets, preserve published versions, and reuse private templates."
-      />
-      {source ? (
-        <Notice title={`Create from template version ${source.version_number}`}>
-          The selected version will be available to clone after creating your
-          Pie.
-        </Notice>
-      ) : null}
-      <Surface>
-        <form className="collection-filters" method="get">
-          <label>
-            <span>Portfolio scope</span>
-            <select name="account" defaultValue={accountScope}>
-              {accounts.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.display_name}
-                </option>
-              ))}
-              <option value="template">Private templates</option>
-            </select>
-          </label>
-          <label>
-            <span>Search Pies</span>
-            <input name="search" defaultValue={search} maxLength={80} />
-          </label>
-          <label>
-            <span>State</span>
-            <select name="state" defaultValue={state}>
-              <option value="all">All states</option>
-              <option value="active">Active</option>
-              <option value="draft">Draft</option>
-              <option value="archived">Archived</option>
-            </select>
-          </label>
-          <label>
-            <span>Sort</span>
-            <select name="sort" defaultValue={sort}>
-              <option value="name_asc">Name A–Z</option>
-              <option value="updated_desc">Recently updated</option>
-            </select>
-          </label>
-          <button type="submit">Apply</button>
-        </form>
-        {page.items.length ? (
-          <div className="target-pie-list">
-            {page.items.map((pie) => (
-              <article className="target-pie-summary" key={pie.id}>
-                <div>
-                  <Link
-                    prefetch={false}
-                    className="target-title-link"
-                    href={`/pies/${pie.id}`}
-                  >
-                    {pie.name}
-                  </Link>
-                  <p className="muted">
-                    {pie.account_id ? "Account target" : "Private template"} ·{" "}
-                    {pie.reporting_currency} · revision {pie.revision}
-                  </p>
-                  {pie.description ? <p>{pie.description}</p> : null}
-                </div>
-                <div className="target-actions">
-                  <StatusPill
-                    tone={pie.state === "active" ? "positive" : "neutral"}
-                  >
-                    {pie.state}
-                  </StatusPill>
-                  {!pie.account_id && pie.active_version_id ? (
+    <AccountView
+      accountId={templateScope ? null : accountSelection.account!.id}
+    >
+      <div className="page-stack">
+        <PageHeader
+          title="Pies"
+          description="Set portfolio targets, preserve published versions, and reuse private templates."
+        />
+        {source ? (
+          <Notice
+            title={`Create from template version ${source.version_number}`}
+          >
+            The selected version will be available to clone after creating your
+            Pie.
+          </Notice>
+        ) : null}
+        <Surface>
+          <form className="collection-filters" method="get">
+            <label>
+              <span>Portfolio scope</span>
+              <select name="account" defaultValue={accountScope}>
+                {accounts.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.display_name}
+                  </option>
+                ))}
+                <option value="template">Private templates</option>
+              </select>
+            </label>
+            <label>
+              <span>Search Pies</span>
+              <input name="search" defaultValue={search} maxLength={80} />
+            </label>
+            <label>
+              <span>State</span>
+              <select name="state" defaultValue={state}>
+                <option value="all">All states</option>
+                <option value="active">Active</option>
+                <option value="draft">Draft</option>
+                <option value="archived">Archived</option>
+              </select>
+            </label>
+            <label>
+              <span>Sort</span>
+              <select name="sort" defaultValue={sort}>
+                <option value="name_asc">Name A–Z</option>
+                <option value="updated_desc">Recently updated</option>
+              </select>
+            </label>
+            <button type="submit">Apply</button>
+          </form>
+          {page.items.length ? (
+            <div className="target-pie-list">
+              {page.items.map((pie) => (
+                <article className="target-pie-summary" key={pie.id}>
+                  <div>
                     <Link
                       prefetch={false}
-                      className="text-link"
-                      href={`/pies?template=${pie.active_version_id}`}
+                      className="target-title-link"
+                      href={`/pies/${pie.id}?account=${pie.account_id ?? "template"}`}
                     >
-                      Use template
+                      {pie.name}
                     </Link>
-                  ) : null}
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            icon={<ChartPie aria-hidden="true" size={24} />}
-            title="No Pies match this view"
-            description="Create your first Pie or adjust the state and search filters."
+                    <p className="muted">
+                      {pie.account_id ? "Account target" : "Private template"} ·{" "}
+                      {pie.reporting_currency} · revision {pie.revision}
+                    </p>
+                    {pie.description ? <p>{pie.description}</p> : null}
+                  </div>
+                  <div className="target-actions">
+                    <StatusPill
+                      tone={pie.state === "active" ? "positive" : "neutral"}
+                    >
+                      {pie.state}
+                    </StatusPill>
+                    {!pie.account_id && pie.active_version_id ? (
+                      <Link
+                        prefetch={false}
+                        className="text-link"
+                        href={`/pies?template=${pie.active_version_id}`}
+                      >
+                        Use template
+                      </Link>
+                    ) : null}
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={<ChartPie aria-hidden="true" size={24} />}
+              title="No Pies match this view"
+              description="Create your first Pie or adjust the state and search filters."
+            />
+          )}
+          <CollectionPagination
+            pathname="/pies"
+            nextCursor={page.next_cursor}
+            total={page.total}
+            returnedCount={page.items.length}
+            preservedQuery={{ state, sort, search, account: accountScope }}
           />
-        )}
-        <CollectionPagination
-          pathname="/pies"
-          nextCursor={page.next_cursor}
-          total={page.total}
-          returnedCount={page.items.length}
-          preservedQuery={{ state, sort, search, account: accountScope }}
+        </Surface>
+        <CreatePieForm
+          key={accountScope}
+          accounts={accounts}
+          initialAccountId={templateScope ? null : accountSelection.account!.id}
+          sourceVersionId={source?.id}
         />
-      </Surface>
-      <CreatePieForm accounts={accounts} sourceVersionId={source?.id} />
-    </div>
+      </div>
+    </AccountView>
   );
 }

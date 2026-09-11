@@ -7,8 +7,9 @@ from decimal import Decimal
 from fastapi import Request, Response
 from trading212_api_contracts import planning as wire
 from trading212_application.planning import CreateContributionPlanCommand
+from trading212_application.xray_projection import xray_public_primitive
 from trading212_domain import planning as domain
-from trading212_domain.serialization import canonical_json, to_primitive
+from trading212_domain.serialization import canonical_json
 from trading212_domain.targets import TargetConstraintKind
 from trading212_domain.values import CurrencyCode, Money
 
@@ -81,11 +82,14 @@ def planning_response[T: wire.PlanningSchema](
     import hashlib
 
     try:
-        payload = wire.canonical_planning_payload(to_primitive(value), schema)
+        payload = wire.canonical_planning_payload(xray_public_primitive(value), schema)
         # Validate before computing a conditional validator; malformed results cannot 304.
         checked = schema.model_validate(payload).model_dump(mode="json")
     except (KeyError, TypeError, ValueError):
         return _error(request, 500, "INTERNAL_ERROR", "The planning operation could not complete.")
+    # Enforce the representation bound before any conditional success.
+    if len(schema.model_validate(checked).model_dump_json().encode("utf-8")) > 2 * 1024 * 1024:
+        return _error(request, 422, "RESULT_TOO_LARGE", "The requested result is too large.")
     if conditional:
         etag = '"' + hashlib.sha256(canonical_json(checked).encode()).hexdigest() + '"'
     return target_response(

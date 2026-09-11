@@ -1,3 +1,4 @@
+import { keyboardClearance } from "./accessibility";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import {
@@ -39,6 +40,7 @@ async function namedRule(request: APIRequestContext, name: string) {
   return rule!;
 }
 async function presentation(page: Page) {
+  await keyboardClearance(page);
   await expect(page.getByRole("main")).toHaveCount(1);
   await expect(
     page.getByRole("heading", { level: 1, name: "Alerts" }),
@@ -61,7 +63,10 @@ async function presentation(page: Page) {
       )
       .evaluateAll((controls) =>
         controls
-          .filter((control) => control.getBoundingClientRect().height < 44)
+          .filter((control) => {
+            const { width, height } = control.getBoundingClientRect();
+            return width > 0 && height > 0 && height < 44;
+          })
           .map((control) => control.tagName),
       ),
   ).toEqual([]);

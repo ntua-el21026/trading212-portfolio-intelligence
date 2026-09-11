@@ -30,6 +30,7 @@ from .targets import (
     UUIDString,
     WeightString,
 )
+from .xray import XrayContext, XrayDimensionSummary, XrayMoneyMetric, XrayRatioMetric
 
 
 def _nonnegative(value: str) -> str:
@@ -109,6 +110,7 @@ class ActualVsTargetQuery(PlanningPageQuery):
     target_version_id: UUIDString
     reporting_currency: CurrencyString
     node_id: UUIDString | None = None
+    xray_run_id: UUIDString | None = None
 
 
 class DriftAnalysisQuery(PlanningSchema):
@@ -118,6 +120,7 @@ class DriftAnalysisQuery(PlanningSchema):
     reporting_currency: CurrencyString
     basis: Literal["direct", "effective"] = "direct"
     top_n: Annotated[int, Field(ge=1, le=50)] = 25
+    xray_run_id: UUIDString | None = None
 
 
 class ContributionPlanQuery(PlanningPageQuery):
@@ -327,6 +330,77 @@ class PlanningResultContext(PlanningSchema):
     assumptions: Annotated[list[PlanningExplanation], Field(max_length=256)]
 
 
+class PlanningCompanyWeight(PlanningSchema):
+    row_key: StableKey
+    entity_id: UUIDString | None
+    metric: XrayRatioMetric | None
+    reason: Literal[
+        "available",
+        "company_basis_not_selected",
+        "company_scope_not_applicable",
+        "company_identity_unavailable",
+        "company_identity_conflict",
+        "company_bucket_unavailable",
+        "company_metric_unavailable",
+    ]
+    identity_decision_ids: Annotated[list[UUIDString], Field(max_length=64)]
+    identity_count: Annotated[StrictInt, Field(ge=0, le=100_000)]
+    identity_omitted_count: Annotated[StrictInt, Field(ge=0, le=100_000)]
+    path_keys: Annotated[
+        list[Annotated[str, StringConstraints(max_length=512)]], Field(max_length=64)
+    ]
+    path_count: Annotated[StrictInt, Field(ge=0, le=10_000)]
+    path_omitted_count: Annotated[StrictInt, Field(ge=0, le=10_000)]
+    proof_digest: Digest | None
+    semantics: Literal["full_portfolio_company_non_additive"]
+    drift_reason: Literal["effective_exposure_target_unavailable"]
+
+    @model_validator(mode="after")
+    def consistent_company_cell(self) -> Self:
+        if (
+            len(self.identity_decision_ids) + self.identity_omitted_count != self.identity_count
+            or len(self.path_keys) + self.path_omitted_count != self.path_count
+            or len(set(self.identity_decision_ids)) != len(self.identity_decision_ids)
+            or len(set(self.path_keys)) != len(self.path_keys)
+        ):
+            raise ValueError("Company identity/path preview counts disagree.")
+        if self.metric is not None and (self.entity_id is None or self.proof_digest is None):
+            raise ValueError("A company metric requires a retained entity/path proof.")
+        if self.reason == "available" and (self.metric is None or self.metric.value is None):
+            raise ValueError("Available company values require a canonical metric.")
+        if self.metric is not None and (
+            self.path_count == 0
+            or self.reason
+            != ("company_metric_unavailable" if self.metric.value is None else "available")
+        ):
+            raise ValueError("Company value state disagrees with its retained metric.")
+        return self
+
+
+class PlanningCompanyBinding(PlanningSchema):
+    planning_run_id: UUIDString
+    planning_input_digest: Digest
+    planning_content_digest: Digest
+    valuation_digest: Digest
+    xray_run_id: UUIDString
+    xray_input_id: UUIDString
+    xray_input_digest: Digest
+    xray_content_digest: Digest
+    account_id: UUIDString
+    snapshot_id: UUIDString
+    reporting_currency: CurrencyString
+    valuation_at: AwareInstant
+    source_cutoff_at: AwareInstant
+    policy_id: UUIDString
+    policy_digest: Digest
+    total: XrayMoneyMetric
+    company_partition: XrayDimensionSummary
+    version: Literal["planning_company_actual_v1"]
+    method: Literal["xray_v1"]
+    method_version: Literal["1.1.0"]
+    numeric_policy: Literal["xray_decimal256_exact_q18_v1"]
+
+
 class PlanningDriftRow(PlanningSchema):
     key: StableKey
     node_id: UUIDString | None
@@ -349,6 +423,17 @@ class PlanningDriftRow(PlanningSchema):
     classification: Literal["underweight", "on_target", "overweight"] | None
     monetary_gap: PlanningMoney | None
     quality: PlanningQualityState
+    company: PlanningCompanyWeight | None = None
+
+    @model_validator(mode="after")
+    def company_echo(self) -> Self:
+        if self.company is not None and (
+            self.company.row_key != self.key
+            or self.effective_weight
+            != (None if self.company.metric is None else self.company.metric.value)
+        ):
+            raise ValueError("Company row identity/value differs from its canonical cell.")
+        return self
 
 
 class PlanningDriftTotals(PlanningSchema):
@@ -391,6 +476,14 @@ class ActualVsTargetResult(PlanningSchema):
     target_identities: Annotated[list[PlanningNodeIdentity], Field(max_length=256)]
     content_digest: Digest
     node_id: UUIDString | None = None
+    company_basis: PlanningCompanyBinding | None = None
+    company_context: XrayContext | None = None
+    projection_digest: Digest | None = None
+
+    @model_validator(mode="after")
+    def company_binding(self) -> Self:
+        _company_binding(self)
+        return self
 
 
 class DriftAnalysisResult(PlanningSchema):
@@ -405,6 +498,14 @@ class DriftAnalysisResult(PlanningSchema):
     eligible_rows: Annotated[StrictInt, Field(ge=0, le=4353)]
     omitted_rows: Annotated[StrictInt, Field(ge=0, le=4353)]
     content_digest: Digest
+    company_basis: PlanningCompanyBinding | None = None
+    company_context: XrayContext | None = None
+    projection_digest: Digest | None = None
+
+    @model_validator(mode="after")
+    def company_binding(self) -> Self:
+        _company_binding(self)
+        return self
 
     @model_validator(mode="after")
     def sample_count(self) -> Self:
@@ -412,6 +513,72 @@ class DriftAnalysisResult(PlanningSchema):
         if returned > self.top_n or returned + self.omitted_rows != self.eligible_rows:
             raise ValueError("The bounded drift sample must disclose its full-set count.")
         return self
+
+
+def _company_binding(value: ActualVsTargetResult | DriftAnalysisResult) -> None:
+    basis, context = value.company_basis, value.company_context
+    selected = (basis is not None, context is not None, value.projection_digest is not None)
+    if len(set(selected)) != 1:
+        raise ValueError("Company projection requires its complete separate binding.")
+    rows = (
+        value.rows.items
+        if isinstance(value, ActualVsTargetResult)
+        else (*value.groups, *value.leaves, *value.cash_and_unclassified)
+    )
+    if basis is None or context is None:
+        if any(row.company is not None and row.company.metric is not None for row in rows):
+            raise ValueError("Unselected company projections cannot contain licensed metrics.")
+        return
+    if (
+        (
+            basis.account_id,
+            basis.snapshot_id,
+            basis.reporting_currency,
+            basis.valuation_at,
+            basis.source_cutoff_at,
+            basis.planning_input_digest,
+            basis.planning_content_digest,
+        )
+        != (
+            value.context.account_id,
+            value.context.snapshot_id,
+            value.context.reporting_currency,
+            value.context.as_of,
+            value.context.source_cutoff_at,
+            value.context.input_digest,
+            value.content_digest,
+        )
+        or (
+            basis.xray_run_id,
+            basis.xray_input_id,
+            basis.xray_input_digest,
+            basis.xray_content_digest,
+            basis.account_id,
+            basis.snapshot_id,
+            basis.reporting_currency,
+            basis.valuation_at,
+            basis.source_cutoff_at,
+        )
+        != (
+            context.run_id,
+            context.input_snapshot_id,
+            context.input_digest,
+            context.content_digest,
+            context.account_id,
+            context.snapshot_id,
+            context.reporting_currency,
+            context.valuation_at,
+            context.source_cutoff_at,
+        )
+        or (basis.method, basis.method_version, basis.numeric_policy)
+        != (context.method.name, context.method.version, context.method.numeric_policy)
+        or [policy.id for policy in context.policies if policy.kind == "calculation"]
+        != [basis.policy_id]
+        or context.access.reproducibility != "reproducible"
+        or basis.company_partition.dimension != "company"
+        or any(row.company is None for row in rows)
+    ):
+        raise ValueError("Company projection pins disagree with its planning and X-ray context.")
 
 
 class PlanningObjective(PlanningSchema):

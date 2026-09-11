@@ -1,9 +1,11 @@
 """Report MCP descriptors, exact command parity and rejection without secret reflection."""
 
 import copy
+from dataclasses import replace
 from datetime import timedelta
 from typing import Any, cast
 from unittest.mock import AsyncMock
+from uuid import UUID
 
 import pytest
 from mcp.server.mcpserver import MCPServer
@@ -11,6 +13,7 @@ from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import CallToolResult
 from trading212_application import reports as app
 from trading212_application.views import Page
+from trading212_domain import reports as domain
 from trading212_mcp.auth import PrincipalResolver
 from trading212_mcp.report_tools import REPORT_TOOL_NAMES
 from trading212_mcp.report_widget import REPORT_WIDGET_URI
@@ -69,6 +72,7 @@ async def test_three_descriptors_have_exact_closed_fields_scopes_and_private_wid
         "plan_revision_id",
         "benchmark_version_id",
         "constituent_snapshot_id",
+        "xray_run_id",
     }
     assert command["inputSchema"]["additionalProperties"] is False
     assert set(command["_meta"]["securitySchemes"][0]["scopes"]) == {
@@ -109,9 +113,7 @@ async def test_create_status_list_share_exact_job_without_grants_or_an_invented_
     service.download_report_artifact.assert_not_awaited()
 
 
-@pytest.mark.parametrize(
-    "key", ["formats", "ttl_days", "template_version", "xray_run_id", "destination"]
-)
+@pytest.mark.parametrize("key", ["formats", "ttl_days", "template_version", "destination"])
 async def test_forbidden_command_extension_rejected_before_service_without_echo(key: str) -> None:
     service = AsyncMock(spec=app.ReportService)
     args = copy.deepcopy(ARGS)
@@ -207,3 +209,43 @@ async def test_lifecycle_rate_and_idempotency_errors_remain_distinct_without_pri
     if wire_code != "IDEMPOTENCY_KEY_REUSED":
         assert "idempotency" not in error["message"]
         assert "idempotency" not in error["remediation"]
+
+
+async def test_optional_company_run_is_forwarded_to_the_canonical_report_selection() -> None:
+    service = AsyncMock(spec=app.ReportService)
+    service.generate_report.return_value = replace(
+        job(), report_type=domain.ReportType.TARGET_DRIFT
+    )
+    run_id, target_id = UUID(int=1006), UUID(int=1005)
+    args = {
+        **ARGS,
+        "report_type": "target_drift",
+        "sections": ["overview", "targets", "drift", "quality"],
+        "target_version_id": str(target_id),
+        "xray_run_id": str(run_id),
+    }
+    result = await call(runtime(service), "generate_portfolio_report", args)
+    assert not result.is_error
+    request = service.generate_report.call_args.args[1]
+    assert request.selection.xray_run_id == run_id
+    assert request.selection.target_version_id == target_id
+    assert request.idempotency_key == ARGS["idempotency_key"]
+    assert request.ttl_days == 7
+
+
+@pytest.mark.parametrize("value", ["private-report-canary", "", 12, ["private-report-canary"]])
+async def test_invalid_company_run_is_rejected_without_service_or_input_echo(value: Any) -> None:
+    service = AsyncMock(spec=app.ReportService)
+    args = {**ARGS, "xray_run_id": value}
+    with pytest.raises(ToolError) as failure:
+        await runtime(service).call_tool("generate_portfolio_report", args)
+    assert "private-report-canary" not in str(failure.value)
+    service.generate_report.assert_not_awaited()
+
+
+async def test_company_run_requires_a_relevant_report_section_before_service() -> None:
+    service = AsyncMock(spec=app.ReportService)
+    args = {**ARGS, "xray_run_id": str(UUID(int=1006))}
+    with pytest.raises(ToolError):
+        await runtime(service).call_tool("generate_portfolio_report", args)
+    service.generate_report.assert_not_awaited()

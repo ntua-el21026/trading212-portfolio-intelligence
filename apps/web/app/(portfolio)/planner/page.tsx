@@ -1,5 +1,9 @@
+import {
+  AccountRequired,
+  AccountView,
+} from "../../../components/account-context";
 import { formatPlanningMoney } from "../../../lib/planning-format";
-import Link from "next/link";
+import Link from "../../../components/navigation-intent";
 import { Notice, StatusPill, Surface } from "@trading212/ui";
 
 import { PageHeader } from "../../../components/page-header";
@@ -36,6 +40,7 @@ export default async function PlannerPage({
   const query = await searchParams;
   const data = await loadPlanningSelection(query);
   const { account, selection, clients } = data;
+  if (!account) return <AccountRequired selection={data.accountSelection} />;
   const state = readEnumParam(
     query.state,
     new Set([
@@ -119,136 +124,141 @@ export default async function PlannerPage({
     outcome,
   };
   return (
-    <div className="page-stack planning-page">
-      <PageHeader
-        title="Contribution planner"
-        description="Build an immutable manual proposal from a fixed snapshot, published targets and your contribution constraints."
-      />
-      <PlanningSelectionForms data={data} pathname="/planner" />
-      {actual && pins && selection?.version ? (
-        <>
-          <PlanningForm
-            key={`${pins.snapshot_id}:${pins.target_version_id}`}
-            targets={targets}
-            initial={{
-              ...pins,
-              contribution: {
-                amount: "0",
-                currency: selection.version.reporting_currency,
-              },
-              mode: "global",
-              coverage_policy: "require_complete",
-              eligible_holding_ids: null,
-              excluded_holding_ids: [],
-              restricted_group_ids: [],
-              listing_preferences: [],
-              allocation_constraints: [],
-              holding_constraints: [],
-              cash_reserve: null,
-              monetary_quantum: null,
-            }}
-          />
-          <PlanningContext context={actual.context} />
-        </>
-      ) : (
-        <Notice title="A target and snapshot are required">
-          Choose a published target version and a stored snapshot to create a
-          plan.
-        </Notice>
-      )}
-      <Surface>
-        <h2>Saved contribution plans</h2>
-        <form method="get" className="target-form">
-          {Object.entries(preserved)
-            .filter(([key]) => key !== "state" && key !== "outcome")
-            .map(([key, value]) =>
-              value ? (
-                <input key={key} type="hidden" name={key} value={value} />
-              ) : null,
-            )}
-          <label>
-            <span>Calculation state</span>
-            <select name="state" defaultValue={state}>
-              {[
-                "all",
-                "queued",
-                "running",
-                "succeeded",
-                "failed",
-                "expired",
-                "cancelled",
-              ].map((value) => (
-                <option value={value} key={value}>
-                  {titleCase(value)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>Plan outcome</span>
-            <select name="outcome" defaultValue={outcome}>
-              {[
-                "all",
-                "optimal",
-                "feasible_nonoptimal",
-                "infeasible",
-                "unavailable",
-                "failed",
-              ].map((value) => (
-                <option value={value} key={value}>
-                  {titleCase(value)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="submit">Filter plans</button>
-        </form>
-        {plans?.items.length ? (
-          <div className="target-pie-list">
-            {plans.items.map((plan) => (
-              <article className="target-pie-summary" key={plan.job.request_id}>
-                <div>
-                  <Link
-                    prefetch={false}
-                    className="target-title-link"
-                    href={`/planner/${plan.job.plan_id}`}
-                  >
-                    {plan.options.contribution.currency}{" "}
-                    {formatPlanningMoney(plan.options.contribution.amount)} ·{" "}
-                    {titleCase(plan.options.mode)}
-                  </Link>
-                  <p className="muted">
-                    Revision {plan.job.request_revision} ·{" "}
-                    {formatDateTime(plan.job.requested_at)}
-                  </p>
-                </div>
-                <StatusPill
-                  tone={
-                    plan.job.state === "failed"
-                      ? "danger"
-                      : plan.job.state === "succeeded"
-                        ? "positive"
-                        : "info"
-                  }
-                >
-                  {titleCase(plan.job.outcome ?? plan.job.state)}
-                </StatusPill>
-              </article>
-            ))}
-          </div>
+    <AccountView accountId={account.id}>
+      <div className="page-stack planning-page">
+        <PageHeader
+          title="Contribution planner"
+          description="Build an immutable manual proposal from a fixed snapshot, published targets and your contribution constraints."
+        />
+        <PlanningSelectionForms data={data} pathname="/planner" />
+        {actual && pins && selection?.version ? (
+          <>
+            <PlanningForm
+              key={`${pins.snapshot_id}:${pins.target_version_id}`}
+              targets={targets}
+              initial={{
+                ...pins,
+                contribution: {
+                  amount: "0",
+                  currency: selection.version.reporting_currency,
+                },
+                mode: "global",
+                coverage_policy: "require_complete",
+                eligible_holding_ids: null,
+                excluded_holding_ids: [],
+                restricted_group_ids: [],
+                listing_preferences: [],
+                allocation_constraints: [],
+                holding_constraints: [],
+                cash_reserve: null,
+                monetary_quantum: null,
+              }}
+            />
+            <PlanningContext context={actual.context} />
+          </>
         ) : (
-          <p className="muted">No saved plans match this view.</p>
+          <Notice title="A target and snapshot are required">
+            Choose a published target version and a stored snapshot to create a
+            plan.
+          </Notice>
         )}
-        {plans ? (
-          <CollectionPagination
-            pathname="/planner"
-            nextCursor={plans.next_cursor}
-            total={plans.total}
-            returnedCount={plans.items.length}
-            preservedQuery={preserved}
-          />
-        ) : null}
-      </Surface>
-    </div>
+        <Surface>
+          <h2>Saved contribution plans</h2>
+          <form method="get" className="target-form">
+            {Object.entries(preserved)
+              .filter(([key]) => key !== "state" && key !== "outcome")
+              .map(([key, value]) =>
+                value ? (
+                  <input key={key} type="hidden" name={key} value={value} />
+                ) : null,
+              )}
+            <label>
+              <span>Calculation state</span>
+              <select name="state" defaultValue={state}>
+                {[
+                  "all",
+                  "queued",
+                  "running",
+                  "succeeded",
+                  "failed",
+                  "expired",
+                  "cancelled",
+                ].map((value) => (
+                  <option value={value} key={value}>
+                    {titleCase(value)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Plan outcome</span>
+              <select name="outcome" defaultValue={outcome}>
+                {[
+                  "all",
+                  "optimal",
+                  "feasible_nonoptimal",
+                  "infeasible",
+                  "unavailable",
+                  "failed",
+                ].map((value) => (
+                  <option value={value} key={value}>
+                    {titleCase(value)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button type="submit">Filter plans</button>
+          </form>
+          {plans?.items.length ? (
+            <div className="target-pie-list">
+              {plans.items.map((plan) => (
+                <article
+                  className="target-pie-summary"
+                  key={plan.job.request_id}
+                >
+                  <div>
+                    <Link
+                      prefetch={false}
+                      className="target-title-link"
+                      href={`/planner/${plan.job.plan_id}`}
+                    >
+                      {plan.options.contribution.currency}{" "}
+                      {formatPlanningMoney(plan.options.contribution.amount)} ·{" "}
+                      {titleCase(plan.options.mode)}
+                    </Link>
+                    <p className="muted">
+                      Revision {plan.job.request_revision} ·{" "}
+                      {formatDateTime(plan.job.requested_at)}
+                    </p>
+                  </div>
+                  <StatusPill
+                    tone={
+                      plan.job.state === "failed"
+                        ? "danger"
+                        : plan.job.state === "succeeded"
+                          ? "positive"
+                          : "info"
+                    }
+                  >
+                    {titleCase(plan.job.outcome ?? plan.job.state)}
+                  </StatusPill>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="muted">No saved plans match this view.</p>
+          )}
+          {plans ? (
+            <CollectionPagination
+              pathname="/planner"
+              nextCursor={plans.next_cursor}
+              total={plans.total}
+              returnedCount={plans.items.length}
+              preservedQuery={preserved}
+            />
+          ) : null}
+        </Surface>
+      </div>
+    </AccountView>
   );
 }

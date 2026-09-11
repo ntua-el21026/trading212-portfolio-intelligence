@@ -1,5 +1,5 @@
 import styles from "./report-view.module.css";
-import Link from "next/link";
+import Link from "./navigation-intent";
 import type { ExportPage, ReportPage } from "@trading212/api-contracts";
 import { Surface } from "@trading212/ui";
 

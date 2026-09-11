@@ -1,3 +1,12 @@
+import { IntelligenceQualityPanel } from "../../../components/intelligence-quality";
+import Link from "../../../components/navigation-intent";
+import { readQualityNavigation } from "../../../lib/intelligence-quality-query";
+import { requireWebAccess } from "../../../lib/auth";
+import {
+  AccountRequired,
+  AccountView,
+} from "../../../components/account-context";
+import { loadSelectedAccount } from "../../../lib/api-adapter";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -5,40 +14,58 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-import { EmptyState, Surface } from "@trading212/ui";
+import { EmptyState, Notice, Surface } from "@trading212/ui";
 
 import { CollectionPagination } from "../../../components/collection-pagination";
 import { MoneyValue, QualityStatus } from "../../../components/financial";
 import { PageHeader } from "../../../components/page-header";
 import { QualityBanner } from "../../../components/quality";
 import { loadQualityView, readDemoViewState } from "../../../lib/api-adapter";
-import {
-  firstSearchParam,
-  readOpaqueCursor,
-} from "../../../lib/collection-query";
 import { formatDateTime, formatMoney, titleCase } from "../../../lib/format";
 
-export default async function QualityPage({
-  searchParams,
+async function LegacyQuality({
+  params,
+  selectedAccountId,
 }: Readonly<{
-  searchParams: Promise<{
-    cursor?: string | string[];
-    state?: string | string[];
-  }>;
+  params: Record<string, string | string[] | undefined>;
+  selectedAccountId: string;
 }>) {
-  const params = await searchParams;
+  const navigation = readQualityNavigation(params);
+  const query = navigation.legacy.query;
+  if (!query) {
+    const reset = new URLSearchParams({ account: selectedAccountId });
+    for (const [key, value] of Object.entries({
+      ...navigation.intelligence.fields,
+      ...navigation.legacy.fields,
+    })) {
+      if (value !== undefined) reset.set(key, value);
+    }
+    return (
+      <Notice title="Invalid reconciliation filters">
+        <p>Intelligence status remains independently available above.</p>
+        <Link prefetch={false} href={`/quality?${reset}`}>
+          Reset invalid reconciliation filters
+        </Link>
+      </Notice>
+    );
+  }
   const bundle = await loadQualityView(
-    readOpaqueCursor(params.cursor),
-    readDemoViewState(params.state),
-  );
+    query.cursor,
+    readDemoViewState(query.state),
+    selectedAccountId,
+  ).catch(() => null);
+  if (!bundle)
+    return (
+      <Notice title="Reconciliation view unavailable">
+        The legacy quality read could not complete. Intelligence status remains
+        independently available above.
+      </Notice>
+    );
   const quality = bundle.quality;
   const reconciliation = bundle.reconciliation;
   return (
     <div className="page-stack">
-      <PageHeader
-        description="Freshness, missing inputs, reconciliation, and metric availability are first-class portfolio facts."
-        title="Quality & reconciliation"
-      />
+      <h2>Portfolio reconciliation</h2>
       <QualityBanner quality={quality} />
       <div className="quality-grid">
         <Surface className="quality-card" compact>
@@ -138,7 +165,12 @@ export default async function QualityPage({
             title="No discrepancies"
           />
         ) : (
-          <div className="table-scroll">
+          <div
+            className="table-scroll"
+            role="region"
+            aria-label="Reconciliation discrepancies"
+            tabIndex={0}
+          >
             <table className="data-table data-table--roomy">
               <caption className="ui-visually-hidden">
                 Reconciliation discrepancy records
@@ -184,7 +216,11 @@ export default async function QualityPage({
         <CollectionPagination
           nextCursor={bundle.discrepancies.next_cursor}
           pathname="/quality"
-          preservedQuery={{ state: firstSearchParam(params.state) }}
+          preservedQuery={{
+            account: selectedAccountId,
+            state: query.state,
+            ...navigation.intelligence.fields,
+          }}
           returnedCount={bundle.discrepancies.items.length}
           total={bundle.discrepancies.total}
         />
@@ -203,5 +239,45 @@ export default async function QualityPage({
         </div>
       </Surface>
     </div>
+  );
+}
+
+export default async function QualityPage({
+  searchParams,
+}: Readonly<{
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}>) {
+  const params = await searchParams;
+  const accountSelection = await loadSelectedAccount(params.account);
+  if (!accountSelection.account)
+    return <AccountRequired selection={accountSelection} />;
+  const access = await requireWebAccess();
+  const selectedAccountId = accountSelection.account.id;
+  return (
+    <AccountView accountId={selectedAccountId}>
+      <div className="page-stack">
+        <PageHeader
+          description="Recorded calculation quality, current source permissions and reconciliation."
+          title="Quality & reconciliation"
+        />
+        <IntelligenceQualityPanel
+          accountId={selectedAccountId}
+          search={params}
+          demo={access.isDemo}
+          permitted={access.principal.scopes.includes("analytics:read")}
+        />
+        {access.principal.scopes.includes("activity:read") ? (
+          <LegacyQuality
+            params={params}
+            selectedAccountId={selectedAccountId}
+          />
+        ) : (
+          <Notice title="Reconciliation detail requires access">
+            Activity read access is required for the legacy reconciliation
+            detail.
+          </Notice>
+        )}
+      </div>
+    </AccountView>
   );
 }

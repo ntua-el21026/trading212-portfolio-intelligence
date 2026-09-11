@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+const DEMO_ACCOUNT = "f0f5c66e-b128-59b2-a620-83bc8faa4a57";
+
 async function signIn(page: Page): Promise<void> {
   await page.goto("/sign-in");
   await page.getByRole("button", { name: "Enter demo portfolio" }).click();
@@ -37,14 +39,15 @@ async function assertAccessibleDocument(page: Page): Promise<void> {
         issues.push("visible table without caption");
       }
     }
-    for (const control of document.querySelectorAll("input, select")) {
-      if (!control.closest("label") && !control.getAttribute("aria-label")) {
-        issues.push("form control without label");
-      }
-    }
     return issues;
   });
   expect(violations).toEqual([]);
+  // Hidden form state has no accessible name; visible controls must have one.
+  for (const control of await page.locator("input, select").all()) {
+    if (await control.isVisible()) {
+      await expect(control).toHaveAccessibleName(/\S/u);
+    }
+  }
 }
 
 function collectConsoleErrors(page: Page): string[] {
@@ -74,7 +77,7 @@ test("overview labels its bounded preview and orders it by market value", async 
   await expect(preview.locator("tbody tr").first()).toContainText("VWCE");
   await expect(page.getByRole("link", { name: "View all" })).toHaveAttribute(
     "href",
-    "/holdings",
+    "/holdings?account=" + DEMO_ACCOUNT,
   );
   await expect(
     page.getByText(
@@ -83,7 +86,7 @@ test("overview labels its bounded preview and orders it by market value", async 
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Explore allocation" }),
-  ).toHaveAttribute("href", "/allocation");
+  ).toHaveAttribute("href", "/allocation?account=" + DEMO_ACCOUNT);
   await assertAccessibleDocument(page);
   await assertNoDocumentOverflow(page);
   expect(consoleErrors).toEqual([]);
@@ -151,6 +154,7 @@ for (const collection of [
     await expect(next).toBeFocused();
     await next.click();
     await expect(page).toHaveURL(/\?[^#]*cursor=/u);
+    expect(new URL(page.url()).searchParams.get("account")).toBe(DEMO_ACCOUNT);
 
     const secondTable = page.getByRole("table", { name: collection.caption });
     await expect(secondTable.locator("tbody tr")).toHaveCount(
@@ -183,7 +187,12 @@ test("collection filters submit bounded URL state and reset pagination", async (
   await page.getByLabel("Sort").selectOption("ticker_asc");
   await page.getByRole("button", { name: "Apply" }).click();
   await expect(page).toHaveURL(
-    /\/holdings\?search=fixture\+holding\+060&sort=ticker_asc$/u,
+    "/holdings?" +
+      new URLSearchParams({
+        account: DEMO_ACCOUNT,
+        search: "fixture holding 060",
+        sort: "ticker_asc",
+      }).toString(),
   );
   await expect(
     page.getByRole("table", { name: "Direct portfolio holdings" }),
@@ -200,6 +209,12 @@ test("collection filters submit bounded URL state and reset pagination", async (
   await expect(page).toHaveURL(
     /start_date=2026-06-01&end_date=2026-06-30&activity_type=buy/u,
   );
+  expect(Object.fromEntries(new URL(page.url()).searchParams)).toEqual({
+    account: DEMO_ACCOUNT,
+    start_date: "2026-06-01",
+    end_date: "2026-06-30",
+    activity_type: "buy",
+  });
   await expect(
     page.getByText(
       "Showing 15 records on this page out of 15 matching records.",

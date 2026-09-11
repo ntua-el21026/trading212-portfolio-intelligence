@@ -254,8 +254,15 @@ def capture_table(
     dataset = None
     if isinstance(builder.selection, r.ReportSelection):
         section = next(
-            section for section in builder.selection.sections if table in section_tables(section)
+            (section for section in builder.selection.sections if table in section_tables(section)),
+            None,
         )
+        if section is None:
+            from trading212_domain.report_schema import COMPANY_REPORT_TABLES
+
+            if builder.selection.xray_run_id is None or table not in COMPANY_REPORT_TABLES:
+                fail_validation("The report table has no selected section.", field="table")
+            section = r.ReportSection.DRIFT
     else:
         dataset = builder.selection.dataset
     builder.add_table(

@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import Link from "./navigation-intent";
 
 interface CollectionPaginationProps {
   nextCursor: string | null;

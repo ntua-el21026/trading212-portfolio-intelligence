@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import Link from "./navigation-intent";
+import { AccountSelect } from "./account-context";
 import { useState } from "react";
 import { Surface } from "@trading212/ui";
 import {
@@ -19,12 +20,12 @@ export interface HistoricalChoice {
 export function HistoricalSelectionForm({
   pathname,
   query,
-  accounts,
   benchmarks,
   benchmarkTotal,
   nextBenchmarkCursor,
   targets,
   targetTotal,
+  nextTargetCursor = null,
 }: Readonly<{
   pathname: "/performance" | "/income";
   query: HistoricalQuery;
@@ -34,6 +35,7 @@ export function HistoricalSelectionForm({
   nextBenchmarkCursor: string | null;
   targets: readonly HistoricalChoice[];
   targetTotal: number;
+  nextTargetCursor?: string | null;
 }>) {
   const performance = pathname === "/performance";
   const [selectedTarget, setSelectedTarget] = useState(query.target ?? "");
@@ -54,13 +56,7 @@ export function HistoricalSelectionForm({
         <input type="hidden" name="view" value={query.view} />
         <label>
           <span>Account</span>
-          <select name="account" defaultValue={query.account} required>
-            {accounts.map((row) => (
-              <option key={row.id} value={row.id}>
-                {row.label}
-              </option>
-            ))}
-          </select>
+          <AccountSelect label="Account" name="account" />
         </label>
         <label>
           <span>Start date</span>
@@ -314,7 +310,10 @@ export function HistoricalSelectionForm({
               Browse more benchmark definitions
             </Link>
           ) : null}{" "}
-          <Link prefetch={false} href="/sources?kind=definitions">
+          <Link
+            prefetch={false}
+            href={`/sources?kind=definitions&account=${query.account ?? ""}`}
+          >
             Inspect benchmark history
           </Link>
           .
@@ -323,7 +322,25 @@ export function HistoricalSelectionForm({
       {groups ? (
         <p className="muted">
           {targets.length} active target choices from {targetTotal} Pies.{" "}
-          <Link prefetch={false} href="/pies">
+          {nextTargetCursor ? (
+            <Link
+              prefetch={false}
+              href={historicalHref(pathname, query, {
+                targets_cursor: nextTargetCursor,
+              })}
+            >
+              Browse more target definitions
+            </Link>
+          ) : null}{" "}
+          {query.targets_cursor ? (
+            <Link
+              prefetch={false}
+              href={historicalHref(pathname, query, { targets_cursor: null })}
+            >
+              First target definitions
+            </Link>
+          ) : null}{" "}
+          <Link prefetch={false} href={`/pies?account=${query.account ?? ""}`}>
             Browse all Pies and immutable versions
           </Link>
           .

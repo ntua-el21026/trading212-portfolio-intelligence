@@ -63,6 +63,9 @@ describe("report selection and retained status", () => {
     expect(await screen.findByText(/REPORT_UNAVAILABLE/)).toBeVisible();
     expect(mocks.command).toHaveBeenCalledTimes(2);
     expect(mocks.command.mock.calls[0]).toEqual(mocks.command.mock.calls[1]);
+    expect(
+      Object.hasOwn(mocks.command.mock.calls[0][0].body, "xray_run_id"),
+    ).toBe(false);
     expect(mocks.command.mock.calls[0][0].body.sections).toEqual([
       "overview",
       "allocation",
@@ -99,6 +102,137 @@ describe("report selection and retained status", () => {
     expect(screen.getByLabelText("Dataset")).toHaveValue("alerts");
     expect(screen.getByLabelText("Format")).not.toHaveTextContent("PDF");
   });
+  it("preserves a company source pin through failed capture and the retry URL", async () => {
+    const user = userEvent.setup();
+    const pin = "10000000-0000-4000-8000-000000000009";
+    window.history.replaceState(
+      {},
+      "",
+      "/reports?report_type=target_drift&xray_run_id=" + pin,
+    );
+    mocks.command.mockResolvedValue({
+      ok: false,
+      code: "REPORT_UNAVAILABLE",
+      message: "Source unusable.",
+    });
+    render(
+      <ReportSelectionForm
+        accountId={accountId}
+        snapshot={snapshot}
+        initial={parseReportQuery({
+          report_type: "target_drift",
+          xray_run_id: pin,
+        })}
+        choices={choices}
+        canCreate
+      />,
+    );
+    await user.type(screen.getByLabelText("Published target"), accountId);
+    expect(screen.getByLabelText("Retained company calculation")).toHaveValue(
+      pin,
+    );
+    await user.click(screen.getByRole("button", { name: "Generate report" }));
+    expect(await screen.findByText(/REPORT_UNAVAILABLE/)).toBeVisible();
+    expect(mocks.command.mock.calls[0][0].body.xray_run_id).toBe(pin);
+    expect(new URL(window.location.href).searchParams.get("xray_run_id")).toBe(
+      pin,
+    );
+    expect(screen.getByLabelText("Retained company calculation")).toHaveValue(
+      pin,
+    );
+  });
+  it.each(["contribution_plan", "portfolio_summary"])(
+    "retains a company pin but rejects a %s selection without drift before dispatch",
+    async (reportType) => {
+      const user = userEvent.setup();
+      const pin = "10000000-0000-4000-8000-000000000009";
+      window.history.replaceState(
+        {},
+        "",
+        "/reports?report_type=target_drift&xray_run_id=" + pin,
+      );
+      render(
+        <ReportSelectionForm
+          accountId={accountId}
+          snapshot={snapshot}
+          initial={parseReportQuery({
+            report_type: "target_drift",
+            xray_run_id: pin,
+          })}
+          choices={choices}
+          canCreate
+        />,
+      );
+      await user.selectOptions(
+        screen.getByLabelText("Report type"),
+        reportType,
+      );
+      if (reportType === "contribution_plan") {
+        await user.type(
+          screen.getByLabelText("Finalized contribution plan"),
+          accountId,
+        );
+      }
+      await user.click(screen.getByRole("button", { name: "Generate report" }));
+      expect(
+        await screen.findByText(
+          /Company actual weights require a drift section/,
+        ),
+      ).toBeVisible();
+      expect(mocks.command).not.toHaveBeenCalled();
+      expect(screen.getByLabelText("Retained company calculation")).toHaveValue(
+        pin,
+      );
+      expect(
+        new URL(window.location.href).searchParams.get("xray_run_id"),
+      ).toBe(pin);
+    },
+  );
+
+  it("requires audit fields for a pinned plans export while preserving the pin for correction", async () => {
+    const user = userEvent.setup();
+    const pin = "10000000-0000-4000-8000-000000000009";
+    window.history.replaceState(
+      {},
+      "",
+      "/reports?kind=export&dataset=plans&xray_run_id=" + pin,
+    );
+    mocks.command.mockResolvedValue({
+      ok: false,
+      code: "REPORT_UNAVAILABLE",
+      message: "Retry.",
+    });
+    render(
+      <ReportSelectionForm
+        accountId={accountId}
+        snapshot={snapshot}
+        initial={parseReportQuery({
+          kind: "export",
+          dataset: "plans",
+          xray_run_id: pin,
+        })}
+        choices={choices}
+        canCreate
+      />,
+    );
+    await user.type(
+      screen.getByLabelText("Finalized contribution plan"),
+      accountId,
+    );
+    await user.click(screen.getByRole("button", { name: "Create export" }));
+    expect(
+      await screen.findByText(/Company actual weights require a drift section/),
+    ).toBeVisible();
+    expect(mocks.command).not.toHaveBeenCalled();
+    await user.selectOptions(screen.getByLabelText("Columns"), "audit");
+    await user.click(screen.getByRole("button", { name: "Create export" }));
+    expect(await screen.findByText(/REPORT_UNAVAILABLE/)).toBeVisible();
+    expect(mocks.command.mock.calls[0][0].body).toMatchObject({
+      xray_run_id: pin,
+      field_set: "audit",
+    });
+  });
+
   it("shows partial quality and warning counts while preventing expired downloads", async () => {
     const user = userEvent.setup();
     const view = render(<ReportJobStatusCard job={job} />);

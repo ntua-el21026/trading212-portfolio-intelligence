@@ -145,6 +145,7 @@ def register_report_tools(
         plan_revision_id: UUIDString | None = None,
         benchmark_version_id: UUIDString | None = None,
         constituent_snapshot_id: UUIDString | None = None,
+        xray_run_id: UUIDString | None = None,
     ) -> CallToolResult:
         request = wire.McpGenerateReportRequest.model_validate(
             {
@@ -162,6 +163,7 @@ def register_report_tools(
                 "plan_revision_id": plan_revision_id,
                 "benchmark_version_id": benchmark_version_id,
                 "constituent_snapshot_id": constituent_snapshot_id,
+                "xray_run_id": xray_run_id,
             }
         )
         return await gateway.generate_portfolio_report(request, context=context)

@@ -28,8 +28,11 @@ from trading212_domain.reports import (
     ReportMetricOrigin,
     ReportNoteMembership,
     ReportRow,
+    ReportSection,
+    ReportTableKey,
 )
 from trading212_worker.report_renderers import BoundedArtifactBuffer, PrivateReportRenderer
+from trading212_worker.report_renderers.pdf import _analytical_order
 
 from tests.unit.domain.report_factories import ReportFixture, document
 
@@ -360,3 +363,27 @@ def test_renderer_refuses_missing_changed_or_corrupt_canonical_rows(change: str)
             guard=guard,
         )
     assert failure.value.code is ReportFailureCode.INPUT_CHANGED
+
+
+@pytest.mark.parametrize(
+    "table",
+    (
+        ReportTableKey.PLANNING_COMPANY_ACTUALS_V1,
+        ReportTableKey.PLANNING_COMPANY_BASIS_V1,
+        ReportTableKey.XRAY_SUMMARY,
+        ReportTableKey.XRAY_QUALITY,
+        ReportTableKey.XRAY_DIMENSIONS,
+        ReportTableKey.XRAY_EXPOSURES,
+        ReportTableKey.XRAY_PATHS,
+    ),
+)
+def test_pdf_places_optional_company_tables_after_drift_before_contribution_plan(
+    table: ReportTableKey,
+) -> None:
+    template = document().header.tables[0]
+    drift = replace(template, section=ReportSection.DRIFT, table=ReportTableKey.DRIFT_TOTALS)
+    company = replace(template, section=ReportSection.DRIFT, table=table)
+    plan = replace(
+        template, section=ReportSection.CONTRIBUTION_PLAN, table=ReportTableKey.PLAN_SUMMARY
+    )
+    assert sorted((plan, company, drift), key=_analytical_order) == [drift, company, plan]

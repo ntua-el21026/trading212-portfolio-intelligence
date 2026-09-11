@@ -1,6 +1,8 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useNavigationVersionRef } from "./navigation-intent";
+
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type {
   CreateContributionPlanRequest,
@@ -186,6 +188,14 @@ export function PlanningForm({
   revision?: { planId: string; etag: string };
 }>) {
   const router = useRouter();
+  const navigationRef = useNavigationVersionRef();
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
   const [body, setBody] = useState(initial);
   const [result, setResult] = useState<PlanningActionResult | null>(null);
   const [pending, startTransition] = useTransition();
@@ -226,6 +236,7 @@ export function PlanningForm({
   };
 
   function submit() {
+    const generation = navigationRef.current;
     const serialized = JSON.stringify(body);
     if (requestIdentity.current?.body !== serialized)
       requestIdentity.current = { body: serialized, key: crypto.randomUUID() };
@@ -243,9 +254,14 @@ export function PlanningForm({
               }
             : { kind: "create", body, idempotency_key: idempotencyKey },
         );
+        if (!mounted.current || navigationRef.current !== generation) return;
         setResult(response);
-        if (response.ok) router.push(`/planner/${response.job.plan_id}`);
+        if (response.ok)
+          router.push(
+            `/planner/${response.job.plan_id}?account=${body.account_id}`,
+          );
       } catch {
+        if (!mounted.current || navigationRef.current !== generation) return;
         setResult({
           ok: false,
           code: "PLANNING_UNAVAILABLE",

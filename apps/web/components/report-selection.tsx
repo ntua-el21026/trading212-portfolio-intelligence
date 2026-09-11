@@ -1,8 +1,10 @@
 "use client";
 
+import { useNavigationVersionRef } from "./navigation-intent";
+
 import styles from "./report-view.module.css";
 import { useEffect, useRef, useState, useTransition } from "react";
-import Link from "next/link";
+import Link from "./navigation-intent";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Notice, Surface } from "@trading212/ui";
 import type { Snapshot } from "@trading212/api-contracts";
@@ -71,6 +73,7 @@ function remember(
     "plan_revision_id",
     "benchmark_version_id",
     "constituent_snapshot_id",
+    "xray_run_id",
   ]) {
     const value = String(data.get(name) ?? "");
     if (value) url.searchParams.set(name, value);
@@ -200,6 +203,7 @@ function ReportSelectionFields({
 }: ReportSelectionProps &
   Readonly<{ onRememberSelection: (url: URL) => void }>) {
   const router = useRouter();
+  const navigationRef = useNavigationVersionRef();
   const mounted = useRef(true);
   useEffect(() => {
     mounted.current = true;
@@ -215,6 +219,7 @@ function ReportSelectionFields({
   const [extras, setExtras] = useState<string[]>(
     initial.sections?.split(",") ?? [],
   );
+  const [companyPin, setCompanyPin] = useState(initial.xray_run_id ?? "");
   const [pending, setPending] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
   const sections = [...new Set([...REQUIRED_SECTIONS[reportType], ...extras])];
@@ -233,12 +238,25 @@ function ReportSelectionFields({
     kind === "report" ? sections.includes("xray") : dataset === "xray";
 
   async function submit(form: HTMLFormElement) {
+    const generation = navigationRef.current;
     setPending(true);
     setFailure(null);
     try {
       const values = new FormData(form);
       remember(form, accountId, snapshot.id, onRememberSelection);
       const requestedSections = selectedSections(values);
+      const selectedCompanyRun = String(values.get("xray_run_id") ?? "");
+      const companyRelevant =
+        kind === "report"
+          ? requestedSections.includes("drift")
+          : dataset === "targets" ||
+            (dataset === "plans" && values.get("field_set") === "audit");
+      if (selectedCompanyRun && !companyRelevant) {
+        setFailure(
+          "Company actual weights require a drift section, a targets export, or a plans export with audit fields. Select that output or remove the retained company calculation.",
+        );
+        return;
+      }
       const selectedPlan = choices.plans.find(
         (plan) => plan.id === values.get("plan_revision_id"),
       );
@@ -259,6 +277,7 @@ function ReportSelectionFields({
         ...(wantsBenchmark && values.get("benchmark_version_id")
           ? { benchmark_version_id: String(values.get("benchmark_version_id")) }
           : {}),
+        ...(selectedCompanyRun ? { xray_run_id: selectedCompanyRun } : {}),
         ...(wantsXray && values.get("constituent_snapshot_id")
           ? {
               constituent_snapshot_id: String(
@@ -296,7 +315,7 @@ function ReportSelectionFields({
         ),
         (value) => value.toString(16).padStart(2, "0"),
       ).join("");
-      if (!mounted.current) return;
+      if (!mounted.current || navigationRef.current !== generation) return;
       const url = new URL(window.location.href);
       const key =
         url.searchParams.get("request_digest") === digest
@@ -310,7 +329,7 @@ function ReportSelectionFields({
         idempotency_key: key,
         body,
       });
-      if (!mounted.current) return;
+      if (!mounted.current || navigationRef.current !== generation) return;
       if (!result.ok) {
         setFailure(`${result.code}: ${result.message}`);
         return;
@@ -327,7 +346,7 @@ function ReportSelectionFields({
       );
       router.refresh();
     } catch (error) {
-      if (!mounted.current) return;
+      if (!mounted.current || navigationRef.current !== generation) return;
       setFailure(
         error instanceof Error &&
           error.message ===
@@ -614,6 +633,34 @@ function ReportSelectionFields({
               A finalized plan supplies its own target when the target field is
               empty.
             </p>
+          ) : null}
+          {wantsTarget || Boolean(companyPin) ? (
+            <details open={Boolean(initial.xray_run_id)}>
+              <summary>Optional company actual weights</summary>
+              <p>
+                Use a retained company calculation for the same account,
+                valuation snapshot and currency. Company weights describe the
+                complete portfolio and may repeat beside several listings. They
+                do not define company targets or post-plan weights.
+              </p>
+              <p>
+                Reports require the drift section. Exports support targets or
+                plans with the audit field set. The source cutoff must be at or
+                after the retained calculation became available; the saved
+                valuation and its financial source cutoff stay unchanged.
+                Current source permissions and retention apply.
+              </p>
+              <label>
+                <span>Retained company calculation</span>
+                <input
+                  name="xray_run_id"
+                  value={companyPin}
+                  onChange={(event) => setCompanyPin(event.target.value)}
+                  maxLength={36}
+                  pattern="[0-9a-fA-F-]{36}"
+                />
+              </label>
+            </details>
           ) : null}
           {wantsXray ? (
             <details>

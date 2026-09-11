@@ -3,7 +3,9 @@ import { CircleHelp } from "lucide-react";
 import { StatusPill, type StatusTone } from "@trading212/ui";
 
 import type { MetricResponse, QualityResponse } from "../lib/contracts";
-import { formatMoney, titleCase } from "../lib/format";
+import { titleCase } from "../lib/format";
+import { NumberValue } from "./number-value";
+import styles from "./number-value.module.css";
 
 const qualityTone: Record<QualityResponse["state"], StatusTone> = {
   estimated: "warning",
@@ -36,20 +38,22 @@ export function MoneyValue({
   if (metric.value === null) {
     return (
       <span
-        className={
-          className ? `metric-unavailable ${className}` : "metric-unavailable"
-        }
+        className={`metric-unavailable ${styles.number} ${className ?? ""}`.trim()}
+        title={`Unavailable ${metric.reporting_currency}`}
       >
         <CircleHelp aria-hidden="true" size={15} />
         Unavailable
+        {showCurrency ? <small> {metric.reporting_currency}</small> : null}
       </span>
     );
   }
   return (
-    <span className={className}>
-      {formatMoney(metric.value)}
-      {showCurrency ? <small> {metric.reporting_currency}</small> : null}
-    </span>
+    <NumberValue
+      className={className}
+      value={metric.value}
+      unit={metric.reporting_currency}
+      showUnit={showCurrency}
+    />
   );
 }
 
@@ -66,16 +70,15 @@ export function MetricCard({
 }>) {
   return (
     <div
-      className={primary ? "metric-card metric-card--primary" : "metric-card"}
+      className={`metric-card ${primary ? "metric-card--primary " : ""}${styles.card}`}
     >
       <span className="metric-card__label">{label}</span>
-      <MoneyValue
-        className="metric-card__value"
-        metric={metric}
-        showCurrency={primary}
-      />
+      <MoneyValue className="metric-card__value" metric={metric} showCurrency />
       {note ? <span className="metric-card__note">{note}</span> : null}
-      {metric.value === null && metric.unavailable_reason ? (
+      {metric.availability === "partial" ? (
+        <span className="metric-card__note">Partial value</span>
+      ) : null}
+      {metric.unavailable_reason ? (
         <span className="metric-card__note">{metric.unavailable_reason}</span>
       ) : null}
     </div>

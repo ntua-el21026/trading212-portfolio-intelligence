@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "./navigation-intent";
 import { Notice, StatusPill, Surface } from "@trading212/ui";
 import type {
   AttributionSummaryResponse,

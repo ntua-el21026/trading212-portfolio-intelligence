@@ -1,20 +1,18 @@
+import { NumberValue } from "./number-value";
 import {
   ArrowRight,
   BriefcaseBusiness,
   RotateCw,
   ShieldCheck,
 } from "lucide-react";
-import Link from "next/link";
+import Link from "./navigation-intent";
+
+import { accountHref } from "../lib/account-selection";
 
 import { EmptyState, Surface } from "@trading212/ui";
 
 import type { OverviewBundle } from "../lib/contracts";
-import {
-  formatDateTime,
-  formatDecimal,
-  formatMoney,
-  formatPercent,
-} from "../lib/format";
+import { formatDateTime, formatPercent } from "../lib/format";
 import { AllocationChart } from "./charts";
 import { MetricCard, MoneyValue } from "./financial";
 import { QualityBanner, TrustRail } from "./quality";
@@ -93,7 +91,10 @@ export function Overview({ bundle }: Readonly<{ bundle: OverviewBundle }>) {
                     canonical rows, including cash when available.
                   </p>
                 </div>
-                <Link className="text-link" href="/allocation">
+                <Link
+                  className="text-link"
+                  href={accountHref("/allocation", summary.account.id)}
+                >
                   Explore allocation <ArrowRight aria-hidden="true" size={15} />
                 </Link>
               </div>
@@ -112,7 +113,12 @@ export function Overview({ bundle }: Readonly<{ bundle: OverviewBundle }>) {
                       <small>{summary.account.reporting_currency} total</small>
                     </div>
                   </div>
-                  <div className="table-scroll">
+                  <div
+                    className="table-scroll"
+                    role="region"
+                    aria-label="Direct allocation by holding"
+                    tabIndex={0}
+                  >
                     <table className="data-table allocation-table">
                       <caption className="ui-visually-hidden">
                         Direct allocation by holding
@@ -136,8 +142,19 @@ export function Overview({ bundle }: Readonly<{ bundle: OverviewBundle }>) {
                               />
                               {item.label}
                             </th>
-                            <td>{formatMoney(item.market_value.value)}</td>
-                            <td>{formatPercent(item.weight)}</td>
+                            <td>
+                              <MoneyValue
+                                metric={item.market_value}
+                                showCurrency
+                              />
+                            </td>
+                            <td>
+                              <span
+                                title={`Canonical ratio: ${item.weight ?? "Unavailable"}`}
+                              >
+                                {formatPercent(item.weight)}
+                              </span>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -155,7 +172,10 @@ export function Overview({ bundle }: Readonly<{ bundle: OverviewBundle }>) {
                     positions, ordered by market value.
                   </p>
                 </div>
-                <Link className="text-link" href="/holdings">
+                <Link
+                  className="text-link"
+                  href={accountHref("/holdings", summary.account.id)}
+                >
                   View all <ArrowRight aria-hidden="true" size={15} />
                 </Link>
               </div>
@@ -166,7 +186,12 @@ export function Overview({ bundle }: Readonly<{ bundle: OverviewBundle }>) {
                   title="No holdings yet"
                 />
               ) : (
-                <div className="table-scroll">
+                <div
+                  className="table-scroll"
+                  role="region"
+                  aria-label="Largest direct holdings"
+                  tabIndex={0}
+                >
                   <table className="data-table holdings-table">
                     <caption className="ui-visually-hidden">
                       Largest direct holdings
@@ -187,7 +212,10 @@ export function Overview({ bundle }: Readonly<{ bundle: OverviewBundle }>) {
                         <tr key={position.id}>
                           <th scope="row">
                             <Link
-                              href={`/holdings/${encodeURIComponent(position.id)}`}
+                              href={accountHref(
+                                `/holdings/${encodeURIComponent(position.id)}`,
+                                summary.account.id,
+                              )}
                             >
                               <strong>{position.ticker}</strong>
                               <span>{position.name}</span>
@@ -195,10 +223,35 @@ export function Overview({ bundle }: Readonly<{ bundle: OverviewBundle }>) {
                           </th>
                           <td>{position.instrument_type.toUpperCase()}</td>
                           <td>{position.trading_currency}</td>
-                          <td>{formatDecimal(position.quantity)}</td>
-                          <td>{formatMoney(position.current_price)}</td>
-                          <td>{formatMoney(position.market_value.value)}</td>
-                          <td>{formatPercent(position.direct_weight)}</td>
+                          <td>
+                            <NumberValue
+                              value={position.quantity}
+                              minimumDigits={0}
+                            />
+                          </td>
+                          <td>
+                            {position.current_price === null ? (
+                              "Unavailable"
+                            ) : (
+                              <NumberValue
+                                value={position.current_price}
+                                unit={position.trading_currency}
+                              />
+                            )}
+                          </td>
+                          <td>
+                            <MoneyValue
+                              metric={position.market_value}
+                              showCurrency
+                            />
+                          </td>
+                          <td>
+                            <span
+                              title={`Canonical ratio: ${position.direct_weight ?? "Unavailable"}`}
+                            >
+                              {formatPercent(position.direct_weight)}
+                            </span>
+                          </td>
                         </tr>
                       ))}
                     </tbody>

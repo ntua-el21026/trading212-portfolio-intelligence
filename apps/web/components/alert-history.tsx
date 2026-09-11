@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "./navigation-intent";
 import { Fragment } from "react";
 import { Notice, Surface } from "@trading212/ui";
 import type {

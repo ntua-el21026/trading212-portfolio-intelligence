@@ -32,6 +32,7 @@ from .report_authorization import ReportAuthorization
 from .report_base import report_error
 from .report_builder import ReportBuilder
 from .report_capture_common import ReportValue, capture_note, capture_row, capture_table
+from .report_capture_company import CompanyReportBasis, capture_company_actuals
 from .report_capture_plan_input import capture_plan_input, capture_planning_sources
 from .target_models import TargetNodeModel, TargetVersionModel, VirtualPortfolioModel
 
@@ -218,6 +219,7 @@ def capture_planning(
     sessions: sessionmaker[Session],
     clock: Callable[[], datetime],
     cursor_signing_key: bytes,
+    company: CompanyReportBasis | None = None,
 ) -> None:
     selection = builder.selection
     if selection.target_version_id is None and selection.plan_revision_id is None:
@@ -425,7 +427,7 @@ def capture_planning(
             )
         )
     if r.ReportTableKey.DRIFT_ROWS in selected:
-        run, calculation, _ = service._drift(
+        run, calculation, drift_input = service._drift(
             session,
             authorization.owner_id,
             account_id=str(authorization.account_id),
@@ -436,6 +438,15 @@ def capture_planning(
             kind="actual_vs_target",
             basis=d.DriftBasis.DIRECT,
         )
+        if company is not None:
+            capture_company_actuals(
+                builder,
+                company,
+                drift_input,
+                calculation,
+                run_id=run.id,
+                content_digest=run.content_digest,
+            )
         drift_context = _context(builder, calculation.context, key="drift")
         builder.add_binding(
             r.ReportBinding(

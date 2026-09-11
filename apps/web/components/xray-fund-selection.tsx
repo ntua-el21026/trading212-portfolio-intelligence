@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "./navigation-intent";
 import { useState } from "react";
 import { Surface } from "@trading212/ui";
 import type { XrayHeldFundsResponse } from "@trading212/api-contracts";

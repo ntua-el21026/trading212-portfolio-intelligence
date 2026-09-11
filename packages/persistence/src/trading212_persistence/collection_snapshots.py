@@ -38,6 +38,7 @@ _INSERT_BATCH_SIZE = 1_000
 
 
 class CollectionSnapshotResource(StrEnum):
+    INTELLIGENCE_QUALITY_SOURCES = "intelligence_quality_sources"
     PORTFOLIOS_NAME = "portfolios_name"
     PORTFOLIOS_UPDATED = "portfolios_updated"
     TARGET_VERSIONS = "target_versions"
@@ -81,6 +82,7 @@ class CollectionSnapshotResource(StrEnum):
 
 
 _SORT_SPECIFICATIONS = {
+    CollectionSnapshotResource.INTELLIGENCE_QUALITY_SOURCES: "ordinal_asc",
     CollectionSnapshotResource.XRAY_EXPOSURES: "ordinal_asc",
     CollectionSnapshotResource.XRAY_PATHS: "ordinal_asc",
     CollectionSnapshotResource.XRAY_HELD_FUNDS: "ordinal_asc",
@@ -153,6 +155,7 @@ _OPTIONAL_ACCOUNT_RESOURCES = frozenset(
 )
 _ACCOUNT_RESOURCES = frozenset(
     {
+        CollectionSnapshotResource.INTELLIGENCE_QUALITY_SOURCES,
         CollectionSnapshotResource.XRAY_EXPOSURES,
         CollectionSnapshotResource.XRAY_PATHS,
         CollectionSnapshotResource.XRAY_HELD_FUNDS,

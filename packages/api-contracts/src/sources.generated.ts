@@ -504,6 +504,506 @@ export const FxSourceStatusSchema = z.strictObject({
   providers: z.array(ProviderStatusSchema).max(100),
 });
 export type FxSourceStatus = z.infer<typeof FxSourceStatusSchema>;
+export const get_intelligence_data_qualityQuerySchema = z.strictObject({
+  analytics_kind: z
+    .enum([
+      "valuation",
+      "actual_vs_target",
+      "drift",
+      "performance",
+      "benchmark",
+      "income",
+      "attribution",
+      "cash_flow",
+      "xray",
+    ])
+    .optional(),
+  cursor: z
+    .union([
+      z.string().min(1).max(2048).regex(new RegExp("^[A-Za-z0-9_-]+$")),
+      z.null(),
+    ])
+    .optional(),
+  limit: z.number().int().min(1).max(100).optional(),
+});
+export type get_intelligence_data_qualityQuery = z.infer<
+  typeof get_intelligence_data_qualityQuerySchema
+>;
+export const IntelligenceMetricQualitySchema = z.strictObject({
+  current_usability: z.enum(["usable", "blocked", "unavailable"]),
+  freshness: z.enum(["fresh", "stale", "unavailable"]),
+  freshness_basis: z.enum([
+    "metric_context",
+    "required_sources",
+    "unavailable",
+  ]),
+  key: z.enum([
+    "portfolio_total",
+    "positions",
+    "cash",
+    "current_price",
+    "direct_allocation",
+    "value",
+    "unclassified",
+    "l1_drift",
+    "weighted_squared_drift",
+    "effective_weight_rounding_residual",
+    "frontier_keys",
+    "group_count",
+    "holding_count",
+    "unclassified_count",
+    "beginning_value",
+    "ending_value",
+    "deposits",
+    "withdrawals",
+    "net_contributions",
+    "investment_gain",
+    "income",
+    "fees",
+    "withholding_taxes",
+    "realized_profit_loss",
+    "unrealized_profit_loss",
+    "time_weighted_return",
+    "money_weighted_return",
+    "modified_dietz_return",
+    "annualized_time_weighted_return",
+    "annualized_modified_dietz_return",
+    "maximum_drawdown",
+    "portfolio_return",
+    "benchmark_return",
+    "excess_return",
+    "tracking_difference",
+    "relative_wealth_return",
+    "annualized_portfolio_return",
+    "annualized_benchmark_return",
+    "annualized_tracking_difference",
+    "tracking_error",
+    "paired_observation_count",
+    "comparable_total_return_basis",
+    "net_income",
+    "gross_income",
+    "withholding",
+    "positive_income",
+    "negative_corrections",
+    "mean_invested_value",
+    "income_yield",
+    "previous_period_income",
+    "dividend_growth",
+    "event_count",
+    "attributed_amount",
+    "residual",
+    "uncovered_residual",
+    "quantization_residual",
+    "attributed_return",
+    "residual_return",
+    "dietz_denominator",
+    "cash_drag",
+    "brinson_allocation",
+    "brinson_selection",
+    "filtered_count",
+    "external_count",
+    "internal_count",
+    "unresolved_count",
+    "total",
+    "company_known_weight",
+    "cash_weight",
+    "unresolved_weight",
+    "duplicated_exposure",
+    "top_concentrations",
+    "hhi",
+    "thresholds",
+    "quality_coverage",
+  ]),
+  license_applicability: z.enum(["licensed", "not_applicable", "unknown"]),
+  missing_input: z.enum(["complete", "missing", "unknown"]),
+  quality_basis: z.enum([
+    "metric",
+    "result_context",
+    "input_context",
+    "unavailable",
+  ]),
+  reasons: z
+    .array(
+      z.enum([
+        "not_calculated",
+        "input_missing",
+        "recorded_unavailable",
+        "computation_failed",
+        "source_not_configured",
+        "source_missing",
+        "source_stale",
+        "freshness_policy_missing",
+        "source_license_denied",
+        "source_license_unknown",
+        "source_expired",
+        "source_purged",
+        "reconciliation_missing",
+        "reconciliation_incomplete",
+        "integrity_mismatch",
+        "metadata_unavailable",
+      ]),
+    )
+    .max(16),
+  recorded_availability: z.union([
+    z.enum(["available", "partial", "unavailable"]),
+    z.null(),
+  ]),
+  recorded_quality: z.union([
+    z.enum([
+      "fresh",
+      "stale",
+      "partial",
+      "estimated",
+      "unreconciled",
+      "failed",
+    ]),
+    z.null(),
+  ]),
+});
+export type IntelligenceMetricQuality = z.infer<
+  typeof IntelligenceMetricQualitySchema
+>;
+export const IntelligenceReconciliationSchema = z.strictObject({
+  as_of: z.union([z.string().datetime({ offset: true }), z.null()]),
+  complete: z.union([z.boolean(), z.null()]),
+  discrepancy_count: z.union([
+    z.number().int().min(0.0).max(100000000.0),
+    z.null(),
+  ]),
+  id: z.union([
+    z
+      .string()
+      .regex(
+        new RegExp(
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        ),
+      )
+      .uuid(),
+    z.null(),
+  ]),
+  reason: z.union([
+    z.enum([
+      "not_calculated",
+      "input_missing",
+      "recorded_unavailable",
+      "computation_failed",
+      "source_not_configured",
+      "source_missing",
+      "source_stale",
+      "freshness_policy_missing",
+      "source_license_denied",
+      "source_license_unknown",
+      "source_expired",
+      "source_purged",
+      "reconciliation_missing",
+      "reconciliation_incomplete",
+      "integrity_mismatch",
+      "metadata_unavailable",
+    ]),
+    z.null(),
+  ]),
+  status: z.union([
+    z.enum(["reconciled", "unreconciled", "partial", "failed"]),
+    z.null(),
+  ]),
+  visibility: z.enum(["visible", "permission_required"]),
+});
+export type IntelligenceReconciliation = z.infer<
+  typeof IntelligenceReconciliationSchema
+>;
+export const IntelligenceQualitySelectionSchema = z.strictObject({
+  content_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  created_at: z.string().datetime({ offset: true }),
+  id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  input_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  input_id: z.union([
+    z
+      .string()
+      .regex(
+        new RegExp(
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        ),
+      )
+      .uuid(),
+    z.null(),
+  ]),
+  input_kind: z.union([z.enum(["historical", "xray"]), z.null()]),
+  kind: z.enum(["valuation", "analytics"]),
+  method_version: z.string().min(1).max(160),
+  period_end: z.union([z.string().date(), z.null()]),
+  period_start: z.union([z.string().date(), z.null()]),
+  reporting_currency: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  source_cutoff_at: z.string().datetime({ offset: true }),
+  valuation_at: z.string().datetime({ offset: true }),
+});
+export type IntelligenceQualitySelection = z.infer<
+  typeof IntelligenceQualitySelectionSchema
+>;
+export const IntelligenceSourceFreshnessSchema = z.strictObject({
+  max_age_seconds: z.union([
+    z.number().int().min(0.0).max(315360000.0),
+    z.null(),
+  ]),
+  policy_version: z.union([z.string().min(1).max(160), z.null()]),
+  reference_at: z.union([z.string().datetime({ offset: true }), z.null()]),
+  state: z.enum(["fresh", "stale", "unavailable"]),
+});
+export type IntelligenceSourceFreshness = z.infer<
+  typeof IntelligenceSourceFreshnessSchema
+>;
+export const IntelligenceSourceIdentitySchema = z.strictObject({
+  id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  kind: z.enum([
+    "portfolio_snapshot",
+    "snapshot_position",
+    "snapshot_cash",
+    "calculation_run",
+    "ingestion_run",
+    "broker_source_record",
+    "broker_source_occurrence",
+    "reconciliation_run",
+    "price_snapshot",
+    "fx_snapshot",
+    "provider_benchmark_snapshot",
+    "corporate_action_snapshot",
+    "instrument_mapping",
+    "calendar_version",
+    "provider_license_version",
+    "benchmark_version",
+    "target_version",
+    "classification_evidence",
+    "historical_evidence",
+    "activity_revision_evidence",
+    "entity_evidence_version",
+    "classification_snapshot",
+    "fund_definition",
+    "fund_mapping",
+    "constituent_snapshot",
+    "xray_policy",
+  ]),
+  parent_id: z.union([
+    z
+      .string()
+      .regex(
+        new RegExp(
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        ),
+      )
+      .uuid(),
+    z.null(),
+  ]),
+});
+export type IntelligenceSourceIdentity = z.infer<
+  typeof IntelligenceSourceIdentitySchema
+>;
+export const IntelligenceQualitySourceSchema = z.strictObject({
+  available_count: z.union([
+    z.number().int().min(0.0).max(100000000.0),
+    z.null(),
+  ]),
+  content_digest: z.union([
+    z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+    z.null(),
+  ]),
+  current_usability: z.enum(["usable", "blocked", "unavailable"]),
+  effective_at: z.union([z.string().datetime({ offset: true }), z.null()]),
+  expected_count: z.union([
+    z.number().int().min(0.0).max(100000000.0),
+    z.null(),
+  ]),
+  expires_at: z.union([z.string().datetime({ offset: true }), z.null()]),
+  first_observed_at: z.union([z.string().datetime({ offset: true }), z.null()]),
+  freshness: IntelligenceSourceFreshnessSchema,
+  identity: IntelligenceSourceIdentitySchema,
+  license_applicability: z.enum(["licensed", "not_applicable", "unknown"]),
+  license_version_id: z.union([
+    z
+      .string()
+      .regex(
+        new RegExp(
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        ),
+      )
+      .uuid(),
+    z.null(),
+  ]),
+  provider_id: z.union([
+    z
+      .string()
+      .regex(
+        new RegExp(
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        ),
+      )
+      .uuid(),
+    z.null(),
+  ]),
+  reasons: z
+    .array(
+      z.enum([
+        "not_calculated",
+        "input_missing",
+        "recorded_unavailable",
+        "computation_failed",
+        "source_not_configured",
+        "source_missing",
+        "source_stale",
+        "freshness_policy_missing",
+        "source_license_denied",
+        "source_license_unknown",
+        "source_expired",
+        "source_purged",
+        "reconciliation_missing",
+        "reconciliation_incomplete",
+        "integrity_mismatch",
+        "metadata_unavailable",
+      ]),
+    )
+    .max(16),
+  recorded_quality: z.union([
+    z.enum([
+      "fresh",
+      "stale",
+      "partial",
+      "estimated",
+      "unreconciled",
+      "failed",
+    ]),
+    z.null(),
+  ]),
+  retention: z.enum(["retained", "expired", "purged", "unavailable"]),
+});
+export type IntelligenceQualitySource = z.infer<
+  typeof IntelligenceQualitySourceSchema
+>;
+export const IntelligenceSourcePageSchema = z.strictObject({
+  exact_total: z.number().int().min(0.0).max(8192.0),
+  expires_at: z.union([z.string().datetime({ offset: true }), z.null()]),
+  items: z.array(IntelligenceQualitySourceSchema).max(100),
+  limit: z.number().int().min(1.0).max(100.0),
+  next_cursor: z.union([
+    z.string().min(1).max(2048).regex(new RegExp("^[A-Za-z0-9_-]+$")),
+    z.null(),
+  ]),
+});
+export type IntelligenceSourcePage = z.infer<
+  typeof IntelligenceSourcePageSchema
+>;
+export const IntelligenceDataQualitySchema = z.strictObject({
+  account_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  activity_visibility: z.enum(["visible", "permission_required"]),
+  analytics_kind: z.enum([
+    "valuation",
+    "actual_vs_target",
+    "drift",
+    "performance",
+    "benchmark",
+    "income",
+    "attribution",
+    "cash_flow",
+    "xray",
+  ]),
+  checked_at: z.string().datetime({ offset: true }),
+  metrics: z.array(IntelligenceMetricQualitySchema).min(1).max(64),
+  reconciliation: IntelligenceReconciliationSchema,
+  schema_version: z.literal("1.0.0"),
+  selection: z.union([IntelligenceQualitySelectionSchema, z.null()]),
+  selection_at: z.string().datetime({ offset: true }),
+  selection_state: z.enum(["retained", "not_available", "unavailable"]),
+  sources: IntelligenceSourcePageSchema,
+  state: z.literal("quality"),
+  supported_kinds: z
+    .array(
+      z.enum([
+        "valuation",
+        "actual_vs_target",
+        "drift",
+        "performance",
+        "benchmark",
+        "income",
+        "attribution",
+        "cash_flow",
+        "xray",
+      ]),
+    )
+    .min(9)
+    .max(9),
+  targets_visibility: z.enum(["visible", "permission_required"]),
+});
+export type IntelligenceDataQuality = z.infer<
+  typeof IntelligenceDataQualitySchema
+>;
+export const IntelligenceQualityPermissionRequiredSchema = z.strictObject({
+  account_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  analytics_kind: z.enum([
+    "valuation",
+    "actual_vs_target",
+    "drift",
+    "performance",
+    "benchmark",
+    "income",
+    "attribution",
+    "cash_flow",
+    "xray",
+  ]),
+  checked_at: z.string().datetime({ offset: true }),
+  missing_scope: z.enum(["activity:read", "targets:read"]),
+  state: z.literal("permission_required"),
+  supported_kinds: z
+    .array(
+      z.enum([
+        "valuation",
+        "actual_vs_target",
+        "drift",
+        "performance",
+        "benchmark",
+        "income",
+        "attribution",
+        "cash_flow",
+        "xray",
+      ]),
+    )
+    .min(9)
+    .max(9),
+});
+export type IntelligenceQualityPermissionRequired = z.infer<
+  typeof IntelligenceQualityPermissionRequiredSchema
+>;
+export const get_intelligence_data_qualityResponseSchema = z.discriminatedUnion(
+  "state",
+  [IntelligenceDataQualitySchema, IntelligenceQualityPermissionRequiredSchema],
+);
+export type get_intelligence_data_qualityResponse = z.infer<
+  typeof get_intelligence_data_qualityResponseSchema
+>;
 export const get_market_source_statusQuerySchema = z.strictObject({
   basis: z
     .union([z.enum(["raw_close", "split_adjusted", "total_return"]), z.null()])
@@ -1514,6 +2014,34 @@ export class SourceApiClient {
         `/api/v1/accounts/${encodeURIComponent(z.string().regex(new RegExp("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")).uuid().parse(account_id))}/fx-sources`,
         FxSourceStatusSchema,
         get_fx_source_statusQuerySchema.parse(query),
+        undefined,
+        options,
+      );
+    } catch (error) {
+      if (error instanceof z.ZodError)
+        throw new SourceApiError(
+          "VALIDATION_FAILED",
+          422,
+          "The reference source request is invalid.",
+        );
+      throw error;
+    }
+  }
+  async get_intelligence_data_quality(
+    account_id: string,
+    query: z.input<typeof get_intelligence_data_qualityQuerySchema>,
+    options: SourceReadOptions = {},
+  ): Promise<
+    SourceApiResponse<
+      z.output<typeof get_intelligence_data_qualityResponseSchema>
+    >
+  > {
+    try {
+      return await this.#request(
+        "GET",
+        `/api/v1/accounts/${encodeURIComponent(z.string().regex(new RegExp("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")).uuid().parse(account_id))}/intelligence-data-quality`,
+        get_intelligence_data_qualityResponseSchema,
+        get_intelligence_data_qualityQuerySchema.parse(query),
         undefined,
         options,
       );

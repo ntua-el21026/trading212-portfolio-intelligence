@@ -1,7 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { CreateContributionPlanRequest } from "@trading212/api-contracts";
+import type {
+  ContributionPlanJob,
+  CreateContributionPlanRequest,
+} from "@trading212/api-contracts";
 
 import { PlanningForm } from "../components/planning-form";
 import type { PlanningTargetOption } from "../lib/planning-types";
@@ -257,5 +260,54 @@ describe("contribution request editing", () => {
       screen.getByRole("textbox", { name: "Contribution (EUR)" }),
     ).toBeDisabled();
     expect(mocks.command).toHaveBeenCalledTimes(1);
+  });
+
+  it("ignores a completed request after its account view is unmounted", async () => {
+    const user = userEvent.setup();
+    let complete!: (value: { ok: true; job: ContributionPlanJob }) => void;
+    mocks.command.mockReturnValue(
+      new Promise((resolve) => {
+        complete = resolve;
+      }),
+    );
+    const first = render(<PlanningForm initial={initial} targets={targets} />);
+    await user.click(
+      screen.getByRole("button", { name: "Calculate contribution plan" }),
+    );
+    first.unmount();
+    const otherAccount = "10000000-0000-4000-8000-000000000009";
+    render(
+      <PlanningForm
+        initial={{ ...initial, account_id: otherAccount }}
+        targets={targets}
+      />,
+    );
+    const amount = screen.getByRole("textbox", { name: "Contribution (EUR)" });
+    await user.clear(amount);
+    await user.type(amount, "73.123456789012345678");
+    await act(async () =>
+      complete({
+        ok: true,
+        job: {
+          account_id: accountId,
+          input_digest: "0".repeat(64),
+          job_id: pieId,
+          outcome: null,
+          plan_id: pieId,
+          request_id: pieId,
+          request_revision: 1,
+          requested_at: "2026-09-07T12:00:00Z",
+          revision_etag: '"' + pieId + ':1"',
+          snapshot_id: snapshotId,
+          state: "queued",
+          target_version_id: versionId,
+          virtual_portfolio_id: pieId,
+        },
+      }),
+    );
+    expect(mocks.push).not.toHaveBeenCalled();
+    expect(mocks.refresh).not.toHaveBeenCalled();
+    expect(amount).toHaveValue("73.123456789012345678");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });

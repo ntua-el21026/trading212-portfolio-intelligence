@@ -1,3 +1,4 @@
+import { keyboardClearance } from "./accessibility";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -42,6 +43,7 @@ async function selection(request: APIRequestContext) {
 }
 
 async function assertPresentation(page: Page) {
+  await keyboardClearance(page);
   expect(
     await page.evaluate(
       () =>
@@ -88,15 +90,69 @@ async function assertPresentation(page: Page) {
     expect(html).not.toContain(forbidden);
 }
 
-async function waitForResult(page: Page, request: APIRequestContext) {
-  await expect(page).toHaveURL(/\/planner\/[0-9a-f-]{36}$/);
+// Capture positioning only; callers must finish native keyboard assertions first.
+async function showSection(page: Page, heading: string) {
+  const banner = await page.getByRole("banner").boundingBox();
+  await page.getByRole("heading", { name: heading, exact: true }).evaluate(
+    (node, offset) => {
+      node.scrollIntoView({ block: "start", behavior: "instant" });
+      for (
+        let parent = node.parentElement;
+        parent;
+        parent = parent.parentElement
+      ) {
+        if (
+          /auto|scroll/.test(getComputedStyle(parent).overflowY) &&
+          parent.scrollHeight > parent.clientHeight
+        ) {
+          parent.scrollBy(0, -24);
+          return;
+        }
+      }
+      window.scrollBy(0, -offset);
+    },
+    (banner?.height ?? 0) + 24,
+  );
+}
+
+async function waitForResult(
+  page: Page,
+  request: APIRequestContext,
+  expectedRevision = 1,
+) {
+  await expect(page).toHaveURL(
+    (url) =>
+      /^\/planner\/[0-9a-f-]{36}$/u.test(url.pathname) &&
+      /^[0-9a-f-]{36}$/u.test(url.searchParams.get("account") ?? "") &&
+      !url.searchParams.has("edit") &&
+      !url.searchParams.has("revision"),
+  );
   const plan = new URL(page.url()).pathname.split("/").at(-1)!;
   await expect(
     page.getByRole("heading", { name: "Allocation result", exact: true }),
   ).toBeVisible({ timeout: 40_000 });
+  // A saved plan keeps its previous result visible while a revision is queued.
+  await expect
+    .poll(
+      async () => {
+        const response = await request.get(`${api}/contribution-plans/${plan}`);
+        expect(response.status()).toBe(200);
+        const detail = await response.json();
+        return {
+          state: detail.job.state,
+          revision: detail.job.request_revision,
+        };
+      },
+      { timeout: 40_000 },
+    )
+    .toEqual({ state: "succeeded", revision: expectedRevision });
   const detail = await request.get(`${api}/contribution-plans/${plan}`);
   expect(detail.status()).toBe(200);
   const canonical = await detail.json();
+  expect(canonical.job.request_revision).toBe(expectedRevision);
+  expect(new URL(page.url()).searchParams.get("account")).toBe(
+    canonical.job.account_id,
+  );
   expect(canonical.job.state).toBe("succeeded");
   expect(canonical.execution_allowed).toBe(false);
   expect(canonical.result.execution_allowed).toBe(false);
@@ -180,7 +236,7 @@ test("manual planner preserves invalid input and retains immutable history after
   await page
     .getByRole("button", { name: "Calculate new revision", exact: true })
     .click();
-  const revised = await waitForResult(page, request);
+  const revised = await waitForResult(page, request, 2);
   expect(revised.job.plan_id).toBe(original.job.plan_id);
   expect(revised.job.request_revision).toBe(2);
   expect(revised.request.options.mode).toBe("cash_only");
@@ -189,7 +245,19 @@ test("manual planner preserves invalid input and retains immutable history after
   await page
     .getByRole("link", { name: "Revision history", exact: true })
     .click();
-  await page.getByRole("link", { name: /^Revision 1 · / }).click();
+  const firstRevision = page.getByRole("link", { name: /^Revision 1 · / });
+  const revisionHref = await firstRevision.getAttribute("href");
+  expect(revisionHref).not.toBeNull();
+  const revisionUrl = new URL(revisionHref!, page.url());
+  expect(revisionUrl.searchParams.get("account")).toBe(account);
+  expect(revisionUrl.searchParams.get("revision")).toBe(
+    original.job.plan_revision_id,
+  );
+  await firstRevision.click();
+  await expect(page).toHaveURL(revisionUrl.href);
+  await expect(
+    page.getByRole("heading", { name: /^EUR 20(?:\.00)?$/ }),
+  ).toBeVisible();
   const historicalSources = page.getByText("Sources and revision details", {
     exact: true,
   });
@@ -208,7 +276,7 @@ test("manual planner preserves invalid input and retains immutable history after
 test("hierarchical and restricted modes use saved target groups and explicit effective-coverage disclosure", async ({
   page,
   request,
-}) => {
+}, testInfo) => {
   test.setTimeout(120_000);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -236,7 +304,7 @@ test("hierarchical and restricted modes use saved target groups and explicit eff
   await page
     .getByRole("button", { name: "Calculate new revision", exact: true })
     .click();
-  const restricted = await waitForResult(page, request);
+  const restricted = await waitForResult(page, request, 2);
   expect(restricted.request.options.mode).toBe("restricted");
   expect(restricted.request.options.restricted_group_ids).toHaveLength(1);
   await page
@@ -252,8 +320,15 @@ test("hierarchical and restricted modes use saved target groups and explicit eff
     page.getByText("Effective exposure coverage", { exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByText(/Effective weights remain unavailable/),
+    page.getByText(
+      /Company drift requires company targets and remains unavailable when only listing targets exist/,
+    ),
   ).toBeVisible();
   await assertPresentation(page);
+  await showSection(page, "Actual versus target");
+  await page.screenshot({
+    path: join(tmpdir(), `t212-p2-08-${testInfo.project.name}-drift.png`),
+    fullPage: false,
+  });
   expect(errors).toEqual([]);
 });

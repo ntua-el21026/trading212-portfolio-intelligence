@@ -172,10 +172,13 @@ class ReportSelection(ReportSchema):
     plan_revision_id: UUIDString | None = None
     benchmark_version_id: UUIDString | None = None
     constituent_snapshot_id: UUIDString | None = None
+    xray_run_id: UUIDString | None = None
     template_version: Literal["report_template_v1"] = "report_template_v1"
 
     @model_validator(mode="after")
     def bounded_period(self) -> Self:
+        if self.xray_run_id is not None and "drift" not in self.sections:
+            raise ValueError("Company actuals require a drift section.")
         if not 0 <= (self.end_date - self.start_date).days <= 3660:
             raise ValueError("The report period exceeds its date bounds.")
         return self
@@ -199,9 +202,14 @@ class ExportSelection(ReportSchema):
     plan_revision_id: UUIDString | None = None
     benchmark_version_id: UUIDString | None = None
     constituent_snapshot_id: UUIDString | None = None
+    xray_run_id: UUIDString | None = None
 
     @model_validator(mode="after")
     def bounded_period(self) -> Self:
+        if self.xray_run_id is not None and not (
+            self.dataset == "targets" or (self.dataset == "plans" and self.field_set == "audit")
+        ):
+            raise ValueError("Company actuals require target or plan-audit rows.")
         if not 0 <= (self.end_date - self.start_date).days <= 3660:
             raise ValueError("The export period exceeds its date bounds.")
         return self
@@ -226,9 +234,12 @@ class McpGenerateReportRequest(ReportSchema):
     plan_revision_id: UUIDString | None = None
     benchmark_version_id: UUIDString | None = None
     constituent_snapshot_id: UUIDString | None = None
+    xray_run_id: UUIDString | None = None
 
     @model_validator(mode="after")
     def bounded_period(self) -> Self:
+        if self.xray_run_id is not None and "drift" not in self.sections:
+            raise ValueError("Company actuals require a drift section.")
         if not 0 <= (self.end_date - self.start_date).days <= 3660:
             raise ValueError("The report period exceeds its date bounds.")
         return self
@@ -569,6 +580,8 @@ ReportTableKey = Literal[
     "attribution_summary",
     "attribution_components",
     "attribution_effects",
+    "planning_company_actuals_v1",
+    "planning_company_basis_v1",
     "xray_summary",
     "xray_quality",
     "xray_dimensions",

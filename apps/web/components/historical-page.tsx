@@ -1,4 +1,6 @@
-import Link from "next/link";
+import { AccountRequired, AccountView } from "./account-context";
+import { resolveAccountSelection } from "../lib/account-selection";
+import Link from "./navigation-intent";
 import type { ReactNode } from "react";
 import type { HistoricalRunContext } from "@trading212/api-contracts";
 import { Notice, Surface } from "@trading212/ui";
@@ -257,13 +259,13 @@ export async function HistoricalPage({
     );
   const clients = await historicalClients();
   const accounts = await clients.portfolio.listAccounts();
-  const requested =
-    typeof search.account === "string" ? search.account : undefined;
-  const account = accounts.find(
-    (row) =>
-      row.id ===
-      (requested ?? process.env.T212PI_ACCOUNT_ID ?? accounts[0]?.id),
+  const accountSelection = resolveAccountSelection(
+    accounts,
+    search.account,
+    process.env.T212PI_ACCOUNT_ID,
   );
+  const account = accountSelection.account;
+  if (!account) return <AccountRequired selection={accountSelection} />;
   let query: HistoricalQuery;
   try {
     query = readHistoricalQuery(search, {
@@ -286,19 +288,6 @@ export async function HistoricalPage({
       </div>
     );
   }
-  if (!account)
-    return (
-      <div className="page-stack">
-        {header}
-        <Notice title="Account unavailable">
-          The selected account is unavailable for this session.{" "}
-          <Link prefetch={false} href={pathname}>
-            Reset selection
-          </Link>
-          .
-        </Notice>
-      </div>
-    );
   query = { ...query, account: account.id };
   const [benchmarks, targets] = await Promise.all([
     historicalResult(async () =>
@@ -317,6 +306,7 @@ export async function HistoricalPage({
         ? targetData(
             await clients.targets.list_virtual_portfolios({
               account_id: account.id,
+              cursor: query.targets_cursor,
               state: "active",
               sort: "name_asc",
               limit: 25,
@@ -329,90 +319,96 @@ export async function HistoricalPage({
     loadHistoricalView(clients, pathname, query, account.id),
   );
   return (
-    <div className="page-stack historical-page">
-      {header}
-      <HistoricalTabs query={query} pathname={pathname} />
-      <HistoricalSelectionForm
-        pathname={pathname}
-        query={query}
-        accounts={accounts.map((row) => ({
-          id: row.id,
-          label: row.display_name,
-        }))}
-        benchmarks={
-          benchmarks.ok
-            ? (benchmarks.data?.items ?? []).flatMap((row) =>
-                row.latest_version_id
-                  ? [
-                      {
-                        id: row.latest_version_id,
-                        label: `${row.name} · ${row.reporting_currency} · latest published version`,
-                      },
-                    ]
-                  : [],
-              )
-            : []
-        }
-        benchmarkTotal={benchmarks.ok ? (benchmarks.data?.total ?? 0) : 0}
-        nextBenchmarkCursor={
-          benchmarks.ok ? (benchmarks.data?.next_cursor ?? null) : null
-        }
-        targets={
-          targets.ok
-            ? (targets.data?.items ?? []).flatMap((row) =>
-                row.active_version_id
-                  ? [
-                      {
-                        id: row.active_version_id,
-                        label: `${row.name} · ${row.reporting_currency}`,
-                      },
-                    ]
-                  : [],
-              )
-            : []
-        }
-        targetTotal={targets.ok ? (targets.data?.total ?? 0) : 0}
-      />
-      {!benchmarks.ok ? (
-        <Notice title="Benchmark choices unavailable">
-          {benchmarks.message}
-        </Notice>
-      ) : null}
-      {!targets.ok ? (
-        <Notice title="Target choices unavailable">{targets.message}</Notice>
-      ) : null}
-      {result.ok ? (
-        <>
-          {result.data.content}
-          {result.data.context ? (
-            <HistoricalContextDetails
-              context={result.data.context}
-              replayHref={historicalHref(pathname, query, {
-                capture: result.data.context.input_snapshot_id,
-              })}
-            />
-          ) : null}
-        </>
-      ) : (
-        <Notice title="Historical analysis unavailable">
-          {result.message} <span className="muted">{result.code}</span>
-        </Notice>
-      )}
-      <Surface>
-        <p>
-          Source coverage, valuation times and the selected knowledge policy
-          determine which results are available. Every financial amount is
-          calculated by the server. Inspect{" "}
-          <Link prefetch={false} href={`/sources?account=${account.id}`}>
-            sources and licenses
-          </Link>{" "}
-          or{" "}
-          <Link prefetch={false} href="/quality">
-            data quality
-          </Link>{" "}
-          for missing evidence.
-        </p>
-      </Surface>
-    </div>
+    <AccountView accountId={account.id}>
+      <div className="page-stack historical-page">
+        {header}
+        <HistoricalTabs query={query} pathname={pathname} />
+        <HistoricalSelectionForm
+          key={JSON.stringify(query)}
+          pathname={pathname}
+          query={query}
+          accounts={accounts.map((row) => ({
+            id: row.id,
+            label: row.display_name,
+          }))}
+          benchmarks={
+            benchmarks.ok
+              ? (benchmarks.data?.items ?? []).flatMap((row) =>
+                  row.latest_version_id
+                    ? [
+                        {
+                          id: row.latest_version_id,
+                          label: `${row.name} · ${row.reporting_currency} · latest published version`,
+                        },
+                      ]
+                    : [],
+                )
+              : []
+          }
+          benchmarkTotal={benchmarks.ok ? (benchmarks.data?.total ?? 0) : 0}
+          nextBenchmarkCursor={
+            benchmarks.ok ? (benchmarks.data?.next_cursor ?? null) : null
+          }
+          targets={
+            targets.ok
+              ? (targets.data?.items ?? []).flatMap((row) =>
+                  row.active_version_id
+                    ? [
+                        {
+                          id: row.active_version_id,
+                          label: `${row.name} · ${row.reporting_currency}`,
+                        },
+                      ]
+                    : [],
+                )
+              : []
+          }
+          targetTotal={targets.ok ? (targets.data?.total ?? 0) : 0}
+          nextTargetCursor={
+            targets.ok ? (targets.data?.next_cursor ?? null) : null
+          }
+        />
+        {!benchmarks.ok ? (
+          <Notice title="Benchmark choices unavailable">
+            {benchmarks.message}
+          </Notice>
+        ) : null}
+        {!targets.ok ? (
+          <Notice title="Target choices unavailable">{targets.message}</Notice>
+        ) : null}
+        {result.ok ? (
+          <>
+            {result.data.content}
+            {result.data.context ? (
+              <HistoricalContextDetails
+                context={result.data.context}
+                replayHref={historicalHref(pathname, query, {
+                  capture: result.data.context.input_snapshot_id,
+                })}
+              />
+            ) : null}
+          </>
+        ) : (
+          <Notice title="Historical analysis unavailable">
+            {result.message} <span className="muted">{result.code}</span>
+          </Notice>
+        )}
+        <Surface>
+          <p>
+            Source coverage, valuation times and the selected knowledge policy
+            determine which results are available. Every financial amount is
+            calculated by the server. Inspect{" "}
+            <Link prefetch={false} href={`/sources?account=${account.id}`}>
+              sources and licenses
+            </Link>{" "}
+            or{" "}
+            <Link prefetch={false} href={"/quality?account=" + account.id}>
+              data quality
+            </Link>{" "}
+            for missing evidence.
+          </p>
+        </Surface>
+      </div>
+    </AccountView>
   );
 }

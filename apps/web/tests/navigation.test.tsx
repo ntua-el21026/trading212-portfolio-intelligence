@@ -2,11 +2,15 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DesktopNavigation, MobileNavigation } from "../components/navigation";
+import { AccountProvider } from "../components/account-context";
+import { getDemoPortfolio } from "../lib/demo-data";
 
 const navigation = vi.hoisted(() => ({ pathname: "/holdings" }));
 
 vi.mock("next/navigation", () => ({
   usePathname: () => navigation.pathname,
+  useRouter: () => ({ push: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 describe("responsive navigation", () => {
@@ -15,7 +19,11 @@ describe("responsive navigation", () => {
   });
 
   it("marks the current desktop route", () => {
-    render(<DesktopNavigation />);
+    render(
+      <AccountProvider accounts={[getDemoPortfolio().summary.account]}>
+        <DesktopNavigation />
+      </AccountProvider>,
+    );
 
     expect(screen.getByRole("link", { name: "Holdings" })).toHaveAttribute(
       "aria-current",
@@ -27,11 +35,20 @@ describe("responsive navigation", () => {
   });
 
   it("provides five bounded mobile destinations", () => {
-    render(<MobileNavigation />);
+    render(
+      <AccountProvider accounts={[getDemoPortfolio().summary.account]}>
+        <MobileNavigation />
+      </AccountProvider>,
+    );
 
     expect(
       screen.getByRole("navigation", { name: "Primary" }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole("link")).toHaveLength(5);
+    for (const link of screen.getAllByRole("link")) {
+      expect(link.getAttribute("href")).toContain(
+        `account=${getDemoPortfolio().summary.account.id}`,
+      );
+    }
   });
 });

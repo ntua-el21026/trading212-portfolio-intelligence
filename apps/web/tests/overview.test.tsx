@@ -33,7 +33,10 @@ describe("Phase 1 overview", () => {
     ).toBeVisible();
     expect(
       screen.getByRole("link", { name: /explore allocation/i }),
-    ).toHaveAttribute("href", "/allocation");
+    ).toHaveAttribute(
+      "href",
+      "/allocation?account=" + getDemoPortfolio().summary.account.id,
+    );
     expect(
       screen.getByRole("table", { name: "Largest direct holdings" }),
     ).toBeInTheDocument();

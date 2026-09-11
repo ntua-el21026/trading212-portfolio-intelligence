@@ -8,7 +8,7 @@ from datetime import UTC, datetime
 from decimal import Decimal
 from uuid import UUID, uuid4
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 from trading212_application import planning as app
@@ -26,6 +26,12 @@ from trading212_application.targets import (
 from trading212_application.views import Page
 from trading212_domain import planning as d
 from trading212_domain.errors import DomainError
+from trading212_domain.planning_company import (
+    COMPANY_PROJECTION_VERSION,
+    PlanningCompanyBasisError,
+    PlanningCompanyProjection,
+    company_row_view,
+)
 from trading212_domain.planning_serialization import (
     contribution_plan_result_from_json,
     planning_input_digest,
@@ -40,6 +46,7 @@ from .collection_snapshots import (
     collection_filter_fingerprint,
 )
 from .planning_collections import first_immutable_page
+from .planning_company_store import PlanningCompanyStore, SelectedCompanyBasis
 from .planning_inputs import capture_input, digest, unavailable, verify_references
 from .planning_job_store import PlanningJobPersistence
 from .planning_models import (
@@ -83,6 +90,11 @@ class PostgresPlanningService(PlanningJobPersistence, app.PlanningService):
     ) -> None:
         self._sessions = sessions
         self._clock = clock or (lambda: datetime.now(UTC))
+        self._company_store = PlanningCompanyStore(
+            sessions=sessions,
+            cursor_signing_key=cursor_signing_key,
+            clock=self._clock,
+        )
         self._targets = PostgresTargetService(
             sessions=sessions,
             cursor_signing_key=cursor_signing_key,
@@ -101,6 +113,7 @@ class PostgresPlanningService(PlanningJobPersistence, app.PlanningService):
         *,
         write: bool = False,
         target: bool = False,
+        company: bool = False,
         operation: Callable[[Session, UUID], T],
     ) -> T:
         for scope in (
@@ -115,6 +128,14 @@ class PostgresPlanningService(PlanningJobPersistence, app.PlanningService):
         def execute() -> T:
             try:
                 with self._sessions() as session, session.begin():
+                    if company:
+                        # Same source/X-ray lock order as authorized X-ray reads;
+                        # acquire before targets and collection capacity locks.
+                        for namespace in ("sources", "xray"):
+                            session.execute(
+                                text("SELECT pg_advisory_xact_lock(hashtextextended(:key,0))"),
+                                {"key": f"{namespace}:{owner}"},
+                            )
                     self._owner_lock(session, owner)
                     return operation(session, owner)
             except TargetServiceError:
@@ -644,12 +665,54 @@ class PostgresPlanningService(PlanningJobPersistence, app.PlanningService):
             calculation = drift_calculation_from_json(run.canonical_result)
         return run, calculation, value
 
+    def _company_projection(
+        self,
+        run: AnalyticsRunModel,
+        calculation: d.DriftCalculation,
+        value: d.PlanningInput,
+        selected: SelectedCompanyBasis | None,
+    ) -> PlanningCompanyProjection:
+        from trading212_analytics.planning_company import (
+            project_company_weights,
+            unselected_company_projection,
+        )
+
+        if selected is None:
+            return unselected_company_projection(calculation.rows)
+        try:
+            return project_company_weights(
+                value,
+                calculation,
+                planning_run_id=run.id,
+                planning_content_digest=run.content_digest,
+                xray_run_id=selected.handle.run_id,
+                xray_input_id=selected.handle.input_id,
+                value=selected.value,
+                result=selected.result,
+            )
+        except PlanningCompanyBasisError:
+            raise app.PlanningServiceError(
+                app.PlanningServiceErrorCode.VALIDATION_FAILED,
+                "The selected company basis does not match the planning valuation.",
+            ) from None
+
     async def get_actual_vs_target(
         self, principal: Principal, account_id: str, *, query: app.ActualVsTargetQuery
     ) -> app.ActualVsTargetResult:
         def execute(session: Session, owner: UUID) -> app.ActualVsTargetResult:
             from trading212_domain.planning_serialization import drift_calculation_from_json
 
+            self._targets._account(session, principal, UUID(account_id))
+            selected = (
+                None
+                if query.xray_run_id is None
+                else self._company_store.load_selected(
+                    session,
+                    principal,
+                    UUID(account_id),
+                    UUID(query.xray_run_id),
+                )
+            )
             definition = CollectionSnapshotDefinition(
                 CollectionSnapshotResource.ACTUAL_TARGET_ROWS,
                 owner,
@@ -660,6 +723,11 @@ class PostgresPlanningService(PlanningJobPersistence, app.PlanningService):
                     query.target_version_id,
                     query.reporting_currency.value,
                     query.node_id,
+                    *(
+                        (query.xray_run_id, COMPANY_PROJECTION_VERSION)
+                        if query.xray_run_id is not None
+                        else ()
+                    ),
                 ),
             )
             store = self._targets._store(session)
@@ -696,6 +764,8 @@ class PostgresPlanningService(PlanningJobPersistence, app.PlanningService):
                     kind="actual_vs_target",
                     basis=d.DriftBasis.DIRECT,
                 )
+            projection = self._company_projection(run, calculation, value, selected)
+            company_cells = {cell.row_key: cell for cell in projection.weights}
             keys = None
             if query.node_id is not None:
                 identity = next((x for x in value.node_identities if x.id == query.node_id), None)
@@ -724,8 +794,10 @@ class PostgresPlanningService(PlanningJobPersistence, app.PlanningService):
             else:
                 assert resumed is not None
                 page = resumed
-            rows = tuple(
-                calculation.rows[row.ordinal]
+            rows: tuple[d.DriftRow, ...] = tuple(
+                company_row_view(
+                    calculation.rows[row.ordinal], company_cells[calculation.rows[row.ordinal].key]
+                )
                 for row_id in page.record_ids
                 if (row := session.get(AnalyticsDriftRowModel, row_id)) is not None
             )
@@ -737,15 +809,31 @@ class PostgresPlanningService(PlanningJobPersistence, app.PlanningService):
                 run.content_digest,
                 target_identities=value.node_identities,
                 node_id=query.node_id,
+                company_basis=projection.binding,
+                company_context=None if selected is None else selected.handle.context,
+                projection_digest=projection.content_digest,
             )
 
-        return await self._run(principal, target=True, operation=execute)
+        return await self._run(
+            principal, target=True, company=query.xray_run_id is not None, operation=execute
+        )
 
     async def get_drift_analysis(
         self, principal: Principal, account_id: str, *, query: app.DriftAnalysisQuery
     ) -> app.DriftAnalysisResult:
         def execute(session: Session, owner: UUID) -> app.DriftAnalysisResult:
-            run, calculation, _ = self._drift(
+            self._targets._account(session, principal, UUID(account_id))
+            selected = (
+                None
+                if query.xray_run_id is None
+                else self._company_store.load_selected(
+                    session,
+                    principal,
+                    UUID(account_id),
+                    UUID(query.xray_run_id),
+                )
+            )
+            run, calculation, value = self._drift(
                 session,
                 owner,
                 account_id=account_id,
@@ -756,11 +844,15 @@ class PostgresPlanningService(PlanningJobPersistence, app.PlanningService):
                 kind="drift",
                 basis=query.basis,
             )
+            projection = self._company_projection(run, calculation, value, selected)
+            company_cells = {cell.row_key: cell for cell in projection.weights}
             ranked = sorted(
                 calculation.rows,
                 key=lambda x: (x.absolute_drift is None, -(x.absolute_drift or Decimal(0)), x.key),
             )
-            sampled = ranked[: query.top_n]
+            sampled = tuple(
+                company_row_view(row, company_cells[row.key]) for row in ranked[: query.top_n]
+            )
             return app.DriftAnalysisResult(
                 calculation.context,
                 run.created_at,
@@ -773,6 +865,11 @@ class PostgresPlanningService(PlanningJobPersistence, app.PlanningService):
                 len(ranked),
                 max(0, len(ranked) - query.top_n),
                 run.content_digest,
+                company_basis=projection.binding,
+                company_context=None if selected is None else selected.handle.context,
+                projection_digest=projection.content_digest,
             )
 
-        return await self._run(principal, target=True, operation=execute)
+        return await self._run(
+            principal, target=True, company=query.xray_run_id is not None, operation=execute
+        )

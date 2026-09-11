@@ -1,4 +1,10 @@
-import Link from "next/link";
+import {
+  AccountRequired,
+  AccountView,
+} from "../../../../../components/account-context";
+import type { ReactNode } from "react";
+import { loadSelectedAccount } from "../../../../../lib/api-adapter";
+import Link from "../../../../../components/navigation-intent";
 import { notFound } from "next/navigation";
 import { Notice, Surface } from "@trading212/ui";
 import { PageHeader } from "../../../../../components/page-header";
@@ -27,10 +33,27 @@ export default async function BenchmarkPage({
   const definitionId = planningUuid((await params).definitionId);
   if (!definitionId) notFound();
   const query = await searchParams;
+  // Definitions belong to the owner. Only an explicit account requests catalog scope.
+  const accountSelection =
+    query.account === undefined
+      ? null
+      : await loadSelectedAccount(query.account);
+  if (accountSelection && !accountSelection.account)
+    return <AccountRequired selection={accountSelection} />;
+  const account = accountSelection?.account;
+  const withScope = (content: ReactNode) =>
+    account ? (
+      <AccountView accountId={account.id}>{content}</AccountView>
+    ) : (
+      <>
+        <Notice title="Owner-wide benchmark">
+          This benchmark is shown for its owner without a portfolio account
+          selection.
+        </Notice>
+        {content}
+      </>
+    );
   const clients = await sourceClients();
-  const accounts = await clients.portfolio.listAccounts();
-  const accountId = planningUuid(query.account) ?? accounts[0]?.id;
-  const account = accounts.find((item) => item.id === accountId);
   const result = await sourceResult(async () => {
     const detail = sourceData(
       await clients.sources.get_benchmark_definition(definitionId, {
@@ -66,10 +89,12 @@ export default async function BenchmarkPage({
   });
   if (!result.ok) {
     if (result.code === "NOT_FOUND") notFound();
-    return <Notice title="Benchmark unavailable">{result.message}</Notice>;
+    return withScope(
+      <Notice title="Benchmark unavailable">{result.message}</Notice>,
+    );
   }
   const { detail, available, selected, preserved } = result.data;
-  return (
+  return withScope(
     <div className="page-stack source-page">
       <PageHeader
         title={detail.definition.name}
@@ -191,6 +216,6 @@ export default async function BenchmarkPage({
         effectiveAt={new Date().toISOString()}
         currency={detail.definition.reporting_currency}
       />
-    </div>
+    </div>,
   );
 }

@@ -16,7 +16,7 @@ from tests.unit.api.report_factories import ACCOUNT, BODY, artifact, job
 
 
 @pytest.mark.parametrize(
-    "extra", ["html", "destination", "owner_id", "xray_run_id", "input_digest"]
+    "extra", ["html", "destination", "owner_id", "company_basis", "input_digest"]
 )
 def test_unknown_report_fields_fail_without_reflecting_input(extra: str) -> None:
     with pytest.raises(ValidationError) as failure:
@@ -72,6 +72,7 @@ def test_http_and_exact_mcp_request_normalize_to_one_identical_command() -> None
         "plan_revision_id",
         "benchmark_version_id",
         "constituent_snapshot_id",
+        "xray_run_id",
     }
 
 

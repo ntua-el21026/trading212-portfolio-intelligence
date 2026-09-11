@@ -116,6 +116,7 @@ const schema = z.strictObject({
   plan_revision_id: uuid.optional(),
   benchmark_version_id: uuid.optional(),
   constituent_snapshot_id: uuid.optional(),
+  xray_run_id: uuid.optional(),
   formats: z
     .string()
     .regex(/^(pdf|csv|json|xlsx)(,(pdf|csv|json|xlsx)){0,3}$/)
@@ -174,6 +175,7 @@ const selectionFields = [
   "plan_revision_id",
   "benchmark_version_id",
   "constituent_snapshot_id",
+  "xray_run_id",
   "formats",
   "sections",
   "field_set",

@@ -23,6 +23,14 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
     {
+      name: "api-chromium-tablet",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { height: 1024, width: 768 },
+        deviceScaleFactor: 2,
+      },
+    },
+    {
       name: "api-chromium-mobile",
       use: {
         ...devices["Pixel 7"],

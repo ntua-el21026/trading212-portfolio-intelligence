@@ -55,7 +55,7 @@ const sourceErrors: Readonly<Record<string, string>> = {
     "The reference source request could not be completed. Your inputs are preserved.",
 };
 
-/** Internal transport; consumers receive only fourteen fixed source operations. */
+/** Internal transport; consumers receive only fifteen fixed source and quality operations. */
 export class SourceTransport extends BoundedTransport {
   constructor(options: SourceClientOptions) {
     super(options, {

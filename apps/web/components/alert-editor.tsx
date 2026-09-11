@@ -1,5 +1,7 @@
 "use client";
 
+import { useNavigationVersionRef } from "./navigation-intent";
+
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Notice, Surface } from "@trading212/ui";
@@ -82,6 +84,7 @@ export function AlertEditor({
   canWrite: boolean;
 }>) {
   const router = useRouter();
+  const navigationRef = useNavigationVersionRef();
   const initial = rule?.latest_version.definition;
   const [metric, setMetric] = useState<AlertEditorMetric>(
     ALERT_METRICS.find((item) => item.metric === initial?.predicate.metric) ??
@@ -102,6 +105,7 @@ export function AlertEditor({
     };
   }, []);
   function submit(event: FormEvent<HTMLFormElement>) {
+    const generation = navigationRef.current;
     event.preventDefault();
     if (pending) return;
     let definition;
@@ -138,8 +142,8 @@ export function AlertEditor({
         ...body,
         idempotency_key: key,
       });
-      if (!mounted.current) return;
-      setSubmitting(false);
+      if (mounted.current) setSubmitting(false);
+      if (!mounted.current || navigationRef.current !== generation) return;
       setFeedback(result);
       if (result.ok) {
         const id =
