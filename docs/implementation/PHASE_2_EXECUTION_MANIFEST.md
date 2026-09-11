@@ -41,8 +41,7 @@ shared physical row/byte budgets, bounded path proofs and the complete position-
 then-cash real UUID ordering. This authority amendment does not complete evidence;
 P2-05 has [scoped exact-source acceptance](P2_05_PORTFOLIO_XRAY.md) at
 `7b102663ea193b4668924a7252180731954f4b00`. P2-06 has [scoped local acceptance](evidence/phase-2-p2-06-9e39767.json) at `9e39767b408b38203d88d6e5b41bf0bc1265adfb` following synchronized P205 closure. Its complete required local evidence is accepted with GitHub Actions explicitly deferred by the owner; no CI pass is claimed. The retained deferral remains active across remaining Phase 2 packages until owner resumption.
-P2-07 is in progress under its [implementation contract](P2_07_ALERTS_AND_RULES.md). P2-08 through P2-10 and Phase 3 stay not_started. P2-08 owns intelligence-data-quality/company actual-weight enrichment;
-company target drift still requires a separately pinned entity-target basis.
+P2-07 has [scoped local acceptance](evidence/phase-2-p2-07-03c3c5b.json) at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7` (7/10 packages, 19/29 local rows, 30/40 scenarios). CI remains owner-deferred. P2-08 through P2-10 and Phase 3 stay not_started. P2-08 owns intelligence-data-quality/company actual-weight enrichment; company target drift still requires a separately pinned entity-target basis.
 
 ## Work-package protocol
 

@@ -32,3 +32,26 @@ paths = ['''(?:^|/)docs/implementation/evidence/phase-2-p2-05-7b10266(?:-runtime
 regexes = [
     '''^\s*"xray_html_sha256": "674467990f1b13605077592f8e2ddf0692efff9ddde8213372c17364516621d2",?\s*$''',
 ]
+
+[[rules.allowlists]]
+description = "Verified P207 source hashes and synthetic runtime identifiers; exact record and line only"
+condition = "AND"
+regexTarget = "line"
+paths = ['''(?:^|/)docs/implementation/evidence/phase-2-p2-07-03c3c5b\.json$''']
+regexes = [
+    '''^\s*"packages/persistence/src/trading212_persistence/alert_capture_xray\.py":\ "b5334d4792ca0d162f2ce0aa358a9c7c46b776e555e7fd20d3dee8b7ef88ba97",?\s*$''',
+    '''^\s*"packages/persistence/src/trading212_persistence/alert_capture_xray_sources\.py":\ "3efad0e94e246d046d7a1f178f3e6ab97b33836652dcafb5051567f76d75f77e",?\s*$''',
+]
+
+[[rules]]
+id = "generic-api-key"
+
+[[rules.allowlists]]
+description = "Verified P207 source hashes and synthetic runtime identifiers; exact record and line only"
+condition = "AND"
+regexTarget = "line"
+paths = ['''(?:^|/)docs/implementation/evidence/phase-2-p2-07-03c3c5b\.json$''']
+regexes = [
+    '''^\s*"api":\ "9e4932d011803df1b6e5ff93b801494c164893c48aea0031a5ba340c80632978",?\s*$''',
+    '''^\s*"key":\ "position\.a0549367\-692f\-4af6\-ba28\-680f51f764b6\.price\.reason",?\s*$''',
+]

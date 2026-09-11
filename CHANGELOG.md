@@ -4,7 +4,13 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
-### Phase 2 reporting
+### Phase 2 alerts and rules
+
+- P2-07 has scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`: versioned alert rules, immutable scheduled evaluation, event deduplication/cooldown, authorized lifecycle/history, bounded delivery and canonical alerts exports. Phase 2 is in progress: 7/10 packages (70%), 19/29 local rows and 30/40 scenarios complete. S31 includes both report/alert durable recovery and actual Redis-loss republication of the same pending alert input. Shared API/DATA/SEC/OPS and S32/S34/S38 predicates remain partial; P2-08 through P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred and unverified; no CI pass or final Phase 2 release is claimed.
+- Preserve raw activity knowledge timestamps; apply attested corrections only when known at the cutoff and include actual economic eligibility in late/future correction timing. Lifecycle replay rechecks current material grants against its original immutable command version. Browser presentation checks await the exact saved event revisions and completed form transitions.
+- Actual completed gate summaries record 2352 isolated and 338 service-backed Python tests, 88% combined Python coverage with branch measurement, 345 web unit tests and 100 local browser checks. The full gate took 5416.926 seconds; fresh runtime took 256.28724 seconds. All six immutable images and the exact source/history scans passed; all seven runtime services restarted and scoped cleanup verified absence. [Evidence](docs/implementation/evidence/phase-2-p2-07-03c3c5b.json).
+
+### Phase 2 reporting (historical P206 closure)
 
 - Accept P206 locally at `9e39767b408b38203d88d6e5b41bf0bc1265adfb` with complete exact-source local gates, scans, runtime/restart/cleanup and scoped screenshot/PDF review. GitHub Actions remains explicitly deferred by the owner across remaining Phase 2; the three startup failures are preserved and no CI pass is claimed. See the [retained assertion map](docs/implementation/evidence/phase-2-p2-06-9e39767.json).
 - Deliver ten report types across PDF/CSV/JSON/XLSX and seven backed standalone export datasets through bounded private jobs/downloads; alerts export awaits P207.
@@ -232,7 +238,7 @@ Live is disabled and untested, not another Phase 1 gate.
 
 Virtual Pies/targets, contribution optimization, full performance/benchmarks, X-ray, reports, alerts, and premium analytical interfaces.
 
-Status: `in_progress`; P2-01 through P2-06 locally complete (6/10 packages, 60%). Sixteen of 29 local rows and twenty-six of 40 scenarios are complete; shared S34 and S38 remain in progress. GitHub Actions is deferred by the owner across remaining Phase 2; required local verification continues.
+Status: `in_progress`; P2-01 through P2-07 locally complete (7/10 packages, 70%). 19/29 local rows and 30/40 scenarios are complete; shared rows remain partial. GitHub Actions is owner-deferred. P208–P210 remain required; final release evidence remains pending.
 
 ### [1.0.0] — Phase 3: Premium Intelligence and Productization
 

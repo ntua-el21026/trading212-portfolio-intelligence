@@ -80,6 +80,8 @@ at `7b102663ea193b4668924a7252180731954f4b00`; the remaining roadmap is unchange
 
 ### P2-07 — Alerts and rules engine
 
+Scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7` is recorded in [the alerts contract](P2_07_ALERTS_AND_RULES.md) and [actual evidence](evidence/phase-2-p2-07-03c3c5b.json). Phase 2 totals: 7/10 packages, 19/29 local rows, 30/40 scenarios. CI remains owner-deferred; later packages and final-release evidence remain required.
+
 - versioned rules for drift, concentration, cash, data freshness, reconciliation, dividend/activity, and provider failure;
 - scheduled evaluation, deduplication, cooldown, acknowledgment;
 - in-app feed and email/webhook adapters as configured;

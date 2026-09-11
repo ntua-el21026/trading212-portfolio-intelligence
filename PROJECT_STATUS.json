@@ -83,7 +83,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "P2-07_corrected_commit_exact_validation_with_owner_deferred_ci",
+  "next_gate": "P2-08_ordered_implementation_with_owner_deferred_ci",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -165,6 +165,13 @@
       "artifact": "docs/implementation/evidence/phase-2-p2-06-9e39767.json",
       "ci_state": "deferred_by_owner",
       "sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+      "status": "complete"
+    },
+    "P2-07": {
+      "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+      "artifact": "docs/implementation/evidence/phase-2-p2-07-03c3c5b.json",
+      "ci_state": "deferred_by_owner",
+      "sha": "03c3c5b0b8182aadaaf48ec29131ab7fe83095a7",
       "status": "complete"
     }
   },
@@ -288,12 +295,12 @@
     "billing_or_spending_changes_authorized": false,
     "ci_pass_claim": false,
     "current_acceptance_ci": {
-      "artifact": "docs/implementation/evidence/phase-2-p2-06-9e39767.json",
+      "artifact": "docs/implementation/evidence/phase-2-p2-07-03c3c5b.json",
       "current_observation_pointer": "/ci/current_source",
-      "finalized_artifact_sha256": "f206c73040d0e5eb3eb80d9434101990b638ba6c8987460f65b385adfd715692",
+      "finalized_artifact_sha256": "ce5fa9a095af558ae93002dff53848411d2148a5026f6a9f2142f04ac68e415b",
       "historical_runs_pointer": "/ci/historical_runs",
       "source_ancestry_pointer": "/ci/source_ancestry",
-      "source_sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb"
+      "source_sha": "03c3c5b0b8182aadaaf48ec29131ab7fe83095a7"
     },
     "finalized_owner_decision": {
       "artifact": "docs/implementation/evidence/phase-2-p2-06-9e39767.json",
@@ -332,103 +339,12 @@
   },
   "current_work_package": {
     "id": "P2-07",
-    "status": "in_progress",
-    "specification": "docs/implementation/P2_07_ALERTS_AND_RULES.md",
-    "acceptance_claim": false,
-    "local_validation": "immutable_0df_failed_browser_corrected_working_browser_passed_exact_acceptance_pending",
-    "focused_correction_evidence": [
-      {
-        "external_record": "p207-notification-timeout-proof.json",
-        "sha256": "65723c856424cb520b246397140b97d9149f81a4a6bf95b4cd475e19411be2cd",
-        "scope": "focused_unaccepted_working_tree"
-      },
-      {
-        "external_record": "p207-revision-capture-correction/verification.json",
-        "sha256": "0083d9932401c7237d8eac9b98effd68248a09fade38fcc33ebc75d7be501bb9",
-        "scope": "focused_unaccepted_working_tree"
-      },
-      {
-        "external_record": "p207-lifecycle-replay-scope-correction/verification.json",
-        "sha256": "25c48b5e7ae98bb4d4b4af4bb02f32aef7ce6dd5014c6e2e177e381eb75a2a82",
-        "scope": "focused_unaccepted_working_tree"
-      },
-      {
-        "external_record": "p207-temporal-proof-preparation/verification.json",
-        "sha256": "c8c4b8880f37dbe16ef86e29ab07d140957b2b4edc6f6416e78b0ee1585addad",
-        "scope": "focused_unaccepted_working_tree"
-      }
-    ],
-    "previous_working_gate": "deliberately_interrupted_after_260_integration_passes_for_review_fixes",
-    "working_full_gate": {
-      "external_record": "gates/p207-working-validate-03.json",
-      "sha256": "02e1706597d7d50e9f0d5752c073fba7f68b32763c074c9294397faccf2550d6",
-      "duration_seconds": 5242.552,
-      "result": "passed",
-      "source_unchanged": true,
-      "scope": "pre_final_review_corrections_unaccepted_working_tree"
-    },
-    "review_corrections_pending": [],
-    "previous_immutable_candidate_observation": {
-      "source_sha": "0d7aa9bd4eccb987f2485c35f57b809ddedd2900",
-      "acceptance": "not_accepted",
-      "make_validate": {
-        "external_record": "gates/p207-immutable-validate-01.json",
-        "sha256": "fee69befebe5e8fd93376ac7e93010d280b1e1c722255a1dce70edc10f71282a",
-        "result": "passed",
-        "duration_seconds": 5268.546
-      },
-      "runtime": {
-        "external_record": "p207-runtime-0d7aa9b-01/runtime.json",
-        "sha256": "075fd4307bc6da08b3f90a625fd67d0afaae954c01e16db34c7d378e3f1fcab1",
-        "result": "passed",
-        "duration_seconds": 256.499932,
-        "scoped_cleanup": "passed"
-      },
-      "security": {
-        "history": "failed_13_verified_noncredential_historical_report_identifiers",
-        "source": "passed",
-        "immutable_images_passed": 6,
-        "failed_evidence": "docs/implementation/evidence/phase-2-p2-07-0d7aa9b-failed-security.json"
-      },
-      "visual_review": {
-        "screenshots_opened": 6,
-        "pdf_pages_opened": [1, 3, 6, 14],
-        "pdf_page_count": 14,
-        "scope": "reviewed_images_and_sample_pages_only"
-      },
-      "next_gate": "corrected_commit_exact_validation_scans_runtime_and_visual_review",
-      "github_actions": "deferred_by_owner"
-    },
-    "immutable_candidate_observation": {
-      "source_sha": "0df988ce4fb785c44d28868d9936d2dbae18c99d",
-      "acceptance": "not_accepted",
-      "make_validate": {
-        "command": ["make", "validate"],
-        "result": "failed",
-        "exit_code": 2,
-        "duration_seconds": 4600.42,
-        "started_at_utc": "2026-09-11T10:44:36.795234+00:00",
-        "completed_at_utc": "2026-09-11T12:01:16.998437+00:00",
-        "source_unchanged": false,
-        "external_record": "gates/p207-immutable-validate-02.json",
-        "sha256": "78b785f0d2025dcf8122328caa0970d8107dc529a46f21564cb7230fcda4a7ce",
-        "log_sha256": "0a6bf4cafa35333f5d91a872bcaf5c0d3cb1b3796dbdf0fa7a641e372dbe1a19"
-      },
-      "failed_evidence": "docs/implementation/evidence/phase-2-p2-07-0df988c-failed-browser.json",
-      "focused_browser_correction": {
-        "desktop": {
-          "external_record": "p207-alert-browser-diagnosis-01/corrected-desktop.log",
-          "sha256": "ad086a75f829e57624e2721eb9ef17de9c5fa98e6e043a7913c26d311bf2fb3e",
-          "passed": 5
-        },
-        "mobile": {
-          "external_record": "p207-alert-browser-diagnosis-01/corrected-mobile.log",
-          "sha256": "7f1ed54b7cc41630d87358a92fe12626ae2edc1d86e7108c532218139e0d98c8",
-          "passed": 5
-        }
-      },
-      "next_gate": "corrected_commit_exact_validation_scans_runtime_and_visual_review",
-      "github_actions": "deferred_by_owner"
-    }
+    "status": "complete",
+    "source_sha": "03c3c5b0b8182aadaaf48ec29131ab7fe83095a7",
+    "acceptance_claim": true,
+    "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+    "artifact": "docs/implementation/evidence/phase-2-p2-07-03c3c5b.json",
+    "github_actions": "deferred_by_owner",
+    "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-07-03c3c5b-implementation-history.json"
   }
 }

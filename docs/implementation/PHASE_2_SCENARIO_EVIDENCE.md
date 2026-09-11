@@ -2,7 +2,7 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 through P2-06 locally complete; 26/40 complete; remaining Phase 2 CI deferred by owner
+**Implementation acceptance:** In progress; P2-01 through P2-07 locally complete; 30/40 complete; remaining Phase 2 CI deferred by owner
 
 **P2-01 evidence SHA:** `ecc75154397c8f9d7532fa2df8576846b60bae7c`
 
@@ -13,6 +13,8 @@
 **P2-04 evidence SHA:** `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`
 
 **P2-05 evidence SHA:** `7b102663ea193b4668924a7252180731954f4b00`; final Phase 2 release SHA pending
+
+**P2-07 local evidence SHA:** `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`; [scoped evidence](evidence/phase-2-p2-07-03c3c5b.json); CI deferred, not passed.
 
 **P2-06 local evidence SHA:** `9e39767b408b38203d88d6e5b41bf0bc1265adfb`; GitHub Actions deferred, not passed; final Phase 2 release SHA remains pending. [Evidence](evidence/phase-2-p2-06-9e39767.json).
 
@@ -60,10 +62,10 @@ Normal exact-source CI requirements remain the default. This dated exception cha
 | P2-S25 | Enforce report owner authorization and expiry. | P2-06 | Other-owner, mismatched-account, expired/deleted/revoked artifacts are denied on every lookup/download; expiry cleanup is bounded and idempotent. | `tests/integration/test_report_ttl_postgres.py::test_natural_report_ttl_denies_before_bounded_idempotent_physical_cleanup`; `tests/integration/test_report_postgres.py::test_current_reader_is_independent_of_the_disabled_job_initiator`; [full exact-source local assertion map](evidence/phase-2-p2-06-9e39767.json); CI deferred by owner | `complete` |
 | P2-S26 | Prove reports contain no secret or provider signed URL. | P2-06 | Inject synthetic runtime/provider/export-URL component canaries; inspect manifests, rendered PDF text/metadata, CSV/JSON and expanded XLSX parts plus logs/traces. | `tests/integration/test_report_privacy_postgres.py::test_four_actual_formats_and_audits_exclude_private_source_and_grant_canaries`; [full exact-source local assertion map](evidence/phase-2-p2-06-9e39767.json); CI deferred by owner | `complete` |
 | P2-S27 | Produce safe CSV/JSON/XLSX exports without formula injection. | P2-06 | Adversarial cell prefixes, whitespace/control prefixes and unsafe filenames produce safe CSV/XLSX cell types/escaping and strict typed JSON; no formula executes. | `tests/unit/worker/test_report_text.py::test_formula_initiators_are_neutralized_without_dropping_original_text`; `tests/unit/worker/test_private_report_renderers.py::test_xlsx_contains_only_explicit_text_without_formulas_or_external_links`; [full exact-source local assertion map](evidence/phase-2-p2-06-9e39767.json); CI deferred by owner | `complete` |
-| P2-S28 | Evaluate a drift alert once and deduplicate repeated identical evaluations. | P2-07 | Same rule-version/input snapshot/window under repeated/concurrent evaluation creates one event and one delivery intent. | Not recorded / none | `pending` |
-| P2-S29 | Enforce cooldown and acknowledgment transitions. | P2-07 | Controlled UTC clock covers cooldown edges and owner-authorized acknowledge/resolve transitions, optimistic concurrency and unchanged historical rule versions. | Not recorded / none | `pending` |
-| P2-S30 | Reject webhook destinations resolving to private or metadata addresses. | P2-07 | Local fake DNS/transport tests deny loopback/private/link-local/metadata/reserved IPv4/IPv6, rebinding and redirects before disallowed dispatch. | Not recorded / none | `pending` |
-| P2-S31 | Preserve alert and report jobs across worker/dispatcher restart. | P2-06/P2-07 | Atomic enqueue/publication/consumer crash windows, duplicate delivery and worker/dispatcher restart preserve original report/alert jobs and artifacts/events. | [partial P206 local evidence](evidence/phase-2-p2-06-9e39767.json); reporting scope only, remaining shared predicates pending | `in_progress` |
+| P2-S28 | Evaluate a drift alert once and deduplicate repeated identical evaluations. | P2-07 | Same rule-version/input snapshot/window under repeated/concurrent evaluation creates one event and one delivery intent. | [P207 local evidence](evidence/phase-2-p2-07-03c3c5b.json); `tests/integration/test_alert_drift_dedup_postgres.py::test_actual_target_drift_slot_deduplicates_concurrent_and_restarted_consumers`; source selector mapped to actual full-file execution | `complete` |
+| P2-S29 | Enforce cooldown and acknowledgment transitions. | P2-07 | Controlled UTC clock covers cooldown edges and owner-authorized acknowledge/resolve transitions, optimistic concurrency and unchanged historical rule versions. | [P207 local evidence](evidence/phase-2-p2-07-03c3c5b.json); `tests/integration/test_alert_postgres.py::test_acknowledgment_window_asof_counts_and_manual_resolution_do_not_rearm`; source selector mapped to actual full-file execution | `complete` |
+| P2-S30 | Reject webhook destinations resolving to private or metadata addresses. | P2-07 | Local fake DNS/transport tests deny loopback/private/link-local/metadata/reserved IPv4/IPv6, rebinding and redirects before disallowed dispatch. | [P207 local evidence](evidence/phase-2-p2-07-03c3c5b.json); `tests/security/test_alert_webhook.py::test_rebinding_private_retry_is_rejected_before_second_connection`; source selector mapped to actual full-file execution | `complete` |
+| P2-S31 | Preserve alert and report jobs across worker/dispatcher restart. | P2-06/P2-07 | Atomic enqueue/publication/consumer crash windows, duplicate delivery and worker/dispatcher restart preserve original report/alert jobs and artifacts/events. | [P207 local evidence](evidence/phase-2-p2-07-03c3c5b.json); `tests/integration/test_alert_postgres.py::test_atomic_slot_idempotency_immutable_input_and_real_worker_restart`; source selector mapped to actual full-file execution; [P206 report proof](evidence/phase-2-p2-06-9e39767.json) retained; fresh report/alert restart and same-input pending Redis-loss recovery | `complete` |
 | P2-S32 | Deny cross-owner API access. | P2-01–09 | Authenticated owner/account cross-products and missing scopes deny all new list/detail/command/download endpoints without existence/secret disclosure. | [partial P206 local evidence](evidence/phase-2-p2-06-9e39767.json); reporting scope only, remaining shared predicates pending | `in_progress` |
 | P2-S33 | Deny cross-owner MCP access. | P2-09 | All 25 tools reject cross-owner/account and missing-scope invocations; invalid IDs and unknown fields fail before unauthorized services or providers run. | Not recorded / none | `pending` |
 | P2-S34 | Preserve API, web, MCP, and report canonical value parity. | P2-01–09 | Same owner/account, snapshot/target/source revisions, cutoff/currency/method/parameters produce equal canonical Decimal values across service/API/rendered web/MCP/report. X-ray additionally pins numeric/traversal policies and representative paths; compare canonical semantic bytes including exact state while excluding derived self-digest/generated envelopes. Report parity remains P2-06. | `tests/contract/test_historical_contract.py::test_comparison_widget_has_valid_hash_csp_safe_dom_and_no_network_or_financial_math`; [partial historical API/web/MCP evidence](evidence/phase-2-p2-04-2a7c89a.json); remaining shared scope pending; not a complete scenario; [partial X-ray evidence](evidence/phase-2-p2-05-7b10266.json); remaining release-wide scope pending; not a complete scenario; [partial P206 local evidence](evidence/phase-2-p2-06-9e39767.json); reporting scope only, remaining shared predicates pending | `in_progress` |
@@ -181,11 +183,11 @@ Exact-source CI passed: Quality `34347516142`, Documentation `34347516068`, Secu
 
 See [runtime](evidence/phase-2-p2-05-7b10266-runtime.json), [security](evidence/phase-2-p2-05-7b10266-security.json), [compatibility](evidence/phase-2-p2-05-7b10266-compatibility.json), [screenshots and visual review](evidence/phase-2-p2-05-7b10266-screenshots.json) and [observed count derivation](evidence/phase-2-p2-05-7b10266-counts.json). Earlier failed candidates remain unaccepted. External broker/provider/deployment gates, the documented P2-08 UI follow-ups and the null final Phase 2 release SHA are unchanged.
 
-## P2-06 scoped local acceptance
+## Historical P2-06 scoped local acceptance
 
 P2-06 has scoped local acceptance at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. GitHub Actions is deferred by explicit owner instruction; no CI pass is claimed. The complete required local gates, exact source bindings and deferred startup observations are retained in the P206 acceptance evidence. Remaining Phase 2 implementation continues under that recorded deferral until the owner resumes CI verification.
 
-The [finalized local artifact](evidence/phase-2-p2-06-9e39767.json) closes only the P206-owned rows and scenarios. Current totals are 16/29 local rows and 26/40 scenarios. Reporting contributes partial evidence to shared scenarios; later packages remain pending.
+The [finalized local artifact](evidence/phase-2-p2-06-9e39767.json) closes only the P206-owned rows and scenarios. At that P206 closure, totals were 16/29 local rows and 26/40 scenarios. Reporting contributes partial evidence to shared scenarios; later packages remain pending.
 
 ### Historical P206 implementation observations
 
@@ -203,4 +205,12 @@ CSS change. Root reviewed eight working screenshots with a documented full-page
 mobile capture limitation; immutable acceptance images require their own review.
 At that development boundary, clean exact-source validation, CI, scans, fresh runtime and screenshot/PDF review were still pending. Current accepted local proof and the distinct owner CI deferral are recorded above. Shared restart,
 parity and output-state scenarios retain their outstanding release-wide scope.
-P2-07 through P2-10 and Phase 3 remain `not_started`.
+At that historical P206 closure, P2-07 through P2-10 and Phase 3 remained `not_started`.
+
+## P2-07 scoped local acceptance
+
+P2-07 has scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`: versioned alert rules, immutable scheduled evaluation, event deduplication/cooldown, authorized lifecycle/history, bounded delivery and canonical alerts exports. Phase 2 is in progress: 7/10 packages (70%), 19/29 local rows and 30/40 scenarios complete. S31 includes both report/alert durable recovery and actual Redis-loss republication of the same pending alert input. Shared API/DATA/SEC/OPS and S32/S34/S38 predicates remain partial; P2-08 through P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred and unverified; no CI pass or final Phase 2 release is claimed.
+
+Actual completed gate summaries record 2352 isolated and 338 service-backed Python tests, 88% combined Python coverage with branch measurement, 345 web unit tests and 100 local browser checks. The full gate took 5416.926 seconds; fresh runtime took 256.28724 seconds. All six immutable images and the exact source/history scans passed; all seven runtime services restarted and scoped cleanup verified absence.
+
+[Actual portable evidence](evidence/phase-2-p2-07-03c3c5b.json) records the exact eight requirements. Its source selectors and complete-file pass observations are distinct; no individual parameter pass IDs are inferred. Earlier failures and working observations remain historical in [the archived record](evidence/phase-2-p2-07-03c3c5b-implementation-history.json). All forty scenarios still require final-release same-source mapping at P2-10.

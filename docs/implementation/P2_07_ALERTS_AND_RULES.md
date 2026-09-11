@@ -1,10 +1,10 @@
 # P2-07 Alerts and Rules
 
-Implementation is in progress from synchronized `main` closure `2cdb409`.
-P2-06 retains its separate exact-source local acceptance at `9e39767`.
-No P2-07 acceptance is claimed. The owner's GitHub Actions deferral continues;
-all applicable local checks remain required. P2-08 through P2-10 follow this
-package, and Phase 3 remains outside this assignment.
+P2-07 has scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`: versioned alert rules, immutable scheduled evaluation, event deduplication/cooldown, authorized lifecycle/history, bounded delivery and canonical alerts exports. Phase 2 is in progress: 7/10 packages (70%), 19/29 local rows and 30/40 scenarios complete. S31 includes both report/alert durable recovery and actual Redis-loss republication of the same pending alert input. Shared API/DATA/SEC/OPS and S32/S34/S38 predicates remain partial; P2-08 through P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred and unverified; no CI pass or final Phase 2 release is claimed.
+
+[Accepted local evidence](evidence/phase-2-p2-07-03c3c5b.json). Actual completed gate summaries record 2352 isolated and 338 service-backed Python tests, 88% combined Python coverage with branch measurement, 345 web unit tests and 100 local browser checks. The full gate took 5416.926 seconds; fresh runtime took 256.28724 seconds. All six immutable images and the exact source/history scans passed; all seven runtime services restarted and scoped cleanup verified absence.
+
+The implementation began from P206 closure `2cdb409`. Earlier working/no-acceptance observations, rejected `0d7aa9b` security evidence and rejected `0df988c` browser evidence remain historical at their original sources; P206 acceptance and evidence bytes are unchanged.
 
 This implementation applies [ADR-0015](../adr/ADR-0015-VERSIONED-ALERT-EVALUATION.md),
 [methods section 8](../analytics/PHASE_2_METHODS.md#8-versioned-alerts-and-deterministic-evaluation),

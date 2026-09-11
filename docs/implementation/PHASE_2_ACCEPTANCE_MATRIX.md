@@ -2,7 +2,7 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 through P2-06 locally complete; 16/29 local rows; remaining Phase 2 CI deferred by owner
+**Implementation acceptance:** In progress; P2-01 through P2-07 locally complete; 19/29 local rows; remaining Phase 2 CI deferred by owner
 
 **Target release:** `0.2.0`
 
@@ -15,6 +15,8 @@
 **P2-04 evidence SHA:** `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`
 
 **P2-05 evidence SHA:** `7b102663ea193b4668924a7252180731954f4b00`; final Phase 2 release SHA pending
+
+**P2-07 local evidence SHA:** `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`; [scoped evidence](evidence/phase-2-p2-07-03c3c5b.json); CI deferred, not passed.
 
 **P2-06 local evidence SHA:** `9e39767b408b38203d88d6e5b41bf0bc1265adfb`; GitHub Actions deferred, not passed; final Phase 2 release SHA remains pending. [Evidence](evidence/phase-2-p2-06-9e39767.json).
 
@@ -65,9 +67,9 @@ gates, and final release evidence. A design commit cannot close a runtime row.
 | P2-RPT-001 | P2-06 | Every required report type and PDF/CSV/JSON/XLSX format has a reproducible canonical manifest, shared service values, source/method/quality/license metadata and bounded private artifacts. [Local exact-source assertion map](evidence/phase-2-p2-06-9e39767.json). | 24, 27, 34 | `complete` |
 | P2-RPT-002 | P2-06 | Durable report/export jobs are idempotent, authorized, expiry/cleanup-aware and audited; downloads reauthorize each access; safe filenames/content types and size limits are enforced. [Local exact-source assertion map](evidence/phase-2-p2-06-9e39767.json). | 25, 31, 32, 40 | `complete` |
 | P2-RPT-003 | P2-06 | Rendered PDF and structured/archive export content excludes secrets/signed URLs; CSV/XLSX formula injection and restricted-source export attempts are rejected or safely encoded. [Local exact-source assertion map](evidence/phase-2-p2-06-9e39767.json). | 26, 27 | `complete` |
-| P2-ALT-001 | P2-07 | Immutable versioned rules cover every approved portfolio/data/report family with deterministic input snapshots, quality gating and no trading signals. | 28, 38 | `pending` |
-| P2-ALT-002 | P2-07 | Scheduling, event deduplication, cooldown, acknowledgment/resolution, safe retry/dead-letter and in-app history survive concurrent workers/restart. | 28, 29, 31, 40 | `pending` |
-| P2-ALT-003 | P2-07 | Optional email/webhook ports are unavailable when unconfigured; configured destinations are verified, bounded, HTTPS-only outside test mode and protected against SSRF/DNS rebinding/redirects. | 30, 31, 37 | `pending` |
+| P2-ALT-001 | P2-07 | Immutable versioned rules cover every approved portfolio/data/report family with deterministic input snapshots, quality gating and no trading signals. | 28, 38 | `complete` |
+| P2-ALT-002 | P2-07 | Scheduling, event deduplication, cooldown, acknowledgment/resolution, safe retry/dead-letter and in-app history survive concurrent workers/restart. | 28, 29, 31, 40 | `complete` |
+| P2-ALT-003 | P2-07 | Optional email/webhook ports are unavailable when unconfigured; configured destinations are verified, bounded, HTTPS-only outside test mode and protected against SSRF/DNS rebinding/redirects. | 30, 31, 37 | `complete` |
 | P2-WEB-001 | P2-08 | All 18 owner-required analytical/editor/report/alert/source/settings experiences use generated clients, canonical services and explicit quality states with durable deep links and navigation. | 34, 38, 39 | `pending` |
 | P2-WEB-002 | P2-08 | Desktop/mobile keyboard, focus, accessible names, reduced motion, chart/table alternatives, no horizontal overflow, browser navigation and critical visual regression gates pass. | 39 | `pending` |
 | P2-MCP-001 | P2-09 | The exact 25-tool registry preserves nine existing tools and exposes fourteen new reads plus two bounded internal commands with strict schemas, exact scopes and truthful annotations. | 33, 34, 36, 37, 38 | `pending` |
@@ -163,11 +165,11 @@ Exact-source CI passed: Quality `34347516142`, Documentation `34347516068`, Secu
 
 See [runtime](evidence/phase-2-p2-05-7b10266-runtime.json), [security](evidence/phase-2-p2-05-7b10266-security.json), [compatibility](evidence/phase-2-p2-05-7b10266-compatibility.json), [screenshots and visual review](evidence/phase-2-p2-05-7b10266-screenshots.json) and [observed count derivation](evidence/phase-2-p2-05-7b10266-counts.json). Earlier failed candidates remain unaccepted. External broker/provider/deployment gates, the documented P2-08 UI follow-ups and the null final Phase 2 release SHA are unchanged.
 
-## P2-06 scoped local acceptance
+## Historical P2-06 scoped local acceptance
 
 P2-06 has scoped local acceptance at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. GitHub Actions is deferred by explicit owner instruction; no CI pass is claimed. The complete required local gates, exact source bindings and deferred startup observations are retained in the P206 acceptance evidence. Remaining Phase 2 implementation continues under that recorded deferral until the owner resumes CI verification.
 
-The [finalized local artifact](evidence/phase-2-p2-06-9e39767.json) closes only the P206-owned rows and scenarios. Current totals are 16/29 local rows and 26/40 scenarios. Reporting contributes partial evidence to shared scenarios; later packages remain pending.
+The [finalized local artifact](evidence/phase-2-p2-06-9e39767.json) closes only the P206-owned rows and scenarios. At that P206 closure, totals were 16/29 local rows and 26/40 scenarios. Reporting contributes partial evidence to shared scenarios; later packages remain pending.
 
 ### Historical P206 implementation observations
 
@@ -186,4 +188,12 @@ only the CSS correction to its hidden desktop sidebar; final-source validation
 and visual review remain separate. Root reviewed the eight working screenshots
 with their documented full-page mobile capture limitation.
 At that earlier boundary, no P2-RPT row was accepted and totals remained thirteen rows and twenty-two scenarios. Current local acceptance uses the complete corrected-source local gates, scans, runtime and visual review, with the separately retained owner CI deferral.
-P2-07 through P2-10 and Phase 3 remain `not_started`.
+At that historical P206 closure, P2-07 through P2-10 and Phase 3 remained `not_started`.
+
+## P2-07 scoped local acceptance
+
+P2-07 has scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`: versioned alert rules, immutable scheduled evaluation, event deduplication/cooldown, authorized lifecycle/history, bounded delivery and canonical alerts exports. Phase 2 is in progress: 7/10 packages (70%), 19/29 local rows and 30/40 scenarios complete. S31 includes both report/alert durable recovery and actual Redis-loss republication of the same pending alert input. Shared API/DATA/SEC/OPS and S32/S34/S38 predicates remain partial; P2-08 through P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred and unverified; no CI pass or final Phase 2 release is claimed.
+
+Actual completed gate summaries record 2352 isolated and 338 service-backed Python tests, 88% combined Python coverage with branch measurement, 345 web unit tests and 100 local browser checks. The full gate took 5416.926 seconds; fresh runtime took 256.28724 seconds. All six immutable images and the exact source/history scans passed; all seven runtime services restarted and scoped cleanup verified absence.
+
+[Actual portable evidence](evidence/phase-2-p2-07-03c3c5b.json) records the exact eight requirements. Its source selectors and complete-file pass observations are distinct; no individual parameter pass IDs are inferred. Earlier failures and working observations remain historical in [the archived record](evidence/phase-2-p2-07-03c3c5b-implementation-history.json). All forty scenarios still require final-release same-source mapping at P2-10.

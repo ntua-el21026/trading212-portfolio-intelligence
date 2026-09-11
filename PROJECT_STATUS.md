@@ -10,6 +10,16 @@
 
 ## Current state
 
+P2-07 has scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`: versioned alert rules, immutable scheduled evaluation, event deduplication/cooldown, authorized lifecycle/history, bounded delivery and canonical alerts exports. Phase 2 is in progress: 7/10 packages (70%), 19/29 local rows and 30/40 scenarios complete. S31 includes both report/alert durable recovery and actual Redis-loss republication of the same pending alert input. Shared API/DATA/SEC/OPS and S32/S34/S38 predicates remain partial; P2-08 through P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred and unverified; no CI pass or final Phase 2 release is claimed.
+
+Actual completed gate summaries record 2352 isolated and 338 service-backed Python tests, 88% combined Python coverage with branch measurement, 345 web unit tests and 100 local browser checks. The full gate took 5416.926 seconds; fresh runtime took 256.28724 seconds. All six immutable images and the exact source/history scans passed; all seven runtime services restarted and scoped cleanup verified absence.
+
+[Finalized local evidence](docs/implementation/evidence/phase-2-p2-07-03c3c5b.json). ROOT's closure records local package scope; external conditions and final-release evidence remain unchanged.
+
+### Historical package observations before this closure
+
+The following working/no-acceptance statements retain their original source and observation time. They do not describe the accepted 03c3c5b candidate.
+
 Stage A is **complete** at `99df47b6633791c3900a52f46f56d48be922a436`. F-01 and F-02 are closed;
 all 24 locally executable acceptance rows and 14 mandatory synthetic scenarios,
 all three workflows, all local gates, and the fresh Compose acceptance passed.
@@ -217,7 +227,7 @@ than fabricated.
 
 ## Next action
 
-Complete P2-07, then proceed sequentially through P2-10 with required local verification and the retained owner CI deferral under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+Proceed sequentially through required P2-08, P2-09 and P2-10 with required local verification and the retained owner CI deferral under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo
@@ -470,7 +480,7 @@ verified against its retained archive, plus exactly 12 obsolete P2-06 build reco
 Current images, current build records, dependencies and evidence were preserved.
 One PostgreSQL container is reused for the corrected-source verification.
 
-## P2-07 implementation in progress
+## Historical P2-07 preparation and rejected 0d7aa9b/0df988c candidates
 
 The [alerts implementation contract](docs/implementation/P2_07_ALERTS_AND_RULES.md) starts from P206 closure `2cdb409`. Rule/domain, persistence, public interfaces and canonical capture are implemented and undergoing full local validation. The final capture correction retains complete relevant revision groups, filters unrelated activity before quality/FX checks, and preserves canonical linked cash-effect deduplication. Complete-ledger coverage remains explicit. Package acceptance is pending; the owner CI deferral continues, and six packages remain locally accepted.
 

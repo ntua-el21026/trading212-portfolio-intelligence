@@ -1,0 +1,127 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "historical_candidate_validation_snapshot",
+  "closure_source_sha": "03c3c5b0b8182aadaaf48ec29131ab7fe83095a7",
+  "new_acceptance_claim": false,
+  "source_file": "PROJECT_PROGRESS.json",
+  "source_file_sha256": "a2eee5ecced84f399b6459255b9fb7e335b9bd5f84edaed7ca00acf731187688",
+  "source_json_pointer": "/phases/phase_2/candidate_validation",
+  "value_sha256": "4f94728e4265811baa971dacce494f536fb77c24ea916a0aec482ecab31acd3c",
+  "value_sha256_encoding": "UTF-8 JSON sort_keys=true separators=(',',':') ensure_ascii=false allow_nan=false",
+  "value": {
+    "acceptance": "accepted_locally_with_ci_deferred",
+    "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+    "accepted_at_utc": "2026-09-10T16:05:33.647538+00:00",
+    "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-06-9e39767-implementation-history.json",
+    "artifacts": [
+      "docs/implementation/evidence/phase-2-p2-06-9e39767.json"
+    ],
+    "build_images": {
+      "api": "sha256:b349e2645bad917f185d579c2ae95092620a963c3c11d388564dc38b9fa4f72a",
+      "mcp": "sha256:e2078119956e79ede7a5509da9ef9c660ead196ee69e71334eedf9816de0916a",
+      "postgres": "sha256:89e7f09728de3257044f986f07ad26be6a51a71c4d705365e009ea7f4e97b35c",
+      "redis": "sha256:e35511469dca8d8ecd319f0cc78ee16fbd1b43c56f85abeba6c032325f6aa79e",
+      "web": "sha256:d37f6ec82d4da1b1a8a14861dbf7860535c4d372be2d28689710ac3ef4caeec2",
+      "worker": "sha256:6574836bb14e1d9ecb14d9fd5f9b9cf4dba313596bdd6b79d220394df02957e2"
+    },
+    "ci_source_ancestry": {
+      "authorized_source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+      "current_source_sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+      "relationship": "descendant",
+      "verification": "git_merge_base_is_ancestor_exit_0"
+    },
+    "ci_state": "deferred_by_owner",
+    "ci_verified": false,
+    "current_ci_observation": {
+      "actual_run_state": "unknown",
+      "historical_attempts_for_this_source": false,
+      "observation_state": "not_queried_after_owner_decision",
+      "observed_post_decision_runs": [],
+      "source_sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+      "state": "deferred_by_owner"
+    },
+    "gate_log_sha256": "76c82e0f80d8d7d9d0afbdb37bc7f28d9535caba0be58a879655f5cb0b051f98",
+    "gate_record_sha256": "d86950db93da9f8679497ea823beeb30edbf8659eef0797f9a12b4f7fb2c014c",
+    "historical_ci_attempts": [
+      {
+        "attempt": 1,
+        "conclusion": "failure",
+        "createdAt": "2026-09-10T12:44:42Z",
+        "databaseId": 34478450265,
+        "event": "push",
+        "headBranch": "main",
+        "headSha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+        "status": "completed",
+        "updatedAt": "2026-09-10T12:44:47Z",
+        "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34478450265",
+        "workflowName": "Documentation baseline validation"
+      },
+      {
+        "attempt": 1,
+        "conclusion": "failure",
+        "createdAt": "2026-09-10T12:44:42Z",
+        "databaseId": 34478450252,
+        "event": "push",
+        "headBranch": "main",
+        "headSha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+        "status": "completed",
+        "updatedAt": "2026-09-10T12:44:55Z",
+        "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34478450252",
+        "workflowName": "Phase 1 quality gates"
+      },
+      {
+        "attempt": 1,
+        "conclusion": "failure",
+        "createdAt": "2026-09-10T12:44:42Z",
+        "databaseId": 34478450202,
+        "event": "push",
+        "headBranch": "main",
+        "headSha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+        "status": "completed",
+        "updatedAt": "2026-09-10T12:44:54Z",
+        "url": "https://github.com/ntua-el21026/trading212-portfolio-intelligence/actions/runs/34478450202",
+        "workflowName": "Security and dependency gates"
+      }
+    ],
+    "historical_ci_source_sha": "a2f2e3c533e6079766beac90f3f97279c622de40",
+    "known_p208_limitations": "The configured synthetic runtime does not establish default unconfigured multi-account UI acceptance. Route/global-header account consistency, sticky-header section positioning, mobile labels/table presentation and remaining P2-08/S39 scope stay outstanding. The earlier P2-04 snapshot retains its original account-count and runtime observations.",
+    "make_validate": "passed",
+    "observed_gate_counts": {
+      "browser_run_passed_counts": [
+        50,
+        3,
+        3,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        4,
+        4,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3
+      ],
+      "browser_tests_passed_locally": 90,
+      "combined_python_coverage_with_branch_measurement_percent": 88,
+      "derivation": "Actual complete coverage, Vitest and serial Playwright summaries in the accepted gate transcript; not per-node observations.",
+      "isolated_python_tests_passed": 1925,
+      "service_backed_python_tests_passed": 277,
+      "web_unit_tests_passed": 301
+    },
+    "pdf_review_observation_sha256": "598710ad69f0c4c197a8a700b95bb1cb16345a9a46ec4983c257768a3442edfe",
+    "previous_accepted_candidate_validation_artifact": "docs/implementation/evidence/phase-2-p2-05-7b10266-candidate-before-p206.json",
+    "runtime": "passed",
+    "runtime_cleanup_verified": true,
+    "runtime_observation_sha256": "16ba28a312513a0f9586b5420f3ab973ab983e2c8066f2131f75cf67dbf52e22",
+    "scope": "P206 and seven assigned acceptance/scenario rows only; remaining Phase 2 is not complete.",
+    "screenshots_observation_sha256": "67efec5f21361a030457f8e9eec92802fe0fa66cfe103ab5cb7d0cae2cae0789",
+    "security_observation_sha256": "c51ea89674021de508369bb3e373060f79a85fd600db3ca02228ca07504063f3",
+    "source_sha": "9e39767b408b38203d88d6e5b41bf0bc1265adfb",
+    "work_package": "P2-06"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "verified_noncredential_evidence_classification",
+  "source_sha": "03c3c5b0b8182aadaaf48ec29131ab7fe83095a7",
+  "artifact": "docs/implementation/evidence/phase-2-p2-07-03c3c5b.json",
+  "artifact_sha256": "ce5fa9a095af558ae93002dff53848411d2148a5026f6a9f2142f04ac68e415b",
+  "raw_runtime_sha256": "4f467c15cb724076820f70b38bed1ee03e6ef6adaed942923f61cb441c36bfa6",
+  "classified_lines": [
+    {
+      "rule": "jfrog-identity-token",
+      "key": "packages/persistence/src/trading212_persistence/alert_capture_xray.py",
+      "value": "b5334d4792ca0d162f2ce0aa358a9c7c46b776e555e7fd20d3dee8b7ef88ba97",
+      "occurrences": 1,
+      "basis": "Exact Git source blob recomputed with SHA256"
+    },
+    {
+      "rule": "jfrog-identity-token",
+      "key": "packages/persistence/src/trading212_persistence/alert_capture_xray_sources.py",
+      "value": "3efad0e94e246d046d7a1f178f3e6ab97b33836652dcafb5051567f76d75f77e",
+      "occurrences": 1,
+      "basis": "Exact Git source blob recomputed with SHA256"
+    },
+    {
+      "rule": "generic-api-key",
+      "key": "api",
+      "value": "9e4932d011803df1b6e5ff93b801494c164893c48aea0031a5ba340c80632978",
+      "occurrences": 2,
+      "basis": "Exact synthetic Docker identity or report warning key verified against original retained runtime"
+    },
+    {
+      "rule": "generic-api-key",
+      "key": "key",
+      "value": "position.a0549367-692f-4af6-ba28-680f51f764b6.price.reason",
+      "occurrences": 3,
+      "basis": "Exact synthetic Docker identity or report warning key verified against original retained runtime"
+    }
+  ],
+  "policy": "Exact rule, evidence path, field, literal value and whole-line anchors only. No wildcard file exemption or entropy threshold change. Default rules retained. Regression exercises every exception with changed value, wrong field, wrong path and extra field; inherited credential canary remains."
+}
