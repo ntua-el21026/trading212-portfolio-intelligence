@@ -12,7 +12,7 @@ import { accountHref } from "../lib/account-selection";
 import { EmptyState, Surface } from "@trading212/ui";
 
 import type { OverviewBundle } from "../lib/contracts";
-import { formatDateTime, formatPercent } from "../lib/format";
+import { formatDateTime, formatPercent, titleCase } from "../lib/format";
 import { AllocationChart } from "./charts";
 import { MetricCard, MoneyValue } from "./financial";
 import { QualityBanner, TrustRail } from "./quality";
@@ -59,14 +59,10 @@ export function Overview({ bundle }: Readonly<{ bundle: OverviewBundle }>) {
               <div>
                 <ShieldCheck aria-hidden="true" />
                 <span>
-                  <strong>
-                    {reconciliation.status === "reconciled"
-                      ? "Reconciled"
-                      : "Review needed"}
-                  </strong>
+                  <strong>{titleCase(reconciliation.status)}</strong>
                   {reconciliation.status === "reconciled"
                     ? "All covered records agree."
-                    : "Open discrepancies are present."}
+                    : `${reconciliation.discrepancy_count} discrepancy record${reconciliation.discrepancy_count === 1 ? "" : "s"}.`}
                 </span>
               </div>
               <div>

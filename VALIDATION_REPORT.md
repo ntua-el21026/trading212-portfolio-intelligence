@@ -154,3 +154,20 @@ log. Workflow actions and external Docker bases remain immutable SHA/digest pinn
 Trading 212 Live remains disabled and untested. The synthetic reconciliation fixture is
 local acceptance evidence only and is not substituted for real-provider opening history.
 Phase 2 and Phase 3 remain `not_started`.
+
+## P2-08 overview correction before package acceptance
+
+Immutable ff884065e896209563d1966865602e73b3622fd6 passed make validate in 6771.536 seconds: 2474 isolated and 377 PostgreSQL coverage cases, 88% branch-aware coverage, 534 web unit tests, 52 demo plus 102 API browser checks across 39 API process reports, and all static/documentation/security/build gates. ROOT reviewed all 60 feature captures and found one mobile overview defect, so package acceptance remains false. The overview now preserves reconciliation status and uses the authoritative discrepancy_count independently of the empty summary issues collection. Five new regression cases failed before the fix and all eight overview tests passed afterward. Corrected working validation passed 539 web unit tests, formatting, web lint/types, docs, production build and three focused API browser viewport checks. The first focused browser attempt exposed a fixture count assumption (standalone 2 versus full-sequence 0); the corrected assertion compares the UI to the actual API count. Fresh immutable validation and acceptance evidence for the corrected source remain required; GitHub Actions is owner-deferred.
+
+Retained task-evidence records (external file names, not repository paths):
+
+- gates/p208-immutable-ff88406-full-01.json: SHA-256 adb9591ec25951f56f11c80c79269825513942b0d5697591f49d2e6903a364a6.
+- p208-early-visual-review-ff88406-01/workspace-root-reviewed.json: SHA-256 fa4929b2940606c077ef6bcf74cafd0e8b4ccf36e1ff7cf707f11fb452566eb9.
+- gates/p208-overview-correction-browser-01.json: SHA-256 6ac2ca0ddeca1db2c2ffa340e2d11ca6d07ef195cbc489c43019abb910489c3f.
+- gates/p208-overview-correction-browser-02.json: SHA-256 9fa5282040df6342621c678ee593b362399ea94f5fee3bf0dd33840ae67227e8.
+- gates/p208-overview-correction-static-unit-01.json: SHA-256 535bacd92b78925e8267fc65016fe3531ec566ce687752308b88c160cb7ab7aa.
+- p208-overview-correction-visual-02/root-reviewed.json: SHA-256 fd970e811b78152ec4567994d34d9f0b774f9e0ce6d558886ec7bc628b266183.
+
+The focused correction records bind an unaccepted working-tree diff; they do
+not replace clean immutable acceptance, security scans, or the retained earlier
+failed visual review. P2-09/P2-10 remain required and Phase 3 remains not started.

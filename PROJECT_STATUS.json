@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-11",
+  "updated_at": "2026-09-11T22:19:34.391018+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -344,6 +344,6 @@
     "specification": "docs/implementation/P2_08_ANALYTICAL_WEB_EXPERIENCE.md",
     "acceptance_claim": false,
     "github_actions": "deferred_by_owner",
-    "local_validation": "Focused static checks, 525 web unit tests, 26 PDF renderer tests, real company report/export artifact checks and three-viewport company/quality/reduced-motion checks passed. Complete immutable acceptance remains pending."
+    "local_validation": "Immutable ff884065e896209563d1966865602e73b3622fd6 passed make validate in 6771.536 seconds: 2474 isolated and 377 PostgreSQL coverage cases, 88% branch-aware coverage, 534 web unit tests, 52 demo plus 102 API browser checks across 39 API process reports, and all static/documentation/security/build gates. ROOT reviewed all 60 feature captures and found one mobile overview defect, so package acceptance remains false. The overview now preserves reconciliation status and uses the authoritative discrepancy_count independently of the empty summary issues collection. Five new regression cases failed before the fix and all eight overview tests passed afterward. Corrected working validation passed 539 web unit tests, formatting, web lint/types, docs, production build and three focused API browser viewport checks. The first focused browser attempt exposed a fixture count assumption (standalone 2 versus full-sequence 0); the corrected assertion compares the UI to the actual API count. Fresh immutable validation and acceptance evidence for the corrected source remain required; GitHub Actions is owner-deferred."
   }
 }

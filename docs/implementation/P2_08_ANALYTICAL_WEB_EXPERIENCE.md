@@ -2,8 +2,9 @@
 
 Implementation is in progress from P207 closure 7d3a5f5. P207 retains its
 [separate local acceptance](evidence/phase-2-p2-07-03c3c5b.json). Generated
-contracts and source are integrated; P208 acceptance, feature-level visual
-review and final same-source evidence remain pending. GitHub Actions is deferred
+contracts and source are integrated. The first immutable full gate passed, but
+feature-level visual review found an overview defect. Its correction is locally
+tested; P208 acceptance and final same-source evidence remain pending. GitHub Actions is deferred
 by the owner. P209 and P210 remain required; Phase 3 is outside this assignment.
 
 The [accepted web architecture](../architecture/PHASE_2_WEB_INFORMATION_ARCHITECTURE.md)
@@ -86,6 +87,12 @@ NumberValue preserves the server's original decimal string in its canonical
 attribute, tooltip and assistive text. Currency comes from each metric. Missing
 dividend quantity remains unavailable and never becomes zero.
 
+Reconciliation status and discrepancy count are independent. The overview keeps
+the actual status, including unreconciled, partial and not evaluated, and displays
+the summary's authoritative discrepancy_count. The embedded issues list is empty
+because records are paged separately; its length is not a count. Zero records do
+not imply reconciliation or justify a claim that open discrepancies exist.
+
 Snapshot charts use UTC observation times, explicit zero-inclusive value axes,
 gap separation and an accessible table containing the original values, states
 and source details. Mixed currencies and values that cannot be represented by
@@ -163,3 +170,19 @@ license checks or expiry assertions. All 11 company-report/artifact cases passed
 under coverage afterward. The failed broad receipt is preserved; the 88% working
 coverage aggregate is not immutable acceptance. A fresh full gate at the committed
 source and actual three-viewport image review remain required.
+
+## Validation history before corrected-source acceptance
+
+P2-08 working validation now has 534 passing web unit tests and completed static,
+documentation, dependency/security, generated-contract and six-image build checks.
+A broad coverage attempt passed 2,474 isolated and 376 PostgreSQL cases but exposed
+one frozen report-fixture clock: PostgreSQL correctly rejected an expired worker
+lease. The fixture now advances its operational clock while retaining explicit
+financial cutoffs and future expiry times. All 11 company-report/artifact cases
+then passed under coverage in 330.70 seconds with assertions unchanged. The 88%
+working coverage aggregate includes the failed attempt and focused correction;
+it is not a fresh successful full coverage run. Completed three-viewport followups
+cover intelligence/workspace/X-ray and historical account links. Immutable
+full validation and reviewed acceptance evidence remain pending.
+
+Immutable ff884065e896209563d1966865602e73b3622fd6 passed make validate in 6771.536 seconds: 2474 isolated and 377 PostgreSQL coverage cases, 88% branch-aware coverage, 534 web unit tests, 52 demo plus 102 API browser checks across 39 API process reports, and all static/documentation/security/build gates. ROOT reviewed all 60 feature captures and found one mobile overview defect, so package acceptance remains false. The overview now preserves reconciliation status and uses the authoritative discrepancy_count independently of the empty summary issues collection. Five new regression cases failed before the fix and all eight overview tests passed afterward. Corrected working validation passed 539 web unit tests, formatting, web lint/types, docs, production build and three focused API browser viewport checks. The first focused browser attempt exposed a fixture count assumption (standalone 2 versus full-sequence 0); the corrected assertion compares the UI to the actual API count. Fresh immutable validation and acceptance evidence for the corrected source remain required; GitHub Actions is owner-deferred.

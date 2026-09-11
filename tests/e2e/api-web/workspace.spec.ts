@@ -10,6 +10,7 @@ import {
 import {
   accountSchema,
   accountSummarySchema,
+  reconciliationSchema,
   type Account,
 } from "@trading212/api-contracts";
 import { z } from "zod";
@@ -236,6 +237,7 @@ test("Back during a pending account navigation restores the earlier account befo
 
 test("all portfolio sections remain accessible at the configured viewport", async ({
   page,
+  request,
 }, info) => {
   test.setTimeout(360_000);
   const paths = [
@@ -287,6 +289,31 @@ test("all portfolio sections remain accessible at the configured viewport", asyn
       overflow.width,
       path + " " + JSON.stringify(overflow),
     ).toBeLessThanOrEqual(1);
+    if (path === "/") {
+      const response = await request.get(
+        api + "/accounts/" + primary + "/reconciliation",
+      );
+      expect(response.status()).toBe(200);
+      const reconciliation = reconciliationSchema.parse(await response.json());
+      expect(reconciliation.status).toBe("unreconciled");
+      expect(reconciliation.issues).toEqual([]);
+      const discrepancyText =
+        reconciliation.discrepancy_count === 1
+          ? "1 discrepancy record."
+          : reconciliation.discrepancy_count + " discrepancy records.";
+      const mobileTrust = page.locator(".mobile-trust-summary");
+      const desktopTrust = page.locator(".trust-rail");
+      for (const panel of [mobileTrust, desktopTrust]) {
+        await expect(panel).toContainText("Unreconciled");
+        await expect(panel).toContainText(discrepancyText);
+      }
+      await expect(
+        info.project.use.isMobile ? mobileTrust : desktopTrust,
+      ).toBeVisible();
+      await expect(
+        page.getByText("Open discrepancies are present.", { exact: true }),
+      ).toHaveCount(0);
+    }
     await keyboardClearance(page);
     if (
       ["/", "/snapshots", "/quality", "/synchronization", "/settings"].includes(

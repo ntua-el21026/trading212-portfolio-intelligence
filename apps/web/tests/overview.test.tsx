@@ -53,6 +53,81 @@ describe("Phase 1 overview", () => {
     );
   });
 
+  it.each([
+    {
+      status: "unreconciled",
+      count: 0,
+      label: "Unreconciled",
+      text: "0 discrepancy records.",
+    },
+    {
+      status: "unreconciled",
+      count: 1,
+      label: "Unreconciled",
+      text: "1 discrepancy record.",
+    },
+    {
+      status: "unreconciled",
+      count: 251,
+      label: "Unreconciled",
+      text: "251 discrepancy records.",
+    },
+    {
+      status: "partial",
+      count: 0,
+      label: "Partial",
+      text: "0 discrepancy records.",
+    },
+    {
+      status: "not_evaluated",
+      count: 0,
+      label: "Not Evaluated",
+      text: "0 discrepancy records.",
+    },
+  ])(
+    "keeps $status status distinct from $count discrepancy records in both layouts",
+    async ({ status, count, label, text }) => {
+      const { Overview } = await import("../components/overview");
+      const bundle = getDemoPortfolio();
+      const { container } = render(
+        <Overview
+          bundle={{
+            ...bundle,
+            reconciliation: {
+              ...bundle.reconciliation,
+              status,
+              // The API summary does not embed the separately paged issue records.
+              issues: [],
+              discrepancy_count: count,
+            },
+          }}
+        />,
+      );
+      const mobile = container.querySelector<HTMLElement>(
+        ".mobile-trust-summary",
+      );
+      expect(mobile).not.toBeNull();
+      expect(
+        within(mobile!).getByText(label, { exact: true }),
+      ).toBeInTheDocument();
+      expect(
+        within(mobile!).getByText(text, { exact: true }),
+      ).toBeInTheDocument();
+      const desktop = screen.getByRole("complementary", {
+        name: "Portfolio trust details",
+      });
+      expect(
+        within(desktop).getByText(label, { exact: true }),
+      ).toBeInTheDocument();
+      expect(
+        within(desktop).getByText(text, { exact: true }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText("Open discrepancies are present."),
+      ).not.toBeInTheDocument();
+    },
+  );
+
   it("labels a bounded allocation preview when more than 50 rows exist", async () => {
     const previous = process.env.PORTFOLIO_E2E_LARGE_COLLECTIONS;
     process.env.PORTFOLIO_E2E_LARGE_COLLECTIONS = "1";

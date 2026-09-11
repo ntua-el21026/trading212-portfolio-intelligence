@@ -12,17 +12,25 @@
 
 P2-08 implementation has started from P207 closure `7d3a5f59f30fe934953c7e3ab27d8e6ae48c1ca1`. Account navigation, analytical presentation, company exposure/report binding and intelligence-quality changes are integrated for validation. Contracts have been generated; no P208 acceptance is claimed. Seven packages remain locally accepted. GitHub Actions stays owner-deferred, and P209/P210 remain required.
 
-P2-08 working validation now has 534 passing web unit tests and completed static,
-documentation, dependency/security, generated-contract and six-image build checks.
-A broad coverage attempt passed 2,474 isolated and 376 PostgreSQL cases but exposed
-one frozen report-fixture clock: PostgreSQL correctly rejected an expired worker
-lease. The fixture now advances its operational clock while retaining explicit
-financial cutoffs and future expiry times. All 11 company-report/artifact cases
-then passed under coverage in 330.70 seconds with assertions unchanged. The 88%
-working coverage aggregate includes the failed attempt and focused correction;
-it is not a fresh successful full coverage run. Completed three-viewport followups
-cover intelligence/workspace/X-ray and historical account links. Immutable
-full validation and reviewed acceptance evidence remain pending.
+P2-08 implementation commit ff884065e896209563d1966865602e73b3622fd6 passed
+the complete local gate in 6,771.536 seconds, including fresh 88% branch-aware
+coverage (2,474 isolated and 377 PostgreSQL cases), 534 web unit tests and 154
+browser checks (52 demo, 102 API across 39 process reports). ROOT then reviewed
+all 60 feature captures and found a mobile overview defect: an unreconciled
+status with zero discrepancy records incorrectly claimed open discrepancies.
+The desktop summary also counted the empty embedded issues collection instead
+of the authoritative discrepancy count.
+
+The correction preserves the actual status and canonical count in both layouts.
+Five new regression cases failed before the fix; all eight overview tests and
+all 539 web unit tests now pass. Three focused API browser viewport checks,
+production build, formatting, web lint/types and documentation checks passed.
+The first focused browser attempt exposed a test fixture assumption: standalone
+fixtures contain two discrepancy records, while the full workspace sequence
+reaches zero. The corrected browser assertion compares the UI to the actual API
+response. Fresh immutable validation and acceptance evidence remain required.
+The preceding failed clock-fixture coverage attempt is retained as historical
+evidence in the P208 implementation document.
 
 P2-07 has scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`: versioned alert rules, immutable scheduled evaluation, event deduplication/cooldown, authorized lifecycle/history, bounded delivery and canonical alerts exports. Phase 2 is in progress: 7/10 packages (70%), 19/29 local rows and 30/40 scenarios complete. S31 includes both report/alert durable recovery and actual Redis-loss republication of the same pending alert input. Shared API/DATA/SEC/OPS and S32/S34/S38 predicates remain partial; At the P207 acceptance boundary, P2-08 through P2-10 and Phase 3 were `not_started`. GitHub Actions is owner-deferred and unverified; no CI pass or final Phase 2 release is claimed.
 

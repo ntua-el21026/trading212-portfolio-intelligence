@@ -6,6 +6,9 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Phase 2 analytical web experience (in progress)
 
+- Correct overview reconciliation summaries to retain the actual status and
+  authoritative discrepancy count, including unreconciled results with zero
+  records; separately paged issues no longer produce a misleading desktop count.
 - Add shared account selection, durable analytical links, history navigation and
   protection against stale command continuations replacing a newer route.
 - Preserve exact financial values and source details with accessible snapshot

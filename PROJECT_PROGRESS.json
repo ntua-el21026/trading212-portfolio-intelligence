@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-11",
+  "updated_at": "2026-09-11T22:19:34.386670+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -4419,7 +4419,7 @@
         "starting_sha": "7d3a5f59f30fe934953c7e3ab27d8e6ae48c1ca1",
         "specification": "docs/implementation/P2_08_ANALYTICAL_WEB_EXPERIENCE.md",
         "acceptance_claim": false,
-        "local_validation": "Working validation: 534 web unit tests passed; broad coverage attempt had 2474 isolated passes and 376 PostgreSQL passes with one report-fixture clock failure. The corrected shared operational clock passed all 11 company-report/artifact cases under coverage; unchanged financial cutoff/license/expiry assertions. All remaining static, documentation, dependency/security, generated-contract and six-image build checks passed. The 88% working coverage aggregate includes the preserved failed attempt and focused correction; fresh immutable make validate and reviewed browser evidence remain required.",
+        "local_validation": "Immutable ff884065e896209563d1966865602e73b3622fd6 passed make validate in 6771.536 seconds: 2474 isolated and 377 PostgreSQL coverage cases, 88% branch-aware coverage, 534 web unit tests, 52 demo plus 102 API browser checks across 39 API process reports, and all static/documentation/security/build gates. ROOT reviewed all 60 feature captures and found one mobile overview defect, so package acceptance remains false. The overview now preserves reconciliation status and uses the authoritative discrepancy_count independently of the empty summary issues collection. Five new regression cases failed before the fix and all eight overview tests passed afterward. Corrected working validation passed 539 web unit tests, formatting, web lint/types, docs, production build and three focused API browser viewport checks. The first focused browser attempt exposed a fixture count assumption (standalone 2 versus full-sequence 0); the corrected assertion compares the UI to the actual API count. Fresh immutable validation and acceptance evidence for the corrected source remain required; GitHub Actions is owner-deferred.",
         "scope": "Account navigation and command isolation, exact accessible financial presentation, intelligence quality projection, company actual-weight and report source binding, and all eighteen analytical experiences."
       }
     },

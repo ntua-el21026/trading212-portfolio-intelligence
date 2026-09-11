@@ -71,7 +71,7 @@ export function TrustRail({
           <p>
             {reconciled
               ? "All covered positions and cash are accounted for."
-              : `${reconciliation.issues.length} open discrepancy record${reconciliation.issues.length === 1 ? "" : "s"}.`}
+              : `${reconciliation.discrepancy_count} discrepancy record${reconciliation.discrepancy_count === 1 ? "" : "s"}.`}
           </p>
         </div>
       </section>
