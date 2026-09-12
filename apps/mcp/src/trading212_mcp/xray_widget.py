@@ -22,26 +22,29 @@ _SCRIPT = r"""
 (() => {
   "use strict";
   const byId = (id) => document.getElementById(id);
+  const record = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+  const records = (value, maximum) => Array.isArray(value) && value.length <= maximum && value.every(record);
   const text = (value, maximum=240) => typeof value === "string" && value.length <= maximum ? value : "Unavailable";
   const count = (value) => Number.isSafeInteger(value) && value >= 0 && value <= 100000 ? String(value) : "Unavailable";
   const decimal = (value) => typeof value === "string" && /^-?(?:0|[1-9][0-9]{0,19})(?:\.[0-9]{1,18})?$/.test(value) ? value : "Unavailable";
   const metric = (value) => {
-    if (!value || !["available", "unavailable"].includes(value.availability)) return "Unavailable";
-    if (value.value === null) return `Unavailable: ${text(value.reason)}`;
+    if (!value || !["available", "unavailable"].includes(value.availability) || !["exact", "lower_bound"].includes(value.bound)) return "Unavailable";
+    if (value.availability === "unavailable" || value.value == null) return `Unavailable: ${text(value.reason)}; ${text(value.quality,30)}`;
     const raw = value.value;
-    const display = typeof raw === "string" ? decimal(raw) : raw && /^[A-Z]{3}$/.test(raw.currency) ? `${decimal(raw.amount)} ${raw.currency}` : "Unavailable";
-    return `${display}${value.bound === "lower_bound" ? " (lower bound)" : ""}${value.positive_below_quantum ? " (positive below display precision)" : ""}; ${text(value.quality,30)}`;
+    const display = typeof raw === "string" ? decimal(raw) : raw && typeof raw.currency === "string" && /^[A-Z]{3}$/.test(raw.currency) ? `${decimal(raw.amount)} ${raw.currency}` : "Unavailable";
+    return `${display}${value.bound === "lower_bound" ? " (lower bound)" : ""}${value.positive_below_quantum === true ? " (positive below display precision)" : ""}; ${text(value.quality,30)}`;
   };
   const render = (envelope) => {
     byId("rows").replaceChildren(); byId("sources").replaceChildren(); byId("content").hidden = true;
     const data = envelope?.data;
     const overlap = data?.view === "mcp_top_pair";
     const items = overlap ? data.common_entities : data?.exposures?.items;
-    if (envelope?.error || !data?.context || !data?.summary || !Array.isArray(items) || items.length > 100 || (!overlap && data.view !== "exposures")) {
+    if (envelope?.error || !record(data?.context) || !record(data?.summary) || !records(items, overlap ? 50 : 100) || (!overlap && data.view !== "exposures")) {
       byId("status").textContent = "X-ray data is unavailable. The conversation remains usable."; return;
     }
     const context = data.context;
     byId("status").textContent = `Quality: ${text(data.summary.total?.quality,30)}. Access: ${text(context.access?.reproducibility,30)}.`;
+    byId("currency").textContent = text(context.reporting_currency,3);
     byId("valuation").textContent = text(context.valuation_at,40);
     byId("cutoff").textContent = text(context.source_cutoff_at,40);
     byId("quality-at").textContent = text(context.quality_evaluated_at,40);
@@ -76,28 +79,43 @@ _SCRIPT = r"""
       byId("rows").append(row);
     }
     const selection = envelope.selection;
-    byId("selection").textContent = Number.isSafeInteger(selection?.total) && Number.isSafeInteger(selection?.returned) && Number.isSafeInteger(selection?.omitted)
+    byId("selection").textContent = Number.isSafeInteger(selection?.total) && selection.total >= 0 && Number.isSafeInteger(selection?.returned) && selection.returned === items.length && selection.returned <= selection.total && Number.isSafeInteger(selection?.omitted) && selection.omitted === selection.total - selection.returned
       ? `${selection.returned} returned of ${selection.total}; ${selection.omitted} not in this response.` : "Selection counts unavailable.";
-    byId("warnings").textContent = Array.isArray(context.warnings) && context.warnings.length <= 64
+    byId("warnings").textContent = records(context.warnings, 64)
       ? context.warnings.map((warning) => text(warning.code)).join("; ") || "No reported warnings." : "Warnings unavailable.";
     if (Number.isSafeInteger(context.warning_omitted_count) && context.warning_omitted_count > 0)
       byId("warnings").textContent += ` ${context.warning_omitted_count} additional warnings omitted from the preview.`;
-    if (Array.isArray(context.sources) && context.sources.length <= 64) {
+    if (records(context.sources, 64)) {
       for (const source of context.sources) {
         const item = document.createElement("li");
         item.textContent = `${text(source.kind,40)}: ${text(source.provider_name)}; source ${text(source.source_at,40)}; confidence ${source.confidence === null ? "unknown" : decimal(source.confidence)}; ${text(source.quality,30)}`;
         byId("sources").append(item);
       }
     }
-    byId("source-count").textContent = Number.isSafeInteger(context.source_count) && Number.isSafeInteger(context.source_omitted_count)
+    byId("source-count").textContent = Number.isSafeInteger(context.source_count) && context.source_count >= 0 && Number.isSafeInteger(context.source_omitted_count) && context.source_omitted_count >= 0 && context.source_omitted_count <= context.source_count
       ? `${context.source_count} pinned source references; ${context.source_omitted_count} omitted from the preview.` : "Source counts unavailable.";
     byId("content").hidden = false;
   };
-  const update = (result) => render(result?.structuredContent || result?.structured_content || result);
+  const update = (result) => {
+    // Host notifications are untrusted presentation input, even with a valid sender.
+    try {
+      render(result?.isError || result?.is_error ? null : result?.structuredContent ?? result?.structured_content ?? result);
+    } catch (_) {
+      render(null);
+    }
+  };
+  const pending = (cancelled = false) => {
+    render(null);
+    byId("status").textContent = cancelled
+      ? "Tool execution was cancelled. No current result is displayed."
+      : "Waiting for the authorized tool result. Input arguments are not results.";
+  };
   window.addEventListener("message", (event) => {
     if (event.source !== window.parent || event.data?.jsonrpc !== "2.0") return;
-    if (event.data.method === "ui/notifications/tool-result") update(event.data.params);
-    if (event.data.id === "xray-initialize" && !event.data.error) window.parent.postMessage({jsonrpc:"2.0",method:"ui/notifications/initialized",params:{}},"*");
+    if (event.data.id === undefined && ["ui/notifications/tool-input", "ui/notifications/tool-input-partial"].includes(event.data.method)) pending();
+    if (event.data.id === undefined && event.data.method === "ui/notifications/tool-cancelled") pending(true);
+    if (event.data.id === undefined && event.data.method === "ui/notifications/tool-result") update(event.data.params);
+    if (event.data.id === "xray-initialize" && !event.data.method && record(event.data.result) && !event.data.error) window.parent.postMessage({jsonrpc:"2.0",method:"ui/notifications/initialized",params:{}},"*");
   }, {passive:true});
   if (window.openai?.toolOutput) update(window.openai.toolOutput);
   window.parent.postMessage({jsonrpc:"2.0",id:"xray-initialize",method:"ui/initialize",params:{
@@ -124,11 +142,11 @@ XRAY_WIDGET_HTML = f"""<!doctype html>
 <p id="status" role="status">Waiting for authorized X-ray data.</p><section id="content" hidden>
 <dl><dt>Portfolio value</dt><dd id="total"></dd><dt>Known company coverage ratio</dt><dd id="coverage"></dd>
 <dt>Unresolved ratio</dt><dd id="unresolved"></dd><dt>Duplicated exposure ratio</dt><dd id="duplication"></dd><dt>Company HHI</dt><dd id="hhi"></dd>
-<dt>Valuation</dt><dd id="valuation"></dd><dt>Source cutoff</dt><dd id="cutoff"></dd><dt>Quality assessed</dt><dd id="quality-at"></dd><dt>Method</dt><dd id="method"></dd><dt>Result digest</dt><dd id="digest"></dd></dl>
+<dt>Reporting currency</dt><dd id="currency"></dd><dt>Valuation</dt><dd id="valuation"></dd><dt>Source cutoff</dt><dd id="cutoff"></dd><dt>Quality assessed</dt><dd id="quality-at"></dd><dt>Method</dt><dd id="method"></dd><dt>Result digest</dt><dd id="digest"></dd></dl>
 <h2>Valuation and source quality</h2><p>Quality measures overlap; do not add them to portfolio value.</p>
 <dl><dt>Valued original roots</dt><dd id="valued-roots"></dd><dt>Direct valuation coverage</dt><dd id="direct-coverage"></dd>
 <dt>Exposure using inferred mappings</dt><dd id="inferred-value"></dd><dt>Exposure using stale sources</dt><dd id="stale-value"></dd></dl>
 <section id="pair" hidden><h2 id="pair-title"></h2><p id="pair-value"></p><p id="pair-coverage"></p><p>Omitted common weight: <span id="omitted-weight"></span></p></section>
-<p id="selection"></p><p id="warnings"></p><div class="table-wrap" tabindex="0" role="region" aria-label="Effective exposure rows">
+<p>Company buckets combine listings of the same company. Totals cover the full authorized scope; a returned page or Top sample is not a new total.</p><p id="selection"></p><p id="warnings"></p><div class="table-wrap" tabindex="0" role="region" aria-label="Effective exposure rows">
 <table><caption id="caption"></caption><thead><tr><th scope="col">Entity</th><th scope="col" id="first-heading"></th><th scope="col" id="second-heading"></th><th scope="col" id="third-heading"></th></tr></thead><tbody id="rows"></tbody></table></div>
 <h2>Source evidence</h2><p id="source-count"></p><ul id="sources"></ul></section></main><script>{_SCRIPT}</script></body></html>"""

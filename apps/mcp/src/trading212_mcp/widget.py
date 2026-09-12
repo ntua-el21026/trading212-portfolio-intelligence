@@ -3,6 +3,9 @@
 
 from __future__ import annotations
 
+import base64
+import hashlib
+
 SNAPSHOT_WIDGET_URI = "ui://trading212-portfolio/snapshot-v1.html"
 SNAPSHOT_WIDGET_MIME = "text/html;profile=mcp-app"
 
@@ -63,7 +66,7 @@ SNAPSHOT_WIDGET_HTML = r"""
     .badge[data-state="stale"], .badge[data-state="partial"], .badge[data-state="unreconciled"], .badge[data-state="failed"] { color: var(--warning); }
     .hero { margin: 22px 0 16px; }
     .hero-label { color: var(--muted); font-size: 13px; }
-    .hero-value { margin-top: 3px; font-size: clamp(30px, 8vw, 46px); line-height: 1.05; letter-spacing: -0.045em; font-weight: 720; }
+    .hero-value { overflow-wrap: anywhere; margin-top: 3px; font-size: clamp(30px, 8vw, 46px); line-height: 1.05; letter-spacing: -0.045em; font-weight: 720; }
     .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
     .metric { min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: 12px; }
     .metric dt { color: var(--muted); font-size: 12px; }
@@ -125,38 +128,35 @@ SNAPSHOT_WIDGET_HTML = r"""
       const qualityBadge = byId("quality-badge");
       const syntheticBadge = byId("synthetic-badge");
       let rpcId = 0;
+      let receivedToolNotification = false;
       const pending = new Map();
 
       const presentMoney = (metric, fallbackCurrency) => {
-        if (!metric || metric.value === null || metric.value === undefined) return "Unavailable";
-        const currency = metric.reporting_currency || fallbackCurrency;
-        const text = String(metric.value);
-        if (!/^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$/.test(text)) return "Unavailable";
-        const numeric = Number(text);
-        if (!Number.isFinite(numeric) || !currency) return `${text} ${currency || ""}`.trim();
-        try {
-          return new Intl.NumberFormat(document.documentElement.lang || "en", {
-            style: "currency",
-            currency,
-            maximumFractionDigits: 2,
-          }).format(numeric);
-        } catch (_) {
-          return `${text} ${currency}`;
-        }
+        if (!metric || metric.availability === "unavailable" || typeof metric.value !== "string") return "Unavailable";
+        const currency = metric.reporting_currency ?? fallbackCurrency;
+        const value = metric.value;
+        // Phase 1 DecimalString does not impose the Phase 2 q18 wire restriction.
+        // This is a display bound only; the structured tool result remains unchanged.
+        if (value.length > 512) return "Value exceeds widget display limit; see the structured tool result.";
+        if (!/^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$/.test(value) ||
+            typeof currency !== "string" || !/^[A-Z]{3}$/.test(currency)) return "Unavailable";
+        const reason = typeof metric.unavailable_reason === "string" && metric.unavailable_reason.length <= 240
+          ? metric.unavailable_reason : "coverage detail unavailable";
+        return `${value} ${currency}${metric.availability === "partial" ? ` (partial: ${reason})` : ""}`;
       };
 
-      const presentTime = (value) => {
-        const timestamp = new Date(value);
-        if (Number.isNaN(timestamp.getTime())) return "—";
-        return new Intl.DateTimeFormat(document.documentElement.lang || "en", {
-          dateStyle: "medium",
-          timeStyle: "short",
-        }).format(timestamp);
-      };
+      // Keep the exact source instant and explicit UTC/offset visible.
+      const presentTime = (value) => typeof value === "string" && value.length <= 40 &&
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/.test(value)
+          ? value : "Unavailable";
 
       const render = (envelope) => {
-        if (!envelope || envelope.error || !envelope.data) {
-          empty.textContent = envelope?.error?.message || "Portfolio snapshot data is unavailable.";
+        qualityBadge.hidden = true;
+        syntheticBadge.hidden = true;
+        qualityBadge.textContent = "";
+        delete qualityBadge.dataset.state;
+        if (!envelope || envelope.error || !envelope.data || typeof envelope.data !== "object" || Array.isArray(envelope.data)) {
+          empty.textContent = "Portfolio snapshot data is unavailable.";
           empty.hidden = false;
           content.hidden = true;
           return;
@@ -169,19 +169,23 @@ SNAPSHOT_WIDGET_HTML = r"""
         byId("contributions-value").textContent = presentMoney(data.net_contributions, currency);
         byId("as-of").textContent = `As of ${presentTime(envelope.as_of || data.valuation_at)}`;
 
-        const quality = envelope.data_quality?.state || "unknown";
+        const state = envelope.data_quality?.state;
+        const quality = typeof state === "string" && state.length <= 30 ? state : "unknown";
         qualityBadge.textContent = `Quality: ${quality}`;
         qualityBadge.dataset.state = quality;
         qualityBadge.hidden = false;
-        syntheticBadge.hidden = !data.synthetic_data;
-        byId("quality-note").textContent = data.quality_disclosure || "Data quality is shown explicitly.";
+        syntheticBadge.hidden = data.synthetic_data !== true;
+        byId("quality-note").textContent = typeof data.quality_disclosure === "string" && data.quality_disclosure.length <= 4096 ? data.quality_disclosure : "Data quality disclosure is unavailable.";
         empty.hidden = true;
         content.hidden = false;
       };
 
       const updateFromToolResult = (result) => {
-        const structured = result?.structuredContent || result?.structured_content || result;
-        render(structured);
+        try {
+          render(result?.isError || result?.is_error ? null : result?.structuredContent ?? result?.structured_content ?? result);
+        } catch (_) {
+          render(null);
+        }
       };
 
       const request = (method, params) => new Promise((resolve, reject) => {
@@ -198,14 +202,23 @@ SNAPSHOT_WIDGET_HTML = r"""
         if (event.source !== window.parent) return;
         const message = event.data;
         if (!message || message.jsonrpc !== "2.0") return;
-        if (message.id !== undefined && pending.has(message.id)) {
+        if (message.id !== undefined && !message.method && pending.has(message.id)) {
           const promise = pending.get(message.id);
           pending.delete(message.id);
           if (message.error) promise.reject(message.error);
           else promise.resolve(message.result);
           return;
         }
-        if (message.method === "ui/notifications/tool-result") {
+        if (message.id === undefined && ["ui/notifications/tool-result", "ui/notifications/tool-input", "ui/notifications/tool-input-partial", "ui/notifications/tool-cancelled"].includes(message.method)) {
+          receivedToolNotification = true;
+        }
+        if (message.id === undefined && ["ui/notifications/tool-input", "ui/notifications/tool-input-partial", "ui/notifications/tool-cancelled"].includes(message.method)) {
+          render(null);
+          empty.textContent = message.method === "ui/notifications/tool-cancelled"
+            ? "Tool execution was cancelled. No current result is displayed."
+            : "Waiting for the authorized tool result. Input arguments are not results.";
+        }
+        if (message.id === undefined && message.method === "ui/notifications/tool-result") {
           updateFromToolResult(message.params);
         }
       }, { passive: true });
@@ -218,10 +231,31 @@ SNAPSHOT_WIDGET_HTML = r"""
         appCapabilities: {},
         protocolVersion: "2026-01-26",
       }).then(() => notify("ui/notifications/initialized", {})).catch(() => {
-        if (window.openai?.toolOutput) updateFromToolResult(window.openai.toolOutput);
+        if (!receivedToolNotification && window.openai?.toolOutput) updateFromToolResult(window.openai.toolOutput);
       });
     })();
   </script>
 </body>
 </html>
 """.strip()
+
+
+# Hash the exact static script/style bytes, including their surrounding whitespace.
+_SCRIPT = SNAPSHOT_WIDGET_HTML.split("<script>", 1)[1].split("</script>", 1)[0]
+_STYLE = SNAPSHOT_WIDGET_HTML.split("<style>", 1)[1].split("</style>", 1)[0]
+
+
+def _hash(value: str) -> str:
+    return base64.b64encode(hashlib.sha256(value.encode()).digest()).decode("ascii")
+
+
+_CSP = (
+    "default-src 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; "
+    "frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; "
+    f"script-src 'sha256-{_hash(_SCRIPT)}'; style-src 'sha256-{_hash(_STYLE)}'"
+)
+SNAPSHOT_WIDGET_HTML = SNAPSHOT_WIDGET_HTML.replace(
+    '  <meta charset="utf-8">',
+    f'  <meta charset="utf-8">\n  <meta http-equiv="Content-Security-Policy" content="{_CSP}">',
+    1,
+)

@@ -400,7 +400,7 @@ class DataQualitySummaryResult(ToolEnvelope[DataQualitySummaryData]):
     pass
 
 
-RESULT_MODELS = {
+RESULT_MODELS: dict[str, type[BaseModel]] = {
     "get_account_summary": AccountSummaryResult,
     "get_portfolio_snapshot": PortfolioSnapshotResult,
     "list_positions": PositionsResult,

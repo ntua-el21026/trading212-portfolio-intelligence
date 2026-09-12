@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from typing import Any, cast
+from typing import Any
 
 import pytest
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import CallToolResult, TextContent
-from pydantic import BaseModel
 from trading212_application.queries import (
     CollectionSnapshotCapacityError,
     PageQuery,
@@ -96,7 +95,7 @@ async def test_each_frozen_tool_returns_schema_valid_structured_content(
 
     assert result.is_error is False
     assert result.structured_content is not None
-    result_model = cast(type[BaseModel], RESULT_MODELS[tool_name])
+    result_model = RESULT_MODELS[tool_name]
     result_model.model_validate(result.structured_content)
     assert result.structured_content["error"] is None
     assert result.structured_content["reporting_currency"] == "EUR"

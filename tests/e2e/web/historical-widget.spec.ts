@@ -23,11 +23,13 @@ const html = execFileSync(
 const known = (value: string | { amount: string; currency: string }) => ({
   value,
   availability: "available",
+  quality: "fresh",
   reason_code: null,
 });
 const unavailable = {
   value: null,
   availability: "unavailable",
+  quality: "partial",
   reason_code: "unavailable_fx",
 };
 const context = {
@@ -103,8 +105,12 @@ test("historical widget preserves exact values, coverage and warnings without ne
       },
     },
   );
-  await expect(page.locator("#primary")).toHaveText(`${amount} EUR`);
-  await expect(page.locator("#secondary")).toHaveText("0.000001 EUR");
+  await expect(page.locator("#primary")).toHaveText(
+    `${amount} EUR; quality fresh`,
+  );
+  await expect(page.locator("#secondary")).toHaveText(
+    "0.000001 EUR; quality fresh",
+  );
   await expect(page.locator("#rows tr")).toHaveCount(2);
   await expect(page.locator("#rows tr").first()).toContainText("0 EUR");
   await expect(page.locator("#rows tr").last()).toContainText(
@@ -194,8 +200,10 @@ test("historical widget rejects untrusted messages and oversized series then ren
       await expect(page.locator("#content")).toBeHidden();
       await expect(page.locator("#status")).toContainText("unavailable");
     } else {
-      await expect(page.locator("#primary")).toHaveText("0.123456789012345678");
-      await expect(page.locator("#secondary")).toHaveText("0");
+      await expect(page.locator("#primary")).toHaveText(
+        "0.123456789012345678; quality fresh",
+      );
+      await expect(page.locator("#secondary")).toHaveText("0; quality fresh");
       await expect(page.locator("#rows tr")).toHaveCount(1);
       await expect(page.locator("#rows tr")).toContainText(
         "1.123456789012345678",

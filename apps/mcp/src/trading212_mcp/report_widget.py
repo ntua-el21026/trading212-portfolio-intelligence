@@ -21,6 +21,8 @@ _SCRIPT = r"""
 (() => {
   "use strict";
   const byId = (id) => document.getElementById(id);
+  const record = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+  const records = (value, maximum) => Array.isArray(value) && value.length <= maximum && value.every(record);
   const states = new Set(["queued", "running", "succeeded", "failed", "expired", "cancelled"]);
   const text = (value, maximum = 120) => typeof value === "string" && value.length <= maximum ? value : "Unavailable";
   const identity = (value) => typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value) ? value : "Unavailable";
@@ -28,11 +30,11 @@ _SCRIPT = r"""
   const render = (envelope) => {
     byId("content").hidden = true;
     byId("pins").replaceChildren(); byId("warnings").replaceChildren();
-    if (!envelope || envelope.error || !envelope.data || envelope.execution_allowed !== false) {
+    if (!envelope || envelope.error || !record(envelope.data) || envelope.execution_allowed !== false) {
       byId("status").textContent = "Report data is unavailable. The conversation remains usable."; return;
     }
     const job = envelope.data, context = job.context;
-    if (!states.has(job.state) || (context === null ? !["expired", "cancelled"].includes(job.state) : (!context || !context.quality || !Array.isArray(context.pins) || context.pins.length > 256 || !Array.isArray(context.quality.warnings) || context.quality.warnings.length > 64))) {
+    if (!states.has(job.state) || (context === null ? !["expired", "cancelled"].includes(job.state) : (!context || !context.quality || !records(context.pins, 256) || !records(context.quality.warnings, 64)))) {
       byId("status").textContent = "The report response does not match its contract."; return;
     }
     byId("status").textContent = `Report state: ${job.state}.`;
@@ -68,12 +70,27 @@ _SCRIPT = r"""
       ? `${omitted} additional warning records are available in the complete authorized manifest.` : "Warning coverage unavailable.";
     byId("content").hidden = false;
   };
-  const update = (result) => render(result?.structuredContent || result?.structured_content || result);
+  const update = (result) => {
+    // Host notifications are untrusted presentation input, even with a valid sender.
+    try {
+      render(result?.isError || result?.is_error ? null : result?.structuredContent ?? result?.structured_content ?? result);
+    } catch (_) {
+      render(null);
+    }
+  };
+  const pending = (cancelled = false) => {
+    render(null);
+    byId("status").textContent = cancelled
+      ? "Tool execution was cancelled. No current result is displayed."
+      : "Waiting for the authorized tool result. Input arguments are not results.";
+  };
   window.addEventListener("message", (event) => {
     if (event.source !== window.parent || !event.data || event.data.jsonrpc !== "2.0") return;
     const message = event.data;
-    if (message.method === "ui/notifications/tool-result") update(message.params);
-    if (message.id === "report-initialize" && !message.error) {
+    if (message.id === undefined && ["ui/notifications/tool-input", "ui/notifications/tool-input-partial"].includes(message.method)) pending();
+    if (message.id === undefined && message.method === "ui/notifications/tool-cancelled") pending(true);
+    if (message.id === undefined && message.method === "ui/notifications/tool-result") update(message.params);
+    if (message.id === "report-initialize" && !message.method && record(message.result) && !message.error) {
       window.parent.postMessage({jsonrpc: "2.0", method: "ui/notifications/initialized", params: {}}, "*");
     }
   }, {passive: true});

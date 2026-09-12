@@ -18,6 +18,21 @@ TOP_LEVEL_SECURITY_SCHEMES_BLOCKER = (
 )
 
 
+class _PrivateArguments(ArgModelBase):
+    # Keep Phase 1 coercion and the SDK's JSON pre-parser unchanged.
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
+
+    @model_validator(mode="before")
+    @classmethod
+    def reject_private_unknown_keys(cls, value: object) -> object:
+        allowed = set(cls.model_fields)
+        allowed.update(field.alias for field in cls.model_fields.values() if field.alias)
+        if isinstance(value, dict) and any(key not in allowed for key in value):
+            # An ordinary extra-field error exposes the caller-controlled field name.
+            raise ValueError("Extra inputs are not permitted.")
+        return value
+
+
 class _StrictTargetArguments(ArgModelBase):
     model_config = ConfigDict(strict=True, extra="forbid", hide_input_in_errors=True)
 
@@ -67,8 +82,9 @@ def finalize_tool_contract(
 
     MCP 2.1.1 builds function-argument Pydantic models with the default
     ``extra=ignore`` behavior. The repository contract is fail-closed, so this
-    pinned adapter rebuilds each generated model with ``extra=forbid`` and
-    publishes the matching schema. It also lets handlers return ``CallToolResult``
+    pinned adapter adds unknown-field rejection and private validation errors
+    without changing legacy coercion. It publishes the matching schema and lets
+    handlers return ``CallToolResult``
     (for concise content and widget-only metadata) while validating structured
     content against the declared result model.
     """
@@ -76,9 +92,11 @@ def finalize_tool_contract(
     if internal is None:  # pragma: no cover - authoring invariant
         raise RuntimeError(f"MCP tool {name!r} was not registered")
 
-    argument_model = internal.fn_metadata.arg_model
-    argument_model.model_config["extra"] = "forbid"
-    argument_model.model_rebuild(force=True)
+    argument_model = create_model(
+        internal.fn_metadata.arg_model.__name__,
+        __base__=(internal.fn_metadata.arg_model, _PrivateArguments),
+    )
+    internal.fn_metadata.arg_model = argument_model
     internal.parameters = argument_model.model_json_schema(by_alias=True)
 
     internal.fn_metadata.output_model = output_model

@@ -1,5 +1,96 @@
 # Phase 1 Validation Report
 
+## P2-09 implementation validation (pending acceptance)
+
+P2-09 implementation is in progress from accepted P208 closure
+`9505e2650aadedd504a0a94117c018b0b7ed153f`. The integrated scope covers the exact
+25-tool MCP registry, private argument errors and five bounded accessible widget
+resources. P209 local acceptance remains pending. Phase 2 retains 8/10 accepted
+packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39
+remain partial; S33 remains pending. P2-10 and Phase 3 remain `not_started`, the
+final Phase 2 release SHA remains null, and GitHub Actions stays owner-deferred.
+
+P208 scoped local acceptance remains bound to source
+`bc21516c51aa5090031b39ea56ded3ca94d657d8` in the unchanged
+[accepted artifact](docs/implementation/evidence/phase-2-p2-08-bc21516.json).
+The older P208 observations below retain their original failed/pending status.
+
+The tests-first privacy regression produced the intended RED against the original
+adapter: nine failures for reflected caller-controlled names/values, 16 passes and
+35 deselections (`p209-private-errors-red-01`, exit 1, 6.354 seconds). The source
+was unchanged during that working-tree gate. The corrected registry gate passed 62 cases, existing MCP compatibility/security
+checks passed 228, and both report/alert PostgreSQL cases passed after two retained
+test-authoring failures. Static checks passed after a result-model type annotation
+and removal of two redundant test casts; both preceding static failures are retained.
+The corrected widget suite passed 74 desktop/mobile cases and the production web
+build; ROOT reviewed the ten widget images, including two corrected planning
+images. Immutable validation and source/image scans remain pending. These focused observations do not
+establish package acceptance.
+
+Retained external task evidence for this regression:
+
+- `gates/p209-private-errors-red-01.json`: SHA-256 `52aed964c9be94230a156f5cca1f7c55af3b08b9a9fe555c88242d9c2675bf3c`.
+- `gates/p209-private-errors-red-01.log`: SHA-256 `6d5abc32b1a670a34e2dd09cbf80a616ff4252b5a1b0233a8a1a1c9bc61752a3`.
+
+The planned widget capture matrix is five resources across the existing desktop
+and mobile projects. Actual passing cases, image identities and human reviews
+must be recorded before they support acceptance; no capture or test count is
+claimed here for an unobserved gate.
+
+## P209 observed focused gates
+
+Each gate below completed on its own unchanged, unaccepted working source based
+on closure `9505e2650aadedd504a0a94117c018b0b7ed153f`. Durations are receipt wall
+times; counts are per-gate populations and must not be summed across reruns.
+
+| Gate | Outcome | Cases | Seconds |
+|---|---|---|---|
+| p209-private-errors-red-01 | failed | 9 failed, 16 passed, 35 deselected | 6.354 |
+| p209-registry-focused-01 | passed | 62 passed | 11.522 |
+| p209-legacy-mcp-focused-01 | passed | 228 passed | 40.642 |
+| p209-durable-mcp-focused-01 | failed | 1 failed, 1 passed | 15.37 |
+| p209-durable-mcp-focused-02 | failed | 1 failed, 1 passed | 17.294 |
+| p209-durable-mcp-focused-03 | passed | 2 passed | 18.326 |
+| p209-static-focused-01 | failed | static checks | 13.167 |
+| p209-static-focused-02 | failed | static checks | 11.702 |
+| p209-static-focused-03 | passed | static checks | 31.338 |
+
+The first durable failure was an incorrect expected idempotency error code; the
+second was a keyword-only constructor misuse in the new test setup. Both test
+corrections preserve canonical production behavior. Static01 found six inferred
+result-model typing errors. The explicit `RESULT_MODELS: dict[str, type[BaseModel]]`
+annotation then exposed two redundant casts in existing gateway tests; static02
+is retained and static03 passed after their removal. No data or wire change was
+introduced by these typing corrections.
+
+Exact external receipt/log hashes (relative names refer to retained task evidence):
+
+- `gates/p209-registry-focused-01.json`: SHA-256 `9227408284df4332e5af2155bf78cac9c7b8a41259789b01e1bbc33c928c202d`; log SHA-256 `0370c372e3c788a33888eb0ac4709a71e2450aba49a6ab2604405f39942b13ef`.
+- `gates/p209-legacy-mcp-focused-01.json`: SHA-256 `d3bffc5739a6cf1255251aed50ffd2ea62596e941fe3651c221620bd3d687e07`; log SHA-256 `01da6a62ff8c20a50210cbfdf0fdd227e4feac98d13491c6e7553c00895cd54a`.
+- `gates/p209-durable-mcp-focused-01.json`: SHA-256 `dbef57ec14d69ab11c470ddca605bd03d670727247f5d42d92dd962fa77268aa`; log SHA-256 `476796587b7b5220896f1beceba432f0c406902765e2ecb905514f9dc422e3b1`.
+- `gates/p209-durable-mcp-focused-02.json`: SHA-256 `6dd299a7e266439cf5d54a0f0582a150189db21d82184fc3303dae9f6ef3ba9a`; log SHA-256 `a2726530a97f678306c30ff238b1e4c106e4a798c58900beec94812c13cda244`.
+- `gates/p209-durable-mcp-focused-03.json`: SHA-256 `d94567d1e8e67d0ccc3af5aff6237480b917b6584257b15499e4bcf75d98dae9`; log SHA-256 `1e0521de15ac45db832e155ca7c52146a50f6938a05bb177f3d98fe89d2dcd06`.
+- `gates/p209-static-focused-01.json`: SHA-256 `3072cd80758970bb714b623216a4172bbe6c7ab60c8fe59c66e88bafa75f4713`; log SHA-256 `58328266c59c7016ac28983716c12f346211ae808b7f8e9cd819f75d98ba11cf`.
+- `gates/p209-static-focused-02.json`: SHA-256 `d9e0b799974527b552e28bc2f37eb0cff848b922b71777357a4cda12d1c0b0cc`; log SHA-256 `52a0eae04bb433bf0cbf1785c5c8dc238fce0818e45584c93cf7951b2bcbc6a5`.
+- `gates/p209-static-focused-03.json`: SHA-256 `61088708b69e3bfefd334262f675c35ece925110963f083ad7b227899f9b1d6a`; log SHA-256 `92595590e67d2167e2c507c44e86e735eb12d16507ad479bd0233ef81090883b`.
+
+## P209 widget correction and review
+
+The first focused browser/build gate passed 74 cases in 80.034 seconds, but ROOT
+rejected its mobile planning image because the Recommended value heading painted
+into the Post-plan value column. The corrected CSS permits long headers to wrap;
+a rendered text-bound assertion now checks headings in every widget CSP case.
+The second gate passed all 74 cases and the production web build in 75.866 seconds.
+ROOT inspected the two corrected planning images; the other eight PNGs match the
+previously inspected images byte for byte. These remain working-source observations.
+
+- `gates/p209-focused-widgets-01.json`: SHA-256 `67fd609ad0c769d1aa01bae9af15c587de31fceec3081d39ebd923ddf1112e7d`.
+- `gates/p209-focused-widgets-02.json`: SHA-256 `708893821ae7bd4bf0032d4f03ccb81d77a244f581aca7feb9e2fcbaf95fbd70`.
+- `p209-focused-widget-visual-review-01.json`: SHA-256 `96973ecbcab89f854feaaf41a920b77d66c36f221492d937e48d291ecd179ef5`.
+- `p209-focused-widget-visual-review-02.json`: SHA-256 `f1b70aafe818a67a71d48323d9d53e91626ce09b7c7027cb584724fcb192a2e8`.
+
+## Retained Phase 1 acceptance
+
 **Corrected Phase 1 acceptance (2026-09-07):** `99df47b6633791c3900a52f46f56d48be922a436`
 passed all local gates and all three workflows: Quality `34121465069` (attempt 2),
 Security `34121465107`, Documentation `34121465071`. Python: 371 isolated plus 73

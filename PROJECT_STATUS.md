@@ -10,6 +10,31 @@
 
 ## Current state
 
+P2-09 implementation is in progress from accepted P208 closure
+`9505e2650aadedd504a0a94117c018b0b7ed153f`. The integrated scope covers the exact
+25-tool MCP registry, private argument errors and five bounded accessible widget
+resources. P209 local acceptance remains pending. Phase 2 retains 8/10 accepted
+packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39
+remain partial; S33 remains pending. P2-10 and Phase 3 remain `not_started`, the
+final Phase 2 release SHA remains null, and GitHub Actions stays owner-deferred.
+
+The tests-first privacy regression produced the intended RED against the original
+adapter: nine failures for reflected caller-controlled names/values, 16 passes and
+35 deselections (`p209-private-errors-red-01`, exit 1, 6.354 seconds). The source
+was unchanged during that working-tree gate. The corrected registry gate passed 62 cases, existing MCP compatibility/security
+checks passed 228, and both report/alert PostgreSQL cases passed after two retained
+test-authoring failures. Static checks passed after a result-model type annotation
+and removal of two redundant test casts; both preceding static failures are retained.
+The corrected widget suite passed 74 desktop/mobile cases and the production web
+build; ROOT reviewed the ten widget images, including two corrected planning
+images. Immutable validation and source/image scans remain pending. These focused observations do not
+establish package acceptance.
+
+See [P209 registry scope and validation](docs/integrations/P2_09_MCP_REGISTRY_ACCEPTANCE.md)
+and [widget presentation boundaries](apps/mcp/WIDGET_PRESENTATION.md).
+
+### Historical P208 scoped closure
+
 P2-08 has scoped local acceptance at `bc21516c51aa5090031b39ea56ded3ca94d657d8` for P2-WEB-001 and P2-WEB-002. Phase 2 remains in progress: 8/10 packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-09 and P2-10 remain required and `not_started`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred, not passed. The final Phase 2 release SHA remains null.
 
 [P208 scoped evidence](docs/implementation/evidence/phase-2-p2-08-bc21516.json); finalized 2026-09-12T14:12:14.532432+00:00. The finalized artifact records 2474 isolated and 377 service-backed Python tests in the full gate, and 157 browser cases across its supplied reports. These are recorded populations, not a new aggregate test count. Actual feature, browser and visual-review bindings remain in the artifact.

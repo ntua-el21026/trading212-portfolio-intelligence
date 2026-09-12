@@ -13,7 +13,6 @@ import pytest
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import CallToolResult
-from pydantic import BaseModel
 from trading212_application import targets as app
 from trading212_application.queries import CollectionSnapshotCapacityError, CursorValidationError
 from trading212_application.views import Page
@@ -133,7 +132,7 @@ async def call(server: MCPServer[Any], name: str, arguments: dict[str, Any]) -> 
     result = await server.call_tool(name, arguments)
     assert isinstance(result, CallToolResult)
     assert result.structured_content is not None
-    cast(type[BaseModel], RESULT_MODELS[name]).model_validate(result.structured_content)
+    RESULT_MODELS[name].model_validate(result.structured_content)
     return result
 
 

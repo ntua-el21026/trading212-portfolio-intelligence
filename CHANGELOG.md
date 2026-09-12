@@ -4,7 +4,24 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
-### Phase 2 analytical web experience (scoped local acceptance)
+### Phase 2 MCP registry and widgets (implementation in progress)
+
+- Harden argument-validation errors across the exact 25-tool MCP registry while
+  preserving the original nine tools' accepted input coercion and response
+  contracts. Retain the actual tests-first privacy RED and subsequent registry,
+  compatibility, durable-service and static passes. Preserve both durable-test
+  and both static-typing failures with their corrections. Package acceptance
+  awaits immutable validation and scans. Focused browser/build checks passed after
+  correcting mobile planning heading overlap and reviewing the captured images.
+- Present canonical snapshot, manual plan, performance/comparison, X-ray and
+  report-status output through five bounded static resources with explicit
+  quality states, text-only rendering, restrictive CSP and keyboard access.
+- Begin P209 after accepted P208 closure `9505e2650aadedd504a0a94117c018b0b7ed153f`.
+  The ledger remains 8/10 packages, 21/29 local rows and 30/40 scenarios complete.
+  P210 and Phase 3 remain not started; GitHub Actions is owner-deferred and the
+  final Phase 2 release SHA remains null.
+
+### Phase 2 analytical web experience (historical scoped local acceptance)
 
 P2-08 has scoped local acceptance at `bc21516c51aa5090031b39ea56ded3ca94d657d8` for P2-WEB-001 and P2-WEB-002. Phase 2 remains in progress: 8/10 packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-09 and P2-10 remain required and `not_started`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred, not passed. The final Phase 2 release SHA remains null.
 
