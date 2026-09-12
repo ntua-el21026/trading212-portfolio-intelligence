@@ -27,6 +27,7 @@ from trading212_application.planning_jobs import PlanTaskMessage
 from trading212_domain import CurrencyCode, build_synthetic_identity
 from trading212_domain import historical as h
 from trading212_domain import reports as r
+from trading212_domain import xray as xd
 from trading212_domain.historical_results import (
     HistoricalCalculation,
     HistoricalObservationUse,
@@ -222,6 +223,95 @@ async def _snapshot_parity(
         assert row[name].value == metric.value
         assert row[name].currency == CurrencyCode(metric.currency)
         assert (row[name].value is None) == (row[name].state is r.CellState.UNAVAILABLE)
+
+
+async def _xray_path_parity(case: ReportCase, report: DownloadedReport, run_id: UUID) -> None:
+    paths = await case.base.service.get_effective_exposure(
+        case.principal,
+        str(case.account_id),
+        query=xray.EffectiveExposureQuery(
+            request=case.base.request(str(run_id)), options=xray.Paths(), limit=100
+        ),
+    )
+    assert isinstance(paths, xray.PathsView)
+    assert paths.context.run_id == str(run_id)
+    assert paths.paths.next_cursor is None
+    rows = report.rows(r.ReportTableKey.XRAY_PATHS)
+    assert len(rows) == paths.paths.total == len(paths.paths.items) > 0
+    expected_by_key = {path.key: path for path in paths.paths.items}
+    assert len(expected_by_key) == len(rows)
+    assert {row["key"].value for row in rows} == set(expected_by_key)
+    relations = report.rows(r.ReportTableKey.XRAY_PATH_RELATIONS)
+    compact_pdf = "".join(report.pdf_text.split())
+    for retained, row in zip(report.tables[r.ReportTableKey.XRAY_PATHS], rows, strict=True):
+        expected = expected_by_key[str(row["key"].value)]
+        position = expected.root if isinstance(expected.root, xd.PositionRoot) else None
+        for key, value in (
+            ("root_key", expected.root_key),
+            ("root_kind", "position" if position is not None else "cash"),
+            ("position_id", str(position.position_id) if position is not None else None),
+            ("instrument_id", expected.instrument_id),
+            ("entity_id", expected.entity_id),
+            ("explicit_cash", expected.explicit_cash),
+            (
+                "unresolved_reason",
+                expected.unresolved_reason.value if expected.unresolved_reason else None,
+            ),
+            ("quality", expected.quality.value),
+            ("confidence", expected.confidence),
+        ):
+            assert row[key].value == value
+        for kind, identifiers in (
+            ("identity_decision", expected.identity_decision_ids),
+            ("source", expected.source_reference_ids),
+        ):
+            actual = {
+                (item["ordinal"].value, item["referenced_key"].value)
+                for item in relations
+                if item["path_key"].value == expected.key and item["relation_kind"].value == kind
+            }
+            assert actual == set(enumerate(identifiers))
+        # Bind each PDF assertion to its own captured path record, including wrapped IDs.
+        marker = f"Record:{retained.key}Key:"
+        assert compact_pdf.count(marker) == 1
+        pdf_record = compact_pdf.split(marker, 1)[1].split("Record:", 1)[0]
+        assert pdf_record.startswith(expected.key)
+        for key, metric in (
+            ("reporting_value", expected.reporting_value),
+            ("absolute_weight", expected.absolute_weight),
+            ("relative_weight", expected.relative_weight),
+        ):
+            cell = row[key]
+            if isinstance(metric, xd.XrayMoneyMetric):
+                assert cell.value == (None if metric.value is None else metric.value.amount)
+                assert cell.currency == (
+                    report.manifest.document.selection.reporting_currency
+                    if metric.value is None
+                    else metric.value.currency
+                )
+            else:
+                assert cell.value == metric.value and cell.currency is None
+            assert cell.state.value == metric.availability.value
+            context = next(
+                item for item in report.manifest.contexts if item.key == cell.context_key
+            )
+            assert (cell.quality if cell.quality is not None else context.quality) == metric.quality
+            assert cell.confidence == metric.confidence
+            assert cell.reason_key == (
+                f"xray.reason.{metric.reason.value}" if metric.reason else None
+            )
+            label = key.replace("_", " ").capitalize()
+            if cell.value is None:
+                display = f"{cell.state.value.capitalize()} ({cell.reason_key})"
+            else:
+                display = canonical_report_cell_value(cell)
+                if cell.currency is not None:
+                    display += f" {cell.currency.value}"
+                if cell.state is not r.CellState.AVAILABLE:
+                    display += f" [{cell.state.value}]"
+                assert cell.bound_key is not None
+                display += f" [bound: {cell.bound_key}]"
+            assert "".join(f"{label}: {display}".split()) in pdf_record
 
 
 def _metric(
@@ -712,6 +802,7 @@ def test_snapshot_and_xray_report_types(report_case: ReportCase, report_type: r.
                 == Decimal("0.41")
             )
             assert summary["hhi"].value == canonical.summary.hhi.value == Decimal("0.4657")
+            await _xray_path_parity(case, report, run_id)
             assert report.manifest.license_references
             for table in (
                 r.ReportTableKey.XRAY_PATHS,

@@ -1,5 +1,5 @@
 import { keyboardClearance } from "./accessibility";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import {
   snapshotDetailSchema,
   XrayCommonEntitiesResponseSchema,
@@ -7,6 +7,8 @@ import {
   XrayHeldFundsResponseSchema,
   XrayPathsResponseSchema,
   XrayOverlapPairsResponseSchema,
+  type XrayMoneyMetric,
+  type XrayRatioMetric,
 } from "@trading212/api-contracts";
 
 const api = "http://127.0.0.1:18000/api/v1";
@@ -15,6 +17,57 @@ const baseline = "f0f5c66e-b128-59b2-a620-83bc8faa4a57";
 const cutoff = "2026-08-31T12:00:00Z";
 function href(extra: Record<string, string> = {}) {
   return `/xray?${new URLSearchParams({ account, cutoff, currency: "EUR", ...extra })}`;
+}
+function readable(value: string) {
+  return value
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+async function exactPathMetrics(
+  values: Locator,
+  metrics: readonly (XrayMoneyMetric | XrayRatioMetric)[],
+) {
+  // Canonical strings and state disclosures are the oracle; no financial conversions.
+  expect(
+    await values.evaluateAll((nodes) =>
+      nodes.map((node) => ({
+        title: node.getAttribute("title"),
+        numeric: Boolean(node.querySelector(".numeric")?.textContent),
+        unavailable:
+          node.querySelector(".metric-unavailable")?.textContent ?? null,
+        currency:
+          node
+            .querySelector(".numeric")
+            ?.textContent?.match(/ ([A-Z]{3})$/)?.[1] ?? null,
+        notes: [...node.querySelectorAll("small")].map(
+          (note) => note.textContent,
+        ),
+      })),
+    ),
+  ).toEqual(
+    metrics.map((metric) => ({
+      title:
+        metric.value === null
+          ? null
+          : typeof metric.value === "string"
+            ? metric.value
+            : `${metric.value.amount} ${metric.value.currency}`,
+      numeric: metric.availability === "available",
+      unavailable: metric.availability === "unavailable" ? "Unavailable" : null,
+      currency:
+        metric.value !== null && typeof metric.value !== "string"
+          ? metric.value.currency
+          : null,
+      notes: [
+        ...(metric.bound === "lower_bound" ? ["Lower bound"] : []),
+        ...(metric.reason ? [readable(metric.reason)] : []),
+        ...("positive_below_quantum" in metric && metric.positive_below_quantum
+          ? ["Positive below display precision"]
+          : []),
+        ...(metric.quality !== "fresh" ? [readable(metric.quality)] : []),
+      ],
+    })),
+  );
 }
 async function presentation(page: Page) {
   await keyboardClearance(page);
@@ -124,6 +177,64 @@ test("persisted X-ray consolidates share classes and receipt with honest unresol
   expect(pathsResponse.status()).toBe(200);
   const paths = XrayPathsResponseSchema.parse(await pathsResponse.json());
   expect(paths.paths.total).toBe(6);
+  expect(paths.context).toEqual(data.context);
+  expect(paths.context).toMatchObject({
+    account_id: account,
+    snapshot_id: snapshot.id,
+    source_cutoff_at: cutoff,
+    reporting_currency: "EUR",
+    method: {
+      name: "xray_v1",
+      version: "1.1.0",
+      numeric_policy: "xray_decimal256_exact_q18_v1",
+      traversal_policy: "xray_position_then_cash_uuid_v1",
+    },
+  });
+  const context = page.locator(".historical-context");
+  await expect(context).toContainText(
+    `${paths.context.method.name} ${paths.context.method.version}`,
+  );
+  const provenance = context.locator(":scope > details").filter({
+    has: page.getByText("Sources, policies and reproducibility", {
+      exact: true,
+    }),
+  });
+  await expect(
+    provenance.locator(":scope > p").last().locator("code"),
+  ).toHaveText([
+    paths.context.run_id,
+    paths.context.input_digest,
+    paths.context.content_digest,
+  ]);
+  await expect(
+    provenance.locator(":scope > ul").nth(1).locator(":scope > li"),
+  ).toHaveText(
+    paths.context.policies.map(
+      (policy) => `${readable(policy.kind)} ${policy.version} · ${policy.id}`,
+    ),
+  );
+  const pathDetails = page
+    .getByRole("heading", { name: "Exposure paths", exact: true })
+    .locator("..")
+    .locator(":scope > details")
+    .filter({ hasText: "Root-relative weight" });
+  await expect(pathDetails).toHaveCount(paths.paths.items.length);
+  for (const [index, path] of paths.paths.items.entries()) {
+    const detail = pathDetails.nth(index);
+    const summary = detail.locator(":scope > summary");
+    await expect(summary).toContainText(path.name);
+    await summary.click();
+    await expect(
+      detail.locator(":scope > p").first().locator("code"),
+    ).toHaveText(path.root_key);
+    await exactPathMetrics(
+      detail.locator(
+        ":scope > summary > .historical-value, :scope > p:first-of-type > .historical-value",
+      ),
+      [path.reporting_value, path.absolute_weight, path.relative_weight],
+    );
+    await summary.click();
+  }
   expect(
     paths.paths.items.some((path) =>
       path.sources.some((source) => source.kind === "broker_fx"),
@@ -307,6 +418,14 @@ test("held-fund comparison and common-entity drilldown retain one canonical run"
     await commonResponse.json(),
   );
   expect(common.context.run_id).toBe(run);
+  expect(common.context).toEqual(result.context);
+  const representative = [common.pair.left, common.pair.right].find(
+    (fund) => fund.name === "Synthetic Atlas Fund",
+  );
+  expect(representative?.composition_root_key).toBeTruthy();
+  await expect(atlasBasis.locator("code")).toHaveText(
+    representative!.composition_root_key!,
+  );
   expect(common.common_entities.total).toBe(2);
   expect(common.common_entities.items.map((item) => item.name).sort()).toEqual([
     "Synthetic Alpha",

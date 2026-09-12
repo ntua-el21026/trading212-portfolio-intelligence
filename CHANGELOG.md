@@ -6,6 +6,11 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Phase 2 analytical web experience (in progress)
 
+- Strengthen real historical, X-ray and planner browser parity with canonical
+  value/state/currency and retained-input comparisons; expose exact saved-plan
+  weights alongside rounded display. Check real company HTTP/MCP run pinning and
+  four-format X-ray report path parity. Focused checks passed; immutable P208
+  acceptance and final S34 completion remain pending.
 - Pin runtime `libpcre2-8-0` to Debian security version `10.42-1+deb12u1`
   before package-manager stripping in API, worker, MCP and web images. Immutable
   P208 source 7201b53 passed its full local gate and 60 captures were ROOT-reviewed,

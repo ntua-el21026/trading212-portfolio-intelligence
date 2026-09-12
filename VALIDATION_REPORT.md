@@ -196,3 +196,37 @@ Working correction gate `p208-pcre2-working-build-scan-01` passed in 62.736 seco
 It binds all six actual image scans and four runtime package-version probes in
 `p208-pcre2-working-image-checks-01/results.json`. Full corrected-source immutable
 acceptance remains pending; GitHub Actions stays owner-deferred.
+
+## P2-08 focused canonical parity on security-corrected source
+
+Base commit: `57eba18bff82051124b09f0970f7ec5494a84d61`; these are
+unaccepted working-tree checks, with unchanged source during each actual gate.
+
+| Gate | Actual outcome | Seconds |
+|---|---|---|
+| p208-historical-parity-static-01 | passed | 21.695 |
+| p208-historical-parity-browser-01 | passed | 259.298 |
+| p208-xray-parity-static-01 | passed | 24.409 |
+| p208-xray-report-parity-01 | failed | 42.498 |
+| p208-xray-report-parity-02 | passed | 42.586 |
+| p208-company-http-mcp-parity-01 | passed | 14.026 |
+| p208-xray-parity-browser-01 | passed | 76.014 |
+| p208-parity-final-static-01 | failed | 0.029 |
+| p208-parity-final-static-02 | passed | 23.245 |
+| p208-planning-parity-browser-01 | failed | 37.413 |
+| p208-planning-parity-browser-02 | passed | 114.454 |
+
+Historical and X-ray each passed three cases per desktop/tablet/mobile project;
+planning passed two per project, for 24 focused browser passes. Each wrapper
+then ran make build-web. The report matrix checks actual JSON/CSV/XLSX/PDF
+artifacts against manifest-bound X-ray paths. The company test uses actual HTTP
+routes and MCP tools with the same optional run pin and canonical service oracle.
+
+The report01 failure was an incorrect test assumption about inherited quality;
+the planning01 failure was an overbroad locator including revision history. Both
+were corrected and passed in their recorded successors. Static01 stopped on
+formatting after the quality assertion edit; formatting was fixed and static02
+passed. Exact receipt hashes and the listed failed attempts are retained in the JSON
+trackers. These checks do not replace the new full immutable validation, strict
+three-project chart gate, source/image scans or 60 fresh reviewed captures.
+GitHub Actions remains owner-deferred; P209/P210 and final S34 remain required.

@@ -383,6 +383,114 @@
       },
       "duration_seconds": 62.736,
       "observed": "Formatting, repository/workspace checks, six serial image builds and package-manager-absence probes passed. All six Trivy image scans passed and four runtime probes reported libpcre2-8-0 version 10.42-1+deb12u1. No scanner exceptions changed. Fresh immutable source acceptance remains required."
+    },
+    "parity_validation": {
+      "state": "focused_working_tree_checks_passed_immutable_acceptance_pending",
+      "source_binding": "unaccepted_working_tree",
+      "base_sha": "57eba18bff82051124b09f0970f7ec5494a84d61",
+      "observed": "Historical, X-ray and saved-plan browser parity now compare actual rendered canonical values, currencies, identities and explicit states with the same retained API inputs/results. All 24 focused cases passed across desktop/tablet/mobile (9 historical, 9 X-ray, 6 planning), with production builds restoring generated types. Real company actual/drift HTTP and MCP calls preserve the optional X-ray run pin and agree with the canonical service. The X-ray four-format report test compares retained path identities, exact amounts/weights and quality with its manifest-bound service run and checks the PDF path fields. The initial report assertion ignored legitimate inherited quality; the initial planning locator also selected history metadata. Both test assumptions were corrected and their failed records preserved. Formatting, lint, strict types and documentation checks passed. Security correction is committed as 57eba18bff82051124b09f0970f7ec5494a84d61. These working-tree checks do not establish immutable P208 acceptance or final S34 completion; the complete corrected source still requires a full gate, explicit three-project strict chart comparison, security scans and fresh reviewed visual evidence. P209/P210 remain required and Actions owner-deferred.",
+      "gates": [
+        {
+          "name": "p208-historical-parity-static-01",
+          "result": "passed",
+          "duration_seconds": 21.695,
+          "receipt": {
+            "path": "${RESUME_ROOT}/gates/p208-historical-parity-static-01.json",
+            "sha256": "c16908e5baeea415c2d3bd0d9ef7d12b0ccd900c6509f4532dabae6fac5999cc"
+          }
+        },
+        {
+          "name": "p208-historical-parity-browser-01",
+          "result": "passed",
+          "duration_seconds": 259.298,
+          "receipt": {
+            "path": "${RESUME_ROOT}/gates/p208-historical-parity-browser-01.json",
+            "sha256": "ac8b7d22d41bd4bc5e3cff3bbb0f283e59cd65cf3070bfd6c4c9ea81e2a66e42"
+          }
+        },
+        {
+          "name": "p208-xray-parity-static-01",
+          "result": "passed",
+          "duration_seconds": 24.409,
+          "receipt": {
+            "path": "${RESUME_ROOT}/gates/p208-xray-parity-static-01.json",
+            "sha256": "9927108fba02c19a4caacc6268b01687076b70dbb1dac8c86ef0d4ac42a1a4ea"
+          }
+        },
+        {
+          "name": "p208-xray-report-parity-01",
+          "result": "failed",
+          "duration_seconds": 42.498,
+          "receipt": {
+            "path": "${RESUME_ROOT}/gates/p208-xray-report-parity-01.json",
+            "sha256": "94dd7c3e7b3ceb123a9a36bd034cb49741c7e9c3347db803a7147ab67200848d"
+          }
+        },
+        {
+          "name": "p208-xray-report-parity-02",
+          "result": "passed",
+          "duration_seconds": 42.586,
+          "receipt": {
+            "path": "${RESUME_ROOT}/gates/p208-xray-report-parity-02.json",
+            "sha256": "4e7c2bbcbf0a0e9d0c1a781fd7ecd119ead35e75c3d2951533988b639dcca20e"
+          }
+        },
+        {
+          "name": "p208-company-http-mcp-parity-01",
+          "result": "passed",
+          "duration_seconds": 14.026,
+          "receipt": {
+            "path": "${RESUME_ROOT}/gates/p208-company-http-mcp-parity-01.json",
+            "sha256": "4ca620f96f745b1ece23c7a2c63965abcaa973b45706d575d5c27f3262d5f991"
+          }
+        },
+        {
+          "name": "p208-xray-parity-browser-01",
+          "result": "passed",
+          "duration_seconds": 76.014,
+          "receipt": {
+            "path": "${RESUME_ROOT}/gates/p208-xray-parity-browser-01.json",
+            "sha256": "e3fd6dcca6c9a1edaa183011d4174a9458e57b562113952ff3b13278e3a6ce70"
+          }
+        },
+        {
+          "name": "p208-parity-final-static-01",
+          "result": "failed",
+          "duration_seconds": 0.029,
+          "receipt": {
+            "path": "${RESUME_ROOT}/gates/p208-parity-final-static-01.json",
+            "sha256": "1bd3851347d4b3e7be4e5bd23c2c2e3496bc6a81d826f11d3b748605b0ebbc14"
+          }
+        },
+        {
+          "name": "p208-parity-final-static-02",
+          "result": "passed",
+          "duration_seconds": 23.245,
+          "receipt": {
+            "path": "${RESUME_ROOT}/gates/p208-parity-final-static-02.json",
+            "sha256": "842ea1c4ac5f7d057e5bf82066614ec4906bd8321b8543e2ac9c10013f7a85b7"
+          }
+        },
+        {
+          "name": "p208-planning-parity-browser-01",
+          "result": "failed",
+          "duration_seconds": 37.413,
+          "receipt": {
+            "path": "${RESUME_ROOT}/gates/p208-planning-parity-browser-01.json",
+            "sha256": "9afe83869e18e5de1ef00f19aa81aa9782100dbfdb1da40be013b2c3815736f3"
+          }
+        },
+        {
+          "name": "p208-planning-parity-browser-02",
+          "result": "passed",
+          "duration_seconds": 114.454,
+          "receipt": {
+            "path": "${RESUME_ROOT}/gates/p208-planning-parity-browser-02.json",
+            "sha256": "2a36efae28fdba793eb87ea966fb8407397eb011e10882d25cae079bd4c9c4ec"
+          }
+        }
+      ],
+      "acceptance_claim": false
     }
   }
 }

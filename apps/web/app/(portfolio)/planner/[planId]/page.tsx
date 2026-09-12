@@ -356,7 +356,9 @@ export default async function PlanDetailPage({
                             {line.current_value.currency}{" "}
                             {formatPlanningMoney(line.current_value.amount)}
                           </td>
-                          <td>{formatPercent(line.target_weight)}</td>
+                          <td title={line.target_weight}>
+                            {formatPercent(line.target_weight)}
+                          </td>
                           <td>
                             {line.recommended_amount.currency}{" "}
                             {formatPlanningMoney(
@@ -367,7 +369,9 @@ export default async function PlanDetailPage({
                             {line.post_value.currency}{" "}
                             {formatPlanningMoney(line.post_value.amount)}
                           </td>
-                          <td>{formatPercent(line.post_weight)}</td>
+                          <td title={line.post_weight}>
+                            {formatPercent(line.post_weight)}
+                          </td>
                           <td>
                             {line.minimum_funded_amount.currency}{" "}
                             {line.minimum_funded_amount.amount} /{" "}

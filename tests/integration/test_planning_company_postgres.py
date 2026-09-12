@@ -7,12 +7,14 @@ import json
 from dataclasses import replace
 from datetime import timedelta
 from decimal import Decimal
-from typing import Never
+from typing import Any, Never
 from uuid import UUID, uuid4
 
+import httpx
 import pytest
 from sqlalchemy import select
 from starlette.requests import Request
+from trading212_api.main import create_app
 from trading212_api.planning_schemas import planning_response
 from trading212_api_contracts import planning as wire
 from trading212_application import planning as app
@@ -23,15 +25,23 @@ from trading212_domain.planning_company import PlanningDriftRowView
 from trading212_domain.sources import LicensePermission
 from trading212_domain.targets import TargetContent, TargetNode, TargetNodeKind
 from trading212_mcp.planning_gateway import _payload
-from trading212_persistence import planning_company_store, planning_service, xray_run_store
+from trading212_mcp.server import create_runtime
+from trading212_persistence import (
+    PostgresPortfolioService,
+    planning_company_store,
+    planning_service,
+    xray_run_store,
+)
 from trading212_persistence.planning_models import AnalyticsRunModel
 from trading212_persistence.planning_service import PostgresPlanningService
 from trading212_persistence.target_service import PostgresTargetService
 from trading212_persistence.xray_catalog_models import ConstituentSnapshotModel
+from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 from trading212_worker.xray_fixture import XRAY_ACCOUNT_ID, XRAY_AT, xray_id
 from trading212_worker.xray_seed import XRAY_CURSOR_KEY
 
 from tests.integration.test_virtual_targets import publish
+from tests.integration.test_xray_api_postgres import HEADERS, ORIGIN, _Bearer, _tool
 from tests.integration.test_xray_reads_postgres import XrayReadCase, company
 from tests.integration.test_xray_reads_postgres import xray_read_case as xray_read_case
 from tests.integration.test_xray_store_permission_postgres import _license
@@ -81,6 +91,77 @@ async def request(case: XrayReadCase, run_id: str | None) -> app.ActualVsTargetQ
         xray_run_id=run_id,
         limit=100,
     )
+
+
+async def _http_mcp_company_parity(
+    case: XrayReadCase,
+    planning: PostgresPlanningService,
+    query: app.ActualVsTargetQuery,
+    actual: app.ActualVsTargetResult,
+    drift: app.DriftAnalysisResult,
+) -> None:
+    assert query.xray_run_id is not None
+    settings = SecuritySettings(
+        environment=RuntimeEnvironment.TEST,
+        local_synthetic_auth_enabled=True,
+        allowed_hosts=("testserver",),
+        allowed_origins=(ORIGIN,),
+    )
+    portfolio = PostgresPortfolioService(
+        sessions=case.sessions, cursor_signing_key=XRAY_CURSOR_KEY, clock=lambda: case.now[0]
+    )
+    api = create_app(
+        settings=settings,
+        service=portfolio,
+        planning_service=planning,
+        xray_service=case.service,
+        bearer_authenticator=_Bearer(case),
+        clock=lambda: case.now[0],
+    )
+    server = create_runtime(
+        security_settings=settings,
+        service=portfolio,
+        planning_service=planning,
+        xray_service=case.service,
+        clock=lambda: case.now[0],
+    ).server
+    pins = {
+        "snapshot_id": query.snapshot_id,
+        "virtual_portfolio_id": query.virtual_portfolio_id,
+        "target_version_id": query.target_version_id,
+        "reporting_currency": query.reporting_currency.value,
+        "xray_run_id": query.xray_run_id,
+    }
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(api), base_url=ORIGIN, headers=HEADERS
+    ) as client:
+        for route, tool, options, expected in (
+            (
+                "actual-vs-target",
+                "get_actual_vs_target",
+                {"limit": query.limit},
+                _payload(actual, wire.ActualVsTargetResult).model_dump(mode="json"),
+            ),
+            (
+                "drift",
+                "get_drift_analysis",
+                {"basis": drift.basis.value, "top_n": drift.top_n},
+                _payload(drift, wire.DriftAnalysisResult).model_dump(mode="json"),
+            ),
+        ):
+            arguments: dict[str, Any] = {**pins, **options}
+            response = await client.get(
+                f"/api/v1/accounts/{XRAY_ACCOUNT_ID}/{route}", params=arguments
+            )
+            assert response.status_code == 200, response.text
+            body = response.json()
+            assert body == expected
+            assert body["company_basis"]["xray_run_id"] == query.xray_run_id
+            assert body["projection_digest"] is not None
+            result = await _tool(server, tool, {"account_id": XRAY_ACCOUNT_ID, **arguments})
+            assert not result.is_error, result
+            assert result.structured_content is not None
+            assert result.structured_content["data"] == body
 
 
 def test_real_producers_paging_restart_top_and_http_mcp_keep_full_metrics_and_base_bytes(
@@ -173,6 +254,7 @@ def test_real_producers_paging_restart_top_and_http_mcp_keep_full_metrics_and_ba
         assert http.status_code == 200
         mcp = _payload(enriched, wire.ActualVsTargetResult).model_dump(mode="json")
         assert json.loads(bytes(http.body)) == mcp
+        await _http_mcp_company_parity(case, planning, query, enriched, larger)
         conditional = planning_response(
             Request(
                 {"type": "http", "headers": [(b"if-none-match", http.headers["etag"].encode())]}

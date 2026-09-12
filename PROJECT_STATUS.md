@@ -28,6 +28,12 @@ P207 ledger remains 7/10 packages, 19/29 local rows and 30/40 scenarios.
 
 [Failed security evidence with raw record hashes](docs/implementation/evidence/phase-2-p2-08-7201b53-failed-security.json).
 
+The security correction is committed at `57eba18`. Focused canonical-parity checks
+passed for 24 actual browser cases across three viewports, company HTTP/MCP run
+pinning, and a four-format X-ray report. The planner also exposes exact target
+and post-contribution weights alongside their rounded display. Fresh immutable
+validation remains required; S34 and P208 acceptance remain partial/pending.
+
 The following overview-correction observations preceded the full02 result.
 
 P2-08 implementation commit ff884065e896209563d1966865602e73b3622fd6 passed

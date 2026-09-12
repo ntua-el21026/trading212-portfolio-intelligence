@@ -5,8 +5,15 @@ import {
   expect,
   test,
   type APIRequestContext,
+  type Locator,
   type Page,
 } from "@playwright/test";
+import {
+  ContributionPlanDetailSchema,
+  type PlanningMoney,
+} from "@trading212/api-contracts";
+import { formatPercent } from "../../../apps/web/lib/format";
+import { formatPlanningMoney } from "../../../apps/web/lib/planning-format";
 
 const api = "http://127.0.0.1:18000/api/v1";
 const account = "f0f5c66e-b128-59b2-a620-83bc8faa4a57";
@@ -115,6 +122,31 @@ async function showSection(page: Page, heading: string) {
   );
 }
 
+function normalizedAmount(value: string) {
+  const plain = value.replaceAll(",", "").replace("−", "-");
+  expect(plain).toMatch(/^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$/);
+  const [whole, fraction = ""] = plain.split(".");
+  const significant = fraction.replace(/0+$/, "");
+  const normalized = whole + (significant ? `.${significant}` : "");
+  return normalized === "-0" ? "0" : normalized;
+}
+
+async function exactMoney(value: Locator, money: PlanningMoney | null) {
+  if (money === null) {
+    await expect(value).toHaveText("Unavailable");
+    return;
+  }
+  await expect(value).toHaveText(
+    `${money.currency} ${formatPlanningMoney(money.amount)}`,
+  );
+  // Independently compare every significant digit after removing display notation.
+  // This catches lost precision even if the shared formatter regresses.
+  const displayed = (await value.innerText())
+    .trim()
+    .slice(money.currency.length + 1);
+  expect(normalizedAmount(displayed)).toBe(normalizedAmount(money.amount));
+}
+
 async function waitForResult(
   page: Page,
   request: APIRequestContext,
@@ -149,6 +181,15 @@ async function waitForResult(
   const detail = await request.get(`${api}/contribution-plans/${plan}`);
   expect(detail.status()).toBe(200);
   const canonical = await detail.json();
+  const observed = ContributionPlanDetailSchema.parse(canonical);
+  if (
+    !observed.result ||
+    !observed.content_digest ||
+    !observed.job.plan_revision_id
+  )
+    throw new Error(
+      "A finalized plan must retain its result, digest and revision.",
+    );
   expect(canonical.job.request_revision).toBe(expectedRevision);
   expect(new URL(page.url()).searchParams.get("account")).toBe(
     canonical.job.account_id,
@@ -163,7 +204,73 @@ async function waitForResult(
   await expect(
     page.getByText(canonical.content_digest, { exact: true }),
   ).toBeVisible();
+  await expect(
+    sources.locator("..").locator(".planning-identities dd"),
+  ).toHaveText([
+    observed.request.snapshot_id,
+    observed.request.target_version_id,
+    observed.job.input_digest,
+    observed.content_digest,
+    observed.job.plan_revision_id,
+  ]);
   await sources.click();
+  const allocation = page
+    .getByRole("heading", { name: "Allocation result", exact: true })
+    .locator("..");
+  for (const [label, money] of [
+    ["Residual contribution cash", observed.result.residual_cash],
+    ["Total cash after contribution", observed.result.post_cash],
+    ["Portfolio after contribution", observed.result.post_total],
+  ] as const) {
+    await exactMoney(
+      allocation.getByText(label, { exact: true }).locator("+ dd"),
+      money,
+    );
+  }
+  const rows = allocation
+    .getByRole("region", { name: "Contribution allocation lines", exact: true })
+    .locator("tbody tr");
+  await expect(rows).toHaveCount(observed.lines.items.length);
+  expect(
+    await rows
+      .locator("th")
+      .evaluateAll((nodes) =>
+        nodes.map((node) => node.firstChild?.textContent?.trim()),
+      ),
+  ).toEqual(observed.lines.items.map((line) => line.node_key));
+  for (const [index, line] of observed.lines.items.entries()) {
+    const row = rows.nth(index);
+    const cells = row.locator("td");
+    await expect(cells).toHaveCount(7);
+    await expect(row.locator("th > span")).toHaveText(
+      line.excluded
+        ? "Excluded from funding"
+        : (line.listing_id ?? "Unresolved listing"),
+    );
+    await exactMoney(cells.nth(0), line.current_value);
+    await exactMoney(cells.nth(2), line.recommended_amount);
+    await exactMoney(cells.nth(3), line.post_value);
+    for (const [column, weight] of [
+      [1, line.target_weight],
+      [4, line.post_weight],
+    ] as const) {
+      await expect(cells.nth(column)).toHaveAttribute("title", weight);
+      await expect(cells.nth(column)).toHaveText(formatPercent(weight));
+    }
+    expect(line.value_increment.currency).toBe(
+      line.minimum_funded_amount.currency,
+    );
+    await expect(cells.nth(5)).toHaveText(
+      `${line.minimum_funded_amount.currency} ${line.minimum_funded_amount.amount} / ${line.value_increment.amount}`,
+    );
+    await expect(cells.nth(6)).toHaveText(
+      line.binding_constraint_keys.join(", ") || "None binding",
+    );
+  }
+  if (observed.lines.items.length === 0)
+    await expect(
+      allocation.getByText("No allocation recommendations", { exact: true }),
+    ).toBeVisible();
   return canonical;
 }
 

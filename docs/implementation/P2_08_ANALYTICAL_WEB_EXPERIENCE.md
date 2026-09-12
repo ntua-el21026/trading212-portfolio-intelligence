@@ -5,7 +5,7 @@ Implementation is in progress from P207 closure 7d3a5f5. P207 retains its
 contracts and source are integrated. Corrected source 7201b53 passed the full local
 gate and ROOT reviewed all 60 feature captures, but four separate runtime-image
 security scans failed. The exact PCRE2 security-package correction is implemented
-in the working tree and passed focused image/build verification. P208 acceptance and final same-source
+at `57eba18` and passed focused image/build verification. P208 acceptance and final same-source
 evidence remain pending. GitHub Actions is deferred by the owner. P209 and P210
 remain required; Phase 3 is outside this assignment.
 
@@ -206,3 +206,26 @@ cover intelligence/workspace/X-ray and historical account links. Immutable
 full validation and reviewed acceptance evidence remain pending.
 
 Immutable ff884065e896209563d1966865602e73b3622fd6 passed make validate in 6771.536 seconds: 2474 isolated and 377 PostgreSQL coverage cases, 88% branch-aware coverage, 534 web unit tests, 52 demo plus 102 API browser checks across 39 API process reports, and all static/documentation/security/build gates. ROOT reviewed all 60 feature captures and found one mobile overview defect, so package acceptance remains false. The overview now preserves reconciliation status and uses the authoritative discrepancy_count independently of the empty summary issues collection. Five new regression cases failed before the fix and all eight overview tests passed afterward. Corrected working validation passed 539 web unit tests, formatting, web lint/types, docs, production build and three focused API browser viewport checks. The first focused browser attempt exposed a fixture count assumption (standalone 2 versus full-sequence 0); the corrected assertion compares the UI to the actual API count. Fresh immutable validation and acceptance evidence for the corrected source remain required; GitHub Actions is owner-deferred.
+
+## Canonical parity verification before immutable acceptance
+
+Browser tests now bind performance series and benchmark summaries/series, paginated
+performance details, group/sector attribution, six X-ray paths, representative
+fund roots, and finalized plan rows to actual API results with the same retained
+inputs. They compare canonical decimal strings, currencies, identities and
+explicit availability/quality disclosures. Chart visibility is checked; these
+tests do not claim numerical verification of SVG geometry. Plan target and post
+weights expose canonical title values while preserving rounded visible formatting.
+
+Real HTTP/MCP company reads also preserve the optional X-ray run pin, and the
+four-format report matrix binds path records and their PDF values to the
+manifest-selected service result. All 24 focused browser cases passed across
+desktop/tablet/mobile (9 historical, 9 X-ray, 6 planning), followed by production
+builds. The company integration check and X-ray report matrix case passed.
+Initial report-quality inheritance and planner-history locator assumptions in
+the added tests were corrected; their failed attempts remain recorded.
+
+The exact working gate references are retained under parity_validation in both
+JSON trackers and summarized in VALIDATION_REPORT.md. S34 remains shared and
+partial; final P208 acceptance still requires fresh immutable full validation,
+the explicit three-project strict chart configuration, security and visual review.
