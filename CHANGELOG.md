@@ -6,7 +6,9 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Phase 2 MCP registry and widgets (scoped local acceptance)
 
-The P2-MCP-001 and P2-MCP-002 scoped checks passed at `d70ab445de38aee255275880c5ef7a105ebbb939`. P2-09 remains in progress until its assigned P2-S33 authorization scenario is accepted. Phase 2 has 8/10 completed packages (80%), 23/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred, with no pass claim. The final Phase 2 release SHA remains null.
+P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. Phase 2 remains in progress with 9/10 completed packages (90%), 23/29 local rows and 31/40 scenarios complete. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. S32/S34/S38/S39 remain partial. P2-10 and Phase 3 remain `not_started`; GitHub Actions is owner-deferred with no pass claim, and the final Phase 2 release SHA remains null.
+
+[P209/S33 supplement](docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json); finalized 2026-09-12T19:03:50.016115+00:00. The same-source relevant MCP, PostgreSQL, static, security, Python-build and single-MCP-image gates passed. The d70 full validation and browser/visual evidence remain historical; no new full validation, browser/visual gate or seven-service runtime is claimed.
 
 [P209 scoped evidence](docs/implementation/evidence/phase-2-p2-09-d70ab44.json); finalized 2026-09-12T18:08:53.523669+00:00. The artifact retains actual widget/API browser observations as supporting evidence. It does not claim a new full Compose startup/restart, runtime cleanup, PDF visual gate or live ChatGPT registration.
 

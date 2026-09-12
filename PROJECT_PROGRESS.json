@@ -130,33 +130,110 @@
       "name": "Portfolio Intelligence",
       "release": "0.2.0",
       "status": "in_progress",
-      "progress_percent": 80,
+      "progress_percent": 90,
       "design_closure": "accepted",
       "candidate_validation": {
         "work_package": "P2-09",
-        "source_sha": "d70ab445de38aee255275880c5ef7a105ebbb939",
-        "scope": "MCP001/002 checks passed; solely assigned S33 and full package closure remain pending.",
-        "acceptance": "scoped_rows_passed_package_acceptance_pending",
+        "source_sha": "bd47329cca5c1409486fff40d48e92163ab4a8af",
+        "tree_sha": "6851d62be8f181abdf2eb23dd2eff2383f790591",
+        "scope": "P209/S33 authorization supplement; MCP001/002 remain historical d70 scoped evidence.",
+        "acceptance": "accepted_locally_with_ci_deferred",
         "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
-        "evidence_finalized_at_utc": "2026-09-12T18:08:53.523669+00:00",
+        "evidence_finalized_at_utc": "2026-09-12T19:03:50.016115+00:00",
         "artifacts": [
-          "docs/implementation/evidence/phase-2-p2-09-d70ab44.json"
+          "docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json"
         ],
-        "artifact_sha256": "9aa88b76cb98447c2551ad9236e6965a42df8d5c72ba4a7f32974d5ce3175353",
-        "make_validate": "passed",
-        "observed_gate_counts": {
-          "browser_cases_in_supplied_reports": 208,
-          "python_full_gate": {
-            "isolated": 2545,
-            "service_backed": 379
-          }
+        "artifact_sha256": "4397883ee4b3382a2fc20c51a827547b0cd9b6d68be099ee17a57b56fdfb3cd9",
+        "relevant_gates": {
+          "static_and_architecture": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-static-01.json",
+              "sha256": "581b25a3e42bb6a3fc073ccb67e45757f9ee7c745b712fea779c75e99dd983db",
+              "bytes": 1316
+            }
+          ],
+          "mcp_unit_contract_security": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+              "bytes": 2502
+            }
+          ],
+          "s33_postgres": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+              "bytes": 2502
+            }
+          ],
+          "source_security": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-source-security.json",
+              "sha256": "0eacb19f40813647213f7a3d8d84a3bf00bcc2ae99bd854de17e57104c054e3f",
+              "bytes": 1330
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-policy-security.json",
+              "sha256": "e9566b5d9b771e923fbbeca74ec0f916f5474f0c76b695ef32eac71140105e87",
+              "bytes": 1234
+            }
+          ],
+          "python_build": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-python-build.json",
+              "sha256": "455676b45c722fe9b9460b375b1633c3f2c6ead068a2963376d6d3ab71e102ca",
+              "bytes": 1358
+            }
+          ],
+          "mcp_image_build_and_scan": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-build.json",
+              "sha256": "e24f15849f4998b08af63a68fbc4f88e648ca6887eec7d1986410f2108f06f3d",
+              "bytes": 1873
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-inspect-02.json",
+              "sha256": "ebc735c446a935b7879cf117c28ec4e5012441f591b82cd1b7ab2ece1b961551",
+              "bytes": 1587
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-package-managers.json",
+              "sha256": "99ed62b2e613418422426e469604ce5961a44a3e9e6f8759579c2f8df41eccab",
+              "bytes": 1373
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-nonroot.json",
+              "sha256": "7d7c17e76d26c71a6ff622595ac98cf4504d348b84f49a74484c771f5d438eb1",
+              "bytes": 1562
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-image-security.json",
+              "sha256": "0f7400c093f39da4daf3803ba8d4dab3f63f6d5ad0c6574484609615dea4e126",
+              "bytes": 1756
+            }
+          ]
         },
-        "gate_record_sha256": "ebcd91dc49870cc47b42850872f6abb6fed189e3e4ab2a87e259c615cecee5d7",
-        "assertion_map_pointer": "/assertion_map",
-        "runtime_scope": "Browser observations retained; no new full Compose runtime/restart/cleanup claimed.",
+        "test_population": {
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          },
+          "passed": 627,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "note": "One actual invocation; overlapping gate category references are not added together."
+        },
+        "runtime_scope": "One rebuilt MCP image; no new browser/visual or seven-service runtime claim.",
         "ci_state": "deferred_by_owner",
         "ci_verified": false,
-        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-09-d70ab44-implementation-history.json",
+        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329-implementation-history.json",
         "previous_candidate_validation_pointer": "/observations/0/value"
       },
       "work_packages": {
@@ -168,7 +245,7 @@
         "P2-06": "complete",
         "P2-07": "complete",
         "P2-08": "complete",
-        "P2-09": "in_progress",
+        "P2-09": "complete",
         "P2-10": "not_started"
       },
       "acceptance": {
@@ -176,7 +253,7 @@
         "locally_executable_rows_total": 29,
         "locally_executable_rows_complete": 23,
         "mandatory_scenarios_total": 40,
-        "mandatory_scenarios_complete": 30,
+        "mandatory_scenarios_complete": 31,
         "release_evidence_sha": null,
         "evidence": {
           "P2-S01": {
@@ -4250,79 +4327,67 @@
             "observation_limit": "Exact literal selectors from mapped observed API browser cases; viewport/test IDs stay in the artifact. No fabricated parameter outcomes or shared scenario closure."
           },
           "P2-09": {
-            "sha": "d70ab445de38aee255275880c5ef7a105ebbb939",
+            "sha": "bd47329cca5c1409486fff40d48e92163ab4a8af",
             "test_nodes": [
-              "tests/contract/test_historical_contract.py::test_comparison_widget_has_valid_hash_csp_safe_dom_and_no_network_or_financial_math",
-              "tests/contract/test_historical_contract.py::test_exact_four_historical_tools_have_frozen_scopes_fields_annotations_and_resource",
-              "tests/contract/test_mcp_contract.py::test_snapshot_widget_is_preserved_and_only_declared_tools_add_resources",
               "tests/contract/test_phase2_mcp_registry.py::test_independent_exact_25_names_fields_scopes_and_annotations_after_p208",
-              "tests/contract/test_phase2_mcp_registry.py::test_original_nine_keep_opaque_ids_coercion_dates_and_decimal_output",
-              "tests/contract/test_planning_contract.py::test_four_tools_have_exact_scopes_annotations_and_no_future_registry_placeholders",
-              "tests/contract/test_planning_contract.py::test_plan_resource_csp_hashes_bind_every_inline_script_and_style",
-              "tests/e2e/web/p209-widget-presentation.spec.ts::X-ray Top bound is 50 and its full-scope overlap is never recomputed from a sample",
-              "tests/e2e/web/p209-widget-presentation.spec.ts::clears retained display on partial/full input and cancellation, then recovers",
-              "tests/e2e/web/p209-widget-presentation.spec.ts::historical metric quality differs from run quality and partial values keep exact units",
-              "tests/e2e/web/p209-widget-presentation.spec.ts::ignores forged sources and request-shaped notifications, honors error results",
-              "tests/e2e/web/p209-widget-presentation.spec.ts::late snapshot initialize failure cannot restore stale compatibility output after new input",
-              "tests/e2e/web/p209-widget-presentation.spec.ts::plan shows bounded explanations and pins separately from solver success and supports keyboard table access",
-              "tests/e2e/web/p209-widget-presentation.spec.ts::rejects malformed and excessive displayed collections without throwing or retaining success",
-              "tests/e2e/web/p209-widget-presentation.spec.ts::report markup remains text and purged context removes prior pins and warnings",
-              "tests/e2e/web/p209-widget-presentation.spec.ts::ships matching static CSP hashes and renders only text without external requests",
-              "tests/e2e/web/p209-widget-presentation.spec.ts::snapshot preserves q18, zero, unavailable and source instant as accessible text",
-              "tests/e2e/web/p209-widget-presentation.spec.ts::snapshot retains the legacy decimal lexical range and distinguishes partial from unavailable",
-              "tests/integration/test_alert_mcp_postgres.py::test_alert_mcp_window_page_survives_restart_and_checks_current_grants",
-              "tests/integration/test_api_mcp_postgres_parity.py::test_postgres_backed_api_and_mcp_return_identical_canonical_values",
-              "tests/integration/test_planning_api_postgres.py::test_actual_drift_and_saved_plan_match_mcp_with_real_worker_and_revision_history",
-              "tests/integration/test_planning_api_postgres.py::test_mcp_command_persists_holding_overrides_and_api_recalculation_retains_them",
-              "tests/integration/test_planning_api_postgres.py::test_planning_success_invalid_retry_and_duplicate_delivery_never_send_to_broker",
-              "tests/integration/test_planning_postgres.py::test_concurrent_same_command_has_one_job_request_and_outbox",
-              "tests/integration/test_planning_postgres.py::test_foreign_owner_and_account_fail_before_durable_mutation",
-              "tests/integration/test_planning_postgres.py::test_real_snapshot_plan_is_immutable_idempotent_and_replayable",
-              "tests/integration/test_report_mcp_postgres.py::test_report_mcp_concurrent_retry_restart_api_parity_and_current_authorization",
-              "tests/security/test_mcp_security.py::test_mcp_source_has_no_provider_transport_orm_or_generic_proxy_surface",
-              "tests/security/test_mcp_security.py::test_missing_auth_configuration_fails_closed_but_health_remains_observable",
-              "tests/security/test_phase2_mcp_registry_security.py::test_every_registered_name_fails_closed_without_a_valid_transport_principal",
               "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth",
               "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control",
-              "tests/security/test_phase2_mcp_registry_security.py::test_original_nine_enforce_owner_and_account_in_canonical_service",
-              "tests/unit/mcp/test_alert_gateway.py::test_summary_uses_same_typed_counts_history_and_proof_without_private_basis",
-              "tests/unit/mcp/test_alert_gateway.py::test_unsupported_alert_arguments_never_reach_service",
-              "tests/unit/mcp/test_gateway.py::test_unknown_input_and_unknown_tool_fail_before_application_dispatch",
-              "tests/unit/mcp/test_historical_gateway.py::test_attribution_frozen_bounds_and_group_reference",
-              "tests/unit/mcp/test_historical_gateway.py::test_four_tools_delegate_once_and_preserve_canonical_full_result",
-              "tests/unit/mcp/test_historical_gateway.py::test_literal_date_instant_validation_survives_strict_sdk_model",
-              "tests/unit/mcp/test_historical_gateway.py::test_no_extra_api_options_or_unknown_keys_are_exposed_by_mcp",
-              "tests/unit/mcp/test_planning_gateway.py::test_individually_valid_mcp_arrays_still_enforce_64k_total_request_bound",
-              "tests/unit/mcp/test_planning_gateway.py::test_mcp_input_types_fail_before_planning_service",
-              "tests/unit/mcp/test_planning_gateway.py::test_service_errors_never_echo_private_exception_messages",
-              "tests/unit/mcp/test_planning_gateway.py::test_unknown_argument_keys_and_values_are_redacted_before_sdk_echo",
-              "tests/unit/mcp/test_report_gateway.py::test_company_run_requires_a_relevant_report_section_before_service",
-              "tests/unit/mcp/test_report_gateway.py::test_forbidden_command_extension_rejected_before_service_without_echo",
-              "tests/unit/mcp/test_report_gateway.py::test_invalid_company_run_is_rejected_without_service_or_input_echo",
-              "tests/unit/mcp/test_report_gateway.py::test_optional_company_run_is_forwarded_to_the_canonical_report_selection",
-              "tests/unit/mcp/test_report_gateway.py::test_three_descriptors_have_exact_closed_fields_scopes_and_private_widget",
-              "tests/unit/mcp/test_report_gateway.py::test_wrong_account_result_and_raw_failure_cannot_escape_gateway",
-              "tests/unit/mcp/test_target_gateway.py::test_new_input_schemas_fail_before_dispatch",
-              "tests/unit/mcp/test_target_gateway.py::test_optional_literal_strings_are_not_reinterpreted_as_json",
-              "tests/unit/mcp/test_target_gateway.py::test_target_input_byte_bound_precedes_service_dispatch",
-              "tests/unit/mcp/test_target_gateway.py::test_target_response_byte_bound_is_enforced",
-              "tests/unit/mcp/test_xray_gateway.py::test_http_only_and_unknown_selectors_are_rejected",
-              "tests/unit/mcp/test_xray_gateway.py::test_registry_exposes_exact_scopes_and_network_isolated_resource",
-              "tests/unit/mcp/test_xray_gateway.py::test_typed_canonical_data_and_currency_selection_delegate_once"
+              "tests/security/test_phase2_mcp_registry_security.py::test_every_registered_name_fails_closed_without_a_valid_transport_principal",
+              "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch",
+              "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts",
+              "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes",
+              "tests/integration/test_phase2_xray_mcp_real_owners_postgres.py::test_xray_mcp_real_owner_and_account_associations_with_retained_positive_runs",
+              "tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py::test_report_alert_mcp_transport_uses_real_two_owner_resources_and_current_grants"
             ],
             "commands": [
               {
-                "command": "make validate",
+                "command": "make check-workspace format-check lint typecheck generated-check docs-check",
+                "exit_code": 0
+              },
+              {
+                "command": "env -u PYTEST_ADDOPTS -u P210_RETENTION_PLAN_OUTPUT uv run --no-sync pytest -v --tb=short --basetemp=${RESUME_ROOT}/p209-s33-immutable-bd47329-01/pytest-tmp --junitxml=${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml tests/unit/mcp tests/contract tests/security tests/integration/test_target_mcp_postgres.py tests/integration/test_api_mcp_postgres_parity.py tests/integration/test_report_mcp_postgres.py tests/integration/test_alert_mcp_postgres.py tests/integration/test_stable_collection_queries.py tests/integration/test_collection_query_snapshots.py tests/integration/test_phase2_legacy_mcp_owners_postgres.py tests/integration/test_phase2_intelligence_mcp_owners_postgres.py tests/integration/test_phase2_xray_mcp_real_owners_postgres.py tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py",
+                "exit_code": 0
+              },
+              {
+                "command": "python3 ${RESUME_ROOT}/p209-s33-security-bd47329-01/run_scans.py source",
+                "exit_code": 0
+              },
+              {
+                "command": "make security-check",
+                "exit_code": 0
+              },
+              {
+                "command": "uv build --all-packages --out-dir ${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist",
+                "exit_code": 0
+              },
+              {
+                "command": "docker build --iidfile ${RESUME_ROOT}/p209-s33-security-bd47329-01/mcp-image-id.txt --file ${RESUME_ROOT}/p209-s33-security-bd47329-01/source/infrastructure/docker/mcp.Dockerfile --tag t212pi_stage_a_20260907-mcp:latest ${RESUME_ROOT}/p209-s33-security-bd47329-01/source",
+                "exit_code": 0
+              },
+              {
+                "command": "docker image inspect --format '{\"id\":{{json .Id}},\"user\":{{json .Config.User}},\"os\":{{json .Os}},\"architecture\":{{json .Architecture}},\"entrypoint\":{{json (index .Config \"Entrypoint\")}},\"command\":{{json .Config.Cmd}},\"healthcheck\":{{json .Config.Healthcheck}}}' sha256:52d812c92acc1c11a036e444d841f8cae2ac2c5ef2113a566423cf111dbcaa21",
+                "exit_code": 0
+              },
+              {
+                "command": "uv run python -m scripts.check_runtime_package_managers sha256:52d812c92acc1c11a036e444d841f8cae2ac2c5ef2113a566423cf111dbcaa21",
+                "exit_code": 0
+              },
+              {
+                "command": "docker run --rm --network=none --read-only --cap-drop=ALL --security-opt=no-new-privileges --entrypoint /bin/sh sha256:52d812c92acc1c11a036e444d841f8cae2ac2c5ef2113a566423cf111dbcaa21 -c 'runtime_uid=$(id -u); printf \"runtime_uid=%s\\n\" \"$runtime_uid\"; test \"$runtime_uid\" -ne 0'",
+                "exit_code": 0
+              },
+              {
+                "command": "${TOOLS_ROOT}/trivy-0.74.0/trivy image --cache-dir ${TOOLS_ROOT}/trivy-cache --image-src docker --scanners vuln,secret --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed --format table --config ${RESUME_ROOT}/p209-s33-security-bd47329-01/source/trivy.yaml sha256:52d812c92acc1c11a036e444d841f8cae2ac2c5ef2113a566423cf111dbcaa21",
                 "exit_code": 0
               }
             ],
             "artifacts": [
-              "docs/implementation/evidence/phase-2-p2-09-d70ab44.json"
+              "docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json"
             ],
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
-            "assertion_map_pointer": "/assertion_map",
-            "observation_limit": "Python source selectors are backed by observed whole-file progress; widget selectors bind actual browser cases. No per-node/parameter pass or shared scenario closure is inferred."
+            "assertion_map_pointer": "/tool_matrix",
+            "observation_limit": "All25 named tool bindings use actual passing JUnit cases; relevant same-source gates only. d70 full/browser/widget evidence remains historical."
           },
           "P2-MCP-001": {
             "sha": "d70ab445de38aee255275880c5ef7a105ebbb939",
@@ -4473,6 +4538,69 @@
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
             "observation_limit": "Python source selectors are backed by observed whole-file progress; widget selectors bind actual browser cases. No per-node/parameter pass or shared scenario closure is inferred."
+          },
+          "P2-S33": {
+            "sha": "bd47329cca5c1409486fff40d48e92163ab4a8af",
+            "test_nodes": [
+              "tests/contract/test_phase2_mcp_registry.py::test_independent_exact_25_names_fields_scopes_and_annotations_after_p208",
+              "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth",
+              "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control",
+              "tests/security/test_phase2_mcp_registry_security.py::test_every_registered_name_fails_closed_without_a_valid_transport_principal",
+              "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch",
+              "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts",
+              "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes",
+              "tests/integration/test_phase2_xray_mcp_real_owners_postgres.py::test_xray_mcp_real_owner_and_account_associations_with_retained_positive_runs",
+              "tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py::test_report_alert_mcp_transport_uses_real_two_owner_resources_and_current_grants"
+            ],
+            "commands": [
+              {
+                "command": "make check-workspace format-check lint typecheck generated-check docs-check",
+                "exit_code": 0
+              },
+              {
+                "command": "env -u PYTEST_ADDOPTS -u P210_RETENTION_PLAN_OUTPUT uv run --no-sync pytest -v --tb=short --basetemp=${RESUME_ROOT}/p209-s33-immutable-bd47329-01/pytest-tmp --junitxml=${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml tests/unit/mcp tests/contract tests/security tests/integration/test_target_mcp_postgres.py tests/integration/test_api_mcp_postgres_parity.py tests/integration/test_report_mcp_postgres.py tests/integration/test_alert_mcp_postgres.py tests/integration/test_stable_collection_queries.py tests/integration/test_collection_query_snapshots.py tests/integration/test_phase2_legacy_mcp_owners_postgres.py tests/integration/test_phase2_intelligence_mcp_owners_postgres.py tests/integration/test_phase2_xray_mcp_real_owners_postgres.py tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py",
+                "exit_code": 0
+              },
+              {
+                "command": "python3 ${RESUME_ROOT}/p209-s33-security-bd47329-01/run_scans.py source",
+                "exit_code": 0
+              },
+              {
+                "command": "make security-check",
+                "exit_code": 0
+              },
+              {
+                "command": "uv build --all-packages --out-dir ${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist",
+                "exit_code": 0
+              },
+              {
+                "command": "docker build --iidfile ${RESUME_ROOT}/p209-s33-security-bd47329-01/mcp-image-id.txt --file ${RESUME_ROOT}/p209-s33-security-bd47329-01/source/infrastructure/docker/mcp.Dockerfile --tag t212pi_stage_a_20260907-mcp:latest ${RESUME_ROOT}/p209-s33-security-bd47329-01/source",
+                "exit_code": 0
+              },
+              {
+                "command": "docker image inspect --format '{\"id\":{{json .Id}},\"user\":{{json .Config.User}},\"os\":{{json .Os}},\"architecture\":{{json .Architecture}},\"entrypoint\":{{json (index .Config \"Entrypoint\")}},\"command\":{{json .Config.Cmd}},\"healthcheck\":{{json .Config.Healthcheck}}}' sha256:52d812c92acc1c11a036e444d841f8cae2ac2c5ef2113a566423cf111dbcaa21",
+                "exit_code": 0
+              },
+              {
+                "command": "uv run python -m scripts.check_runtime_package_managers sha256:52d812c92acc1c11a036e444d841f8cae2ac2c5ef2113a566423cf111dbcaa21",
+                "exit_code": 0
+              },
+              {
+                "command": "docker run --rm --network=none --read-only --cap-drop=ALL --security-opt=no-new-privileges --entrypoint /bin/sh sha256:52d812c92acc1c11a036e444d841f8cae2ac2c5ef2113a566423cf111dbcaa21 -c 'runtime_uid=$(id -u); printf \"runtime_uid=%s\\n\" \"$runtime_uid\"; test \"$runtime_uid\" -ne 0'",
+                "exit_code": 0
+              },
+              {
+                "command": "${TOOLS_ROOT}/trivy-0.74.0/trivy image --cache-dir ${TOOLS_ROOT}/trivy-cache --image-src docker --scanners vuln,secret --severity HIGH,CRITICAL --exit-code 1 --ignore-unfixed --format table --config ${RESUME_ROOT}/p209-s33-security-bd47329-01/source/trivy.yaml sha256:52d812c92acc1c11a036e444d841f8cae2ac2c5ef2113a566423cf111dbcaa21",
+                "exit_code": 0
+              }
+            ],
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json"
+            ],
+            "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+            "ci_state": "deferred_by_owner",
+            "assertion_map_pointer": "/tool_matrix",
+            "observation_limit": "All25 named tool bindings use actual passing JUnit cases; relevant same-source gates only. d70 full/browser/widget evidence remains historical."
           }
         }
       },
@@ -4697,6 +4825,13 @@
           "artifact": "docs/implementation/evidence/phase-2-p2-09-d70ab44-implementation-history.json",
           "sha256": "d05c9d1f6d722f57e3e8d943b77ca95ad0b8bde61fcd9ba5bd1b7822efb0f00c",
           "scope": "Original tracker values only."
+        },
+        {
+          "work_package": "P2-09",
+          "source_sha": "bd47329cca5c1409486fff40d48e92163ab4a8af",
+          "artifact": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329-implementation-history.json",
+          "sha256": "6fb2d0870855436c5fc8de94dca11156f00eb0c1d70ec7c8d1cab9e88c15c60b",
+          "scope": "Original five tracker objects only."
         }
       ],
       "post_p206_housekeeping": {
@@ -4713,16 +4848,84 @@
       },
       "current_implementation": {
         "work_package": "P2-09",
-        "status": "in_progress",
-        "source_sha": "d70ab445de38aee255275880c5ef7a105ebbb939",
-        "acceptance_claim": false,
+        "status": "complete",
+        "source_sha": "bd47329cca5c1409486fff40d48e92163ab4a8af",
+        "acceptance_claim": true,
         "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
-        "artifact": "docs/implementation/evidence/phase-2-p2-09-d70ab44.json",
+        "artifact": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json",
         "github_actions": "deferred_by_owner",
-        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-09-d70ab44-implementation-history.json",
+        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329-implementation-history.json",
         "specification": "docs/integrations/P2_09_MCP_REGISTRY_ACCEPTANCE.md",
         "widget_specification": "apps/mcp/WIDGET_PRESENTATION.md",
-        "remaining_requirement": "P2-S33 persisted authorization matrix before package completion"
+        "relevant_gates": {
+          "static_and_architecture": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-static-01.json",
+              "sha256": "581b25a3e42bb6a3fc073ccb67e45757f9ee7c745b712fea779c75e99dd983db",
+              "bytes": 1316
+            }
+          ],
+          "mcp_unit_contract_security": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+              "bytes": 2502
+            }
+          ],
+          "s33_postgres": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+              "bytes": 2502
+            }
+          ],
+          "source_security": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-source-security.json",
+              "sha256": "0eacb19f40813647213f7a3d8d84a3bf00bcc2ae99bd854de17e57104c054e3f",
+              "bytes": 1330
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-policy-security.json",
+              "sha256": "e9566b5d9b771e923fbbeca74ec0f916f5474f0c76b695ef32eac71140105e87",
+              "bytes": 1234
+            }
+          ],
+          "python_build": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-python-build.json",
+              "sha256": "455676b45c722fe9b9460b375b1633c3f2c6ead068a2963376d6d3ab71e102ca",
+              "bytes": 1358
+            }
+          ],
+          "mcp_image_build_and_scan": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-build.json",
+              "sha256": "e24f15849f4998b08af63a68fbc4f88e648ca6887eec7d1986410f2108f06f3d",
+              "bytes": 1873
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-inspect-02.json",
+              "sha256": "ebc735c446a935b7879cf117c28ec4e5012441f591b82cd1b7ab2ece1b961551",
+              "bytes": 1587
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-package-managers.json",
+              "sha256": "99ed62b2e613418422426e469604ce5961a44a3e9e6f8759579c2f8df41eccab",
+              "bytes": 1373
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-nonroot.json",
+              "sha256": "7d7c17e76d26c71a6ff622595ac98cf4504d348b84f49a74484c771f5d438eb1",
+              "bytes": 1562
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-image-security.json",
+              "sha256": "0f7400c093f39da4daf3803ba8d4dab3f63f6d5ad0c6574484609615dea4e126",
+              "bytes": 1756
+            }
+          ]
+        }
       }
     },
     "phase_3": {

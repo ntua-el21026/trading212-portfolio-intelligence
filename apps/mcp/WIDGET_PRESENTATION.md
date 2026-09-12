@@ -2,6 +2,8 @@
 
 The five MCP resources have scoped local P209 acceptance at `d70ab445de38aee255275880c5ef7a105ebbb939`, with actual widget cases and reviewed captures retained in [P209 scoped evidence](../../docs/implementation/evidence/phase-2-p2-09-d70ab44.json). Rendering bounds and compatibility remain as described below. Final shared scenarios and live ChatGPT registration remain incomplete; no new full Compose runtime or cleanup is claimed.
 
+P2-09 and its assigned S33 authorization scenario are complete at `bd47329cca5c1409486fff40d48e92163ab4a8af` in the [S33 supplement](../../docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json). This adds authorization and relevant build/security evidence; it does not create new widget/browser/visual observations. Phase 2 remains in progress at 9/10 packages (90%), 23/29 local rows and 31/40 scenarios, with P2-10 and Phase 3 not_started, owner-deferred CI and a null final release SHA.
+
 The five static resources keep their existing URI, MIME, and Python export names:
 
 | Resource | Export | Presentation |

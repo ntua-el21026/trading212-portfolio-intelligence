@@ -1,0 +1,169 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "historical_p209_pre_s33_tracker_observations",
+  "closure_source_sha": "bd47329cca5c1409486fff40d48e92163ab4a8af",
+  "new_acceptance_claim": false,
+  "scope": "Five original objects before supplemental closure; original observations and failures are not relabeled.",
+  "observations": [
+    {
+      "source_path": "PROJECT_PROGRESS.json",
+      "source_file_sha256": "b8ecc027f3ce81ef0a0131f677fc985db6d31cf948d65967dbf90a476d452b18",
+      "json_pointer": "/phases/phase_2/candidate_validation",
+      "value": {
+        "work_package": "P2-09",
+        "source_sha": "d70ab445de38aee255275880c5ef7a105ebbb939",
+        "scope": "MCP001/002 checks passed; solely assigned S33 and full package closure remain pending.",
+        "acceptance": "scoped_rows_passed_package_acceptance_pending",
+        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+        "evidence_finalized_at_utc": "2026-09-12T18:08:53.523669+00:00",
+        "artifacts": [
+          "docs/implementation/evidence/phase-2-p2-09-d70ab44.json"
+        ],
+        "artifact_sha256": "9aa88b76cb98447c2551ad9236e6965a42df8d5c72ba4a7f32974d5ce3175353",
+        "make_validate": "passed",
+        "observed_gate_counts": {
+          "browser_cases_in_supplied_reports": 208,
+          "python_full_gate": {
+            "isolated": 2545,
+            "service_backed": 379
+          }
+        },
+        "gate_record_sha256": "ebcd91dc49870cc47b42850872f6abb6fed189e3e4ab2a87e259c615cecee5d7",
+        "assertion_map_pointer": "/assertion_map",
+        "runtime_scope": "Browser observations retained; no new full Compose runtime/restart/cleanup claimed.",
+        "ci_state": "deferred_by_owner",
+        "ci_verified": false,
+        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-09-d70ab44-implementation-history.json",
+        "previous_candidate_validation_pointer": "/observations/0/value"
+      }
+    },
+    {
+      "source_path": "PROJECT_PROGRESS.json",
+      "source_file_sha256": "b8ecc027f3ce81ef0a0131f677fc985db6d31cf948d65967dbf90a476d452b18",
+      "json_pointer": "/phases/phase_2/current_implementation",
+      "value": {
+        "work_package": "P2-09",
+        "status": "in_progress",
+        "source_sha": "d70ab445de38aee255275880c5ef7a105ebbb939",
+        "acceptance_claim": false,
+        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+        "artifact": "docs/implementation/evidence/phase-2-p2-09-d70ab44.json",
+        "github_actions": "deferred_by_owner",
+        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-09-d70ab44-implementation-history.json",
+        "specification": "docs/integrations/P2_09_MCP_REGISTRY_ACCEPTANCE.md",
+        "widget_specification": "apps/mcp/WIDGET_PRESENTATION.md",
+        "remaining_requirement": "P2-S33 persisted authorization matrix before package completion"
+      }
+    },
+    {
+      "source_path": "PROJECT_PROGRESS.json",
+      "source_file_sha256": "b8ecc027f3ce81ef0a0131f677fc985db6d31cf948d65967dbf90a476d452b18",
+      "json_pointer": "/phases/phase_2/acceptance/evidence/P2-09",
+      "value": {
+        "sha": "d70ab445de38aee255275880c5ef7a105ebbb939",
+        "test_nodes": [
+          "tests/contract/test_historical_contract.py::test_comparison_widget_has_valid_hash_csp_safe_dom_and_no_network_or_financial_math",
+          "tests/contract/test_historical_contract.py::test_exact_four_historical_tools_have_frozen_scopes_fields_annotations_and_resource",
+          "tests/contract/test_mcp_contract.py::test_snapshot_widget_is_preserved_and_only_declared_tools_add_resources",
+          "tests/contract/test_phase2_mcp_registry.py::test_independent_exact_25_names_fields_scopes_and_annotations_after_p208",
+          "tests/contract/test_phase2_mcp_registry.py::test_original_nine_keep_opaque_ids_coercion_dates_and_decimal_output",
+          "tests/contract/test_planning_contract.py::test_four_tools_have_exact_scopes_annotations_and_no_future_registry_placeholders",
+          "tests/contract/test_planning_contract.py::test_plan_resource_csp_hashes_bind_every_inline_script_and_style",
+          "tests/e2e/web/p209-widget-presentation.spec.ts::X-ray Top bound is 50 and its full-scope overlap is never recomputed from a sample",
+          "tests/e2e/web/p209-widget-presentation.spec.ts::clears retained display on partial/full input and cancellation, then recovers",
+          "tests/e2e/web/p209-widget-presentation.spec.ts::historical metric quality differs from run quality and partial values keep exact units",
+          "tests/e2e/web/p209-widget-presentation.spec.ts::ignores forged sources and request-shaped notifications, honors error results",
+          "tests/e2e/web/p209-widget-presentation.spec.ts::late snapshot initialize failure cannot restore stale compatibility output after new input",
+          "tests/e2e/web/p209-widget-presentation.spec.ts::plan shows bounded explanations and pins separately from solver success and supports keyboard table access",
+          "tests/e2e/web/p209-widget-presentation.spec.ts::rejects malformed and excessive displayed collections without throwing or retaining success",
+          "tests/e2e/web/p209-widget-presentation.spec.ts::report markup remains text and purged context removes prior pins and warnings",
+          "tests/e2e/web/p209-widget-presentation.spec.ts::ships matching static CSP hashes and renders only text without external requests",
+          "tests/e2e/web/p209-widget-presentation.spec.ts::snapshot preserves q18, zero, unavailable and source instant as accessible text",
+          "tests/e2e/web/p209-widget-presentation.spec.ts::snapshot retains the legacy decimal lexical range and distinguishes partial from unavailable",
+          "tests/integration/test_alert_mcp_postgres.py::test_alert_mcp_window_page_survives_restart_and_checks_current_grants",
+          "tests/integration/test_api_mcp_postgres_parity.py::test_postgres_backed_api_and_mcp_return_identical_canonical_values",
+          "tests/integration/test_planning_api_postgres.py::test_actual_drift_and_saved_plan_match_mcp_with_real_worker_and_revision_history",
+          "tests/integration/test_planning_api_postgres.py::test_mcp_command_persists_holding_overrides_and_api_recalculation_retains_them",
+          "tests/integration/test_planning_api_postgres.py::test_planning_success_invalid_retry_and_duplicate_delivery_never_send_to_broker",
+          "tests/integration/test_planning_postgres.py::test_concurrent_same_command_has_one_job_request_and_outbox",
+          "tests/integration/test_planning_postgres.py::test_foreign_owner_and_account_fail_before_durable_mutation",
+          "tests/integration/test_planning_postgres.py::test_real_snapshot_plan_is_immutable_idempotent_and_replayable",
+          "tests/integration/test_report_mcp_postgres.py::test_report_mcp_concurrent_retry_restart_api_parity_and_current_authorization",
+          "tests/security/test_mcp_security.py::test_mcp_source_has_no_provider_transport_orm_or_generic_proxy_surface",
+          "tests/security/test_mcp_security.py::test_missing_auth_configuration_fails_closed_but_health_remains_observable",
+          "tests/security/test_phase2_mcp_registry_security.py::test_every_registered_name_fails_closed_without_a_valid_transport_principal",
+          "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth",
+          "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control",
+          "tests/security/test_phase2_mcp_registry_security.py::test_original_nine_enforce_owner_and_account_in_canonical_service",
+          "tests/unit/mcp/test_alert_gateway.py::test_summary_uses_same_typed_counts_history_and_proof_without_private_basis",
+          "tests/unit/mcp/test_alert_gateway.py::test_unsupported_alert_arguments_never_reach_service",
+          "tests/unit/mcp/test_gateway.py::test_unknown_input_and_unknown_tool_fail_before_application_dispatch",
+          "tests/unit/mcp/test_historical_gateway.py::test_attribution_frozen_bounds_and_group_reference",
+          "tests/unit/mcp/test_historical_gateway.py::test_four_tools_delegate_once_and_preserve_canonical_full_result",
+          "tests/unit/mcp/test_historical_gateway.py::test_literal_date_instant_validation_survives_strict_sdk_model",
+          "tests/unit/mcp/test_historical_gateway.py::test_no_extra_api_options_or_unknown_keys_are_exposed_by_mcp",
+          "tests/unit/mcp/test_planning_gateway.py::test_individually_valid_mcp_arrays_still_enforce_64k_total_request_bound",
+          "tests/unit/mcp/test_planning_gateway.py::test_mcp_input_types_fail_before_planning_service",
+          "tests/unit/mcp/test_planning_gateway.py::test_service_errors_never_echo_private_exception_messages",
+          "tests/unit/mcp/test_planning_gateway.py::test_unknown_argument_keys_and_values_are_redacted_before_sdk_echo",
+          "tests/unit/mcp/test_report_gateway.py::test_company_run_requires_a_relevant_report_section_before_service",
+          "tests/unit/mcp/test_report_gateway.py::test_forbidden_command_extension_rejected_before_service_without_echo",
+          "tests/unit/mcp/test_report_gateway.py::test_invalid_company_run_is_rejected_without_service_or_input_echo",
+          "tests/unit/mcp/test_report_gateway.py::test_optional_company_run_is_forwarded_to_the_canonical_report_selection",
+          "tests/unit/mcp/test_report_gateway.py::test_three_descriptors_have_exact_closed_fields_scopes_and_private_widget",
+          "tests/unit/mcp/test_report_gateway.py::test_wrong_account_result_and_raw_failure_cannot_escape_gateway",
+          "tests/unit/mcp/test_target_gateway.py::test_new_input_schemas_fail_before_dispatch",
+          "tests/unit/mcp/test_target_gateway.py::test_optional_literal_strings_are_not_reinterpreted_as_json",
+          "tests/unit/mcp/test_target_gateway.py::test_target_input_byte_bound_precedes_service_dispatch",
+          "tests/unit/mcp/test_target_gateway.py::test_target_response_byte_bound_is_enforced",
+          "tests/unit/mcp/test_xray_gateway.py::test_http_only_and_unknown_selectors_are_rejected",
+          "tests/unit/mcp/test_xray_gateway.py::test_registry_exposes_exact_scopes_and_network_isolated_resource",
+          "tests/unit/mcp/test_xray_gateway.py::test_typed_canonical_data_and_currency_selection_delegate_once"
+        ],
+        "commands": [
+          {
+            "command": "make validate",
+            "exit_code": 0
+          }
+        ],
+        "artifacts": [
+          "docs/implementation/evidence/phase-2-p2-09-d70ab44.json"
+        ],
+        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+        "ci_state": "deferred_by_owner",
+        "assertion_map_pointer": "/assertion_map",
+        "observation_limit": "Python source selectors are backed by observed whole-file progress; widget selectors bind actual browser cases. No per-node/parameter pass or shared scenario closure is inferred."
+      }
+    },
+    {
+      "source_path": "PROJECT_STATUS.json",
+      "source_file_sha256": "e1d208cd79e7ca202679ce6c5f6129519b662599a0a6d1250fc0c18027f4c22e",
+      "json_pointer": "/current_work_package",
+      "value": {
+        "id": "P2-09",
+        "status": "in_progress",
+        "source_sha": "d70ab445de38aee255275880c5ef7a105ebbb939",
+        "acceptance_claim": false,
+        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+        "artifact": "docs/implementation/evidence/phase-2-p2-09-d70ab44.json",
+        "github_actions": "deferred_by_owner",
+        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-09-d70ab44-implementation-history.json",
+        "specification": "docs/integrations/P2_09_MCP_REGISTRY_ACCEPTANCE.md",
+        "widget_specification": "apps/mcp/WIDGET_PRESENTATION.md",
+        "remaining_requirement": "P2-S33 persisted authorization matrix before package completion"
+      }
+    },
+    {
+      "source_path": "PROJECT_STATUS.json",
+      "source_file_sha256": "e1d208cd79e7ca202679ce6c5f6129519b662599a0a6d1250fc0c18027f4c22e",
+      "json_pointer": "/phase_2_package_evidence/P2-09",
+      "value": {
+        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+        "artifact": "docs/implementation/evidence/phase-2-p2-09-d70ab44.json",
+        "ci_state": "deferred_by_owner",
+        "sha": "d70ab445de38aee255275880c5ef7a105ebbb939",
+        "status": "in_progress"
+      }
+    }
+  ]
+}

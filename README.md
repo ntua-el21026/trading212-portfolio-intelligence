@@ -10,7 +10,9 @@ A private, premium, strictly read-only portfolio intelligence platform for Tradi
 
 ## Current Phase 2 increment
 
-The P2-MCP-001 and P2-MCP-002 scoped checks passed at `d70ab445de38aee255275880c5ef7a105ebbb939`. P2-09 remains in progress until its assigned P2-S33 authorization scenario is accepted. Phase 2 has 8/10 completed packages (80%), 23/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred, with no pass claim. The final Phase 2 release SHA remains null.
+P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. Phase 2 remains in progress with 9/10 completed packages (90%), 23/29 local rows and 31/40 scenarios complete. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. S32/S34/S38/S39 remain partial. P2-10 and Phase 3 remain `not_started`; GitHub Actions is owner-deferred with no pass claim, and the final Phase 2 release SHA remains null.
+
+[P209/S33 supplement](docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json); finalized 2026-09-12T19:03:50.016115+00:00. The same-source relevant MCP, PostgreSQL, static, security, Python-build and single-MCP-image gates passed. The d70 full validation and browser/visual evidence remain historical; no new full validation, browser/visual gate or seven-service runtime is claimed.
 
 [P209 scoped evidence](docs/implementation/evidence/phase-2-p2-09-d70ab44.json); finalized 2026-09-12T18:08:53.523669+00:00. The artifact retains actual widget/API browser observations as supporting evidence. It does not claim a new full Compose startup/restart, runtime cleanup, PDF visual gate or live ChatGPT registration.
 
@@ -67,7 +69,7 @@ API, web, workers, reports, and MCP tools share the same canonical domain, autho
 | Phase | Release | Outcome | Status |
 |---|---:|---|---|
 | 1. Trusted Foundation | `0.1.0` | Monorepo, domain/persistence, GET-only Trading 212 ingestion, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, CI and operations | Implementation complete; 24 local acceptance rows complete; external gates remain |
-| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 through P2-08 locally complete, 8/10 packages (80%); P2-09 authorization acceptance in progress; CI temporarily deferred by owner |
+| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 through P2-09 locally complete, 9/10 packages (90%); P2-10 not started; CI temporarily deferred by owner |
 | 3. Premium Intelligence & Productization | `1.0.0` | Advanced risk/scenarios/projections/goals, research cockpit, rich ChatGPT UI, PWA polish, premium providers and production hardening | Not started |
 
 ## Phase 1 technical baseline
@@ -115,7 +117,7 @@ records this increment's evidence boundary.
 
 P2-04 historical performance, benchmark, attribution, income and cash-flow intelligence has [scoped exact-source acceptance](docs/implementation/P2_04_HISTORICAL_INTELLIGENCE.md) at `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`. P2-05 now has [scoped X-ray acceptance](docs/implementation/P2_05_PORTFOLIO_XRAY.md)
 at `7b102663ea193b4668924a7252180731954f4b00`: exact direct/indirect exposure, licensed sources, overlap and
-canonical API/web/MCP projections. P206 adds private canonical reports and exports with [scoped local acceptance](docs/implementation/evidence/phase-2-p2-06-9e39767.json) at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. Phase 2 has 23/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; P209 authorization acceptance, P210 and shared release predicates remain required. GitHub Actions is deferred by explicit owner instruction across remaining Phase 2 until the owner resumes verification; no current CI pass is claimed. P207 now backs the alerts export dataset with canonical retained input and current authorization/retention.
+canonical API/web/MCP projections. P206 adds private canonical reports and exports with [scoped local acceptance](docs/implementation/evidence/phase-2-p2-06-9e39767.json) at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. Phase 2 has 23/29 local rows and 31/40 scenarios complete. S32/S34/S38/S39 remain partial; P210 and shared release predicates remain required. GitHub Actions is deferred by explicit owner instruction across remaining Phase 2 until the owner resumes verification; no current CI pass is claimed. P207 now backs the alerts export dataset with canonical retained input and current authorization/retention.
 
 **Historical P204/P205 runtime limitations (original observation retained):**
 
@@ -123,7 +125,7 @@ Source-backed known P2-08 limitations remain: the complete seed now has four acc
 
 **Historical P208 web-scope resolution (original statement):**
 
-Current P208 web-scope resolution: the [P208 scoped evidence](docs/implementation/evidence/phase-2-p2-08-bc21516.json) (`/assertion_map/features`, `/assertion_map/checks`, `/runtime/browsers` and `/screenshots`) records the actual API-backed account-selection/header, mobile-label, keyboard and table workflows. Those observations resolve the web follow-up scope from the historical records above. They do not rewrite those historical runtime results, establish default Compose environment forwarding, or claim a new full Compose run. S39 remains partial until P209 widget evidence is accepted.
+Current P208 web-scope resolution: the [P208 scoped evidence](docs/implementation/evidence/phase-2-p2-08-bc21516.json) (`/assertion_map/features`, `/assertion_map/checks`, `/runtime/browsers` and `/screenshots`) records the actual API-backed account-selection/header, mobile-label, keyboard and table workflows. Those observations resolve the web follow-up scope from the historical records above. They do not rewrite those historical runtime results, establish default Compose environment forwarding, or claim a new full Compose run. S39 remains partial for the final shared accessibility closure in P210.
 
 Current P209 contribution: [P209 scoped evidence](docs/implementation/evidence/phase-2-p2-09-d70ab44.json) adds the bounded widget scope. S39 remains partial with final shared accessibility closure required in P210.
 

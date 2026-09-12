@@ -1,0 +1,2217 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_kind": "p209_s33_immutable_source_supplement",
+  "stage": "P2-09",
+  "source_sha": "bd47329cca5c1409486fff40d48e92163ab4a8af",
+  "tree_sha": "6851d62be8f181abdf2eb23dd2eff2383f790591",
+  "generated_at": "2026-09-12T19:03:50.016115+00:00",
+  "result": "passed",
+  "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+  "requirements": [
+    "P2-09",
+    "P2-S33"
+  ],
+  "accepted_rows": [],
+  "validation_scope": "S33 persisted ownership and exact-scope preauthorization supplement, validated by relevant gates at one actual immutable source; not final Phase2 all-local acceptance.",
+  "source_inventory": {
+    "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/source-inventory.json",
+    "sha256": "48ffc413e94f38426da0746b1ec93b30e9e000bda700818c091a98c30ad53a95",
+    "bytes": 209659
+  },
+  "source_change_review": {
+    "baseline_source_sha": "d70ab445de38aee255275880c5ef7a105ebbb939",
+    "changed_production_paths": [
+      "apps/mcp/src/trading212_mcp/gateway.py",
+      "apps/mcp/src/trading212_mcp/server.py"
+    ],
+    "actual_changed_source_refs": [
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/apps/mcp/src/trading212_mcp/gateway.py",
+        "sha256": "65dd6c8ba1d1551ecf7b214e0619b76d059100ac9322f68c22ac6bf0c99c67a1",
+        "bytes": 35852
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/apps/mcp/src/trading212_mcp/server.py",
+        "sha256": "9ceb65f6d6c936fe352448d5f3dd14f8452aee150046f023cd8c30a2f6fd39e8",
+        "bytes": 33602
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/phase2_authorization_cases.py",
+        "sha256": "548d07adc4faeade0fed069df2e9c316a3bb433122758bc573dcd1f846d6e44a",
+        "bytes": 22450
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/phase2_mcp_owner_resources.py",
+        "sha256": "86e75c7ab8a65b76ff58ed71e2316b15c774a12d061123e3e776ecc488dac995",
+        "bytes": 11622
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/phase2_mcp_owner_transport.py",
+        "sha256": "fb3925973d0a8eca1990bd5b88f764035ef554a403e86e06f65a36b666317272",
+        "bytes": 3536
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/phase2_mcp_xray_owners.py",
+        "sha256": "b7bce6d03a6bd7ffcc92be7c7ed163ed41d1b1dee0b88e3a921bbf6f2e35fcbf",
+        "bytes": 9404
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/test_phase2_intelligence_mcp_owners_postgres.py",
+        "sha256": "49dd4c5352a2d04729c900b487a58a5bb7d7cc1e5c14d5778e258a1c2e0f16ab",
+        "bytes": 23713
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/test_phase2_legacy_mcp_owners_postgres.py",
+        "sha256": "aece910c1cbc2ba5eeb9b739f0cbbfd50896e63261e52a39fbec5e76802d61e9",
+        "bytes": 8657
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py",
+        "sha256": "6983f4e0fb80bc28cebc700a3659a65b77fd3b2ef805a8985c82829cbd6cad5f",
+        "bytes": 8734
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/test_phase2_xray_mcp_real_owners_postgres.py",
+        "sha256": "21112bb9c0d5c1a2a028d7430c25876f0852a3f3916b675d260ac0ba1873d850",
+        "bytes": 6430
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/security/test_phase2_mcp_registry_security.py",
+        "sha256": "5d3cdfa7e508b5592eb731870c7c3541f14320c148b5dedff8a1947d24c00534",
+        "bytes": 12587
+      }
+    ],
+    "unexpected_production_changes": [],
+    "reviewer": "ROOT",
+    "reviewed_at_utc": "2026-09-12T19:03:50.016115+00:00",
+    "result": "passed"
+  },
+  "gates": {
+    "static_and_architecture": [
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-static-01.json",
+        "sha256": "581b25a3e42bb6a3fc073ccb67e45757f9ee7c745b712fea779c75e99dd983db",
+        "bytes": 1316
+      }
+    ],
+    "mcp_unit_contract_security": [
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+        "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+        "bytes": 2502
+      }
+    ],
+    "s33_postgres": [
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+        "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+        "bytes": 2502
+      }
+    ],
+    "source_security": [
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-source-security.json",
+        "sha256": "0eacb19f40813647213f7a3d8d84a3bf00bcc2ae99bd854de17e57104c054e3f",
+        "bytes": 1330
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-policy-security.json",
+        "sha256": "e9566b5d9b771e923fbbeca74ec0f916f5474f0c76b695ef32eac71140105e87",
+        "bytes": 1234
+      }
+    ],
+    "python_build": [
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-python-build.json",
+        "sha256": "455676b45c722fe9b9460b375b1633c3f2c6ead068a2963376d6d3ab71e102ca",
+        "bytes": 1358
+      }
+    ],
+    "mcp_image_build_and_scan": [
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-build.json",
+        "sha256": "e24f15849f4998b08af63a68fbc4f88e648ca6887eec7d1986410f2108f06f3d",
+        "bytes": 1873
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-inspect-02.json",
+        "sha256": "ebc735c446a935b7879cf117c28ec4e5012441f591b82cd1b7ab2ece1b961551",
+        "bytes": 1587
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-package-managers.json",
+        "sha256": "99ed62b2e613418422426e469604ce5961a44a3e9e6f8759579c2f8df41eccab",
+        "bytes": 1373
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-nonroot.json",
+        "sha256": "7d7c17e76d26c71a6ff622595ac98cf4504d348b84f49a74484c771f5d438eb1",
+        "bytes": 1562
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-image-security.json",
+        "sha256": "0f7400c093f39da4daf3803ba8d4dab3f63f6d5ad0c6574484609615dea4e126",
+        "bytes": 1756
+      }
+    ]
+  },
+  "build_outputs": {
+    "python_distributions": [
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_analytics-0.1.0-py3-none-any.whl",
+        "sha256": "d4810af94c9b44bd26f035c8772dfccea217edb2fe7e3f648955a9189b151763",
+        "bytes": 127885
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_analytics-0.1.0.tar.gz",
+        "sha256": "19385443eb493aca291f9ffac26b71cf5b924dd91e32d67dbd5debf9e69d4e03",
+        "bytes": 111042
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_api-0.1.0-py3-none-any.whl",
+        "sha256": "c5b9797495796070d973729c414419e529236755381fa6af1925be5d6a0723b8",
+        "bytes": 54364
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_api-0.1.0.tar.gz",
+        "sha256": "5b2875d304247d35cf1c44ab12159db19d373759e16c6f9ee9dd675ae27199d7",
+        "bytes": 41130
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_api_contracts-0.1.0-py3-none-any.whl",
+        "sha256": "e3d91918acb2c77f5f27224eadebdffd67f91d433afb280382ba8724f0fadc27",
+        "bytes": 47316
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_api_contracts-0.1.0.tar.gz",
+        "sha256": "a62dcc229b1338394a14cfa797823fbca1261269ed62d7805dd37424720e6b46",
+        "bytes": 38514
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_application-0.1.0-py3-none-any.whl",
+        "sha256": "7543cdc24ac716e84825e79cad704a8495103cea564c0bb3470848973b65df9c",
+        "bytes": 76269
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_application-0.1.0.tar.gz",
+        "sha256": "5fb2fb56877bc4c708884b586caa631e3fd48f4dee88bb119f43d34acae25458",
+        "bytes": 59701
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_domain-0.1.0-py3-none-any.whl",
+        "sha256": "07dde7c635762093283cdd946952ffcaef7d3806c7aaf9046c7473bbe73621a1",
+        "bytes": 120232
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_domain-0.1.0.tar.gz",
+        "sha256": "02c3884a5e811cca21171801a4c5d7effedd35992a60cad4bc1c3bea6bc2ae71",
+        "bytes": 102170
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_mcp-0.1.0-py3-none-any.whl",
+        "sha256": "6d8e02163925a1d8d1a459e78ff4a9ce5af88bb85567b15391f19ac1e45c950f",
+        "bytes": 84395
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_mcp-0.1.0.tar.gz",
+        "sha256": "3364c260ff1e8b22c1657ae3b80287494c52a8adccb839079743fa8b1091cfb3",
+        "bytes": 65105
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_observability-0.1.0-py3-none-any.whl",
+        "sha256": "065363167be1c9ec746e2038871020fece24562773b320f2968b0d82ace52822",
+        "bytes": 7675
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_observability-0.1.0.tar.gz",
+        "sha256": "833ac4ef392dd76c6f89240c3accdd92403fac53365f7c76989b908409928e94",
+        "bytes": 5155
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_persistence-0.1.0-py3-none-any.whl",
+        "sha256": "a2216f07f7ee15a3d889601114f469577f5ecca661aa985fb0b9048b32f00e03",
+        "bytes": 418621
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_persistence-0.1.0.tar.gz",
+        "sha256": "5f3a8966ae1ae2d44d11c216a35ad6ee86993d941426f22441a883d02ca60cf1",
+        "bytes": 340531
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_provider-0.1.0-py3-none-any.whl",
+        "sha256": "2a4ec34da8855244ee890e7de48ede7911a5a2de9efdfe2f616c2c0736d923e4",
+        "bytes": 18316
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_provider-0.1.0.tar.gz",
+        "sha256": "d49fca3294e60f1bf3f0cd9fbd6916813c7c1c52bb46043b230ec1d221f2eaad",
+        "bytes": 13636
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_reference_data-0.1.0-py3-none-any.whl",
+        "sha256": "c5566ddb7edfb2ca68c7bc465aa32a47db40088168681364ea96d71bf999316b",
+        "bytes": 26000
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_reference_data-0.1.0.tar.gz",
+        "sha256": "0bbdf364f082a36d9239debc20be750883615a2cc6f209e31e1aa2db42ca6873",
+        "bytes": 19858
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_security-0.1.0-py3-none-any.whl",
+        "sha256": "7a00f8cd430a38c490688053ff007ecf1d97b0f276f460c09017d45c84f0e8ce",
+        "bytes": 9505
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_security-0.1.0.tar.gz",
+        "sha256": "2d9a7de662130ba76b70452daad31d10eb76b0e5f71e9e78faf36e2e4e71ec6a",
+        "bytes": 6238
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_worker-0.1.0-py3-none-any.whl",
+        "sha256": "2c1a10d626a63ba63a0bf1dfd6e6b07d2b6586f736aa7648d6fa2f8cc0610020",
+        "bytes": 862037
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/python-dist/trading212_worker-0.1.0.tar.gz",
+        "sha256": "28e0faa7c84988c6467245e5ea277fccbd0d86a6d5b545f8cf9604df2680c026",
+        "bytes": 843876
+      }
+    ],
+    "mcp_image_id_and_inspection": {
+      "image_id": "sha256:52d812c92acc1c11a036e444d841f8cae2ac2c5ef2113a566423cf111dbcaa21",
+      "manifest": {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/image_ids.json",
+        "sha256": "b2d3f8940d18a7df4324a765c1c8491c0b95a72080852454e5f55020a82c8935",
+        "bytes": 82
+      },
+      "inspection_gate": {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-inspect-02.json",
+        "sha256": "ebc735c446a935b7879cf117c28ec4e5012441f591b82cd1b7ab2ece1b961551",
+        "bytes": 1587
+      }
+    },
+    "mcp_image_scan": {
+      "gate": {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-image-security.json",
+        "sha256": "0f7400c093f39da4daf3803ba8d4dab3f63f6d5ad0c6574484609615dea4e126",
+        "bytes": 1756
+      },
+      "log": {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-image-security.log",
+        "sha256": "3b3c862e2f4495189ea6dec629893ea507a0447174c5689ede1087160fd7d6da",
+        "bytes": 29714
+      }
+    },
+    "source_archive": {
+      "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source.tar",
+      "sha256": "9b1c213689f890b3e9c3ddfb3d8885edc46da1c8a1ff2116b364c85cecfe90ee",
+      "bytes": 39270400
+    }
+  },
+  "root_review": {
+    "reviewer": "ROOT",
+    "reviewed_at_utc": "2026-09-12T19:03:50.016115+00:00",
+    "result": "passed",
+    "input_sha256_bindings": [
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+        "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+        "bytes": 2502
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-static-01.json",
+        "sha256": "581b25a3e42bb6a3fc073ccb67e45757f9ee7c745b712fea779c75e99dd983db",
+        "bytes": 1316
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+        "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+        "bytes": 105541
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/source-inventory.json",
+        "sha256": "48ffc413e94f38426da0746b1ec93b30e9e000bda700818c091a98c30ad53a95",
+        "bytes": 209659
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-source-security.json",
+        "sha256": "0eacb19f40813647213f7a3d8d84a3bf00bcc2ae99bd854de17e57104c054e3f",
+        "bytes": 1330
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-policy-security.json",
+        "sha256": "e9566b5d9b771e923fbbeca74ec0f916f5474f0c76b695ef32eac71140105e87",
+        "bytes": 1234
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-python-build.json",
+        "sha256": "455676b45c722fe9b9460b375b1633c3f2c6ead068a2963376d6d3ab71e102ca",
+        "bytes": 1358
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-build.json",
+        "sha256": "e24f15849f4998b08af63a68fbc4f88e648ca6887eec7d1986410f2108f06f3d",
+        "bytes": 1873
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-inspect-02.json",
+        "sha256": "ebc735c446a935b7879cf117c28ec4e5012441f591b82cd1b7ab2ece1b961551",
+        "bytes": 1587
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-package-managers.json",
+        "sha256": "99ed62b2e613418422426e469604ce5961a44a3e9e6f8759579c2f8df41eccab",
+        "bytes": 1373
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-nonroot.json",
+        "sha256": "7d7c17e76d26c71a6ff622595ac98cf4504d348b84f49a74484c771f5d438eb1",
+        "bytes": 1562
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-image-security.json",
+        "sha256": "0f7400c093f39da4daf3803ba8d4dab3f63f6d5ad0c6574484609615dea4e126",
+        "bytes": 1756
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/apps/mcp/src/trading212_mcp/gateway.py",
+        "sha256": "65dd6c8ba1d1551ecf7b214e0619b76d059100ac9322f68c22ac6bf0c99c67a1",
+        "bytes": 35852
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/apps/mcp/src/trading212_mcp/server.py",
+        "sha256": "9ceb65f6d6c936fe352448d5f3dd14f8452aee150046f023cd8c30a2f6fd39e8",
+        "bytes": 33602
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/phase2_authorization_cases.py",
+        "sha256": "548d07adc4faeade0fed069df2e9c316a3bb433122758bc573dcd1f846d6e44a",
+        "bytes": 22450
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/phase2_mcp_owner_resources.py",
+        "sha256": "86e75c7ab8a65b76ff58ed71e2316b15c774a12d061123e3e776ecc488dac995",
+        "bytes": 11622
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/phase2_mcp_owner_transport.py",
+        "sha256": "fb3925973d0a8eca1990bd5b88f764035ef554a403e86e06f65a36b666317272",
+        "bytes": 3536
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/phase2_mcp_xray_owners.py",
+        "sha256": "b7bce6d03a6bd7ffcc92be7c7ed163ed41d1b1dee0b88e3a921bbf6f2e35fcbf",
+        "bytes": 9404
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/test_phase2_intelligence_mcp_owners_postgres.py",
+        "sha256": "49dd4c5352a2d04729c900b487a58a5bb7d7cc1e5c14d5778e258a1c2e0f16ab",
+        "bytes": 23713
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/test_phase2_legacy_mcp_owners_postgres.py",
+        "sha256": "aece910c1cbc2ba5eeb9b739f0cbbfd50896e63261e52a39fbec5e76802d61e9",
+        "bytes": 8657
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py",
+        "sha256": "6983f4e0fb80bc28cebc700a3659a65b77fd3b2ef805a8985c82829cbd6cad5f",
+        "bytes": 8734
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/test_phase2_xray_mcp_real_owners_postgres.py",
+        "sha256": "21112bb9c0d5c1a2a028d7430c25876f0852a3f3916b675d260ac0ba1873d850",
+        "bytes": 6430
+      },
+      {
+        "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/security/test_phase2_mcp_registry_security.py",
+        "sha256": "5d3cdfa7e508b5592eb731870c7c3541f14320c148b5dedff8a1947d24c00534",
+        "bytes": 12587
+      }
+    ],
+    "scope_and_failure_review": "ROOT reviewed the two-file production authorization fix, independent scope/owner/account oracles and all25 named passing JUnit bindings; original103case failure and9case RED retained. Source and singleMCP image gates are actual S results. The original d70 full/browser/six-image evidence remains historical and byte-identical; no new full, browser visual, seven-service restart, public ChatGPT, external integration or Phase3 result is asserted."
+  },
+  "required_test_nodes": [
+    "tests/contract/test_phase2_mcp_registry.py::test_independent_exact_25_names_fields_scopes_and_annotations_after_p208",
+    "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth",
+    "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control",
+    "tests/security/test_phase2_mcp_registry_security.py::test_every_registered_name_fails_closed_without_a_valid_transport_principal",
+    "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch",
+    "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts",
+    "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes",
+    "tests/integration/test_phase2_xray_mcp_real_owners_postgres.py::test_xray_mcp_real_owner_and_account_associations_with_retained_positive_runs",
+    "tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py::test_report_alert_mcp_transport_uses_real_two_owner_resources_and_current_grants"
+  ],
+  "tool_matrix": [
+    {
+      "tool": "get_account_summary",
+      "required_scopes": [
+        "portfolio:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[get_account_summary]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_account_summary]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_account_summary]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[get_account_summary]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[get_account_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_account_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_account_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[get_account_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_portfolio_snapshot",
+      "required_scopes": [
+        "portfolio:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[get_portfolio_snapshot]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_portfolio_snapshot]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_portfolio_snapshot]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[get_portfolio_snapshot]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[get_portfolio_snapshot]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_portfolio_snapshot]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_portfolio_snapshot]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[get_portfolio_snapshot]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "list_positions",
+      "required_scopes": [
+        "portfolio:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[list_positions]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[list_positions]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[list_positions]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[list_positions]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[list_positions]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[list_positions]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[list_positions]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[list_positions]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "list_recent_transactions",
+      "required_scopes": [
+        "portfolio:read",
+        "activity:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[list_recent_transactions]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[list_recent_transactions]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[list_recent_transactions]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[list_recent_transactions]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[list_recent_transactions]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[list_recent_transactions]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[list_recent_transactions]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[list_recent_transactions]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_dividend_summary",
+      "required_scopes": [
+        "portfolio:read",
+        "activity:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[get_dividend_summary]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_dividend_summary]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_dividend_summary]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[get_dividend_summary]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[get_dividend_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_dividend_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_dividend_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[get_dividend_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_direct_allocation",
+      "required_scopes": [
+        "portfolio:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[get_direct_allocation]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_direct_allocation]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_direct_allocation]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[get_direct_allocation]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[get_direct_allocation]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_direct_allocation]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_direct_allocation]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[get_direct_allocation]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "compare_portfolio_snapshots",
+      "required_scopes": [
+        "portfolio:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[compare_portfolio_snapshots]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[compare_portfolio_snapshots]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[compare_portfolio_snapshots]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[compare_portfolio_snapshots]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[compare_portfolio_snapshots]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[compare_portfolio_snapshots]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[compare_portfolio_snapshots]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[compare_portfolio_snapshots]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_reconciliation_status",
+      "required_scopes": [
+        "portfolio:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[get_reconciliation_status]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_reconciliation_status]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_reconciliation_status]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[get_reconciliation_status]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[get_reconciliation_status]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_reconciliation_status]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_reconciliation_status]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[get_reconciliation_status]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_data_quality_summary",
+      "required_scopes": [
+        "portfolio:read",
+        "activity:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[get_data_quality_summary]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_data_quality_summary]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_data_quality_summary]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[get_data_quality_summary]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_legacy_mcp_owners_postgres.py::test_original_nine_real_owners_and_both_owned_accounts[get_data_quality_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_data_quality_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_data_quality_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch[get_data_quality_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "list_virtual_pies",
+      "required_scopes": [
+        "portfolio:read",
+        "targets:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[list_virtual_pies]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[list_virtual_pies]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[list_virtual_pies]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[list_virtual_pies]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[list_virtual_pies]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[list_virtual_pies]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[list_virtual_pies]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_virtual_pie",
+      "required_scopes": [
+        "portfolio:read",
+        "targets:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_virtual_pie]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_virtual_pie]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_virtual_pie]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_virtual_pie]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_virtual_pie]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_virtual_pie]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_virtual_pie]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_actual_vs_target",
+      "required_scopes": [
+        "portfolio:read",
+        "targets:read",
+        "analytics:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_actual_vs_target]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_actual_vs_target]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_actual_vs_target]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_actual_vs_target]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_actual_vs_target]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_actual_vs_target]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_actual_vs_target]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_drift_analysis",
+      "required_scopes": [
+        "portfolio:read",
+        "targets:read",
+        "analytics:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_drift_analysis]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_drift_analysis]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_drift_analysis]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_drift_analysis]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_drift_analysis]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_drift_analysis]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_drift_analysis]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_contribution_plan",
+      "required_scopes": [
+        "portfolio:read",
+        "analytics:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_contribution_plan]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_contribution_plan]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_contribution_plan]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_contribution_plan]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_contribution_plan]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_contribution_plan]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_contribution_plan]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_performance_summary",
+      "required_scopes": [
+        "portfolio:read",
+        "analytics:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_performance_summary]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_performance_summary]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_performance_summary]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_performance_summary]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_performance_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_performance_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_performance_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_benchmark_comparison",
+      "required_scopes": [
+        "portfolio:read",
+        "analytics:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_benchmark_comparison]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_benchmark_comparison]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_benchmark_comparison]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_benchmark_comparison]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_benchmark_comparison]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_benchmark_comparison]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_benchmark_comparison]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_dividend_intelligence",
+      "required_scopes": [
+        "portfolio:read",
+        "activity:read",
+        "analytics:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_dividend_intelligence]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_dividend_intelligence]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_dividend_intelligence]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_dividend_intelligence]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_dividend_intelligence]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_dividend_intelligence]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_dividend_intelligence]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_attribution_summary",
+      "required_scopes": [
+        "portfolio:read",
+        "analytics:read",
+        "targets:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_attribution_summary]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_attribution_summary]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_attribution_summary]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_attribution_summary]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[get_attribution_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_attribution_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_attribution_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_effective_exposure",
+      "required_scopes": [
+        "portfolio:read",
+        "analytics:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_xray_mcp_real_owners_postgres.py::test_xray_mcp_real_owner_and_account_associations_with_retained_positive_runs[get_effective_exposure]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_effective_exposure]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_effective_exposure]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_effective_exposure]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_xray_mcp_real_owners_postgres.py::test_xray_mcp_real_owner_and_account_associations_with_retained_positive_runs[get_effective_exposure]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_effective_exposure]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_effective_exposure]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_etf_overlap",
+      "required_scopes": [
+        "portfolio:read",
+        "analytics:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_xray_mcp_real_owners_postgres.py::test_xray_mcp_real_owner_and_account_associations_with_retained_positive_runs[get_etf_overlap]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_etf_overlap]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_etf_overlap]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_etf_overlap]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_xray_mcp_real_owners_postgres.py::test_xray_mcp_real_owner_and_account_associations_with_retained_positive_runs[get_etf_overlap]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_etf_overlap]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_etf_overlap]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_report_status",
+      "required_scopes": [
+        "portfolio:read",
+        "reports:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py::test_report_alert_mcp_transport_uses_real_two_owner_resources_and_current_grants[get_report_status]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_report_status]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_report_status]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_report_status]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py::test_report_alert_mcp_transport_uses_real_two_owner_resources_and_current_grants[get_report_status]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_report_status]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_report_status]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "list_reports",
+      "required_scopes": [
+        "portfolio:read",
+        "reports:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py::test_report_alert_mcp_transport_uses_real_two_owner_resources_and_current_grants[list_reports]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[list_reports]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[list_reports]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[list_reports]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py::test_report_alert_mcp_transport_uses_real_two_owner_resources_and_current_grants[list_reports]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[list_reports]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[list_reports]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "get_alert_summary",
+      "required_scopes": [
+        "portfolio:read",
+        "alerts:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py::test_report_alert_mcp_transport_uses_real_two_owner_resources_and_current_grants[get_alert_summary]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_alert_summary]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_alert_summary]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_alert_summary]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py::test_report_alert_mcp_transport_uses_real_two_owner_resources_and_current_grants[get_alert_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[get_alert_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[get_alert_summary]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "create_contribution_plan",
+      "required_scopes": [
+        "portfolio:read",
+        "targets:read",
+        "analytics:read",
+        "plans:write"
+      ],
+      "persisted_case": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[create_contribution_plan]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[create_contribution_plan]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[create_contribution_plan]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[create_contribution_plan]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_intelligence_mcp_owners_postgres.py::test_intelligence_tools_real_owner_account_controls_and_authenticated_scopes[create_contribution_plan]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[create_contribution_plan]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[create_contribution_plan]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    },
+    {
+      "tool": "generate_portfolio_report",
+      "required_scopes": [
+        "portfolio:read",
+        "analytics:read",
+        "reports:write",
+        "activity:read",
+        "targets:read"
+      ],
+      "persisted_case": "tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py::test_report_alert_mcp_transport_uses_real_two_owner_resources_and_current_grants[generate_portfolio_report]",
+      "missing_scope_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[generate_portfolio_report]",
+      "invalid_input_case": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[generate_portfolio_report]",
+      "pre_dispatch_case": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[generate_portfolio_report]",
+      "observed_result": "passed",
+      "observed_junit_bindings": [
+        {
+          "node_id": "tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py::test_report_alert_mcp_transport_uses_real_two_owner_resources_and_current_grants[generate_portfolio_report]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_every_tool_hides_unknown_names_values_and_invalid_known_values_before_auth[generate_portfolio_report]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        },
+        {
+          "node_id": "tests/security/test_phase2_mcp_registry_security.py::test_exact_scopes_and_each_missing_scope_with_positive_dispatch_control[generate_portfolio_report]",
+          "result": "passed",
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          }
+        }
+      ]
+    }
+  ],
+  "historical_context": {
+    "limited_registry_widget_acceptance": {
+      "path": "${REPOSITORY_ROOT}/docs/implementation/evidence/phase-2-p2-09-d70ab44.json",
+      "sha256": "9aa88b76cb98447c2551ad9236e6965a42df8d5c72ba4a7f32974d5ce3175353",
+      "bytes": 204373
+    },
+    "limited_artifact_effective_scope": "Retained P2-MCP-001/P2-MCP-002 evidence only; this predecessor alone did not close solely owned S33 or P209. Its bytes and original claims are preserved as history.",
+    "full_validation": {
+      "bytes": 11963,
+      "path": "${RESUME_ROOT}/gates/p209-immutable-d70ab44-full-01.json",
+      "sha256": "ebcd91dc49870cc47b42850872f6abb6fed189e3e4ab2a87e259c615cecee5d7"
+    },
+    "full_validation_source_sha": "d70ab445de38aee255275880c5ef7a105ebbb939",
+    "full_validation_current_source_claim": false,
+    "failure_observations": [
+      {
+        "receipt": {
+          "path": "${RESUME_ROOT}/gates/p209-s33-working-01.json",
+          "sha256": "af8be822d42b00cb983077a449e769b56799cc56ac24f9500cd49ddd6bd2040b",
+          "bytes": 5313
+        },
+        "result": "failed",
+        "scope": "historical_working_source_only",
+        "note": "Actual first persisted grid failed: 8 failures and 95 passes. ROOT confirmed a denied legacy transaction call added one collection snapshot; retain all other failures and their separate fixture diagnoses."
+      },
+      {
+        "receipt": {
+          "path": "${RESUME_ROOT}/gates/p209-legacy-preauthorization-red-01.json",
+          "sha256": "8d4319895fc77e4a9471bb8ae39533ea3032f009eebde310ba12c6844eadea5a",
+          "bytes": 4525
+        },
+        "result": "failed",
+        "scope": "historical_working_source_only",
+        "note": "Actual nine new pre-dispatch regression cases failed before applying the production correction. ROOT reviewed each intended failure; no result is promoted to passed here."
+      }
+    ],
+    "additional_observed_failure_and_fix_records": [
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-historical-diagnostic-01.json",
+        "sha256": "aa0bacd15a87e614f9ac8eab2b4ba63d328ef8a73cdbe93590ea26e44d6b9509",
+        "bytes": 4721
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-closed-day-01.json",
+        "sha256": "808a5f7f09c344af81882720a2e6b6f1ecee9e51b7cd9105edced4045558e9cb",
+        "bytes": 4644
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-plan-cursor-01.json",
+        "sha256": "4530e034af62451a8ee5b6898d1a691fd8adbf22080d2d2a8d488109bf60c198",
+        "bytes": 4611
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-working-02.json",
+        "sha256": "a40c47fcebe6bcebda210bd855aa48e4d0f096d643be151589a98cbe043f6613",
+        "bytes": 5446
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-regression-working-01.json",
+        "sha256": "d1a87b84d3264e68321ea6de241580e4f60bc11043bf29414dc0ab036920871f",
+        "bytes": 4936
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-xray-fixture-labels-01.json",
+        "sha256": "bc2ea2f7261a978e31a7265171ad856ce08f00272ca7de0bfedc7283b15ecc2e",
+        "bytes": 1731
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-staged-gitleaks-01.json",
+        "sha256": "b946b51ab2c5b34afe77bef0cb2ededaf4c5f03d5dee238cea5abe8149b4b9f3",
+        "bytes": 2635
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-staged-gitleaks-02.json",
+        "sha256": "2f7e972e770bf7f1181a0cbbe99474d7e06f0766c81773554288babf33a1d22e",
+        "bytes": 2141
+      },
+      {
+        "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-inspect.json",
+        "sha256": "5796b5aee4985f097404faa95a773dbc1a32ba39ec94378cd69e863e40eb1f87",
+        "bytes": 1572
+      }
+    ],
+    "image_inspection_correction": "The original metadata-only Go template rejected an absent Entrypoint key; actual Docker image uses CMD. The corrected inspection uses map lookup to record null and passed against the same built image. No image or source rebuild was required."
+  },
+  "corrections": {
+    "legacy_scope_dispatch": {
+      "production_fix": "Require the whole legacy tool scope set after principal resolution and before any service callback; use one injected runtime-clock instant and preserve canonical owner checks.",
+      "regression": "tests/security/test_phase2_mcp_registry_security.py::test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch",
+      "actual_same_source_passing_receipt": {
+        "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+        "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+        "bytes": 2502
+      }
+    },
+    "persisted_fixture_corrections": {
+      "actual_source_refs": [
+        {
+          "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/phase2_authorization_cases.py",
+          "sha256": "548d07adc4faeade0fed069df2e9c316a3bb433122758bc573dcd1f846d6e44a",
+          "bytes": 22450
+        },
+        {
+          "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/phase2_mcp_owner_resources.py",
+          "sha256": "86e75c7ab8a65b76ff58ed71e2316b15c774a12d061123e3e776ecc488dac995",
+          "bytes": 11622
+        },
+        {
+          "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/phase2_mcp_owner_transport.py",
+          "sha256": "fb3925973d0a8eca1990bd5b88f764035ef554a403e86e06f65a36b666317272",
+          "bytes": 3536
+        },
+        {
+          "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/phase2_mcp_xray_owners.py",
+          "sha256": "b7bce6d03a6bd7ffcc92be7c7ed163ed41d1b1dee0b88e3a921bbf6f2e35fcbf",
+          "bytes": 9404
+        },
+        {
+          "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/test_phase2_intelligence_mcp_owners_postgres.py",
+          "sha256": "49dd4c5352a2d04729c900b487a58a5bb7d7cc1e5c14d5778e258a1c2e0f16ab",
+          "bytes": 23713
+        },
+        {
+          "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/test_phase2_legacy_mcp_owners_postgres.py",
+          "sha256": "aece910c1cbc2ba5eeb9b739f0cbbfd50896e63261e52a39fbec5e76802d61e9",
+          "bytes": 8657
+        },
+        {
+          "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/test_phase2_report_alert_mcp_authorization_postgres.py",
+          "sha256": "6983f4e0fb80bc28cebc700a3659a65b77fd3b2ef805a8985c82829cbd6cad5f",
+          "bytes": 8734
+        },
+        {
+          "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source/tests/integration/test_phase2_xray_mcp_real_owners_postgres.py",
+          "sha256": "21112bb9c0d5c1a2a028d7430c25876f0852a3f3916b675d260ac0ba1873d850",
+          "bytes": 6430
+        }
+      ],
+      "root_explanation": "Actual ASGI factories invoked; historical periods use a closed UTC day; canonical second holding supplies real planning pagination. Three synthetic registration labels clarified after a staged scanner finding. Original denial, owner/account, cursor and retained-state assertions preserved; no scanner exceptions added.",
+      "actual_same_source_passing_receipt": {
+        "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+        "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+        "bytes": 2502
+      }
+    }
+  },
+  "ci": {
+    "decision": {
+      "bytes": 1487,
+      "path": "${RESUME_ROOT}/owner-ci-deferral-20260910.json",
+      "sha256": "9273a51af64a6ecf5e3934fff5a71182c22434aca29bdd1c0cdbf66221c8f73a"
+    },
+    "passed": false,
+    "state": "deferred_by_owner"
+  },
+  "limitations": [
+    "No new full make validate execution at supplemental source is claimed by this artifact.",
+    "No new browser, widget-image review, web acceptance or seven-service Compose runtime/restart/cleanup claim is made.",
+    "P2-MCP-001 and P2-MCP-002 retain the original d70 source/artifact bindings.",
+    "P2-S32, P2-S34, P2-S38 and P2-S39 remain in progress; P2-10 and Phase3 remain not started.",
+    "Final Phase2 release_evidence_sha remains null."
+  ],
+  "closure_expectation": {
+    "completed_packages": 9,
+    "package_total": 10,
+    "completed_local_rows": 23,
+    "local_row_total": 29,
+    "completed_scenarios": 31,
+    "scenario_total": 40,
+    "final_phase2_release_sha": null
+  },
+  "observed_test_population": {
+    "junit": {
+      "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+      "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+      "bytes": 105541
+    },
+    "gate": {
+      "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+      "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+      "bytes": 2502
+    },
+    "passed": 627,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "note": "One actual invocation; overlapping gate category references are not added together."
+  },
+  "supporting_artifacts": [
+    {
+      "path": "${RESUME_ROOT}/p209-s33-source-delivery-01/delivery.json",
+      "sha256": "738117770001e0699e0bc427323ff144bd800166bdb11a5c6d7f2c5abb145f25",
+      "bytes": 3314
+    },
+    {
+      "path": "${RESUME_ROOT}/p209-s33-source-delivery-01/root-review.json",
+      "sha256": "18cdd0c831465a646e7967295fc420313d57dae612b18a990de9506edbcbd237",
+      "bytes": 2692
+    },
+    {
+      "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/metadata.json",
+      "sha256": "316db2c1fa9dc5c123a5b4a03bb8eda8fbac7d0a231abdf2a2178a234e7e4e09",
+      "bytes": 712
+    },
+    {
+      "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/source-results.json",
+      "sha256": "aa57988cc2720d84664a978a87e12964be40da77fb918720de2ad7a7d6888605",
+      "bytes": 2217
+    },
+    {
+      "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/tool-versions.json",
+      "sha256": "640c21a7efc74b86de8526443bf919f347f1166f6f91b7c1a70581cddc8373e4",
+      "bytes": 774
+    },
+    {
+      "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/run_scans.py",
+      "sha256": "9c8568d7756cffdb1a37676493fd5230d6b34887179c0a3ef19d2c1fadf55ac9",
+      "bytes": 9227
+    },
+    {
+      "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/postconditions.json",
+      "sha256": "81dfc53daacdb81ad04332c9edc38077ad93fa07bbf36a5c972fffe6579f701d",
+      "bytes": 1020
+    },
+    {
+      "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/image-trivy-db-metadata.json",
+      "sha256": "4fd040dfb736f7ead3b6623c94528c0c1fecbc2c7b5894d9fbf3a8f106585464",
+      "bytes": 153
+    },
+    {
+      "path": "${RESUME_ROOT}/p209-s33-security-bd47329-01/image-trivy-policy-metadata.json",
+      "sha256": "3dd99b84ed84153f06471c7b9d47478a34fdfe1ba80e226543fd5954a8665290",
+      "bytes": 155
+    },
+    {
+      "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/finalize_s33_v5.py",
+      "sha256": "d3fd33dad21ba02094780263548350aecc2bc350ac84c71a9574553cb5c76d2f",
+      "bytes": 10230
+    }
+  ]
+}
