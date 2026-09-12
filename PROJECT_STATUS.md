@@ -10,6 +10,16 @@
 
 ## Current state
 
+The P2-MCP-001 and P2-MCP-002 scoped checks passed at `d70ab445de38aee255275880c5ef7a105ebbb939`. P2-09 remains in progress until its assigned P2-S33 authorization scenario is accepted. Phase 2 has 8/10 completed packages (80%), 23/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred, with no pass claim. The final Phase 2 release SHA remains null.
+
+[P209 scoped evidence](docs/implementation/evidence/phase-2-p2-09-d70ab44.json); finalized 2026-09-12T18:08:53.523669+00:00. The artifact retains actual widget/API browser observations as supporting evidence. It does not claim a new full Compose startup/restart, runtime cleanup, PDF visual gate or live ChatGPT registration.
+
+The finalized artifact records 2545 isolated and 379 service-backed Python tests in the full gate, and 208 browser cases across its supplied reports. These are recorded populations, not an aggregate of overlapping runs. Python selectors describe source coverage supported by observed whole-file progress; actual widget cases and ROOT visual reviews remain bound in the artifact.
+
+Historical P209 tracker values and validation/review history are retained in [the scoped archive](docs/implementation/evidence/phase-2-p2-09-d70ab44-implementation-history.json).
+
+### Historical P209 implementation and focused verification
+
 P2-09 implementation is in progress from accepted P208 closure
 `9505e2650aadedd504a0a94117c018b0b7ed153f`. The integrated scope covers the exact
 25-tool MCP registry, private argument errors and five bounded accessible widget
@@ -326,7 +336,7 @@ than fabricated.
 
 ## Next action
 
-Proceed sequentially through required P2-09 and P2-10 with required local verification and the retained owner CI deferral under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+Complete P2-09 authorization acceptance, then proceed through required P2-10 with required local verification and the retained owner CI deferral under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo

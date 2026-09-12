@@ -90,6 +90,8 @@ Scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7` is recorde
 
 ### P2-08 — Premium analytical web experience
 
+**Historical P208 acceptance boundary:**
+
 P2-08 has scoped local acceptance at `bc21516c51aa5090031b39ea56ded3ca94d657d8` for P2-WEB-001 and P2-WEB-002. Phase 2 remains in progress: 8/10 packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-09 and P2-10 remain required and `not_started`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred, not passed. The final Phase 2 release SHA remains null. See [P208 scoped evidence](evidence/phase-2-p2-08-bc21516.json) and [the implemented web contract](P2_08_ANALYTICAL_WEB_EXPERIENCE.md).
 
 - target/Pie editor;
@@ -101,6 +103,10 @@ P2-08 has scoped local acceptance at `bc21516c51aa5090031b39ea56ded3ca94d657d8` 
 - accessibility, responsiveness, visual regression, saved views.
 
 ### P2-09 — Portfolio-intelligence MCP tools
+
+The P2-MCP-001 and P2-MCP-002 scoped checks passed at `d70ab445de38aee255275880c5ef7a105ebbb939`. P2-09 remains in progress until its assigned P2-S33 authorization scenario is accepted. Phase 2 has 8/10 completed packages (80%), 23/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred, with no pass claim. The final Phase 2 release SHA remains null.
+
+[P209 scoped evidence](evidence/phase-2-p2-09-d70ab44.json); finalized 2026-09-12T18:08:53.523669+00:00. The artifact retains actual widget/API browser observations as supporting evidence. It does not claim a new full Compose startup/restart, runtime cleanup, PDF visual gate or live ChatGPT registration.
 
 Add bounded tools for:
 

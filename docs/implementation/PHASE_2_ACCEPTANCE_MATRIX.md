@@ -2,7 +2,7 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 through P2-08 locally complete; 21/29 local rows; remaining Phase 2 CI deferred by owner
+**Implementation acceptance:** In progress; P2-01 through P2-08 locally complete; P2-09 authorization acceptance in progress; 23/29 local rows; remaining Phase 2 CI deferred by owner
 
 **Target release:** `0.2.0`
 
@@ -72,8 +72,8 @@ gates, and final release evidence. A design commit cannot close a runtime row.
 | P2-ALT-003 | P2-07 | Optional email/webhook ports are unavailable when unconfigured; configured destinations are verified, bounded, HTTPS-only outside test mode and protected against SSRF/DNS rebinding/redirects. | 30, 31, 37 | `complete` |
 | P2-WEB-001 | P2-08 | All 18 owner-required analytical/editor/report/alert/source/settings experiences use generated clients, canonical services and explicit quality states with durable deep links and navigation. | 34, 38, 39 | `complete` |
 | P2-WEB-002 | P2-08 | Desktop/mobile keyboard, focus, accessible names, reduced motion, chart/table alternatives, no horizontal overflow, browser navigation and critical visual regression gates pass. | 39 | `complete` |
-| P2-MCP-001 | P2-09 | The exact 25-tool registry preserves nine existing tools and exposes fourteen new reads plus two bounded internal commands with strict schemas, exact scopes and truthful annotations. | 33, 34, 36, 37, 38 | `pending` |
-| P2-MCP-002 | P2-09 | Plan/report commands persist authorized durable IDs with idempotency and audit; resources use strict CSP; unknown fields/tools, injection, cross-owner data and broker access fail closed. | 12, 26, 31, 33, 37 | `pending` |
+| P2-MCP-001 | P2-09 | The exact 25-tool registry preserves nine existing tools and exposes fourteen new reads plus two bounded internal commands with strict schemas, exact scopes and truthful annotations. [Local exact-source assertion map](evidence/phase-2-p2-09-d70ab44.json). | 33, 34, 36, 37, 38 | `complete` |
+| P2-MCP-002 | P2-09 | Plan/report commands persist authorized durable IDs with idempotency and audit; resources use strict CSP; unknown fields/tools, injection, cross-owner data and broker access fail closed. [Local exact-source assertion map](evidence/phase-2-p2-09-d70ab44.json). | 12, 26, 31, 33, 37 | `complete` |
 | P2-API-001 | P2-01–09 | Additive typed `/api/v1` resources enforce owner/account scopes, command CSRF/idempotency/preconditions, stable errors, decimal strings and synchronized OpenAPI/TypeScript output. | 32, 34, 38 | `pending` |
 | P2-DATA-001 | P2-01–10 | Empty/prior-head/repeated migrations, schema drift, indexes, constraints, exact NUMERIC/UTC, immutable provenance and retention/expiry pass on PostgreSQL. | 2, 14, 25, 31, 40 | `pending` |
 | P2-SEC-001 | P2-10 | Every secret/canary/output/archive boundary, owner/scope denial, CSP, provider isolation and webhook SSRF negative passes; no generic SQL/URL/path/shell/browser tool exists. | 26, 27, 30, 32, 33, 36, 37 | `pending` |
@@ -137,7 +137,13 @@ pagination capacity) are retained separately from the corrected fresh runtime. T
 local rows and twelve scenarios are complete; P2-S14/P2-S36 and later/shared
 predicates remain pending. Phase 3 remains `not_started`.
 
-## Current P2-08 scoped local acceptance
+## Current P209 scoped local acceptance
+
+The P2-MCP-001 and P2-MCP-002 scoped checks passed at `d70ab445de38aee255275880c5ef7a105ebbb939`. P2-09 remains in progress until its assigned P2-S33 authorization scenario is accepted. Phase 2 has 8/10 completed packages (80%), 23/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred, with no pass claim. The final Phase 2 release SHA remains null.
+
+[P209 scoped evidence](evidence/phase-2-p2-09-d70ab44.json); finalized 2026-09-12T18:08:53.523669+00:00. The artifact retains actual widget/API browser observations as supporting evidence. It does not claim a new full Compose startup/restart, runtime cleanup, PDF visual gate or live ChatGPT registration.
+
+## Historical P2-08 scoped local acceptance
 
 P2-08 has scoped local acceptance at `bc21516c51aa5090031b39ea56ded3ca94d657d8` for P2-WEB-001 and P2-WEB-002. Phase 2 remains in progress: 8/10 packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-09 and P2-10 remain required and `not_started`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred, not passed. The final Phase 2 release SHA remains null.
 

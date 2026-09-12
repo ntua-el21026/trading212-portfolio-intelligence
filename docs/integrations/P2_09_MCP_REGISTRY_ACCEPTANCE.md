@@ -1,10 +1,10 @@
 # P2-09 MCP registry implementation and acceptance
 
-Status: **implementation in progress; local acceptance pending**. P209 follows
-accepted P208 closure `9505e2650aadedd504a0a94117c018b0b7ed153f`. The registry
-retains exactly 25 bounded tool names, including the original nine reads and the
-two internal durable commands. Trading 212 access remains restricted to the
-frozen ten GET capabilities. GitHub Actions remains owner-deferred.
+The P2-MCP-001 and P2-MCP-002 scoped checks passed at `d70ab445de38aee255275880c5ef7a105ebbb939`. P2-09 remains in progress until its assigned P2-S33 authorization scenario is accepted. Phase 2 has 8/10 completed packages (80%), 23/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred, with no pass claim. The final Phase 2 release SHA remains null.
+
+[P209 scoped evidence](../implementation/evidence/phase-2-p2-09-d70ab44.json); finalized 2026-09-12T18:08:53.523669+00:00. The artifact retains actual widget/API browser observations as supporting evidence. It does not claim a new full Compose startup/restart, runtime cleanup, PDF visual gate or live ChatGPT registration.
+
+The finalized artifact records 2545 isolated and 379 service-backed Python tests in the full gate, and 208 browser cases across its supplied reports. These are recorded populations, not an aggregate of overlapping runs. Python selectors describe source coverage supported by observed whole-file progress; actual widget cases and ROOT visual reviews remain bound in the artifact.
 
 Authorities: owner attachment section 18; [frozen registry](PHASE_2_MCP_TOOL_REGISTRY.md);
 [ADR-0016](../adr/ADR-0016-INTERNAL-MCP-COMMANDS.md). The acceptance oracle in
@@ -69,7 +69,21 @@ and keyboard behavior are described in
 Browser presentation checks complement registry and durable-service checks;
 live ChatGPT registration remains a separate external condition.
 
-## Recorded validation and remaining acceptance
+## Historical P209 implementation validation
+
+### Original implementation status
+
+Status: **implementation in progress; local acceptance pending**. P209 follows
+accepted P208 closure `9505e2650aadedd504a0a94117c018b0b7ed153f`. The registry
+retains exactly 25 bounded tool names, including the original nine reads and the
+two internal durable commands. Trading 212 access remains restricted to the
+frozen ten GET capabilities. GitHub Actions remains owner-deferred.
+
+### Working validation and then-pending acceptance
+
+The observations below retain their original working source and historical pending statements. They do not replace [P209 scoped evidence](../implementation/evidence/phase-2-p2-09-d70ab44.json) or relabel an earlier failed attempt.
+
+
 
 The tests-first privacy regression produced the intended RED against the original
 adapter: nine failures for reflected caller-controlled names/values, 16 passes and

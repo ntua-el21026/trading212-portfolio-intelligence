@@ -1,11 +1,6 @@
 # Widget presentation boundaries
 
-The five MCP resources present canonical results within local display bounds.
-P209 implementation is in progress. Focused desktop/mobile browser and image
-review checks passed on the corrected working source; immutable acceptance remains
-pending. Registry and service
-acceptance are tracked in the
-[P209 implementation record](../../docs/integrations/P2_09_MCP_REGISTRY_ACCEPTANCE.md).
+The five MCP resources have scoped local P209 acceptance at `d70ab445de38aee255275880c5ef7a105ebbb939`, with actual widget cases and reviewed captures retained in [P209 scoped evidence](../../docs/implementation/evidence/phase-2-p2-09-d70ab44.json). Rendering bounds and compatibility remain as described below. Final shared scenarios and live ChatGPT registration remain incomplete; no new full Compose runtime or cleanup is claimed.
 
 The five static resources keep their existing URI, MIME, and Python export names:
 
@@ -66,3 +61,12 @@ this document does not claim an accessibility audit or live ChatGPT acceptance.
 Protocol reference: [MCP Apps stable 2026-01-26 specification](https://github.com/modelcontextprotocol/ext-apps/blob/main/specification/2026-01-26/apps.mdx),
 Host-to-View notifications and lifecycle sections. The installed mcp/mcp_types
 2.1.1 source supplies the CallToolResult structured_content/is_error Python names.
+
+## Historical P209 implementation status
+
+The five MCP resources present canonical results within local display bounds.
+P209 implementation is in progress. Focused desktop/mobile browser and image
+review checks passed on the corrected working source; immutable acceptance remains
+pending. Registry and service
+acceptance are tracked in the
+[P209 implementation record](../../docs/integrations/P2_09_MCP_REGISTRY_ACCEPTANCE.md).

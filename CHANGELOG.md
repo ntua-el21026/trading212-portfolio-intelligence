@@ -4,7 +4,13 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
-### Phase 2 MCP registry and widgets (implementation in progress)
+### Phase 2 MCP registry and widgets (scoped local acceptance)
+
+The P2-MCP-001 and P2-MCP-002 scoped checks passed at `d70ab445de38aee255275880c5ef7a105ebbb939`. P2-09 remains in progress until its assigned P2-S33 authorization scenario is accepted. Phase 2 has 8/10 completed packages (80%), 23/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred, with no pass claim. The final Phase 2 release SHA remains null.
+
+[P209 scoped evidence](docs/implementation/evidence/phase-2-p2-09-d70ab44.json); finalized 2026-09-12T18:08:53.523669+00:00. The artifact retains actual widget/API browser observations as supporting evidence. It does not claim a new full Compose startup/restart, runtime cleanup, PDF visual gate or live ChatGPT registration.
+
+### Historical P209 implementation and focused verification
 
 - Harden argument-validation errors across the exact 25-tool MCP registry while
   preserving the original nine tools' accepted input coercion and response

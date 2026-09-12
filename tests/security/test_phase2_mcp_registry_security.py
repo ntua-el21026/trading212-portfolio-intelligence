@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import copy
 from dataclasses import replace
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any, cast
 from unittest.mock import AsyncMock
 
@@ -16,7 +16,7 @@ from trading212_application.alerts import AlertService
 from trading212_application.historical import PerformanceIntelligenceService
 from trading212_application.planning import PlanningService
 from trading212_application.reports import ReportService
-from trading212_application.services import SyntheticPortfolioService
+from trading212_application.services import PortfolioService, SyntheticPortfolioService
 from trading212_application.targets import TargetService
 from trading212_application.xray import XrayService
 from trading212_mcp.auth import PrincipalResolver
@@ -130,9 +130,73 @@ async def test_exact_scopes_and_each_missing_scope_with_positive_dispatch_contro
         assert denied.structured_content["data"] is None
         assert denied.structured_content["error"]["code"] == "ACCESS_DENIED"
         RESULT_MODELS[case.name].model_validate(denied.structured_content)
-        # Legacy authorization lives inside the real synthetic application service.
-        # New-family authorization must precede even an application-service call.
+        # This mock observes new-family dispatch. The dedicated legacy regression
+        # below also observes calls into its real synthetic application service.
         assert service.mock_calls == [], (case.name, missing)
+
+
+@pytest.mark.parametrize("case", LEGACY_CASES, ids=lambda case: case.name)
+async def test_legacy_tools_check_all_scopes_before_any_canonical_service_dispatch(
+    case: RegistryCase,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    required = frozenset(Scope(value) for value in case.scopes)
+    authorized = replace(_principal(required), expires_at=NOW + timedelta(seconds=60))
+    selected = authorized
+    now = NOW
+
+    async def resolve(_resolver: PrincipalResolver) -> Principal:
+        return selected
+
+    monkeypatch.setattr(PrincipalResolver, "resolve", resolve)
+    canonical = SyntheticPortfolioService(clock=lambda: now)
+    observed = AsyncMock(spec=PortfolioService, wraps=canonical)
+    server = create_runtime(
+        security_settings=SecuritySettings(
+            environment=RuntimeEnvironment.TEST,
+            local_synthetic_auth_enabled=True,
+        ),
+        service=cast(PortfolioService, observed),
+        clock=lambda: now,
+    ).server
+    arguments = {
+        **copy.deepcopy(case.arguments),
+        "account_id": SyntheticPortfolioService.ACCOUNT_ID,
+    }
+
+    # The wrapper must really execute the canonical positive control with exact scopes.
+    positive = await server.call_tool(case.name, arguments)
+    assert isinstance(positive, CallToolResult) and not positive.is_error
+    assert positive.structured_content is not None
+    RESULT_MODELS[case.name].model_validate(positive.structured_content)
+    assert positive.structured_content["data"] is not None
+    assert positive.structured_content["error"] is None
+    assert observed.mock_calls
+
+    for missing in required:
+        observed.reset_mock()
+        selected = replace(authorized, scopes=frozenset(Scope) - {missing})
+        denied = await server.call_tool(case.name, arguments)
+        assert isinstance(denied, CallToolResult) and denied.is_error
+        assert denied.structured_content is not None
+        RESULT_MODELS[case.name].model_validate(denied.structured_content)
+        assert denied.structured_content["data"] is None
+        assert denied.structured_content["error"]["code"] == "ACCESS_DENIED"
+        # Count invocation, not just awaiting: gather can schedule work before another
+        # service rejects, and a submitted database thread cannot be rolled back here.
+        assert observed.mock_calls == [], (case.name, missing)
+
+    # A short-lived positive control and this boundary use the injected runtime clock.
+    observed.reset_mock()
+    selected = authorized
+    now = authorized.expires_at
+    expired = await server.call_tool(case.name, arguments)
+    assert isinstance(expired, CallToolResult) and expired.is_error
+    assert expired.structured_content is not None
+    RESULT_MODELS[case.name].model_validate(expired.structured_content)
+    assert expired.structured_content["data"] is None
+    assert expired.structured_content["error"]["code"] == "ACCESS_DENIED"
+    assert observed.mock_calls == []
 
 
 @pytest.mark.parametrize("case", LEGACY_CASES, ids=lambda case: case.name)

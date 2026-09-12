@@ -303,7 +303,9 @@ def create_runtime(
         token_verifier=token_verifier,
         log_level="INFO",
     )
-    gateway = PortfolioMcpGateway(service=portfolio_service, principals=principal_resolver)
+    gateway = PortfolioMcpGateway(
+        service=portfolio_service, principals=principal_resolver, clock=runtime_clock
+    )
     _register_health(
         server,
         access_control_configured=access_control_configured,

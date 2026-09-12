@@ -1,6 +1,16 @@
 # Phase 1 Validation Report
 
-## P2-09 implementation validation (pending acceptance)
+## Current P209 scoped local validation
+
+The P2-MCP-001 and P2-MCP-002 scoped checks passed at `d70ab445de38aee255275880c5ef7a105ebbb939`. P2-09 remains in progress until its assigned P2-S33 authorization scenario is accepted. Phase 2 has 8/10 completed packages (80%), 23/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred, with no pass claim. The final Phase 2 release SHA remains null.
+
+[P209 scoped evidence](docs/implementation/evidence/phase-2-p2-09-d70ab44.json); finalized 2026-09-12T18:08:53.523669+00:00. The artifact retains actual widget/API browser observations as supporting evidence. It does not claim a new full Compose startup/restart, runtime cleanup, PDF visual gate or live ChatGPT registration.
+
+The finalized artifact records 2545 isolated and 379 service-backed Python tests in the full gate, and 208 browser cases across its supplied reports. These are recorded populations, not an aggregate of overlapping runs. Python selectors describe source coverage supported by observed whole-file progress; actual widget cases and ROOT visual reviews remain bound in the artifact.
+
+Original P209 tracker values, working failures and visual-review history remain in [the scoped history archive](docs/implementation/evidence/phase-2-p2-09-d70ab44-implementation-history.json).
+
+## Historical P2-09 implementation validation before acceptance
 
 P2-09 implementation is in progress from accepted P208 closure
 `9505e2650aadedd504a0a94117c018b0b7ed153f`. The integrated scope covers the exact
@@ -90,7 +100,7 @@ literal (3.661 seconds). Formatting changed no semantic input or assertion.
 - `gates/p209-pdf-body-static-02.json`: SHA-256 `e870af62bb8faf56ea2b1ea3135d0b7a6024b0034d35d7ed7fdacc7ba262e01d`; log SHA-256 `d3fa2716a1d46406b648e411e8cba08473ed4c34a2ff58792f565980fced9932`.
 - `gates/p209-pdf-body-static-03.json`: SHA-256 `fe29080bfdbfaf19f5e0a7ef98c2d74140316280f3f0c80940d8dd6242363965`; log SHA-256 `9264e48c1376249c05f77cf764ff99ee45031db72f39728ed94905450288bf5b`.
 
-## P209 observed focused gates
+## Historical P209 observed focused gates
 
 Each gate below completed on its own unchanged, unaccepted working source based
 on closure `9505e2650aadedd504a0a94117c018b0b7ed153f`. Durations are receipt wall
@@ -127,7 +137,7 @@ Exact external receipt/log hashes (relative names refer to retained task evidenc
 - `gates/p209-static-focused-02.json`: SHA-256 `d9e0b799974527b552e28bc2f37eb0cff848b922b71777357a4cda12d1c0b0cc`; log SHA-256 `52a0eae04bb433bf0cbf1785c5c8dc238fce0818e45584c93cf7951b2bcbc6a5`.
 - `gates/p209-static-focused-03.json`: SHA-256 `61088708b69e3bfefd334262f675c35ece925110963f083ad7b227899f9b1d6a`; log SHA-256 `92595590e67d2167e2c507c44e86e735eb12d16507ad479bd0233ef81090883b`.
 
-## P209 widget correction and review
+## Historical P209 widget correction and review
 
 The first focused browser/build gate passed 74 cases in 80.034 seconds, but ROOT
 rejected its mobile planning image because the Recommended value heading painted
@@ -374,3 +384,72 @@ passed. Exact receipt hashes and the listed failed attempts are retained in the 
 trackers. These checks do not replace the new full immutable validation, strict
 three-project chart gate, source/image scans or 60 fresh reviewed captures.
 GitHub Actions remains owner-deferred; P209/P210 and final S34 remain required.
+
+### P2-09 capture-evidence timing correction
+
+The full validation at `d70ab445de38aee255275880c5ef7a105ebbb939` passed in
+6,938.446 seconds with 208 browser passes and unchanged clean source. The first
+subsequent evidence collection failed before creating an output directory:
+`Capture mtime is outside its exact actual case.` This was a collector error,
+not an application or browser-test failure.
+
+The installed Playwright 1.62.1 worker starts the first test before its suite's
+`beforeAll`, while its reported test duration excludes that hook's separate
+slot. Therefore `startTime + duration` was not the first test's wall-clock end.
+Each original screenshot lies after that calculation and strictly before the
+next actual test start on the same worker. The corrected collector retains the
+reported duration as diagnostic data and validates the original capture within
+the half-open interval from its own test start to that next same-worker start.
+It rejects missing or ambiguous successors and uses no arbitrary time allowance.
+
+The unchanged first collector's actual exit-1 diagnostic is retained at
+`${RESUME_ROOT}/p209-d70ab44-capture-timing-diagnostic-01/diagnostic.json`
+(SHA-256 `5f99262cd6da6783a496a466af720300b3cbd960de81e27eac6a5febfca23c46`).
+The corrected collector is sealed as
+`5d61ca347d8720cd4413e412bcc50756935c1cd784593fe7cd3415e695cc6b5d`.
+Helper-only checks passed ten original captures, five boundary conditions for
+both consumers and nine worker/identity/ambiguity negatives, with all nineteen
+protected files unchanged; receipt SHA-256
+`33d41187afd636918c9b3e07c33cb49bc939171fc523de68ed0e3d93e99b3c4a`.
+Actual discovery02 then passed in 4.898 seconds and collection02 succeeded.
+Neither those helper checks nor discovery substitute for full validation or
+ROOT acceptance. Original reports, images and their nanosecond timestamps were
+preserved, including ROOT's earlier ten-image visual review.
+
+The actual untouched null-image draft and reference-consistent semantic-null
+copy each exited 1 at the required missing-review guard, with no accepted output.
+Their receipt SHA-256 values are respectively
+`36bc50aaf34ce330674b601f359b040e743fb0156204e9308cdd223518dc9302`
+and `fab91b2650ed1d77a22385b67c5edc5d0825f8acf79b142b7423868a55efcfb3`.
+The genuine reviewed manifest then finalized successfully in 3.975 seconds on
+unchanged clean source; its actual gate is
+`${RESUME_ROOT}/gates/p209-immutable-d70ab44-finalization-01.json`.
+
+At this verification boundary, scoped housekeeping removed 761,090,048 allocated
+bytes of inactive Next development files and six superseded native Docker build
+history records. Source, dependencies, production outputs, evidence and current
+Docker resources were preserved. Receipt SHA-256:
+`f302fd945796a0423a1971442283c318a1b1153db7dc4749e250dc24775e2bd5`.
+Docker-native reclaimed storage and Windows VHD compaction were not measured.
+
+### P2-09 completion-projection rejection
+
+The first documentation gate exited 2 because the proposed package completion
+left its solely assigned P2-S33 scenario pending. The existing repository
+validator correctly rejected that state. The source-bound MCP001/002 artifact
+remains unchanged; package progress is restored to 8/10 (80%) until the prepared
+persisted authorization matrix is executed and accepted. No scenario ownership
+or validator rule was weakened. A generated trailing blank line was also removed.
+Failed gate receipt SHA-256: `c6e03a413069860e4bfd9c72307285431573f612b6b2785117080ede9863310c`.
+
+### P2-09 authorization correction under validation
+
+The actual `p209-s33-working-01` matrix passed 95 cases and failed eight. One failure exposed a legacy MCP authorization race: `list_activity` could commit pagination metadata while concurrent `get_summary` rejected a missing portfolio scope. The gateway now checks all declared tool scopes before any service dispatch and uses the runtime authorization clock. All nine legacy tools have exact-scope positive controls and zero-dispatch assertions for missing scopes and expiry; this regression first failed all nine cases against the original production source (`p209-legacy-preauthorization-red-01`). Canonical owner/account authorization remains in application services.
+
+The other seven failures were fixture errors. Six historical controls selected an unfinished inclusive UTC day; selecting the previous closed day passed all six (`p209-s33-closed-day-01`). A single-holding plan correctly had no second page; a second real canonical catalog holding makes both planning cursor cases pass (`p209-s33-plan-cursor-01`). These changes preserve the denial, immutable-state and cursor assertions.
+
+The corrected matrix `p209-s33-working-02` passed all 112 cases in 71.634 seconds, with unchanged working source. These are working-tree results, not immutable acceptance. P2-09 and its S33 scenario remain open pending the correction commit and relevant immutable MCP, PostgreSQL, static, security and build checks. The full d70ab44 validation and its original limited acceptance artifact remain historical evidence at that exact source; no new full browser or deployment result is claimed. GitHub Actions remains owner-deferred.
+
+The follow-up `p209-s33-regression-working-01` passed 576 MCP unit, contract, security and PostgreSQL cases, including canonical API parity, durable commands and collection capacity/rollback. `p209-s33-static-working-03` passed the workspace, format, lint, type, generated-contract and documentation checks. `p209-s33-security-build-working-01` passed `make security-check build-python`: SAST reported zero findings across seven rules and 547 scanned files; configured secrets and Gitleaks exception negatives passed, locked dependency audits passed, and all Python distributions built. These remain working-source checks; immutable correction acceptance follows separately.
+
+The first exact-index Gitleaks scan (`p209-s33-staged-gitleaks-01`) flagged three synthetic X-ray provider/policy/evidence labels as generic API keys. Source review confirmed these were literal fixture metadata passed to typed registrations, with no credential or external transport. They were renamed to the explicit label `synthetic`; no scanner rule, exception, credential or application behavior changed. The failed scan receipt remains retained, and the affected X-ray checks and staged scan are rerun before delivery.

@@ -8,7 +8,7 @@ import logging
 import re
 import uuid
 from collections.abc import Awaitable, Callable, Iterable
-from datetime import date
+from datetime import UTC, date, datetime
 from typing import Any, TypeVar, cast
 
 from mcp.server.mcpserver import Context
@@ -34,7 +34,9 @@ from trading212_domain.values import decimal_string
 from trading212_security.principals import (
     AuthenticationError,
     AuthorizationError,
+    Authorizer,
     Principal,
+    Scope,
 )
 from trading212_security.redaction import RedactingLogFilter, Redactor
 
@@ -95,9 +97,11 @@ class PortfolioMcpGateway:
         service: PortfolioService,
         principals: PrincipalResolver,
         logger: logging.Logger | None = None,
+        clock: Callable[[], datetime] | None = None,
     ) -> None:
         self._service = service
         self._principals = principals
+        self._clock = clock or (lambda: datetime.now(UTC))
         self._logger = logger or logging.getLogger("trading212_mcp.audit")
         self._logger.addFilter(RedactingLogFilter(Redactor()))
 
@@ -703,6 +707,17 @@ class PortfolioMcpGateway:
         correlation_id = _correlation_id(context)
         try:
             principal = await self._principals.resolve()
+            scopes = [Scope.PORTFOLIO_READ]
+            if tool_name in {
+                "list_recent_transactions",
+                "get_dividend_summary",
+                "get_data_quality_summary",
+            }:
+                scopes.append(Scope.ACTIVITY_READ)
+            # Check the whole tool contract before concurrent reads can retain cursors.
+            now = self._clock()
+            for scope in scopes:
+                Authorizer().require_scope(principal, scope, now=now)
             result, message, widget_meta = await operation(principal)
             result_type.model_validate(result)
             self._audit(tool_name, account_id, principal.principal_id, correlation_id, "success")
