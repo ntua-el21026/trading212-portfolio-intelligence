@@ -4,7 +4,17 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
-### Phase 2 analytical web experience (in progress)
+### Phase 2 analytical web experience (scoped local acceptance)
+
+P2-08 has scoped local acceptance at `bc21516c51aa5090031b39ea56ded3ca94d657d8` for P2-WEB-001 and P2-WEB-002. Phase 2 remains in progress: 8/10 packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-09 and P2-10 remain required and `not_started`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred, not passed. The final Phase 2 release SHA remains null.
+
+[P208 scoped evidence](docs/implementation/evidence/phase-2-p2-08-bc21516.json); finalized 2026-09-12T14:12:14.532432+00:00. P208 evidence covers the actual API-backed web processes. It does not claim a new full Compose startup/restart, runtime cleanup proof or PDF visual gate.
+
+#### Historical implementation and verification before scoped closure
+
+The entries below retain the original working observations, including rejected
+7201b53 image scans and subsequent security/parity corrections. Their pending
+acceptance statements describe those observations, not the finalized scope above.
 
 - Strengthen real historical, X-ray and planner browser parity with canonical
   value/state/currency and retained-input comparisons; expose exact saved-plan
@@ -30,9 +40,9 @@ All notable project changes are recorded here. The project follows semantic vers
 - Project explicitly pinned full-portfolio company actuals alongside direct target
   drift; preserve non-additive semantics and exact report/export source bindings.
 - Correct reconciliation reference ordering and optional company PDF table order.
-  P208 acceptance and P209/P210 remain pending; GitHub Actions stays owner-deferred.
+  P209/P210 remain required and not_started; GitHub Actions stays owner-deferred.
 
-### Phase 2 alerts and rules
+### Phase 2 alerts and rules (historical P207 closure)
 
 - P2-07 has scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`: versioned alert rules, immutable scheduled evaluation, event deduplication/cooldown, authorized lifecycle/history, bounded delivery and canonical alerts exports. Phase 2 is in progress: 7/10 packages (70%), 19/29 local rows and 30/40 scenarios complete. S31 includes both report/alert durable recovery and actual Redis-loss republication of the same pending alert input. Shared API/DATA/SEC/OPS and S32/S34/S38 predicates remain partial; P2-08 through P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred and unverified; no CI pass or final Phase 2 release is claimed.
 - Preserve raw activity knowledge timestamps; apply attested corrections only when known at the cutoff and include actual economic eligibility in late/future correction timing. Lifecycle replay rechecks current material grants against its original immutable command version. Browser presentation checks await the exact saved event revisions and completed form transitions.
@@ -266,7 +276,7 @@ Live is disabled and untested, not another Phase 1 gate.
 
 Virtual Pies/targets, contribution optimization, full performance/benchmarks, X-ray, reports, alerts, and premium analytical interfaces.
 
-Status: `in_progress`; P2-01 through P2-07 locally complete (7/10 packages, 70%). 19/29 local rows and 30/40 scenarios are complete; shared rows remain partial. GitHub Actions is owner-deferred. P208–P210 remain required; final release evidence remains pending.
+Status: `in_progress`; P2-01 through P2-08 locally complete (8/10 packages, 80%). 21/29 local rows and 30/40 scenarios are complete; S32/S34/S38/S39 remain partial and S33 is pending. GitHub Actions is owner-deferred. P209–P210 remain required; final Phase 2 release evidence SHA remains null.
 
 ### [1.0.0] — Phase 3: Premium Intelligence and Productization
 

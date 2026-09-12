@@ -80,7 +80,7 @@ at `7b102663ea193b4668924a7252180731954f4b00`; the remaining roadmap is unchange
 
 ### P2-07 — Alerts and rules engine
 
-Scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7` is recorded in [the alerts contract](P2_07_ALERTS_AND_RULES.md) and [actual evidence](evidence/phase-2-p2-07-03c3c5b.json). Phase 2 totals: 7/10 packages, 19/29 local rows, 30/40 scenarios. CI remains owner-deferred; later packages and final-release evidence remain required.
+Scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7` is recorded in [the alerts contract](P2_07_ALERTS_AND_RULES.md) and [actual evidence](evidence/phase-2-p2-07-03c3c5b.json). At the P207 acceptance boundary: 7/10 packages, 19/29 local rows, 30/40 scenarios. CI remains owner-deferred; later packages and final-release evidence remain required.
 
 - versioned rules for drift, concentration, cash, data freshness, reconciliation, dividend/activity, and provider failure;
 - scheduled evaluation, deduplication, cooldown, acknowledgment;
@@ -89,6 +89,8 @@ Scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7` is recorde
 - complete audit and quality context.
 
 ### P2-08 — Premium analytical web experience
+
+P2-08 has scoped local acceptance at `bc21516c51aa5090031b39ea56ded3ca94d657d8` for P2-WEB-001 and P2-WEB-002. Phase 2 remains in progress: 8/10 packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-09 and P2-10 remain required and `not_started`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred, not passed. The final Phase 2 release SHA remains null. See [P208 scoped evidence](evidence/phase-2-p2-08-bc21516.json) and [the implemented web contract](P2_08_ANALYTICAL_WEB_EXPERIENCE.md).
 
 - target/Pie editor;
 - contribution plan workflow;

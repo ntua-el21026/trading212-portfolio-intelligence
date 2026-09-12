@@ -41,7 +41,9 @@ shared physical row/byte budgets, bounded path proofs and the complete position-
 then-cash real UUID ordering. This authority amendment does not complete evidence;
 P2-05 has [scoped exact-source acceptance](P2_05_PORTFOLIO_XRAY.md) at
 `7b102663ea193b4668924a7252180731954f4b00`. P2-06 has [scoped local acceptance](evidence/phase-2-p2-06-9e39767.json) at `9e39767b408b38203d88d6e5b41bf0bc1265adfb` following synchronized P205 closure. Its complete required local evidence is accepted with GitHub Actions explicitly deferred by the owner; no CI pass is claimed. The retained deferral remains active across remaining Phase 2 packages until owner resumption.
-P2-07 has [scoped local acceptance](evidence/phase-2-p2-07-03c3c5b.json) at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7` (7/10 packages, 19/29 local rows, 30/40 scenarios). CI remains owner-deferred. P2-08 is in_progress with acceptance pending; P2-09, P2-10 and Phase 3 stay not_started. P2-08 owns intelligence-data-quality/company actual-weight enrichment; company target drift still requires a separately pinned entity-target basis.
+At its historical closure, P2-07 had [scoped local acceptance](evidence/phase-2-p2-07-03c3c5b.json) at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7` (7/10 packages, 19/29 local rows, 30/40 scenarios).
+
+P2-08 has scoped local acceptance at `bc21516c51aa5090031b39ea56ded3ca94d657d8` for P2-WEB-001 and P2-WEB-002. Phase 2 remains in progress: 8/10 packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-09 and P2-10 remain required and `not_started`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred, not passed. The final Phase 2 release SHA remains null. See [P208 scoped evidence](evidence/phase-2-p2-08-bc21516.json). P2-08 owns intelligence-data-quality/company actual-weight enrichment; company target drift still requires a separately pinned entity-target basis.
 
 ## Work-package protocol
 

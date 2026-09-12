@@ -1,13 +1,8 @@
 # P2-08 Analytical Web Experience
 
-Implementation is in progress from P207 closure 7d3a5f5. P207 retains its
-[separate local acceptance](evidence/phase-2-p2-07-03c3c5b.json). Generated
-contracts and source are integrated. Corrected source 7201b53 passed the full local
-gate and ROOT reviewed all 60 feature captures, but four separate runtime-image
-security scans failed. The exact PCRE2 security-package correction is implemented
-at `57eba18` and passed focused image/build verification. P208 acceptance and final same-source
-evidence remain pending. GitHub Actions is deferred by the owner. P209 and P210
-remain required; Phase 3 is outside this assignment.
+P2-08 has scoped local acceptance at `bc21516c51aa5090031b39ea56ded3ca94d657d8` for P2-WEB-001 and P2-WEB-002. Phase 2 remains in progress: 8/10 packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-09 and P2-10 remain required and `not_started`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred, not passed. The final Phase 2 release SHA remains null.
+
+[P208 scoped evidence](evidence/phase-2-p2-08-bc21516.json); finalized 2026-09-12T14:12:14.532432+00:00. P207 retains its [separate local acceptance](evidence/phase-2-p2-07-03c3c5b.json).
 
 The [accepted web architecture](../architecture/PHASE_2_WEB_INFORMATION_ARCHITECTURE.md)
 and [Phase 2 methods](../analytics/PHASE_2_METHODS.md) remain authoritative.
@@ -153,7 +148,32 @@ whose input codec specifies sorted order. It preserves duplicate membership and 
 other reconciliation values, identities and metadata. This prevents UUID ordering
 from rejecting an otherwise identical sealed basis without rewriting stored bytes.
 
-## Latest immutable candidate: failed image security
+## Scoped local acceptance
+
+The finalized artifact records 2474 isolated and 377 service-backed Python tests in the full gate, and 157 browser cases across its supplied reports. These are recorded populations, not a new aggregate test count. Actual feature, browser and visual-review bindings remain in the artifact.
+
+P208 evidence covers the actual API-backed web processes. It does not claim a new full Compose startup/restart, runtime cleanup proof or PDF visual gate.
+
+Only WEB001/002 close here. The source selection, privacy, canonical presentation and feature workflows bind to the artifact's `/assertion_map`; actual image review is retained under `/screenshots`. Historical account/header/mobile/table runtime limitations remain historical; current API web evidence does not establish default Compose configuration.
+
+## Historical implementation and working verification
+
+The following original preparation statements, failed candidates and focused
+correction/parity observations retain their original scope and source. Tracker
+values, including the exact correction_validation and parity_validation objects,
+are preserved in [the implementation archive](evidence/phase-2-p2-08-bc21516-implementation-history.json).
+The unchanged validation report and failed-security artifact retain their raw references.
+
+Implementation is in progress from P207 closure 7d3a5f5. P207 retains its
+[separate local acceptance](evidence/phase-2-p2-07-03c3c5b.json). Generated
+contracts and source are integrated. Corrected source 7201b53 passed the full local
+gate and ROOT reviewed all 60 feature captures, but four separate runtime-image
+security scans failed. The exact PCRE2 security-package correction is implemented
+at `57eba18` and passed focused image/build verification. P208 acceptance and final same-source
+evidence remain pending. GitHub Actions is deferred by the owner. P209 and P210
+remain required; Phase 3 is outside this assignment.
+
+## Historical 7201b53 candidate: failed image security
 
 Immutable P208 source `7201b5396c14ece3055710749ead3807b4e5652a` passed
 `make validate` full02 in 8,459.812 seconds: 2,474 isolated and 377 PostgreSQL

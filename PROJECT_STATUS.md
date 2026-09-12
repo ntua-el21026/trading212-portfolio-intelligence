@@ -10,6 +10,19 @@
 
 ## Current state
 
+P2-08 has scoped local acceptance at `bc21516c51aa5090031b39ea56ded3ca94d657d8` for P2-WEB-001 and P2-WEB-002. Phase 2 remains in progress: 8/10 packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-09 and P2-10 remain required and `not_started`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred, not passed. The final Phase 2 release SHA remains null.
+
+[P208 scoped evidence](docs/implementation/evidence/phase-2-p2-08-bc21516.json); finalized 2026-09-12T14:12:14.532432+00:00. The finalized artifact records 2474 isolated and 377 service-backed Python tests in the full gate, and 157 browser cases across its supplied reports. These are recorded populations, not a new aggregate test count. Actual feature, browser and visual-review bindings remain in the artifact.
+
+P208 evidence covers the actual API-backed web processes. It does not claim a new full Compose startup/restart, runtime cleanup proof or PDF visual gate.
+
+### Historical P208 preparation before scoped closure
+
+The following statements retain the original ff88406 overview failure/correction,
+7201b53 full-gate pass and image-security rejection, and subsequent PCRE2 and
+canonical-parity working observations recorded in source bc21516. They do not
+describe the finalized acceptance artifact. See [archived tracker observations](docs/implementation/evidence/phase-2-p2-08-bc21516-implementation-history.json).
+
 P2-08 implementation has started from P207 closure `7d3a5f59f30fe934953c7e3ab27d8e6ae48c1ca1`. Account navigation, analytical presentation, company exposure/report binding and intelligence-quality changes are integrated for validation. Contracts have been generated; no P208 acceptance is claimed. Seven packages remain locally accepted. GitHub Actions stays owner-deferred, and P209/P210 remain required.
 
 Immutable P208 source `7201b5396c14ece3055710749ead3807b4e5652a` passed
@@ -273,7 +286,7 @@ than fabricated.
 
 ## Next action
 
-Proceed sequentially through required P2-08, P2-09 and P2-10 with required local verification and the retained owner CI deferral under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+Proceed sequentially through required P2-09 and P2-10 with required local verification and the retained owner CI deferral under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo

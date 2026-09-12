@@ -2,7 +2,7 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 through P2-07 locally complete; 19/29 local rows; remaining Phase 2 CI deferred by owner
+**Implementation acceptance:** In progress; P2-01 through P2-08 locally complete; 21/29 local rows; remaining Phase 2 CI deferred by owner
 
 **Target release:** `0.2.0`
 
@@ -70,8 +70,8 @@ gates, and final release evidence. A design commit cannot close a runtime row.
 | P2-ALT-001 | P2-07 | Immutable versioned rules cover every approved portfolio/data/report family with deterministic input snapshots, quality gating and no trading signals. | 28, 38 | `complete` |
 | P2-ALT-002 | P2-07 | Scheduling, event deduplication, cooldown, acknowledgment/resolution, safe retry/dead-letter and in-app history survive concurrent workers/restart. | 28, 29, 31, 40 | `complete` |
 | P2-ALT-003 | P2-07 | Optional email/webhook ports are unavailable when unconfigured; configured destinations are verified, bounded, HTTPS-only outside test mode and protected against SSRF/DNS rebinding/redirects. | 30, 31, 37 | `complete` |
-| P2-WEB-001 | P2-08 | All 18 owner-required analytical/editor/report/alert/source/settings experiences use generated clients, canonical services and explicit quality states with durable deep links and navigation. | 34, 38, 39 | `pending` |
-| P2-WEB-002 | P2-08 | Desktop/mobile keyboard, focus, accessible names, reduced motion, chart/table alternatives, no horizontal overflow, browser navigation and critical visual regression gates pass. | 39 | `pending` |
+| P2-WEB-001 | P2-08 | All 18 owner-required analytical/editor/report/alert/source/settings experiences use generated clients, canonical services and explicit quality states with durable deep links and navigation. | 34, 38, 39 | `complete` |
+| P2-WEB-002 | P2-08 | Desktop/mobile keyboard, focus, accessible names, reduced motion, chart/table alternatives, no horizontal overflow, browser navigation and critical visual regression gates pass. | 39 | `complete` |
 | P2-MCP-001 | P2-09 | The exact 25-tool registry preserves nine existing tools and exposes fourteen new reads plus two bounded internal commands with strict schemas, exact scopes and truthful annotations. | 33, 34, 36, 37, 38 | `pending` |
 | P2-MCP-002 | P2-09 | Plan/report commands persist authorized durable IDs with idempotency and audit; resources use strict CSP; unknown fields/tools, injection, cross-owner data and broker access fail closed. | 12, 26, 31, 33, 37 | `pending` |
 | P2-API-001 | P2-01–09 | Additive typed `/api/v1` resources enforce owner/account scopes, command CSRF/idempotency/preconditions, stable errors, decimal strings and synchronized OpenAPI/TypeScript output. | 32, 34, 38 | `pending` |
@@ -137,6 +137,14 @@ pagination capacity) are retained separately from the corrected fresh runtime. T
 local rows and twelve scenarios are complete; P2-S14/P2-S36 and later/shared
 predicates remain pending. Phase 3 remains `not_started`.
 
+## Current P2-08 scoped local acceptance
+
+P2-08 has scoped local acceptance at `bc21516c51aa5090031b39ea56ded3ca94d657d8` for P2-WEB-001 and P2-WEB-002. Phase 2 remains in progress: 8/10 packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-09 and P2-10 remain required and `not_started`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred, not passed. The final Phase 2 release SHA remains null.
+
+[P208 scoped evidence](evidence/phase-2-p2-08-bc21516.json); finalized 2026-09-12T14:12:14.532432+00:00. P208 evidence covers the actual API-backed web processes. It does not claim a new full Compose startup/restart, runtime cleanup proof or PDF visual gate.
+
+Current P208 web-scope resolution: the [P208 scoped evidence](evidence/phase-2-p2-08-bc21516.json) (`/assertion_map/features`, `/assertion_map/checks`, `/runtime/browsers` and `/screenshots`) records the actual API-backed account-selection/header, mobile-label, keyboard and table workflows. Those observations resolve the web follow-up scope from the historical records below. They do not rewrite those historical runtime results, establish default Compose environment forwarding, or claim a new full Compose run. S39 remains partial until P209 widget evidence is accepted.
+
 ## P2-04 observed evidence
 
 P2-04 is complete at `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`. The [accepted assertion map](evidence/phase-2-p2-04-2a7c89a.json) closes P2-PERF-001, P2-PERF-002, P2-INC-001 and P2-S14 through P2-S19. Shared P2-S34 remains `in_progress`: historical API/web/MCP parity is partial evidence; report/export and remaining shared scope are outstanding.
@@ -190,7 +198,9 @@ with their documented full-page mobile capture limitation.
 At that earlier boundary, no P2-RPT row was accepted and totals remained thirteen rows and twenty-two scenarios. Current local acceptance uses the complete corrected-source local gates, scans, runtime and visual review, with the separately retained owner CI deferral.
 At that historical P206 closure, P2-07 through P2-10 and Phase 3 remained `not_started`.
 
-## P2-07 scoped local acceptance
+## Historical P2-07 scoped local acceptance
+
+The following paragraph records the P207/pre-P208 acceptance boundary; current P208 totals and web resolution are recorded above.
 
 P2-07 has scoped local acceptance at `03c3c5b0b8182aadaaf48ec29131ab7fe83095a7`: versioned alert rules, immutable scheduled evaluation, event deduplication/cooldown, authorized lifecycle/history, bounded delivery and canonical alerts exports. Phase 2 is in progress: 7/10 packages (70%), 19/29 local rows and 30/40 scenarios complete. S31 includes both report/alert durable recovery and actual Redis-loss republication of the same pending alert input. Shared API/DATA/SEC/OPS and S32/S34/S38 predicates remain partial; P2-08 is `in_progress` with acceptance pending; P2-09, P2-10 and Phase 3 remain `not_started`. GitHub Actions is owner-deferred and unverified; no CI pass or final Phase 2 release is claimed.
 
