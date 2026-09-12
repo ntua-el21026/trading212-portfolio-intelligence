@@ -27,8 +27,23 @@ test-authoring failures. Static checks passed after a result-model type annotati
 and removal of two redundant test casts; both preceding static failures are retained.
 The corrected widget suite passed 74 desktop/mobile cases and the production web
 build; ROOT reviewed the ten widget images, including two corrected planning
-images. Immutable validation and source/image scans remain pending. These focused observations do not
-establish package acceptance.
+images. The first immutable full gate subsequently failed at the PDF pagination
+assertion described below. A fresh immutable validation and source/image scans
+remain pending. These earlier focused observations do not establish package acceptance.
+
+The immutable `aa5a5f118ae41d334818621d16330333d5347c46` full gate failed in
+2,305.073 seconds (exit 2), with 363 passes and one failure in the service-backed
+session. The X-ray report assertion expected adjacent Record/Key text across a
+PDF page boundary. The isolated case then passed in 41.429 seconds; a controlled
+two-page renderer example reproduced the framing interruption in 1.132 seconds.
+The initial raw-join helper produced three RED failures in 1.592 seconds.
+
+The correction is confined to tests: verify and remove the outer page framing,
+then retain exact record identity and metric assertions over the body text.
+Identical header/footer text inside a canonical record remains intact. The focused correction gate passed all 47 selected tests in 327.098 seconds.
+All nine reader regressions and static checks passed in 31.129 seconds after
+formatting-only corrections; production rendering is unchanged.
+See the [retained diagnostic chronology](VALIDATION_REPORT.md#p209-immutable-full-failure-and-pdf-correction).
 
 See [P209 registry scope and validation](docs/integrations/P2_09_MCP_REGISTRY_ACCEPTANCE.md)
 and [widget presentation boundaries](apps/mcp/WIDGET_PRESENTATION.md).

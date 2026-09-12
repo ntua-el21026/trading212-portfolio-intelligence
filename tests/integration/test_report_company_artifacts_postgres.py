@@ -154,7 +154,7 @@ def test_pinned_company_pdf_download_has_exact_manifest_values_and_metric_eviden
         )
         assert report.manifest.document.selection == selection
         alpha_rows = _company_evidence(report, full)
-        text = " ".join(report.pdf_text.split())
+        text = " ".join(report.pdf_body_text.split())
         assert "Planning company actuals v1" in text
         assert "Planning company basis v1" in text
         note = next(

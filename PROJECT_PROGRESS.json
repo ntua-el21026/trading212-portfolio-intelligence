@@ -133,31 +133,66 @@
       "progress_percent": 80,
       "design_closure": "accepted",
       "candidate_validation": {
-        "work_package": "P2-08",
-        "source_sha": "bc21516c51aa5090031b39ea56ded3ca94d657d8",
-        "scope": "WEB001/002 only; shared/final scope incomplete.",
-        "acceptance": "accepted_locally_with_ci_deferred",
-        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
-        "evidence_finalized_at_utc": "2026-09-12T14:12:14.532432+00:00",
-        "artifacts": [
-          "docs/implementation/evidence/phase-2-p2-08-bc21516.json"
-        ],
-        "artifact_sha256": "7321c31b2b012a617506466fe87d0b1c1f71482f63314ca67bf48f973a34256d",
-        "make_validate": "passed",
+        "work_package": "P2-09",
+        "source_sha": "aa5a5f118ae41d334818621d16330333d5347c46",
+        "scope": "MCP001/002 candidate; no new local acceptance or shared/final closure.",
+        "acceptance": "failed_candidate",
+        "acceptance_claim": false,
+        "make_validate": "failed",
+        "exit_code": 2,
+        "duration_seconds": 2305.073,
+        "source_binding": "immutable_commit",
+        "source_unchanged": true,
         "observed_gate_counts": {
-          "python_full_gate": {
-            "isolated": 2474,
-            "service_backed": 377
-          },
-          "browser_cases_in_supplied_reports": 157
+          "service_backed_session": {
+            "passed": 363,
+            "failed": 1,
+            "deselected": 2551
+          }
         },
-        "gate_record_sha256": "2b53680225f30e529b131418750fe8f3c02eeaa883eddcdd7389f459401ce142",
-        "assertion_map_pointer": "/assertion_map",
-        "runtime_scope": "actual API browser processes; no new full Compose restart claimed",
+        "count_scope": "Service-backed session where make validate stopped; not a completed full-gate total.",
+        "failed_test": "tests/integration/test_report_type_matrix_postgres.py::test_snapshot_and_xray_report_types[portfolio_xray]",
+        "gate_record": {
+          "file": "gates/p209-immutable-aa5a5f1-full-01.json",
+          "sha256": "4ba1e093270caf097cea11cc2034eb9ccc0fd0b685e3947aae3c0059efb782ae",
+          "bytes": 1215
+        },
+        "log": {
+          "file": "gates/p209-immutable-aa5a5f1-full-01.log",
+          "sha256": "8df499e09b81c63109f630001c49e6421e5d19d122e81f4fabb50139a2c8158f",
+          "bytes": 35247
+        },
+        "correction": "Use a test-only PDF body helper that verifies and removes only the outer page header, footer and sequential page number before joining body text. Preserve identical text inside canonical records and all exact record/metric assertions; production rendering and financial values are unchanged. The focused correction gate passed 47 cases; static checks passed after formatting-only corrections. A fresh immutable full gate remains pending.",
+        "correction_validation": "focused_and_static_passed_immutable_pending",
         "ci_state": "deferred_by_owner",
         "ci_verified": false,
-        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-08-bc21516-implementation-history.json",
-        "previous_candidate_validation_pointer": "/observations/0/value"
+        "previous_candidate_validation": {
+          "work_package": "P2-08",
+          "source_sha": "bc21516c51aa5090031b39ea56ded3ca94d657d8",
+          "scope": "WEB001/002 only; shared/final scope incomplete.",
+          "acceptance": "accepted_locally_with_ci_deferred",
+          "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+          "evidence_finalized_at_utc": "2026-09-12T14:12:14.532432+00:00",
+          "artifacts": [
+            "docs/implementation/evidence/phase-2-p2-08-bc21516.json"
+          ],
+          "artifact_sha256": "7321c31b2b012a617506466fe87d0b1c1f71482f63314ca67bf48f973a34256d",
+          "make_validate": "passed",
+          "observed_gate_counts": {
+            "python_full_gate": {
+              "isolated": 2474,
+              "service_backed": 377
+            },
+            "browser_cases_in_supplied_reports": 157
+          },
+          "gate_record_sha256": "2b53680225f30e529b131418750fe8f3c02eeaa883eddcdd7389f459401ce142",
+          "assertion_map_pointer": "/assertion_map",
+          "runtime_scope": "actual API browser processes; no new full Compose restart claimed",
+          "ci_state": "deferred_by_owner",
+          "ci_verified": false,
+          "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-08-bc21516-implementation-history.json",
+          "previous_candidate_validation_pointer": "/observations/0/value"
+        }
       },
       "work_packages": {
         "P2-01": "complete",
@@ -4539,7 +4574,7 @@
           "focused_compatibility_and_postgres": "passed",
           "widget_browser_and_visual_review": "passed_on_corrected_working_source",
           "static_checks": "passed",
-          "immutable_make_validate": "pending",
+          "immutable_make_validate": "failed",
           "source_and_image_security": "pending",
           "runtime_evidence": "pending",
           "focused_gate_history": [
@@ -4855,7 +4890,7 @@
               }
             }
           ],
-          "evidence_scope": "Each receipt binds its own unchanged working source. Focused passes do not replace final immutable P209 acceptance.",
+          "evidence_scope": "Each receipt retains its own immutable or unchanged working-source binding. Earlier focused passes and ROOT visual reviews remain historical observations; they do not validate the current PDF test correction or establish P209 acceptance.",
           "widget_visual_history": [
             {
               "file": "p209-focused-widget-visual-review-01.json",
@@ -4867,7 +4902,230 @@
               "sha256": "f1b70aafe818a67a71d48323d9d53e91626ce09b7c7027cb584724fcb192a2e8",
               "bytes": 7718
             }
-          ]
+          ],
+          "immutable_full_gate": {
+            "gate": "p209-immutable-aa5a5f1-full-01",
+            "result": "failed",
+            "source_binding": "immutable_commit",
+            "base_sha": "aa5a5f118ae41d334818621d16330333d5347c46",
+            "source_unchanged": true,
+            "exit_code": 2,
+            "duration_seconds": 2305.073,
+            "command": ["make", "validate"],
+            "receipt": {
+              "file": "gates/p209-immutable-aa5a5f1-full-01.json",
+              "sha256": "4ba1e093270caf097cea11cc2034eb9ccc0fd0b685e3947aae3c0059efb782ae",
+              "bytes": 1215
+            },
+            "log": {
+              "file": "gates/p209-immutable-aa5a5f1-full-01.log",
+              "sha256": "8df499e09b81c63109f630001c49e6421e5d19d122e81f4fabb50139a2c8158f",
+              "bytes": 35247
+            },
+            "observed_counts": {
+              "passed": 363,
+              "failed": 1,
+              "deselected": 2551
+            },
+            "count_scope": "Service-backed session where make validate stopped; not a completed full-gate total.",
+            "failed_test": "tests/integration/test_report_type_matrix_postgres.py::test_snapshot_and_xray_report_types[portfolio_xray]",
+            "observation": "The full run found zero exact Record/Key adjacency markers on unchanged source. The original failing PDF was not retained; a separate controlled actual-renderer reproduction demonstrated interruption by page framing."
+          },
+          "pdf_pagination_correction": {
+            "status": "in_progress",
+            "source_binding": "unaccepted_working_tree",
+            "base_sha": "aa5a5f118ae41d334818621d16330333d5347c46",
+            "acceptance_claim": false,
+            "scope": "Test-only PDF page-framing normalization and regression coverage.",
+            "correction": "Use a test-only PDF body helper that verifies and removes only the outer page header, footer and sequential page number before joining body text. Preserve identical text inside canonical records and all exact record/metric assertions; production rendering and financial values are unchanged. The focused correction gate passed 47 cases; static checks passed after formatting-only corrections. A fresh immutable full gate remains pending.",
+            "focused_tests": "passed",
+            "static_checks": "passed",
+            "fresh_immutable_make_validate": "pending",
+            "diagnostic_gate_history": [
+              {
+                "gate": "p209-pdf-pagination-reproduction-01",
+                "result": "passed",
+                "source_binding": "immutable_commit",
+                "base_sha": "aa5a5f118ae41d334818621d16330333d5347c46",
+                "source_unchanged": true,
+                "exit_code": 0,
+                "duration_seconds": 41.429,
+                "command": [
+                  "uv",
+                  "run",
+                  "--no-sync",
+                  "pytest",
+                  "-p",
+                  "capture_pdf_failure",
+                  "tests/integration/test_report_type_matrix_postgres.py::test_snapshot_and_xray_report_types[portfolio_xray]"
+                ],
+                "receipt": {
+                  "file": "gates/p209-pdf-pagination-reproduction-01.json",
+                  "sha256": "0edfbb4e5e1c53b82b5ed2e4b045363cd139ff10d9389da35769f13b45fa01a3",
+                  "bytes": 1393
+                },
+                "log": {
+                  "file": "gates/p209-pdf-pagination-reproduction-01.log",
+                  "sha256": "efc168f0dec29401a1f2fe8dbd883f4e3e87271a60abc7d35c3e3e67f7724084",
+                  "bytes": 599
+                },
+                "observed_counts": {
+                  "passed": 1
+                },
+                "observation": "The isolated portfolio_xray case passed on the unchanged immutable source; this rerun did not reproduce the pagination-dependent full-gate failure."
+              },
+              {
+                "gate": "p209-pdf-controlled-seam-01",
+                "result": "passed",
+                "source_binding": "immutable_commit",
+                "base_sha": "aa5a5f118ae41d334818621d16330333d5347c46",
+                "source_unchanged": true,
+                "exit_code": 0,
+                "duration_seconds": 1.132,
+                "command": [
+                  "uv",
+                  "run",
+                  "--no-sync",
+                  "python",
+                  "/home/peppasmich/.local/state/t212pi/20260908-resume/p209-pdf-pagination-diagnostic-01/reproduce_seam.py"
+                ],
+                "receipt": {
+                  "file": "gates/p209-pdf-controlled-seam-01.json",
+                  "sha256": "e622715fa737840eeb126bb83dc7746fce88ea5dc7f11727c3a07738baa0f286",
+                  "bytes": 1345
+                },
+                "log": {
+                  "file": "gates/p209-pdf-controlled-seam-01.log",
+                  "sha256": "554a32659506c9c1f0d96939e8f303c4293508f432ce877c9b57dd893098394a",
+                  "bytes": 118
+                },
+                "observation": "Controlled output from the actual renderer contained two pages and placed footer/header text between intact Record and Key lines; raw adjacency count was zero. This is a diagnostic reproduction, not a passing acceptance gate."
+              },
+              {
+                "gate": "p209-pdf-body-red-01",
+                "result": "failed",
+                "source_binding": "unaccepted_working_tree",
+                "base_sha": "aa5a5f118ae41d334818621d16330333d5347c46",
+                "source_unchanged": true,
+                "exit_code": 1,
+                "duration_seconds": 1.592,
+                "command": [
+                  "uv",
+                  "run",
+                  "--no-sync",
+                  "pytest",
+                  "tests/unit/worker/test_report_pdf_body.py"
+                ],
+                "receipt": {
+                  "file": "gates/p209-pdf-body-red-01.json",
+                  "sha256": "161e5534c57c095d26a4dd95b396494a5e763f58ffc21fa8aa40bee937bac798",
+                  "bytes": 1724
+                },
+                "log": {
+                  "file": "gates/p209-pdf-body-red-01.log",
+                  "sha256": "16ca81de2f1ef0a1c7f6b33a3de780ef012a5263b6f174d9bb4732618ea08791",
+                  "bytes": 7511
+                },
+                "observed_counts": {
+                  "failed": 3
+                },
+                "classification": "expected_pdf_body_regression_red",
+                "observation": "Three real-renderer page-break regressions failed against the initial raw-join helper: record/key adjacency, wrapped key and wrapped exact value. This unaccepted working source was unchanged during the RED run."
+              }
+            ],
+            "focused_gate": {
+              "gate": "p209-pdf-body-focused-01",
+              "result": "passed",
+              "source_binding": "unaccepted_working_tree",
+              "base_sha": "aa5a5f118ae41d334818621d16330333d5347c46",
+              "source_unchanged": true,
+              "exit_code": 0,
+              "duration_seconds": 327.098,
+              "command": [
+                "uv",
+                "run",
+                "--no-sync",
+                "pytest",
+                "tests/unit/worker/test_report_pdf_body.py",
+                "tests/unit/worker/test_private_report_renderers.py",
+                "tests/integration/test_report_type_matrix_postgres.py",
+                "tests/integration/test_report_company_artifacts_postgres.py"
+              ],
+              "observed_counts": {
+                "passed": 47
+              },
+              "observation": "Nine pagination-reader regressions, 26 actual renderer unit cases, ten report-type integration cases and two company artifact integration cases passed on the corrected working source.",
+              "receipt": {
+                "file": "gates/p209-pdf-body-focused-01.json",
+                "sha256": "77cb04d274b3e84f523e4b4d4ba4a0763b683256febb17cc3e78199f1a04949f",
+                "bytes": 1916
+              },
+              "log": {
+                "file": "gates/p209-pdf-body-focused-01.log",
+                "sha256": "d522783947d1160746fef5cf8dc57c1fa1b47225ad6cfe140a0dbb7a2af7782f",
+                "bytes": 921
+              }
+            },
+            "static_gate_history": [
+              {
+                "gate": "p209-pdf-body-static-01",
+                "result": "failed",
+                "exit_code": 2,
+                "duration_seconds": 3.833,
+                "source_binding": "unaccepted_working_tree",
+                "source_unchanged": true,
+                "observation": "Prettier required formatting the two edited status JSON files.",
+                "receipt": {
+                  "file": "gates/p209-pdf-body-static-01.json",
+                  "sha256": "0a246e72cecbcc0fc9e1d83373c6b1db4bc8aade92e62e9564ffc232774632ab",
+                  "bytes": 1728
+                },
+                "log": {
+                  "file": "gates/p209-pdf-body-static-01.log",
+                  "sha256": "6e1f9d757ca2be71eca1ef3478b521566609f6cf1ee573f3f65e5afc53c2f66e",
+                  "bytes": 517
+                }
+              },
+              {
+                "gate": "p209-pdf-body-static-02",
+                "result": "failed",
+                "exit_code": 2,
+                "duration_seconds": 3.661,
+                "source_binding": "unaccepted_working_tree",
+                "source_unchanged": true,
+                "observation": "Ruff E501 required splitting one test string literal; its value was unchanged.",
+                "receipt": {
+                  "file": "gates/p209-pdf-body-static-02.json",
+                  "sha256": "e870af62bb8faf56ea2b1ea3135d0b7a6024b0034d35d7ed7fdacc7ba262e01d",
+                  "bytes": 1728
+                },
+                "log": {
+                  "file": "gates/p209-pdf-body-static-02.log",
+                  "sha256": "d3fa2716a1d46406b648e411e8cba08473ed4c34a2ff58792f565980fced9932",
+                  "bytes": 864
+                }
+              },
+              {
+                "gate": "p209-pdf-body-static-03",
+                "result": "passed",
+                "exit_code": 0,
+                "duration_seconds": 31.129,
+                "source_binding": "unaccepted_working_tree",
+                "source_unchanged": true,
+                "observation": "All nine pagination-reader cases and formatting, lint, strict typing, repository/docs and generated-contract checks passed.",
+                "receipt": {
+                  "file": "gates/p209-pdf-body-static-03.json",
+                  "sha256": "fe29080bfdbfaf19f5e0a7ef98c2d74140316280f3f0c80940d8dd6242363965",
+                  "bytes": 1785
+                },
+                "log": {
+                  "file": "gates/p209-pdf-body-static-03.log",
+                  "sha256": "9264e48c1376249c05f77cf764ff99ee45031db72f39728ed94905450288bf5b",
+                  "bytes": 2593
+                }
+              }
+            ]
+          }
         },
         "previous_accepted_implementation": {
           "work_package": "P2-08",

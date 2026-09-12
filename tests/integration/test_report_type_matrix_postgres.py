@@ -65,6 +65,7 @@ from tests.integration.test_planning_postgres import planning_database as planni
 from tests.integration.test_report_postgres import ReportCase, finish, generate
 from tests.integration.test_report_postgres import report_case as report_case
 from tests.integration.test_xray_reads_postgres import xray_read_case as xray_read_case
+from tests.report_pdf import report_body_text
 
 pytestmark = pytest.mark.integration
 
@@ -130,6 +131,7 @@ class DownloadedReport:
     csv_records: tuple[dict[str, str], ...] = ()
     pdf_text: str = ""
     pdf_first_page: str = ""
+    pdf_body_text: str = ""
 
     def rows(self, key: r.ReportTableKey) -> tuple[dict[str, r.ReportCell], ...]:
         return tuple(
@@ -242,7 +244,7 @@ async def _xray_path_parity(case: ReportCase, report: DownloadedReport, run_id: 
     assert len(expected_by_key) == len(rows)
     assert {row["key"].value for row in rows} == set(expected_by_key)
     relations = report.rows(r.ReportTableKey.XRAY_PATH_RELATIONS)
-    compact_pdf = "".join(report.pdf_text.split())
+    compact_pdf = "".join(report.pdf_body_text.split())
     for retained, row in zip(report.tables[r.ReportTableKey.XRAY_PATHS], rows, strict=True):
         expected = expected_by_key[str(row["key"].value)]
         position = expected.root if isinstance(expected.root, xd.PositionRoot) else None
@@ -663,11 +665,18 @@ def _checked_formats(report: DownloadedReport) -> DownloadedReport:
     pdf = PdfReader(BytesIO(report.artifacts[r.ReportFormat.PDF]))
     assert 0 < len(pdf.pages) <= r.MAX_REPORT_PDF_PAGES
     assert dict(pdf.attachments) == {"report-manifest.json": [manifest_bytes]}
-    first = pdf.pages[0].extract_text()
-    text = "\n".join(page.extract_text() for page in pdf.pages)
+    pages = [page.extract_text() for page in pdf.pages]
+    first = pages[0]
+    text = "\n".join(pages)
     assert text.strip()
     assert report.manifest.document.document_digest in " ".join(text.split())
-    return replace(report, csv_records=tuple(csv_rows), pdf_text=text, pdf_first_page=first)
+    return replace(
+        report,
+        csv_records=tuple(csv_rows),
+        pdf_text=text,
+        pdf_first_page=first,
+        pdf_body_text=report_body_text(pages),
+    )
 
 
 def _annual_formats(report: DownloadedReport) -> None:

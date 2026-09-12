@@ -24,8 +24,9 @@ test-authoring failures. Static checks passed after a result-model type annotati
 and removal of two redundant test casts; both preceding static failures are retained.
 The corrected widget suite passed 74 desktop/mobile cases and the production web
 build; ROOT reviewed the ten widget images, including two corrected planning
-images. Immutable validation and source/image scans remain pending. These focused observations do not
-establish package acceptance.
+images. The first immutable full gate subsequently failed at the PDF pagination
+assertion described below. A fresh immutable validation and source/image scans
+remain pending. These earlier focused observations do not establish package acceptance.
 
 Retained external task evidence for this regression:
 
@@ -36,6 +37,58 @@ The planned widget capture matrix is five resources across the existing desktop
 and mobile projects. Actual passing cases, image identities and human reviews
 must be recorded before they support acceptance; no capture or test count is
 claimed here for an unobserved gate.
+
+## P209 immutable full failure and PDF correction
+
+The full `make validate` gate at clean, unchanged
+`aa5a5f118ae41d334818621d16330333d5347c46` failed with exit 2 after 2,305.073
+seconds. Its service-backed session ended with 363 passed, one failed and 2,551
+deselected. Those counts describe the session where validation stopped, not a
+completed full-gate total. The failing case was
+`tests/integration/test_report_type_matrix_postgres.py::test_snapshot_and_xray_report_types[portfolio_xray]`.
+The `Record:xray.path.2Key:` assertion found zero exact markers. The original
+failing PDF was not retained. A separate controlled actual-renderer reproduction
+confirmed that page framing can interrupt intact record and key lines.
+
+| Retained gate | Actual outcome | Seconds |
+|---|---|---|
+| p209-immutable-aa5a5f1-full-01 | Failed: 363 service-backed passes, one failure, 2,551 deselected; exit 2 | 2305.073 |
+| p209-pdf-pagination-reproduction-01 | Isolated X-ray case passed; pagination-dependent failure did not recur | 41.429 |
+| p209-pdf-controlled-seam-01 | Actual two-page renderer output reproduced footer/header interruption; raw adjacency count zero | 1.132 |
+| p209-pdf-body-red-01 | Three RED failures with the initial raw-join helper: record/key, wrapped key and wrapped exact value | 1.592 |
+| p209-pdf-body-focused-01 | 47 passed: nine new reader cases, 26 renderer unit cases, ten report types and two company cases | 327.098 |
+
+The first three receipts bind the unchanged immutable source. The RED receipt
+binds its own unchanged, unaccepted working source containing the new helper and
+regression tests. Diagnostic passes do not supersede the failed full gate.
+
+The test-only correction verifies each page's exact outer header, footer and
+sequential page number, removes only those framing lines, and joins the remaining
+body text. It preserves matching text inside a canonical record and retains the
+exact identity, amount, currency and state assertions. Production PDF rendering
+and financial calculations are unchanged. The focused correction gate passed all
+47 selected tests in 327.098 seconds. All nine reader regressions and static checks passed in
+31.129 seconds after formatting-only corrections; a fresh immutable full gate and source/image evidence remain
+required. P209 acceptance is pending, with 8/10 packages, 21/29 local rows and
+30/40 scenarios complete. P210 and Phase 3 remain not started, the final release
+SHA remains null, and GitHub Actions remains owner-deferred.
+
+Exact external receipt/log references (durations are receipt wall times):
+
+- `gates/p209-immutable-aa5a5f1-full-01.json`: SHA-256 `4ba1e093270caf097cea11cc2034eb9ccc0fd0b685e3947aae3c0059efb782ae`; log `gates/p209-immutable-aa5a5f1-full-01.log`: SHA-256 `8df499e09b81c63109f630001c49e6421e5d19d122e81f4fabb50139a2c8158f`.
+- `gates/p209-pdf-pagination-reproduction-01.json`: SHA-256 `0edfbb4e5e1c53b82b5ed2e4b045363cd139ff10d9389da35769f13b45fa01a3`; log `gates/p209-pdf-pagination-reproduction-01.log`: SHA-256 `efc168f0dec29401a1f2fe8dbd883f4e3e87271a60abc7d35c3e3e67f7724084`.
+- `gates/p209-pdf-controlled-seam-01.json`: SHA-256 `e622715fa737840eeb126bb83dc7746fce88ea5dc7f11727c3a07738baa0f286`; log `gates/p209-pdf-controlled-seam-01.log`: SHA-256 `554a32659506c9c1f0d96939e8f303c4293508f432ce877c9b57dd893098394a`.
+- `gates/p209-pdf-body-red-01.json`: SHA-256 `161e5534c57c095d26a4dd95b396494a5e763f58ffc21fa8aa40bee937bac798`; log `gates/p209-pdf-body-red-01.log`: SHA-256 `16ca81de2f1ef0a1c7f6b33a3de780ef012a5263b6f174d9bb4732618ea08791`.
+
+Focused correction receipt `gates/p209-pdf-body-focused-01.json`: SHA-256 `77cb04d274b3e84f523e4b4d4ba4a0763b683256febb17cc3e78199f1a04949f`; log SHA-256 `d522783947d1160746fef5cf8dc57c1fa1b47225ad6cfe140a0dbb7a2af7782f`.
+
+The two preceding static attempts are retained: static01 failed Prettier formatting
+on the status JSON files (3.833 seconds); static02 failed a long test string
+literal (3.661 seconds). Formatting changed no semantic input or assertion.
+
+- `gates/p209-pdf-body-static-01.json`: SHA-256 `0a246e72cecbcc0fc9e1d83373c6b1db4bc8aade92e62e9564ffc232774632ab`; log SHA-256 `6e1f9d757ca2be71eca1ef3478b521566609f6cf1ee573f3f65e5afc53c2f66e`.
+- `gates/p209-pdf-body-static-02.json`: SHA-256 `e870af62bb8faf56ea2b1ea3135d0b7a6024b0034d35d7ed7fdacc7ba262e01d`; log SHA-256 `d3fa2716a1d46406b648e411e8cba08473ed4c34a2ff58792f565980fced9932`.
+- `gates/p209-pdf-body-static-03.json`: SHA-256 `fe29080bfdbfaf19f5e0a7ef98c2d74140316280f3f0c80940d8dd6242363965`; log SHA-256 `9264e48c1376249c05f77cf764ff99ee45031db72f39728ed94905450288bf5b`.
 
 ## P209 observed focused gates
 
