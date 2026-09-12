@@ -9,6 +9,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 from trading212_application import sources as app
+from trading212_application.operational_telemetry import SourceFamily, record_source_status
 from trading212_application.queries import CursorValidationError
 from trading212_application.source_providers import SourceCapability
 from trading212_application.views import Page
@@ -574,7 +575,9 @@ class SourceReads(SourceStore):
                 account_id=account_id, providers=providers, series=series
             )
 
-        return await self._run(principal, operation)
+        response = await self._run(principal, operation)
+        record_source_status(SourceFamily.MARKET, response.series.items)
+        return response
 
     async def get_benchmark_source_status(
         self, principal: Principal, account_id: str, *, query: app.SourceStatusQuery
@@ -587,7 +590,9 @@ class SourceReads(SourceStore):
                 account_id=account_id, providers=providers, series=series
             )
 
-        return await self._run(principal, operation)
+        response = await self._run(principal, operation)
+        record_source_status(SourceFamily.BENCHMARK, response.series.items)
+        return response
 
     async def get_fx_source_status(
         self, principal: Principal, account_id: str, *, query: app.FxSourceStatusQuery
@@ -696,4 +701,6 @@ class SourceReads(SourceStore):
                 pairs=Page(tuple(views), page.next_cursor, page.limit, page.exact_total),
             )
 
-        return await self._run(principal, operation)
+        response = await self._run(principal, operation)
+        record_source_status(SourceFamily.FX, response.pairs.items)
+        return response

@@ -1,6 +1,6 @@
 {
   "name": "trading212-portfolio-intelligence",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Strictly read-only Trading 212 portfolio intelligence workspace",
   "engines": {

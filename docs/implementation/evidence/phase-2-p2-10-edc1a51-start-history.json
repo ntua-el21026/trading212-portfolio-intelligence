@@ -1,0 +1,290 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "historical_p209_tracker_observations_before_p210_implementation",
+  "accepted_delivery_baseline_sha": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+  "new_acceptance_claim": false,
+  "scope": "Only the three current tracker objects replaced when P210 implementation starts. Accepted P209 evidence, ledgers, CI records and earlier history remain unchanged.",
+  "observations": [
+    {
+      "source_path": "PROJECT_PROGRESS.json",
+      "source_file_sha256": "7c16b40e3035e4d90bd1473f4a906fe00f2b154884febdfb1c58fe6328621d95",
+      "json_pointer": "/phases/phase_2/candidate_validation",
+      "value": {
+        "work_package": "P2-09",
+        "source_sha": "bd47329cca5c1409486fff40d48e92163ab4a8af",
+        "tree_sha": "6851d62be8f181abdf2eb23dd2eff2383f790591",
+        "scope": "P209/S33 authorization supplement; MCP001/002 remain historical d70 scoped evidence.",
+        "acceptance": "accepted_locally_with_ci_deferred",
+        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+        "evidence_finalized_at_utc": "2026-09-12T19:03:50.016115+00:00",
+        "artifacts": [
+          "docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json"
+        ],
+        "artifact_sha256": "4397883ee4b3382a2fc20c51a827547b0cd9b6d68be099ee17a57b56fdfb3cd9",
+        "relevant_gates": {
+          "static_and_architecture": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-static-01.json",
+              "sha256": "581b25a3e42bb6a3fc073ccb67e45757f9ee7c745b712fea779c75e99dd983db",
+              "bytes": 1316
+            }
+          ],
+          "mcp_unit_contract_security": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+              "bytes": 2502
+            }
+          ],
+          "s33_postgres": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+              "bytes": 2502
+            }
+          ],
+          "source_security": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-source-security.json",
+              "sha256": "0eacb19f40813647213f7a3d8d84a3bf00bcc2ae99bd854de17e57104c054e3f",
+              "bytes": 1330
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-policy-security.json",
+              "sha256": "e9566b5d9b771e923fbbeca74ec0f916f5474f0c76b695ef32eac71140105e87",
+              "bytes": 1234
+            }
+          ],
+          "python_build": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-python-build.json",
+              "sha256": "455676b45c722fe9b9460b375b1633c3f2c6ead068a2963376d6d3ab71e102ca",
+              "bytes": 1358
+            }
+          ],
+          "mcp_image_build_and_scan": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-build.json",
+              "sha256": "e24f15849f4998b08af63a68fbc4f88e648ca6887eec7d1986410f2108f06f3d",
+              "bytes": 1873
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-inspect-02.json",
+              "sha256": "ebc735c446a935b7879cf117c28ec4e5012441f591b82cd1b7ab2ece1b961551",
+              "bytes": 1587
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-package-managers.json",
+              "sha256": "99ed62b2e613418422426e469604ce5961a44a3e9e6f8759579c2f8df41eccab",
+              "bytes": 1373
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-nonroot.json",
+              "sha256": "7d7c17e76d26c71a6ff622595ac98cf4504d348b84f49a74484c771f5d438eb1",
+              "bytes": 1562
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-image-security.json",
+              "sha256": "0f7400c093f39da4daf3803ba8d4dab3f63f6d5ad0c6574484609615dea4e126",
+              "bytes": 1756
+            }
+          ]
+        },
+        "test_population": {
+          "junit": {
+            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
+            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
+            "bytes": 105541
+          },
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+            "bytes": 2502
+          },
+          "passed": 627,
+          "failed": 0,
+          "errors": 0,
+          "skipped": 0,
+          "note": "One actual invocation; overlapping gate category references are not added together."
+        },
+        "runtime_scope": "One rebuilt MCP image; no new browser/visual or seven-service runtime claim.",
+        "ci_state": "deferred_by_owner",
+        "ci_verified": false,
+        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329-implementation-history.json",
+        "previous_candidate_validation_pointer": "/observations/0/value"
+      }
+    },
+    {
+      "source_path": "PROJECT_PROGRESS.json",
+      "source_file_sha256": "7c16b40e3035e4d90bd1473f4a906fe00f2b154884febdfb1c58fe6328621d95",
+      "json_pointer": "/phases/phase_2/current_implementation",
+      "value": {
+        "work_package": "P2-09",
+        "status": "complete",
+        "source_sha": "bd47329cca5c1409486fff40d48e92163ab4a8af",
+        "acceptance_claim": true,
+        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+        "artifact": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json",
+        "github_actions": "deferred_by_owner",
+        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329-implementation-history.json",
+        "specification": "docs/integrations/P2_09_MCP_REGISTRY_ACCEPTANCE.md",
+        "widget_specification": "apps/mcp/WIDGET_PRESENTATION.md",
+        "relevant_gates": {
+          "static_and_architecture": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-static-01.json",
+              "sha256": "581b25a3e42bb6a3fc073ccb67e45757f9ee7c745b712fea779c75e99dd983db",
+              "bytes": 1316
+            }
+          ],
+          "mcp_unit_contract_security": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+              "bytes": 2502
+            }
+          ],
+          "s33_postgres": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+              "bytes": 2502
+            }
+          ],
+          "source_security": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-source-security.json",
+              "sha256": "0eacb19f40813647213f7a3d8d84a3bf00bcc2ae99bd854de17e57104c054e3f",
+              "bytes": 1330
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-policy-security.json",
+              "sha256": "e9566b5d9b771e923fbbeca74ec0f916f5474f0c76b695ef32eac71140105e87",
+              "bytes": 1234
+            }
+          ],
+          "python_build": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-python-build.json",
+              "sha256": "455676b45c722fe9b9460b375b1633c3f2c6ead068a2963376d6d3ab71e102ca",
+              "bytes": 1358
+            }
+          ],
+          "mcp_image_build_and_scan": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-build.json",
+              "sha256": "e24f15849f4998b08af63a68fbc4f88e648ca6887eec7d1986410f2108f06f3d",
+              "bytes": 1873
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-inspect-02.json",
+              "sha256": "ebc735c446a935b7879cf117c28ec4e5012441f591b82cd1b7ab2ece1b961551",
+              "bytes": 1587
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-package-managers.json",
+              "sha256": "99ed62b2e613418422426e469604ce5961a44a3e9e6f8759579c2f8df41eccab",
+              "bytes": 1373
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-nonroot.json",
+              "sha256": "7d7c17e76d26c71a6ff622595ac98cf4504d348b84f49a74484c771f5d438eb1",
+              "bytes": 1562
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-image-security.json",
+              "sha256": "0f7400c093f39da4daf3803ba8d4dab3f63f6d5ad0c6574484609615dea4e126",
+              "bytes": 1756
+            }
+          ]
+        }
+      }
+    },
+    {
+      "source_path": "PROJECT_STATUS.json",
+      "source_file_sha256": "6c3650615a2eaec46610c29ccaf43d79e224c412a960bac6a50fd37a0bf77fad",
+      "json_pointer": "/current_work_package",
+      "value": {
+        "id": "P2-09",
+        "status": "complete",
+        "source_sha": "bd47329cca5c1409486fff40d48e92163ab4a8af",
+        "acceptance_claim": true,
+        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+        "artifact": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json",
+        "github_actions": "deferred_by_owner",
+        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329-implementation-history.json",
+        "specification": "docs/integrations/P2_09_MCP_REGISTRY_ACCEPTANCE.md",
+        "widget_specification": "apps/mcp/WIDGET_PRESENTATION.md",
+        "relevant_gates": {
+          "static_and_architecture": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-static-01.json",
+              "sha256": "581b25a3e42bb6a3fc073ccb67e45757f9ee7c745b712fea779c75e99dd983db",
+              "bytes": 1316
+            }
+          ],
+          "mcp_unit_contract_security": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+              "bytes": 2502
+            }
+          ],
+          "s33_postgres": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
+              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
+              "bytes": 2502
+            }
+          ],
+          "source_security": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-source-security.json",
+              "sha256": "0eacb19f40813647213f7a3d8d84a3bf00bcc2ae99bd854de17e57104c054e3f",
+              "bytes": 1330
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-policy-security.json",
+              "sha256": "e9566b5d9b771e923fbbeca74ec0f916f5474f0c76b695ef32eac71140105e87",
+              "bytes": 1234
+            }
+          ],
+          "python_build": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-python-build.json",
+              "sha256": "455676b45c722fe9b9460b375b1633c3f2c6ead068a2963376d6d3ab71e102ca",
+              "bytes": 1358
+            }
+          ],
+          "mcp_image_build_and_scan": [
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-build.json",
+              "sha256": "e24f15849f4998b08af63a68fbc4f88e648ca6887eec7d1986410f2108f06f3d",
+              "bytes": 1873
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-inspect-02.json",
+              "sha256": "ebc735c446a935b7879cf117c28ec4e5012441f591b82cd1b7ab2ece1b961551",
+              "bytes": 1587
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-package-managers.json",
+              "sha256": "99ed62b2e613418422426e469604ce5961a44a3e9e6f8759579c2f8df41eccab",
+              "bytes": 1373
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-nonroot.json",
+              "sha256": "7d7c17e76d26c71a6ff622595ac98cf4504d348b84f49a74484c771f5d438eb1",
+              "bytes": 1562
+            },
+            {
+              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-image-security.json",
+              "sha256": "0f7400c093f39da4daf3803ba8d4dab3f63f6d5ad0c6574484609615dea4e126",
+              "bytes": 1756
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

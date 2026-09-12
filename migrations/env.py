@@ -12,7 +12,7 @@ from trading212_persistence.models import ALL_MODELS
 
 config = context.config
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 # Importing the model registry is intentional: it guarantees all tables attach to Base.metadata.
 assert ALL_MODELS

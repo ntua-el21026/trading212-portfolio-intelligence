@@ -10,7 +10,9 @@ A private, premium, strictly read-only portfolio intelligence platform for Tradi
 
 ## Current Phase 2 increment
 
-P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. Phase 2 remains in progress with 9/10 completed packages (90%), 23/29 local rows and 31/40 scenarios complete. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. S32/S34/S38/S39 remain partial. P2-10 and Phase 3 remain `not_started`; GitHub Actions is owner-deferred with no pass claim, and the final Phase 2 release SHA remains null.
+P2-10 implementation is integrated, with focused verification in progress and fresh immutable acceptance pending. The accepted ledger and all prior source-bound evidence remain unchanged.
+
+P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. Phase 2 remains in progress with 9/10 completed packages (90%), 23/29 local rows and 31/40 scenarios complete. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. S32/S34/S38/S39 remain partial. P2-10 is `in_progress`, with its integrated implementation `implemented_unverified`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred with no pass claim, and the final Phase 2 release SHA remains null.
 
 [P209/S33 supplement](docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json); finalized 2026-09-12T19:03:50.016115+00:00. The same-source relevant MCP, PostgreSQL, static, security, Python-build and single-MCP-image gates passed. The d70 full validation and browser/visual evidence remain historical; no new full validation, browser/visual gate or seven-service runtime is claimed.
 
@@ -69,7 +71,7 @@ API, web, workers, reports, and MCP tools share the same canonical domain, autho
 | Phase | Release | Outcome | Status |
 |---|---:|---|---|
 | 1. Trusted Foundation | `0.1.0` | Monorepo, domain/persistence, GET-only Trading 212 ingestion, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, CI and operations | Implementation complete; 24 local acceptance rows complete; external gates remain |
-| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 through P2-09 locally complete, 9/10 packages (90%); P2-10 not started; CI temporarily deferred by owner |
+| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | In progress; P2-01 through P2-09 locally complete, 9/10 packages (90%); P2-10 in progress, acceptance pending; CI temporarily deferred by owner |
 | 3. Premium Intelligence & Productization | `1.0.0` | Advanced risk/scenarios/projections/goals, research cockpit, rich ChatGPT UI, PWA polish, premium providers and production hardening | Not started |
 
 ## Phase 1 technical baseline

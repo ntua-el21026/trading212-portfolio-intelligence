@@ -189,6 +189,7 @@ def create_app(
     cursor_signing_key: bytes | None = None,
 ) -> FastAPI:
     runtime_clock = clock or (lambda: datetime.now(UTC))
+    metrics = OperationalMetrics(service="api")
     security_settings = settings or SecuritySettings()
     deployed = security_settings.environment in {
         RuntimeEnvironment.STAGING,
@@ -220,6 +221,7 @@ def create_app(
             security_settings,
             runtime_clock,
             cursor_signing_key=cursor_signing_key,
+            query_observer=metrics.observe_database_query,
         )
         target_service = target_service or default_targets
         planning_service = planning_service or default_planning
@@ -258,7 +260,7 @@ def create_app(
         bearer_authenticator=bearer_authenticator,
         clock=runtime_clock,
         readiness_probe=readiness_probe or default_readiness,
-        metrics=OperationalMetrics(service="api"),
+        metrics=metrics,
         audit_sink=audit_sink or StructuredLogSecurityAuditSink(),
     )
     application = FastAPI(
@@ -266,7 +268,7 @@ def create_app(
         description=(
             "Private portfolio analytics and internal planning; Trading 212 access is read-only."
         ),
-        version="0.1.0",
+        version="0.2.0",
         docs_url=None,
         redoc_url=None,
         openapi_url="/openapi.json",
@@ -313,6 +315,7 @@ def _local_runtime_defaults(
     clock: Callable[[], datetime],
     *,
     cursor_signing_key: bytes | None,
+    query_observer: Callable[[float, bool], None] | None = None,
 ) -> tuple[
     PortfolioService,
     TargetService,
@@ -342,7 +345,7 @@ def _local_runtime_defaults(
         raise ValueError("DATABASE_URL must be configured")
     if settings.environment not in {RuntimeEnvironment.LOCAL, RuntimeEnvironment.TEST}:
         raise ValueError("implicit PostgreSQL runtime is restricted to local/test")
-    engine = create_database_engine(database_url)
+    engine = create_database_engine(database_url, query_observer=query_observer)
     sessions = create_session_factory(engine)
     queue = PostgresRefreshQueue(sessions=sessions, clock=clock)
 

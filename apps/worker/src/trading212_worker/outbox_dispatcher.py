@@ -48,10 +48,12 @@ from trading212_persistence.refresh_semantics import (
     REFRESH_TASK_NAME,
     REFRESH_TASK_VERSION,
 )
+from trading212_persistence.source_service import PostgresSourceService
 from trading212_persistence.target_service import PostgresTargetService
 from trading212_security.settings import RuntimeEnvironment
 
 from .alert_tasks import CeleryAlertPublisher, dispatch_alerts_once, dispatch_notifications_once
+from .phase2_metrics import QUEUE_SAMPLE_INTERVAL_SECONDS, observe_phase2_queues
 from .plan_tasks import CeleryPlanPublisher, dispatch_plans_once
 from .report_tasks import (
     CeleryExportPublisher,
@@ -1344,7 +1346,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     except ValueError:
         _LOGGER.error("refresh_outbox_configuration_invalid")
         return 2
-    engine = create_database_engine(settings.database_url)
+    metrics = OperationalMetrics(service="outbox-dispatcher")
+    engine = create_database_engine(
+        settings.database_url, query_observer=metrics.observe_database_query
+    )
     celery = Celery("trading212_outbox_dispatcher", broker=settings.broker_url)
     try:
         if args.healthcheck:
@@ -1357,7 +1362,6 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
                 else 1
             )
-        metrics = OperationalMetrics(service="outbox-dispatcher")
         target_service = PostgresTargetService(
             sessions=create_session_factory(engine),
             clock=lambda: datetime.now(UTC),
@@ -1370,6 +1374,19 @@ def main(argv: Sequence[str] | None = None) -> int:
             sessions=create_session_factory(engine), cursor_signing_key=secrets.token_bytes(32)
         )
         plan_publisher = CeleryPlanPublisher(celery)
+        source_service = PostgresSourceService(
+            sessions=create_session_factory(engine),
+            # Maintenance issues no cursor and cannot authorize a source read.
+            cursor_signing_key=secrets.token_bytes(32),
+        )
+
+        async def cleanup_sources() -> None:
+            with metrics.duration.labels(operation="source_payload_expiry").time():
+                completed = await source_service.expire_source_snapshots(limit=100)
+            metrics.phase2_expiry_completed.labels(family="source").inc(completed)
+            if completed:
+                _LOGGER.info("source_payload_expiry completed=%d", completed)
+
         from trading212_persistence.report_job_store import PostgresReportJobStore
 
         report_store = PostgresReportJobStore(create_session_factory(engine))
@@ -1418,7 +1435,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     metrics.queue_delivery_attempts.labels(queue=queue, outcome=outcome).inc(count)
                 metrics.queue_delivery_failures.labels(queue=queue).inc(result.deferred)
             with alert_sessions() as session, session.begin():
-                expire_alert_payloads(session, at=datetime.now(UTC), limit=100)
+                completed = expire_alert_payloads(session, at=datetime.now(UTC), limit=100)
+            metrics.phase2_expiry_completed.labels(family="alert").inc(completed)
 
         async def dispatch_reports() -> None:
             for queue, export in (("report_dispatch", False), ("export_dispatch", True)):
@@ -1445,7 +1463,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 ):
                     metrics.queue_delivery_attempts.labels(queue=queue, outcome=outcome).inc(count)
                 metrics.queue_delivery_failures.labels(queue=queue).inc(result.deferred)
-            await report_store.expire_report_artifacts(limit=100)
+            completed = await report_store.expire_report_artifacts(limit=100)
+            metrics.phase2_expiry_completed.labels(family="report_export").inc(completed)
 
         async def dispatch_plans() -> None:
             with metrics.duration.labels(operation="plan_dispatch").time():
@@ -1477,6 +1496,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             asyncio.run(dispatch_plans())
             asyncio.run(dispatch_reports())
             asyncio.run(dispatch_alerts())
+            asyncio.run(cleanup_sources())
+            observe_phase2_queues(create_session_factory(engine), metrics, at=datetime.now(UTC))
             return 0
         stopped = Event()
 
@@ -1494,6 +1515,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         except OSError:
             _LOGGER.error("refresh_outbox_metrics_bind_failed")
             return 2
+        next_queue_sample = 0.0
         with metrics_server:
             while not stopped.is_set():
                 try:
@@ -1503,16 +1525,38 @@ def main(argv: Sequence[str] | None = None) -> int:
                     _LOGGER.error("refresh_outbox_cycle_failed")
                 try:
                     asyncio.run(dispatch_plans())
+                    metrics.phase2_cycle_ready.labels(family="plan").set(1)
                 except Exception:
+                    metrics.phase2_cycle_ready.labels(family="plan").set(0)
                     _LOGGER.error("plan_outbox_cycle_failed")
                 try:
                     asyncio.run(dispatch_reports())
+                    metrics.phase2_cycle_ready.labels(family="report_export").set(1)
                 except Exception:
+                    metrics.phase2_cycle_ready.labels(family="report_export").set(0)
                     _LOGGER.error("report_outbox_cycle_failed")
                 try:
                     asyncio.run(dispatch_alerts())
+                    metrics.phase2_cycle_ready.labels(family="alert_notification").set(1)
                 except Exception:
+                    metrics.phase2_cycle_ready.labels(family="alert_notification").set(0)
                     _LOGGER.error("alert_outbox_cycle_failed")
+                try:
+                    asyncio.run(cleanup_sources())
+                    metrics.phase2_cycle_ready.labels(family="source_retention").set(1)
+                except Exception:
+                    metrics.phase2_cycle_ready.labels(family="source_retention").set(0)
+                    _LOGGER.error("source_payload_expiry_cycle_failed")
+                if time.monotonic() >= next_queue_sample:
+                    try:
+                        observe_phase2_queues(
+                            create_session_factory(engine), metrics, at=datetime.now(UTC)
+                        )
+                        metrics.phase2_cycle_ready.labels(family="queue_observation").set(1)
+                    except Exception:
+                        metrics.phase2_cycle_ready.labels(family="queue_observation").set(0)
+                        _LOGGER.error("phase2_queue_observation_failed")
+                    next_queue_sample = time.monotonic() + QUEUE_SAMPLE_INTERVAL_SECONDS
                 stopped.wait(settings.poll_interval_seconds)
         return 0
     finally:

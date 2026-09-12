@@ -7,7 +7,7 @@ from .sessions import InMemorySessionStore, SessionManager
 from .settings import RuntimeEnvironment, SecuritySettings
 from .tokens import JwtAuthenticator, LocalSyntheticAuthenticator
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "AuthorizationError",

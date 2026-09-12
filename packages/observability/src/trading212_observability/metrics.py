@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from ipaddress import ip_address
 from threading import Lock, Thread
 from types import TracebackType
@@ -102,6 +103,66 @@ class OperationalMetrics:
             namespace=namespace,
             subsystem=subsystem,
             registry=self.registry,
+        )
+
+        self.database_query_duration = Histogram(
+            "database_query_duration_seconds",
+            "Cursor execution time; excludes result fetching and pool/connect time.",
+            labelnames=("outcome",),
+            namespace=namespace,
+            subsystem=subsystem,
+            registry=self.registry,
+        )
+        self.phase2_queue_items = Gauge(
+            "phase2_queue_items",
+            "Current durable records, clipped at 1000; not cumulative attempt counts.",
+            labelnames=("queue", "state"),
+            namespace=namespace,
+            subsystem=subsystem,
+            registry=self.registry,
+        )
+        self.phase2_queue_saturated = Gauge(
+            "phase2_queue_saturated",
+            "One means the reported queue count is a lower bound.",
+            labelnames=("queue", "state"),
+            namespace=namespace,
+            subsystem=subsystem,
+            registry=self.registry,
+        )
+        self.phase2_queue_observed_at = Gauge(
+            "phase2_queue_observed_at_seconds",
+            "Time of the latest successful bounded queue snapshot.",
+            namespace=namespace,
+            subsystem=subsystem,
+            registry=self.registry,
+        )
+        self.phase2_expiry_completed = Counter(
+            "phase2_expiry_completed_total",
+            "New completed capture expiry records, not purged rows or bytes.",
+            labelnames=("family",),
+            namespace=namespace,
+            subsystem=subsystem,
+            registry=self.registry,
+        )
+        self.phase2_cycle_ready = Gauge(
+            "phase2_cycle_ready",
+            "One after the last successful family cycle; does not certify worker completion.",
+            labelnames=("family",),
+            namespace=namespace,
+            subsystem=subsystem,
+            registry=self.registry,
+        )
+
+    def observe_database_query(self, duration_seconds: float, failed: bool) -> None:
+        if (
+            type(failed) is not bool
+            or isinstance(duration_seconds, bool)
+            or not math.isfinite(duration_seconds)
+            or duration_seconds < 0
+        ):
+            raise ValueError("A finite query duration and typed outcome are required.")
+        self.database_query_duration.labels(outcome="failure" if failed else "success").observe(
+            duration_seconds
         )
 
     def render(self) -> bytes:

@@ -1196,7 +1196,7 @@ wheels = [
 
 [[package]]
 name = "trading212-analytics"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/analytics" }
 dependencies = [
     { name = "trading212-domain" },
@@ -1207,7 +1207,7 @@ requires-dist = [{ name = "trading212-domain", editable = "packages/domain" }]
 
 [[package]]
 name = "trading212-api"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "apps/api" }
 dependencies = [
     { name = "celery", extra = ["redis"] },
@@ -1240,7 +1240,7 @@ requires-dist = [
 
 [[package]]
 name = "trading212-api-contracts"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/api-contracts" }
 dependencies = [
     { name = "pydantic" },
@@ -1251,7 +1251,7 @@ requires-dist = [{ name = "pydantic", specifier = "==2.13.5" }]
 
 [[package]]
 name = "trading212-application"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/application" }
 dependencies = [
     { name = "trading212-analytics" },
@@ -1268,12 +1268,12 @@ requires-dist = [
 
 [[package]]
 name = "trading212-domain"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/domain" }
 
 [[package]]
 name = "trading212-mcp"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "apps/mcp" }
 dependencies = [
     { name = "mcp" },
@@ -1298,7 +1298,7 @@ requires-dist = [
 
 [[package]]
 name = "trading212-observability"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/observability" }
 dependencies = [
     { name = "opentelemetry-api" },
@@ -1319,7 +1319,7 @@ requires-dist = [
 
 [[package]]
 name = "trading212-persistence"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/persistence" }
 dependencies = [
     { name = "alembic" },
@@ -1344,7 +1344,7 @@ requires-dist = [
 
 [[package]]
 name = "trading212-portfolio-intelligence"
-version = "0.1.0"
+version = "0.2.0"
 source = { virtual = "." }
 
 [package.dev-dependencies]
@@ -1375,7 +1375,7 @@ dev = [
 
 [[package]]
 name = "trading212-provider"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/trading212" }
 dependencies = [
     { name = "httpx" },
@@ -1400,7 +1400,7 @@ requires-dist = [
 
 [[package]]
 name = "trading212-reference-data"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/reference-data" }
 dependencies = [
     { name = "trading212-application" },
@@ -1415,7 +1415,7 @@ requires-dist = [
 
 [[package]]
 name = "trading212-security"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "packages/security" }
 dependencies = [
     { name = "cryptography" },
@@ -1434,7 +1434,7 @@ requires-dist = [
 
 [[package]]
 name = "trading212-worker"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "apps/worker" }
 dependencies = [
     { name = "celery", extra = ["redis"] },

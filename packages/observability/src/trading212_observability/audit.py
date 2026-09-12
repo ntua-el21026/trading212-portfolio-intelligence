@@ -53,7 +53,7 @@ class SecurityAuditEvent:
     authentication_method: AuthenticationMethod
     actor_ref: str | None = None
     owner_ref: str | None = None
-    application_version: str = "0.1.0"
+    application_version: str = "0.2.0"
 
     def __post_init__(self) -> None:
         try:

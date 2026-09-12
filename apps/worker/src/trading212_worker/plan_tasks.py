@@ -12,6 +12,7 @@ from enum import StrEnum
 from typing import TYPE_CHECKING, Protocol
 
 from celery import Celery, Task  # type: ignore[import-untyped]
+from trading212_application.operational_telemetry import Operation, record_operation
 from trading212_application.planning_jobs import (
     PLAN_DISPATCH_BATCH_SIZE,
     PLAN_HEARTBEAT_SECONDS,
@@ -140,10 +141,21 @@ async def execute_plan_message(
             return await fail(PlanJobFailureCode.STORAGE_UNAVAILABLE, retryable=True)
         if lease_lost.is_set():
             return PlanExecutionState.FENCED
+        calculation_started = time.perf_counter()
         try:
             result = await asyncio.to_thread(calculate, pinned)
         except Exception:
+            record_operation(
+                Operation.OPTIMIZER_CALCULATION,
+                "failed",
+                duration_seconds=time.perf_counter() - calculation_started,
+            )
             return await fail(PlanJobFailureCode.CALCULATION_FAILED, retryable=False)
+        record_operation(
+            Operation.OPTIMIZER_CALCULATION,
+            result.summary.outcome.value,
+            duration_seconds=time.perf_counter() - calculation_started,
+        )
         if lease_lost.is_set():
             return PlanExecutionState.FENCED
         try:

@@ -111,6 +111,7 @@ def expire_enrichment_payloads(
     session: Session, *, at: datetime, limit: int, budget: SourcePurgeBudget
 ) -> int:
     completed = 0
+    busy_owners: set[UUID] = set()
     for model, reference in _FAMILIES:
         after: tuple[datetime, UUID] | None = None
         while completed < limit and budget.metadata_limit >= 2:
@@ -123,6 +124,8 @@ def expire_enrichment_payloads(
                 )
                 .exists(),
             )
+            if busy_owners:
+                query = query.where(model.owner_id.not_in(busy_owners))
             if after is not None:
                 query = query.where(tuple_(model.expires_at, model.id) > after)
             candidate = session.execute(query.order_by(model.expires_at, model.id).limit(1)).first()
@@ -131,15 +134,22 @@ def expire_enrichment_payloads(
             if not budget.inspect(rows=1):
                 return completed
             after = (candidate.expires_at, candidate.id)
-            for lock in ("sources", "xray"):
-                session.execute(
-                    text("SELECT pg_advisory_xact_lock(hashtextextended(:key,0))"),
+            # Share the maintenance lock order without stalling other families.
+            if not all(
+                session.scalar(
+                    text("SELECT pg_try_advisory_xact_lock(hashtextextended(:key,0))"),
                     {"key": f"{lock}:{candidate.owner_id}"},
                 )
+                is True
+                for lock in ("sources", "xray")
+            ):
+                # Defer this owner across families without spending the pass on its backlog.
+                busy_owners.add(candidate.owner_id)
+                continue
             source = session.scalar(
                 select(model)
                 .where(model.id == candidate.id, model.owner_id == candidate.owner_id)
-                .with_for_update()
+                .with_for_update(skip_locked=True)
             )
             if source is None:
                 continue

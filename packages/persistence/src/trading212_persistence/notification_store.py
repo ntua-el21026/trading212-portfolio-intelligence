@@ -10,6 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from trading212_application import alert_jobs as jobs
 from trading212_application import alerts as app
+from trading212_application.operational_telemetry import Operation, record_operation
 from trading212_domain.alert_serialization import decode_alert_record
 from trading212_domain.alerts import AlertReason
 
@@ -55,12 +56,12 @@ class PostgresAlertNotificationStore(AlertJobTransitions):
                 retryable=receipt.outcome is jobs.AlertDeliveryOutcome.RETRYABLE_FAILURE,
             )
 
-        def execute() -> bool:
+        def execute() -> str | None:
             with self._sessions() as session, session.begin():
                 alert_owner_lock(session, claim.message.owner_id)
                 job = self._live(session, claim)
                 if not isinstance(job, NotificationDeliveryJobModel):
-                    return False
+                    return None
                 self._job_authorization(session, job)
                 if receipt.observed_at > self._now() or receipt.observed_at < job.created_at:
                     raise jobs.AlertJobInputError(AlertReason.AMBIGUOUS_SOURCE)
@@ -78,9 +79,17 @@ class PostgresAlertNotificationStore(AlertJobTransitions):
                     outcome="succeeded",
                 )
                 self._audit_job(session, job, "completed")
-                return True
+                return job.channel
 
-        return await self._worker_run(execute)
+        channel = await self._worker_run(execute)
+        if channel is None:
+            return False
+        operation = {
+            "email": Operation.EMAIL_DELIVERY,
+            "webhook": Operation.WEBHOOK_DELIVERY,
+        }[channel]
+        record_operation(operation, "accepted")
+        return True
 
 
 def provision_notification_destination(

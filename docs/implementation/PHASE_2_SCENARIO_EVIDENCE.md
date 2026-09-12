@@ -2,7 +2,7 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** In progress; P2-01 through P2-09 locally complete; 31/40 complete; P2-10 not_started; remaining Phase 2 CI deferred by owner
+**Implementation acceptance:** In progress; P2-01 through P2-09 locally complete; 31/40 complete; P2-10 in_progress with acceptance pending; remaining Phase 2 CI deferred by owner
 
 **P2-01 evidence SHA:** `ecc75154397c8f9d7532fa2df8576846b60bae7c`
 
@@ -209,7 +209,7 @@ At that historical P206 closure, P2-07 through P2-10 and Phase 3 remained `not_s
 
 ## P209 authorization acceptance and partial shared contribution
 
-P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. Phase 2 remains in progress with 9/10 completed packages (90%), 23/29 local rows and 31/40 scenarios complete. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. S32/S34/S38/S39 remain partial. P2-10 and Phase 3 remain `not_started`; GitHub Actions is owner-deferred with no pass claim, and the final Phase 2 release SHA remains null.
+P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. Phase 2 remains in progress with 9/10 completed packages (90%), 23/29 local rows and 31/40 scenarios complete. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. S32/S34/S38/S39 remain partial. P2-10 is `in_progress`, with its integrated implementation `implemented_unverified`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred with no pass claim, and the final Phase 2 release SHA remains null.
 
 [P209/S33 supplement](evidence/phase-2-p2-09-s33-bd47329.json); finalized 2026-09-12T19:03:50.016115+00:00. The same-source relevant MCP, PostgreSQL, static, security, Python-build and single-MCP-image gates passed. The d70 full validation and browser/visual evidence remain historical; no new full validation, browser/visual gate or seven-service runtime is claimed.
 

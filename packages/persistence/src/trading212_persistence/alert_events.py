@@ -10,6 +10,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from trading212_analytics.alerts import reduce_alert_condition
 from trading212_application.alert_jobs import AlertJobInputError, AlertNotificationPayload
+from trading212_application.operational_telemetry import AlertPublicationCounts
 from trading212_domain.alert_serialization import (
     alert_record_digest,
     decode_alert_condition,
@@ -80,7 +81,8 @@ def _notify(
     *,
     principal_id: UUID,
     now: datetime,
-) -> None:
+) -> tuple[int, int]:
+    email_unavailable = webhook_unavailable = 0
     external_available = False
     external_requested = False
     for identifier in value.version.definition.destination_ids:
@@ -104,6 +106,9 @@ def _notify(
             continue
         configured = destination.state == "configured" and version.secret_reference is not None
         external_available |= configured
+        if not configured:
+            email_unavailable += int(version.channel == "email")
+            webhook_unavailable += int(version.channel == "webhook")
         identifier = uuid4()
         payload = AlertNotificationPayload(
             delivery_id=identifier,
@@ -166,6 +171,7 @@ def _notify(
             eligibility=event.notification_state,
         )
     )
+    return email_unavailable, webhook_unavailable
 
 
 def apply_alert_result(
@@ -176,7 +182,7 @@ def apply_alert_result(
     *,
     principal_id: UUID,
     now: datetime,
-) -> None:
+) -> AlertPublicationCounts:
     condition = session.scalar(
         select(AlertConditionModel)
         .where(AlertConditionModel.rule_version_id == value.version.id)
@@ -249,6 +255,23 @@ def apply_alert_result(
         if isinstance(value.payload, AlertEventBatchInput)
         else {}
     )
+    created = cooldown = 0
+    email_unavailable = webhook_unavailable = 0
+    deduplicated = (
+        sum(
+            item.decision is True and item.deduplication_digest in known
+            for item in result.event_decisions
+        )
+        if result.execution_intent.value == "live"
+        else 0
+    )
+    latched = int(
+        result.execution_intent.value == "live"
+        and result.observation is not None
+        and result.decision is True
+        and not state.armed
+        and not transition.create
+    )
     for intent in transition.create:
         existing = session.scalar(
             select(AlertEventModel.id).where(
@@ -257,6 +280,7 @@ def apply_alert_result(
             )
         )
         if existing is not None:
+            deduplicated += 1
             continue
         observation = (
             observations.get((intent.event_identity, intent.revision_id))
@@ -323,6 +347,13 @@ def apply_alert_result(
         )
         if intent.episode_ordinal is not None:
             state = replace(state, open_episode_id=event.id)
-        _notify(session, event, value, principal_id=principal_id, now=now)
+        email, webhook = _notify(session, event, value, principal_id=principal_id, now=now)
+        email_unavailable += email
+        webhook_unavailable += webhook
+        created += 1
+        cooldown += int(intent.notification_state is AlertNotificationState.SUPPRESSED_COOLDOWN)
     condition.state_payload = encode_alert_condition(state)
     condition.last_applied_scheduled_for = state.last_applied_scheduled_for
+    return AlertPublicationCounts(
+        created, deduplicated, cooldown, latched, email_unavailable, webhook_unavailable
+    )

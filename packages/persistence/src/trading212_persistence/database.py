@@ -9,6 +9,8 @@ from sqlalchemy import Engine, create_engine
 from sqlalchemy.engine import URL, make_url
 from sqlalchemy.orm import Session, sessionmaker
 
+from .query_telemetry import DatabaseQueryTiming, QueryObserver
+
 if TYPE_CHECKING:
     from .repositories import ReconciliationRepository, SnapshotRepository
 
@@ -22,13 +24,18 @@ def validate_database_url(url: str | URL) -> URL:
     return parsed
 
 
-def create_database_engine(url: str | URL, *, echo: bool = False) -> Engine:
-    return create_engine(
+def create_database_engine(
+    url: str | URL, *, echo: bool = False, query_observer: QueryObserver | None = None
+) -> Engine:
+    engine = create_engine(
         validate_database_url(url),
         echo=echo,
         pool_pre_ping=True,
         future=True,
     )
+    if query_observer is not None:
+        DatabaseQueryTiming(engine, query_observer)
+    return engine
 
 
 def create_session_factory(engine: Engine) -> sessionmaker[Session]:

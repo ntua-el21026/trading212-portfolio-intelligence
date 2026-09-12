@@ -4,19 +4,19 @@ build-backend = "uv_build"
 
 [project]
 name = "trading212-worker"
-version = "0.1.0"
+version = "0.2.0"
 description = "Durable background worker for Trading 212 Portfolio Intelligence"
 requires-python = "==3.13.*"
 dependencies = [
     "celery[redis]==5.6.3",
-    "trading212-analytics==0.1.0",
-    "trading212-application==0.1.0",
-    "trading212-domain==0.1.0",
-    "trading212-observability==0.1.0",
-    "trading212-persistence==0.1.0",
-    "trading212-security==0.1.0",
-    "trading212-provider==0.1.0",
-    "trading212-reference-data==0.1.0",
+    "trading212-analytics==0.2.0",
+    "trading212-application==0.2.0",
+    "trading212-domain==0.2.0",
+    "trading212-observability==0.2.0",
+    "trading212-persistence==0.2.0",
+    "trading212-security==0.2.0",
+    "trading212-provider==0.2.0",
+    "trading212-reference-data==0.2.0",
     "reportlab==5.0.1",
     "xlsxwriter==3.2.9",
 ]

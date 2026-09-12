@@ -78,7 +78,7 @@ class _ReadOnlyRequestBuilder:
                 "Authorization": authorization,
                 "Accept": "application/json",
                 "X-Correlation-ID": correlation_id,
-                "User-Agent": "trading212-portfolio-intelligence/0.1.0",
+                "User-Agent": "trading212-portfolio-intelligence/0.2.0",
             },
         )
 

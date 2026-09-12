@@ -23382,7 +23382,7 @@
   "info": {
     "description": "Private portfolio analytics and internal planning; Trading 212 access is read-only.",
     "title": "Trading 212 Portfolio Intelligence API",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "openapi": "3.1.0",
   "paths": {

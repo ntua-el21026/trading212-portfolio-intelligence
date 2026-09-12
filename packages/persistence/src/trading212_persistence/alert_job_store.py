@@ -10,6 +10,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from trading212_application import alert_jobs as jobs
 from trading212_application import alerts as app
+from trading212_application.operational_telemetry import (
+    AlertPublicationCounts,
+    Operation,
+    record_operation,
+)
 from trading212_domain.alert_serialization import decode_alert_input, encode_alert_result
 from trading212_domain.alerts import (
     MAX_ALERT_RESULT_BYTES,
@@ -332,12 +337,12 @@ class PostgresAlertJobStore(AlertJobTransitions):
         if len(payload) > MAX_ALERT_RESULT_BYTES:
             raise jobs.AlertJobInputError(AlertReason.INPUT_BOUND_EXCEEDED)
 
-        def execute() -> bool:
+        def execute() -> tuple[bool, AlertPublicationCounts | None]:
             with self._sessions() as session, session.begin():
                 alert_owner_lock(session, claim.message.owner_id)
                 job = self._live(session, claim)
                 if not isinstance(job, AlertEvaluationJobModel):
-                    return False
+                    return False, None
                 value = self._input(session, job)
                 if (
                     result.rule_version_id,
@@ -378,13 +383,13 @@ class PostgresAlertJobStore(AlertJobTransitions):
                     )
                     session.add(row)
                     session.flush()
-                    apply_alert_result(
+                    observations = apply_alert_result(
                         session, value, result, row, principal_id=job.principal_id, now=self._now()
                     )
                     session.flush()
                     if self._live(session, claim) is None:
                         savepoint.rollback()
-                        return False
+                        return False, None
                     self._job_authorization(session, job)
                     job.state = "succeeded"
                     job.completed_at = self._now()
@@ -400,6 +405,11 @@ class PostgresAlertJobStore(AlertJobTransitions):
                         outcome="succeeded",
                     )
                     self._audit_job(session, job, "completed")
-                return True
+                return True, observations
 
-        return await self._worker_run(execute)
+        retained, observations = await self._worker_run(execute)
+        if retained:
+            record_operation(Operation.ALERT_EVALUATION, result.outcome.value)
+            assert observations is not None
+            observations.record()
+        return retained

@@ -4,17 +4,17 @@ build-backend = "uv_build"
 
 [project]
 name = "trading212-provider"
-version = "0.1.0"
+version = "0.2.0"
 description = "Strictly GET-only Trading 212 provider adapter"
 requires-python = "==3.13.*"
 dependencies = [
     "httpx==0.28.1",
     "pydantic==2.13.5",
     "pyyaml==6.0.3",
-    "trading212-application==0.1.0",
-    "trading212-domain==0.1.0",
-    "trading212-observability==0.1.0",
-    "trading212-security==0.1.0",
+    "trading212-application==0.2.0",
+    "trading212-domain==0.2.0",
+    "trading212-observability==0.2.0",
+    "trading212-security==0.2.0",
 ]
 
 [tool.uv.sources]

@@ -13,6 +13,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, aliased
 from trading212_application import alert_jobs as jobs
 from trading212_application import alerts as app
+from trading212_application.operational_telemetry import Operation, record_operation
 from trading212_domain.alerts import AlertExecutionIntent, AlertReason
 from trading212_security.principals import AuthorizationError
 
@@ -570,12 +571,12 @@ class AlertJobTransitions(AlertStore):
             raise ValueError("A typed report failure is required.")
         permanent = failure in jobs.ALERT_PERMANENT_FAILURES
 
-        def execute() -> bool:
+        def execute() -> tuple[bool, str | None, str]:
             with self._sessions() as session, session.begin():
                 alert_owner_lock(session, claim.message.owner_id)
                 job = self._live(session, claim)
                 if job is None:
-                    return False
+                    return False, None, "failed"
                 if (
                     retryable
                     and not permanent
@@ -617,9 +618,22 @@ class AlertJobTransitions(AlertStore):
                         outcome="failed",
                         failure=failure,
                     )
-                return True
+                return (
+                    True,
+                    job.channel if isinstance(job, NotificationDeliveryJobModel) else None,
+                    "retry" if job.state == "queued" else "failed",
+                )
 
-        return await self._worker_run(execute)
+        retained, channel, outcome = await self._worker_run(execute)
+        if retained:
+            record_operation(Operation.ALERT_FAILURE, failure.value)
+            if channel is not None:
+                operation = {
+                    "email": Operation.EMAIL_DELIVERY,
+                    "webhook": Operation.WEBHOOK_DELIVERY,
+                }[channel]
+                record_operation(operation, outcome)
+        return retained
 
     async def fail_evaluation_job(
         self, claim: jobs.AlertEvaluationJobClaim, *, failure: AlertReason, retryable: bool

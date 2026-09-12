@@ -298,7 +298,7 @@ def create_runtime(
             "Values are observations or deterministic analytics, never trade instructions; "
             "preserve quality warnings, timestamps, unavailable fields, and reporting currency."
         ),
-        version="0.1.0",
+        version="0.2.0",
         auth=auth_settings,
         token_verifier=token_verifier,
         log_level="INFO",

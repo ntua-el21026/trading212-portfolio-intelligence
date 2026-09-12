@@ -133,108 +133,324 @@
       "progress_percent": 90,
       "design_closure": "accepted",
       "candidate_validation": {
-        "work_package": "P2-09",
-        "source_sha": "bd47329cca5c1409486fff40d48e92163ab4a8af",
-        "tree_sha": "6851d62be8f181abdf2eb23dd2eff2383f790591",
-        "scope": "P209/S33 authorization supplement; MCP001/002 remain historical d70 scoped evidence.",
-        "acceptance": "accepted_locally_with_ci_deferred",
-        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
-        "evidence_finalized_at_utc": "2026-09-12T19:03:50.016115+00:00",
-        "artifacts": [
-          "docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json"
+        "work_package": "P2-10",
+        "source_sha": null,
+        "tree_sha": null,
+        "accepted_delivery_baseline_sha": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+        "scope": "Integrated P210 implementation and focused working-tree observations; immutable release acceptance remains pending.",
+        "acceptance": "pending_immutable_validation",
+        "acceptance_claim": false,
+        "source_binding": "unaccepted_working_tree",
+        "source_binding_note": "The gate HEAD SHA identifies the accepted delivery baseline. Each receipt binds its own dirty working tree; no future immutable source SHA or equivalence to the final integrated source is claimed.",
+        "working_tree_gates": [
+          {
+            "id": "p210-o3-prefix-working-red-01",
+            "result": "failed",
+            "exit_code": 1,
+            "duration_seconds": 36.883,
+            "tests_passed": 0,
+            "tests_failed": 4,
+            "source_binding": "unaccepted_working_tree",
+            "head_sha_at_execution": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+            "source_unchanged_during_gate": true,
+            "receipt": {
+              "path": "${RESUME_ROOT}/gates/p210-o3-prefix-working-red-01.json",
+              "sha256": "8c12db7d8c432930d182cc277a005d6bc005680b25b33c48282562a20f07298c",
+              "bytes": 7144
+            },
+            "log": {
+              "path": "${RESUME_ROOT}/gates/p210-o3-prefix-working-red-01.log",
+              "sha256": "f3a6cdd1b541b3dace188388866d99ab0885a749a1b952991ab430838bc87f7e",
+              "bytes": 14273
+            }
+          },
+          {
+            "id": "p210-o3-prefix-working-green-01",
+            "result": "passed",
+            "exit_code": 0,
+            "duration_seconds": 40.145,
+            "tests_passed": 4,
+            "tests_failed": 0,
+            "source_binding": "unaccepted_working_tree",
+            "head_sha_at_execution": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+            "source_unchanged_during_gate": true,
+            "receipt": {
+              "path": "${RESUME_ROOT}/gates/p210-o3-prefix-working-green-01.json",
+              "sha256": "5ed4736378788cac634020bfc313f0ccbbe431dd2eb7a3c81f3f4598ecd45054",
+              "bytes": 7152
+            },
+            "log": {
+              "path": "${RESUME_ROOT}/gates/p210-o3-prefix-working-green-01.log",
+              "sha256": "3017acbe5c85779214b66b3adb2d3d9be71666970373b062e14ff8d49b142347",
+              "bytes": 1457
+            }
+          },
+          {
+            "id": "p210-retention-focused-working-01",
+            "result": "failed",
+            "exit_code": 1,
+            "duration_seconds": 71.946,
+            "tests_passed": 28,
+            "tests_failed": 2,
+            "source_binding": "unaccepted_working_tree",
+            "head_sha_at_execution": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+            "source_unchanged_during_gate": true,
+            "receipt": {
+              "path": "${RESUME_ROOT}/gates/p210-retention-focused-working-01.json",
+              "sha256": "ab2d34d6b88248fa822c6e724e0239c77a3ae17f221d9ec8770c91b7dac698ef",
+              "bytes": 6821
+            },
+            "log": {
+              "path": "${RESUME_ROOT}/gates/p210-retention-focused-working-01.log",
+              "sha256": "fd285fe44edb3ab3e87276a4abb43192797c09336a26d5b52a5897be1424f40d",
+              "bytes": 6314
+            }
+          },
+          {
+            "id": "p210-retention-focused-working-02",
+            "result": "passed",
+            "exit_code": 0,
+            "duration_seconds": 73.744,
+            "tests_passed": 30,
+            "tests_failed": 0,
+            "source_binding": "unaccepted_working_tree",
+            "head_sha_at_execution": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+            "source_unchanged_during_gate": true,
+            "receipt": {
+              "path": "${RESUME_ROOT}/gates/p210-retention-focused-working-02.json",
+              "sha256": "58f692d3adcfd631b4738c009eab4f4395cedd89e335f2492bd8d22014e81720",
+              "bytes": 6799
+            },
+            "log": {
+              "path": "${RESUME_ROOT}/gates/p210-retention-focused-working-02.log",
+              "sha256": "e578a4afe81a015d90932ed09f06216fa65b297414a4d8daef8e082f8b5bb26d",
+              "bytes": 5059
+            }
+          },
+          {
+            "id": "p210-static-working-01",
+            "result": "failed",
+            "exit_code": 2,
+            "duration_seconds": 21.202,
+            "source_binding": "unaccepted_working_tree",
+            "head_sha_at_execution": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+            "source_unchanged_during_gate": true,
+            "receipt": {
+              "path": "${RESUME_ROOT}/gates/p210-static-working-01.json",
+              "sha256": "ca31d8479c31c97a7af44c05730aeee00858cc94eeec1c7e64f07496d4d0034f",
+              "bytes": 6001
+            },
+            "log": {
+              "path": "${RESUME_ROOT}/gates/p210-static-working-01.log",
+              "sha256": "fdfa8a90c172415e4b3ea247a99ad2bd77b298b44b322fed11f9847db7f61fa7",
+              "bytes": 4019
+            }
+          },
+          {
+            "id": "p210-static-working-02",
+            "result": "passed",
+            "exit_code": 0,
+            "duration_seconds": 30.432,
+            "source_binding": "unaccepted_working_tree",
+            "head_sha_at_execution": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+            "source_unchanged_during_gate": true,
+            "receipt": {
+              "path": "${RESUME_ROOT}/gates/p210-static-working-02.json",
+              "sha256": "a8e429c07c66df6e524a19019f9872dd39321f62be65e16ef73a515a0bb9d157",
+              "bytes": 6001
+            },
+            "log": {
+              "path": "${RESUME_ROOT}/gates/p210-static-working-02.log",
+              "sha256": "10d923c02adfd8dbc4aa9d944082d410ddba75d7058b3dab61ecc23c19d3b860",
+              "bytes": 2127
+            }
+          },
+          {
+            "id": "p210-focused-working-01",
+            "result": "failed",
+            "exit_code": 1,
+            "duration_seconds": 262.249,
+            "source_binding": "unaccepted_working_tree",
+            "head_sha_at_execution": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+            "source_unchanged_during_gate": true,
+            "receipt": {
+              "path": "${RESUME_ROOT}/gates/p210-focused-working-01.json",
+              "sha256": "4c0ce2bf45659b361546131534ce2981600c6da3d0170414583676744c108367",
+              "bytes": 7874
+            },
+            "log": {
+              "path": "${RESUME_ROOT}/gates/p210-focused-working-01.log",
+              "sha256": "f4b6cc3578f92195d3c6f6a05c99a6975e1ab704483eaa357c9f8de3e50f79f2",
+              "bytes": 43529
+            },
+            "tests_passed": 189,
+            "tests_failed": 1,
+            "test_errors": 7,
+            "tests_skipped": 0
+          },
+          {
+            "id": "p210-output-fixtures-working-01",
+            "result": "passed",
+            "exit_code": 0,
+            "duration_seconds": 11.449,
+            "source_binding": "unaccepted_working_tree",
+            "head_sha_at_execution": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+            "source_unchanged_during_gate": true,
+            "receipt": {
+              "path": "${RESUME_ROOT}/gates/p210-output-fixtures-working-01.json",
+              "sha256": "33bf3cd820cafa322425e2f6a2467fe92bff330502ca576523695c93a0cb141a",
+              "bytes": 13573
+            },
+            "log": {
+              "path": "${RESUME_ROOT}/gates/p210-output-fixtures-working-01.log",
+              "sha256": "e155e9684771e80810dea2578a61395405f3e29c3ebe088190a5f005b4eff25c",
+              "bytes": 2587
+            },
+            "tests_passed": 11,
+            "tests_failed": 0,
+            "test_errors": 0,
+            "tests_skipped": 0
+          },
+          {
+            "id": "p210-query-plan-working-02",
+            "result": "passed",
+            "exit_code": 0,
+            "duration_seconds": 2.794,
+            "source_binding": "unaccepted_working_tree",
+            "head_sha_at_execution": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+            "source_unchanged_during_gate": true,
+            "receipt": {
+              "path": "${RESUME_ROOT}/gates/p210-query-plan-working-02.json",
+              "sha256": "084c6a339dfbe4c1f3d6d108664f8eeb25128c80f0dba6edc472fcd37f1ec230",
+              "bytes": 6753
+            },
+            "log": {
+              "path": "${RESUME_ROOT}/gates/p210-query-plan-working-02.log",
+              "sha256": "3f1e474c3e06734e5529a89c308b35616c83f241996fabf0aad0b1c4062b5a39",
+              "bytes": 1448
+            },
+            "tests_passed": 1,
+            "tests_failed": 0,
+            "test_errors": 0,
+            "tests_skipped": 0
+          },
+          {
+            "id": "p210-precommit-static-01",
+            "command": [
+              "make",
+              "check-workspace",
+              "generated-check",
+              "format-check",
+              "lint",
+              "typecheck",
+              "docs-check"
+            ],
+            "result": "passed",
+            "exit_code": 0,
+            "duration_seconds": 29.566,
+            "source_binding": "unaccepted_working_tree",
+            "head_sha_at_execution": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+            "source_unchanged_during_gate": true,
+            "receipt": {
+              "path": "${RESUME_ROOT}/gates/p210-precommit-static-01.json",
+              "sha256": "e7cbb341702f24baa634c01dd5dfb4a5b7d057d584d9b0a4ef07070929d838dd",
+              "bytes": 6297
+            },
+            "log": {
+              "path": "${RESUME_ROOT}/gates/p210-precommit-static-01.log",
+              "sha256": "10d923c02adfd8dbc4aa9d944082d410ddba75d7058b3dab61ecc23c19d3b860",
+              "bytes": 2127
+            }
+          },
+          {
+            "id": "p210-precommit-regression-security-build-01",
+            "command": [
+              "make",
+              "test-unit",
+              "test-contract",
+              "test-migrations",
+              "test-security",
+              "security-check",
+              "build"
+            ],
+            "result": "passed",
+            "exit_code": 0,
+            "duration_seconds": 318.756,
+            "source_binding": "unaccepted_working_tree",
+            "head_sha_at_execution": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+            "source_unchanged_during_gate": true,
+            "receipt": {
+              "path": "${RESUME_ROOT}/gates/p210-precommit-regression-security-build-01.json",
+              "sha256": "c38e2173417436572ae1d15917f7f932c278c69a8ea644d7907f7397008295b1",
+              "bytes": 6321
+            },
+            "log": {
+              "path": "${RESUME_ROOT}/gates/p210-precommit-regression-security-build-01.log",
+              "sha256": "acbbe2556db3d324c0096d08fb3fa76a93c28ffaf685d0ab7539a872f6cba3be",
+              "bytes": 26693
+            },
+            "separate_test_populations": {
+              "python_unit_passed": 2153,
+              "web_unit_passed": 539,
+              "contract_passed": 160,
+              "migration_passed": 12,
+              "security_passed": 226
+            }
+          }
         ],
-        "artifact_sha256": "4397883ee4b3382a2fc20c51a827547b0cd9b6d68be099ee17a57b56fdfb3cd9",
-        "relevant_gates": {
-          "static_and_architecture": [
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-static-01.json",
-              "sha256": "581b25a3e42bb6a3fc073ccb67e45757f9ee7c745b712fea779c75e99dd983db",
-              "bytes": 1316
-            }
-          ],
-          "mcp_unit_contract_security": [
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
-              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
-              "bytes": 2502
-            }
-          ],
-          "s33_postgres": [
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
-              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
-              "bytes": 2502
-            }
-          ],
-          "source_security": [
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-source-security.json",
-              "sha256": "0eacb19f40813647213f7a3d8d84a3bf00bcc2ae99bd854de17e57104c054e3f",
-              "bytes": 1330
+        "causal_reviews": [
+          {
+            "review": {
+              "path": "${RESUME_ROOT}/p210-o3-prefix-working-01/root-red-review.json",
+              "sha256": "9fe5d49d95b3960aeda777e48c5a92f6bd4a8c4ced6eb63791af160e32ce476f",
+              "bytes": 956
             },
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-policy-security.json",
-              "sha256": "e9566b5d9b771e923fbbeca74ec0f916f5474f0c76b695ef32eac71140105e87",
-              "bytes": 1234
-            }
-          ],
-          "python_build": [
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-python-build.json",
-              "sha256": "455676b45c722fe9b9460b375b1633c3f2c6ead068a2963376d6d3ab71e102ca",
-              "bytes": 1358
-            }
-          ],
-          "mcp_image_build_and_scan": [
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-build.json",
-              "sha256": "e24f15849f4998b08af63a68fbc4f88e648ca6887eec7d1986410f2108f06f3d",
-              "bytes": 1873
-            },
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-inspect-02.json",
-              "sha256": "ebc735c446a935b7879cf117c28ec4e5012441f591b82cd1b7ab2ece1b961551",
-              "bytes": 1587
-            },
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-package-managers.json",
-              "sha256": "99ed62b2e613418422426e469604ce5961a44a3e9e6f8759579c2f8df41eccab",
-              "bytes": 1373
-            },
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-nonroot.json",
-              "sha256": "7d7c17e76d26c71a6ff622595ac98cf4504d348b84f49a74484c771f5d438eb1",
-              "bytes": 1562
-            },
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-image-security.json",
-              "sha256": "0f7400c093f39da4daf3803ba8d4dab3f63f6d5ad0c6574484609615dea4e126",
-              "bytes": 1756
-            }
-          ]
-        },
-        "test_population": {
-          "junit": {
-            "path": "${RESUME_ROOT}/p209-s33-immutable-bd47329-01/junit.xml",
-            "sha256": "fe7474e53058b2def27e2eab4b5a1c3637df8383901670dce272560a4a476386",
-            "bytes": 105541
+            "finding": "Four intended retention failures: a busy owner exhausted the shared inspection budget before free-owner records in later families. The correction excludes that failed-lock owner for the current pass while preserving shared bounds and try-lock ordering."
           },
-          "gate": {
-            "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
-            "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
-            "bytes": 2502
-          },
-          "passed": 627,
-          "failed": 0,
-          "errors": 0,
-          "skipped": 0,
-          "note": "One actual invocation; overlapping gate category references are not added together."
+          {
+            "review": {
+              "path": "${RESUME_ROOT}/p210-migration-logging-fix-01/review.json",
+              "sha256": "94cc05f351202e05b2064354d9b7ae996d4ee02b6d6645e21f678fc26164bcef",
+              "bytes": 704
+            },
+            "patch": {
+              "path": "${RESUME_ROOT}/p210-migration-logging-fix-01/candidate.patch",
+              "sha256": "ab70b604cc136cc3829878ad8c5fbda8ec492246458981f7c79fae0630673846",
+              "bytes": 367
+            },
+            "finding": "The first 30-case neighbor gate passed 28 and failed two expected-log assertions because Alembic disabled existing application loggers. Preserve them with disable_existing_loggers=False; the unchanged assertions then passed."
+          }
+        ],
+        "remaining_validation": {
+          "broader_focused_checks": "working_corrective_checks_passed; original_failed_attempt_preserved; no_aggregate_pass_claim",
+          "static_and_generated_contract_checks": "precommit_working_pass; immutable_full_validation_pending",
+          "immutable_full_validation": "pending",
+          "immutable_security_build_runtime_and_acceptance": "pending",
+          "regression_security_and_build_checks": "precommit_working_pass; immutable_full_validation_pending"
         },
-        "runtime_scope": "One rebuilt MCP image; no new browser/visual or seven-service runtime claim.",
         "ci_state": "deferred_by_owner",
         "ci_verified": false,
-        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329-implementation-history.json",
-        "previous_candidate_validation_pointer": "/observations/0/value"
+        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-10-edc1a51-start-history.json",
+        "previous_candidate_validation_pointer": "/observations/0/value",
+        "regeneration_review": {
+          "path": "${RESUME_ROOT}/p210-regeneration-working-01/result.json",
+          "sha256": "1fb28103f028aa634624c3e6e31ee0fb8920d78c584045b0cac407cee5e08040",
+          "bytes": 4691
+        },
+        "working_corrections": [
+          {
+            "failure": "Static01 reported9 typing errors in3 fixture files.",
+            "correction": "Use installed TestClient httpx2 response types, a variadic private-identifier tuple annotation and explicit imports for monkeypatched signal/MetricsHttpServer; Static02 passed."
+          },
+          {
+            "failure": "Focused01:189passed,1failed,7setup_errors.",
+            "correction": "Seven setup errors were missing parent of explicit basetemp in ROOT command; all11 report/TTL cases passed with fresh precreated parent. Keyset assertion overspecified direct index node; corrected test accepts only bounded exact bitmap index/heap path, preserves key predicates/zero discards/normal settings, and passed. No application query/index change."
+          },
+          {
+            "failure": "Initial formatting found SQL string construction and long fixture literals.",
+            "correction": "Use psycopg SQL/Identifier composition with parameterized values in disposable TTL query fixture; formatting/types now pass. Original preparation bytes remain preserved."
+          }
+        ]
       },
       "work_packages": {
         "P2-01": "complete",
@@ -246,7 +462,7 @@
         "P2-07": "complete",
         "P2-08": "complete",
         "P2-09": "complete",
-        "P2-10": "not_started"
+        "P2-10": "in_progress"
       },
       "acceptance": {
         "status": "in_progress",
@@ -4832,6 +5048,13 @@
           "artifact": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329-implementation-history.json",
           "sha256": "6fb2d0870855436c5fc8de94dca11156f00eb0c1d70ec7c8d1cab9e88c15c60b",
           "scope": "Original five tracker objects only."
+        },
+        {
+          "work_package": "P2-09",
+          "accepted_delivery_baseline_sha": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+          "artifact": "docs/implementation/evidence/phase-2-p2-10-edc1a51-start-history.json",
+          "sha256": "a8f430d71518b14a2b72b459733bba8b55fd4dc9de750681286ceb957a9b5ae8",
+          "scope": "Only the three original current tracker objects replaced at P210 implementation start."
         }
       ],
       "post_p206_housekeeping": {
@@ -4847,85 +5070,19 @@
         "global_prune_used": false
       },
       "current_implementation": {
-        "work_package": "P2-09",
-        "status": "complete",
-        "source_sha": "bd47329cca5c1409486fff40d48e92163ab4a8af",
-        "acceptance_claim": true,
-        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
-        "artifact": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json",
+        "work_package": "P2-10",
+        "status": "implemented_unverified",
+        "source_sha": null,
+        "accepted_delivery_baseline_sha": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
+        "acceptance_claim": false,
+        "acceptance_scope": "pending_immutable_validation",
+        "specification": "docs/implementation/PHASE_2_EXECUTION_MANIFEST.md",
         "github_actions": "deferred_by_owner",
-        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329-implementation-history.json",
-        "specification": "docs/integrations/P2_09_MCP_REGISTRY_ACCEPTANCE.md",
-        "widget_specification": "apps/mcp/WIDGET_PRESENTATION.md",
-        "relevant_gates": {
-          "static_and_architecture": [
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-static-01.json",
-              "sha256": "581b25a3e42bb6a3fc073ccb67e45757f9ee7c745b712fea779c75e99dd983db",
-              "bytes": 1316
-            }
-          ],
-          "mcp_unit_contract_security": [
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
-              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
-              "bytes": 2502
-            }
-          ],
-          "s33_postgres": [
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-immutable-bd47329-tests-01.json",
-              "sha256": "2bd7b319697cbe51ba1a73a42915a93e9e574fd8f049da07bcb8974f00a7feeb",
-              "bytes": 2502
-            }
-          ],
-          "source_security": [
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-source-security.json",
-              "sha256": "0eacb19f40813647213f7a3d8d84a3bf00bcc2ae99bd854de17e57104c054e3f",
-              "bytes": 1330
-            },
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-policy-security.json",
-              "sha256": "e9566b5d9b771e923fbbeca74ec0f916f5474f0c76b695ef32eac71140105e87",
-              "bytes": 1234
-            }
-          ],
-          "python_build": [
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-python-build.json",
-              "sha256": "455676b45c722fe9b9460b375b1633c3f2c6ead068a2963376d6d3ab71e102ca",
-              "bytes": 1358
-            }
-          ],
-          "mcp_image_build_and_scan": [
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-build.json",
-              "sha256": "e24f15849f4998b08af63a68fbc4f88e648ca6887eec7d1986410f2108f06f3d",
-              "bytes": 1873
-            },
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-inspect-02.json",
-              "sha256": "ebc735c446a935b7879cf117c28ec4e5012441f591b82cd1b7ab2ece1b961551",
-              "bytes": 1587
-            },
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-package-managers.json",
-              "sha256": "99ed62b2e613418422426e469604ce5961a44a3e9e6f8759579c2f8df41eccab",
-              "bytes": 1373
-            },
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-nonroot.json",
-              "sha256": "7d7c17e76d26c71a6ff622595ac98cf4504d348b84f49a74484c771f5d438eb1",
-              "bytes": 1562
-            },
-            {
-              "path": "${RESUME_ROOT}/gates/p209-s33-security-bd47329-01-mcp-image-security.json",
-              "sha256": "0f7400c093f39da4daf3803ba8d4dab3f63f6d5ad0c6574484609615dea4e126",
-              "bytes": 1756
-            }
-          ]
-        }
+        "working_validation": {
+          "source_path": "PROJECT_PROGRESS.json",
+          "json_pointer": "/phases/phase_2/candidate_validation"
+        },
+        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-10-edc1a51-start-history.json"
       }
     },
     "phase_3": {

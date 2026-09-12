@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy.orm import Session
 from trading212_analytics.xray import calculate_xray, verify_xray_result
+from trading212_application.operational_telemetry import record_xray_calculation
 from trading212_application.xray import XrayServiceErrorCode
 from trading212_domain.xray_codec import XrayComponent, encode_xray_component, encode_xray_result
 from trading212_domain.xray_result import XrayCalculation
@@ -25,6 +26,7 @@ def publish_xray(
     value = captured.value
     result = calculate_xray(value)
     verify_xray_result(value, result)
+    record_xray_calculation(result.portfolio_summary)
     canonical_result = encode_xray_result(result)
     fingerprint = sha256(captured.canonical_input).hexdigest()
     if result.input_digest != fingerprint:

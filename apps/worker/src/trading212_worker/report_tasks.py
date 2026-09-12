@@ -6,6 +6,7 @@ import asyncio
 import logging
 import secrets
 import threading
+import time
 from contextlib import suppress
 from dataclasses import dataclass
 from enum import StrEnum
@@ -14,6 +15,7 @@ from typing import cast
 from celery import Celery, Task  # type: ignore[import-untyped]
 from trading212_application import report_jobs as jobs
 from trading212_application import reports as app
+from trading212_application.operational_telemetry import Operation, record_operation
 from trading212_domain.errors import DomainError
 from trading212_domain.reports import ReportFailureCode, ReportManifest
 from trading212_persistence import create_database_engine, create_session_factory
@@ -146,6 +148,8 @@ def _render(
     )
     artifacts: list[app.RenderedArtifact] = []
     guard = _RenderGuard(cancelled)
+    started = time.perf_counter()
+    render_outcome = "failed"
     try:
         with opening as document:
             manifest = document.manifest
@@ -175,10 +179,19 @@ def _render(
             guard.check()
             if document.manifest != manifest:
                 raise app.ReportRenderError(ReportFailureCode.INPUT_CHANGED)
+            render_outcome = "completed"
             return manifest, tuple(artifacts)
     except BaseException:
         artifacts.clear()
         raise
+    finally:
+        record_operation(
+            Operation.REPORT_RENDER
+            if isinstance(claim, jobs.ReportJobClaim)
+            else Operation.EXPORT_RENDER,
+            render_outcome,
+            duration_seconds=time.perf_counter() - started,
+        )
 
 
 async def _execute(
@@ -236,6 +249,12 @@ async def _execute(
             return ReportExecutionState.RECOVERY_PENDING
         if not retained:
             return ReportExecutionState.FENCED
+        record_operation(
+            Operation.REPORT_FAILURE
+            if isinstance(claim, jobs.ReportJobClaim)
+            else Operation.EXPORT_FAILURE,
+            code.value,
+        )
         return ReportExecutionState.DEFERRED if retryable else ReportExecutionState.FAILED
 
     pulse = asyncio.create_task(heartbeat())

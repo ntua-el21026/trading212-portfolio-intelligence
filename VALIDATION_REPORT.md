@@ -1,8 +1,53 @@
 # Phase 1 Validation Report
 
-## Current P209 scoped local validation
+## Current P210 implementation validation
 
-P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. Phase 2 remains in progress with 9/10 completed packages (90%), 23/29 local rows and 31/40 scenarios complete. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. S32/S34/S38/S39 remain partial. P2-10 and Phase 3 remain `not_started`; GitHub Actions is owner-deferred with no pass claim, and the final Phase 2 release SHA remains null.
+P2-10 implementation now covers the remaining authorization and canonical parity checks, query telemetry, bounded retention, operations evidence and release metadata. Focused working-tree observations are recorded below; broader checks and fresh immutable release acceptance remain pending.
+
+### P210 working-tree verification
+
+The four intended busy-owner retention regressions failed in 36.883 seconds before
+the correction and passed in 40.145 seconds afterward. The correction excludes a
+failed-lock owner for the current pass so later families can reach free-owner
+records without changing the shared inspection/removal bounds or try-lock order.
+
+The first 30-case neighbor gate passed 28 and failed two expected-log assertions
+in 71.946 seconds because Alembic disabled existing application loggers. Setting
+`disable_existing_loggers=False` preserved those loggers; the same 30 tests then
+passed in 73.744 seconds with no assertion changes. Both failures, their raw
+outputs and ROOT's causal reviews remain retained.
+
+These are separate working-tree observations based on accepted delivery
+`edc1a51f5c3497e6722e294fab43955ce8ae4451`; each receipt binds the source present
+during that gate. They establish no immutable P210 SHA or aggregate test count.
+Working static/generated checks passed after fixture typing and SQL-composition
+corrections. The broader run recorded 189 passes, one overly specific query-plan
+assertion failure and seven missing-output-parent setup errors. The 11 report/TTL
+cases then passed with the command corrected; the keyset test passed after retaining
+its indexed row bound across both direct and exact non-lossy bitmap plans. These
+separate attempts are not an aggregate pass count. Precommit static/generated checks passed in 29.566 seconds. The separate
+regression/security/build gate passed in 318.756 seconds: 2,153 Python unit, 539 web
+unit, 160 contract, 12 migration and 226 security tests, followed by the configured
+security scans and builds. These populations overlap and are not summed. Fresh
+immutable acceptance remains pending. The machine
+record is `PROJECT_PROGRESS.json#/phases/phase_2/candidate_validation`; external
+receipt paths resolve beneath the retained task evidence root `${RESUME_ROOT}`.
+
+| Working-tree gate | Observed result | Seconds | Receipt SHA-256 |
+|---|---|---:|---|
+| `p210-o3-prefix-working-red-01` | 0 passed, 4 failed; exit 1 | 36.883 | `8c12db7d8c432930d182cc277a005d6bc005680b25b33c48282562a20f07298c` |
+| `p210-o3-prefix-working-green-01` | 4 passed, 0 failed; exit 0 | 40.145 | `5ed4736378788cac634020bfc313f0ccbbe431dd2eb7a3c81f3f4598ecd45054` |
+| `p210-retention-focused-working-01` | 28 passed, 2 failed; exit 1 | 71.946 | `ab2d34d6b88248fa822c6e724e0239c77a3ae17f221d9ec8770c91b7dac698ef` |
+| `p210-retention-focused-working-02` | 30 passed, 0 failed; exit 0 | 73.744 | `58f692d3adcfd631b4738c009eab4f4395cedd89e335f2492bd8d22014e81720` |
+| `p210-query-plan-working-02` | 1 passed, 0 failed, 0 errors; exit 0 | 2.794 | `084c6a339dfbe4c1f3d6d108664f8eeb25128c80f0dba6edc472fcd37f1ec230` |
+| `p210-output-fixtures-working-01` | 11 passed, 0 failed, 0 errors; exit 0 | 11.449 | `33bf3cd820cafa322425e2f6a2467fe92bff330502ca576523695c93a0cb141a` |
+| `p210-focused-working-01` | 189 passed, 1 failed, 7 errors; exit 1 | 262.249 | `4c0ce2bf45659b361546131534ce2981600c6da3d0170414583676744c108367` |
+| `p210-static-working-02` | exit 0 | 30.432 | `a8e429c07c66df6e524a19019f9872dd39321f62be65e16ef73a515a0bb9d157` |
+| `p210-static-working-01` | exit 2 | 21.202 | `ca31d8479c31c97a7af44c05730aeee00858cc94eeec1c7e64f07496d4d0034f` |
+| `p210-precommit-static-01` | passed; exit 0 | 29.566 | `e7cbb341702f24baa634c01dd5dfb4a5b7d057d584d9b0a4ef07070929d838dd` |
+| `p210-precommit-regression-security-build-01` | passed; exit 0 | 318.756 | `c38e2173417436572ae1d15917f7f932c278c69a8ea644d7907f7397008295b1` |
+
+P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. Phase 2 remains in progress with 9/10 completed packages (90%), 23/29 local rows and 31/40 scenarios complete. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. S32/S34/S38/S39 remain partial. P2-10 is `in_progress`, with its integrated implementation `implemented_unverified`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred with no pass claim, and the final Phase 2 release SHA remains null.
 
 [P209/S33 supplement](docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json); finalized 2026-09-12T19:03:50.016115+00:00. The same-source relevant MCP, PostgreSQL, static, security, Python-build and single-MCP-image gates passed. The d70 full validation and browser/visual evidence remain historical; no new full validation, browser/visual gate or seven-service runtime is claimed.
 

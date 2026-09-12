@@ -12,7 +12,7 @@ from .errors import (
 )
 from .ingestion_adapter import Trading212IngestionAdapter
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "CAPABILITIES",

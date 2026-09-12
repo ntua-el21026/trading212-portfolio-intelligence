@@ -14,7 +14,7 @@ from .logging import bind_correlation_id, clear_request_context, configure_loggi
 from .metrics import MetricsHttpServer, OperationalMetrics
 from .tracing import configure_tracing
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "AuthenticationMethod",

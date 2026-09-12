@@ -13,6 +13,7 @@ from sqlalchemy import delete, func, select, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 from trading212_application import targets as app
+from trading212_application.operational_telemetry import Operation, record_operation
 from trading212_application.queries import CursorCodec
 from trading212_application.views import Page
 from trading212_domain import targets as domain
@@ -1007,7 +1008,11 @@ class PostgresTargetService(app.TargetService):
             )
             return self._validation_view(session, row)
 
-        return await self._run(principal, Scope.TARGETS_WRITE, execute)
+        response = await self._run(principal, Scope.TARGETS_WRITE, execute)
+        record_operation(
+            Operation.TARGET_VALIDATION_RESPONSE, "valid" if response.valid else "invalid"
+        )
+        return response
 
     def _activate(
         self,

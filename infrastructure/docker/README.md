@@ -9,10 +9,10 @@ root:
 ```bash
 docker build -f infrastructure/docker/postgres.Dockerfile -t t212pi-postgres:18.6-hardened .
 docker build -f infrastructure/docker/redis.Dockerfile -t t212pi-redis:8.10.1-hardened .
-docker build -f infrastructure/docker/api.Dockerfile -t t212pi-api:0.1.0 .
-docker build -f infrastructure/docker/worker.Dockerfile -t t212pi-worker:0.1.0 .
-docker build -f infrastructure/docker/mcp.Dockerfile -t t212pi-mcp:0.1.0 .
-docker build -f infrastructure/docker/web.Dockerfile -t t212pi-web:0.1.0 .
+docker build -f infrastructure/docker/api.Dockerfile -t t212pi-api:0.2.0 .
+docker build -f infrastructure/docker/worker.Dockerfile -t t212pi-worker:0.2.0 .
+docker build -f infrastructure/docker/mcp.Dockerfile -t t212pi-mcp:0.2.0 .
+docker build -f infrastructure/docker/web.Dockerfile -t t212pi-web:0.2.0 .
 ```
 
 The database/coordination derivatives upgrade the affected OpenSSL packages. The

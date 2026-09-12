@@ -4,11 +4,12 @@ import asyncio
 import logging
 from datetime import UTC, datetime, timedelta
 from threading import Event
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import pytest
 from celery import Celery  # type: ignore[import-untyped]
+from trading212_analytics.planning import calculate_contribution_plan
 from trading212_application.planning_jobs import (
     PLAN_TASK_NAME,
     PlanDispatchClaim,
@@ -25,6 +26,8 @@ from trading212_worker.plan_tasks import (
     execute_plan_message,
     register_planning_task,
 )
+
+from tests.unit.analytics.planning_factories import planning_input
 
 if TYPE_CHECKING:
     from trading212_domain.planning import ContributionPlanResult, PlanningInput
@@ -49,8 +52,8 @@ class Store:
         self.dispatch = PlanDispatchClaim(
             self.message, str(uuid4()), datetime.now(UTC) + timedelta(seconds=30), 1
         )
-        self.pinned = cast("PlanningInput", object())
-        self.result = cast("ContributionPlanResult", object())
+        self.pinned = planning_input()
+        self.result = calculate_contribution_plan(self.pinned)
         self.claimed = False
         self.keep_lease = True
         self.pulse_observed = asyncio.Event()

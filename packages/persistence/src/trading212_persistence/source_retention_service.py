@@ -191,6 +191,7 @@ def expire_source_payloads(
     written until dependent copies and source payloads are physically gone.
     """
     completed = 0
+    busy_owners: set[UUID] = set()
     for model, child_model, columns in SOURCE_PAYLOADS:
         reference = str(model.__tablename__).removesuffix("s") + "_id"
         after: tuple[datetime, UUID] | None = None
@@ -204,6 +205,8 @@ def expire_source_payloads(
                 )
                 .exists(),
             )
+            if busy_owners:
+                query = query.where(model.owner_id.not_in(busy_owners))
             if after is not None:
                 query = query.where(tuple_(model.expires_at, model.id) > after)
             selected = session.execute(query.order_by(model.expires_at, model.id).limit(1)).first()
@@ -212,19 +215,23 @@ def expire_source_payloads(
             if not budget.inspect(rows=1):
                 raise RuntimeError("Source expiry discovery exceeded its row allowance.")
             after = (selected.expires_at, selected.id)
-            # Keep the existing source owner lock before taking the row lock.
-            session.execute(
-                text("SELECT pg_advisory_xact_lock(hashtextextended(:key,0))"),
-                {"key": f"sources:{selected.owner_id}"},
-            )
-            session.execute(
-                text("SELECT pg_advisory_xact_lock(hashtextextended(:key,0))"),
-                {"key": f"xray:{selected.owner_id}"},
-            )
+            # Keep the sources -> xray order, but leave busy owners for the next
+            # bounded invocation instead of blocking the shared dispatcher.
+            if not all(
+                session.scalar(
+                    text("SELECT pg_try_advisory_xact_lock(hashtextextended(:key,0))"),
+                    {"key": f"{lock}:{selected.owner_id}"},
+                )
+                is True
+                for lock in ("sources", "xray")
+            ):
+                # Defer this owner across families without spending the pass on its backlog.
+                busy_owners.add(selected.owner_id)
+                continue
             row = session.scalar(
                 select(model)
                 .where(model.id == selected.id, model.owner_id == selected.owner_id)
-                .with_for_update()
+                .with_for_update(skip_locked=True)
             )
             if row is None:
                 continue
