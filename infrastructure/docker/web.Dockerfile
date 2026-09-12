@@ -17,6 +17,11 @@ FROM node:24.20.0-bookworm-slim@sha256:ba849c60be29959425b8734d57b8b4b7d56f98edd
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 WORKDIR /app
 RUN groupadd --gid 10001 app && useradd --uid 10001 --gid app --no-create-home app
+# Apply the Bookworm PCRE2 security update before removing package managers.
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends --only-upgrade \
+        libpcre2-8-0=10.42-1+deb12u1 \
+    && rm -rf /var/lib/apt/lists/*
 RUN rm -rf \
     /usr/local/bin/corepack \
     /usr/local/bin/npm \

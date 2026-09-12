@@ -6,6 +6,13 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Phase 2 analytical web experience (in progress)
 
+- Pin runtime `libpcre2-8-0` to Debian security version `10.42-1+deb12u1`
+  before package-manager stripping in API, worker, MCP and web images. Immutable
+  P208 source 7201b53 passed its full local gate and 60 captures were ROOT-reviewed,
+  but those four image scans failed for CVE-2026-86145 and CVE-2026-89161.
+  The correction passed six image scans and fixed-package runtime probes; fresh
+  immutable acceptance remains pending. No scanner exceptions were added.
+  [Retained failed security evidence](docs/implementation/evidence/phase-2-p2-08-7201b53-failed-security.json).
 - Correct overview reconciliation summaries to retain the actual status and
   authoritative discrepancy count, including unreconciled results with zero
   records; separately paged issues no longer produce a misleading desktop count.

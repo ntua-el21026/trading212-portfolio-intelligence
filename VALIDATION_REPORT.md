@@ -171,3 +171,28 @@ Retained task-evidence records (external file names, not repository paths):
 The focused correction records bind an unaccepted working-tree diff; they do
 not replace clean immutable acceptance, security scans, or the retained earlier
 failed visual review. P2-09/P2-10 remain required and Phase 3 remains not started.
+
+## P2-08 immutable 7201b53 full gate and failed image security
+
+Immutable P208 source `7201b5396c14ece3055710749ead3807b4e5652a` passed
+`make validate` full02 in 8,459.812 seconds: 2,474 isolated and 377 PostgreSQL
+cases, 88% branch-aware coverage, 539 web unit tests and 154 browser checks
+(52 demo, 102 API across 39 API process reports). ROOT reviewed all 60 actual
+feature captures. The separate security run `p208-security-7201b53-01` passed
+the source/history scans and PostgreSQL/Redis image scans, but failed the API,
+worker, MCP and web images. Each contains Debian bookworm `libpcre2-8-0`
+`10.42-1`, with CVE-2026-86145 and CVE-2026-89161; the scanner reports
+`10.42-1+deb12u1` as fixed. The four runtime Dockerfiles now install that exact
+security package before package-manager stripping. Working-tree formatting, documentation, six serial image builds, package-manager
+checks, six Trivy image scans and four fixed-package runtime probes passed in
+62.736 seconds. Fresh immutable acceptance remains pending; no exceptions were added. P208 is unaccepted, and the accepted
+P207 ledger remains 7/10 packages, 19/29 local rows and 30/40 scenarios.
+
+[Failed security evidence](docs/implementation/evidence/phase-2-p2-08-7201b53-failed-security.json) binds the full02 gate
+receipt and transcript, all eight ROOT review records, six image-scan result/log
+pairs, source/history result/log pairs, image identities, and scanner metadata.
+Original external file names and SHA-256 values are preserved in that record.
+Working correction gate `p208-pcre2-working-build-scan-01` passed in 62.736 seconds.
+It binds all six actual image scans and four runtime package-version probes in
+`p208-pcre2-working-image-checks-01/results.json`. Full corrected-source immutable
+acceptance remains pending; GitHub Actions stays owner-deferred.

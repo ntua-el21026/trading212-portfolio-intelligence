@@ -2,10 +2,12 @@
 
 Implementation is in progress from P207 closure 7d3a5f5. P207 retains its
 [separate local acceptance](evidence/phase-2-p2-07-03c3c5b.json). Generated
-contracts and source are integrated. The first immutable full gate passed, but
-feature-level visual review found an overview defect. Its correction is locally
-tested; P208 acceptance and final same-source evidence remain pending. GitHub Actions is deferred
-by the owner. P209 and P210 remain required; Phase 3 is outside this assignment.
+contracts and source are integrated. Corrected source 7201b53 passed the full local
+gate and ROOT reviewed all 60 feature captures, but four separate runtime-image
+security scans failed. The exact PCRE2 security-package correction is implemented
+in the working tree and passed focused image/build verification. P208 acceptance and final same-source
+evidence remain pending. GitHub Actions is deferred by the owner. P209 and P210
+remain required; Phase 3 is outside this assignment.
 
 The [accepted web architecture](../architecture/PHASE_2_WEB_INFORMATION_ARCHITECTURE.md)
 and [Phase 2 methods](../analytics/PHASE_2_METHODS.md) remain authoritative.
@@ -150,6 +152,24 @@ The company basis comparison normalizes only the four source-reference inventori
 whose input codec specifies sorted order. It preserves duplicate membership and all
 other reconciliation values, identities and metadata. This prevents UUID ordering
 from rejecting an otherwise identical sealed basis without rewriting stored bytes.
+
+## Latest immutable candidate: failed image security
+
+Immutable P208 source `7201b5396c14ece3055710749ead3807b4e5652a` passed
+`make validate` full02 in 8,459.812 seconds: 2,474 isolated and 377 PostgreSQL
+cases, 88% branch-aware coverage, 539 web unit tests and 154 browser checks
+(52 demo, 102 API across 39 API process reports). ROOT reviewed all 60 actual
+feature captures. The separate security run `p208-security-7201b53-01` passed
+the source/history scans and PostgreSQL/Redis image scans, but failed the API,
+worker, MCP and web images. Each contains Debian bookworm `libpcre2-8-0`
+`10.42-1`, with CVE-2026-86145 and CVE-2026-89161; the scanner reports
+`10.42-1+deb12u1` as fixed. The four runtime Dockerfiles now install that exact
+security package before package-manager stripping. Working-tree formatting, documentation, six serial image builds, package-manager
+checks, six Trivy image scans and four fixed-package runtime probes passed in
+62.736 seconds. Fresh immutable acceptance remains pending; no exceptions were added. P208 is unaccepted, and the accepted
+P207 ledger remains 7/10 packages, 19/29 local rows and 30/40 scenarios.
+
+[Failed security evidence with raw record hashes](evidence/phase-2-p2-08-7201b53-failed-security.json).
 
 ## Verification in progress
 

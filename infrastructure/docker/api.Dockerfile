@@ -16,6 +16,11 @@ RUN uv sync --frozen --no-dev --package trading212-api --no-editable \
 FROM python:3.13.15-slim-bookworm@sha256:c45a22ea000adfd9cda29364bbe7edd23001ce5cc2ad15857cfbf7766943b9ca AS runtime
 ENV PATH=/opt/venv/bin:$PATH PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
+# Apply the Bookworm PCRE2 security update before removing package managers.
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends --only-upgrade \
+        libpcre2-8-0=10.42-1+deb12u1 \
+    && rm -rf /var/lib/apt/lists/*
 RUN groupadd --gid 10001 app \
     && useradd --uid 10001 --gid app --no-create-home app \
     && rm -rf \

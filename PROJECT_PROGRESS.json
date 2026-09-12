@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-11T22:19:34.386670+00:00",
+  "updated_at": "2026-09-12T11:39:32.427856+00:00",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -4337,6 +4337,24 @@
           "artifact": "docs/implementation/evidence/phase-2-p2-07-0df988c-failed-browser.json",
           "correction": "Await the exact rendered event revisions and completed form transition; the original minimum control height assertion remains unchanged. Fresh immutable acceptance remains pending.",
           "github_actions": "deferred_by_owner"
+        },
+        {
+          "work_package": "P2-08",
+          "source_sha": "7201b5396c14ece3055710749ead3807b4e5652a",
+          "acceptance": "failed_candidate",
+          "local_exact_validation": "passed",
+          "local_exact_validation_duration_seconds": 8459.812,
+          "local_browser_checks_passed": 154,
+          "root_reviewed_captures": 60,
+          "local_source_scan": "passed",
+          "local_history_scan": "passed",
+          "local_image_scans_passed": 2,
+          "local_image_scans_failed": 4,
+          "failed_images": ["api", "worker", "mcp", "web"],
+          "artifact": "docs/implementation/evidence/phase-2-p2-08-7201b53-failed-security.json",
+          "artifact_sha256": "ad3062ca32c9be6c5a602fe5d25827a9d71bce33a00d0ac947c08d26747401ab",
+          "correction": "Install libpcre2-8-0=10.42-1+deb12u1 in all four application runtime images before package-manager stripping. Working-tree correction verification and corrected immutable acceptance remain pending; no exceptions added.",
+          "github_actions": "deferred_by_owner"
         }
       ],
       "ci_deferral": {
@@ -4419,8 +4437,29 @@
         "starting_sha": "7d3a5f59f30fe934953c7e3ab27d8e6ae48c1ca1",
         "specification": "docs/implementation/P2_08_ANALYTICAL_WEB_EXPERIENCE.md",
         "acceptance_claim": false,
-        "local_validation": "Immutable ff884065e896209563d1966865602e73b3622fd6 passed make validate in 6771.536 seconds: 2474 isolated and 377 PostgreSQL coverage cases, 88% branch-aware coverage, 534 web unit tests, 52 demo plus 102 API browser checks across 39 API process reports, and all static/documentation/security/build gates. ROOT reviewed all 60 feature captures and found one mobile overview defect, so package acceptance remains false. The overview now preserves reconciliation status and uses the authoritative discrepancy_count independently of the empty summary issues collection. Five new regression cases failed before the fix and all eight overview tests passed afterward. Corrected working validation passed 539 web unit tests, formatting, web lint/types, docs, production build and three focused API browser viewport checks. The first focused browser attempt exposed a fixture count assumption (standalone 2 versus full-sequence 0); the corrected assertion compares the UI to the actual API count. Fresh immutable validation and acceptance evidence for the corrected source remain required; GitHub Actions is owner-deferred.",
-        "scope": "Account navigation and command isolation, exact accessible financial presentation, intelligence quality projection, company actual-weight and report source binding, and all eighteen analytical experiences."
+        "local_validation": "Immutable 7201b5396c14ece3055710749ead3807b4e5652a full02 make validate passed in 8459.812 seconds with 2474 isolated and 377 PostgreSQL cases, 88% branch-aware coverage, 539 web unit tests and 154 browser checks (52 demo and 102 API across 39 API process reports). ROOT reviewed all 60 actual feature captures. Separate security scans in p208-security-7201b53-01 passed for the source, repository history, PostgreSQL image and Redis image, but failed for API, worker, MCP and web images: Debian bookworm libpcre2-8-0 10.42-1 has CVE-2026-86145 and CVE-2026-89161, with scanner-reported fixed version 10.42-1+deb12u1. The four runtime Dockerfiles now install that exact security package before package-manager stripping; working-tree formatting, documentation, six serial image builds, package-manager-absence checks, all six Trivy image scans and four fixed-package runtime probes passed in 62.736 seconds. Fresh immutable acceptance remains pending; no exceptions were added. P208 remains unaccepted. The accepted P207 ledger remains 7/10 packages, 19/29 local rows and 30/40 scenarios; P209/P210 remain required and GitHub Actions is owner-deferred.",
+        "scope": "Account navigation and command isolation, exact accessible financial presentation, intelligence quality projection, company actual-weight and report source binding, and all eighteen analytical experiences.",
+        "local_validation_history": [
+          "Immutable ff884065e896209563d1966865602e73b3622fd6 passed make validate in 6771.536 seconds: 2474 isolated and 377 PostgreSQL coverage cases, 88% branch-aware coverage, 534 web unit tests, 52 demo plus 102 API browser checks across 39 API process reports, and all static/documentation/security/build gates. ROOT reviewed all 60 feature captures and found one mobile overview defect, so package acceptance remains false. The overview now preserves reconciliation status and uses the authoritative discrepancy_count independently of the empty summary issues collection. Five new regression cases failed before the fix and all eight overview tests passed afterward. Corrected working validation passed 539 web unit tests, formatting, web lint/types, docs, production build and three focused API browser viewport checks. The first focused browser attempt exposed a fixture count assumption (standalone 2 versus full-sequence 0); the corrected assertion compares the UI to the actual API count. Fresh immutable validation and acceptance evidence for the corrected source remain required; GitHub Actions is owner-deferred."
+        ],
+        "failed_candidate_evidence": {
+          "artifact": "docs/implementation/evidence/phase-2-p2-08-7201b53-failed-security.json",
+          "sha256": "ad3062ca32c9be6c5a602fe5d25827a9d71bce33a00d0ac947c08d26747401ab"
+        },
+        "correction_validation": {
+          "state": "working_tree_checks_passed_immutable_acceptance_pending",
+          "source_binding": "unaccepted_working_tree",
+          "gate": {
+            "path": "${RESUME_ROOT}/gates/p208-pcre2-working-build-scan-01.json",
+            "sha256": "ac3eb1146fc7bca8869a9681c89c31e2ea4072264aba35ee4c584646ca615f30"
+          },
+          "image_checks": {
+            "path": "${RESUME_ROOT}/p208-pcre2-working-image-checks-01/results.json",
+            "sha256": "6dc4f123ebc222f7bc3f98293430446aee5d03bdb5e8fe2314f435147a6a055d"
+          },
+          "duration_seconds": 62.736,
+          "observed": "Formatting, repository/workspace checks, six serial image builds and package-manager-absence probes passed. All six Trivy image scans passed and four runtime probes reported libpcre2-8-0 version 10.42-1+deb12u1. No scanner exceptions changed. Fresh immutable source acceptance remains required."
+        }
       }
     },
     "phase_3": {

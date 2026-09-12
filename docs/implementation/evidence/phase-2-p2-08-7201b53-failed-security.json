@@ -1,0 +1,328 @@
+{
+  "schema_version": "1.0.0",
+  "recorded_at_utc": "2026-09-12T11:36:10.335430+00:00",
+  "affected_commit": "7201b5396c14ece3055710749ead3807b4e5652a",
+  "tree": "3008a3216b77c16e4c7f08d5371e59c57d20ca37",
+  "result": "failed",
+  "package_acceptance": "not_accepted",
+  "evidence_kind": "local_failed_security_gate",
+  "execution_provenance": "Existing ROOT execution and visual-review receipts read and hashed; this documentation update did not run validation, builds, runtime checks or scanners.",
+  "record_location": "${RESUME_ROOT} denotes the retained task evidence root. References bind original external bytes; they are not repository-relative files.",
+  "full_validation": {
+    "result": "passed",
+    "command": [
+      "make",
+      "validate"
+    ],
+    "duration_seconds": 8459.812,
+    "started_at_utc": "2026-09-12T08:58:46.019470+00:00",
+    "completed_at_utc": "2026-09-12T11:19:45.348878+00:00",
+    "source_unchanged": true,
+    "record": {
+      "path": "${RESUME_ROOT}/gates/p208-immutable-7201b53-full-02.json",
+      "sha256": "8cd12aaf7429c27f13922c1571af8601f5a916ad79b956362854ed78c7733264"
+    },
+    "log": {
+      "path": "${RESUME_ROOT}/gates/p208-immutable-7201b53-full-02.log",
+      "sha256": "e27432ef0e8cec8e90752d5b2463f2a8ce022b36e9ce1b8403cf91a2c4e87a9f"
+    },
+    "observed_counts": {
+      "isolated_python_tests_passed": 2474,
+      "service_backed_python_tests_passed": 377,
+      "combined_python_coverage_with_branch_measurement_percent": 88,
+      "web_unit_tests_passed": 539,
+      "browser_tests_passed": 154,
+      "demo_browser_tests_passed": 52,
+      "api_browser_tests_passed": 102,
+      "api_process_reports": 39
+    },
+    "scope": "Successful full02 make validate observation for the immutable source; the later separate six-image scans failed, so this is not package acceptance."
+  },
+  "visual_review": {
+    "reviewer": "ROOT",
+    "reviewed_captures": 60,
+    "distinct_role_project_pairs": 60,
+    "result": "passed",
+    "records": [
+      {
+        "path": "${RESUME_ROOT}/p208-early-visual-review-7201b53-02/alerts-api-chromium-desktop-root-reviewed.json",
+        "sha256": "d537a8890bd9b928faa9dca1d57fbc0a90ffb07752150650e70a83718e96086b"
+      },
+      {
+        "path": "${RESUME_ROOT}/p208-early-visual-review-7201b53-02/alerts-api-chromium-tablet-root-reviewed.json",
+        "sha256": "ede458ef0522a8d35fbf648adbf35ad671a242fa1cf2a9748874a671cdb2c8ed"
+      },
+      {
+        "path": "${RESUME_ROOT}/p208-early-visual-review-7201b53-02/batch-02-root-reviewed.json",
+        "sha256": "2c1d2027aee56c648cc6f261e06bef92ef1917521abed6ad4df9e79f32a7f0a8"
+      },
+      {
+        "path": "${RESUME_ROOT}/p208-early-visual-review-7201b53-02/batch-20260912T110355774420Z-root-reviewed.json",
+        "sha256": "ead34521a9ca29def82d20c25498f85a2e388e362f15f8a0f66620184c1e6cb7"
+      },
+      {
+        "path": "${RESUME_ROOT}/p208-early-visual-review-7201b53-02/batch-20260912T111200527350Z-root-reviewed.json",
+        "sha256": "de982b38938611855f388f0c73854902b852817e2e8945049fae5ed482e924eb"
+      },
+      {
+        "path": "${RESUME_ROOT}/p208-early-visual-review-7201b53-02/batch-20260912T111443207351Z-root-reviewed.json",
+        "sha256": "e80c01f0d8749340cbc1f6840ea9dd9ccf89126132ea5539f66b4b1a0181551f"
+      },
+      {
+        "path": "${RESUME_ROOT}/p208-early-visual-review-7201b53-02/batch-20260912T111559510280Z-root-reviewed.json",
+        "sha256": "ac94ceb13448358751015733fcf558d7edebbe01bc4da79b78d1d4c39a710cf1"
+      },
+      {
+        "path": "${RESUME_ROOT}/p208-early-visual-review-7201b53-02/batch-20260912T111643528206Z-root-reviewed.json",
+        "sha256": "2e5cf6a418b0d02b75490faec3f5b0bf62da5b76be611f8e088eaba7645ef0ab"
+      }
+    ],
+    "scope": "ROOT reviewed the actual retained images. This documents visual review and does not add numerical browser assertions or establish package acceptance."
+  },
+  "failed_gate": {
+    "name": "runtime_image_security_scan",
+    "tool": "Trivy 0.74.0",
+    "failed_images": [
+      "api",
+      "worker",
+      "mcp",
+      "web"
+    ],
+    "passed_images": [
+      "postgres",
+      "redis"
+    ],
+    "findings": [
+      {
+        "id": "CVE-2026-86145",
+        "severity": "HIGH",
+        "package": "libpcre2-8-0",
+        "distribution": "Debian bookworm",
+        "installed_version": "10.42-1",
+        "fixed_version": "10.42-1+deb12u1"
+      },
+      {
+        "id": "CVE-2026-89161",
+        "severity": "HIGH",
+        "package": "libpcre2-8-0",
+        "distribution": "Debian bookworm",
+        "installed_version": "10.42-1",
+        "fixed_version": "10.42-1+deb12u1"
+      }
+    ],
+    "policy": {
+      "scanners": [
+        "vuln",
+        "secret"
+      ],
+      "severity": [
+        "HIGH",
+        "CRITICAL"
+      ],
+      "ignore_unfixed": true,
+      "config_sha256": "28494fcd8c095d145d36e177ba11f8fb279a6d1996ca343c516784540bed0703"
+    },
+    "images": [
+      {
+        "name": "api",
+        "started_at_utc": "2026-09-12T11:28:20.632128+00:00",
+        "exit_code": 1,
+        "duration_seconds": 2.119,
+        "outcome": "failed",
+        "result": {
+          "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-api-result.json",
+          "sha256": "929f01f72fd3c42bc9f4e28eaf50581a3b1f69899c4e38364405d681af5a9d1e"
+        },
+        "log": {
+          "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-api.log",
+          "sha256": "6bc492f4ee9ff1972ded1759916cb64122c62dda93e54beb4d98e074daa91787"
+        },
+        "image_id": "sha256:a4501ab0a8bf289d2ca018341e50a65f324906cfbdf80aa22e055a9106dd2487"
+      },
+      {
+        "name": "worker",
+        "started_at_utc": "2026-09-12T11:28:22.751433+00:00",
+        "exit_code": 1,
+        "duration_seconds": 2.671,
+        "outcome": "failed",
+        "result": {
+          "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-worker-result.json",
+          "sha256": "4490c76ab364f29c453d2877be96807008d4f8cbeed2dfc3856c2d1a9fd0a836"
+        },
+        "log": {
+          "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-worker.log",
+          "sha256": "25be925cb05afe88d82e0fcf357ee4be45364d861aa1a8a9c15358fc42de0c02"
+        },
+        "image_id": "sha256:6871272354d0fffc2855c06a8cda118bf13800cdfc487efe9cbc13b5abd6e5c3"
+      },
+      {
+        "name": "mcp",
+        "started_at_utc": "2026-09-12T11:28:25.422753+00:00",
+        "exit_code": 1,
+        "duration_seconds": 2.12,
+        "outcome": "failed",
+        "result": {
+          "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-mcp-result.json",
+          "sha256": "997ed36aa6905fec67375679e98625cf95c5a28257fab20d0de573ae69d5a97f"
+        },
+        "log": {
+          "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-mcp.log",
+          "sha256": "0f16567a1b157a65967556e98824df38e9929ba6b30569413958a7c54a78f0b8"
+        },
+        "image_id": "sha256:f0673a0741581b1d0303d46995f3a58376287db31a0eef1a7057e0d294f28f4d"
+      },
+      {
+        "name": "web",
+        "started_at_utc": "2026-09-12T11:28:27.542950+00:00",
+        "exit_code": 1,
+        "duration_seconds": 1.469,
+        "outcome": "failed",
+        "result": {
+          "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-web-result.json",
+          "sha256": "7c76eccb94941217ccfb9a4082377099292683af3c0a519434c55b0c0ae2dd86"
+        },
+        "log": {
+          "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-web.log",
+          "sha256": "50742c5f1f3d02efcd7854c3252051ba488a8d18ed5e92a8e74830b6d61dc852"
+        },
+        "image_id": "sha256:6fa6738de074a270175d550b10e78b155d28cc34a43eabf83e5eda6207a773e4"
+      },
+      {
+        "name": "postgres",
+        "started_at_utc": "2026-09-12T11:28:29.011682+00:00",
+        "exit_code": 0,
+        "duration_seconds": 0.164,
+        "outcome": "passed",
+        "result": {
+          "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-postgres-result.json",
+          "sha256": "1ce5faffe16bc2d18a32d51bbb688e05f1edcf85c1dccfea222491453e22b401"
+        },
+        "log": {
+          "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-postgres.log",
+          "sha256": "aef73259e155f184e880444df0ebd80e94c13b2c803f627b9b78c7c158f3d3b2"
+        },
+        "image_id": "sha256:8b6e9179fec00b5f4baf213d54c79e160ee0bf1573aa8ec17452a421e80c4ec9"
+      },
+      {
+        "name": "redis",
+        "started_at_utc": "2026-09-12T11:28:29.176033+00:00",
+        "exit_code": 0,
+        "duration_seconds": 0.114,
+        "outcome": "passed",
+        "result": {
+          "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-redis-result.json",
+          "sha256": "5d05127609b5a120c97882499c83ce4e9c9e215efce881d606ce878fd9e26945"
+        },
+        "log": {
+          "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-redis.log",
+          "sha256": "7bf265cc07a35943aa68f7e26654c442f58cb17bdb66cb8b286e07034a967c78"
+        },
+        "image_id": "sha256:890d9f6cdf4f878f8f91ce96874ff1f896caea0144202be4e56e0981db3ee9cc"
+      }
+    ]
+  },
+  "other_observed_scans": {
+    "source": {
+      "started_at_utc": "2026-09-12T11:28:12.307174+00:00",
+      "exit_code": 0,
+      "duration_seconds": 8.087,
+      "outcome": "passed",
+      "result": {
+        "path": "${RESUME_ROOT}/p208-security-7201b53-01/trivy-fs-result.json",
+        "sha256": "51851dd7267ef7b58d9ec1fcef6cec8c4b67e4491a7252a3e78eb71b06773b2e"
+      },
+      "log": {
+        "path": "${RESUME_ROOT}/p208-security-7201b53-01/trivy-fs.log",
+        "sha256": "5ac2ff3c37dd2b8685ca08717161381c60f41b2a61db428b6b3cd9d62fadc913"
+      }
+    },
+    "repository_history": {
+      "started_at_utc": "2026-09-12T11:27:57.371645+00:00",
+      "exit_code": 0,
+      "duration_seconds": 14.935,
+      "outcome": "passed",
+      "result": {
+        "path": "${RESUME_ROOT}/p208-security-7201b53-01/gitleaks-result.json",
+        "sha256": "3bdadaa42971f4487319c827afa8225092bc1b4e3fff9a294620108386ad8c9e"
+      },
+      "log": {
+        "path": "${RESUME_ROOT}/p208-security-7201b53-01/gitleaks.log",
+        "sha256": "84ad3b03749a8cf7d52513df678660347c3b339f941eda908da78dad0ca7cc80"
+      }
+    },
+    "scope": "Passes apply to the recorded immutable source, tools, databases and configured policy."
+  },
+  "bindings": {
+    "metadata.json": {
+      "path": "${RESUME_ROOT}/p208-security-7201b53-01/metadata.json",
+      "sha256": "e941a9ad1b7fe89e48511e6e305fb097d7f62c7a9e18dc6e43e1fecbbc8871a6"
+    },
+    "build_evidence.json": {
+      "path": "${RESUME_ROOT}/p208-security-7201b53-01/build_evidence.json",
+      "sha256": "eb225482caaf4cc37a99e4a0c332855421f0a8c9c06cbe5e2f65fe2f5f6809d0"
+    },
+    "image_ids.json": {
+      "path": "${RESUME_ROOT}/p208-security-7201b53-01/image_ids.json",
+      "sha256": "c9966537d0e63f11d73f512265d6301802021179cf9f79207de15b850fd524b9"
+    },
+    "source-results.json": {
+      "path": "${RESUME_ROOT}/p208-security-7201b53-01/source-results.json",
+      "sha256": "cee3aae3f6794178ae7cd7e0d7b97e1a559f4e0b9bfe7a4d965aba392da8d8e0"
+    },
+    "image-results.json": {
+      "path": "${RESUME_ROOT}/p208-security-7201b53-01/image-results.json",
+      "sha256": "1a8a5da152fd1405a6ffe2ec11bb6e5e4a331c8a8de2ca30ceb5954aae16d794"
+    },
+    "source-preparation.json": {
+      "path": "${RESUME_ROOT}/p208-security-7201b53-01/source-preparation.json",
+      "sha256": "d1e45d89180763d5a19b2eac3b61031aa07474930ab3a0aa656f479a04639629"
+    },
+    "tool-versions.json": {
+      "path": "${RESUME_ROOT}/p208-security-7201b53-01/tool-versions.json",
+      "sha256": "f6cc08e0ea0011e427aa140fd3cad703dadf0f1e7e3d9c2831c509217c2f9778"
+    },
+    "trivy-db-metadata.json": {
+      "path": "${RESUME_ROOT}/p208-security-7201b53-01/trivy-db-metadata.json",
+      "sha256": "4fd040dfb736f7ead3b6623c94528c0c1fecbc2c7b5894d9fbf3a8f106585464"
+    },
+    "source-trivy-db-metadata.json": {
+      "path": "${RESUME_ROOT}/p208-security-7201b53-01/source-trivy-db-metadata.json",
+      "sha256": "4fd040dfb736f7ead3b6623c94528c0c1fecbc2c7b5894d9fbf3a8f106585464"
+    },
+    "trivy-policy-metadata.json": {
+      "path": "${RESUME_ROOT}/p208-security-7201b53-01/trivy-policy-metadata.json",
+      "sha256": "dc07ff9d3691d0e64d32d0db4be3b38a517c32df773c57839b12eb211111f055"
+    },
+    "source-trivy-policy-metadata.json": {
+      "path": "${RESUME_ROOT}/p208-security-7201b53-01/source-trivy-policy-metadata.json",
+      "sha256": "dc07ff9d3691d0e64d32d0db4be3b38a517c32df773c57839b12eb211111f055"
+    }
+  },
+  "correction": {
+    "description": "Install the exact Debian security package libpcre2-8-0=10.42-1+deb12u1 in all four application runtime images before package-manager stripping.",
+    "files": [
+      "infrastructure/docker/api.Dockerfile",
+      "infrastructure/docker/worker.Dockerfile",
+      "infrastructure/docker/mcp.Dockerfile",
+      "infrastructure/docker/web.Dockerfile"
+    ],
+    "status": "implemented_in_working_tree_verification_pending",
+    "new_exceptions": false,
+    "corrected_source_validation": "pending",
+    "corrected_image_builds_and_scans": "pending",
+    "corrected_runtime_verification": "pending",
+    "corrected_immutable_acceptance": "pending"
+  },
+  "acceptance_ledger": {
+    "accepted_work_packages": 7,
+    "total_work_packages": 10,
+    "locally_executable_rows_complete": 19,
+    "locally_executable_rows_total": 29,
+    "mandatory_scenarios_complete": 30,
+    "mandatory_scenarios_total": 40,
+    "accepted_p207_source_sha": "03c3c5b0b8182aadaaf48ec29131ab7fe83095a7",
+    "p208_acceptance_claim": false,
+    "p209_and_p210": "required"
+  },
+  "github_actions": "deferred_by_owner"
+}

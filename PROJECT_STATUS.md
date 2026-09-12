@@ -6,11 +6,29 @@
 
 **Implementation authority:** `main`
 
-**Updated:** 2026-09-11
+**Updated:** 2026-09-12
 
 ## Current state
 
 P2-08 implementation has started from P207 closure `7d3a5f59f30fe934953c7e3ab27d8e6ae48c1ca1`. Account navigation, analytical presentation, company exposure/report binding and intelligence-quality changes are integrated for validation. Contracts have been generated; no P208 acceptance is claimed. Seven packages remain locally accepted. GitHub Actions stays owner-deferred, and P209/P210 remain required.
+
+Immutable P208 source `7201b5396c14ece3055710749ead3807b4e5652a` passed
+`make validate` full02 in 8,459.812 seconds: 2,474 isolated and 377 PostgreSQL
+cases, 88% branch-aware coverage, 539 web unit tests and 154 browser checks
+(52 demo, 102 API across 39 API process reports). ROOT reviewed all 60 actual
+feature captures. The separate security run `p208-security-7201b53-01` passed
+the source/history scans and PostgreSQL/Redis image scans, but failed the API,
+worker, MCP and web images. Each contains Debian bookworm `libpcre2-8-0`
+`10.42-1`, with CVE-2026-86145 and CVE-2026-89161; the scanner reports
+`10.42-1+deb12u1` as fixed. The four runtime Dockerfiles now install that exact
+security package before package-manager stripping. Working-tree formatting, documentation, six serial image builds, package-manager
+checks, six Trivy image scans and four fixed-package runtime probes passed in
+62.736 seconds. Fresh immutable acceptance remains pending; no exceptions were added. P208 is unaccepted, and the accepted
+P207 ledger remains 7/10 packages, 19/29 local rows and 30/40 scenarios.
+
+[Failed security evidence with raw record hashes](docs/implementation/evidence/phase-2-p2-08-7201b53-failed-security.json).
+
+The following overview-correction observations preceded the full02 result.
 
 P2-08 implementation commit ff884065e896209563d1966865602e73b3622fd6 passed
 the complete local gate in 6,771.536 seconds, including fresh 88% branch-aware
