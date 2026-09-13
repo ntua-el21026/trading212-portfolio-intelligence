@@ -1,8 +1,8 @@
 # Phase 1 Validation Report
 
-## Current P210 implementation validation
+## Final P210 local implementation validation
 
-P2-10 implementation now covers the remaining authorization and canonical parity checks, query telemetry, bounded retention, operations evidence and release metadata. Focused working-tree observations are recorded below; broader checks and fresh immutable release acceptance remain pending.
+P2-10 implementation now covers the remaining authorization and canonical parity checks, query telemetry, bounded retention, operations evidence and release metadata. Focused working-tree observations are recorded below; final immutable local release acceptance is recorded separately in [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json) at 3998426aa7e7614e421518efd01b08188e194100. The completed make validate command ran for 7363.975 seconds with unchanged source; retained working observations below remain historical.
 
 ### P210 working-tree verification
 
@@ -47,7 +47,7 @@ receipt paths resolve beneath the retained task evidence root `${RESUME_ROOT}`.
 | `p210-precommit-static-01` | passed; exit 0 | 29.566 | `e7cbb341702f24baa634c01dd5dfb4a5b7d057d584d9b0a4ef07070929d838dd` |
 | `p210-precommit-regression-security-build-01` | passed; exit 0 | 318.756 | `c38e2173417436572ae1d15917f7f932c278c69a8ea644d7907f7397008295b1` |
 
-P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. Phase 2 remains in progress with 9/10 completed packages (90%), 23/29 local rows and 31/40 scenarios complete. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. S32/S34/S38/S39 remain partial. P2-10 is `in_progress`, with its integrated implementation `implemented_unverified`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred with no pass claim, and the final Phase 2 release SHA remains null.
+P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. Phase 2 is locally complete at 3998426aa7e7614e421518efd01b08188e194100: 10/10 packages (100%), 29/29 local rows and 40/40 scenarios. P2-10 and the shared local predicates are complete under the final same-source acceptance. Phase 3 remains not_started. GitHub Actions remains owner-deferred and unverified, with no CI pass claim. The final Phase 2 release evidence SHA is 3998426aa7e7614e421518efd01b08188e194100. See [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json).
 
 [P209/S33 supplement](docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json); finalized 2026-09-12T19:03:50.016115+00:00. The same-source relevant MCP, PostgreSQL, static, security, Python-build and single-MCP-image gates passed. The d70 full validation and browser/visual evidence remain historical; no new full validation, browser/visual gate or seven-service runtime is claimed.
 

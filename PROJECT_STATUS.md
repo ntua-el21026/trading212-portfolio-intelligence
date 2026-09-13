@@ -10,13 +10,13 @@
 
 ## Current state
 
-P2-10 implementation covers the remaining authorization and canonical parity checks, query telemetry, bounded retention, operations evidence and release metadata. Working-tree observations remain in the [validation report](VALIDATION_REPORT.md#p210-working-tree-verification).
+P2-10 implementation covers the remaining authorization and canonical parity checks, query telemetry, bounded retention, operations evidence and release metadata. Working-tree observations remain in the [validation report](VALIDATION_REPORT.md#p210-working-tree-verification). Final immutable P210 local acceptance is recorded separately in [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json) at 3998426aa7e7614e421518efd01b08188e194100; working-tree observations remain historical.
 
 Prior immutable source `03105f4d36b0457600dfc5ab6fb13b0308820027` passed full `make validate` in 7,298.293 seconds and source security in 36.446 seconds, but image security failed in 8.861 seconds: PostgreSQL 33 High/Critical findings and Redis 12. All 70 original /tmp captures were lost after the WSL reboot, so visual recovery/review remains pending. [Retained failure, coverage and diagnostic evidence](docs/implementation/evidence/phase-2-p2-10-03105f4-failed-security.json) preserves those results without acceptance.
 
-ROOT's subsequent focused PostgreSQL/Redis build passed in 14.706 seconds; patched two-image scans and runtime-image package-manager checks passed in 4.983 seconds. Both gates observed unchanged working trees. These are separate working-source observations; corrected immutable full validation and security/runtime/visual acceptance remain pending.
+ROOT's subsequent focused PostgreSQL/Redis build passed in 14.706 seconds; patched two-image scans and runtime-image package-manager checks passed in 4.983 seconds. Both gates observed unchanged working trees. These are separate working-source observations. Corrected immutable P210 local acceptance at 3998426aa7e7614e421518efd01b08188e194100 is recorded separately in [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json); earlier working passes and the 03105f4 failed-security/capture-loss observation remain historical.
 
-P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. Phase 2 remains in progress with 9/10 completed packages (90%), 23/29 local rows and 31/40 scenarios complete. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. S32/S34/S38/S39 remain partial. P2-10 is `in_progress`, with its integrated implementation `implemented_unverified`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred with no pass claim, and the final Phase 2 release SHA remains null.
+P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. Phase 2 is locally complete at 3998426aa7e7614e421518efd01b08188e194100: 10/10 packages (100%), 29/29 local rows and 40/40 scenarios. P2-10 and the shared local predicates are complete under the final same-source acceptance. Phase 3 remains not_started. GitHub Actions remains owner-deferred and unverified, with no CI pass claim. The final Phase 2 release evidence SHA is 3998426aa7e7614e421518efd01b08188e194100. See [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json).
 
 [P209/S33 supplement](docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json); finalized 2026-09-12T19:03:50.016115+00:00. The same-source relevant MCP, PostgreSQL, static, security, Python-build and single-MCP-image gates passed. The d70 full validation and browser/visual evidence remain historical; no new full validation, browser/visual gate or seven-service runtime is claimed.
 
@@ -344,7 +344,7 @@ than fabricated.
 
 ## Next action
 
-Complete P2-10 focused checks and fresh immutable local release acceptance with the retained owner CI deferral under the accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
+P2-10 and the final immutable local release predicates are complete at 3998426aa7e7614e421518efd01b08188e194100 under the retained owner CI deferral and accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
 owner/deployment conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo
@@ -356,7 +356,7 @@ owner/deployment conditions without substituting synthetic evidence:
    unless valid provider evidence becomes available.
 
 The accepted direct-`main` policy is the only active delivery mechanism. Frozen
-architecture and safety decisions remain unchanged. Phase 2 is `in_progress`; Phase 3 remains `not_started`.
+architecture and safety decisions remain unchanged. Phase 2 is `complete` under exact-source local acceptance at 3998426aa7e7614e421518efd01b08188e194100; Phase 3 remains `not_started`.
 
 ## Permanent boundaries
 

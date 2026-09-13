@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-12",
+  "updated_at": "2026-09-13",
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -13,7 +13,7 @@
   "documentation_readiness": "approved",
   "current_phase": "phase_2",
   "current_release_target": "0.2.0",
-  "implementation_status": "in_progress",
+  "implementation_status": "complete",
   "release_readiness": "blocked_external",
   "release_candidate_sha": "99df47b6633791c3900a52f46f56d48be922a436",
   "release_candidate_relationship": "validated_evidence_sha_is_ancestor_of_main",
@@ -83,7 +83,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "P2-10_focused_then_immutable_local_acceptance_with_owner_deferred_ci",
+  "next_gate": "external_conditions_only_phase_3_not_started",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -141,7 +141,7 @@
   "phase_2_design": {
     "version": "0.2",
     "status": "accepted",
-    "runtime_acceptance": "in_progress",
+    "runtime_acceptance": "complete",
     "authority": "docs/DESIGN_FREEZE_V0_2.md"
   },
   "phase_2_package_evidence": {
@@ -191,6 +191,13 @@
       "supplemental_artifact": "docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json",
       "supplemental_artifact_sha256": "4397883ee4b3382a2fc20c51a827547b0cd9b6d68be099ee17a57b56fdfb3cd9",
       "evidence_scope": "Original sha/artifact retain d70 registry/widget scope; supplemental fields close P209/S33."
+    },
+    "P2-10": {
+      "sha": "3998426aa7e7614e421518efd01b08188e194100",
+      "status": "complete",
+      "artifact": "docs/implementation/evidence/phase-2-p2-10-3998426.json",
+      "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+      "ci_state": "deferred_by_owner"
     }
   },
   "phase_2_failed_candidate_history": [
@@ -331,10 +338,10 @@
     "billing_or_spending_changes_authorized": false,
     "ci_pass_claim": false,
     "current_acceptance_ci": {
-      "artifact": "docs/implementation/evidence/phase-2-p2-09-d70ab44.json",
+      "artifact": "docs/implementation/evidence/phase-2-p2-10-3998426.json",
       "current_observation_pointer": "/ci",
-      "finalized_artifact_sha256": "9aa88b76cb98447c2551ad9236e6965a42df8d5c72ba4a7f32974d5ce3175353",
-      "source_sha": "d70ab445de38aee255275880c5ef7a105ebbb939"
+      "finalized_artifact_sha256": "3d3d6c44349313836c8123abab022109c1d7daa65a7ffa42a05a6f8aa9c23ab0",
+      "source_sha": "3998426aa7e7614e421518efd01b08188e194100"
     },
     "finalized_owner_decision": {
       "artifact": "docs/implementation/evidence/phase-2-p2-06-9e39767.json",
@@ -373,17 +380,13 @@
   },
   "current_work_package": {
     "id": "P2-10",
-    "status": "implemented_unverified",
-    "source_sha": null,
-    "accepted_delivery_baseline_sha": "edc1a51f5c3497e6722e294fab43955ce8ae4451",
-    "acceptance_claim": false,
-    "acceptance_scope": "pending_immutable_validation",
-    "specification": "docs/implementation/PHASE_2_EXECUTION_MANIFEST.md",
+    "status": "complete",
+    "source_sha": "3998426aa7e7614e421518efd01b08188e194100",
+    "acceptance_claim": true,
+    "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+    "artifact": "docs/implementation/evidence/phase-2-p2-10-3998426.json",
+    "implementation_report": "docs/implementation/PHASE_2_IMPLEMENTATION_REPORT.md",
     "github_actions": "deferred_by_owner",
-    "working_validation": {
-      "source_path": "PROJECT_PROGRESS.json",
-      "json_pointer": "/phases/phase_2/candidate_validation"
-    },
-    "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-10-edc1a51-start-history.json"
+    "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-10-3998426-implementation-history.json"
   }
 }
