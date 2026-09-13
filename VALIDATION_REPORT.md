@@ -500,3 +500,42 @@ The corrected matrix `p209-s33-working-02` passed all 112 cases in 71.634 second
 The follow-up `p209-s33-regression-working-01` passed 576 MCP unit, contract, security and PostgreSQL cases, including canonical API parity, durable commands and collection capacity/rollback. `p209-s33-static-working-03` passed the workspace, format, lint, type, generated-contract and documentation checks. `p209-s33-security-build-working-01` passed `make security-check build-python`: SAST reported zero findings across seven rules and 547 scanned files; configured secrets and Gitleaks exception negatives passed, locked dependency audits passed, and all Python distributions built. These remain working-source checks; immutable correction acceptance follows separately.
 
 The first exact-index Gitleaks scan (`p209-s33-staged-gitleaks-01`) flagged three synthetic X-ray provider/policy/evidence labels as generic API keys. Source review confirmed these were literal fixture metadata passed to typed registrations, with no credential or external transport. They were renamed to the explicit label `synthetic`; no scanner rule, exception, credential or application behavior changed. The failed scan receipt remains retained, and the affected X-ray checks and staged scan are rerun before delivery.
+
+### P2-10 prior immutable pass, failed image security and working correction
+
+Source `03105f4d36b0457600dfc5ab6fb13b0308820027` completed `make validate`
+with exit 0 in 7,298.293 seconds, ending 2026-09-12T21:49:44.268160Z,
+with unchanged clean source. Actual counts were 2,575 isolated coverage,
+510 service/migration coverage, 539 web unit and 208 browser passes
+(106 synthetic, 102 API). Overlapping standalone targets are not added.
+
+The actual coverage export passed in 5.043 seconds: lines 45,165/49,152 =
+91.888427734375%; branch-only 10,132/13,264 = 76.38721351025332%;
+combined statement-and-branch 88.59427069982056% (console 89%).
+The retained coverage database was unchanged. Source/history security passed
+in 36.446 seconds; subsequent image security failed in 8.861 seconds.
+PostgreSQL had 33 package/CVE findings (21 High, 12 Critical); Redis had 12
+(9 High, 3 Critical). API, worker, MCP and web scans passed under that policy.
+These original immutable image failures remain failed.
+
+ROOT's disposable PostgreSQL-base APT diagnostic confirmed fixed OS versions
+and simulated ten upgrades, zero new packages and zero removals. Its broader
+diagnostic included three OpenSSL-family packages; ROOT retained seven
+PostgreSQL/four Redis direct fix pins. The subsequent working-tree gates
+`p210-os-fix-build-working-01` and `p210-os-fix-scan-working-01` passed in
+14.706 and 4.983 seconds, respectively: two image builds, both patched image
+scans and six runtime-image package-manager probes. Both gates recorded
+unchanged working trees. No scanner policy or acceptance boundary changed.
+
+ROOT found all 70 original /tmp captures absent after the WSL reboot
+(boot at 2026-09-13 08:46 UTC), after the September 12 full-command pass.
+Surviving browser JSONs do not establish visual review. Fresh original
+captures, corrected immutable full validation and security/runtime/visual
+acceptance remain pending. P2-10 stays implemented_unverified; the current
+implementation source SHA and final release SHA remain null. Stage A and the
+accepted 9/10 packages, 23/29 local rows and 31/40 scenarios remain unchanged.
+GitHub Actions remains owner-deferred/unverified.
+
+[Failure history with exact original references and hashes](docs/implementation/evidence/phase-2-p2-10-03105f4-failed-security.json)
+binds the full/coverage/security records, APT diagnostic and separate working
+correction. This documentation update ran no tests, builds or scanners.

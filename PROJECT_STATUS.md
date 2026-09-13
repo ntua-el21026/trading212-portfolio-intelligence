@@ -6,11 +6,15 @@
 
 **Implementation authority:** `main`
 
-**Updated:** 2026-09-12
+**Updated:** 2026-09-13
 
 ## Current state
 
-P2-10 implementation now covers the remaining authorization and canonical parity checks, query telemetry, bounded retention, operations evidence and release metadata. Focused working-tree observations are recorded in the [validation report](VALIDATION_REPORT.md#p210-working-tree-verification); broader checks and fresh immutable release acceptance remain pending.
+P2-10 implementation covers the remaining authorization and canonical parity checks, query telemetry, bounded retention, operations evidence and release metadata. Working-tree observations remain in the [validation report](VALIDATION_REPORT.md#p210-working-tree-verification).
+
+Prior immutable source `03105f4d36b0457600dfc5ab6fb13b0308820027` passed full `make validate` in 7,298.293 seconds and source security in 36.446 seconds, but image security failed in 8.861 seconds: PostgreSQL 33 High/Critical findings and Redis 12. All 70 original /tmp captures were lost after the WSL reboot, so visual recovery/review remains pending. [Retained failure, coverage and diagnostic evidence](docs/implementation/evidence/phase-2-p2-10-03105f4-failed-security.json) preserves those results without acceptance.
+
+ROOT's subsequent focused PostgreSQL/Redis build passed in 14.706 seconds; patched two-image scans and runtime-image package-manager checks passed in 4.983 seconds. Both gates observed unchanged working trees. These are separate working-source observations; corrected immutable full validation and security/runtime/visual acceptance remain pending.
 
 P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. Phase 2 remains in progress with 9/10 completed packages (90%), 23/29 local rows and 31/40 scenarios complete. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. S32/S34/S38/S39 remain partial. P2-10 is `in_progress`, with its integrated implementation `implemented_unverified`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred with no pass claim, and the final Phase 2 release SHA remains null.
 

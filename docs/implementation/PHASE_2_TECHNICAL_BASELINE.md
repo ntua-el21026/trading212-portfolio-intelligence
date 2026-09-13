@@ -32,6 +32,13 @@ terms, locked with the existing package manager, and pass all security/image
 gates in the same capability increment. Do not install a system Python package,
 additional Docker daemon, competing JavaScript lockfile, or global toolchain.
 
+The PostgreSQL and Redis Dockerfiles also pin Debian security updates for gzip,
+PCRE2, SQLite and installed Perl packages. The upstream PostgreSQL/Redis versions
+and image digests remain unchanged; the existing OpenSSL pins and runtime
+hardening remain in force. These package updates address the retained
+[03105f4 image-scan failure](evidence/phase-2-p2-10-03105f4-failed-security.json);
+acceptance requires fresh scans of the rebuilt immutable images.
+
 ## Package responsibilities
 
 | Existing package/application | Phase 2 responsibility |

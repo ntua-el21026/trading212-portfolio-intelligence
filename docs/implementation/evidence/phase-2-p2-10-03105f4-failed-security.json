@@ -1,0 +1,389 @@
+{
+  "schema_version": "1.0.0",
+  "recorded_at_utc": "2026-09-13T09:21:41.203761+00:00",
+  "affected_commit": "03105f4d36b0457600dfc5ab6fb13b0308820027",
+  "tree": "6734b1d2b7d4b5db9bdbbf5b4c2145bc797ba61e",
+  "result": "failed",
+  "package_acceptance": "not_accepted",
+  "acceptance_claim": false,
+  "evidence_kind": "local_failed_security_gate",
+  "execution_provenance": "Existing ROOT records read and hashed. This documentation update ran no application tests, builds, scanners, browser or runtime checks.",
+  "record_location": "${RESUME_ROOT} denotes /home/peppasmich/.local/state/t212pi/20260908-resume. References bind original external bytes; logs and source trees are not copied.",
+  "full_validation": {
+    "source_binding": "immutable_commit",
+    "result": "passed",
+    "exit_code": 0,
+    "duration_seconds": 7298.293,
+    "started_at_utc": "2026-09-12T19:48:06.307892+00:00",
+    "completed_at_utc": "2026-09-12T21:49:44.268160+00:00",
+    "source_unchanged": true,
+    "record": {
+      "path": "${RESUME_ROOT}/gates/p210-immutable-03105f4-full-01.json",
+      "sha256": "c5e970e06e3db407b7e1957d7feb91bc1396b13419ecf2d0185524a7b9146a9c"
+    },
+    "log": {
+      "path": "${RESUME_ROOT}/gates/p210-immutable-03105f4-full-01.log",
+      "sha256": "becb903de7aa701d536ae1a61b69d9f0c83f8669f72f23f51dc52ea584ba1812"
+    },
+    "command": [
+      "make",
+      "validate"
+    ],
+    "observed_counts": {
+      "isolated_coverage_passed": 2575,
+      "service_migration_coverage_passed": 510,
+      "web_unit_passed": 539,
+      "browser_passed": 208,
+      "synthetic_browser_passed": 106,
+      "api_browser_passed": 102,
+      "raw_browser_json_reports": 40
+    },
+    "service_junit": {
+      "path": "${RESUME_ROOT}/p210-immutable-03105f4-01/pytest.xml",
+      "sha256": "10ce583e14fd254fe74f5f5b589d05399848d4a704d0819e21e31774fa0d6b61"
+    },
+    "count_scope": "Coverage invocations and completed web-unit summaries; actual browser records in the 40 full-receipt outputs. Final JUnit contains only 510 service/migration cases. Earlier standalone runs overlap and are not added.",
+    "acceptance": null
+  },
+  "coverage": {
+    "source_binding": "immutable_commit",
+    "result": "passed",
+    "exit_code": 0,
+    "duration_seconds": 5.043,
+    "started_at_utc": "2026-09-13T08:50:36.361631+00:00",
+    "completed_at_utc": "2026-09-13T08:50:41.404904+00:00",
+    "source_unchanged": true,
+    "record": {
+      "path": "${RESUME_ROOT}/gates/p210-immutable-03105f4-coverage-json-01.json",
+      "sha256": "dfc6ffaeafd63f18bd5fcbc863dff7b2ed61fa59140855c254a2abd61545a2f3"
+    },
+    "log": {
+      "path": "${RESUME_ROOT}/gates/p210-immutable-03105f4-coverage-json-01.log",
+      "sha256": "e9abbd929d56d8af89db6beb36036a7e67bd87b06d6b20c4bba2f03294eb5d30"
+    },
+    "json": {
+      "path": "${RESUME_ROOT}/p210-immutable-03105f4-01/coverage.json",
+      "sha256": "d988c9f947ea574dc46d673f0eea500c6ac69a52c2b363b03bcd5a4007ff6ac4"
+    },
+    "export_review": {
+      "path": "${RESUME_ROOT}/p210-immutable-03105f4-01/coverage-export-review.json",
+      "sha256": "d80fbb837e4185f186bc92b403b09c33b40a25805132578fcd187bcec9d7a91f"
+    },
+    "database_before_export": {
+      "path": "${RESUME_ROOT}/p210-immutable-03105f4-01/coverage-database-before-export.json",
+      "sha256": "b219c7f6321b8f454ac6045e8565d3c768acf4b855f95c5acfc4db0b2521d0dd"
+    },
+    "retained_database_sha256": "facd8ada0e525cae8fc1debbfdae826d213c1d095c93d22934a7fcb03f7ea254",
+    "database_unchanged": true,
+    "branch_measurement_enabled": true,
+    "covered_lines": 45165,
+    "total_lines": 49152,
+    "line_percent": 91.888427734375,
+    "covered_branches": 10132,
+    "total_branches": 13264,
+    "branch_only_percent": 76.38721351025332,
+    "combined_statement_and_branch_percent": 88.59427069982056,
+    "console_display_percent": 89
+  },
+  "source_security": {
+    "source_binding": "immutable_commit",
+    "result": "passed",
+    "exit_code": 0,
+    "duration_seconds": 36.446,
+    "started_at_utc": "2026-09-13T08:56:34.014770+00:00",
+    "completed_at_utc": "2026-09-13T08:57:10.458373+00:00",
+    "source_unchanged": true,
+    "record": {
+      "path": "${RESUME_ROOT}/gates/p210-immutable-03105f4-source-security-01.json",
+      "sha256": "ab368c9d951473f8ac16fb24d5bf9e5e06829626eed854f484dbf716160947c5"
+    },
+    "log": {
+      "path": "${RESUME_ROOT}/gates/p210-immutable-03105f4-source-security-01.log",
+      "sha256": "d5f6a270937cf357e9cfe4f4ec625631a142262355a4bd850de04bfccb90c85f"
+    },
+    "results": {
+      "path": "${RESUME_ROOT}/p210-security-03105f4-01/source-results.json",
+      "sha256": "53d84be28c2935a55d29e2b646f998dfd7dbc77e7e6a36af2c0c3beb3b05dc6e"
+    },
+    "scope": "Configured Gitleaks history and Trivy source scans passed at the original immutable source.",
+    "logs": [
+      {
+        "path": "${RESUME_ROOT}/p210-security-03105f4-01/gitleaks.log",
+        "sha256": "3a591d6c1f3f8b77baefa8006f2d16a765e4a488459083b3678918720fc02235"
+      },
+      {
+        "path": "${RESUME_ROOT}/p210-security-03105f4-01/trivy-fs.log",
+        "sha256": "5903334f3966558b0e666a9aa2b67338b58508abc54207d966e78c7daabeca15"
+      }
+    ]
+  },
+  "image_security": {
+    "source_binding": "immutable_commit",
+    "result": "failed",
+    "exit_code": 1,
+    "duration_seconds": 8.861,
+    "started_at_utc": "2026-09-13T08:57:10.509164+00:00",
+    "completed_at_utc": "2026-09-13T08:57:19.370374+00:00",
+    "source_unchanged": true,
+    "record": {
+      "path": "${RESUME_ROOT}/gates/p210-immutable-03105f4-image-security-01.json",
+      "sha256": "669b8bdac05d9ee3d275c0d0660cddac6164c1dc453cc28a21484b80ccde8bf4"
+    },
+    "log": {
+      "path": "${RESUME_ROOT}/gates/p210-immutable-03105f4-image-security-01.log",
+      "sha256": "2319a1d8a87fb657316a5d95ca0205ffcc432064c11d0987881ebe9221ed9294"
+    },
+    "results": {
+      "path": "${RESUME_ROOT}/p210-security-03105f4-01/image-results.json",
+      "sha256": "7cb6218acda704f083ba6d11137cb9c4a7249b03127629823c9e3322020b3ad8"
+    },
+    "policy": {
+      "scanners": [
+        "vuln",
+        "secret"
+      ],
+      "severity": [
+        "HIGH",
+        "CRITICAL"
+      ],
+      "ignore_unfixed": true,
+      "policy_changes": false
+    },
+    "images": [
+      {
+        "name": "api",
+        "image_id": "sha256:28e54f582606665e4554902044de40bc0065b489491195cbe95dbaa95bc9c5d5",
+        "exit_code": 0,
+        "log": {
+          "path": "${RESUME_ROOT}/p210-security-03105f4-01/image-api.log",
+          "sha256": "5dff60ce29c7671a0ec23d57e8f7c758b18a137d4b885377bcecec19c8a05a16"
+        }
+      },
+      {
+        "name": "worker",
+        "image_id": "sha256:527c81c9d9d4d947842103eb337a7c9f6030d07b425f4f7ad41fffe279ed5b53",
+        "exit_code": 0,
+        "log": {
+          "path": "${RESUME_ROOT}/p210-security-03105f4-01/image-worker.log",
+          "sha256": "a8c9c3fd3f275a3158f87605748e6a6c86eb25ec98435766898d8e4c45480687"
+        }
+      },
+      {
+        "name": "mcp",
+        "image_id": "sha256:5fc90b5aa1a2e453ba8e745b770474e6ed44924989e0193441956c896e41fd3c",
+        "exit_code": 0,
+        "log": {
+          "path": "${RESUME_ROOT}/p210-security-03105f4-01/image-mcp.log",
+          "sha256": "2a902ce25502fb5dc63736eabc1ce33b980c37f78cf962371de7e39f06ebe9de"
+        }
+      },
+      {
+        "name": "web",
+        "image_id": "sha256:3aed645c6690c3714ae4bc6346797b86766c4c99a573450bfc5c7328c95e6926",
+        "exit_code": 0,
+        "log": {
+          "path": "${RESUME_ROOT}/p210-security-03105f4-01/image-web.log",
+          "sha256": "71d813fcc1bb1f14ef01f473062ff0057817b815dbc23781c8ee31029a592cf2"
+        }
+      },
+      {
+        "name": "postgres",
+        "image_id": "sha256:7b0e88b8211ebb212d8f62069647c10480e72257e0049569da2f94c30017b590",
+        "exit_code": 1,
+        "log": {
+          "path": "${RESUME_ROOT}/p210-security-03105f4-01/image-postgres.log",
+          "sha256": "22478b46004f12c0331f1273e6c9f1943d80cac1f0d9599fd78030538f1963f2"
+        },
+        "findings": {
+          "total": 33,
+          "high": 21,
+          "critical": 12
+        }
+      },
+      {
+        "name": "redis",
+        "image_id": "sha256:63daa73c72ba62dec7c004a3030ed0868e5cfebef636d6f37ec23f182b6d7fe7",
+        "exit_code": 1,
+        "log": {
+          "path": "${RESUME_ROOT}/p210-security-03105f4-01/image-redis.log",
+          "sha256": "f997d3a3056e17eadcbaa67fca97f75cbf12e9bf7ea1ed9825d23a58e21d5b55"
+        },
+        "findings": {
+          "total": 12,
+          "high": 9,
+          "critical": 3
+        }
+      }
+    ],
+    "affected_packages": [
+      {
+        "package": "gzip",
+        "installed_version": "1.13-1",
+        "minimum_fixed_version": "1.13-1+deb13u1",
+        "images": [
+          "postgres",
+          "redis"
+        ]
+      },
+      {
+        "package": "libpcre2-8-0",
+        "installed_version": "10.46-1~deb13u1",
+        "minimum_fixed_version": "10.46-1~deb13u2",
+        "images": [
+          "postgres",
+          "redis"
+        ]
+      },
+      {
+        "package": "libperl5.40",
+        "installed_version": "5.40.1-6",
+        "minimum_fixed_version": "5.40.1-6+deb13u1",
+        "images": [
+          "postgres"
+        ]
+      },
+      {
+        "package": "libsqlite3-0",
+        "installed_version": "3.46.1-7+deb13u1",
+        "minimum_fixed_version": "3.46.1-7+deb13u2",
+        "images": [
+          "postgres",
+          "redis"
+        ]
+      },
+      {
+        "package": "perl",
+        "installed_version": "5.40.1-6",
+        "minimum_fixed_version": "5.40.1-6+deb13u1",
+        "images": [
+          "postgres"
+        ]
+      },
+      {
+        "package": "perl-base",
+        "installed_version": "5.40.1-6",
+        "minimum_fixed_version": "5.40.1-6+deb13u1",
+        "images": [
+          "postgres",
+          "redis"
+        ]
+      },
+      {
+        "package": "perl-modules-5.40",
+        "installed_version": "5.40.1-6",
+        "minimum_fixed_version": "5.40.1-6+deb13u1",
+        "images": [
+          "postgres"
+        ]
+      }
+    ],
+    "finding_scope": "Debian 13.6 OS package/CVE findings, not unique CVE totals; PostgreSQL 33 (21 High/12 Critical), Redis 12 (9 High/3 Critical). The original failed results remain failed."
+  },
+  "visual_evidence": {
+    "original_captures_lost": 70,
+    "capture_location": "/tmp",
+    "loss_provenance": "ROOT inspected the restarted WSL environment and found the 70 original /tmp captures absent after the full command completed. The first collector failed with FileNotFoundError before writing outputs. Surviving JSON reports do not substitute for the missing visual evidence.",
+    "recovery_status": "pending_fresh_original_captures",
+    "visual_review": null,
+    "scope": "Surviving raw browser JSONs establish command execution only. Fresh captures and actual web/widget/PDF review remain required at the corrected immutable source.",
+    "root_observed_wsl_boot_utc": "2026-09-13 08:46 UTC"
+  },
+  "apt_diagnostic": {
+    "record": {
+      "path": "${RESUME_ROOT}/p210-image-os-fix-01/apt-policy.json",
+      "sha256": "6690679ecaf9a046475eb09272697626bc22cf53501472343ef6ceecb21a3e80"
+    },
+    "log": {
+      "path": "${RESUME_ROOT}/p210-image-os-fix-01/apt-policy.log",
+      "sha256": "f91cec6f1f071e6ddb5a3f801548ebe0d0a75c054d7c2203dec6edc5a727135f"
+    },
+    "started_at_utc": "2026-09-13T09:15:33.185454+00:00",
+    "exit_code": 0,
+    "base_image": "postgres:18.6@sha256:4ef4dbc939d61acea57712655ddb4b4ab27419c913f94cca0cd57cb3ea3c2280",
+    "simulation": {
+      "upgraded": 10,
+      "newly_installed": 0,
+      "removed": 0,
+      "not_upgraded": 16
+    },
+    "scope": "One disposable --rm PostgreSQL-base diagnostic confirmed candidate fixed versions and simulated ten upgrades, including three OpenSSL-family packages. This is package metadata/simulation, not an image build or scan.",
+    "selected_fix_scope": "ROOT retains seven PostgreSQL/four Redis direct OS package pins matching the findings; diagnostic package count is not the direct-pin count."
+  },
+  "working_correction": {
+    "status": "focused_working_checks_passed",
+    "source_binding": "unaccepted_working_tree",
+    "base_source_sha": "03105f4d36b0457600dfc5ab6fb13b0308820027",
+    "source_diff_digest": "8aa0962f19472b6165b8723c3b26ee0218892df5a676532c4470e4a6a6bb1fdf",
+    "build": {
+      "source_binding": "unaccepted_working_tree",
+      "result": "passed",
+      "exit_code": 0,
+      "duration_seconds": 14.706,
+      "started_at_utc": "2026-09-13T09:16:36.534395+00:00",
+      "completed_at_utc": "2026-09-13T09:16:51.239972+00:00",
+      "source_unchanged": true,
+      "record": {
+        "path": "${RESUME_ROOT}/gates/p210-os-fix-build-working-01.json",
+        "sha256": "512d322ceeddd1ffc61a0c45ba52f6b683517bc0c3c983932daad04d95541553"
+      },
+      "log": {
+        "path": "${RESUME_ROOT}/gates/p210-os-fix-build-working-01.log",
+        "sha256": "294be342a3cef43e10bae835ce6cd47a2bb3354fb467552ca2fb4212af9e237c"
+      }
+    },
+    "two_image_scan_and_package_manager_checks": {
+      "source_binding": "unaccepted_working_tree",
+      "result": "passed",
+      "exit_code": 0,
+      "duration_seconds": 4.983,
+      "started_at_utc": "2026-09-13T09:17:24.359397+00:00",
+      "completed_at_utc": "2026-09-13T09:17:29.342080+00:00",
+      "source_unchanged": true,
+      "record": {
+        "path": "${RESUME_ROOT}/gates/p210-os-fix-scan-working-01.json",
+        "sha256": "903de6a7093b70220247ec4e3bd588aa47d85f33159f02e987f5a5242a0d6dae"
+      },
+      "log": {
+        "path": "${RESUME_ROOT}/gates/p210-os-fix-scan-working-01.log",
+        "sha256": "f3d168ffe44808870e7cea3c2f3e49ec96f5bb70f16c9365bc14351e64d3b096"
+      }
+    },
+    "patched_images": [
+      {
+        "name": "postgres",
+        "image_id": "sha256:82274e2f70831022d5fce20149f3961a49db4db2c58430b07b3441b3230ffc44",
+        "exit_code": 0,
+        "report": {
+          "path": "${RESUME_ROOT}/p210-image-os-fix-01/postgres-scan.json",
+          "sha256": "815e6494ed40adb36feaf5e8b35077c6337b261df52147a092d7ec7c6cfa10e6"
+        }
+      },
+      {
+        "name": "redis",
+        "image_id": "sha256:813ece7fd3340d0b2602a0a945ebbf185ff82796a679c3219795a21fcbf68da3",
+        "exit_code": 0,
+        "report": {
+          "path": "${RESUME_ROOT}/p210-image-os-fix-01/redis-scan.json",
+          "sha256": "aed96aaaf150a16aeb8f5e66a21484356e755bf77e3b0920b1b34f7851740bec"
+        }
+      }
+    ],
+    "package_manager_probe_images": 6,
+    "policy_changes": false,
+    "acceptance_claim": false,
+    "scope": "Actual focused PostgreSQL/Redis builds and patched two-image scans passed; six runtime-image package-manager probes passed. Source was unchanged during each working-tree gate. These outcomes do not replace the original failure or establish new immutable-source full validation, security/runtime/visual acceptance.",
+    "corrected_immutable_source_sha": null,
+    "corrected_immutable_validation": null
+  },
+  "remaining": {
+    "security_acceptance": null,
+    "runtime_acceptance": null,
+    "visual_acceptance": null,
+    "root_review": null,
+    "final_acceptance": null,
+    "delivery_D": null,
+    "final_release_sha": null,
+    "github_actions": "deferred_by_owner_unverified"
+  },
+  "preservation": "Accepted package/requirement/scenario ledger, Stage A and historical evidence remain unchanged."
+}

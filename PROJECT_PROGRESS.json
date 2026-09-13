@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-12",
+  "updated_at": "2026-09-13",
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -5082,7 +5082,32 @@
           "source_path": "PROJECT_PROGRESS.json",
           "json_pointer": "/phases/phase_2/candidate_validation"
         },
-        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-10-edc1a51-start-history.json"
+        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-10-edc1a51-start-history.json",
+        "prior_immutable_observation": {
+          "source_sha": "03105f4d36b0457600dfc5ab6fb13b0308820027",
+          "source_path": "docs/implementation/evidence/phase-2-p2-10-03105f4-failed-security.json",
+          "result": "failed_security",
+          "full_validation": "passed",
+          "source_security": "passed",
+          "image_security": "failed",
+          "postgres_findings": 33,
+          "redis_findings": 12,
+          "original_captures_lost": 70,
+          "acceptance_claim": false
+        },
+        "current_fix_observation": {
+          "source_path": "docs/implementation/evidence/phase-2-p2-10-03105f4-failed-security.json",
+          "json_pointer": "/working_correction",
+          "source_binding": "unaccepted_working_tree",
+          "base_source_sha": "03105f4d36b0457600dfc5ab6fb13b0308820027",
+          "status": "focused_working_checks_passed",
+          "build_duration_seconds": 14.706,
+          "scan_and_package_manager_checks_duration_seconds": 4.983,
+          "source_unchanged_during_each_gate": true,
+          "acceptance_claim": false,
+          "corrected_immutable_source_sha": null,
+          "corrected_immutable_validation": null
+        }
       }
     },
     "phase_3": {
