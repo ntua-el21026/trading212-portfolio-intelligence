@@ -220,14 +220,41 @@ def modeled_risk(matrix: Matrix, weights: tuple[Decimal, ...], annual_factor: in
     for weight in weights:
         if finite(weight) < ZERO:
             invalid("premium.model.weights")
-    factor = semidefinite_factor(matrix)
     with arithmetic():
         if sum(weights, ZERO) != ONE:
             invalid("premium.model.weights")
+    return modeled_risk_from_values(matrix, weights, annual_factor)
+
+
+def modeled_risk_from_values(
+    matrix: Matrix, values: tuple[Decimal, ...], annual_factor: int
+) -> ModeledRisk:
+    """Use v/sum(v) algebraically without allocating a rounded weight residual.
+
+    The caller must prove that values are the complete material portfolio. This
+    normalization alone cannot establish economic coverage.
+    """
+    size = _matrix(matrix)
+    if (
+        not isinstance(values, tuple)
+        or len(values) != size
+        or type(annual_factor) is not int
+        or annual_factor not in (12, 252)
+    ):
+        invalid("premium.model.shape")
+    for value in values:
+        if finite(value) < ZERO:
+            invalid("premium.model.values")
+    factor = semidefinite_factor(matrix)
+    with arithmetic():
+        total = sum(values, ZERO)
+        if total <= ZERO:
+            invalid("premium.model.values")
         product = tuple(
-            sum((row[j] * weights[j] for j in range(size)), ZERO) * annual_factor for row in matrix
+            sum((row[j] * values[j] for j in range(size)), ZERO) * annual_factor / total
+            for row in matrix
         )
-        variance = sum((weights[i] * product[i] for i in range(size)), ZERO)
+        variance = sum((values[i] * product[i] for i in range(size)), ZERO) / total
         tolerance = TOLERANCE * max(ONE, *(v.copy_abs() for v in product))
         if variance < -tolerance:
             invalid("premium.model.variance")
@@ -235,12 +262,16 @@ def modeled_risk(matrix: Matrix, weights: tuple[Decimal, ...], annual_factor: in
             return ModeledRisk(ZERO, None, None, None, None, factor.numerical_zero_pivots)
         volatility = variance.sqrt()
         marginal = tuple(value / volatility for value in product)
-        components = tuple(weight * value for weight, value in zip(weights, marginal, strict=True))
+        components = tuple(value * marginal[i] / total for i, value in enumerate(values))
         residual = volatility - sum(components, ZERO)
         if residual.copy_abs() > TOLERANCE * max(ONE, volatility):
             invalid("premium.model.reconciliation")
-        standalone = sum(
-            (weights[i] * max(ZERO, matrix[i][i] * annual_factor).sqrt() for i in range(size)), ZERO
+        standalone = (
+            sum(
+                (values[i] * max(ZERO, matrix[i][i] * annual_factor).sqrt() for i in range(size)),
+                ZERO,
+            )
+            / total
         )
         return ModeledRisk(
             volatility,

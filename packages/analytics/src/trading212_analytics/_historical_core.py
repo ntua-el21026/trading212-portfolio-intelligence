@@ -496,9 +496,9 @@ class HistoricalEngine:
         self.expected_fx = 0
         self.available_fx = 0
         self.action_coverage_checks: dict[datetime, bool] = {}
-        self._preflight()
+        self.preflight_cell_bound = self._preflight()
 
-    def _preflight(self) -> None:
+    def _preflight(self) -> int:
         currencies = {self.currency, *(item.native_currency for item in self.value.instruments)}
         for event in self.value.event_candidates:
             native = event_money(event)
@@ -545,6 +545,7 @@ class HistoricalEngine:
             raise DomainError(
                 ErrorCode.INPUT_BOUND_EXCEEDED, "Historical valuation-cell capacity exceeded."
             )
+        return len(instants) * (len(self.instruments) + len(currencies) + components)
 
     def cutoff(self, at: datetime) -> datetime:
         return (

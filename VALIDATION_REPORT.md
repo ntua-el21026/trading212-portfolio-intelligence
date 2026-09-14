@@ -27,6 +27,16 @@ The v1.0 additive freeze has 30 local acceptance rows and 48 mandatory scenarios
 all pending. Design/governance checks do not stand in for premium runtime tests.
 Final candidate and independent review remain pending.
 
+## Phase 3 canonical risk component checks
+
+The working source passed 85 focused risk tests (numerical primitives, statistics,
+canonical history and composed results), plus focused Ruff and strict mypy checks.
+Checks include source/currency/account mismatch rejection, no cash-flow return
+fabrication, complete monthly boundaries, independent covariance/weight/concentration
+references and strict result replay. The originals reside in the task's external
+`phase3-20260914` evidence directory. These are component checks, not a full Phase 3
+candidate run or independent acceptance; no acceptance row is marked complete.
+
 ## Historical record before owner progression
 
 ## Current R-01/R-02 validation status
