@@ -152,4 +152,9 @@ technical baseline and manifest before depending on the new choices.
 - [Operations](operations/PHASE_2_OPERATIONS.md)
 
 Phase 1's sealed broker boundary and immutable audit evidence remain authoritative.
-Phase 3 remains not_started.
+Phase 2 is accepted by the owner for progression at corrected source f88b019,
+delivered at d2ebdaf. Phase 3 design preparation and execution are authorized;
+its local completion and independent acceptance remain pending. See
+[ADR-0018](adr/ADR-0018-OWNER-AUTHORIZED-PHASE-TRANSITION.md) and the
+[owner decision](implementation/evidence/phase-3-owner-authorization-20260914.json).
+The additive Phase 3 freeze must precede dependent product implementation.

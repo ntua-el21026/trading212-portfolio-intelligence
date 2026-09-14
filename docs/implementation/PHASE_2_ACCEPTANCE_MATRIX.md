@@ -1,8 +1,31 @@
 # Phase 2 Acceptance Matrix
 
+## Owner-authorized progression, 2026-09-14
+
+Phase 2 is **accepted by the owner for progression** to Phase 3. The accepted
+corrected source is `f88b0199b2d8691ff89101b7991e9bb0fea1d1ca`, tree
+`5ac0dba52e369a30a32a2d7d5b41409e12fc0911`; its observed delivery and this
+assignment's clean starting main are `d2ebdaf96d1b61aacea5c6492824946540f88803`.
+The owner-reported independent code review found R-01/R-02 corrected and no new
+blocker within its inspected scope. It did not independently inspect the full
+local archives or rerun every gate. This decision is progression authority,
+not independent full-release verification.
+
+Phase 3 is in progress toward `1.0.0`. Its implementation and final local
+validation remain pending; independent review will remain pending for the new
+candidate. GitHub Actions is `deferred_by_owner`, unverified. Production
+release/deployment, paid-provider purchases and Live are not authorized.
+
+See the [retained owner decision](evidence/phase-3-owner-authorization-20260914.json). The observations below are the
+historical delivery record. Their then-pending acceptance and not-started Phase 3
+statements retain their original temporal meaning; the owner decision above is
+the current progression authority. Historical test/artifact bytes are unchanged.
+
+## Historical record before owner progression
+
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** R-01/R-02 local validation passed; independent Phase 2 acceptance pending.
+**Implementation acceptance:** Owner-accepted for progression only; historical local ledger retained below.
 
 R-01 (authentication identity compatibility) and R-02 (status/evidence
 separation) are implemented and locally validated at

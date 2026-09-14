@@ -4,6 +4,18 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Phase 3 authorized for implementation
+
+- Record owner acceptance of corrected Phase 2 for progression at f88b019,
+  delivered at d2ebdaf; preserve the narrower reported independent code-review scope.
+- Add explicit schema-2 transition validation and negative contracts; retain
+  historical artifacts and schema-1 regression checks. New Phase 3 acceptance
+  cannot inherit the owner decision or report deferred CI/production as passed.
+- Begin the complete P3-01 through P3-10 assignment toward 1.0.0. Implementation
+  and final local validation are pending; GitHub Actions remains owner-deferred.
+
+### Historical observations before owner progression
+
 ### R-01/R-02 remediation pending independent review
 
 R-01 (authentication identity compatibility) and R-02 (status/evidence

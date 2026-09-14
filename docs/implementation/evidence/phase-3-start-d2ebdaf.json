@@ -1,0 +1,254 @@
+{
+  "source_sha": "d2ebdaf96d1b61aacea5c6492824946540f88803",
+  "tree_sha": "0a8598a853b025bb2cd4f8c30e6bef042756ced2",
+  "scope": "Original selectors before owner-authorized Phase 3 transition; observations are historical, not new execution evidence.",
+  "observations": [
+    {
+      "document": "PROJECT_STATUS.json",
+      "pointer": "/schema_version",
+      "value": 1
+    },
+    {
+      "document": "PROJECT_STATUS.json",
+      "pointer": "/current_candidate",
+      "value": {
+        "phase": "phase_2",
+        "release": "0.2.0",
+        "findings": [
+          "R-01",
+          "R-02"
+        ],
+        "baseline_delivery_sha": "6479186f378bab5ab6fcfd9b29fd444eebd28e6b",
+        "implementation_source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
+        "implementation_tree_sha": "5ac0dba52e369a30a32a2d7d5b41409e12fc0911",
+        "documentation_delivery_sha": null,
+        "implementation_status": "implemented_pending_independent_review",
+        "local_validation_status": "passed",
+        "local_validation_evidence": {
+          "path": "docs/implementation/evidence/phase-2-r01-r02-f88b019.json",
+          "sha256": "4c9aaa73e6039541ba79a9d732ce3d92908606d020c29134fd3ce1e7777e3e0b",
+          "bytes": 10523
+        },
+        "independent_review_status": "pending",
+        "independent_review_evidence": null,
+        "ci_status": "deferred_by_owner",
+        "ci_verified": false
+      }
+    },
+    {
+      "document": "PROJECT_STATUS.json",
+      "pointer": "/current_evidence",
+      "value": {
+        "phase": "phase_2",
+        "release": "0.2.0",
+        "scope": "current_candidate",
+        "implementation_source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
+        "implementation_tree_sha": "5ac0dba52e369a30a32a2d7d5b41409e12fc0911",
+        "documentation_delivery_sha": null,
+        "artifact": {
+          "path": "docs/implementation/evidence/phase-2-r01-r02-f88b019.json",
+          "sha256": "4c9aaa73e6039541ba79a9d732ce3d92908606d020c29134fd3ce1e7777e3e0b",
+          "bytes": 10523
+        },
+        "local_validation_status": "passed",
+        "independent_review_status": "pending",
+        "ci_status": "deferred_by_owner",
+        "ci_verified": false
+      }
+    },
+    {
+      "document": "PROJECT_STATUS.json",
+      "pointer": "/legacy_evidence_scopes",
+      "value": {
+        "/release_candidate_sha": "historical_stage_a",
+        "/release_candidate_relationship": "historical_stage_a",
+        "/validated_evidence": "historical_stage_a",
+        "/security_gate_architecture/validated_evidence_results": "historical_stage_a",
+        "/release_readiness": "historical_phase_1_external_conditions",
+        "/phase_2_package_evidence": "historical_reported_local_results",
+        "/phase_2_ci_deferral/current_acceptance_ci": "historical_reported_local_results"
+      }
+    },
+    {
+      "document": "PROJECT_STATUS.json",
+      "pointer": "/current_phase",
+      "value": "phase_2"
+    },
+    {
+      "document": "PROJECT_STATUS.json",
+      "pointer": "/current_release_target",
+      "value": "0.2.0"
+    },
+    {
+      "document": "PROJECT_STATUS.json",
+      "pointer": "/next_gate",
+      "value": "R01_R02_independent_review_after_recorded_local_validation"
+    },
+    {
+      "document": "PROJECT_STATUS.json",
+      "pointer": "/current_work_package",
+      "value": {
+        "id": "P2-10",
+        "status": "implemented_pending_independent_review",
+        "source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
+        "acceptance_claim": false,
+        "current_candidate_pointer": "/current_candidate",
+        "historical_evidence_pointer": "/historical_evidence/phase_2"
+      }
+    },
+    {
+      "document": "PROJECT_STATUS.json",
+      "pointer": "/phase_2_design/runtime_acceptance",
+      "value": "pending"
+    },
+    {
+      "document": "PROJECT_PROGRESS.json",
+      "pointer": "/schema_version",
+      "value": 1
+    },
+    {
+      "document": "PROJECT_PROGRESS.json",
+      "pointer": "/current_candidate",
+      "value": {
+        "phase": "phase_2",
+        "release": "0.2.0",
+        "findings": [
+          "R-01",
+          "R-02"
+        ],
+        "baseline_delivery_sha": "6479186f378bab5ab6fcfd9b29fd444eebd28e6b",
+        "implementation_source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
+        "implementation_tree_sha": "5ac0dba52e369a30a32a2d7d5b41409e12fc0911",
+        "documentation_delivery_sha": null,
+        "implementation_status": "implemented_pending_independent_review",
+        "local_validation_status": "passed",
+        "local_validation_evidence": {
+          "path": "docs/implementation/evidence/phase-2-r01-r02-f88b019.json",
+          "sha256": "4c9aaa73e6039541ba79a9d732ce3d92908606d020c29134fd3ce1e7777e3e0b",
+          "bytes": 10523
+        },
+        "independent_review_status": "pending",
+        "independent_review_evidence": null,
+        "ci_status": "deferred_by_owner",
+        "ci_verified": false
+      }
+    },
+    {
+      "document": "PROJECT_PROGRESS.json",
+      "pointer": "/current_evidence",
+      "value": {
+        "phase": "phase_2",
+        "release": "0.2.0",
+        "scope": "current_candidate",
+        "implementation_source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
+        "implementation_tree_sha": "5ac0dba52e369a30a32a2d7d5b41409e12fc0911",
+        "documentation_delivery_sha": null,
+        "artifact": {
+          "path": "docs/implementation/evidence/phase-2-r01-r02-f88b019.json",
+          "sha256": "4c9aaa73e6039541ba79a9d732ce3d92908606d020c29134fd3ce1e7777e3e0b",
+          "bytes": 10523
+        },
+        "local_validation_status": "passed",
+        "independent_review_status": "pending",
+        "ci_status": "deferred_by_owner",
+        "ci_verified": false
+      }
+    },
+    {
+      "document": "PROJECT_PROGRESS.json",
+      "pointer": "/legacy_evidence_scopes",
+      "value": {
+        "/phases/phase_1": "historical_stage_a",
+        "/release_readiness": "historical_phase_1_external_conditions",
+        "/phases/phase_2/work_packages": "historical_reported_local_results",
+        "/phases/phase_2/progress_percent": "historical_reported_local_results",
+        "/phases/phase_2/acceptance": "historical_reported_local_results",
+        "/phases/phase_2/ci_deferral/current_acceptance_ci": "historical_reported_local_results"
+      }
+    },
+    {
+      "document": "PROJECT_PROGRESS.json",
+      "pointer": "/phases/phase_2/status",
+      "value": "in_progress"
+    },
+    {
+      "document": "PROJECT_PROGRESS.json",
+      "pointer": "/phases/phase_3",
+      "value": {
+        "name": "Premium Intelligence and Productization",
+        "release": "1.0.0",
+        "status": "not_started",
+        "progress_percent": 0
+      }
+    }
+  ],
+  "added_pointers": {
+    "PROJECT_STATUS.json": [
+      "/phase_transition",
+      "/production_readiness"
+    ],
+    "PROJECT_PROGRESS.json": [
+      "/phase_transition",
+      "/production_readiness",
+      "/phases/phase_2/owner_acceptance"
+    ]
+  },
+  "inventory": {
+    "source_sha": "d2ebdaf96d1b61aacea5c6492824946540f88803",
+    "tree_sha": "0a8598a853b025bb2cd4f8c30e6bef042756ced2",
+    "branch": "main",
+    "status": "",
+    "api_paths": 87,
+    "api_operations": 95,
+    "mcp_tools": [
+      "get_account_summary",
+      "get_portfolio_snapshot",
+      "list_positions",
+      "list_recent_transactions",
+      "get_dividend_summary",
+      "get_direct_allocation",
+      "compare_portfolio_snapshots",
+      "get_reconciliation_status",
+      "get_data_quality_summary",
+      "list_virtual_pies",
+      "get_virtual_pie",
+      "get_actual_vs_target",
+      "get_drift_analysis",
+      "get_contribution_plan",
+      "create_contribution_plan",
+      "get_performance_summary",
+      "get_benchmark_comparison",
+      "get_dividend_intelligence",
+      "get_attribution_summary",
+      "get_effective_exposure",
+      "get_etf_overlap",
+      "get_report_status",
+      "list_reports",
+      "generate_portfolio_report",
+      "get_alert_summary"
+    ],
+    "broker_gets": [
+      "/equity/account/summary",
+      "/equity/metadata/instruments",
+      "/equity/metadata/exchanges",
+      "/equity/positions",
+      "/equity/orders",
+      "/equity/orders/{order_id}",
+      "/equity/history/orders",
+      "/equity/history/transactions",
+      "/equity/history/dividends",
+      "/equity/history/exports"
+    ],
+    "python": "3.13.15",
+    "dependencies": {
+      "mcp": "2.1.1",
+      "PyJWT": "2.13.0",
+      "cryptography": "50.0.1",
+      "pydantic": "2.13.5",
+      "fastapi": "0.141.1",
+      "sqlalchemy": "2.0.52",
+      "alembic": "1.19.1"
+    },
+    "migration_head": "20260911_0016 (head)"
+  }
+}

@@ -20,6 +20,7 @@ from scripts.validate_repository import (
     validate_phase2_design,
     validate_required_files,
 )
+from tests.status_fixtures import restore_phase2_selectors
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_FILES = (
@@ -40,6 +41,7 @@ def contract_root(tmp_path: Path) -> Path:
         target = tmp_path / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text((ROOT / relative).read_text(encoding="utf-8"), encoding="utf-8")
+    restore_phase2_selectors(tmp_path)
     _normalize_design_baseline(tmp_path)
     return tmp_path
 

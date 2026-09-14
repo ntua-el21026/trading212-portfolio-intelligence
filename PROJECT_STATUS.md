@@ -10,81 +10,60 @@
 
 ## Current state
 
-R-01 (authentication identity compatibility) and R-02 (status/evidence
-separation) are implemented and locally validated at
-`f88b0199b2d8691ff89101b7991e9bb0fea1d1ca`, tree
-`5ac0dba52e369a30a32a2d7d5b41409e12fc0911`, following delivered main
-`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The corrected candidate is **awaiting
-independent acceptance**. Its later documentation delivery is recorded externally
-after pushing; the delivery SHA remains null in its own contents. GitHub Actions
-remains `deferred_by_owner` and unverified; Phase 3 remains `not_started`.
+Phase 2 is **accepted by the owner for progression** to Phase 3. The accepted
+corrected source is `f88b0199b2d8691ff89101b7991e9bb0fea1d1ca`, tree
+`5ac0dba52e369a30a32a2d7d5b41409e12fc0911`; its observed delivery and this
+assignment's clean starting main are `d2ebdaf96d1b61aacea5c6492824946540f88803`.
+The owner-reported independent code review found R-01/R-02 corrected and no new
+blocker within its inspected scope. It did not independently inspect the full
+local archives or rerun every gate. This decision is progression authority,
+not independent full-release verification.
 
-The [authentication identity contract](docs/security/AUTHENTICATION_IDENTITY.md)
-defines R-01. R-02 provides the explicit status selectors below.
-See the [current local evidence](docs/implementation/evidence/phase-2-r01-r02-f88b019.json) and [review guide](docs/implementation/R01_R02_REVIEW_GUIDE.md).
-The compatibility labels `implementation_status=in_progress`, Phase 2
-`status=in_progress`, design `runtime_acceptance=pending` and candidate
-`acceptance=pending_remediation` describe the overall unaccepted phase. The
-canonical current selectors separately record completed implementation and
-passing local validation; none asserts independent acceptance.
+Phase 3 is in progress toward `1.0.0`. Its implementation and final local
+validation remain pending; independent review will remain pending for the new
+candidate. GitHub Actions is `deferred_by_owner`, unverified. Production
+release/deployment, paid-provider purchases and Live are not authorized.
+
+The [transition decision](docs/implementation/evidence/phase-3-owner-authorization-20260914.json)
+and [ADR-0018](docs/adr/ADR-0018-OWNER-AUTHORIZED-PHASE-TRANSITION.md) authorize
+all P3-01 through P3-10. Phase 3 design preparation is underway; no package has
+local acceptance yet. The unchanged baseline has migration `20260911_0016`,
+87 API paths / 95 operations, 25 MCP tools and exactly ten Trading 212 GET
+capabilities, observed by local runtime introspection before edits.
 
 ### Current and historical machine selectors
 
-Both [PROJECT_STATUS.json](PROJECT_STATUS.json) and
-[PROJECT_PROGRESS.json](PROJECT_PROGRESS.json) expose identical, closed
-`current_candidate` and `current_evidence` objects. Both refer to the active
-remediation. `historical_evidence.phase_2` retains the prior local report, and
-`legacy_evidence_scopes` labels the old compatibility paths as historical.
+[PROJECT_STATUS.json](PROJECT_STATUS.json) and
+[PROJECT_PROGRESS.json](PROJECT_PROGRESS.json) use schema version 2.
 
 | Selector | Meaning |
 | --- | --- |
-| `current_candidate` | R-01/R-02 at f88b019: implemented with recorded local validation; independent review remains pending. |
-| `current_evidence` | The active f88b019 candidate: local validation passed, with its own source/tree and repository evidence reference; independent review pending. |
-| `historical_evidence.phase_2` | Retained historical local report: V=`3998426aa7e7614e421518efd01b08188e194100`, tree=`ff5522eb438a30cfa88aad6bf4e2853fb85ef3a0`, documentation delivery D=`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. Its reported pass is not the remediation result. |
-| Legacy `release_candidate_sha`, `validated_evidence` and security-result selectors | Historical Stage A at `99df47b6633791c3900a52f46f56d48be922a436`; original values and counts are preserved. |
-| Legacy Phase 2 work packages, percentage and acceptance evidence | Historical reported 10/10 packages, 29/29 rows and 40/40 scenarios at V. All 79 entries remain intact; acceptance status is `historical_reported_local_results`. |
-| Legacy `release_readiness` | Historical Phase 1 external conditions. The local authentication defect is a remediation requirement, not an external blocker. |
+| `phase_transition` | Closed owner decision, progression scope, accepted f88b019 source/tree, d2ebdaf delivery and immutable evidence binding. |
+| `current_candidate` | Phase 3 / 1.0.0; implementation in progress, final local validation pending, independent review pending. |
+| `current_evidence` | Only this Phase 3 candidate's actual evidence; null while pending. No old pass is copied into it. |
+| `production_readiness` | `not_authorized`, independent of local implementation and owner progression. |
+| `historical_evidence.phase_2` | Original 3998426 local report, not the corrected source or Phase 3 result. |
+| `phase_transition.evidence` | Retains corrected f88b019 local evidence separately from the narrower owner-reported independent code review. |
+| Legacy Phase 2 acceptance / packages / percentage | Preserved 10 packages, 29 acceptance rows and 40 scenarios at their original source. |
+| Legacy Phase 2 `current_implementation` / `candidate_validation` | Historical f88b019 remediation observations, explicitly scoped by `legacy_evidence_scopes`. |
+| Legacy Stage A identity and `release_readiness` | Historical source and external-condition observations, unchanged. |
 
-`current_candidate` contains exactly `phase`, `release`, `findings`,
-`baseline_delivery_sha`, `implementation_source_sha`, `implementation_tree_sha`,
-`documentation_delivery_sha`, `implementation_status`, `local_validation_status`,
-`local_validation_evidence`, `independent_review_status`,
-`independent_review_evidence`, `ci_status` and `ci_verified`.
-Implementation is `in_progress` or `implemented_unverified` while local validation
-is pending or failed; an actual local pass requires
-`implemented_pending_independent_review`. Local validation is `pending`, `failed`
-or `passed`. An uncommitted source requires null tree/delivery
-and pending validation with null evidence. A later result requires its own
-immutable source/tree and a repository JSON reference with exactly `path`,
-`sha256` and positive integer `bytes`, binding that source/tree and result.
-Neither the old artifact nor its coverage supplies a new result. Documentation
-delivery, when known, is distinct from implementation source. Keep it null in
-the commit it would identify: its actual SHA and ordinary fast-forward delivery
-are recorded externally after pushing. A later observation may bind that receipt;
-no commit claims its own future hash or delivery result.
+The closed candidate/evidence fields from schema 1 remain compatible, now
+identifying Phase 3 and an empty remediation findings list. The baseline is
+observed d2ebdaf. Null source requires null tree/delivery and pending validation
+with no artifact. A local pass requires a new immutable source/tree and a
+repository JSON reference with exact path/SHA256/byte binding and matching
+source/tree/result. It sets `implemented_pending_independent_review`, never
+owner or independent acceptance. New completed packages require scoped evidence.
 
-`current_evidence` contains exactly `phase`, `release`, `scope`,
-`implementation_source_sha`, `implementation_tree_sha`,
-`documentation_delivery_sha`, `artifact`, `local_validation_status`,
-`independent_review_status`, `ci_status` and `ci_verified`. Its scope is
-`current_candidate`. Source/tree/delivery, validation status and artifact must
-agree with `current_candidate`; pending validation has a null artifact.
-A local pass changes its result to `passed` with actual evidence, while
-independent review stays `pending`.
-
-`historical_evidence` contains exactly `phase_2`. That record uses the same
-evidence fields with scope `historical_reported_local_results`, local result
-`reported_passed` and independent review `not_unconditionally_accepted`. Its
-original artifact uses the same hash/byte binding. All selectors identify
-Phase 2 / 0.2.0 and deferred, unverified CI.
-
-The current stopping boundary keeps independent review `pending` and its evidence
-null even after actual local validation. Active work-package and candidate-validation
-compatibility objects point to `/current_candidate` and
-`/historical_evidence/phase_2` without an acceptance claim. Their former exact observations are appended to
-Phase 2 `implementation_history`; earlier history and Stage A remain preserved.
-The [repository validator](scripts/validate_repository.py) checks declarations
-and artifact bindings, not execution or reviewer approval.
+Documentation delivery is separate from the implementation SHA and remains null
+inside its own commit; record its actual hash and content/type/mode equivalence
+externally after delivery. Retained artifacts and the
+[prior selectors](docs/implementation/evidence/phase-3-start-d2ebdaf.json) preserve
+what was reported before this explicit transition. The
+[validator](scripts/validate_repository.py) checks consistency, not execution or
+reviewer approval. Its historical schema-1 regression fixtures retain the old
+pending-remediation rules.
 
 ### Delivery recommendation
 

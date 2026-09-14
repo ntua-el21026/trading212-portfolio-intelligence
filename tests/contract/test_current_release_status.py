@@ -10,6 +10,7 @@ from typing import Any
 import pytest
 
 from scripts.validate_repository import validate_current_release_status
+from tests.status_fixtures import restore_phase2_selectors
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCUMENTS = ("PROJECT_STATUS.json", "PROJECT_PROGRESS.json")
@@ -61,6 +62,7 @@ def _details(root: Path) -> str:
 def status_root(tmp_path: Path) -> Path:
     for name in DOCUMENTS:
         (tmp_path / name).write_bytes((ROOT / name).read_bytes())
+    restore_phase2_selectors(tmp_path)
     relative = _read(tmp_path, DOCUMENTS[0])["historical_evidence"]["phase_2"]["artifact"]["path"]
     target = tmp_path / relative
     target.parent.mkdir(parents=True, exist_ok=True)

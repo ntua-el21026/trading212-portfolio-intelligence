@@ -108,6 +108,7 @@ REQUIRED_FILES = (
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",
     *PHASE2_REQUIRED_FILES,
+    "docs/adr/ADR-0018-OWNER-AUTHORIZED-PHASE-TRANSITION.md",
 )
 
 PHASE2_PACKAGES = tuple(f"P2-{number:02d}" for number in range(1, 11))
@@ -1094,6 +1095,129 @@ def _phase2_evidence_errors(root: Path, identifier: str, value: object) -> list[
     return errors
 
 
+PHASE3_AUTHORIZATION_PATH = "docs/implementation/evidence/phase-3-owner-authorization-20260914.json"
+PHASE3_AUTHORIZATION_SHA256 = "23f5c124d17fda5edf2201d1285cfeb5956a0935da0bc49d23bb7bbf0dcda8b9"
+PHASE3_BASELINE_SHA = "d2ebdaf96d1b61aacea5c6492824946540f88803"
+PHASE2_CORRECTED_SHA = "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca"
+PHASE2_CORRECTED_TREE = "5ac0dba52e369a30a32a2d7d5b41409e12fc0911"
+
+
+def _phase3_transition_errors(
+    root: Path, status: dict[str, object], progress: dict[str, object]
+) -> list[str]:
+    """Check the reviewed owner decision, not independently authenticate a human.
+
+    This explicit policy permits only the authorized Phase 2 -> Phase 3 move.
+    Changing authority/scope requires another reviewed policy change; a matching
+    checksum of an arbitrary agent-authored approval is insufficient.
+    """
+    errors: list[str] = []
+    path = _evidence_file(root, PHASE3_AUTHORIZATION_PATH)
+    try:
+        raw = path.read_bytes() if path is not None else b""
+        authorization = _object(json.loads(raw))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        raw, authorization = b"", {}
+    if hashlib.sha256(raw).hexdigest() != PHASE3_AUTHORIZATION_SHA256:
+        errors.append("Phase 3 requires the retained reviewed owner authorization artifact")
+    expected = {
+        "authority": "repository_owner",
+        "decision": "accepted_for_progression",
+        "scope": "phase_2_progression_only",
+        "from_phase": "phase_2",
+        "to_phase": "phase_3",
+        "source_sha": PHASE2_CORRECTED_SHA,
+        "tree_sha": PHASE2_CORRECTED_TREE,
+        "delivery_sha": PHASE3_BASELINE_SHA,
+        "evidence": {
+            "path": PHASE3_AUTHORIZATION_PATH,
+            "sha256": PHASE3_AUTHORIZATION_SHA256,
+            "bytes": 1193,
+        },
+    }
+    for document in (status, progress):
+        if type(document.get("schema_version")) is not int or document["schema_version"] != 2:
+            errors.append("Phase 3 requires synchronized status schema_version 2")
+        if (
+            document.get("phase_transition") != expected
+            or type(_object(_object(document.get("phase_transition")).get("evidence")).get("bytes"))
+            is not int
+        ):
+            errors.append("Phase transition must match owner authority, scope, source and evidence")
+        if document.get("production_readiness") != "not_authorized":
+            errors.append("Phase 3 production readiness remains not_authorized")
+    local_ref = _object(authorization.get("local_validation_evidence"))
+    local_path = _evidence_file(root, local_ref.get("path"))
+    try:
+        local_raw = local_path.read_bytes() if local_path is not None else b""
+        local = _object(json.loads(local_raw))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        local_raw, local = b"", {}
+    if (
+        not local_raw
+        or hashlib.sha256(local_raw).hexdigest() != local_ref.get("sha256")
+        or len(local_raw) != local_ref.get("bytes")
+        or local.get("source_sha") != PHASE2_CORRECTED_SHA
+        or local.get("tree_sha") != PHASE2_CORRECTED_TREE
+        or local.get("result") != "passed"
+    ):
+        errors.append(
+            "Owner progression must retain the corrected Phase 2 source-bound local result"
+        )
+    phases = _object(progress.get("phases"))
+    phase2, phase3 = _object(phases.get("phase_2")), _object(phases.get("phase_3"))
+    if (
+        phase2.get("status") != "accepted_for_progression"
+        or phase2.get("owner_acceptance") != expected
+        or type(_object(_object(phase2.get("owner_acceptance")).get("evidence")).get("bytes"))
+        is not int
+        or _object(status.get("phase_2_design")).get("runtime_acceptance")
+        != "accepted_by_owner_for_progression"
+    ):
+        errors.append("Phase 2 owner acceptance must identify progression only in both documents")
+    if (
+        status.get("current_phase") != "phase_3"
+        or status.get("current_release_target") != "1.0.0"
+        or phase3.get("release") != "1.0.0"
+        or phase3.get("status") != "in_progress"
+    ):
+        errors.append("Authorized Phase 3 remains in progress toward 1.0.0 without acceptance")
+    packages = _object(phase3.get("work_packages"))
+    if tuple(packages) != tuple(f"P3-{i:02}" for i in range(1, 11)) or any(
+        state not in ("not_started", "in_progress", "implemented_unverified", "complete", "blocked")
+        for state in packages.values()
+    ):
+        errors.append("Phase 3 requires exactly ordered P3-01 through P3-10 implementation states")
+    acceptance = _object(phase3.get("acceptance"))
+    if (
+        set(acceptance)
+        != {"status", "owner_acceptance_status", "independent_review_status", "evidence"}
+        or acceptance.get("owner_acceptance_status") != "not_requested"
+        or acceptance.get("independent_review_status") != "pending"
+        or acceptance.get("status")
+        not in ("pending", "locally_validated_pending_independent_review")
+    ):
+        errors.append("Phase 3 acceptance cannot inherit owner or independent Phase 2 approval")
+    evidence = _object(acceptance.get("evidence"))
+    for identifier, state in packages.items():
+        if state == "complete":
+            errors.extend(_phase2_evidence_errors(root, identifier, evidence.get(identifier)))
+    complete = sum(state == "complete" for state in packages.values())
+    if acceptance.get("status") == "locally_validated_pending_independent_review" and (
+        complete != 10
+        or _object(status.get("current_candidate")).get("local_validation_status") != "passed"
+    ):
+        errors.append(
+            "Phase 3 local acceptance requires all ten packages and exact candidate gates"
+        )
+    if (
+        type(phase3.get("progress_percent")) is not int
+        or phase3["progress_percent"] != complete * 10
+    ):
+        errors.append("Phase 3 progress must equal its locally completed package inventory")
+    return errors
+
+
 def validate_current_release_status(root: Path = ROOT) -> list[Failure]:
     """Separate the remediation candidate from historical, source-bound reports.
 
@@ -1149,6 +1273,17 @@ def validate_current_release_status(root: Path = ROOT) -> list[Failure]:
             add(f"{relative} must be a readable JSON object")
         documents.append(_object(value))
     status, progress = documents
+    phase3_active = status.get("schema_version") == 2
+    if phase3_active:
+        for error in _phase3_transition_errors(root, status, progress):
+            add(error)
+    elif any(
+        type(document.get("schema_version")) is not int
+        or document.get("schema_version") != 1
+        or "phase_transition" in document
+        for document in documents
+    ):
+        add("unsupported status schema or unauthorized phase transition")
     for key in ("current_candidate", "current_evidence", "historical_evidence"):
         if status.get(key) != progress.get(key):
             add(f"{key} must agree across status documents")
@@ -1176,12 +1311,17 @@ def validate_current_release_status(root: Path = ROOT) -> list[Failure]:
         ("current_evidence", current),
         ("historical_evidence.phase_2", historical),
     ):
-        if record.get("phase") != "phase_2" or record.get("release") != "0.2.0":
-            add(f"{label} must identify phase_2 / 0.2.0")
+        phase, release = (
+            ("phase_3", "1.0.0")
+            if phase3_active and label != "historical_evidence.phase_2"
+            else ("phase_2", "0.2.0")
+        )
+        if record.get("phase") != phase or record.get("release") != release:
+            add(f"{label} must identify {phase} / {release}")
         if record.get("ci_status") != "deferred_by_owner" or record.get("ci_verified") is not False:
             add(f"{label} must retain deferred, unverified CI")
-    if candidate.get("findings") != ["R-01", "R-02"]:
-        add("current_candidate must identify the R-01/R-02 remediation")
+    if candidate.get("findings") != ([] if phase3_active else ["R-01", "R-02"]):
+        add("current_candidate must identify the R-01/R-02 remediation or authorized Phase 3")
     if (
         candidate.get("independent_review_status") != "pending"
         or candidate.get("independent_review_evidence") is not None
@@ -1231,7 +1371,7 @@ def validate_current_release_status(root: Path = ROOT) -> list[Failure]:
         )
     if not valid_sha(candidate.get("baseline_delivery_sha")) or candidate.get(
         "baseline_delivery_sha"
-    ) != historical.get("documentation_delivery_sha"):
+    ) != (PHASE3_BASELINE_SHA if phase3_active else historical.get("documentation_delivery_sha")):
         add("current_candidate baseline must bind the prior reported documentation delivery")
     prior = artifact(historical.get("artifact"), "historical_evidence.phase_2.artifact")
     if (
@@ -1264,6 +1404,8 @@ def validate_current_release_status(root: Path = ROOT) -> list[Failure]:
             historical.get("implementation_source_sha"),
             historical.get("documentation_delivery_sha"),
             status.get("release_candidate_sha"),
+            PHASE2_CORRECTED_SHA if phase3_active else None,
+            PHASE3_BASELINE_SHA if phase3_active else None,
         )
     ):
         add("current_candidate requires a new implementation source/tree, not historical evidence")
@@ -1306,21 +1448,32 @@ def validate_current_release_status(root: Path = ROOT) -> list[Failure]:
             "/phases/phase_2/ci_deferral/current_acceptance_ci": historical_scope,
         },
     )
+    if phase3_active:
+        expected_scopes[1].update(
+            {
+                "/phases/phase_2/current_implementation": "historical_remediation_candidate",
+                "/phases/phase_2/candidate_validation": "historical_remediation_candidate",
+            }
+        )
     for document, scopes in zip(documents, expected_scopes, strict=True):
         if document.get("legacy_evidence_scopes") != scopes:
             add("legacy evidence selectors must retain explicit historical compatibility scopes")
     phase2 = _object(_object(progress.get("phases")).get("phase_2"))
     acceptance = _object(phase2.get("acceptance"))
     if (
-        phase2.get("status") != "in_progress"
+        phase2.get("status") != ("accepted_for_progression" if phase3_active else "in_progress")
         or status.get("implementation_status") != "in_progress"
-        or _object(status.get("phase_2_design")).get("runtime_acceptance") != "pending"
+        or _object(status.get("phase_2_design")).get("runtime_acceptance")
+        != ("accepted_by_owner_for_progression" if phase3_active else "pending")
         or acceptance.get("status") != historical_scope
         or acceptance.get("release_evidence_sha") != historical.get("implementation_source_sha")
     ):
         add("active remediation must remain pending beside the historical Phase 2 ledger")
+    active_phase = (
+        _object(_object(progress.get("phases")).get("phase_3")) if phase3_active else phase2
+    )
     for record in (
-        _object(phase2.get("current_implementation")),
+        _object(active_phase.get("current_implementation")),
         _object(status.get("current_work_package")),
     ):
         if (
@@ -1331,10 +1484,11 @@ def validate_current_release_status(root: Path = ROOT) -> list[Failure]:
             or record.get("historical_evidence_pointer") != "/historical_evidence/phase_2"
         ):
             add("active compatibility selectors must point to the unaccepted current candidate")
-    validation = _object(phase2.get("candidate_validation"))
+    validation = _object(active_phase.get("candidate_validation"))
     if (
         validation.get("source_sha") != source
-        or validation.get("acceptance") != "pending_remediation"
+        or validation.get("acceptance")
+        != ("pending_implementation" if phase3_active else "pending_remediation")
         or validation.get("acceptance_claim") is not False
         or validation.get("current_candidate_pointer") != "/current_candidate"
         or validation.get("historical_evidence_pointer") != "/historical_evidence/phase_2"
@@ -1383,6 +1537,10 @@ def validate_phase2_design(root: Path = ROOT) -> list[Failure]:
     phases = _object(progress.get("phases"))
     phase2 = _object(phases.get("phase_2"))
     phase3 = _object(phases.get("phase_3"))
+    phase3_active = status.get("schema_version") == 2
+    if phase3_active:
+        for error in _phase3_transition_errors(root, status, progress):
+            add(error)
     audit_shas = []
     for document in documents:
         audit = _object(document.get("audit_remediation"))
@@ -1427,15 +1585,19 @@ def validate_phase2_design(root: Path = ROOT) -> list[Failure]:
         or _object(status.get("validated_evidence")).get("sha") != audit_shas[0]
     ):
         add("completed Phase 1 acceptance and historical validated evidence must bind Stage A SHA")
-    if (
+    if not phase3_active and (
         phase3.get("status") != "not_started"
         or type(phase3.get("progress_percent")) is not int
         or phase3.get("progress_percent") != 0
     ):
         add("Phase 3 must remain not_started with zero progress")
-    if any(state != "not_started" for state in _object(phase3.get("work_packages")).values()):
+    if not phase3_active and any(
+        state != "not_started" for state in _object(phase3.get("work_packages")).values()
+    ):
         add("Phase 3 work packages must remain untouched")
-    if status.get("current_phase") != "phase_2" or status.get("current_release_target") != "0.2.0":
+    if not phase3_active and (
+        status.get("current_phase") != "phase_2" or status.get("current_release_target") != "0.2.0"
+    ):
         add("current status must identify Phase 2 release 0.2.0")
 
     packages = _object(phase2.get("work_packages"))
@@ -1534,7 +1696,13 @@ def validate_phase2_design(root: Path = ROOT) -> list[Failure]:
     ):
         if claim == "complete" and not release_complete:
             add(f"{field} cannot claim completion before all packages, rows and scenarios")
-    if phase2.get("status") not in ("not_started", "in_progress", "complete", "blocked"):
+    if phase2.get("status") not in (
+        "not_started",
+        "in_progress",
+        "complete",
+        "blocked",
+        *(("accepted_for_progression",) if phase3_active else ()),
+    ):
         add("Phase 2 status must use a supported implementation state")
     if acceptance.get("status") not in (
         "pending",

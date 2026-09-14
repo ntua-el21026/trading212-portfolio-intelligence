@@ -1,40 +1,32 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "project": "trading212-portfolio-intelligence",
   "updated_at": "2026-09-14",
   "current_candidate": {
-    "phase": "phase_2",
-    "release": "0.2.0",
-    "findings": ["R-01", "R-02"],
-    "baseline_delivery_sha": "6479186f378bab5ab6fcfd9b29fd444eebd28e6b",
-    "implementation_source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
-    "implementation_tree_sha": "5ac0dba52e369a30a32a2d7d5b41409e12fc0911",
+    "phase": "phase_3",
+    "release": "1.0.0",
+    "findings": [],
+    "baseline_delivery_sha": "d2ebdaf96d1b61aacea5c6492824946540f88803",
+    "implementation_source_sha": null,
+    "implementation_tree_sha": null,
     "documentation_delivery_sha": null,
-    "implementation_status": "implemented_pending_independent_review",
-    "local_validation_status": "passed",
-    "local_validation_evidence": {
-      "path": "docs/implementation/evidence/phase-2-r01-r02-f88b019.json",
-      "sha256": "4c9aaa73e6039541ba79a9d732ce3d92908606d020c29134fd3ce1e7777e3e0b",
-      "bytes": 10523
-    },
+    "implementation_status": "in_progress",
+    "local_validation_status": "pending",
+    "local_validation_evidence": null,
     "independent_review_status": "pending",
     "independent_review_evidence": null,
     "ci_status": "deferred_by_owner",
     "ci_verified": false
   },
   "current_evidence": {
-    "phase": "phase_2",
-    "release": "0.2.0",
+    "phase": "phase_3",
+    "release": "1.0.0",
     "scope": "current_candidate",
-    "implementation_source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
-    "implementation_tree_sha": "5ac0dba52e369a30a32a2d7d5b41409e12fc0911",
+    "implementation_source_sha": null,
+    "implementation_tree_sha": null,
     "documentation_delivery_sha": null,
-    "artifact": {
-      "path": "docs/implementation/evidence/phase-2-r01-r02-f88b019.json",
-      "sha256": "4c9aaa73e6039541ba79a9d732ce3d92908606d020c29134fd3ce1e7777e3e0b",
-      "bytes": 10523
-    },
-    "local_validation_status": "passed",
+    "artifact": null,
+    "local_validation_status": "pending",
     "independent_review_status": "pending",
     "ci_status": "deferred_by_owner",
     "ci_verified": false
@@ -64,7 +56,9 @@
     "/phases/phase_2/work_packages": "historical_reported_local_results",
     "/phases/phase_2/progress_percent": "historical_reported_local_results",
     "/phases/phase_2/acceptance": "historical_reported_local_results",
-    "/phases/phase_2/ci_deferral/current_acceptance_ci": "historical_reported_local_results"
+    "/phases/phase_2/ci_deferral/current_acceptance_ci": "historical_reported_local_results",
+    "/phases/phase_2/current_implementation": "historical_remediation_candidate",
+    "/phases/phase_2/candidate_validation": "historical_remediation_candidate"
   },
   "design_freeze": {
     "version": "0.1",
@@ -193,7 +187,7 @@
     "phase_2": {
       "name": "Portfolio Intelligence",
       "release": "0.2.0",
-      "status": "in_progress",
+      "status": "accepted_for_progression",
       "progress_percent": 100,
       "design_closure": "accepted",
       "candidate_validation": {
@@ -4171,13 +4165,61 @@
         "acceptance_claim": false,
         "current_candidate_pointer": "/current_candidate",
         "historical_evidence_pointer": "/historical_evidence/phase_2"
+      },
+      "owner_acceptance": {
+        "authority": "repository_owner",
+        "decision": "accepted_for_progression",
+        "scope": "phase_2_progression_only",
+        "from_phase": "phase_2",
+        "to_phase": "phase_3",
+        "source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
+        "tree_sha": "5ac0dba52e369a30a32a2d7d5b41409e12fc0911",
+        "delivery_sha": "d2ebdaf96d1b61aacea5c6492824946540f88803",
+        "evidence": {
+          "path": "docs/implementation/evidence/phase-3-owner-authorization-20260914.json",
+          "sha256": "23f5c124d17fda5edf2201d1285cfeb5956a0935da0bc49d23bb7bbf0dcda8b9",
+          "bytes": 1193
+        }
       }
     },
     "phase_3": {
       "name": "Premium Intelligence and Productization",
       "release": "1.0.0",
-      "status": "not_started",
-      "progress_percent": 0
+      "status": "in_progress",
+      "progress_percent": 0,
+      "work_packages": {
+        "P3-01": "not_started",
+        "P3-02": "not_started",
+        "P3-03": "not_started",
+        "P3-04": "not_started",
+        "P3-05": "not_started",
+        "P3-06": "not_started",
+        "P3-07": "not_started",
+        "P3-08": "not_started",
+        "P3-09": "not_started",
+        "P3-10": "not_started"
+      },
+      "current_implementation": {
+        "work_package": "P3-01",
+        "status": "in_progress",
+        "source_sha": null,
+        "acceptance_claim": false,
+        "current_candidate_pointer": "/current_candidate",
+        "historical_evidence_pointer": "/historical_evidence/phase_2"
+      },
+      "candidate_validation": {
+        "source_sha": null,
+        "acceptance": "pending_implementation",
+        "acceptance_claim": false,
+        "current_candidate_pointer": "/current_candidate",
+        "historical_evidence_pointer": "/historical_evidence/phase_2"
+      },
+      "acceptance": {
+        "status": "pending",
+        "owner_acceptance_status": "not_requested",
+        "independent_review_status": "pending",
+        "evidence": {}
+      }
     }
   },
   "external_gates": {
@@ -4221,5 +4263,21 @@
         "conclusion": "success"
       }
     }
-  }
+  },
+  "phase_transition": {
+    "authority": "repository_owner",
+    "decision": "accepted_for_progression",
+    "scope": "phase_2_progression_only",
+    "from_phase": "phase_2",
+    "to_phase": "phase_3",
+    "source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
+    "tree_sha": "5ac0dba52e369a30a32a2d7d5b41409e12fc0911",
+    "delivery_sha": "d2ebdaf96d1b61aacea5c6492824946540f88803",
+    "evidence": {
+      "path": "docs/implementation/evidence/phase-3-owner-authorization-20260914.json",
+      "sha256": "23f5c124d17fda5edf2201d1285cfeb5956a0935da0bc49d23bb7bbf0dcda8b9",
+      "bytes": 1193
+    }
+  },
+  "production_readiness": "not_authorized"
 }
