@@ -14,6 +14,13 @@ All notable project changes are recorded here. The project follows semantic vers
 - Begin the complete P3-01 through P3-10 assignment toward 1.0.0. Implementation
   and final local validation are pending; GitHub Actions remains owner-deferred.
 
+### Phase 3 additive implementation freeze
+
+- Freeze numerical methods, typed services/data/providers, 38-tool target registry,
+  private PWA/research, retention/jobs and measurable local verification.
+- Preserve separate 30-row/48-scenario inventories and reject unsupported completion.
+  Product implementation and final candidate validation remain pending.
+
 ### Historical observations before owner progression
 
 ### R-01/R-02 remediation pending independent review

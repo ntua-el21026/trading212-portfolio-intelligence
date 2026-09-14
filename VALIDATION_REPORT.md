@@ -21,6 +21,12 @@ historical delivery record. Their then-pending acceptance and not-started Phase 
 statements retain their original temporal meaning; the owner decision above is
 the current progression authority. Historical test/artifact bytes are unchanged.
 
+## Phase 3 design boundary
+
+The v1.0 additive freeze has 30 local acceptance rows and 48 mandatory scenarios,
+all pending. Design/governance checks do not stand in for premium runtime tests.
+Final candidate and independent review remain pending.
+
 ## Historical record before owner progression
 
 ## Current R-01/R-02 validation status

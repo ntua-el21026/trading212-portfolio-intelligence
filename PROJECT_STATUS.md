@@ -26,7 +26,8 @@ release/deployment, paid-provider purchases and Live are not authorized.
 
 The [transition decision](docs/implementation/evidence/phase-3-owner-authorization-20260914.json)
 and [ADR-0018](docs/adr/ADR-0018-OWNER-AUTHORIZED-PHASE-TRANSITION.md) authorize
-all P3-01 through P3-10. Phase 3 design preparation is underway; no package has
+all P3-01 through P3-10. The additive [Phase 3 freeze](docs/DESIGN_FREEZE_V1_0.md) now defines ten packages,
+30 acceptance rows and 48 scenarios. No package has
 local acceptance yet. The unchanged baseline has migration `20260911_0016`,
 87 API paths / 95 operations, 25 MCP tools and exactly ten Trading 212 GET
 capabilities, observed by local runtime introspection before edits.

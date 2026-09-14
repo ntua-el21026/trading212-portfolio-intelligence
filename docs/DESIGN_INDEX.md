@@ -1,7 +1,7 @@
 # Design Index and Authority Order
 
 **Status:** Accepted  
-**Design freeze:** v0.1 foundation plus accepted v0.2 Phase 2 delta
+**Design freeze:** v0.1 foundation, v0.2 Phase 2 delta and v1.0 Phase 3 delta
 
 **Implementation branch:** `main`
 
@@ -13,7 +13,7 @@ When documents conflict, apply this order from highest to lowest authority:
 
 1. Explicit owner instruction in the current task.
 2. `AGENTS.md` repository operating and safety policy.
-3. `docs/DESIGN_FREEZE_V0_1.md` and its additive Phase 2 delta `docs/DESIGN_FREEZE_V0_2.md`.
+3. `docs/DESIGN_FREEZE_V0_1.md` and its additive deltas `docs/DESIGN_FREEZE_V0_2.md` and `docs/DESIGN_FREEZE_V1_0.md`.
 4. Accepted ADRs under `docs/adr/`.
 5. Security and external-provider contracts:
    - `docs/security/SECURITY_ARCHITECTURE.md`
@@ -158,3 +158,29 @@ its local completion and independent acceptance remain pending. See
 [ADR-0018](adr/ADR-0018-OWNER-AUTHORIZED-PHASE-TRANSITION.md) and the
 [owner decision](implementation/evidence/phase-3-owner-authorization-20260914.json).
 The additive Phase 3 freeze must precede dependent product implementation.
+
+## Phase 3 accepted execution contracts
+
+The owner authorizes implementation of all ten packages. Design acceptance does not
+certify runtime completion, independent acceptance, deferred CI or production. Read:
+
+- [DESIGN FREEZE V1 0](DESIGN_FREEZE_V1_0.md)
+- [PHASE 3 METHODS](analytics/PHASE_3_METHODS.md)
+- [PHASE 3 API SERVICE CONTRACTS](architecture/PHASE_3_API_SERVICE_CONTRACTS.md)
+- [PHASE 3 DATA MODEL](architecture/PHASE_3_DATA_MODEL.md)
+- [PHASE 3 WEB INFORMATION ARCHITECTURE](architecture/PHASE_3_WEB_INFORMATION_ARCHITECTURE.md)
+- [PHASE 3 TEST STRATEGY](engineering/PHASE_3_TEST_STRATEGY.md)
+- [PHASE 3 ACCEPTANCE MATRIX](implementation/PHASE_3_ACCEPTANCE_MATRIX.md)
+- [PHASE 3 EXECUTION MANIFEST](implementation/PHASE_3_EXECUTION_MANIFEST.md)
+- [PHASE 3 IMPLEMENTATION REPORT](implementation/PHASE_3_IMPLEMENTATION_REPORT.md)
+- [PHASE 3 SCENARIO EVIDENCE](implementation/PHASE_3_SCENARIO_EVIDENCE.md)
+- [PHASE 3 TECHNICAL BASELINE](implementation/PHASE_3_TECHNICAL_BASELINE.md)
+- [PHASE 3 MCP TOOL REGISTRY](integrations/PHASE_3_MCP_TOOL_REGISTRY.md)
+- [PHASE 3 PROVIDER CONTRACTS](integrations/PHASE_3_PROVIDER_CONTRACTS.md)
+- [PHASE 3 OPERATIONS](operations/PHASE_3_OPERATIONS.md)
+- [PHASE 3 SECURITY PRIVACY](security/PHASE_3_SECURITY_PRIVACY.md)
+- [ADR-0019-PREMIUM-NUMERICAL-METHODS](adr/ADR-0019-PREMIUM-NUMERICAL-METHODS.md)
+- [ADR-0020-PREMIUM-DURABLE-WORK](adr/ADR-0020-PREMIUM-DURABLE-WORK.md)
+- [ADR-0021-PREMIUM-PROVIDERS-AND-LICENSES](adr/ADR-0021-PREMIUM-PROVIDERS-AND-LICENSES.md)
+- [ADR-0022-PRIVATE-PWA-AND-RESEARCH](adr/ADR-0022-PRIVATE-PWA-AND-RESEARCH.md)
+- [ADR-0023-PREMIUM-MCP-RESOURCES](adr/ADR-0023-PREMIUM-MCP-RESOURCES.md)

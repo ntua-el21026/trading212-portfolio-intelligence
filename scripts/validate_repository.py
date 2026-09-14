@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate repository authorities and evidence for the Phase 1/2 contracts.
+"""Validate repository authorities and evidence for the Phase 1/2/3 contracts.
 
 The validator intentionally uses only the Python standard library so it can run
 before application dependency manifests exist.
@@ -18,6 +18,29 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+PHASE3_REQUIRED_FILES = (
+    "docs/DESIGN_FREEZE_V1_0.md",
+    "docs/analytics/PHASE_3_METHODS.md",
+    "docs/architecture/PHASE_3_API_SERVICE_CONTRACTS.md",
+    "docs/architecture/PHASE_3_DATA_MODEL.md",
+    "docs/architecture/PHASE_3_WEB_INFORMATION_ARCHITECTURE.md",
+    "docs/engineering/PHASE_3_TEST_STRATEGY.md",
+    "docs/implementation/PHASE_3_ACCEPTANCE_MATRIX.md",
+    "docs/implementation/PHASE_3_EXECUTION_MANIFEST.md",
+    "docs/implementation/PHASE_3_IMPLEMENTATION_REPORT.md",
+    "docs/implementation/PHASE_3_SCENARIO_EVIDENCE.md",
+    "docs/implementation/PHASE_3_TECHNICAL_BASELINE.md",
+    "docs/integrations/PHASE_3_MCP_TOOL_REGISTRY.md",
+    "docs/integrations/PHASE_3_PROVIDER_CONTRACTS.md",
+    "docs/operations/PHASE_3_OPERATIONS.md",
+    "docs/security/PHASE_3_SECURITY_PRIVACY.md",
+    "docs/adr/ADR-0019-PREMIUM-NUMERICAL-METHODS.md",
+    "docs/adr/ADR-0020-PREMIUM-DURABLE-WORK.md",
+    "docs/adr/ADR-0021-PREMIUM-PROVIDERS-AND-LICENSES.md",
+    "docs/adr/ADR-0022-PRIVATE-PWA-AND-RESEARCH.md",
+    "docs/adr/ADR-0023-PREMIUM-MCP-RESOURCES.md",
+)
 
 PHASE2_REQUIRED_FILES = (
     "docs/DESIGN_FREEZE_V0_2.md",
@@ -108,6 +131,7 @@ REQUIRED_FILES = (
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",
     *PHASE2_REQUIRED_FILES,
+    *PHASE3_REQUIRED_FILES,
     "docs/adr/ADR-0018-OWNER-AUTHORIZED-PHASE-TRANSITION.md",
 )
 
@@ -1757,6 +1781,164 @@ def validate_phase2_design(root: Path = ROOT) -> list[Failure]:
     return failures
 
 
+PHASE3_PACKAGES = tuple(f"P3-{i:02d}" for i in range(1, 11))
+PHASE3_SCENARIOS = tuple(f"P3-S{i:02d}" for i in range(1, 49))
+PHASE3_ACCEPTANCE_IDS = tuple(
+    f"P3-{family}-{i:03d}"
+    for family in (
+        "RISK",
+        "STRESS",
+        "PROJ",
+        "RESEARCH",
+        "MCP",
+        "WEB",
+        "PROVIDER",
+        "ACCOUNT",
+        "OPS",
+        "RC",
+    )
+    for i in range(1, 4)
+)
+PHASE3_MCP_TOOLS = (
+    "create_risk_run",
+    "get_risk_summary",
+    "get_risk_matrix",
+    "list_scenarios",
+    "create_scenario_run",
+    "get_scenario_result",
+    "compare_scenarios",
+    "create_projection_run",
+    "get_projection",
+    "list_goals",
+    "get_goal_analysis",
+    "get_research_summary",
+    "get_research_item",
+)
+PHASE3_MATRIX = "docs/implementation/PHASE_3_ACCEPTANCE_MATRIX.md"
+PHASE3_LEDGER = "docs/implementation/PHASE_3_SCENARIO_EVIDENCE.md"
+PHASE3_MANIFEST = "docs/implementation/PHASE_3_EXECUTION_MANIFEST.md"
+PHASE3_REGISTRY = "docs/integrations/PHASE_3_MCP_TOOL_REGISTRY.md"
+PHASE3_DESIGN = {
+    "status": "accepted_for_implementation",
+    "freeze": "docs/DESIGN_FREEZE_V1_0.md",
+    "version": "1.0",
+    "runtime_acceptance": "pending",
+    "mcp_target_tools": 38,
+}
+
+
+def validate_phase3_design(root: Path = ROOT) -> list[Failure]:
+    """Check frozen inventories/evidence consistency, not independent execution."""
+    failures: list[Failure] = []
+
+    def add(detail: str) -> None:
+        failures.append(Failure("phase3-design", detail))
+
+    def load(relative: str) -> str:
+        try:
+            return (root / relative).read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            add(f"missing or unreadable Phase 3 authority: {relative}")
+            return ""
+
+    def document(relative: str) -> dict[str, object]:
+        try:
+            return _object(json.loads(load(relative)))
+        except json.JSONDecodeError:
+            add(f"invalid JSON authority: {relative}")
+            return {}
+
+    status, progress = document("PROJECT_STATUS.json"), document("PROJECT_PROGRESS.json")
+    phase = _object(_object(progress.get("phases")).get("phase_3"))
+    for relative in PHASE3_REQUIRED_FILES:
+        load(relative)
+    for value in (status.get("phase_3_design"), phase.get("design")):
+        if value != PHASE3_DESIGN or type(_object(value).get("mcp_target_tools")) is not int:
+            add("Phase 3 design must agree across status documents without runtime acceptance")
+    manifest = _phase2_rows(load(PHASE3_MANIFEST), r"P3-\d{2}")
+    matrix = _phase2_rows(load(PHASE3_MATRIX), r"P3-[A-Z]+-\d{3}")
+    scenarios = _phase2_rows(load(PHASE3_LEDGER), r"P3-S\d{2}")
+    for rows, identifiers, width, label in (
+        (manifest, PHASE3_PACKAGES, 4, "ten-package manifest"),
+        (matrix, PHASE3_ACCEPTANCE_IDS, 5, "30-row acceptance matrix"),
+        (scenarios, PHASE3_SCENARIOS, 6, "48-scenario ledger"),
+    ):
+        if tuple(row[0] for row in rows) != identifiers or any(len(row) != width for row in rows):
+            add(f"Phase 3 requires exact ordered {label} and its required columns")
+    inventory = _object(phase.get("acceptance_inventory"))
+    counts = {
+        "locally_executable_rows_total": 30,
+        "locally_executable_rows_complete": sum(row[-1] == "complete" for row in matrix),
+        "mandatory_scenarios_total": 48,
+        "mandatory_scenarios_complete": sum(row[-1] == "complete" for row in scenarios),
+    }
+    if set(inventory) != set(counts) or any(
+        type(inventory.get(key)) is not int or inventory.get(key) != count
+        for key, count in counts.items()
+    ):
+        add("Phase 3 acceptance inventory must match actual completed rows/scenarios")
+    evidence = _object(_object(phase.get("acceptance")).get("evidence"))
+    packages = _object(phase.get("work_packages"))
+    known = (*PHASE3_PACKAGES, *PHASE3_ACCEPTANCE_IDS, *PHASE3_SCENARIOS)
+    completed = [key for key, value in packages.items() if value == "complete"]
+    for row in matrix + scenarios:
+        if len(row) not in (5, 6):
+            continue
+        identifier, package = row[:2]
+        if package not in PHASE3_PACKAGES or row[-1] not in PHASE2_ROW_STATES:
+            add(f"{identifier} requires a frozen package and valid local state")
+        if row[-1] == "complete":
+            completed.append(identifier)
+        if packages.get(package) == "complete" and row[-1] != "complete":
+            add(f"{package} cannot complete while assigned predicates remain pending")
+    scenario_states = {row[0]: row[-1] for row in scenarios}
+    referenced: set[str] = set()
+    for row in matrix:
+        if len(row) != 5:
+            continue
+        references = re.findall(r"P3-S\d{2}", row[3])
+        referenced.update(references)
+        if not references or any(identifier not in PHASE3_SCENARIOS for identifier in references):
+            add(f"{row[0]} requires known mandatory scenarios")
+        if row[-1] == "complete" and any(scenario_states.get(i) != "complete" for i in references):
+            add(f"{row[0]} cannot complete before all referenced scenarios")
+    if referenced != set(PHASE3_SCENARIOS):
+        add("acceptance matrix must cover every mandatory Phase 3 scenario")
+    for row in scenarios:
+        nodes = _object(evidence.get(row[0])).get("test_nodes")
+        if (
+            len(row) == 6
+            and row[-1] == "complete"
+            and (
+                not _test_node_exists(root, row[4])
+                or not isinstance(nodes, list)
+                or row[4] not in nodes
+            )
+        ):
+            add(f"{row[0]} completed scenario must bind its actual exact selector")
+    for identifier in set(completed) | set(evidence):
+        if identifier not in known:
+            add(f"unknown Phase 3 evidence requirement {identifier}")
+        for error in _phase2_evidence_errors(root, identifier, evidence.get(identifier)):
+            add(error)
+    registry = _phase2_rows(load(PHASE3_REGISTRY), r"\d+")
+    if (
+        tuple(row[0] for row in registry) != tuple(str(i) for i in range(26, 39))
+        or tuple(row[1] for row in registry if len(row) > 1) != PHASE3_MCP_TOOLS
+    ):
+        add("premium MCP registry requires exactly thirteen frozen additions, final total 38")
+    for row in registry:
+        if len(row) != 6 or row[4] != ("COMMAND" if row[0] in ("26", "30", "33") else "READ"):
+            add("premium MCP must preserve three internal commands and ten reads")
+    annotations = _phase2_rows(load(PHASE3_REGISTRY), r"READ|COMMAND")
+    if annotations != [
+        ["READ", "true", "false", "true", "false"],
+        ["COMMAND", "false", "false", "true", "false"],
+    ]:
+        add("premium MCP annotations must match actual bounded side effects")
+    return failures
+
+
 def validate_case_collisions() -> list[Failure]:
     seen: dict[str, Path] = {}
     failures: list[Failure] = []
@@ -1785,6 +1967,7 @@ def main() -> int:
         validate_governance_and_prompt,
         validate_acceptance_traceability,
         validate_phase2_design,
+        validate_phase3_design,
         validate_current_release_status,
         validate_case_collisions,
     )
@@ -1798,7 +1981,7 @@ def main() -> int:
             print(f"- [{failure.check}] {failure.detail}", file=sys.stderr)
         return 1
 
-    print("Repository documentation, Phase 1 handoff and Phase 2 design validation passed.")
+    print("Repository documentation, Phase 1 handoff and Phase 2/3 design validation passed.")
     print(
         f"Validated {len(REQUIRED_FILES)} required files and "
         f"{len(EXPECTED_CAPABILITIES)} exact GET capabilities."

@@ -4219,6 +4219,19 @@
         "owner_acceptance_status": "not_requested",
         "independent_review_status": "pending",
         "evidence": {}
+      },
+      "design": {
+        "status": "accepted_for_implementation",
+        "freeze": "docs/DESIGN_FREEZE_V1_0.md",
+        "version": "1.0",
+        "runtime_acceptance": "pending",
+        "mcp_target_tools": 38
+      },
+      "acceptance_inventory": {
+        "locally_executable_rows_total": 30,
+        "locally_executable_rows_complete": 0,
+        "mandatory_scenarios_total": 48,
+        "mandatory_scenarios_complete": 0
       }
     }
   },
