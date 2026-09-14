@@ -5,7 +5,64 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-13",
+  "updated_at": "2026-09-14",
+  "current_candidate": {
+    "phase": "phase_2",
+    "release": "0.2.0",
+    "findings": ["R-01", "R-02"],
+    "baseline_delivery_sha": "6479186f378bab5ab6fcfd9b29fd444eebd28e6b",
+    "implementation_source_sha": null,
+    "implementation_tree_sha": null,
+    "documentation_delivery_sha": null,
+    "implementation_status": "in_progress",
+    "local_validation_status": "pending",
+    "local_validation_evidence": null,
+    "independent_review_status": "pending",
+    "independent_review_evidence": null,
+    "ci_status": "deferred_by_owner",
+    "ci_verified": false
+  },
+  "current_evidence": {
+    "phase": "phase_2",
+    "release": "0.2.0",
+    "scope": "current_candidate",
+    "implementation_source_sha": null,
+    "implementation_tree_sha": null,
+    "documentation_delivery_sha": null,
+    "artifact": null,
+    "local_validation_status": "pending",
+    "independent_review_status": "pending",
+    "ci_status": "deferred_by_owner",
+    "ci_verified": false
+  },
+  "historical_evidence": {
+    "phase_2": {
+      "phase": "phase_2",
+      "release": "0.2.0",
+      "scope": "historical_reported_local_results",
+      "implementation_source_sha": "3998426aa7e7614e421518efd01b08188e194100",
+      "implementation_tree_sha": "ff5522eb438a30cfa88aad6bf4e2853fb85ef3a0",
+      "documentation_delivery_sha": "6479186f378bab5ab6fcfd9b29fd444eebd28e6b",
+      "artifact": {
+        "path": "docs/implementation/evidence/phase-2-p2-10-3998426.json",
+        "sha256": "3d3d6c44349313836c8123abab022109c1d7daa65a7ffa42a05a6f8aa9c23ab0",
+        "bytes": 248319
+      },
+      "local_validation_status": "reported_passed",
+      "independent_review_status": "not_unconditionally_accepted",
+      "ci_status": "deferred_by_owner",
+      "ci_verified": false
+    }
+  },
+  "legacy_evidence_scopes": {
+    "/release_candidate_sha": "historical_stage_a",
+    "/release_candidate_relationship": "historical_stage_a",
+    "/validated_evidence": "historical_stage_a",
+    "/security_gate_architecture/validated_evidence_results": "historical_stage_a",
+    "/release_readiness": "historical_phase_1_external_conditions",
+    "/phase_2_package_evidence": "historical_reported_local_results",
+    "/phase_2_ci_deferral/current_acceptance_ci": "historical_reported_local_results"
+  },
   "design_freeze": {
     "version": "0.1",
     "status": "accepted"
@@ -13,7 +70,7 @@
   "documentation_readiness": "approved",
   "current_phase": "phase_2",
   "current_release_target": "0.2.0",
-  "implementation_status": "complete",
+  "implementation_status": "in_progress",
   "release_readiness": "blocked_external",
   "release_candidate_sha": "99df47b6633791c3900a52f46f56d48be922a436",
   "release_candidate_relationship": "validated_evidence_sha_is_ancestor_of_main",
@@ -83,7 +140,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "external_conditions_only_phase_3_not_started",
+  "next_gate": "R01_R02_implementation_then_exact_source_local_validation_and_independent_review",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -141,7 +198,7 @@
   "phase_2_design": {
     "version": "0.2",
     "status": "accepted",
-    "runtime_acceptance": "complete",
+    "runtime_acceptance": "pending",
     "authority": "docs/DESIGN_FREEZE_V0_2.md"
   },
   "phase_2_package_evidence": {
@@ -380,13 +437,10 @@
   },
   "current_work_package": {
     "id": "P2-10",
-    "status": "complete",
-    "source_sha": "3998426aa7e7614e421518efd01b08188e194100",
-    "acceptance_claim": true,
-    "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
-    "artifact": "docs/implementation/evidence/phase-2-p2-10-3998426.json",
-    "implementation_report": "docs/implementation/PHASE_2_IMPLEMENTATION_REPORT.md",
-    "github_actions": "deferred_by_owner",
-    "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-10-3998426-implementation-history.json"
+    "status": "in_progress",
+    "source_sha": null,
+    "acceptance_claim": false,
+    "current_candidate_pointer": "/current_candidate",
+    "historical_evidence_pointer": "/historical_evidence/phase_2"
   }
 }

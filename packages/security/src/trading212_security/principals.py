@@ -8,6 +8,8 @@ from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Protocol
 
+from .identity import is_string_or_uri
+
 
 class Scope(StrEnum):
     PORTFOLIO_READ = "portfolio:read"
@@ -47,13 +49,16 @@ class Principal:
     session_id: str | None = None
 
     def __post_init__(self) -> None:
-        for name in ("principal_id", "owner_id", "issuer", "subject"):
+        for name in ("principal_id", "owner_id"):
             value = getattr(self, name)
             if not isinstance(value, str) or not _OPAQUE_ID.fullmatch(value):
                 raise AuthenticationError(f"invalid {name}")
+        for name in ("issuer", "subject"):
+            if not is_string_or_uri(getattr(self, name)):
+                raise AuthenticationError(f"invalid {name}")
         for name in ("authenticated_at", "expires_at"):
             value = getattr(self, name)
-            if value.tzinfo is None or value.utcoffset() is None:
+            if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
                 raise AuthenticationError(f"{name} must be timezone-aware")
             object.__setattr__(self, name, value.astimezone(UTC))
         if self.expires_at <= self.authenticated_at:

@@ -1,7 +1,63 @@
 {
   "schema_version": 1,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-13",
+  "updated_at": "2026-09-14",
+  "current_candidate": {
+    "phase": "phase_2",
+    "release": "0.2.0",
+    "findings": ["R-01", "R-02"],
+    "baseline_delivery_sha": "6479186f378bab5ab6fcfd9b29fd444eebd28e6b",
+    "implementation_source_sha": null,
+    "implementation_tree_sha": null,
+    "documentation_delivery_sha": null,
+    "implementation_status": "in_progress",
+    "local_validation_status": "pending",
+    "local_validation_evidence": null,
+    "independent_review_status": "pending",
+    "independent_review_evidence": null,
+    "ci_status": "deferred_by_owner",
+    "ci_verified": false
+  },
+  "current_evidence": {
+    "phase": "phase_2",
+    "release": "0.2.0",
+    "scope": "current_candidate",
+    "implementation_source_sha": null,
+    "implementation_tree_sha": null,
+    "documentation_delivery_sha": null,
+    "artifact": null,
+    "local_validation_status": "pending",
+    "independent_review_status": "pending",
+    "ci_status": "deferred_by_owner",
+    "ci_verified": false
+  },
+  "historical_evidence": {
+    "phase_2": {
+      "phase": "phase_2",
+      "release": "0.2.0",
+      "scope": "historical_reported_local_results",
+      "implementation_source_sha": "3998426aa7e7614e421518efd01b08188e194100",
+      "implementation_tree_sha": "ff5522eb438a30cfa88aad6bf4e2853fb85ef3a0",
+      "documentation_delivery_sha": "6479186f378bab5ab6fcfd9b29fd444eebd28e6b",
+      "artifact": {
+        "path": "docs/implementation/evidence/phase-2-p2-10-3998426.json",
+        "sha256": "3d3d6c44349313836c8123abab022109c1d7daa65a7ffa42a05a6f8aa9c23ab0",
+        "bytes": 248319
+      },
+      "local_validation_status": "reported_passed",
+      "independent_review_status": "not_unconditionally_accepted",
+      "ci_status": "deferred_by_owner",
+      "ci_verified": false
+    }
+  },
+  "legacy_evidence_scopes": {
+    "/phases/phase_1": "historical_stage_a",
+    "/release_readiness": "historical_phase_1_external_conditions",
+    "/phases/phase_2/work_packages": "historical_reported_local_results",
+    "/phases/phase_2/progress_percent": "historical_reported_local_results",
+    "/phases/phase_2/acceptance": "historical_reported_local_results",
+    "/phases/phase_2/ci_deferral/current_acceptance_ci": "historical_reported_local_results"
+  },
   "design_freeze": {
     "version": "0.1",
     "status": "complete"
@@ -129,34 +185,16 @@
     "phase_2": {
       "name": "Portfolio Intelligence",
       "release": "0.2.0",
-      "status": "complete",
+      "status": "in_progress",
       "progress_percent": 100,
       "design_closure": "accepted",
       "candidate_validation": {
         "work_package": "P2-10",
-        "source_sha": "3998426aa7e7614e421518efd01b08188e194100",
-        "acceptance": "accepted_locally_with_ci_deferred",
-        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
-        "evidence_finalized_at_utc": "2026-09-13T12:34:05.233805+00:00",
-        "artifacts": [
-          "docs/implementation/evidence/phase-2-p2-10-3998426.json"
-        ],
-        "artifact_sha256": "3d3d6c44349313836c8123abab022109c1d7daa65a7ffa42a05a6f8aa9c23ab0",
-        "make_validate": "passed",
-        "observed_gate_counts": {
-          "browser_cases_in_supplied_reports": 211,
-          "combined_python_branch_coverage_percent": 89,
-          "python": {
-            "isolated": 2575,
-            "service_backed": 510
-          }
-        },
-        "gate_record_sha256": "2f86a937d9bb24667f0da63a36d366151c2958f707f86b665e385f0b13518b0d",
-        "assertion_map_pointer": "/assertion_map",
-        "ci_state": "deferred_by_owner",
-        "ci_verified": false,
-        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-10-3998426-implementation-history.json",
-        "previous_candidate_validation_pointer": "/observations/0/value"
+        "source_sha": null,
+        "acceptance": "pending_remediation",
+        "acceptance_claim": false,
+        "current_candidate_pointer": "/current_candidate",
+        "historical_evidence_pointer": "/historical_evidence/phase_2"
       },
       "work_packages": {
         "P2-01": "complete",
@@ -171,7 +209,7 @@
         "P2-10": "complete"
       },
       "acceptance": {
-        "status": "complete",
+        "status": "historical_reported_local_results",
         "locally_executable_rows_total": 29,
         "locally_executable_rows_complete": 29,
         "mandatory_scenarios_total": 40,
@@ -4048,6 +4086,62 @@
           "artifact": "docs/implementation/evidence/phase-2-p2-10-3998426-implementation-history.json",
           "sha256": "c81bb5b39b827eb0d64914abc572cfeeeaba98e154dede45d4335c3ce33e786d",
           "scope": "Exact prior status objects and ledger."
+        },
+        {
+          "work_package": "P2-10",
+          "source_sha": "3998426aa7e7614e421518efd01b08188e194100",
+          "documentation_delivery_sha": "6479186f378bab5ab6fcfd9b29fd444eebd28e6b",
+          "scope": "Exact tracker observations before R-01/R-02 remediation; reported local results, not unconditional independent acceptance.",
+          "previous_phase_status": "complete",
+          "previous_acceptance_status": "complete",
+          "previous_candidate_validation": {
+            "work_package": "P2-10",
+            "source_sha": "3998426aa7e7614e421518efd01b08188e194100",
+            "acceptance": "accepted_locally_with_ci_deferred",
+            "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+            "evidence_finalized_at_utc": "2026-09-13T12:34:05.233805+00:00",
+            "artifacts": [
+              "docs/implementation/evidence/phase-2-p2-10-3998426.json"
+            ],
+            "artifact_sha256": "3d3d6c44349313836c8123abab022109c1d7daa65a7ffa42a05a6f8aa9c23ab0",
+            "make_validate": "passed",
+            "observed_gate_counts": {
+              "browser_cases_in_supplied_reports": 211,
+              "combined_python_branch_coverage_percent": 89,
+              "python": {
+                "isolated": 2575,
+                "service_backed": 510
+              }
+            },
+            "gate_record_sha256": "2f86a937d9bb24667f0da63a36d366151c2958f707f86b665e385f0b13518b0d",
+            "assertion_map_pointer": "/assertion_map",
+            "ci_state": "deferred_by_owner",
+            "ci_verified": false,
+            "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-10-3998426-implementation-history.json",
+            "previous_candidate_validation_pointer": "/observations/0/value"
+          },
+          "previous_current_implementation": {
+            "work_package": "P2-10",
+            "status": "complete",
+            "source_sha": "3998426aa7e7614e421518efd01b08188e194100",
+            "acceptance_claim": true,
+            "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+            "artifact": "docs/implementation/evidence/phase-2-p2-10-3998426.json",
+            "implementation_report": "docs/implementation/PHASE_2_IMPLEMENTATION_REPORT.md",
+            "github_actions": "deferred_by_owner",
+            "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-10-3998426-implementation-history.json"
+          },
+          "previous_status_work_package": {
+            "id": "P2-10",
+            "status": "complete",
+            "source_sha": "3998426aa7e7614e421518efd01b08188e194100",
+            "acceptance_claim": true,
+            "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
+            "artifact": "docs/implementation/evidence/phase-2-p2-10-3998426.json",
+            "implementation_report": "docs/implementation/PHASE_2_IMPLEMENTATION_REPORT.md",
+            "github_actions": "deferred_by_owner",
+            "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-10-3998426-implementation-history.json"
+          }
         }
       ],
       "post_p206_housekeeping": {
@@ -4064,14 +4158,11 @@
       },
       "current_implementation": {
         "work_package": "P2-10",
-        "status": "complete",
-        "source_sha": "3998426aa7e7614e421518efd01b08188e194100",
-        "acceptance_claim": true,
-        "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
-        "artifact": "docs/implementation/evidence/phase-2-p2-10-3998426.json",
-        "implementation_report": "docs/implementation/PHASE_2_IMPLEMENTATION_REPORT.md",
-        "github_actions": "deferred_by_owner",
-        "archived_implementation_observations": "docs/implementation/evidence/phase-2-p2-10-3998426-implementation-history.json"
+        "status": "in_progress",
+        "source_sha": null,
+        "acceptance_claim": false,
+        "current_candidate_pointer": "/current_candidate",
+        "historical_evidence_pointer": "/historical_evidence/phase_2"
       }
     },
     "phase_3": {

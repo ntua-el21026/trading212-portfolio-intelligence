@@ -6,9 +6,91 @@
 
 **Implementation authority:** `main`
 
-**Updated:** 2026-09-13
+**Updated:** 2026-09-14
 
 ## Current state
+
+Phase 2 has **not received unconditional independent acceptance**. R-01
+(authentication identity compatibility) and R-02 (status/evidence separation) are
+in progress from delivered main
+`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The new candidate's implementation
+source, tree and later documentation delivery remain null until actually
+recorded. Local validation is pending; independent review is pending. GitHub
+Actions is owner-deferred and unverified; Phase 3 remains `not_started`.
+
+The [authentication identity contract](docs/security/AUTHENTICATION_IDENTITY.md)
+defines R-01. R-02 provides the explicit status selectors below.
+
+### Current and historical machine selectors
+
+Both [PROJECT_STATUS.json](PROJECT_STATUS.json) and
+[PROJECT_PROGRESS.json](PROJECT_PROGRESS.json) expose identical, closed
+`current_candidate` and `current_evidence` objects. Both refer to the active
+remediation. `historical_evidence.phase_2` retains the prior local report, and
+`legacy_evidence_scopes` labels the old compatibility paths as historical.
+
+| Selector | Meaning |
+| --- | --- |
+| `current_candidate` | R-01/R-02 implementation and its own future local evidence; independent review remains pending. |
+| `current_evidence` | The active candidate result: pending with null artifact/source/tree now, then its own source-bound evidence after actual local validation. |
+| `historical_evidence.phase_2` | Retained historical local report: V=`3998426aa7e7614e421518efd01b08188e194100`, tree=`ff5522eb438a30cfa88aad6bf4e2853fb85ef3a0`, documentation delivery D=`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. Its reported pass is not the remediation result. |
+| Legacy `release_candidate_sha`, `validated_evidence` and security-result selectors | Historical Stage A at `99df47b6633791c3900a52f46f56d48be922a436`; original values and counts are preserved. |
+| Legacy Phase 2 work packages, percentage and acceptance evidence | Historical reported 10/10 packages, 29/29 rows and 40/40 scenarios at V. All 79 entries remain intact; acceptance status is `historical_reported_local_results`. |
+| Legacy `release_readiness` | Historical Phase 1 external conditions. The local authentication defect is a remediation requirement, not an external blocker. |
+
+`current_candidate` contains exactly `phase`, `release`, `findings`,
+`baseline_delivery_sha`, `implementation_source_sha`, `implementation_tree_sha`,
+`documentation_delivery_sha`, `implementation_status`, `local_validation_status`,
+`local_validation_evidence`, `independent_review_status`,
+`independent_review_evidence`, `ci_status` and `ci_verified`.
+Implementation is `in_progress` or `implemented_unverified` while local validation
+is pending or failed; an actual local pass requires
+`implemented_pending_independent_review`. Local validation is `pending`, `failed`
+or `passed`. An uncommitted source requires null tree/delivery
+and pending validation with null evidence. A later result requires its own
+immutable source/tree and a repository JSON reference with exactly `path`,
+`sha256` and positive integer `bytes`, binding that source/tree and result.
+Neither the old artifact nor its coverage supplies a new result. Documentation
+delivery, when known, is distinct from implementation source. Keep it null in
+the commit it would identify: its actual SHA and ordinary fast-forward delivery
+are recorded externally after pushing. A later observation may bind that receipt;
+no commit claims its own future hash or delivery result.
+
+`current_evidence` contains exactly `phase`, `release`, `scope`,
+`implementation_source_sha`, `implementation_tree_sha`,
+`documentation_delivery_sha`, `artifact`, `local_validation_status`,
+`independent_review_status`, `ci_status` and `ci_verified`. Its scope is
+`current_candidate`. Source/tree/delivery, validation status and artifact must
+agree with `current_candidate`; pending validation has a null artifact.
+A local pass changes its result to `passed` with actual evidence, while
+independent review stays `pending`.
+
+`historical_evidence` contains exactly `phase_2`. That record uses the same
+evidence fields with scope `historical_reported_local_results`, local result
+`reported_passed` and independent review `not_unconditionally_accepted`. Its
+original artifact uses the same hash/byte binding. All selectors identify
+Phase 2 / 0.2.0 and deferred, unverified CI.
+
+The current stopping boundary keeps independent review `pending` and its evidence
+null even after actual local validation. Active work-package and candidate-validation
+compatibility objects point to `/current_candidate` and
+`/historical_evidence/phase_2` without an acceptance claim. Their former exact observations are appended to
+Phase 2 `implementation_history`; earlier history and Stage A remain preserved.
+The [repository validator](scripts/validate_repository.py) checks declarations
+and artifact bindings, not execution or reviewer approval.
+
+### Delivery recommendation
+
+A main ruleset is recommended and **not configured**: allow ordinary direct
+pushes, prohibit force pushes and deletion, and require linear history. This is
+nonblocking; no repository administration change is claimed.
+
+### Historical reported local release and prior observations
+
+The retained statements below describe prior local reports at their original
+sources and observation times. Their completion/acceptance language does not
+establish unconditional independent Phase 2 acceptance or validate R-01/R-02.
+Immutable artifacts, test counts and coverage retain their original provenance.
 
 P2-10 implementation covers the remaining authorization and canonical parity checks, query telemetry, bounded retention, operations evidence and release metadata. Working-tree observations remain in the [validation report](VALIDATION_REPORT.md#p210-working-tree-verification). Final immutable P210 local acceptance is recorded separately in [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json) at 3998426aa7e7614e421518efd01b08188e194100; working-tree observations remain historical.
 
@@ -344,8 +426,10 @@ than fabricated.
 
 ## Next action
 
-P2-10 and the final immutable local release predicates are complete at 3998426aa7e7614e421518efd01b08188e194100 under the retained owner CI deferral and accepted [v0.2 design delta](docs/DESIGN_FREEZE_V0_2.md). Preserve these separate external
-owner/deployment conditions without substituting synthetic evidence:
+Finish R-01/R-02, record the actual new implementation source and its own local
+validation evidence, then await independent review. The prior 3998426 report
+does not close this remediation. Preserve these separate external owner/deployment
+conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo
    credential is supplied.
@@ -356,7 +440,8 @@ owner/deployment conditions without substituting synthetic evidence:
    unless valid provider evidence becomes available.
 
 The accepted direct-`main` policy is the only active delivery mechanism. Frozen
-architecture and safety decisions remain unchanged. Phase 2 is `complete` under exact-source local acceptance at 3998426aa7e7614e421518efd01b08188e194100; Phase 3 remains `not_started`.
+architecture and safety decisions remain unchanged. Phase 2 is `in_progress`
+for R-01/R-02 and awaits independent review; Phase 3 remains `not_started`.
 
 ## Permanent boundaries
 

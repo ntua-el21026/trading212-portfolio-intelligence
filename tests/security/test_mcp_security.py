@@ -227,7 +227,7 @@ def test_shared_oauth_boundary_rejects_invalid_tokens_and_never_echoes_valid_tok
     assert resource_metadata.status_code == 200
     assert resource_metadata.json() == {
         "resource": "https://portfolio.example/mcp",
-        "authorization_servers": ["https://issuer.example/"],
+        "authorization_servers": ["https://issuer.example"],
         # Per-tool scopes are advertised in each descriptor and enforced by application services.
         "scopes_supported": [],
         "bearer_methods_supported": ["header"],

@@ -8,6 +8,7 @@ before application dependency manifests exist.
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import re
 import shlex
@@ -1093,6 +1094,262 @@ def _phase2_evidence_errors(root: Path, identifier: str, value: object) -> list[
     return errors
 
 
+def validate_current_release_status(root: Path = ROOT) -> list[Failure]:
+    """Separate the remediation candidate from historical, source-bound reports.
+
+    This checks declared status and evidence consistency, never independently
+    attests execution or reviewer approval. The current owner stopping boundary
+    is a locally validated candidate awaiting independent acceptance.
+    """
+    failures: list[Failure] = []
+
+    def add(detail: str) -> None:
+        failures.append(Failure("current-release-status", detail))
+
+    def closed(value: object, keys: str, label: str) -> dict[str, object]:
+        result = _object(value)
+        if not isinstance(value, dict) or set(result) != set(keys.split()):
+            add(f"{label} must contain exactly its documented fields")
+        return result
+
+    def valid_sha(value: object) -> bool:
+        return isinstance(value, str) and SHA_RE.fullmatch(value) is not None and value != "0" * 40
+
+    def artifact(value: object, label: str) -> dict[str, object]:
+        ref = closed(value, "path sha256 bytes", label)
+        path = _evidence_file(root, ref.get("path"))
+        checksum = ref.get("sha256")
+        if (
+            path is None
+            or not isinstance(checksum, str)
+            or re.fullmatch(r"[a-f0-9]{64}", checksum) is None
+            or not _positive_integer(ref.get("bytes"))
+        ):
+            add(f"{label} requires an existing repository file and SHA256/byte binding")
+            return {}
+        try:
+            raw = path.read_bytes()
+            result = json.loads(raw)
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            add(f"{label} must be readable JSON evidence")
+            return {}
+        if hashlib.sha256(raw).hexdigest() != checksum or len(raw) != ref["bytes"]:
+            add(f"{label} hash or byte length differs from retained evidence")
+        if not isinstance(result, dict):
+            add(f"{label} must be a JSON object")
+        return _object(result)
+
+    documents: list[dict[str, object]] = []
+    for relative in ("PROJECT_STATUS.json", "PROJECT_PROGRESS.json"):
+        try:
+            value = json.loads((root / relative).read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            value = None
+        if not isinstance(value, dict):
+            add(f"{relative} must be a readable JSON object")
+        documents.append(_object(value))
+    status, progress = documents
+    for key in ("current_candidate", "current_evidence", "historical_evidence"):
+        if status.get(key) != progress.get(key):
+            add(f"{key} must agree across status documents")
+    candidate_fields = (
+        "phase release findings baseline_delivery_sha implementation_source_sha "
+        "implementation_tree_sha documentation_delivery_sha implementation_status "
+        "local_validation_status local_validation_evidence independent_review_status "
+        "independent_review_evidence ci_status ci_verified"
+    )
+    evidence_fields = (
+        "phase release scope implementation_source_sha implementation_tree_sha "
+        "documentation_delivery_sha artifact local_validation_status independent_review_status "
+        "ci_status ci_verified"
+    )
+    for document in documents:
+        closed(document.get("current_candidate"), candidate_fields, "current_candidate")
+        closed(document.get("current_evidence"), evidence_fields, "current_evidence")
+        history = closed(document.get("historical_evidence"), "phase_2", "historical_evidence")
+        closed(history.get("phase_2"), evidence_fields, "historical_evidence.phase_2")
+    candidate = _object(status.get("current_candidate"))
+    current = _object(status.get("current_evidence"))
+    historical = _object(_object(status.get("historical_evidence")).get("phase_2"))
+    for label, record in (
+        ("current_candidate", candidate),
+        ("current_evidence", current),
+        ("historical_evidence.phase_2", historical),
+    ):
+        if record.get("phase") != "phase_2" or record.get("release") != "0.2.0":
+            add(f"{label} must identify phase_2 / 0.2.0")
+        if record.get("ci_status") != "deferred_by_owner" or record.get("ci_verified") is not False:
+            add(f"{label} must retain deferred, unverified CI")
+    if candidate.get("findings") != ["R-01", "R-02"]:
+        add("current_candidate must identify the R-01/R-02 remediation")
+    if (
+        candidate.get("independent_review_status") != "pending"
+        or candidate.get("independent_review_evidence") is not None
+    ):
+        add("current_candidate must await independent review without an approval claim")
+    implementation = candidate.get("implementation_status")
+    if implementation not in (
+        "in_progress",
+        "implemented_unverified",
+        "implemented_pending_independent_review",
+    ):
+        add("current_candidate implementation must use a supported unaccepted state")
+    if (
+        current.get("scope") != "current_candidate"
+        or current.get("independent_review_status") != candidate.get("independent_review_status")
+        or current.get("local_validation_status") != candidate.get("local_validation_status")
+        or current.get("artifact") != candidate.get("local_validation_evidence")
+        or any(
+            current.get(key) != candidate.get(key)
+            for key in (
+                "implementation_source_sha",
+                "implementation_tree_sha",
+                "documentation_delivery_sha",
+            )
+        )
+    ):
+        add("current_evidence must describe this candidate and its own pending or actual result")
+    if (
+        historical.get("scope") != "historical_reported_local_results"
+        or historical.get("local_validation_status") != "reported_passed"
+        or historical.get("independent_review_status") != "not_unconditionally_accepted"
+    ):
+        add(
+            "historical_evidence.phase_2 must qualify prior reported local results, "
+            "not independent acceptance"
+        )
+    for key in (
+        "implementation_source_sha",
+        "implementation_tree_sha",
+        "documentation_delivery_sha",
+    ):
+        if not valid_sha(historical.get(key)):
+            add(f"historical_evidence.phase_2.{key} requires its actual immutable SHA")
+    if historical.get("implementation_source_sha") == historical.get("documentation_delivery_sha"):
+        add(
+            "historical evidence must distinguish implementation source from documentation delivery"
+        )
+    if not valid_sha(candidate.get("baseline_delivery_sha")) or candidate.get(
+        "baseline_delivery_sha"
+    ) != historical.get("documentation_delivery_sha"):
+        add("current_candidate baseline must bind the prior reported documentation delivery")
+    prior = artifact(historical.get("artifact"), "historical_evidence.phase_2.artifact")
+    if (
+        prior.get("source_sha") != historical.get("implementation_source_sha")
+        or prior.get("tree_sha") != historical.get("implementation_tree_sha")
+        or prior.get("stage") != "P2-10"
+        or prior.get("result") != "passed"
+    ):
+        add("historical evidence must bind the actual P210 source/tree and reported result")
+
+    source = candidate.get("implementation_source_sha")
+    tree = candidate.get("implementation_tree_sha")
+    delivery = candidate.get("documentation_delivery_sha")
+    local = candidate.get("local_validation_status")
+    if local not in ("pending", "failed", "passed"):
+        add("current_candidate local validation must be pending, failed or passed")
+    if (local == "passed") != (implementation == "implemented_pending_independent_review"):
+        add("a local pass must be implemented_pending_independent_review, without acceptance")
+    if source is None:
+        if tree is not None or delivery is not None or local != "pending":
+            add(
+                "an uncommitted candidate must keep source/tree/delivery null "
+                "and validation pending"
+            )
+    elif (
+        not valid_sha(source)
+        or not valid_sha(tree)
+        or source
+        in (
+            historical.get("implementation_source_sha"),
+            historical.get("documentation_delivery_sha"),
+            status.get("release_candidate_sha"),
+        )
+    ):
+        add("current_candidate requires a new implementation source/tree, not historical evidence")
+    if delivery is not None and (not valid_sha(delivery) or delivery == source):
+        add("candidate documentation delivery must be a distinct actual SHA or null")
+    if local == "pending":
+        if candidate.get("local_validation_evidence") is not None:
+            add("pending candidate validation cannot carry a copied or future result")
+    elif local in ("failed", "passed"):
+        observed = artifact(
+            candidate.get("local_validation_evidence"), "candidate validation evidence"
+        )
+        if (
+            source is None
+            or observed.get("source_sha") != source
+            or observed.get("tree_sha") != tree
+            or observed.get("result") != local
+        ):
+            add("candidate validation evidence must bind its own source/tree and actual result")
+        if candidate.get("local_validation_evidence") == historical.get("artifact"):
+            add("historical evidence cannot validate the remediation candidate")
+
+    historical_scope = "historical_reported_local_results"
+    expected_scopes = (
+        {
+            "/release_candidate_sha": "historical_stage_a",
+            "/release_candidate_relationship": "historical_stage_a",
+            "/validated_evidence": "historical_stage_a",
+            "/security_gate_architecture/validated_evidence_results": "historical_stage_a",
+            "/release_readiness": "historical_phase_1_external_conditions",
+            "/phase_2_package_evidence": historical_scope,
+            "/phase_2_ci_deferral/current_acceptance_ci": historical_scope,
+        },
+        {
+            "/phases/phase_1": "historical_stage_a",
+            "/release_readiness": "historical_phase_1_external_conditions",
+            "/phases/phase_2/work_packages": historical_scope,
+            "/phases/phase_2/progress_percent": historical_scope,
+            "/phases/phase_2/acceptance": historical_scope,
+            "/phases/phase_2/ci_deferral/current_acceptance_ci": historical_scope,
+        },
+    )
+    for document, scopes in zip(documents, expected_scopes, strict=True):
+        if document.get("legacy_evidence_scopes") != scopes:
+            add("legacy evidence selectors must retain explicit historical compatibility scopes")
+    phase2 = _object(_object(progress.get("phases")).get("phase_2"))
+    acceptance = _object(phase2.get("acceptance"))
+    if (
+        phase2.get("status") != "in_progress"
+        or status.get("implementation_status") != "in_progress"
+        or _object(status.get("phase_2_design")).get("runtime_acceptance") != "pending"
+        or acceptance.get("status") != historical_scope
+        or acceptance.get("release_evidence_sha") != historical.get("implementation_source_sha")
+    ):
+        add("active remediation must remain pending beside the historical Phase 2 ledger")
+    for record in (
+        _object(phase2.get("current_implementation")),
+        _object(status.get("current_work_package")),
+    ):
+        if (
+            record.get("source_sha") != source
+            or record.get("status") != candidate.get("implementation_status")
+            or record.get("acceptance_claim") is not False
+            or record.get("current_candidate_pointer") != "/current_candidate"
+            or record.get("historical_evidence_pointer") != "/historical_evidence/phase_2"
+        ):
+            add("active compatibility selectors must point to the unaccepted current candidate")
+    validation = _object(phase2.get("candidate_validation"))
+    if (
+        validation.get("source_sha") != source
+        or validation.get("acceptance") != "pending_remediation"
+        or validation.get("acceptance_claim") is not False
+        or validation.get("current_candidate_pointer") != "/current_candidate"
+        or validation.get("historical_evidence_pointer") != "/historical_evidence/phase_2"
+    ):
+        add("candidate_validation must not retain a historical pass as the current result")
+    stage_a = _object(status.get("audit_remediation")).get("corrected_evidence_sha")
+    if (
+        status.get("release_candidate_sha") != stage_a
+        or _object(status.get("validated_evidence")).get("sha") != stage_a
+        or historical.get("implementation_source_sha") == stage_a
+    ):
+        add("legacy Stage A identity must stay distinct from reported Phase 2 evidence")
+    return failures
+
+
 def validate_phase2_design(root: Path = ROOT) -> list[Failure]:
     """Check declared evidence consistency, not independently attest execution.
 
@@ -1169,7 +1426,7 @@ def validate_phase2_design(root: Path = ROOT) -> list[Failure]:
         or phase1_acceptance.get("release_evidence_sha") != audit_shas[0]
         or _object(status.get("validated_evidence")).get("sha") != audit_shas[0]
     ):
-        add("completed Phase 1 acceptance and current validated evidence must bind Stage A SHA")
+        add("completed Phase 1 acceptance and historical validated evidence must bind Stage A SHA")
     if (
         phase3.get("status") != "not_started"
         or type(phase3.get("progress_percent")) is not int
@@ -1279,8 +1536,18 @@ def validate_phase2_design(root: Path = ROOT) -> list[Failure]:
             add(f"{field} cannot claim completion before all packages, rows and scenarios")
     if phase2.get("status") not in ("not_started", "in_progress", "complete", "blocked"):
         add("Phase 2 status must use a supported implementation state")
-    if acceptance.get("status") not in ("pending", "in_progress", "complete"):
-        add("Phase 2 acceptance status must be pending, in_progress or complete")
+    if acceptance.get("status") not in (
+        "pending",
+        "in_progress",
+        "complete",
+        "historical_reported_local_results",
+    ):
+        add(
+            "Phase 2 acceptance status must be pending, in_progress, complete "
+            "or historical_reported_local_results"
+        )
+    if acceptance.get("status") == "historical_reported_local_results" and not release_complete:
+        add("historical Phase 2 release must retain all source-bound package/row/scenario evidence")
     release_sha = acceptance.get("release_evidence_sha")
     if release_complete:
         if (
@@ -1350,6 +1617,7 @@ def main() -> int:
         validate_governance_and_prompt,
         validate_acceptance_traceability,
         validate_phase2_design,
+        validate_current_release_status,
         validate_case_collisions,
     )
     failures: list[Failure] = []

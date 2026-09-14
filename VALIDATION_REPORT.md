@@ -1,6 +1,27 @@
 # Phase 1 Validation Report
 
-## Final P210 local implementation validation
+## Current R-01/R-02 validation status
+
+Phase 2 has **not received unconditional independent acceptance**. R-01
+(authentication identity compatibility) and R-02 (status/evidence separation) are
+in progress from delivered main
+`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The new candidate's implementation
+source, tree and later documentation delivery remain null until actually
+recorded. Local validation is pending; independent review is pending. GitHub
+Actions is owner-deferred and unverified; Phase 3 remains `not_started`.
+
+The [authentication identity contract](docs/security/AUTHENTICATION_IDENTITY.md)
+and [status selector contract](PROJECT_STATUS.md#current-and-historical-machine-selectors)
+govern the remediation. No new immutable validation, coverage, scan or acceptance
+result is recorded here. ROOT will bind actual new-source results after serial
+validation; prior populations are not summed or reused as new coverage.
+
+## Historical reported P210 local implementation validation
+
+The retained statements below describe prior local reports at their original
+sources and observation times. Their completion/acceptance language does not
+establish unconditional independent Phase 2 acceptance or validate R-01/R-02.
+Immutable artifacts, test counts and coverage retain their original provenance.
 
 P2-10 implementation now covers the remaining authorization and canonical parity checks, query telemetry, bounded retention, operations evidence and release metadata. Focused working-tree observations are recorded below; final immutable local release acceptance is recorded separately in [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json) at 3998426aa7e7614e421518efd01b08188e194100. The completed make validate command ran for 7363.975 seconds with unchanged source; retained working observations below remain historical.
 
@@ -30,7 +51,8 @@ regression/security/build gate passed in 318.756 seconds: 2,153 Python unit, 539
 unit, 160 contract, 12 migration and 226 security tests, followed by the configured
 security scans and builds. These populations overlap and are not summed. Fresh
 immutable acceptance remains pending. The machine
-record is `PROJECT_PROGRESS.json#/phases/phase_2/candidate_validation`; external
+record is retained in `docs/implementation/evidence/phase-2-p2-10-3998426-implementation-history.json`
+under its original observations; the active `current_candidate` is separate. External
 receipt paths resolve beneath the retained task evidence root `${RESUME_ROOT}`.
 
 | Working-tree gate | Observed result | Seconds | Receipt SHA-256 |

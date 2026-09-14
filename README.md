@@ -8,7 +8,27 @@ A private, premium, strictly read-only portfolio intelligence platform for Tradi
 
 > **Historical baseline:** Architecture Design Freeze v0.1 is approved. Phase 1 implementation is complete on `main`, and all 24 locally executable acceptance rows passed at immutable evidence SHA `e13916eca34d8e3be1ed130248d6c3d1ed7e3869`. Release readiness is `blocked_external` only by the documented owner/deployment conditions. Real Trading 212 opening-history coverage remains `unavailable_explicit` and is not inferred from the synthetic scenario 8 acceptance fixture. Phase 2 and Phase 3 are `not_started`.
 
-## Current Phase 2 local release
+## Current Phase 2 remediation
+
+Phase 2 has **not received unconditional independent acceptance**. R-01
+(authentication identity compatibility) and R-02 (status/evidence separation) are
+in progress from delivered main
+`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The new candidate's implementation
+source, tree and later documentation delivery remain null until actually
+recorded. Local validation is pending; independent review is pending. GitHub
+Actions is owner-deferred and unverified; Phase 3 remains `not_started`.
+
+Use the [current and historical status selectors](PROJECT_STATUS.md#current-and-historical-machine-selectors)
+and [authentication identity contract](docs/security/AUTHENTICATION_IDENTITY.md).
+The [main ruleset recommendation](PROJECT_STATUS.md#delivery-recommendation) is
+nonblocking and not configured.
+
+### Historical reported Phase 2 local release
+
+The retained statements below describe prior local reports at their original
+sources and observation times. Their completion/acceptance language does not
+establish unconditional independent Phase 2 acceptance or validate R-01/R-02.
+Immutable artifacts, test counts and coverage retain their original provenance.
 
 P2-10 implementation has final immutable local acceptance at 3998426aa7e7614e421518efd01b08188e194100. All prior source-bound evidence and failed/working observations remain historical and preserved. See [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json). CI remains owner-deferred and unverified; Phase 3 remains not_started.
 
@@ -71,7 +91,7 @@ API, web, workers, reports, and MCP tools share the same canonical domain, autho
 | Phase | Release | Outcome | Status |
 |---|---:|---|---|
 | 1. Trusted Foundation | `0.1.0` | Monorepo, domain/persistence, GET-only Trading 212 ingestion, reconciliation, snapshots, core accounting/allocation, API, web foundation, MCP tools, CI and operations | Implementation complete; 24 local acceptance rows complete; external gates remain |
-| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | Locally complete at 3998426aa7e7614e421518efd01b08188e194100; 10/10 packages (100%), 29/29 local rows, 40/40 scenarios; CI owner-deferred and unverified; Phase 3 not_started |
+| 2. Portfolio Intelligence | `0.2.0` | Virtual Pies/targets, contribution optimizer, benchmark performance, attribution, ETF look-through/X-ray, reports and alerts | R-01/R-02 in progress; source/local validation pending; independent review pending; Actions deferred. Prior 3998426 results are historical. |
 | 3. Premium Intelligence & Productization | `1.0.0` | Advanced risk/scenarios/projections/goals, research cockpit, rich ChatGPT UI, PWA polish, premium providers and production hardening | Not started |
 
 ## Phase 1 technical baseline
@@ -119,7 +139,7 @@ records this increment's evidence boundary.
 
 P2-04 historical performance, benchmark, attribution, income and cash-flow intelligence has [scoped exact-source acceptance](docs/implementation/P2_04_HISTORICAL_INTELLIGENCE.md) at `2a7c89a9b8c37d97006dafbbe97a44eec37b3fe0`. P2-05 now has [scoped X-ray acceptance](docs/implementation/P2_05_PORTFOLIO_XRAY.md)
 at `7b102663ea193b4668924a7252180731954f4b00`: exact direct/indirect exposure, licensed sources, overlap and
-canonical API/web/MCP projections. P206 adds private canonical reports and exports with [scoped local acceptance](docs/implementation/evidence/phase-2-p2-06-9e39767.json) at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. Phase 2 now has 29/29 local rows and 40/40 scenarios complete under final same-source P210 local acceptance at 3998426aa7e7614e421518efd01b08188e194100. S32/S34/S38/S39 and the shared local release predicates are complete; [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json) binds that final scope. GitHub Actions is deferred by explicit owner instruction across remaining Phase 2 until the owner resumes verification; no current CI pass is claimed. P207 now backs the alerts export dataset with canonical retained input and current authorization/retention.
+canonical API/web/MCP projections. P206 adds private canonical reports and exports with [scoped local acceptance](docs/implementation/evidence/phase-2-p2-06-9e39767.json) at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. The historical 3998426 report states: Phase 2 now has 29/29 local rows and 40/40 scenarios complete under final same-source P210 local acceptance at 3998426aa7e7614e421518efd01b08188e194100. S32/S34/S38/S39 and the shared local release predicates are complete; [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json) binds that final scope. GitHub Actions is deferred by explicit owner instruction across remaining Phase 2 until the owner resumes verification; no current CI pass is claimed. P207 now backs the alerts export dataset with canonical retained input and current authorization/retention.
 
 **Historical P204/P205 runtime limitations (original observation retained):**
 
@@ -127,9 +147,9 @@ Source-backed known P2-08 limitations remain: the complete seed now has four acc
 
 **Historical P208 web-scope resolution (original statement):**
 
-Current P208 web-scope resolution: the [P208 scoped evidence](docs/implementation/evidence/phase-2-p2-08-bc21516.json) (`/assertion_map/features`, `/assertion_map/checks`, `/runtime/browsers` and `/screenshots`) records the actual API-backed account-selection/header, mobile-label, keyboard and table workflows. Those observations resolve the web follow-up scope from the historical records above. They do not rewrite those historical runtime results, establish default Compose environment forwarding, or claim a new full Compose run. Final shared local S39 accessibility closure is separately bound by [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json) at 3998426aa7e7614e421518efd01b08188e194100.
+Historical P208 web-scope resolution: the [P208 scoped evidence](docs/implementation/evidence/phase-2-p2-08-bc21516.json) (`/assertion_map/features`, `/assertion_map/checks`, `/runtime/browsers` and `/screenshots`) records the actual API-backed account-selection/header, mobile-label, keyboard and table workflows. Those observations resolve the web follow-up scope from the historical records above. They do not rewrite those historical runtime results, establish default Compose environment forwarding, or claim a new full Compose run. Final shared local S39 accessibility closure is separately bound by [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json) at 3998426aa7e7614e421518efd01b08188e194100.
 
-Current P209 contribution: [P209 scoped evidence](docs/implementation/evidence/phase-2-p2-09-d70ab44.json) adds the bounded widget scope. Final shared local S39 accessibility closure is separately bound by [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json) at 3998426aa7e7614e421518efd01b08188e194100.
+Historical P209 contribution: [P209 scoped evidence](docs/implementation/evidence/phase-2-p2-09-d70ab44.json) adds the bounded widget scope. Final shared local S39 accessibility closure is separately bound by [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json) at 3998426aa7e7614e421518efd01b08188e194100.
 
 ## Documentation entry point
 

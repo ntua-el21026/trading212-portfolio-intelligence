@@ -2,7 +2,23 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** Locally complete at 3998426aa7e7614e421518efd01b08188e194100; 40/40 scenarios, 29/29 local rows and 10/10 packages; GitHub Actions remains owner-deferred and unverified
+**Implementation acceptance:** R-01/R-02 pending; no unconditional independent Phase 2 acceptance.
+
+Phase 2 has **not received unconditional independent acceptance**. R-01
+(authentication identity compatibility) and R-02 (status/evidence separation) are
+in progress from delivered main
+`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The new candidate's implementation
+source, tree and later documentation delivery remain null until actually
+recorded. Local validation is pending; independent review is pending. GitHub
+Actions is owner-deferred and unverified; Phase 3 remains `not_started`.
+
+Use [current status selectors](../../PROJECT_STATUS.md#current-and-historical-machine-selectors)
+and the [authentication identity contract](../security/AUTHENTICATION_IDENTITY.md).
+All complete rows, test references, counts and scoped records below are the
+historical reported ledger at 3998426, not the new candidate result. New-source
+evidence and independent review remain required; six external states are unchanged.
+
+**Historical ledger observation (original):** Locally complete at 3998426aa7e7614e421518efd01b08188e194100; 40/40 scenarios, 29/29 local rows and 10/10 packages; GitHub Actions remains owner-deferred and unverified
 
 **P2-01 evidence SHA:** `ecc75154397c8f9d7532fa2df8576846b60bae7c`
 
@@ -26,11 +42,22 @@ required executable predicate. Final P210 same-source local acceptance at 399842
 
 ## Current owner-authorized CI exception
 
+This deferral also applies to R-01/R-02: Actions is owner-deferred and unverified.
+The original local-release observation follows.
+
 P2-06 has scoped local acceptance at `9e39767b408b38203d88d6e5b41bf0bc1265adfb`. GitHub Actions is deferred by explicit owner instruction; no CI pass is claimed. The complete required local gates, exact source bindings and deferred startup observations are retained in the P206 acceptance evidence. Final Phase 2 local acceptance at 3998426aa7e7614e421518efd01b08188e194100 retains that recorded deferral until the owner resumes CI verification; no CI pass is claimed.
 
 Normal exact-source CI requirements remain the default. This dated exception changes only their current prerequisite status, preserves every required local gate and remains explicitly outstanding for verification after owner resumption.
 
 ## Mandatory predicates
+
+R-01 requires actual signed issuer/subject authentication through API and MCP,
+including current grants, cross-owner denial and safe failures. R-02 requires
+unambiguous source/evidence selectors without promoting historical passes.
+These current obligations affect P2-API-001, P2-MCP-001, P2-SEC-001 and
+P2-S32/P2-S33/P2-S35, alongside full-release and Phase 1 regression predicates.
+They remain pending for the new candidate; original rows below retain their
+historical evidence and do not claim that the new regressions ran.
 
 | ID | Owner-required outcome | Package | Required executable/retained evidence | Exact test nodes / evidence SHA | State |
 |---|---|---|---|---|---|

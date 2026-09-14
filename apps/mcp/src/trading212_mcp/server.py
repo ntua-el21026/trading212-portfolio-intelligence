@@ -38,7 +38,7 @@ from trading212_security.tokens import BearerAuthenticator
 
 from .alert_gateway import AlertMcpGateway
 from .alert_tools import ALERT_TOOL_NAMES, register_alert_tools
-from .auth import PrincipalResolver, SharedTokenVerifier
+from .auth import ExactIssuerUrl, PrincipalResolver, SharedTokenVerifier
 from .gateway import PortfolioMcpGateway
 from .historical_gateway import HistoricalMcpGateway
 from .historical_tools import HISTORICAL_TOOL_NAMES, register_historical_tools
@@ -274,7 +274,7 @@ def create_runtime(
             raise ValueError(
                 "bearer-authenticated MCP requires issuer and public resource-server URL"
             )
-        issuer = TypeAdapter(AnyHttpUrl).validate_python(security.issuer)
+        issuer = ExactIssuerUrl(security.issuer)
         resource_url = TypeAdapter(AnyHttpUrl).validate_python(transport.resource_server_url)
         auth_settings = AuthSettings(
             issuer_url=issuer,

@@ -1,16 +1,37 @@
 # Phase 2 Implementation Report
 
-**Status: final exact-source local P2-10 acceptance at 3998426aa7e7614e421518efd01b08188e194100; CI owner-deferred and unverified.**
+**Current status: R-01/R-02 remediation in progress; independent review pending.**
+
+Phase 2 has **not received unconditional independent acceptance**. R-01
+(authentication identity compatibility) and R-02 (status/evidence separation) are
+in progress from delivered main
+`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The new candidate's implementation
+source, tree and later documentation delivery remain null until actually
+recorded. Local validation is pending; independent review is pending. GitHub
+Actions is owner-deferred and unverified; Phase 3 remains `not_started`.
+
+See the [authentication identity contract](../security/AUTHENTICATION_IDENTITY.md)
+and [current status selectors](../../PROJECT_STATUS.md#current-and-historical-machine-selectors).
+The twelve sections and 35 owner topics below retain the reported 3998426 local
+release and earlier histories. Their completion/review statements are historical,
+not unconditional independent acceptance or results for the new candidate.
+Original artifact bindings, Stage A and ordered source history are preserved;
+no prior coverage is attributed to the remediation.
+
+**Historical report: local P2-10 results at 3998426aa7e7614e421518efd01b08188e194100;
+CI owner-deferred and unverified.**
 
 Phase 2 adds virtual targets, contribution planning, historical intelligence,
 portfolio X-ray, private reports and alerts to the corrected Phase 1 foundation.
 Stage A and P2-01 through P2-09 retain accepted scoped historical records.
 P2-10 hardening and lockstep 0.2.0 metadata were delivered at
-03105f4d36b0457600dfc5ab6fb13b0308820027. Current source V is
+03105f4d36b0457600dfc5ab6fb13b0308820027. Reported historical source V is
 3998426aa7e7614e421518efd01b08188e194100, tree
 ff5522eb438a30cfa88aad6bf4e2853fb85ef3a0, following that exact parent and adding
 the PostgreSQL/Redis OS security pins and retained failure/status documentation.
-P2-10 has final exact-source local acceptance at 3998426aa7e7614e421518efd01b08188e194100. D denotes this later documentation commit. Its SHA and fast-forward delivery are recorded separately after pushing.
+P2-10 has final exact-source local acceptance at 3998426aa7e7614e421518efd01b08188e194100. In this retained report, D denotes delivered documentation commit
+6479186f378bab5ab6fcfd9b29fd444eebd28e6b. New remediation source and later
+documentation delivery remain separate and unrecorded.
 
 [P208 scoped acceptance](evidence/phase-2-p2-08-bc21516.json) remains bound to
 bc21516; [P209 MCP001/002 acceptance](evidence/phase-2-p2-09-d70ab44.json) to
@@ -52,14 +73,16 @@ fields below are bound to actual accepted P210 evidence and explicit ROOT-review
 | Accepted P208 / P209 scoped sources | bc21516c51aa5090031b39ea56ded3ca94d657d8 / d70ab445de38aee255275880c5ef7a105ebbb939 |
 | Accepted S33 source and P209 closure | bd47329cca5c1409486fff40d48e92163ab4a8af / edc1a51f5c3497e6722e294fab43955ce8ae4451 |
 | Prior P210 implementation source and tree | 03105f4d36b0457600dfc5ab6fb13b0308820027 / 6734b1d2b7d4b5db9bdbbf5b4c2145bc797ba61e |
-| Current corrected source V and tree | 3998426aa7e7614e421518efd01b08188e194100 / ff5522eb438a30cfa88aad6bf4e2853fb85ef3a0 |
-| Accepted final Phase 2 release and closure D | V is the accepted final Phase 2 source; D is the later documentation delivery |
+| Historical reported source V and tree | 3998426aa7e7614e421518efd01b08188e194100 / ff5522eb438a30cfa88aad6bf4e2853fb85ef3a0 |
+| Historical reported Phase 2 release and closure D | V is the reported local source; D is documentation delivery 6479186f378bab5ab6fcfd9b29fd444eebd28e6b; neither establishes unconditional independent acceptance |
 | V delivery checkout and remote state | New source-delivery record binds parent 03105f4, clean main, pushed main and refreshed origin/main at V |
 | Main branch evidence | The final source-main-lineage.json observation records a non-shallow repository with only main locally; V delivery binds the remote main SHA. |
 | Ordered actual delivery commits through V | 46 retained commit/push pairs; ordered full SHAs below |
 | Direct and fast-forward main delivery evidence | Through-V retained proof below; D delivery is recorded separately after pushing |
 
-D denotes this later documentation commit. Its SHA and fast-forward delivery are recorded separately after pushing.
+In this retained report, D denotes delivered documentation commit
+6479186f378bab5ab6fcfd9b29fd444eebd28e6b. New remediation source and later
+documentation delivery remain separate and unrecorded.
 
 The [Stage A audit](PHASE_1_AUDIT_CORRECTIONS.md) records this assignment's start.
 The earlier foundation start in the [Phase 1 implementation report](PHASE_1_IMPLEMENTATION_REPORT.md)
@@ -790,4 +813,6 @@ Phase 3 remains **not started**. ROOT reviewed the final source composition and
 scope boundaries, actual same-source gates and the individual acceptance map.
 The final evidence source is V; the non-shallow source-main-lineage.json observation and retained
 ordered delivery receipts establish main-only development through V.
-D denotes this later documentation commit. Its SHA and fast-forward delivery are recorded separately after pushing.
+In this retained report, D denotes delivered documentation commit
+6479186f378bab5ab6fcfd9b29fd444eebd28e6b. New remediation source and later
+documentation delivery remain separate and unrecorded.

@@ -6,9 +6,12 @@ import hashlib
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
+from urllib.parse import urlsplit
 
 from mcp.server.auth.middleware.auth_context import get_access_token
 from mcp.server.auth.provider import AccessToken
+from pydantic import AnyHttpUrl
+from trading212_security.identity import is_string_or_uri
 from trading212_security.principals import AuthenticationError, Principal, Scope
 from trading212_security.settings import SecuritySettings
 from trading212_security.tokens import BearerAuthenticator, LocalSyntheticAuthenticator
@@ -99,8 +102,9 @@ def _principal_from_access_token(access_token: AccessToken) -> Principal:
             expires_at=expires_at,
             session_id=session_id,
         )
-    except (TypeError, ValueError) as exc:
-        raise AuthenticationError("invalid authenticated principal") from exc
+    except (AuthenticationError, TypeError, ValueError):
+        pass
+    raise AuthenticationError("invalid authenticated principal")
 
 
 def _claim(claims: dict[str, Any], name: str) -> str:
@@ -108,3 +112,27 @@ def _claim(claims: dict[str, Any], name: str) -> str:
     if not isinstance(value, str):
         raise AuthenticationError("invalid authenticated principal")
     return value
+
+
+class ExactIssuerUrl(AnyHttpUrl):
+    """Keep the SDK's validated URL type without canonicalizing an identity claim."""
+
+    def __init__(self, value: str) -> None:
+        if not is_string_or_uri(value):
+            raise ValueError("invalid MCP issuer")
+        parts = urlsplit(value)
+        if parts.scheme not in {"https", "http"} or not parts.netloc:
+            raise ValueError("invalid MCP issuer profile")
+        super().__init__(value)
+        if (
+            (self.scheme != "https" and self.host not in {"localhost", "127.0.0.1", "[::1]"})
+            or self.username is not None
+            or self.password is not None
+            or self.query is not None
+            or self.fragment is not None
+        ):
+            raise ValueError("invalid MCP issuer profile")
+        self._identity = value
+
+    def __str__(self) -> str:
+        return self._identity

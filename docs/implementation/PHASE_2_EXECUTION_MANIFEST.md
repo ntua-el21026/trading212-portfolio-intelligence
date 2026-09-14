@@ -8,6 +8,13 @@
 
 **Execution branch:** main only
 
+**Current execution status:** R-01/R-02 remediation is in progress. New source
+and local validation are pending; independent review is pending, Actions is
+owner-deferred and Phase 3 is `not_started`. The accepted design contract and
+historical package records below do not establish unconditional independent
+Phase 2 acceptance. Follow the [current status selectors](../../PROJECT_STATUS.md#current-and-historical-machine-selectors)
+and [authentication identity contract](../security/AUTHENTICATION_IDENTITY.md).
+
 ## Entry gate
 
 Stage A is accepted at `99df47b6633791c3900a52f46f56d48be922a436`. No Phase 2
@@ -47,7 +54,12 @@ At its historical closure, P2-07 had [scoped local acceptance](evidence/phase-2-
 
 P2-08 has scoped local acceptance at `bc21516c51aa5090031b39ea56ded3ca94d657d8` for P2-WEB-001 and P2-WEB-002. Phase 2 remains in progress: 8/10 packages (80%), 21/29 local rows and 30/40 scenarios complete. S32/S34/S38/S39 remain partial; S33 is pending. P2-09 and P2-10 remain required and `not_started`; Phase 3 remains `not_started`. GitHub Actions is owner-deferred, not passed. The final Phase 2 release SHA remains null. See [P208 scoped evidence](evidence/phase-2-p2-08-bc21516.json). P2-08 owns intelligence-data-quality/company actual-weight enrichment; company target drift still requires a separately pinned entity-target basis.
 
-### Final P210 local acceptance and retained P209 history
+### Historical reported P210 local release and retained P209 history
+
+The retained statements below describe prior local reports at their original
+sources and observation times. Their completion/acceptance language does not
+establish unconditional independent Phase 2 acceptance or validate R-01/R-02.
+Immutable artifacts, test counts and coverage retain their original provenance.
 
 P2-10 implementation has final immutable local acceptance at 3998426aa7e7614e421518efd01b08188e194100. All prior source-bound evidence and failed/working observations remain historical and preserved. See [final P210 local evidence](evidence/phase-2-p2-10-3998426.json). CI remains owner-deferred and unverified; Phase 3 remains not_started.
 

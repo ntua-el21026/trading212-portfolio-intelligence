@@ -4,11 +4,33 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
-### Phase 2 hardening and local release acceptance
+### R-01/R-02 remediation pending independent review
+
+Phase 2 has **not received unconditional independent acceptance**. R-01
+(authentication identity compatibility) and R-02 (status/evidence separation) are
+in progress from delivered main
+`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The new candidate's implementation
+source, tree and later documentation delivery remain null until actually
+recorded. Local validation is pending; independent review is pending. GitHub
+Actions is owner-deferred and unverified; Phase 3 remains `not_started`.
+
+- Add strict current-candidate and historical-evidence selectors to both status
+  JSON files, with compatible validator rules and focused contract tests.
+- Qualify earlier local reports without changing immutable artifacts, counts,
+  coverage or historical ledger entries.
+- Link the [authentication identity contract](docs/security/AUTHENTICATION_IDENTITY.md);
+  its implementation and signed-token evidence are tracked separately.
+
+The retained statements below describe prior local reports at their original
+sources and observation times. Their completion/acceptance language does not
+establish unconditional independent Phase 2 acceptance or validate R-01/R-02.
+Immutable artifacts, test counts and coverage retain their original provenance.
+
+### Historical Phase 2 hardening and reported local release
 
 P2-10 implementation now covers the remaining authorization and canonical parity checks, query telemetry, bounded retention, operations evidence and release metadata. Focused working-tree observations are recorded in the [validation report](VALIDATION_REPORT.md#p210-working-tree-verification); final immutable local release acceptance is recorded separately at 3998426aa7e7614e421518efd01b08188e194100 in [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json).
 
-### Phase 2 MCP registry and widgets (scoped local acceptance)
+### Historical Phase 2 MCP registry and widgets (scoped local acceptance)
 
 P2-09 is complete with P2-S33 authorization evidence at `bd47329cca5c1409486fff40d48e92163ab4a8af`. P2-MCP-001 and P2-MCP-002 retain their scoped evidence at `d70ab445de38aee255275880c5ef7a105ebbb939`. Phase 2 is locally complete at 3998426aa7e7614e421518efd01b08188e194100: 10/10 packages (100%), 29/29 local rows and 40/40 scenarios. P2-10 and the shared local predicates are complete under the final same-source acceptance. Phase 3 remains not_started. GitHub Actions remains owner-deferred and unverified, with no CI pass claim. The final Phase 2 release evidence SHA is 3998426aa7e7614e421518efd01b08188e194100. See [final P210 local evidence](docs/implementation/evidence/phase-2-p2-10-3998426.json).
 
