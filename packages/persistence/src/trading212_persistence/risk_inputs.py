@@ -42,11 +42,16 @@ RiskPreflight = Callable[[HistoricalInput, RiskDefinitionContent, tuple[RiskAsse
 class RiskCopySources(PostgresSourceService):
     retention_deadline: datetime | None = None
     copy_created_at: datetime | None = None
+    license_ids: set[UUID] | None = None
 
     def _permit(
         self, session: Session, owner: UUID, license_id: UUID, use: SourceUse
     ) -> SourceLicense:
         license = super()._permit(session, owner, license_id, use)
+        if self.license_ids is not None:
+            self.license_ids.add(license_id)
+            if len(self.license_ids) > 8192:
+                raise risk_error(app.RiskErrorCode.INPUT_BOUND_EXCEEDED)
         super()._permit(session, owner, license_id, SourceUse.STORE)
         current = self._current_license(session, owner, UUID(license.provider_id))
         if current is None or current.retention_days is None or license.retention_days is None:
@@ -86,10 +91,11 @@ class RiskInputStore(RiskDefinitionStore):
         preflight: RiskPreflight,
         *,
         retained_at: datetime | None = None,
+        license_ids: set[UUID] | None = None,
     ) -> RiskExecutionInput:
         try:
             return self._load_authorized_inputs(
-                session, auth, command, preflight, retained_at=retained_at
+                session, auth, command, preflight, retained_at=retained_at, license_ids=license_ids
             )
         except RiskJobInputError:
             raise risk_error(app.RiskErrorCode.INPUT_BOUND_EXCEEDED) from None
@@ -108,6 +114,7 @@ class RiskInputStore(RiskDefinitionStore):
         preflight: RiskPreflight,
         *,
         retained_at: datetime | None = None,
+        license_ids: set[UUID] | None = None,
     ) -> RiskExecutionInput:
         auth.check(session, now=self._now())
         version = self._owned(session, auth, RiskVersionModel, command.definition_version_id)
@@ -134,6 +141,7 @@ class RiskInputStore(RiskDefinitionStore):
             sessions=self._sessions, cursor_signing_key=self._cursor_key, clock=self._clock
         )
         sources.copy_created_at = retained_at or self._now()
+        sources.license_ids = license_ids
         history_store = HistoricalCaptureStore(
             self._sessions, cursor_signing_key=self._cursor_key, clock=self._clock
         )

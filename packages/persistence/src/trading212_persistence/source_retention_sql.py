@@ -118,7 +118,9 @@ def purge_payload_rows(
             select(table.c.id, size.label("payload_bytes"))
             .where(remaining)
             .order_by(table.c.id)
-            .limit(budget.metadata_limit)
+            # Metadata and mutation each inspect the row. Reserve room for both
+            # so a small remaining allowance cannot spend every pass on metadata.
+            .limit(min(budget.metadata_limit, max(1, budget.rows_inspected // 2)))
             .with_for_update(skip_locked=True)
         ).all()
         if not budget.inspect(rows=len(metadata)):

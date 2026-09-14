@@ -17,7 +17,7 @@ MAX_PURGE_ROWS = 4096
 MAX_PURGE_BYTES = 64 * 1024 * 1024
 MAX_PURGE_BATCH_ROWS = 512
 
-PurgeFamily = Literal["historical", "xray", "report", "export", "alert"]
+PurgeFamily = Literal["historical", "xray", "report", "export", "alert", "risk"]
 
 
 def _count(value: int, maximum: int, field_name: str) -> None:
@@ -79,9 +79,14 @@ class SourcePurgeBudget:
             _count(getattr(self, name), maximum, name)
 
     def _enter(self, family: PurgeFamily, identifier: UUID, *, capture: bool) -> bool:
-        if family not in ("historical", "xray", "report", "export", "alert") or not isinstance(
-            identifier, UUID
-        ):
+        if family not in (
+            "historical",
+            "xray",
+            "report",
+            "export",
+            "alert",
+            "risk",
+        ) or not isinstance(identifier, UUID):
             raise ValueError("A typed purge participant is required.")
         seen = self._captures_seen if capture else self._runs_seen
         key = (family, identifier)

@@ -187,7 +187,7 @@ def test_empty_to_head_is_idempotent_and_matches_metadata(database_engine: Engin
     expected = set(Base.metadata.tables)
     assert actual == expected
     with database_engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260914_0017"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260914_0018"
 
 
 def test_export_url_cleanup_is_scoped_null_safe_and_repeatable(database_engine: Engine) -> None:
@@ -672,6 +672,7 @@ def test_migration_is_current_and_downgrade_policy_is_explicit(database_engine: 
     alert_revision = Path("migrations/versions/20260910_0015_alerts.py").read_text()
     quality_revision = Path("migrations/versions/20260911_0016_intelligence_quality.py").read_text()
     premium_revision = Path("migrations/versions/20260914_0017_premium_risk.py").read_text()
+    retention_revision = Path("migrations/versions/20260914_0018_premium_retention.py").read_text()
     assert revision.count("op.drop_table(") + metadata_revision.count(
         "op.drop_table("
     ) + occurrence_revision.count("op.drop_table(") + outbox_revision.count(
@@ -684,9 +685,12 @@ def test_migration_is_current_and_downgrade_policy_is_explicit(database_engine: 
         "op.drop_table("
     ) + report_revision.count("op.drop_table(") + alert_revision.count(
         "op.drop_table("
-    ) + quality_revision.count("op.drop_table(") + premium_revision.count("op.drop_table(") == len(
-        Base.metadata.tables
-    )
+    ) + quality_revision.count("op.drop_table(") + premium_revision.count(
+        "op.drop_table("
+    ) + retention_revision.count("op.drop_table(") == len(Base.metadata.tables)
+    assert 'revision = "20260914_0018"' in retention_revision
+    assert 'down_revision = "20260914_0017"' in retention_revision
+    assert "trading212_persistence" not in retention_revision
     assert 'revision = "20260914_0017"' in premium_revision
     assert 'down_revision = "20260911_0016"' in premium_revision
     assert "trading212_persistence" not in premium_revision

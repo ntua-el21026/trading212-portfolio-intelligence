@@ -122,6 +122,23 @@ until forbidden copies are physically gone. Keep only permitted audit/digest
 and command tombstones; collection/report TTL cannot extend source retention.
 A deleted source makes dependent replay explicitly unavailable, not silently newer.
 
+Risk runs additionally pin up to 8,192 distinct original license identities in
+premium_run_licenses during authorized capture. These owner/account/provider-scoped
+references are sealed with admission and remain audit metadata after payload removal.
+Migration 0018 backfills the references from normalized historical dependencies
+(including registered-evidence dependencies) and X-ray dependencies; it does not
+rewrite a financial result. Current license selection uses effective time, version
+number and stable ID, matching source authorization, and does not select future policy.
+
+The existing source dispatcher shares its single purge budget with risk maintenance.
+Risk cleanup holds sources, X-ray, historical and premium owner locks without waiting
+on busy owners. It fences queued/running jobs, deletes normalized children before their
+series and clears the canonical result last. Byte capacity remains charged until all
+payload phases finish. A pending retention marker survives partial work; metadata
+lists then show expired availability and financial reads/replay deny before decode.
+Source/enrichment completion waits for eligible risk copies for the same owner.
+
+
 ## Required database and recovery proof
 
 Test cross-owner/account composite FKs, immutable publication, exact numeric/UTC

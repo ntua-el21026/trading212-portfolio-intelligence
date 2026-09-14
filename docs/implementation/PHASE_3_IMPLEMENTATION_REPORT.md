@@ -1,6 +1,6 @@
 # Phase 3 Implementation Report
 
-**Current:** P3-01 calculation, storage, worker, REST and generated client implemented; web/MCP/report/retention work in progress
+**Current:** P3-01 calculation, storage, worker, REST and generated client implemented; web/MCP/report delivery and retention verification in progress
 **Target:** 1.0.0; independent review pending; production not authorized
 
 Start main d2ebdaf96d1b61aacea5c6492824946540f88803. Governance delivery
@@ -149,3 +149,33 @@ checks exact issuer/audience, malformed claims, foreign-owner denial, current-gr
 revocation before304/replay and canonical API/matrix parity after atomic publication.
 The full Phase 3 candidate, web/MCP/report consumers and physical retention remain
 pending. Acceptance and scenario completion counts remain zero.
+
+
+## P3-01 physical retention implementation
+
+REST/client delivery is 3b930a92c067ebe5a6e76a7f132fb61ee9b6a4a4, tree
+04f1e30ebab7b203b33e994f1bf461e15171bcd0. The unchanged pre-commit source passed
+3,166 Python unit/property/contract/security tests, 11 PostgreSQL tests and 544 web
+unit tests, plus formatting, lint, typing and boundary/contract gates. Original
+risk-api-working-02 receipts and the earlier failed inventory assertion are retained
+under phase3-20260914. This is component evidence, not final candidate certification.
+
+Migration 0018 adds immutable license lineage and preserves existing financial
+payloads. Risk maintenance now participates in the common source purge allowance,
+including current license revocation and shortened copy retention. Pending work
+fences active jobs before physical deletion, removes normalized children before the
+canonical result, and releases retained/reserved byte capacity only upon completion.
+Future licenses are excluded. Metadata lists disclose expired retention without
+loading financial arrays; replay/detail authorization continues to precede decode.
+
+Seven PostgreSQL regression tests passed in 177.25 seconds for physical expiry,
+bounded resumption, active-worker fencing, source-cleanup ordering, future policy,
+busy owners and populated 0017 upgrade. The original passing log is identified in
+retention-component.json in that evidence directory. Broader regression verification is in progress. Web,
+MCP, reports, full P3-01 acceptance and all other Phase 3 packages remain pending.
+
+The small-budget regression exposed a pre-existing shared purge helper defect:
+metadata selection could consume all remaining row inspections and leave no room
+for clearing, so repeated small passes never progressed. The helper now reserves
+space for both inspections without raising any row/byte bound or skipping a pending
+prefix. Earlier failed attempts and their corrections remain separately recorded.

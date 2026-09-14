@@ -93,7 +93,7 @@ def test_populated_phase2_upgrade_keeps_rows_values_and_replay(
         command.upgrade(config, "head")
         command.check(config)
         assert fingerprints(engine, legacy) == before
-        assert len(inspect(engine).get_table_names()) - 1 == 229
+        assert len(inspect(engine).get_table_names()) - 1 == 230
         replay = asyncio.run(
             service.get_performance_summary(
                 history_principal(NOW),

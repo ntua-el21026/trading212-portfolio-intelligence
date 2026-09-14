@@ -108,6 +108,31 @@ class PremiumRunModel(PremiumOwned):
     retained_bytes: Mapped[int] = mapped_column(BigInteger, default=0)
 
 
+class PremiumRunLicenseModel(PremiumOwned):
+    """Immutable authority references, retained as audit metadata after payload expiry."""
+
+    __tablename__ = "premium_run_licenses"
+    __table_args__ = (
+        scoped(),
+        parent("run_id", "premium_runs"),
+        ForeignKeyConstraint(
+            ["owner_id", "provider_id", "license_version_id"],
+            [
+                "provider_license_versions.owner_id",
+                "provider_license_versions.provider_id",
+                "provider_license_versions.id",
+            ],
+            ondelete="RESTRICT",
+            name="fk_premium_run_license_owner_provider",
+        ),
+        UniqueConstraint("run_id", "license_version_id"),
+        Index("ix_premium_run_licenses_provider", "owner_id", "provider_id", "run_id"),
+    )
+    run_id: Mapped[UUID] = mapped_column()
+    provider_id: Mapped[UUID] = mapped_column()
+    license_version_id: Mapped[UUID] = mapped_column()
+
+
 class PremiumJobModel(PremiumOwned):
     __tablename__ = "premium_jobs"
     __table_args__ = (
@@ -253,6 +278,7 @@ class PremiumAuditModel(PremiumOwned):
 PREMIUM_MODELS = (
     PremiumCapacityModel,
     PremiumRunModel,
+    PremiumRunLicenseModel,
     PremiumJobModel,
     PremiumOutboxModel,
     PremiumAttemptModel,

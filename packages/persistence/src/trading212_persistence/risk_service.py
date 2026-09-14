@@ -110,11 +110,13 @@ class PostgresRiskService(RiskInputStore):
         run: RiskRunModel,
         job: PremiumJobModel,
         result: app.RiskResultView | None = None,
+        *,
+        retained_expired: bool = False,
     ) -> app.RiskRunView:
         availability: Literal["pending", "available", "not_loaded", "expired", "unavailable"] = (
             "pending"
         )
-        if root.expires_at <= self._now():
+        if retained_expired or job.state == "expired" or root.expires_at <= self._now():
             availability = "expired"
             result = None
         elif result is not None:
@@ -193,7 +195,10 @@ class PostgresRiskService(RiskInputStore):
     async def create_run(self, principal: Principal, command: app.CreateRiskRun) -> app.RiskRunView:
         def operation(session: Session, auth: ReportAuthorization) -> app.RiskRunView:
             # Revalidate material references even for idempotent admission replay.
-            inputs = self._load_inputs(session, auth, command, self._preflight)
+            license_ids: set[UUID] = set()
+            inputs = self._load_inputs(
+                session, auth, command, self._preflight, license_ids=license_ids
+            )
             prior = self._prior(
                 session, auth, "risk.run.create.v1", command.idempotency_key, inputs.input_digest
             )
@@ -272,6 +277,35 @@ class PostgresRiskService(RiskInputStore):
                     )
                 )
             session.flush()
+            from .premium_models import PremiumRunLicenseModel
+            from .source_models import ProviderLicenseVersionModel
+
+            licenses = session.execute(
+                select(ProviderLicenseVersionModel.id, ProviderLicenseVersionModel.provider_id)
+                .where(
+                    ProviderLicenseVersionModel.owner_id == auth.owner_id,
+                    ProviderLicenseVersionModel.id.in_(license_ids),
+                )
+                .order_by(ProviderLicenseVersionModel.id)
+            ).all()
+            if len(licenses) != len(license_ids):
+                raise risk_error(app.RiskErrorCode.SOURCE_UNAVAILABLE)
+            for start in range(0, len(licenses), 500):
+                session.add_all(
+                    [
+                        PremiumRunLicenseModel(
+                            id=uuid4(),
+                            owner_id=auth.owner_id,
+                            account_id=auth.account_id,
+                            run_id=run.id,
+                            provider_id=license.provider_id,
+                            license_version_id=license.id,
+                            created_at=self._now(),
+                        )
+                        for license in licenses[start : start + 500]
+                    ]
+                )
+                session.flush()
             run.sealed = True
             job = PremiumJobModel(
                 id=uuid4(),
@@ -350,7 +384,17 @@ class PostgresRiskService(RiskInputStore):
                 .order_by(PremiumRunModel.created_at.desc(), PremiumRunModel.id.desc()),
             )
             records = session.execute(
-                select(PremiumRunModel, RiskRunModel, PremiumJobModel)
+                select(
+                    PremiumRunModel,
+                    RiskRunModel,
+                    PremiumJobModel,
+                    select(PremiumRetentionModel.id)
+                    .where(
+                        PremiumRetentionModel.owner_id == PremiumRunModel.owner_id,
+                        PremiumRetentionModel.run_id == PremiumRunModel.id,
+                    )
+                    .exists(),
+                )
                 .join(RiskRunModel, RiskRunModel.id == PremiumRunModel.id)
                 .join(PremiumJobModel, PremiumJobModel.run_id == PremiumRunModel.id)
                 .where(
@@ -359,7 +403,10 @@ class PostgresRiskService(RiskInputStore):
                     PremiumRunModel.id.in_(page.record_ids),
                 )
             ).all()
-            rows = {root.id: self._view(root, run, job) for root, run, job in records}
+            rows = {
+                root.id: self._view(root, run, job, retained_expired=expired)
+                for root, run, job, expired in records
+            }
             if len(rows) != len(page.record_ids):
                 raise risk_error(app.RiskErrorCode.RISK_UNAVAILABLE)
             return Page(

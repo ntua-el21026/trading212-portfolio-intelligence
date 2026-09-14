@@ -153,3 +153,15 @@ def test_duplicate_or_oversized_batch_fails_before_any_charge() -> None:
     with pytest.raises(ValueError, match="batch size"):
         budget.reserve_clear_batch(tuple(_cost(n, 0) for n in range(513)))
     assert _remaining(budget) == before
+
+
+def test_premium_and_existing_families_share_run_capacity() -> None:
+    families: tuple[PurgeFamily, ...] = ("historical", "xray", "report", "export", "alert", "risk")
+    budget = SourcePurgeBudget(runs=len(families))
+    identifier = UUID(int=1)
+    for family in families:
+        assert budget.enter_run(family, identifier)
+    assert budget.runs == 0
+    assert budget.enter_run("risk", identifier)
+    assert not budget.enter_run("risk", UUID(int=2))
+    assert not budget.enter_run("historical", UUID(int=2))

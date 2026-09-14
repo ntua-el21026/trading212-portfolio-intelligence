@@ -21,8 +21,8 @@ not independent full-release verification.
 
 Phase 3 is in progress toward `1.0.0`. P3-01 now has canonical history and a
 complete calculation object, normalized storage, bounded durable worker, typed REST
-operations and a generated client. Web/MCP/report delivery, shared physical retention
-and package-wide verification remain pending.
+operations and a generated client. Shared physical retention is implemented with
+verification in progress. Web/MCP/report delivery and package-wide verification remain pending.
 Final local validation remains pending; independent review will remain pending for the new
 candidate. GitHub Actions is `deferred_by_owner`, unverified. Production
 release/deployment, paid-provider purchases and Live are not authorized.

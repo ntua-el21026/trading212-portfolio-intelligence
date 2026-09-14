@@ -25,11 +25,13 @@ All notable project changes are recorded here. The project follows semantic vers
   and source-bound admission through migration 0017. Reuse the application command
   identity registry and existing dispatcher for one bounded risk execution slot.
 - Fence retries/cancellation and isolate calculations in a child with memory/time
-  limits and deterministic cleanup. Web/MCP/report/retention delivery remains pending;
+  limits and deterministic cleanup. Web/MCP/report delivery remains pending;
   no premium tool or package is represented as complete.
 - Add eleven bounded risk REST operations and a generated TypeScript client, with
   current-grant conditional reads, exact financial strings and explicit missing values.
   Bind matrix views to retained assumptions, source context and the canonical digest.
+- Add immutable risk license lineage and budgeted physical cleanup with active-job
+  fencing, current-license checks and canonical payload removal after normalized rows.
 
 ### Phase 3 additive implementation freeze
 

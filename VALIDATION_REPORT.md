@@ -67,6 +67,19 @@ A signed-JWT PostgreSQL test executed the actual subprocess, compared canonical
 HTTP/matrix output, and denied foreign, expired, malformed and currently revoked
 identities. This is local application validation, not an external security review.
 
+## Phase 3 risk physical-retention component checks
+
+Seven isolated PostgreSQL regressions passed via
+`uv run pytest tests/integration/test_risk_retention_postgres.py -q --tb=short`
+in 177.25 seconds. They cover current license revocation/tightening without decode,
+small shared budgets and resumption, active worker fencing, future licenses and busy
+owners, source completion ordering and populated 0017-to-0018 upgrade. The latter
+compares all 229 previous table projections and the canonical risk result unchanged;
+it is an upgrade proof, not the required genuine empty-database backup restoration.
+Original attempts 01/02 and passing attempt03 are retained in phase3-20260914.
+The shared-helper fix and all retention families still require the broader source-bound
+gate before this milestone is delivered. Final Phase 3 acceptance remains pending.
+
 ## Historical record before owner progression
 
 ## Current R-01/R-02 validation status

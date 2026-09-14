@@ -109,6 +109,10 @@ def _expire_snapshot(
         if work.phase == "complete":
             return False
     if work.phase == "copies":
+        from .risk_retention import expire_risk_payloads
+
+        if not expire_risk_payloads(session, at=at, owner=row.owner_id, budget=budget):
+            return False
         kind = str(row.__tablename__).removesuffix("_snapshots")
         if not purge_alert_source_copies(
             session, owner=row.owner_id, kind=kind, source_id=row.id, at=at, budget=budget
