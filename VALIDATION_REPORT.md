@@ -1,20 +1,93 @@
-# Phase 1 Validation Report
+# Validation Report
 
 ## Current R-01/R-02 validation status
 
-Phase 2 has **not received unconditional independent acceptance**. R-01
-(authentication identity compatibility) and R-02 (status/evidence separation) are
-in progress from delivered main
-`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The new candidate's implementation
-source, tree and later documentation delivery remain null until actually
-recorded. Local validation is pending; independent review is pending. GitHub
-Actions is owner-deferred and unverified; Phase 3 remains `not_started`.
+R-01 (authentication identity compatibility) and R-02 (status/evidence
+separation) are implemented and locally validated at
+`f88b0199b2d8691ff89101b7991e9bb0fea1d1ca`, tree
+`5ac0dba52e369a30a32a2d7d5b41409e12fc0911`, following delivered main
+`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The corrected candidate is **awaiting
+independent acceptance**. Its later documentation delivery is recorded externally
+after pushing; the delivery SHA remains null in its own contents. GitHub Actions
+remains `deferred_by_owner` and unverified; Phase 3 remains `not_started`.
 
 The [authentication identity contract](docs/security/AUTHENTICATION_IDENTITY.md)
 and [status selector contract](PROJECT_STATUS.md#current-and-historical-machine-selectors)
-govern the remediation. No new immutable validation, coverage, scan or acceptance
-result is recorded here. ROOT will bind actual new-source results after serial
-validation; prior populations are not summed or reused as new coverage.
+govern the remediation. The [current evidence summary](docs/implementation/evidence/phase-2-r01-r02-f88b019.json) and
+[review guide](docs/implementation/R01_R02_REVIEW_GUIDE.md) link actual commands, logs, source/image identities,
+browser records, capture provenance, coverage and retained failed attempts.
+
+`make validate` passed with exit 0 in **7367.261 seconds**, from
+2026-09-14T04:29:33.984107Z to 2026-09-14T06:32:20.911189Z. Source and tree
+remained clean and unchanged at the revision above. Formatting, lint, architecture,
+strict mypy/TypeScript, generated contracts, workspace/docs checks, PostgreSQL
+migrations, dependency/security checks, Python/web builds and all six serial
+container builds/probes passed.
+
+| Recorded population | Passed |
+| --- | ---: |
+| Python unit | 2490 |
+| Property | 36 |
+| Contract | 200 |
+| PostgreSQL integration invocation | 541 |
+| Migration-file tests | 12 |
+| Security | 226 |
+| Isolated coverage population | 2952 |
+| Service-backed coverage population | 556 |
+| Web unit | 539 |
+| Full Playwright: 106 synthetic and 102 API-backed | 208 |
+| Separate strict chart cases (not added to full browser count) | 3 |
+
+Python invocations overlap. The two coverage populations have zero common node
+IDs and cover **3508 distinct Python tests**; no other suite totals are added to
+that union. All 40 full browser reports passed without skips, flaky results or
+unexpected failures. The collector bound all 70 required captures to this run.
+
+| Coverage measure | Covered / total | Percent |
+| --- | ---: | ---: |
+| Lines | 45256 / 49219 | 91.9482313741% |
+| Branches only | 10171 / 13294 | 76.5081991876% |
+| Combined statements and branches | 55427 / 62513 | 88.6647577304% |
+
+These are one retained coverage.py 7.16.0 database/export at f88b019, not prior
+3998426 measurements. The CLI's rounded 89% is the combined measure.
+
+Real JWT coverage includes RS256, ES256 and EdDSA: 9 identity cases, 309 claim
+boundary cases, 3 API cases, 16 exact MCP metadata cases and 46 real MCP/PostgreSQL
+transport cases. Forty current-release contract tests passed. Before the fix,
+6 of 9 signed identity cases failed and all 3 API cases rejected valid signed
+requests with 401. Afterward, HTTPS/provider-separated identities survive exact
+matching and authorized API reads return 200; invalid tokens return sanitized
+401 and authorization denial retains its intended scope. The retrospective
+baseline MCP comparison failed discovery in 3 cases; it was a component overlay,
+not an immutable whole-baseline run. Current MCP evidence exercises the real
+Streamable HTTP verifier, scoped reads, both internal commands, semantic
+idempotency, current grants/licenses and negative no-persistence outcomes.
+
+Source/full-history Gitleaks and source plus six-image Trivy scans passed at V.
+Trivy retains HIGH/CRITICAL and ignore-unfixed filters. SAST reported no findings
+in its configured 551-target scope; production Python/pnpm audits reported no
+known vulnerabilities in the scanned dependency sets. Export-URL canary and
+portable-artifact scans are separate retained checks, not independent review.
+The seven-service restart gate passed in **292.405 seconds**, covering refresh
+and alert Redis-loss recovery, retained nonempty state, replay/idempotency,
+API/MCP/web parity, authorization/expiry and privacy. Teardown verified task
+containers, networks and disposable volumes absent.
+
+Migration head remains `20260911_0016`: 87 API paths / 95 operations, 25 MCP names
+and exactly ten broker GET capabilities. Current execution crosswalks retain
+all 14 Phase 1 scenarios, Stage A F-01/F-02, and all 156 unique selectors used by
+the 79 historical Phase 2 ledger entries (10 packages, 29 rows, 40 scenarios).
+The original ledger entries and historical source/evidence values are unchanged.
+
+Failed development attempts remain failed diagnostic records. They include the
+fractional-time regression, corrected test expectations/type annotations, and an
+external capture timing-model error: Playwright's reported duration excludes
+`beforeAll`, so the corrected collector bounds those ten widgets by the next
+recorded test start on the same worker. No image timestamps were changed.
+The portable scanner's broad secret-pattern match in a Next.js artifact filename
+is separately documented and narrowly classified as path metadata; raw evidence
+bytes and the failed scan are preserved.
 
 ## Historical reported P210 local implementation validation
 

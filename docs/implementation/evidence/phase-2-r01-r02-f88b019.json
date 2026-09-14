@@ -1,0 +1,281 @@
+{
+  "schema_version": 1,
+  "findings": ["R-01", "R-02"],
+  "source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
+  "tree_sha": "5ac0dba52e369a30a32a2d7d5b41409e12fc0911",
+  "baseline_delivery_sha": "6479186f378bab5ab6fcfd9b29fd444eebd28e6b",
+  "documentation_delivery_sha": null,
+  "result": "passed",
+  "scope": "Completed exact-source local validation; independent acceptance pending",
+  "implementation_status": "implemented_pending_independent_review",
+  "independent_review_status": "pending",
+  "independent_review_evidence": null,
+  "ci_status": "deferred_by_owner",
+  "ci_verified": false,
+  "phase_3_status": "not_started",
+  "observed_at_utc": "2026-09-14T07:08:44.960565+00:00",
+  "portable_review": {
+    "windows_directory": "C:/Users/peppa/.codex/artifacts/trading212/review-f88b019",
+    "original_directory": "/home/peppasmich/.local/state/t212pi/20260908-resume/r01-r02-20260913/review-pack-f88b019-01",
+    "root_review": {
+      "path": "root-review.json",
+      "sha256": "1cb548fdda850c81619f03eef608677b295bd13fe2c612d7af07858cae5b79fb",
+      "bytes": 42305
+    },
+    "archive": {
+      "path": "supporting-records.zip",
+      "sha256": "3b199c5863f93ff02c804cefc20c7f93b1604c7f3495a25321655e2114e94699",
+      "bytes": 2400461
+    },
+    "manifest": {
+      "path": "manifest.json",
+      "sha256": "ee7065ce2d1e44f5e7ff7e4fb3c9410750fb29ff15ccee85a22bf59bbc3fa5a4",
+      "bytes": 86722
+    },
+    "postassembly_scan": {
+      "path": "portable-pack-scan-f88b019-02.json",
+      "sha256": "7ab5ea55c0e1d851cb346f3d54bfba8e3265274b8ba4eb0c45547f560cb617d8",
+      "bytes": 43332
+    },
+    "capture_coverage_archive": {
+      "path": "capture-coverage-supplement-f88b019-01.zip",
+      "sha256": "5ffa075e55cb74ed79bdd57c8062cb01fb7331881c1e6e74b93372f50ff7162d",
+      "bytes": 26789930
+    },
+    "capture_coverage_receipt": {
+      "path": "capture-coverage-supplement-f88b019-01.json",
+      "sha256": "37e2ccf26389707512cda4fc1c10adead12aff3f39a956bf29e39c2f15e3086d",
+      "bytes": 29118
+    },
+    "original_to_portable_mapping": "manifest.json",
+    "delivery_receipt": "DELIVERY.json (written externally after the documentation commit is pushed)"
+  },
+  "full_validation": {
+    "command": ["make", "validate"],
+    "started_at_utc": "2026-09-14T04:29:33.984107+00:00",
+    "completed_at_utc": "2026-09-14T06:32:20.911189+00:00",
+    "duration_seconds": 7367.261,
+    "exit_code": 0,
+    "result": "passed",
+    "source_unchanged": true
+  },
+  "full_gate_record_in_archive": {
+    "path": "inputs/0037-r01-r02-f88b019-full-01.json",
+    "sha256": "ff9f35afe754bcc1fb2252c1bfd893f09f14dea846dbcb5688b05d643284d569",
+    "bytes": 12316
+  },
+  "full_log_in_archive": {
+    "path": "inputs/0038-r01-r02-f88b019-full-01.log",
+    "sha256": "ca1e3c702f6af01f5b032a8abf9006eeb50b6f7ee9371738232f12a4549fd044",
+    "bytes": 19243999
+  },
+  "python": {
+    "invocations_overlap": true,
+    "unit": 2490,
+    "property": 36,
+    "contract": 200,
+    "integration_invocation": 541,
+    "migration_files": 12,
+    "security": 226,
+    "coverage_populations": {
+      "isolated": 2952,
+      "service_backed": 556,
+      "intersection": 0,
+      "distinct_total": 3508
+    }
+  },
+  "focused_regressions": {
+    "signed_identity": {
+      "source": "tests/unit/security/test_real_jwt_authentication.py",
+      "passed": 9
+    },
+    "claim_boundaries": {
+      "source": "tests/unit/security/test_real_jwt_claim_boundaries.py",
+      "passed": 309
+    },
+    "real_api_authentication": {
+      "source": "tests/unit/api/test_real_jwt_api.py",
+      "passed": 3
+    },
+    "exact_mcp_metadata": {
+      "source": "tests/unit/mcp/test_real_jwt_metadata.py",
+      "passed": 16
+    },
+    "real_mcp_postgres_transport": {
+      "source": "tests/integration/test_real_jwt_mcp_postgres.py",
+      "passed": 46
+    },
+    "release_status_contract": {
+      "source": "tests/contract/test_current_release_status.py",
+      "passed": 40
+    }
+  },
+  "web": {
+    "unit": 539,
+    "full_browser": {
+      "synthetic": 106,
+      "api_backed": 102,
+      "total": 208,
+      "reports": 40,
+      "unexpected": 0,
+      "flaky": 0,
+      "skipped": 0
+    },
+    "separate_chart_cases": 3,
+    "required_captures": 70,
+    "visual_review": null
+  },
+  "coverage": {
+    "line": {
+      "numerator": 45256,
+      "denominator": 49219,
+      "percent": 91.94823137406286,
+      "percent_exact_fraction": "4525600/49219"
+    },
+    "branch": {
+      "numerator": 10171,
+      "denominator": 13294,
+      "percent": 76.50819918760342,
+      "percent_exact_fraction": "508550/6647"
+    },
+    "combined_statement_and_branch": {
+      "numerator": 55427,
+      "denominator": 62513,
+      "percent": 88.66475773039208,
+      "percent_exact_fraction": "5542700/62513"
+    },
+    "file_count": 341,
+    "coverage_version": "7.16.0",
+    "scope": "One source-bound export; file summaries counted once. Line, branch and combined rates are distinct."
+  },
+  "inventories": {
+    "migration_head": "20260911_0016",
+    "api_paths": 87,
+    "api_operations": 95,
+    "mcp_tools": 25,
+    "broker_capabilities": 10,
+    "broker_methods": ["GET"],
+    "phase_1_scenarios": 14,
+    "phase_2_packages": 10,
+    "phase_2_acceptance_rows": 29,
+    "phase_2_scenarios": 40,
+    "historical_evidence_entries_preserved": 79,
+    "unique_historical_phase_2_test_selectors_resolved": 156
+  },
+  "principal_runtime_versions": {
+    "python": "3.13.15",
+    "node": "24.20.0",
+    "pnpm": "10.34.5",
+    "uv": "0.12.7",
+    "PyJWT": "2.13.0",
+    "cryptography": "50.0.1",
+    "mcp": "2.1.1",
+    "pydantic": "2.13.5",
+    "fastapi": "0.141.1",
+    "sqlalchemy": "2.0.52",
+    "alembic": "1.19.1",
+    "pytest": "9.1.1",
+    "hypothesis": "6.167.1",
+    "coverage": "7.16.0",
+    "ruff": "0.16.5",
+    "mypy": "2.3.1"
+  },
+  "security_and_runtime": {
+    "source_and_history": "passed Gitleaks and Trivy",
+    "image_scans": "passed on all six built image IDs",
+    "trivy_scope": "HIGH/CRITICAL, ignore-unfixed; not universal zero vulnerabilities",
+    "sast": "0 findings in 551-target configured scope",
+    "production_dependency_audits": "passed Python and pnpm",
+    "runtime": "passed seven-service same-container stop/start, retained nonempty state, refresh/alert Redis-loss recovery, no duplicate replay, parity, authorization/expiry and privacy",
+    "runtime_seconds": 292.405,
+    "task_resources_cleanup_verified_absent": true,
+    "capture_collector": "passed 70 source/report/image associations; ten beforeAll cases use exact same-worker next-start bounds",
+    "portable_scan": "passed; two exact Next.js pathname pattern occurrences classified separately; original failed scan and pack bytes preserved"
+  },
+  "current_evidence_crosswalks_in_archive": {
+    "stage-a-phase1-regression-crosswalk.json": {
+      "path": "inputs/0125-stage-a-phase1-regression-crosswalk.json",
+      "sha256": "235e3bf0476eba8a508f5d4dbae1b052e2d457f00897c9d64dc5280164629d7c",
+      "bytes": 23259
+    },
+    "phase2-regression-crosswalk.json": {
+      "path": "inputs/0126-phase2-regression-crosswalk.json",
+      "sha256": "eb01ed6b265c5b6a03622bd5dc14e2da6782fdb73639b9e1fa16f2d43d0934f0",
+      "bytes": 453124
+    },
+    "python-populations.json": {
+      "path": "inputs/0087-python-populations.json",
+      "sha256": "4a86a7688458f1b79cc68167531ec392393d9c89731ef2895009e4fa5ba7821b",
+      "bytes": 17821699
+    }
+  },
+  "current_gate_records_in_archive": {
+    "chart-01": {
+      "path": "inputs/0025-r01-r02-f88b019-chart-01.json",
+      "sha256": "2a7729c1994af10090c2e2ed576aa26108d81ebf61903251884fd8f4b92b6762",
+      "bytes": 1753
+    },
+    "coverage-retention-01": {
+      "path": "inputs/0031-r01-r02-f88b019-coverage-retention-01.json",
+      "sha256": "53fe4337390450c6315046c56b2ef2e7ffabcb81969f5ba1d34fa91b295045db",
+      "bytes": 1843
+    },
+    "coverage-json-01": {
+      "path": "inputs/0028-r01-r02-f88b019-coverage-json-01.json",
+      "sha256": "1284e77e67f5748d05b91249902beeffc390e1313055fe391d3d14c5d542db6d",
+      "bytes": 1735
+    },
+    "build-capture-01": {
+      "path": "inputs/0015-r01-r02-f88b019-build-capture-01.json",
+      "sha256": "e1b5292eb58650ecb539b223046989ef94f36383403b1b810bb4ddbf654e5407",
+      "bytes": 2011
+    },
+    "postgate-cleanup-01": {
+      "path": "inputs/0082-r01-r02-f88b019-postgate-cleanup-01.json",
+      "sha256": "f688988aff8412b7b6aa5694e616c1d207c247685f01a90b761c281bdbd4cbb2",
+      "bytes": 2043
+    },
+    "source-security-01": {
+      "path": "inputs/0094-r01-r02-f88b019-source-security-01.json",
+      "sha256": "de154413c4d27d12193e6db559b94ab0d4447b554dd78f2fbb009a086f8b4503",
+      "bytes": 1587
+    },
+    "image-security-01": {
+      "path": "inputs/0079-r01-r02-f88b019-image-security-01.json",
+      "sha256": "3b2ffff4ec83d12ba7a4166687f70fef7bb56a655e492e6b8920f8d9ad6a1496",
+      "bytes": 1693
+    },
+    "security-evidence-01": {
+      "path": "inputs/0091-r01-r02-f88b019-security-evidence-01.json",
+      "sha256": "881446bf1ea153e65c26ecc25d3569503ae72b787da7f8a9d2d38a3ca8654958",
+      "bytes": 1991
+    },
+    "runtime-01": {
+      "path": "inputs/0088-r01-r02-f88b019-runtime-01.json",
+      "sha256": "16eac7bd2d339d5e47c5e237bc1779b1907db39392effc58d8c477b1573cedb8",
+      "bytes": 1991
+    },
+    "python-populations-01": {
+      "path": "inputs/0085-r01-r02-f88b019-python-populations-01.json",
+      "sha256": "1c084f5ed628a6903c03523cc0fa7c09291513904e865c9c33f8fe23b383abb6",
+      "bytes": 1706
+    },
+    "captures-02": {
+      "path": "inputs/0022-r01-r02-f88b019-captures-02.json",
+      "sha256": "a870da959490af497e0f41e9e115bbd4fb99a62baddd8e9f282c9a145012211c",
+      "bytes": 1942
+    },
+    "final-canary-01": {
+      "path": "inputs/0034-r01-r02-f88b019-final-canary-01.json",
+      "sha256": "04d94a319415737344a90adf457e9f3258dcd8d99a0d6ee54a67fdf47c349b7a",
+      "bytes": 1858
+    }
+  },
+  "limits": [
+    "Before-fix and preliminary failed/working-tree records retain their actual scopes; they are not new immutable passes.",
+    "All historical Stage A/Phase 1/Phase 2 evidence and ledger values are unchanged.",
+    "External gates remain real Demo/history, disabled untested Live, production host/domain/IdP/secrets, public HTTPS/OAuth MCP/ChatGPT, licensed data, notification destinations and production storage/backup restoration.",
+    "No independent acceptance, production readiness or GitHub Actions pass is claimed.",
+    "Main ruleset remains a nonblocking recommendation, not configured."
+  ]
+}

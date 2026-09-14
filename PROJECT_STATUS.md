@@ -10,16 +10,23 @@
 
 ## Current state
 
-Phase 2 has **not received unconditional independent acceptance**. R-01
-(authentication identity compatibility) and R-02 (status/evidence separation) are
-in progress from delivered main
-`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The new candidate's implementation
-source, tree and later documentation delivery remain null until actually
-recorded. Local validation is pending; independent review is pending. GitHub
-Actions is owner-deferred and unverified; Phase 3 remains `not_started`.
+R-01 (authentication identity compatibility) and R-02 (status/evidence
+separation) are implemented and locally validated at
+`f88b0199b2d8691ff89101b7991e9bb0fea1d1ca`, tree
+`5ac0dba52e369a30a32a2d7d5b41409e12fc0911`, following delivered main
+`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The corrected candidate is **awaiting
+independent acceptance**. Its later documentation delivery is recorded externally
+after pushing; the delivery SHA remains null in its own contents. GitHub Actions
+remains `deferred_by_owner` and unverified; Phase 3 remains `not_started`.
 
 The [authentication identity contract](docs/security/AUTHENTICATION_IDENTITY.md)
 defines R-01. R-02 provides the explicit status selectors below.
+See the [current local evidence](docs/implementation/evidence/phase-2-r01-r02-f88b019.json) and [review guide](docs/implementation/R01_R02_REVIEW_GUIDE.md).
+The compatibility labels `implementation_status=in_progress`, Phase 2
+`status=in_progress`, design `runtime_acceptance=pending` and candidate
+`acceptance=pending_remediation` describe the overall unaccepted phase. The
+canonical current selectors separately record completed implementation and
+passing local validation; none asserts independent acceptance.
 
 ### Current and historical machine selectors
 
@@ -31,8 +38,8 @@ remediation. `historical_evidence.phase_2` retains the prior local report, and
 
 | Selector | Meaning |
 | --- | --- |
-| `current_candidate` | R-01/R-02 implementation and its own future local evidence; independent review remains pending. |
-| `current_evidence` | The active candidate result: pending with null artifact/source/tree now, then its own source-bound evidence after actual local validation. |
+| `current_candidate` | R-01/R-02 at f88b019: implemented with recorded local validation; independent review remains pending. |
+| `current_evidence` | The active f88b019 candidate: local validation passed, with its own source/tree and repository evidence reference; independent review pending. |
 | `historical_evidence.phase_2` | Retained historical local report: V=`3998426aa7e7614e421518efd01b08188e194100`, tree=`ff5522eb438a30cfa88aad6bf4e2853fb85ef3a0`, documentation delivery D=`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. Its reported pass is not the remediation result. |
 | Legacy `release_candidate_sha`, `validated_evidence` and security-result selectors | Historical Stage A at `99df47b6633791c3900a52f46f56d48be922a436`; original values and counts are preserved. |
 | Legacy Phase 2 work packages, percentage and acceptance evidence | Historical reported 10/10 packages, 29/29 rows and 40/40 scenarios at V. All 79 entries remain intact; acceptance status is `historical_reported_local_results`. |
@@ -426,9 +433,8 @@ than fabricated.
 
 ## Next action
 
-Finish R-01/R-02, record the actual new implementation source and its own local
-validation evidence, then await independent review. The prior 3998426 report
-does not close this remediation. Preserve these separate external owner/deployment
+Review the corrected f88b019 candidate and its inspectable local evidence independently.
+The prior 3998426 report remains historical. Preserve these external owner/deployment
 conditions without substituting synthetic evidence:
 
 1. Run the owner-controlled Trading 212 Demo smoke when a dedicated read-only Demo
@@ -441,7 +447,7 @@ conditions without substituting synthetic evidence:
 
 The accepted direct-`main` policy is the only active delivery mechanism. Frozen
 architecture and safety decisions remain unchanged. Phase 2 is `in_progress`
-for R-01/R-02 and awaits independent review; Phase 3 remains `not_started`.
+as an unaccepted phase and awaits independent review; Phase 3 remains `not_started`.
 
 ## Permanent boundaries
 

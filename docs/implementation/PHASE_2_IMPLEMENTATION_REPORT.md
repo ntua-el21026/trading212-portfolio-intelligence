@@ -1,14 +1,15 @@
 # Phase 2 Implementation Report
 
-**Current status: R-01/R-02 remediation in progress; independent review pending.**
+**Current status: R-01/R-02 implemented; local validation passed; independent review pending.**
 
-Phase 2 has **not received unconditional independent acceptance**. R-01
-(authentication identity compatibility) and R-02 (status/evidence separation) are
-in progress from delivered main
-`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The new candidate's implementation
-source, tree and later documentation delivery remain null until actually
-recorded. Local validation is pending; independent review is pending. GitHub
-Actions is owner-deferred and unverified; Phase 3 remains `not_started`.
+R-01 (authentication identity compatibility) and R-02 (status/evidence
+separation) are implemented and locally validated at
+`f88b0199b2d8691ff89101b7991e9bb0fea1d1ca`, tree
+`5ac0dba52e369a30a32a2d7d5b41409e12fc0911`, following delivered main
+`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The corrected candidate is **awaiting
+independent acceptance**. Its later documentation delivery is recorded externally
+after pushing; the delivery SHA remains null in its own contents. GitHub Actions
+remains `deferred_by_owner` and unverified; Phase 3 remains `not_started`.
 
 See the [authentication identity contract](../security/AUTHENTICATION_IDENTITY.md)
 and [current status selectors](../../PROJECT_STATUS.md#current-and-historical-machine-selectors).
@@ -16,7 +17,8 @@ The twelve sections and 35 owner topics below retain the reported 3998426 local
 release and earlier histories. Their completion/review statements are historical,
 not unconditional independent acceptance or results for the new candidate.
 Original artifact bindings, Stage A and ordered source history are preserved;
-no prior coverage is attributed to the remediation.
+no prior coverage is attributed to the remediation. See [current local evidence](evidence/phase-2-r01-r02-f88b019.json)
+and the [review guide](R01_R02_REVIEW_GUIDE.md).
 
 **Historical report: local P2-10 results at 3998426aa7e7614e421518efd01b08188e194100;
 CI owner-deferred and unverified.**
@@ -30,8 +32,8 @@ P2-10 hardening and lockstep 0.2.0 metadata were delivered at
 ff5522eb438a30cfa88aad6bf4e2853fb85ef3a0, following that exact parent and adding
 the PostgreSQL/Redis OS security pins and retained failure/status documentation.
 P2-10 has final exact-source local acceptance at 3998426aa7e7614e421518efd01b08188e194100. In this retained report, D denotes delivered documentation commit
-6479186f378bab5ab6fcfd9b29fd444eebd28e6b. New remediation source and later
-documentation delivery remain separate and unrecorded.
+6479186f378bab5ab6fcfd9b29fd444eebd28e6b. The new remediation source is f88b019; its later documentation delivery
+remains separate and is recorded externally after pushing.
 
 [P208 scoped acceptance](evidence/phase-2-p2-08-bc21516.json) remains bound to
 bc21516; [P209 MCP001/002 acceptance](evidence/phase-2-p2-09-d70ab44.json) to

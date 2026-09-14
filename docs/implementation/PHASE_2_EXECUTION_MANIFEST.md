@@ -8,12 +8,14 @@
 
 **Execution branch:** main only
 
-**Current execution status:** R-01/R-02 remediation is in progress. New source
-and local validation are pending; independent review is pending, Actions is
-owner-deferred and Phase 3 is `not_started`. The accepted design contract and
-historical package records below do not establish unconditional independent
-Phase 2 acceptance. Follow the [current status selectors](../../PROJECT_STATUS.md#current-and-historical-machine-selectors)
+**Current execution status:** R-01/R-02 is implemented and locally validated at
+`f88b0199b2d8691ff89101b7991e9bb0fea1d1ca`; independent acceptance is pending.
+Actions remains owner-deferred/unverified and Phase 3 is `not_started`.
+See [current local evidence](evidence/phase-2-r01-r02-f88b019.json), the [review guide](R01_R02_REVIEW_GUIDE.md),
+[current status selectors](../../PROJECT_STATUS.md#current-and-historical-machine-selectors)
 and [authentication identity contract](../security/AUTHENTICATION_IDENTITY.md).
+The accepted design and historical package records below retain their original
+meaning and do not establish independent acceptance of this candidate.
 
 ## Entry gate
 

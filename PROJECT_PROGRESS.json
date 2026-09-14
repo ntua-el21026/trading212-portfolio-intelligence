@@ -7,12 +7,16 @@
     "release": "0.2.0",
     "findings": ["R-01", "R-02"],
     "baseline_delivery_sha": "6479186f378bab5ab6fcfd9b29fd444eebd28e6b",
-    "implementation_source_sha": null,
-    "implementation_tree_sha": null,
+    "implementation_source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
+    "implementation_tree_sha": "5ac0dba52e369a30a32a2d7d5b41409e12fc0911",
     "documentation_delivery_sha": null,
-    "implementation_status": "in_progress",
-    "local_validation_status": "pending",
-    "local_validation_evidence": null,
+    "implementation_status": "implemented_pending_independent_review",
+    "local_validation_status": "passed",
+    "local_validation_evidence": {
+      "path": "docs/implementation/evidence/phase-2-r01-r02-f88b019.json",
+      "sha256": "4c9aaa73e6039541ba79a9d732ce3d92908606d020c29134fd3ce1e7777e3e0b",
+      "bytes": 10523
+    },
     "independent_review_status": "pending",
     "independent_review_evidence": null,
     "ci_status": "deferred_by_owner",
@@ -22,11 +26,15 @@
     "phase": "phase_2",
     "release": "0.2.0",
     "scope": "current_candidate",
-    "implementation_source_sha": null,
-    "implementation_tree_sha": null,
+    "implementation_source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
+    "implementation_tree_sha": "5ac0dba52e369a30a32a2d7d5b41409e12fc0911",
     "documentation_delivery_sha": null,
-    "artifact": null,
-    "local_validation_status": "pending",
+    "artifact": {
+      "path": "docs/implementation/evidence/phase-2-r01-r02-f88b019.json",
+      "sha256": "4c9aaa73e6039541ba79a9d732ce3d92908606d020c29134fd3ce1e7777e3e0b",
+      "bytes": 10523
+    },
+    "local_validation_status": "passed",
     "independent_review_status": "pending",
     "ci_status": "deferred_by_owner",
     "ci_verified": false
@@ -190,7 +198,7 @@
       "design_closure": "accepted",
       "candidate_validation": {
         "work_package": "P2-10",
-        "source_sha": null,
+        "source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
         "acceptance": "pending_remediation",
         "acceptance_claim": false,
         "current_candidate_pointer": "/current_candidate",
@@ -4158,8 +4166,8 @@
       },
       "current_implementation": {
         "work_package": "P2-10",
-        "status": "in_progress",
-        "source_sha": null,
+        "status": "implemented_pending_independent_review",
+        "source_sha": "f88b0199b2d8691ff89101b7991e9bb0fea1d1ca",
         "acceptance_claim": false,
         "current_candidate_pointer": "/current_candidate",
         "historical_evidence_pointer": "/historical_evidence/phase_2"

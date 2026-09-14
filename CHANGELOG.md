@@ -6,20 +6,28 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### R-01/R-02 remediation pending independent review
 
-Phase 2 has **not received unconditional independent acceptance**. R-01
-(authentication identity compatibility) and R-02 (status/evidence separation) are
-in progress from delivered main
-`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The new candidate's implementation
-source, tree and later documentation delivery remain null until actually
-recorded. Local validation is pending; independent review is pending. GitHub
-Actions is owner-deferred and unverified; Phase 3 remains `not_started`.
+R-01 (authentication identity compatibility) and R-02 (status/evidence
+separation) are implemented and locally validated at
+`f88b0199b2d8691ff89101b7991e9bb0fea1d1ca`, tree
+`5ac0dba52e369a30a32a2d7d5b41409e12fc0911`, following delivered main
+`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The corrected candidate is **awaiting
+independent acceptance**. Its later documentation delivery is recorded externally
+after pushing; the delivery SHA remains null in its own contents. GitHub Actions
+remains `deferred_by_owner` and unverified; Phase 3 remains `not_started`.
 
+- Preserve exact bounded external JWT identities while keeping internal IDs strict;
+  reject malformed claim/time conversions with sanitized failures. Preserve
+  fractional NumericDate precision and trusted issuer/key/algorithm boundaries.
+- Exercise real RS256/ES256/EdDSA API and MCP authentication, current PostgreSQL
+  grants, command scopes/idempotency and negative no-persistence behavior.
+- Record the [new immutable local results](docs/implementation/evidence/phase-2-r01-r02-f88b019.json) and
+  [inspectable review pack](docs/implementation/R01_R02_REVIEW_GUIDE.md); independent acceptance remains pending.
 - Add strict current-candidate and historical-evidence selectors to both status
   JSON files, with compatible validator rules and focused contract tests.
 - Qualify earlier local reports without changing immutable artifacts, counts,
   coverage or historical ledger entries.
 - Link the [authentication identity contract](docs/security/AUTHENTICATION_IDENTITY.md);
-  its implementation and signed-token evidence are tracked separately.
+  the field-specific claims and fallback rules were documented before production changes.
 
 The retained statements below describe prior local reports at their original
 sources and observation times. Their completion/acceptance language does not

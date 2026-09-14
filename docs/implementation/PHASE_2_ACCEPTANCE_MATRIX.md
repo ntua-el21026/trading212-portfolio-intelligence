@@ -2,21 +2,23 @@
 
 **Contract status:** Accepted design closure, 2026-09-07
 
-**Implementation acceptance:** R-01/R-02 pending; no unconditional independent Phase 2 acceptance.
+**Implementation acceptance:** R-01/R-02 local validation passed; independent Phase 2 acceptance pending.
 
-Phase 2 has **not received unconditional independent acceptance**. R-01
-(authentication identity compatibility) and R-02 (status/evidence separation) are
-in progress from delivered main
-`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The new candidate's implementation
-source, tree and later documentation delivery remain null until actually
-recorded. Local validation is pending; independent review is pending. GitHub
-Actions is owner-deferred and unverified; Phase 3 remains `not_started`.
+R-01 (authentication identity compatibility) and R-02 (status/evidence
+separation) are implemented and locally validated at
+`f88b0199b2d8691ff89101b7991e9bb0fea1d1ca`, tree
+`5ac0dba52e369a30a32a2d7d5b41409e12fc0911`, following delivered main
+`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The corrected candidate is **awaiting
+independent acceptance**. Its later documentation delivery is recorded externally
+after pushing; the delivery SHA remains null in its own contents. GitHub Actions
+remains `deferred_by_owner` and unverified; Phase 3 remains `not_started`.
 
 Use [current status selectors](../../PROJECT_STATUS.md#current-and-historical-machine-selectors)
 and the [authentication identity contract](../security/AUTHENTICATION_IDENTITY.md).
 All complete rows, test references, counts and scoped records below are the
-historical reported ledger at 3998426, not the new candidate result. New-source
-evidence and independent review remain required; six external states are unchanged.
+historical reported ledger at 3998426. [Current local evidence](evidence/phase-2-r01-r02-f88b019.json)
+and the [review guide](R01_R02_REVIEW_GUIDE.md) separately bind the corrected f88b019 candidate.
+Independent review remains required; six external states are unchanged.
 
 **Historical ledger observation (original):** Locally complete at 3998426aa7e7614e421518efd01b08188e194100; 10/10 packages, 29/29 local rows and 40/40 scenarios; GitHub Actions remains owner-deferred and unverified
 
@@ -73,8 +75,13 @@ including current grants, cross-owner denial and safe failures. R-02 requires
 unambiguous source/evidence selectors without promoting historical passes.
 These current obligations affect P2-API-001, P2-MCP-001, P2-SEC-001 and
 P2-S32/P2-S33/P2-S35, alongside full-release and Phase 1 regression predicates.
-They remain pending for the new candidate; original rows below retain their
-historical evidence and do not claim that the new regressions ran.
+These obligations passed local validation at f88b019, with independent acceptance
+pending. The [current evidence](evidence/phase-2-r01-r02-f88b019.json) maps signed API cases to P2-API-001/S32,
+real signed MCP/PostgreSQL cases to P2-MCP-001/S33, authorization negatives to
+P2-SEC-001, and status/full-regression checks to P2-REL-001/P2-REG-001/S35.
+The full-run crosswalk resolves all 156 selectors from the original 79 ledger
+entries; Stage A/Phase 1 and the restart checks remain separately inspectable.
+Original rows below retain their historical evidence unchanged.
 
 | ID | Package | Required acceptance | Scenario mapping | State |
 |---|---|---|---|---|

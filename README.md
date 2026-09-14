@@ -10,16 +10,19 @@ A private, premium, strictly read-only portfolio intelligence platform for Tradi
 
 ## Current Phase 2 remediation
 
-Phase 2 has **not received unconditional independent acceptance**. R-01
-(authentication identity compatibility) and R-02 (status/evidence separation) are
-in progress from delivered main
-`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The new candidate's implementation
-source, tree and later documentation delivery remain null until actually
-recorded. Local validation is pending; independent review is pending. GitHub
-Actions is owner-deferred and unverified; Phase 3 remains `not_started`.
+R-01 (authentication identity compatibility) and R-02 (status/evidence
+separation) are implemented and locally validated at
+`f88b0199b2d8691ff89101b7991e9bb0fea1d1ca`, tree
+`5ac0dba52e369a30a32a2d7d5b41409e12fc0911`, following delivered main
+`6479186f378bab5ab6fcfd9b29fd444eebd28e6b`. The corrected candidate is **awaiting
+independent acceptance**. Its later documentation delivery is recorded externally
+after pushing; the delivery SHA remains null in its own contents. GitHub Actions
+remains `deferred_by_owner` and unverified; Phase 3 remains `not_started`.
 
 Use the [current and historical status selectors](PROJECT_STATUS.md#current-and-historical-machine-selectors)
 and [authentication identity contract](docs/security/AUTHENTICATION_IDENTITY.md).
+See the [current local evidence](docs/implementation/evidence/phase-2-r01-r02-f88b019.json) and [review guide](docs/implementation/R01_R02_REVIEW_GUIDE.md).
+The overall Phase 2 acceptance remains pending.
 The [main ruleset recommendation](PROJECT_STATUS.md#delivery-recommendation) is
 nonblocking and not configured.
 
