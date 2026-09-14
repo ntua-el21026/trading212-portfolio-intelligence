@@ -4188,7 +4188,7 @@
       "status": "in_progress",
       "progress_percent": 0,
       "work_packages": {
-        "P3-01": "not_started",
+        "P3-01": "in_progress",
         "P3-02": "not_started",
         "P3-03": "not_started",
         "P3-04": "not_started",

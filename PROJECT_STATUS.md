@@ -19,8 +19,9 @@ blocker within its inspected scope. It did not independently inspect the full
 local archives or rerun every gate. This decision is progression authority,
 not independent full-release verification.
 
-Phase 3 is in progress toward `1.0.0`. Its implementation and final local
-validation remain pending; independent review will remain pending for the new
+Phase 3 is in progress toward `1.0.0`. P3-01 numerical/statistical implementation
+is underway; canonical history, persistence and interface delivery remain pending.
+Final local validation remains pending; independent review will remain pending for the new
 candidate. GitHub Actions is `deferred_by_owner`, unverified. Production
 release/deployment, paid-provider purchases and Live are not authorized.
 

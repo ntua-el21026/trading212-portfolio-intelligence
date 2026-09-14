@@ -14,6 +14,13 @@ All notable project changes are recorded here. The project follows semantic vers
 - Begin the complete P3-01 through P3-10 assignment toward 1.0.0. Implementation
   and final local validation are pending; GitHub Actions remains owner-deferred.
 
+### P3-01 numerical foundation in progress
+
+- Implement isolated Decimal96 risk estimates and strict canonical series contracts,
+  with independent numerical references and explicit missing/zero/tail behavior.
+- Keep canonical capture, persistence/jobs and UI delivery pending; no premium tool
+  or package is represented as complete.
+
 ### Phase 3 additive implementation freeze
 
 - Freeze numerical methods, typed services/data/providers, 38-tool target registry,
