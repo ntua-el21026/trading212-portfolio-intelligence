@@ -38,7 +38,8 @@ def test_exact_six_historical_get_routes_leave_existing_performance_summary() ->
     }
     assert "/api/v1/accounts/{account_id}/performance/summary" in contract["paths"]
     assert "/api/v1/accounts/{account_id}/intelligence-data-quality" in contract["paths"]
-    assert sum(len(methods) for methods in contract["paths"].values()) == 95
+    # The 95 preserved operations plus eleven frozen risk operations.
+    assert sum(len(methods) for methods in contract["paths"].values()) == 106
     assert contract == json.loads(
         (ROOT / "packages/api-contracts/openapi/phase1-v1.json").read_text()
     )

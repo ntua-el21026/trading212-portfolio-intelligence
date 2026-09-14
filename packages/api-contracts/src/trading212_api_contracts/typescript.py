@@ -29,7 +29,16 @@ class TargetClientGenerator:
         imported_schemas: frozenset[str] = frozenset(),
         imported_module: str = "./sources.generated",
     ) -> None:
-        if tag not in {"targets", "planning", "sources", "historical", "xray", "reports", "alerts"}:
+        if tag not in {
+            "targets",
+            "planning",
+            "sources",
+            "historical",
+            "xray",
+            "reports",
+            "alerts",
+            "risk",
+        }:
             raise ValueError(
                 "Only fixed target, planning, source, historical and X-ray operations are supported"
             )
@@ -137,9 +146,18 @@ class TargetClientGenerator:
             result = f"z.literal({_quoted(schema['const'])})"
         elif "enum" in schema:
             values = schema["enum"]
-            if not values or not all(isinstance(value, str) for value in values):
-                raise ValueError("Target enums must contain strings")
-            result = f"z.enum({_quoted(values)})"
+            if (
+                self.tag == "risk"
+                and schema.get("type") == "integer"
+                and values
+                and all(type(value) is int and abs(value) <= 2**53 - 1 for value in values)
+            ):
+                # Annualization has a closed integer convention, never a financial float.
+                result = "z.union([" + ", ".join(f"z.literal({value})" for value in values) + "])"
+            else:
+                if not values or not all(isinstance(value, str) for value in values):
+                    raise ValueError("Target enums must contain strings")
+                result = f"z.enum({_quoted(values)})"
         elif schema.get("type") == "object":
             if schema.get("additionalProperties") is not False:
                 raise ValueError("Target objects must forbid unknown fields")
@@ -274,6 +292,13 @@ class TargetClientGenerator:
                 f"try {{ return await {invocation}; }} catch (error) {{ "
                 "if (error instanceof z.ZodError) throw new ReportApiError("
                 '"VALIDATION_FAILED", 422, "The report request is invalid."); '
+                "throw error; }\n"
+            )
+        if self.tag == "risk":
+            body_text = (
+                f"try {{ return await {invocation}; }} catch (error) {{ "
+                "if (error instanceof z.ZodError) throw new RiskApiError("
+                '"VALIDATION_FAILED", 422, "The bounded risk request is invalid."); '
                 "throw error; }\n"
             )
         return (
@@ -516,3 +541,74 @@ class ReportClientGenerator(TargetClientGenerator):
 
 def render_report_client(contract: dict[str, Any]) -> str:
     return ReportClientGenerator(contract).render()
+
+
+class RiskClientGenerator(TargetClientGenerator):
+    """Reuse the canonical source and historical schemas without duplicate exports."""
+
+    def __init__(self, contract: dict[str, Any]) -> None:
+        source = TargetClientGenerator(contract, tag="sources")
+        source.render()
+        historical = TargetClientGenerator(
+            contract, tag="historical", imported_schemas=frozenset(source.rendered)
+        )
+        historical.render()
+        super().__init__(contract, tag="risk", imported_schemas=frozenset(source.rendered))
+        self.historical_schemas = frozenset(historical.rendered)
+        self.used_historical: set[str] = set()
+
+    def reference(self, reference: str) -> str:
+        prefix = "#/components/schemas/"
+        name = reference.removeprefix(prefix)
+        if reference.startswith(prefix) and name in self.historical_schemas:
+            self.used_historical.add(name)
+            return f"{_name(name)}Schema"
+        return super().reference(reference)
+
+    def render(self) -> str:
+        rendered = super().render()
+        if self.used_historical:
+            imported = ", ".join(f"{_name(name)}Schema" for name in sorted(self.used_historical))
+            rendered = rendered.replace(
+                'import { z } from "zod";',
+                'import { z } from "zod";\nimport { '
+                + imported
+                + ' } from "./historical.generated";',
+            )
+        for name in (
+            "Transport",
+            "ApiClient",
+            "ApiResponse",
+            "ReadOptions",
+            "CommandOptions",
+            "ClientOptions",
+        ):
+            rendered = rendered.replace(f"Target{name}", f"Risk{name}")
+        return rendered.replace("./target-transport", "./risk-transport").replace(
+            "RiskTransport, type", "RiskTransport, RiskApiError, type"
+        )
+
+
+def render_risk_client(contract: dict[str, Any]) -> str:
+    expected = {
+        "list_risk_definitions",
+        "create_risk_definition",
+        "get_risk_definition",
+        "list_risk_versions",
+        "create_risk_version",
+        "get_risk_version",
+        "list_risk_runs",
+        "create_risk_run",
+        "get_risk_run",
+        "get_risk_matrix",
+        "cancel_risk_run",
+    }
+    actual = [
+        operation["operationId"]
+        for methods in contract["paths"].values()
+        for operation in methods.values()
+        if "risk" in operation.get("tags", [])
+    ]
+    if len(actual) != len(expected) or set(actual) != expected:
+        raise ValueError("The frozen risk operation registry differs.")
+    return RiskClientGenerator(contract).render()

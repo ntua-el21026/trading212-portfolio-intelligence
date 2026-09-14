@@ -15,7 +15,7 @@ from trading212_application.risk_jobs import RiskExecutionInput
 from trading212_application.views import Page
 from trading212_domain.errors import DomainError
 from trading212_domain.historical_serialization import historical_canonical_bytes
-from trading212_domain.risk_result import RiskCalculation, RiskMatrix
+from trading212_domain.risk_result import RiskCalculation
 from trading212_security.principals import Principal
 
 from .collection_snapshots import CollectionSnapshotResource
@@ -39,6 +39,7 @@ MAX_OWNER_PREMIUM_BYTES = 268435456
 def public_risk_result(value: RiskCalculation, content_digest: str) -> app.RiskResultView:
     context = value.history.canonical_performance_context
     view = app.RiskResultView(
+        definition=value.definition,
         historical_context=replace(
             context, sources=context.sources[:64], warnings=context.warnings[:64]
         ),
@@ -309,7 +310,7 @@ class PostgresRiskService(RiskInputStore):
             resource=(RiskRunModel, run_id),
         )
 
-    async def get_matrix(self, principal: Principal, run_id: UUID) -> RiskMatrix:
+    async def get_matrix(self, principal: Principal, run_id: UUID) -> app.RiskMatrixView:
         view = await self.get_run(principal, run_id)
         if view.result is None:
             raise risk_error(
@@ -317,7 +318,19 @@ class PostgresRiskService(RiskInputStore):
                 if view.result_availability == "expired"
                 else app.RiskErrorCode.RISK_UNAVAILABLE
             )
-        return view.result.matrix
+        result = view.result
+        return app.RiskMatrixView(
+            run_id=view.id,
+            account_id=view.account_id,
+            definition_version_id=view.definition_version_id,
+            definition=result.definition,
+            historical_context=result.historical_context,
+            omitted_sources=result.omitted_sources,
+            omitted_warnings=result.omitted_warnings,
+            content_digest=result.content_digest,
+            numerical_profile=result.numerical_profile,
+            matrix=result.matrix,
+        )
 
     async def list_runs(
         self, principal: Principal, account_id: UUID, query: app.RiskPageQuery

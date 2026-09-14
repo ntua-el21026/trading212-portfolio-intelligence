@@ -140,7 +140,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "phase_3_P3_01_interfaces_retention_and_acceptance",
+  "next_gate": "phase_3_P3_01_web_mcp_reports_retention_and_acceptance",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",

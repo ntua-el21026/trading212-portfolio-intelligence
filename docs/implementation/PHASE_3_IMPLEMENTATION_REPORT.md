@@ -1,6 +1,6 @@
 # Phase 3 Implementation Report
 
-**Current:** P3-01 canonical calculation, normalized storage and bounded worker implemented; interface/retention work in progress
+**Current:** P3-01 calculation, storage, worker, REST and generated client implemented; web/MCP/report/retention work in progress
 **Target:** 1.0.0; independent review pending; production not authorized
 
 Start main d2ebdaf96d1b61aacea5c6492824946540f88803. Governance delivery
@@ -109,3 +109,43 @@ REST/generated clients, web/MCP/report integration, shared physical source-reten
 hooks, broader adversarial/performance evidence and full P3-01 acceptance remain
 pending. The other Phase 3 packages remain pending. No acceptance row/scenario or
 package is marked complete, and no public premium MCP tool is registered yet.
+
+
+## P3-01 REST and generated client
+
+The storage/worker milestone was delivered as
+0e0cc02c7dca209707eee59f9d5c0883e42e91df, tree
+4667e42603bcac8a5ffeb2678e52537fdf9293d4. Its unchanged working-source
+checks passed 2,888 unit/property/contract tests, 47 PostgreSQL tests and 226 security
+tests, with generated-contract freshness, Ruff, strict mypy and repository boundary
+checks. The gate receipts bind exact pre-commit content; they are not an immutable
+post-commit candidate rerun. The exact scope-registry assertion was extended to the
+ten frozen premium scopes after its original Phase 2 inventory rejected the change.
+
+Eleven risk operations add eight paths, for 95 paths/106 operations at this milestone.
+All 87 old paths and existing component schemas compare unchanged. Public risk views
+retain the definition assumptions, canonical historical context and source omissions;
+matrix views carry the same immutable financial identity. Financial values use the
+existing exact string grammar; available and unavailable metrics are separate closed
+wire shapes. Lists carry bounded owned operational metadata without financial arrays.
+
+Authentication and token scopes precede request parsing; persistence checks current
+identity, account and grants before cursor/replay/conditional responses. Commands
+require semantic idempotency and browser sessions require current CSRF/trusted origin.
+Version creation requires the owned aggregate revision. Bodies are bounded to64KiB,
+responses to2MiB, and service/network failures use fixed safe categories. The local
+synthetic session and trusted synthetic grant seed explicitly add risk:write; no
+production token authentication grants new database permissions.
+
+The generated client exposes exactly the eleven fixed methods, reuses historical
+and source schemas, preserves decimal strings and rejects extra fields/invalid IDs
+before transport. Its private requests disable caching and redirects. The existing
+workspace analytics dependency is made explicit at the API composition root; no
+third-party dependency or runtime version changes.
+
+Focused checks include50 risk schema/route tests, two contract tests, five generated
+client tests and a real signed-JWT/PostgreSQL/subprocess HTTP lifecycle. That lifecycle
+checks exact issuer/audience, malformed claims, foreign-owner denial, current-grant
+revocation before304/replay and canonical API/matrix parity after atomic publication.
+The full Phase 3 candidate, web/MCP/report consumers and physical retention remain
+pending. Acceptance and scenario completion counts remain zero.

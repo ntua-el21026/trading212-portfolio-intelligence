@@ -12,6 +12,7 @@ dependencies = [
     "fastapi==0.141.1",
     "pydantic==2.13.5",
     "pydantic-settings==2.15.0",
+    "trading212-analytics==0.2.0",
     "trading212-api-contracts==0.2.0",
     "trading212-application==0.2.0",
     "trading212-domain==0.2.0",
@@ -22,6 +23,7 @@ dependencies = [
 ]
 
 [tool.uv.sources]
+trading212-analytics = { workspace = true }
 trading212-api-contracts = { workspace = true }
 trading212-application = { workspace = true }
 trading212-domain = { workspace = true }

@@ -233,7 +233,11 @@ async def test_canonical_result_and_every_normalized_projection_round_trip(
     assert view.result.observed.requested_observations > 200
     assert view.result.observed.volatility_annualized.value is not None
     assert len(view.result.historical_context.sources) <= 64
-    assert await case.service.get_matrix(case.principal, first.id) == view.result.matrix
+    matrix = await case.service.get_matrix(case.principal, first.id)
+    assert matrix.matrix == view.result.matrix
+    assert matrix.content_digest == view.result.content_digest
+    assert matrix.historical_context == view.result.historical_context
+    assert matrix.definition == view.result.definition
     # This proves the persisted path does not silently substitute a recalculated result.
     with patch(
         "trading212_analytics.risk.calculate_risk",

@@ -74,7 +74,7 @@ async def seed_complete_synthetic(database_url: str, *, app_environment: str) ->
             create_session_factory(engine),
             app_environment=app_environment,
             at=SEED_TIME,
-            scopes=frozenset({Scope.ALERTS_READ, Scope.ALERTS_WRITE}),
+            scopes=frozenset({Scope.ALERTS_READ, Scope.ALERTS_WRITE, Scope.RISK_WRITE}),
         )
     finally:
         engine.dispose()

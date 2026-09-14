@@ -788,3 +788,12 @@ export type {
   AlertReadOptions,
   AlertCommandOptions,
 } from "./alert-transport";
+
+export * from "./risk.generated";
+export { RiskApiError } from "./risk-transport";
+export type {
+  RiskApiResponse,
+  RiskClientOptions,
+  RiskReadOptions,
+  RiskCommandOptions,
+} from "./risk-transport";

@@ -56,6 +56,17 @@ This migration proof is not a backup/restore exercise.
 Full candidate validation, physical retention and public interface acceptance remain
 pending. Original attempts are retained in the external phase3-20260914 directory.
 
+## Phase 3 risk REST/client component checks
+
+Risk storage delivery0e0cc02 passed unchanged working-source gates: 2,888
+unit/property/contract, 47 PostgreSQL and 226 security tests. Original receipts and
+failures are retained externally under phase3-20260914; these do not certify a final
+immutable Phase 3 candidate. Fifty focused risk schema/route tests, two contract
+tests and five generated-client tests cover the additive REST/client boundary.
+A signed-JWT PostgreSQL test executed the actual subprocess, compared canonical
+HTTP/matrix output, and denied foreign, expired, malformed and currently revoked
+identities. This is local application validation, not an external security review.
+
 ## Historical record before owner progression
 
 ## Current R-01/R-02 validation status

@@ -54,6 +54,7 @@ from trading212_application.queries import (
 )
 from trading212_application.refresh_semantics import RefreshIdempotencyConflictError
 from trading212_application.reports import ReportService
+from trading212_application.risk import RiskService
 from trading212_application.services import (
     PortfolioService,
     RefreshUnavailableError,
@@ -101,6 +102,7 @@ from .intelligence_quality_routes import register_intelligence_quality_routes
 from .planning_routes import register_planning_routes
 from .refresh_queue import PostgresRefreshQueue
 from .report_routes import register_report_routes
+from .risk_routes import register_risk_routes
 from .schemas import (
     AccountResponse,
     AccountSummaryResponse,
@@ -156,6 +158,7 @@ class ApiContext:
     planning_service: PlanningService | None
     source_service: SourceService | None
     historical_service: PerformanceIntelligenceService | None
+    risk_service: RiskService | None
     intelligence_quality_service: IntelligenceDataQualityService | None
     xray_service: XrayService | None
     report_service: ReportService | None
@@ -177,6 +180,7 @@ def create_app(
     planning_service: PlanningService | None = None,
     source_service: SourceService | None = None,
     historical_service: PerformanceIntelligenceService | None = None,
+    risk_service: RiskService | None = None,
     intelligence_quality_service: IntelligenceDataQualityService | None = None,
     xray_service: XrayService | None = None,
     report_service: ReportService | None = None,
@@ -212,6 +216,7 @@ def create_app(
             default_planning,
             default_sources,
             default_historical,
+            default_risk,
             default_intelligence_quality,
             default_xray,
             default_reports,
@@ -227,6 +232,7 @@ def create_app(
         planning_service = planning_service or default_planning
         source_service = source_service or default_sources
         historical_service = historical_service or default_historical
+        risk_service = risk_service or default_risk
         intelligence_quality_service = intelligence_quality_service or default_intelligence_quality
         xray_service = xray_service or default_xray
         report_service = report_service or default_reports
@@ -251,6 +257,7 @@ def create_app(
         planning_service=planning_service,
         source_service=source_service,
         historical_service=historical_service,
+        risk_service=risk_service,
         intelligence_quality_service=intelligence_quality_service,
         xray_service=xray_service,
         report_service=report_service,
@@ -302,6 +309,7 @@ def create_app(
     register_planning_routes(application, _principal, _context)
     register_source_routes(application, _principal, _context)
     register_historical_routes(application, _principal, _context)
+    register_risk_routes(application, _principal, _context)
     register_intelligence_quality_routes(application, _principal, _context)
     register_xray_routes(application, _principal, _context)
     register_report_routes(application, _principal, _context)
@@ -322,12 +330,14 @@ def _local_runtime_defaults(
     PlanningService,
     SourceService,
     PerformanceIntelligenceService,
+    RiskService,
     IntelligenceDataQualityService,
     XrayService,
     ReportService,
     AlertService,
     Callable[[], Awaitable[bool]],
 ]:
+    from trading212_analytics.risk_history import validate_risk_capacity
     from trading212_persistence.alert_service import PostgresAlertService
     from trading212_persistence.historical_service import PostgresHistoricalService
     from trading212_persistence.intelligence_quality_service import (
@@ -335,6 +345,7 @@ def _local_runtime_defaults(
     )
     from trading212_persistence.planning_service import PostgresPlanningService
     from trading212_persistence.report_service import PostgresReportService
+    from trading212_persistence.risk_service import PostgresRiskService
     from trading212_persistence.source_service import PostgresSourceService
     from trading212_persistence.xray_service import PostgresXrayService
 
@@ -394,6 +405,12 @@ def _local_runtime_defaults(
             clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
             cursor_ttl_seconds=settings.cursor_ttl_seconds,
+        ),
+        PostgresRiskService(
+            sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            preflight=validate_risk_capacity,
         ),
         PostgresIntelligenceDataQualityService(
             sessions,

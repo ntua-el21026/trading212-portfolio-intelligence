@@ -83,6 +83,13 @@ availability, historical/parametric tail definitions and values, concentration,
 effective holdings, diversification, marginal/component risk and residuals.
 Never infer complete modeled portfolio risk from an incomplete selected universe.
 
+RiskMatrixView includes the run/account/definition-version identity, immutable
+definition assumptions, historical context with bounded source/warning omissions,
+canonical result digest, numeric profile and matrix coverage. Expired matrix inputs
+return410; ordinary run status can still show typed expired availability without a
+financial result. A definition ETag is its owned id/revision; financial-read ETags
+hash the validated public representation after current authorization.
+
 ## Scenario contracts
 
 ScenarioVersionContent contains name, description, first_order|compounded mode,

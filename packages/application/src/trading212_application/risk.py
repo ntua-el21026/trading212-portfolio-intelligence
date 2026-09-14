@@ -29,6 +29,7 @@ class RiskErrorCode(StrEnum):
     INPUT_BOUND_EXCEEDED = "INPUT_BOUND_EXCEEDED"
     CONFLICT = "CONFLICT"
     REVISION_MISMATCH = "REVISION_MISMATCH"
+    REVISION_REQUIRED = "REVISION_REQUIRED"
     RATE_LIMITED = "RATE_LIMITED"
     SOURCE_UNAVAILABLE = "SOURCE_UNAVAILABLE"
     RISK_UNAVAILABLE = "RISK_UNAVAILABLE"
@@ -176,6 +177,7 @@ class RiskDefinitionView:
 class RiskResultView:
     """No private return arrays or complete historical evidence graph in public results."""
 
+    definition: RiskDefinitionContent
     historical_context: HistoricalResultContext
     omitted_sources: int
     omitted_warnings: int
@@ -215,6 +217,20 @@ class RiskRunView:
     result_availability: Literal["pending", "available", "not_loaded", "expired", "unavailable"]
 
 
+@dataclass(frozen=True, slots=True, kw_only=True)
+class RiskMatrixView:
+    run_id: UUID
+    account_id: UUID
+    definition_version_id: UUID
+    definition: RiskDefinitionContent
+    historical_context: HistoricalResultContext
+    omitted_sources: int
+    omitted_warnings: int
+    content_digest: str
+    numerical_profile: str
+    matrix: RiskMatrix
+
+
 class RiskService(Protocol):
     async def create_definition(
         self, principal: Principal, command: CreateRiskDefinition
@@ -237,5 +253,5 @@ class RiskService(Protocol):
     async def list_runs(
         self, principal: Principal, account_id: UUID, query: RiskPageQuery
     ) -> Page[RiskRunView]: ...
-    async def get_matrix(self, principal: Principal, run_id: UUID) -> RiskMatrix: ...
+    async def get_matrix(self, principal: Principal, run_id: UUID) -> RiskMatrixView: ...
     async def cancel_run(self, principal: Principal, command: CancelRiskRun) -> RiskRunView: ...
