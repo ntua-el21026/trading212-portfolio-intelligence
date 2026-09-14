@@ -140,7 +140,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "phase_3_design_freeze_and_P3_01",
+  "next_gate": "phase_3_P3_01_interfaces_retention_and_acceptance",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -437,6 +437,7 @@
   },
   "current_work_package": {
     "id": "P3-01",
+    "implementation_report": "docs/implementation/PHASE_3_IMPLEMENTATION_REPORT.md",
     "status": "in_progress",
     "source_sha": null,
     "acceptance_claim": false,

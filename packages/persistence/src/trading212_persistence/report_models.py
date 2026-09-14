@@ -38,7 +38,11 @@ REPORT_SCOPES = (
     "'configuration:read','targets:read','targets:write','plans:write',"
     "'reports:read','reports:write'"
 )
-ALL_DELEGATION_SCOPES = REPORT_SCOPES + ",'alerts:read','alerts:write'"
+ALL_DELEGATION_SCOPES = (
+    REPORT_SCOPES + ",'alerts:read','alerts:write','risk:write','scenarios:write',"
+    "'projections:write','goals:write','research:read','research:write',"
+    "'preferences:read','preferences:write','aggregate:read','aggregate:write'"
+)
 
 REPORT_FAILURES = (
     "'invalid_input','input_unavailable','input_changed','access_denied',"
@@ -416,21 +420,38 @@ class ApplicationCommandIdentityModel(ReportOwned):
     __table_args__ = (
         _owned("application_command_identities"),
         UniqueConstraint(
+            "owner_id", "account_id", "id", name="uq_application_command_scoped_identity"
+        ),
+        ForeignKeyConstraint(
+            ["owner_id", "premium_actor_id"],
+            ["principals.owner_id", "principals.id"],
+            ondelete="RESTRICT",
+            name="fk_application_command_premium_actor",
+        ),
+        UniqueConstraint(
             "owner_id", "command", "idempotency_key", name="uq_application_command_owner_key"
         ),
         _parent("application_command_identities", "report_job_id", "report_jobs"),
         _parent("application_command_identities", "export_job_id", "export_jobs"),
         CheckConstraint(
-            "command IN ('reports.generate.v1','exports.generate.v1')", name="command_allowed"
+            "command IN ('reports.generate.v1','exports.generate.v1','risk.definition.create.v1',"
+            "'risk.version.create.v1','risk.run.create.v1','risk.run.cancel.v1')",
+            name="command_allowed",
         ),
         CheckConstraint("idempotency_key ~ '^[A-Za-z0-9._:-]{1,180}$'", name="key_format"),
         CheckConstraint("command_digest ~ '^[0-9a-f]{64}$'", name="digest_format"),
         CheckConstraint(
-            (
-                "(command='reports.generate.v1' AND report_job_id IS NOT NULL AND expor"
-                "t_job_id IS NULL) OR (command='exports.generate.v1' AND export_job_id "
-                "IS NOT NULL AND report_job_id IS NULL)"
-            ),
+            "(command='reports.generate.v1' AND report_job_id IS NOT NULL AND "
+            "export_job_id IS NULL AND premium_resource_id IS NULL AND premium"
+            "_actor_id IS NULL AND premium_correlation_id IS NULL) OR "
+            "(command='exports.generate.v1' AND export_job_id IS NOT NULL AND "
+            "report_job_id IS NULL AND premium_resource_id IS NULL AND premium"
+            "_actor_id IS NULL AND premium_correlation_id IS NULL) OR "
+            "(command IN ('risk.definition.create.v1','risk.version.create.v1'"
+            ",'risk.run.create.v1','risk.run.cancel.v1') AND report_job_id IS "
+            "NULL AND export_job_id IS NULL AND premium_resource_id IS NOT NUL"
+            "L AND premium_actor_id IS NOT NULL AND premium_correlation_id IS "
+            "NOT NULL)",
             name="parent_kind",
         ),
     )
@@ -440,6 +461,9 @@ class ApplicationCommandIdentityModel(ReportOwned):
     command_digest: Mapped[str] = mapped_column(String(64))
     report_job_id: Mapped[UUID | None] = mapped_column()
     export_job_id: Mapped[UUID | None] = mapped_column()
+    premium_resource_id: Mapped[UUID | None] = mapped_column()
+    premium_actor_id: Mapped[UUID | None] = mapped_column()
+    premium_correlation_id: Mapped[str | None] = mapped_column(String(120))
 
 
 class ReportManifestBase(ReportOwned):

@@ -21,8 +21,12 @@ All notable project changes are recorded here. The project follows semantic vers
 - Build risk history from retained session-close TWR and total-return sources; bind
   matrices, tails, complete-universe modeled risk and X-ray concentration to one result.
 - Preserve exact source/quality disclosures, Q18 residuals and digest-verified replay.
-- Keep durable persistence/jobs and interface delivery pending; no premium tool or
-  package is represented as complete.
+- Add normalized risk storage, immutable versions, current grants, stable cursors
+  and source-bound admission through migration 0017. Reuse the application command
+  identity registry and existing dispatcher for one bounded risk execution slot.
+- Fence retries/cancellation and isolate calculations in a child with memory/time
+  limits and deterministic cleanup. Interface/retention delivery remains pending;
+  no premium tool or package is represented as complete.
 
 ### Phase 3 additive implementation freeze
 

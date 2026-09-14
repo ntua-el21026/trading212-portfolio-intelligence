@@ -188,13 +188,11 @@ def _asset_series(
     return _series(engine.value, definition, source.instrument_id, tuple(intervals), month_ends)
 
 
-@financial
-def build_risk_history(
+def _prepare_risk_history(
     value: d.HistoricalInput,
     definition: RiskDefinitionContent,
-    *,
-    assets: tuple[RiskAssetSource, ...] = (),
-) -> RiskHistory:
+    assets: tuple[RiskAssetSource, ...],
+) -> tuple[HistoricalEngine, tuple[MarketSession, ...], frozenset[datetime]]:
     validate_historical_input(value)
     if not isinstance(definition, RiskDefinitionContent):
         fail_validation("A risk definition is required.", field="definition")
@@ -220,6 +218,28 @@ def build_risk_history(
         raise DomainError(
             ErrorCode.INPUT_BOUND_EXCEEDED, "Combined risk history capacity exceeded."
         )
+    return engine, sessions, month_ends
+
+
+@financial
+def validate_risk_capacity(
+    value: d.HistoricalInput,
+    definition: RiskDefinitionContent,
+    assets: tuple[RiskAssetSource, ...],
+) -> int:
+    """Perform the same bounded preflight at admission without calculating returns."""
+    engine, sessions, _ = _prepare_risk_history(value, definition, assets)
+    return engine.preflight_cell_bound + len(sessions) * len(assets) * 2
+
+
+@financial
+def build_risk_history(
+    value: d.HistoricalInput,
+    definition: RiskDefinitionContent,
+    *,
+    assets: tuple[RiskAssetSource, ...] = (),
+) -> RiskHistory:
+    engine, sessions, month_ends = _prepare_risk_history(value, definition, assets)
     # Retain canonical drawdown rather than a separately defined risk drawdown curve.
     canonical = performance(engine, h.PerformanceOptions(frequency=d.HistoricalFrequency.DAILY))
     intervals: list[RiskInterval] = []

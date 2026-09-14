@@ -24,6 +24,16 @@ class Scope(StrEnum):
     REPORTS_WRITE = "reports:write"
     ALERTS_READ = "alerts:read"
     ALERTS_WRITE = "alerts:write"
+    RISK_WRITE = "risk:write"
+    SCENARIOS_WRITE = "scenarios:write"
+    PROJECTIONS_WRITE = "projections:write"
+    GOALS_WRITE = "goals:write"
+    RESEARCH_READ = "research:read"
+    RESEARCH_WRITE = "research:write"
+    PREFERENCES_READ = "preferences:read"
+    PREFERENCES_WRITE = "preferences:write"
+    AGGREGATE_READ = "aggregate:read"
+    AGGREGATE_WRITE = "aggregate:write"
 
 
 class AuthenticationError(RuntimeError):

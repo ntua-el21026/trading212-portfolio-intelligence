@@ -83,6 +83,16 @@ def test_scope_registry_contains_no_execution_capability() -> None:
         "reports:write",
         "alerts:read",
         "alerts:write",
+        "risk:write",
+        "scenarios:write",
+        "projections:write",
+        "goals:write",
+        "research:read",
+        "research:write",
+        "preferences:read",
+        "preferences:write",
+        "aggregate:read",
+        "aggregate:write",
     }
     assert all("trade" not in scope.value for scope in Scope)
 

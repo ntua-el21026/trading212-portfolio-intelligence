@@ -29,8 +29,10 @@ from .base import Base, CreatedAtMixin, UpdatedAtMixin, UUIDPrimaryKeyMixin
 from .historical_models import HISTORICAL_MODELS
 from .intelligence_quality_models import INTELLIGENCE_QUALITY_MODELS
 from .planning_models import PLANNING_MODELS
+from .premium_models import PREMIUM_MODELS
 from .provider_observation_models import PROVIDER_OBSERVATION_MODELS
 from .report_models import REPORT_MODELS
+from .risk_models import RISK_MODELS
 from .source_models import SOURCE_MODELS
 from .target_models import TARGET_MODELS
 from .types import ExactNumeric, UTCDateTime
@@ -349,7 +351,8 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         CheckConstraint("schema_version = 1", name="schema_version_supported"),
         CheckConstraint(
             (
-                "resource IN ('intelligence_quality_sources','activity','dividends','instruments',"
+                "resource IN ('risk_definitions','risk_versions','risk_runs',"
+                "'intelligence_quality_sources','activity','dividends','instruments',"
                 "'positions_market_value','positions_weight','positions_ticker',"
                 "'portfolios_name','portfolios_updated','target_versions',"
                 "'target_events','target_nodes','contribution_plans','plan_lines',"
@@ -413,7 +416,8 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         ),
         CheckConstraint(
             (
-                "((resource IN ('intelligence_quality_sources','alert_rules','alert_versions',"
+                "((resource IN ('risk_definitions','risk_versions','risk_runs',"
+                "'intelligence_quality_sources','alert_rules','alert_versions',"
                 "'alert_events','alert_evaluations',"
                 "'notification_destinations','reports','exports','activity','dividends',"
                 "'positions_market_value','positions_weight','positions_ticker',"
@@ -1112,4 +1116,6 @@ ALL_MODELS = (
     *ALERT_MODELS,
     ActivityRevisionEvidenceModel,
     *PROVIDER_OBSERVATION_MODELS,
+    *PREMIUM_MODELS,
+    *RISK_MODELS,
 )

@@ -37,6 +37,25 @@ references and strict result replay. The originals reside in the task's external
 `phase3-20260914` evidence directory. These are component checks, not a full Phase 3
 candidate run or independent acceptance; no acceptance row is marked complete.
 
+## Phase 3 risk persistence and worker component checks
+
+Working-source checks passed 44 real PostgreSQL migration/schema/definition/run/job
+tests and 8 process/message tests. They cover current grant revocation, opaque
+issuer/subject identity, revision/idempotency/cursor semantics, capacity reservation,
+canonical/normalized replay, dispatch ambiguity, lease recovery, cancellation and
+actual worker subprocess publication. Process tests compare canonical bytes with
+the in-process calculation and verify deadline termination and child reaping.
+One scoped PostgreSQL container was reused; all fixture databases were dropped.
+A populated 0016-to-0017 upgrade passed: all 212 legacy tables retained identical
+row counts and hashes of every pre-upgrade column, and canonical historical replay
+was unchanged after introducing the 17 new tables. A separate real source-rights
+test confirmed that current store revocation and a tightened retention limit deny
+risk access before private decode, including idempotent replay and worker loading.
+This migration proof is not a backup/restore exercise.
+
+Full candidate validation, physical retention and public interface acceptance remain
+pending. Original attempts are retained in the external phase3-20260914 directory.
+
 ## Historical record before owner progression
 
 ## Current R-01/R-02 validation status

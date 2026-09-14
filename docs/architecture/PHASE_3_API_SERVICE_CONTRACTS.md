@@ -16,6 +16,9 @@ Page default 25/max100; source/warning preview max64 with exact omitted counts.
 Dates and IDs are versioned input references, never implicit instructions to fetch.
 Reauthorize before cursor/304/idempotent replay as well as ordinary reads.
 
+The existing application command identity is scoped by owner, fixed command version
+and idempotency key; its digest also binds the account and material input.
+
 Every create/run command requires X-Idempotency-Key; modifications to an existing
 aggregate require If-Match. Same semantics returns the original logical identity,
 changed semantics conflicts. Published definitions change only by creating a new
@@ -56,7 +59,9 @@ missing/outlier/basis policy versions. Validate minimum 20 samples, daily rollin
 
 CreateRiskRunRequest pins definition_version_id, portfolio_snapshot_id,
 historical_input_snapshot_id, window/currency/cutoff, optional benchmark_version_id
-and up to 32 unique canonical asset source mappings. It never accepts caller-supplied
+and up to 32 unique canonical asset source mappings. An optional explicit xray_run_id
+pins the same owned snapshot/cutoff for concentration and current-weight risk; omission
+leaves those projections unavailable and never silently selects a newer X-ray run. It never accepts caller-supplied
 return arrays or uses current holding-value changes as asset returns. Missing
 material history becomes explicit metric availability; unknown fields fail.
 

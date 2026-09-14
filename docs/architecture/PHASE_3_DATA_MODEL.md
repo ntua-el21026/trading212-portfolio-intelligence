@@ -42,6 +42,11 @@ publication patterns. Pin original actor/principal scope, owner/account, immutab
 inputs, source cutoff, method/schema/numeric version and semantic input digest.
 Use the current application command identity mechanism. A GET never creates a job.
 
+The shared premium_runs/premium_jobs/premium_dispatch_outbox identities use typed
+per-family child records (risk_runs first), not untyped financial bodies. These are
+normalized equivalents of the family run records above. A partial unique index
+enforces the local single-running-job ceiling across premium families.
+
 Fixed task names are `risk.calculate.v1`, `scenarios.calculate.v1` and
 `projections.calculate.v1`. Messages contain only bounded opaque job/request/
 owner/account references, version and digest. Producers cannot choose a callable,
@@ -93,6 +98,12 @@ work. Deadline expiry is an operational failure, not a change in the mathematica
 result. Keep successful checkpoints for retry within retention, reauthorize every
 resume, and never change seed, paths, horizon or tolerances to obtain success.
 Per-owner and global admission use PostgreSQL authority, not Redis-only locks.
+
+Risk calendar content uses the existing canonical source key/version pair. Its
+normalized version row references the resolved owner-scoped calendar UUID; neither
+identity replaces the other in the calculation digest. Run lists contain bounded
+owned operational metadata without decoded financial results. Financial detail,
+matrix and replay paths recheck the complete current source authorization.
 
 ## Source legality and physical retention
 

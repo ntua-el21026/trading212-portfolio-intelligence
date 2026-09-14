@@ -1,6 +1,6 @@
 # Phase 3 Implementation Report
 
-**Current:** Additive design accepted; P3-01 canonical calculation implemented; durable/interface work in progress
+**Current:** P3-01 canonical calculation, normalized storage and bounded worker implemented; interface/retention work in progress
 **Target:** 1.0.0; independent review pending; production not authorized
 
 Start main d2ebdaf96d1b61aacea5c6492824946540f88803. Governance delivery
@@ -57,3 +57,55 @@ case pass. No production boundary was relaxed. Original attempt logs are retaine
 These are working-source component checks; durable normalized storage/jobs, current
 read/execute/export authorization, REST/generated clients/web/MCP/report integration
 and full package acceptance remain pending. The acceptance counts stay at zero.
+
+
+## P3-01 normalized storage and bounded worker
+
+Migration 0017 extends the existing application command identities and current
+principal grants, adds 17 normalized premium/risk tables, and extends the existing
+immutable collection snapshots for risk definitions, versions and run metadata.
+Calendar references retain the canonical source key/version; persistence resolves
+that pair to an owned immutable calendar UUID. Existing Phase 2 financial methods,
+report commands and source identities keep their contracts.
+
+Risk definitions have immutable predecessors, revision checks, semantic idempotency,
+transactional audit and current-grant checks before replay/cursors. Risk admission
+pins owned history, portfolio, optional X-ray and ordered asset mappings. Current
+source display/store rights are checked before private decode, and the shortest
+applicable source lifetime bounds the run. The same valuation-cell preflight runs
+at admission and calculation; combined private input bytes are bounded to 32 MiB.
+
+Runs reserve capacity in PostgreSQL: at most two active jobs per owner, one running
+premium job globally, 512 definition versions and 256 MiB retained/reserved payload.
+Publication verifies the canonical digest and every fixed normalized projection.
+The canonical historical drawdown can retain its partial-value reason. Normalized
+storage size is included when releasing the conservative result reservation.
+
+The fixed risk outbox is relayed by the existing dispatcher. Messages carry only
+opaque identities and the input digest. Publication claims, consumer leases,
+heartbeats, absolute per-attempt deadlines, retry bounds and immutable attempts
+fence stale or cancelled workers. Current initiating identity/grants and source
+rights are checked again at load/publication. The existing Celery worker starts
+one isolated calculation subprocess with a 240-second attempt deadline, 512 MiB
+address-space limit, minimal environment, fixed codecs and Linux parent-death kill.
+Cancellation/deadline tests verify that the child is killed/reaped without retaining
+scratch files. No additional Compose service is introduced.
+
+Working-source component checks passed 44 migration/schema/definition/run/job tests
+and 8 process/message tests. They include an actual child publishing through the
+fenced PostgreSQL store. Original failed attempts remain retained: a calendar key
+was initially mistaken for its storage UUID, and a dispatcher claim initially
+failed to clear its dispatcher identity. Both contracts were preserved while fixing
+the implementation. These counts are not final candidate validation.
+
+A populated 0016-to-0017 upgrade passed: all 212 legacy tables retained identical
+row counts and hashes of every pre-upgrade column, and canonical historical replay
+was unchanged after introducing the 17 new tables. A separate real source-rights
+test confirmed that current store revocation and a tightened retention limit deny
+risk access before private decode, including idempotent replay and worker loading.
+This migration proof is not a backup/restore exercise.
+
+REST/generated clients, web/MCP/report integration, shared physical source-retention
+hooks, broader adversarial/performance evidence and full P3-01 acceptance remain
+pending. The other Phase 3 packages remain pending. No acceptance row/scenario or
+package is marked complete, and no public premium MCP tool is registered yet.
