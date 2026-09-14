@@ -49,3 +49,23 @@ interaction latencyp75<=200ms, CLS<=.1 over >=5 runs. Report lab, not field CWV.
 Premium route first-load compressed JS<=350KiB excluding separately measured shared
 runtime; disclose shared/incremental bytes and investigate >10% existing-route
 regression. Do not alter thresholds/fixtures to disguise a violation.
+
+## Implemented risk workspace
+
+/risk uses the existing account shell and fixed generated risk/history/source/X-ray
+clients. Runs, definitions, new analysis and result are typed URL views; each
+collection has an independent bounded cursor. Definitions use immutable versions,
+explicit calendar/frequency/rates/tail assumptions and revision checks. New analyses
+show retained snapshot/history/X-ray identities before an internal command. The UI
+never supplies return arrays or an owner identity. Source selections allow at most32
+instruments with one licensed total-return series each, preserving choices across
+source pages. Empty selection requests observed statistics only.
+
+Results use canonical persisted metrics and labeled unavailable reasons. Rolling
+charts reuse the historical renderer with explicit volatility units, disconnected
+gaps, UTC day labels and exact table values. Source details retain full timestamps.
+Status controls stop automatic polling after48 refreshes and suppress late command
+results on navigation. All internal writes recheck session origin/CSRF and service
+scopes/grants. No browser private-data cache or new Docker service is introduced.
+Component evidence is described in PHASE_3_IMPLEMENTATION_REPORT; final PWA and
+premium widget validation remain pending.

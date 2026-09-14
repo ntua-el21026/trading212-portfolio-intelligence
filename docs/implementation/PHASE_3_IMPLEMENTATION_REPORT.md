@@ -179,3 +179,60 @@ metadata selection could consume all remaining row inspections and leave no room
 for clearing, so repeated small passes never progressed. The helper now reserves
 space for both inspections without raising any row/byte bound or skipping a pending
 prefix. Earlier failed attempts and their corrections remain separately recorded.
+
+## P3-01 authenticated web workspace
+
+Physical retention was delivered as e94339ed5c60d9ddf3090d8e813e211f66f6745c,
+tree ba244400f8b4fee37183b2c12576d0b214ed8bbf. The unchanged pre-commit source
+passed3,167 Python unit/property/contract/security tests and70 real PostgreSQL
+migration/retention/service tests, plus Ruff, strict typing, boundary and contract
+gates. Original receipts remain in phase3-20260914; this is component validation.
+
+The risk route extends the existing authenticated account shell. Owners can create
+immutable assumptions, inspect version history, pin an owned snapshot and historical
+window, optionally select a benchmark/X-ray, select bounded sourced total-return
+assets, submit a durable analysis and inspect or cancel its job. Existing worker and
+PostgreSQL services execute the analysis. The browser fixture uses a bounded in-memory
+message transport into the real dispatcher, leases and isolated calculation child;
+it does not emulate the financial API or require another container.
+
+Canonical results display observed estimates separately from current-weight modeling,
+rolling volatility with gaps and paginated table alternatives, tail conventions,
+matrices, component reconciliation, concentration availability and retained source
+identity. Decimal strings remain authoritative; browser conversions occur only in
+existing chart geometry and presentation. An absent X-ray does not claim an HHI lower
+bound was calculated. Historical chart consumers retain the original default caption.
+
+URL selectors reject unknown/duplicate fields, invalid UUIDs, dates and signed-cursor
+syntax. Account changes retain only valid dates and mask the previous account view.
+Each server action reauthenticates the session and checks origin/CSRF, then dispatches
+one of four closed generated operations. Forms preserve command identity on retry,
+reset it when inputs change, discard late responses after navigation and disclose
+write-scope restrictions. Status polling is bounded to48 automatic refreshes.
+
+Thirty new unit regressions passed. The real signed local-session browser journey
+passed at1440,768 and360 pixels (web-browser-05,125.639 seconds): immutable version
+creation, actual worker completion, exact API volatility parity, matrix selection,
+missing-data labeling, keyboard focus, account switching/back navigation, foreign
+account/result denial and malformed filters. All three journeys had no browser
+warnings/errors and no document horizontal overflow in input and result views.
+Fifteen synthetic screenshots are retained; desktop and mobile captures were visually
+inspected. Browser plugin is unavailable; existing pinned Playwright was used.
+These checks do not claim the final Phase3 accessibility/performance budgets.
+
+Original failed browser attempts remain alongside their source bindings:01 rejected
+a fixture cursor key below256bits;02 expected the wrong existing page title and also
+recorded Next's generated dev-type imports;03 caught duplicate sibling React keys.
+The fixture key, expectation and panel identities were corrected.04 passed all three
+viewports before the concentration wording correction and expanded form captures.
+The source-bound web-working-01 gate passed in341.872 seconds:3,167 Python tests,
+574 web tests, three real API/worker browser journeys, Ruff, strict Python/TypeScript,
+repository/architecture/secrets/broker/generated-contract checks and production build.
+After two presentation-only chart caption/date changes, web-final-01 passed in145.194
+seconds: all574 web tests, all three browser viewports, lint/typecheck and production
+build. Both receipts record unchanged source during execution. Fifteen final captures
+remain with the original logs; the compact mobile chart was visually inspected.
+These are unchanged working-tree component receipts, not a final immutable release run.
+Full P3-01 acceptance, MCP/report integration, all other
+packages and immutable final-candidate validation remain pending; completion counts
+are unchanged. GitHub Actions remains deferred_by_owner and unverified.

@@ -65,7 +65,7 @@ export function accountSwitchHref(
     ? `/${section}`
     : pathname;
   const next = new URLSearchParams({ account: accountId });
-  const dateKeys = ["/performance", "/income"].includes(destination)
+  const dateKeys = ["/performance", "/income", "/risk"].includes(destination)
     ? ["start", "end"]
     : ["start_date", "end_date"];
   for (const key of dateKeys) {

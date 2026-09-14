@@ -2490,3 +2490,54 @@ a {
 .planning-table th > span {
   display: block;
 }
+
+/* Risk inputs and retained decimal evidence must remain usable on narrow screens. */
+.risk-page .risk-digest {
+  overflow-wrap: anywhere;
+}
+.risk-page fieldset {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 1rem;
+  grid-column: 1 / -1;
+  min-width: 0;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0.4rem;
+  padding: 1rem;
+}
+.risk-page fieldset > p,
+.risk-page fieldset > ul {
+  grid-column: 1 / -1;
+}
+.risk-page .risk-source-choice {
+  display: flex;
+  align-items: center;
+  overflow-wrap: anywhere;
+}
+.risk-page .risk-source-choice input {
+  width: 1.2rem;
+  min-height: 1.2rem;
+  flex: 0 0 1.2rem;
+}
+.risk-provenance {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 0.6rem;
+}
+.risk-provenance dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.risk-page .form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.risk-page .historical-metrics {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+.risk-page .historical-metrics .numeric {
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+}

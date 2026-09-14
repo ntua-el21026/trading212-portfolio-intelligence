@@ -43,12 +43,14 @@ export function HistoricalChart({
   series,
   unit,
   tableId,
+  ratioLabel = "return",
 }: Readonly<{
   label: string;
   rows: readonly HistoricalChartRow[];
   series: readonly HistoricalChartSeries[];
   unit: "ratio" | string;
   tableId: string;
+  ratioLabel?: string;
 }>) {
   const descriptionId = useId();
   const data: GeometryRow[] = rows.map((row) => {
@@ -65,7 +67,7 @@ export function HistoricalChart({
   return (
     <figure className="historical-figure">
       <figcaption>
-        {label} · {unit === "ratio" ? "return" : unit}
+        {label} · {unit === "ratio" ? ratioLabel : unit}
       </figcaption>
       <div
         className="historical-chart"

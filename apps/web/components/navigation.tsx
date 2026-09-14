@@ -34,6 +34,7 @@ const primaryItems = [
   { href: "/planner", icon: CircleDollarSign, label: "Planner" },
   { href: "/sources", icon: ShieldCheck, label: "Sources" },
   { href: "/performance", icon: TrendingUp, label: "Performance" },
+  { href: "/risk", icon: ShieldCheck, label: "Risk" },
   { href: "/income", icon: CircleDollarSign, label: "Income" },
   { href: "/xray", icon: ChartPie, label: "X-ray" },
   { href: "/reports", icon: FileText, label: "Reports" },

@@ -442,7 +442,16 @@
     "source_sha": null,
     "acceptance_claim": false,
     "current_candidate_pointer": "/current_candidate",
-    "historical_evidence_pointer": "/historical_evidence/phase_2"
+    "historical_evidence_pointer": "/historical_evidence/phase_2",
+    "component_status": {
+      "calculation": "implemented",
+      "persistence_and_worker": "implemented",
+      "rest_and_generated_client": "implemented",
+      "shared_physical_retention": "implemented",
+      "web_workspace": "implemented",
+      "mcp_and_reports": "pending",
+      "package_acceptance": "pending"
+    }
   },
   "phase_transition": {
     "authority": "repository_owner",

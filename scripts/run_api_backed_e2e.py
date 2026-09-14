@@ -27,9 +27,11 @@ from sqlalchemy import func, select
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session
 from trading212_analytics.planning import calculate_contribution_plan
+from trading212_analytics.risk_history import validate_risk_capacity
 from trading212_api.main import create_app
 from trading212_application.planning_jobs import PlanTaskMessage
 from trading212_application.report_jobs import ExportTaskMessage, ReportTaskMessage
+from trading212_application.risk_jobs import RiskTaskMessage
 from trading212_domain import build_synthetic_identity
 from trading212_persistence import (
     PostgresPlanningService,
@@ -38,6 +40,7 @@ from trading212_persistence import (
 )
 from trading212_persistence.models import SourceRecordModel, TransactionModel
 from trading212_persistence.report_job_store import PostgresReportJobStore
+from trading212_persistence.risk_job_store import PostgresRiskJobStore
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 from trading212_worker.plan_tasks import dispatch_plans_once, execute_plan_message
 from trading212_worker.report_seed import seed_synthetic_report_grants
@@ -47,6 +50,7 @@ from trading212_worker.report_tasks import (
     execute_export_message,
     execute_report_message,
 )
+from trading212_worker.risk_tasks import dispatch_risks_once, execute_risk_message
 from trading212_worker.scenarios import persist_quantity_cash_mismatch_scenario
 from trading212_worker.seed import SEED_TIME, seed_complete_synthetic, seed_materialized_synthetic
 
@@ -227,6 +231,30 @@ async def _deliver_fixture_plans(service: PostgresPlanningService, stopped: asyn
             await asyncio.wait_for(stopped.wait(), timeout=0.25)
 
 
+class _FixtureRiskPublisher:
+    """Bounded test transport; execution uses the real fenced, isolated risk worker."""
+
+    def __init__(self) -> None:
+        self.messages: Queue[RiskTaskMessage] = Queue(maxsize=4)
+
+    async def publish_risk(self, message: RiskTaskMessage) -> None:
+        self.messages.put_nowait(message)
+
+
+async def _deliver_fixture_risks(store: PostgresRiskJobStore, stopped: asyncio.Event) -> None:
+    publisher = _FixtureRiskPublisher()
+    while not stopped.is_set():
+        await dispatch_risks_once(store, publisher, dispatcher_id="browser-fixture")
+        while not publisher.messages.empty():
+            try:
+                message = publisher.messages.get_nowait()
+            except Empty:
+                break
+            await execute_risk_message(store, message, consumer_id="browser-fixture")
+        with suppress(TimeoutError):
+            await asyncio.wait_for(stopped.wait(), timeout=0.25)
+
+
 class _FixtureReportPublisher:
     """Bounded test transport for the production report dispatcher and consumer."""
 
@@ -292,6 +320,9 @@ def _exit_fixture(signum: int, frame: FrameType | None) -> NoReturn:
 def _serve_fixture(database_url: str) -> None:
     from scripts.api_e2e_timings import fixture_timings, timings_enabled
 
+    risk = os.environ.get("T212PI_E2E_RISK", "0")
+    if risk not in {"0", "1"}:
+        raise RuntimeError("The risk browser fixture selector must be 0 or 1.")
     historical = os.environ.get("T212PI_E2E_HISTORICAL", "0")
     if historical not in {"0", "1"}:
         raise RuntimeError("The historical browser fixture selector must be 0 or 1.")
@@ -308,7 +339,9 @@ def _serve_fixture(database_url: str) -> None:
     migration_config.set_main_option("script_location", str(_REPOSITORY_ROOT / "migrations"))
     migration_config.set_main_option("sqlalchemy.url", database_url)
     command.upgrade(migration_config, "head")
-    seed = seed_complete_synthetic if historical == "1" else seed_materialized_synthetic
+    seed = (
+        seed_complete_synthetic if historical == "1" or risk == "1" else seed_materialized_synthetic
+    )
     asyncio.run(seed(database_url, app_environment="test"))
 
     engine = create_database_engine(database_url)
@@ -369,6 +402,11 @@ def _serve_fixture(database_url: str) -> None:
         cursor_signing_key=b"browser-fixture-planning-cursor-key",
     )
     fixture_reports = PostgresReportJobStore(create_session_factory(control_engine))
+    fixture_risks = PostgresRiskJobStore(
+        create_session_factory(control_engine),
+        cursor_signing_key=b"browser-fixture-risk-cursor-key-v1",
+        preflight=validate_risk_capacity,
+    )
     original_lifespan = app.router.lifespan_context
 
     @asynccontextmanager
@@ -378,6 +416,8 @@ def _serve_fixture(database_url: str) -> None:
             try:
                 async with asyncio.TaskGroup() as deliveries:
                     deliveries.create_task(_deliver_fixture_plans(fixture_plans, stopped))
+                    if risk == "1":
+                        deliveries.create_task(_deliver_fixture_risks(fixture_risks, stopped))
                     if reports == "1" or alerts == "1":
                         deliveries.create_task(_deliver_fixture_reports(fixture_reports, stopped))
                     try:
