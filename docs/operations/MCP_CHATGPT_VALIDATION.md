@@ -1,6 +1,6 @@
 # MCP Inspector and ChatGPT Developer Mode Validation
 
-**Status:** Phase 1 operational procedure
+**Status:** Current local MCP procedure; public validation remains external
 **External gate:** public HTTPS/OAuth deployment and ChatGPT connection remain
 `blocked_external` until the owner supplies that environment and runs this
 procedure.
@@ -34,18 +34,17 @@ npx @modelcontextprotocol/inspector@latest
 Select **Streamable HTTP**, enter `http://127.0.0.1:8001/mcp`, and initialize.
 Capture the Inspector package version used in the validation record. Verify:
 
-1. exactly these nine tools are discovered: `get_account_summary`,
-   `get_portfolio_snapshot`, `list_positions`, `list_recent_transactions`,
-   `get_dividend_summary`, `get_direct_allocation`,
-   `compare_portfolio_snapshots`, `get_reconciliation_status`, and
-   `get_data_quality_summary`;
-2. every descriptor is read-only, non-destructive, idempotent, closed-world, and
-   has a bounded input/output schema plus the documented authentication metadata;
+1. exactly28 tools are discovered: the preserved25 Phase2 tools and
+   create_risk_run, get_risk_summary and get_risk_matrix; compare every descriptor
+   with the current frozen registries and executable contract tests;
+2. all descriptors are non-destructive, idempotent and closed-world. Internal
+   planning/report/risk creation is correctly marked as a write; all other tools
+   are reads. Each has bounded schemas and exact authentication metadata;
 3. repeated identical calls return equivalent canonical values;
 4. invalid/extra input keys, malformed cursors, excessive limits, unknown IDs,
    and cross-account access fail with bounded sanitized errors;
 5. empty, stale, partial, unavailable, and provider-failure states remain explicit;
-6. `get_portfolio_snapshot` attaches the versioned
+6. six declared resources render; `get_portfolio_snapshot` attaches the versioned
    `ui://trading212-portfolio/snapshot-v1.html` resource and the widget renders;
 7. widget CSP connect/resource domain allowlists are empty and no credential,
    raw provider payload, or private error detail appears.
@@ -68,7 +67,7 @@ containing only approved synthetic or Demo read-only data. Before ChatGPT:
 - prove unauthenticated, invalid-token, wrong-audience, missing-scope, and
   cross-owner calls are denied;
 - confirm TLS, host/origin protections, CSP, redaction, bounded schemas, and all
-  nine tool annotations;
+  28 tool annotations;
 - verify `/health/live` and `/health/ready` disclose no dependency or secret
   details.
 
@@ -91,7 +90,7 @@ Do not paste a Trading 212 credential into ChatGPT; ChatGPT authenticates to thi
 application's MCP resource server only. Phase 1 validation does not require
 public directory submission.
 
-After discovery, review all nine schemas and annotations before enabling the
+After discovery, review all28 schemas and annotations before enabling the
 connection. Test direct requests, indirect discovery, follow-up conversation,
 repeated calls, the snapshot widget, empty/stale/partial/unavailable states,
 provider failure, and unsupported/mutating requests. Confirm ChatGPT preserves
@@ -100,7 +99,7 @@ does not imply trade execution or financial advice.
 
 Refresh metadata after any descriptor, schema, widget URI, CSP, or OAuth change.
 Record the staging URL, release SHA/image digest, OAuth issuer/audience (not
-tokens), Inspector version/results, ChatGPT connection time, nine-tool inventory,
+tokens), Inspector version/results, ChatGPT connection time, 28-tool inventory,
 widget evidence, negative tests, and any browser/console errors.
 
 Official references:

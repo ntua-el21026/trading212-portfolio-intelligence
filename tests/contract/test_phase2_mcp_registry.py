@@ -37,10 +37,12 @@ async def test_independent_exact_25_names_fields_scopes_and_annotations_after_p2
     server = create_runtime(security_settings=_settings()).server
     tools = await server.list_tools()
     expected_names = tuple(case.name for case in CASES)
-    assert len(tools) == len(set(expected_names)) == 25
-    assert {tool.name for tool in tools} == set(expected_names)
+    assert len(set(expected_names)) == 25
+    premium = {"create_risk_run", "get_risk_summary", "get_risk_matrix"}
+    assert len(tools) == 28
+    assert {tool.name for tool in tools} == set(expected_names) | premium
     assert tuple(tool.name for tool in tools[:9]) == expected_names[:9]
-    assert set(RESULT_MODELS) == set(expected_names)
+    assert set(RESULT_MODELS) == set(expected_names) | premium
     descriptors = {
         tool.name: tool.model_dump(mode="json", by_alias=True, exclude_none=True) for tool in tools
     }

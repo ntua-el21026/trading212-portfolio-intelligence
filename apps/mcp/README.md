@@ -1,132 +1,72 @@
-# Phase 1 MCP / ChatGPT integration
+# MCP / ChatGPT integration
 
-This service exposes the nine frozen read-only portfolio tools from
-`docs/integrations/CHATGPT_MCP_APP.md` over Streamable HTTP at `/mcp`. It uses the
-same `PortfolioService`, `Principal`, scopes, and account-ownership policy as the
-HTTP API. It contains no Trading 212 transport, SQL, generic HTTP/URL,
-filesystem, broker-path, or refresh tool.
+The Streamable HTTP service at /mcp currently exposes28 bounded tools: the original
+nine portfolio reads,16 Phase2 tools and three Phase3 risk tools. The frozen
+[Phase3 registry](../../docs/integrations/PHASE_3_MCP_TOOL_REGISTRY.md) defines the
+remaining additions; unfinished tools are not registered. Six static resources
+present snapshot, planning, performance, X-ray, report status and risk results.
 
-All nine tools invoke typed application-service queries. Position search/sort,
-transaction date/type filters, and cursor pagination are applied before rows reach
-the gateway. Dividend totals cover the full filtered period while the recent
-sample remains bounded. Explicit snapshot IDs use direct owner/account-scoped
-lookup. The gateway never collects a fixed prefix and presents it as complete.
+All financial values come from typed canonical application services backed by
+PostgreSQL. No tool accepts a broker path, method, arbitrary URL, SQL, filesystem
+path or shell command. create_contribution_plan, generate_portfolio_report and
+create_risk_run create bounded private application records with semantic idempotency;
+their annotations correctly declare writes. Every other tool is a read. There are
+no broker/provider requests in risk tools and no execution capability.
 
-Collection cursors are opaque signed tokens bound to resource, owner/account,
-filter/sort, immutable result membership or read cutoff, and last ordering key.
-Invalid, expired, tampered, or mismatched cursors fail safely. Tool cursor inputs
-permit the bounded token size required by this contract; callers must treat them
-as opaque.
+Risk creation requires portfolio:read, analytics:read and risk:write. Summary and
+matrix require the first two. Current principal/account grants and retained source
+licenses are checked by the service on every operation, including replay. The
+risk gateway bounds inputs to64KiB and complete results to2MiB, uses the existing
+RiskRunResponse/RiskMatrixResponse contracts and logs hashed identity references.
+The original25 tool input/output semantics and scopes remain preserved.
 
-## Local seeded inspection
+## Local execution and verification
 
-The unauthenticated local mode is deliberately disabled by default. Migrate and seed
-the local PostgreSQL database first, then enable local/test synthetic authentication
-explicitly:
+Use the existing project environment and one scoped PostgreSQL service. Migrate
+and seed synthetic data first; resolve DATABASE_URL through the local secret
+configuration. Synthetic authentication is disabled by default and may only be
+explicitly enabled for loopback local/test work:
 
 ```bash
-T212PI_ENVIRONMENT=test \
-T212PI_LOCAL_SYNTHETIC_AUTH_ENABLED=true \
-DATABASE_URL=postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/portfolio \
-T212PI_MCP_HOST=127.0.0.1 \
-T212PI_MCP_PORT=8001 \
+T212PI_ENVIRONMENT=test T212PI_LOCAL_SYNTHETIC_AUTH_ENABLED=true \
+T212PI_MCP_HOST=127.0.0.1 T212PI_MCP_PORT=8001 \
 uv run --package trading212-mcp python -m trading212_mcp.main
 ```
 
-In another terminal:
+Health paths are /health/live and /health/ready. Without DATABASE_URL or configured
+authentication the CLI fails closed. For tests use the pinned project environment:
 
 ```bash
-uv run python -c \
-  "from trading212_application.services import SyntheticPortfolioService as S; print(S.ACCOUNT_ID)"
-npx @modelcontextprotocol/inspector@latest
+uv run pytest tests/contract/test_mcp_contract.py tests/contract/test_phase2_mcp_registry.py tests/unit/mcp/test_risk_gateway.py
+uv run pytest tests/integration/test_risk_mcp_postgres.py tests/integration/test_real_jwt_mcp_postgres.py
 ```
 
-Select **Streamable HTTP**, enter `http://127.0.0.1:8001/mcp`, initialize, and
-verify that exactly nine tools are listed. Exercise each tool with the opaque
-seeded account ID printed above, including invalid cursors, limits, identifiers,
-date ranges, extra input keys, and repeated identical calls. Health endpoints are
-`GET /health/live` and `GET /health/ready`.
+Integration fixtures create and remove temporary databases in the existing
+PostgreSQL container. They use real signed tokens, SDK transport and persisted
+current grants; risk execution uses the real isolated worker. They do not claim
+public OAuth/ChatGPT registration or final Phase3 acceptance.
 
-Use more than one page when inspecting positions or transactions and verify that
-the returned exact total remains stable. `get_dividend_summary` returns a bounded
-recent sample plus full-period database totals; it is not a substitute collection
-listing.
+## Authentication and static resources
 
-### Containerized local synthetic mode
+Deployed composition requires a shared trusted bearer authenticator, exact issuer
+and resource audience, HTTPS public_base_url, explicit allowed hosts/origins and
+an explicit cursor key. Credentials remain outside the repository. Existing
+identity, malformed-claim and trusted-key regressions remain mandatory. Local
+synthetic mode must never be exposed through a public tunnel.
 
-Containerized local development may need the process to listen on all container
-interfaces while Docker publishes it only on host loopback. That exception is
-local-only and must be explicit:
+All resources use text/html;profile=mcp-app, hash-based document CSP and empty
+connect/resource allowlists. Risk initializes the stable MCP Apps2026-01-26 bridge,
+then permits only host-mediated get_risk_summary/get_risk_matrix for the current
+account/run. One read may be pending for15 seconds. Partial inputs, cancellation,
+errors, account changes and teardown clear previous financial content. The
+feature-detected window.openai.callTool/toolOutput fallback preserves existing
+compatibility. See [widget boundaries](WIDGET_PRESENTATION.md).
 
-```text
-T212PI_MCP_HOST=0.0.0.0
-T212PI_MCP_ALLOW_NON_LOOPBACK_LOCAL_SYNTHETIC_BIND=true
-```
+mcp==2.1.1 remains pinned. Its Tool model lacks top-level securitySchemes, so the
+existing _meta.securitySchemes compatibility mirror is emitted with exact scopes.
+No top-level support or public deployment is claimed. Official references:
 
-Use it only with a loopback host-port mapping such as
-`127.0.0.1:8001:8001`; never use this synthetic mode on an
-Internet-reachable listener.
-
-## Deployed authentication composition
-
-Production must construct `create_runtime(...)` with:
-
-- `DATABASE_URL` for the shared canonical PostgreSQL service, or an explicitly
-  injected `PortfolioService` in a deployment composition root;
-- a shared `BearerAuthenticator` (normally `JwtAuthenticator` resolved through the
-  deployment secret-provider boundary);
-- `SecuritySettings.issuer` for OAuth discovery;
-- `McpSettings.public_base_url` for the HTTPS resource server URL;
-- explicit allowed hosts and origins.
-
-The MCP SDK then protects `/mcp`, publishes OAuth protected-resource metadata, and
-maps the validated token to the shared `Principal`. Application services enforce
-the exact `portfolio:read` and `activity:read` scopes plus account ownership.
-`get_data_quality_summary` requires both scopes because it reports portfolio and
-activity coverage.
-Starting the CLI without `DATABASE_URL`, or without either deployment bearer
-authentication or explicit local/test synthetic authentication, fails closed.
-
-## ChatGPT Developer Mode
-
-Use a public HTTPS development tunnel or Secure MCP Tunnel; never expose the local
-synthetic mode on an Internet-reachable endpoint. For an authenticated deployment:
-
-1. Verify the public `https://<host>/mcp` URL and OAuth discovery with MCP Inspector.
-2. In ChatGPT, open **Settings → Security and login** and enable **Developer mode**.
-3. Open ChatGPT Plugins, select the plus button, and add the complete HTTPS `/mcp`
-   URL (or select the configured Secure MCP Tunnel).
-4. Review the nine discovered schemas/annotations, authenticate, then test direct,
-   indirect, follow-up, empty, stale, partial, provider-failure, and unsupported
-   requests. Refresh metadata after descriptor or widget changes.
-
-Live registration is an external deployment gate until a public domain and OAuth
-configuration are supplied; local tests do not claim that gate passed.
-
-## Apps resource and CSP
-
-Only `get_portfolio_snapshot` attaches
-`ui://trading212-portfolio/snapshot-v1.html`. The dependency-free card consumes
-`ui/notifications/tool-result` through the MCP Apps bridge first, feature-detects
-`window.openai.toolOutput` only as a compatibility fallback, and renders untrusted
-data via `textContent`. It performs no network requests or subframing, so both CSP
-domain allowlists are exactly empty. Change the resource URI when HTML, CSS, or
-JavaScript changes incompatibly.
-
-## Pinned SDK compatibility gate
-
-`mcp==2.1.1` is pinned. Its `mcp.types.Tool` wire model does not contain the
-top-level `securitySchemes` extension documented by OpenAI, so serializing such a
-field through the supported Python model is impossible. Every descriptor emits the
-official `_meta.securitySchemes` compatibility mirror with its exact OAuth scopes;
-`tests/contract/test_mcp_contract.py` locks this behavior and records the absent
-top-level field as an upstream SDK gate. Do not fabricate top-level support or
-silently remove authentication metadata.
-
-Official references used for this implementation:
-
-- <https://developers.openai.com/plugins/build/mcp-server>
-- <https://developers.openai.com/plugins/build/chatgpt-ui>
-- <https://developers.openai.com/plugins/plan/tools>
-- <https://developers.openai.com/plugins/reference>
-- <https://developers.openai.com/plugins/deploy/connect-chatgpt>
+- [MCP server](https://developers.openai.com/plugins/build/mcp-server)
+- [ChatGPT UI](https://developers.openai.com/plugins/build/chatgpt-ui)
+- [Tool metadata](https://developers.openai.com/plugins/reference)
+- [Stable MCP Apps protocol](https://github.com/modelcontextprotocol/ext-apps/blob/main/specification/2026-01-26/apps.mdx)

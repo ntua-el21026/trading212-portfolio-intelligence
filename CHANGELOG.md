@@ -4,6 +4,8 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+- Add three scoped risk MCP tools and an isolated interactive resource over canonical persisted results.
+
 - Add the authenticated risk workspace with immutable definitions, retained-input runs, canonical result tables/charts and bounded job controls.
 
 ### Phase 3 authorized for implementation

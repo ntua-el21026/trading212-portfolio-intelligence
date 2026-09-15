@@ -50,7 +50,7 @@ async def test_exact_four_historical_tools_have_frozen_scopes_fields_annotations
 ):
     server = create_runtime().server
     tools = await server.list_tools()
-    assert len(tools) == 25 and tuple(tool.name for tool in tools[15:19]) == HISTORICAL_TOOL_NAMES
+    assert len(tools) == 28 and tuple(tool.name for tool in tools[15:19]) == HISTORICAL_TOOL_NAMES
     common = {"account_id", "start_date", "end_date", "source_cutoff_at", "reporting_currency"}
     extras = (
         {"method", "frequency"},

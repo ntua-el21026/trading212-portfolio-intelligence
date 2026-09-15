@@ -59,3 +59,18 @@ loading/errors/retry, accessible tables, focus/reduced motion are required.
 Local signed-JWT/browser tests cover exact38 descriptors, strict schema/annotations,
 scopes/CSP, command conflict/concurrent replay, bounded outputs and zero broker/provider
 dispatch. Public ChatGPT registration remains separately unverified.
+
+
+## Current implementation checkpoint
+
+Risk tools26-28 and risk-v1.html are implemented. The executable registry currently
+contains28 tools and6 resources; the original25 remain in order with their exact
+inputs, scopes and outputs. The remaining ten premium tools and five new resources
+are unregistered until their service implementations exist. This is not final P3-05
+acceptance or public ChatGPT registration. Risk result envelopes wrap the same
+RiskRunResponse/RiskMatrixResponse used by REST, with a closed safe error alternative.
+Risk widget reads use tools/call after host capability negotiation, with the existing
+window.openai.callTool compatibility fallback when available. Refresh is limited to
+summary/matrix for the displayed owned account/run, one pending read and15 seconds.
+Partial inputs, cancellation, errors and teardown clear financial content; late
+responses cannot replace a new account/run selection. No broker command is available.

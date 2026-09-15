@@ -22,6 +22,7 @@ from .planning_schemas import (
     DriftAnalysisToolResult,
 )
 from .report_schemas import GenerateReportToolResult, ReportListToolResult, ReportStatusToolResult
+from .risk_schemas import RiskMatrixToolResult, RiskRunToolResult
 from .target_schemas import VirtualPieResult, VirtualPiesResult
 from .xray_schemas import XrayExposureToolResult, XrayOverlapToolResult
 
@@ -426,4 +427,7 @@ RESULT_MODELS: dict[str, type[BaseModel]] = {
     "get_report_status": ReportStatusToolResult,
     "generate_portfolio_report": GenerateReportToolResult,
     "get_alert_summary": AlertSummaryToolResult,
+    "create_risk_run": RiskRunToolResult,
+    "get_risk_summary": RiskRunToolResult,
+    "get_risk_matrix": RiskMatrixToolResult,
 }

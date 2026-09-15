@@ -1,8 +1,14 @@
 # Widget presentation boundaries
 
+Current Phase3 implementation exposes28 tools and6 resources. The five Phase2
+resources retain their accepted contracts; risk-v1.html is the additive resource
+described below. Phase3 local acceptance and independent review remain pending.
+
+## Historical Phase2 evidence
+
 The five MCP resources have scoped local P209 acceptance at `d70ab445de38aee255275880c5ef7a105ebbb939`, with actual widget cases and reviewed captures retained in [P209 scoped evidence](../../docs/implementation/evidence/phase-2-p2-09-d70ab44.json). Rendering bounds and compatibility remain as described below. Final shared local scenarios and the actual P210 runtime/teardown are separately bound by [final P210 local evidence](../../docs/implementation/evidence/phase-2-p2-10-3998426.json) at 3998426aa7e7614e421518efd01b08188e194100. Live ChatGPT registration remains an external condition. Postacceptance housekeeping is recorded in the separate post-delivery receipt.
 
-P2-09 and its assigned S33 authorization scenario are complete at `bd47329cca5c1409486fff40d48e92163ab4a8af` in the [S33 supplement](../../docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json). This adds authorization and relevant build/security evidence; it does not create new widget/browser/visual observations. Phase 2 is locally complete at 3998426aa7e7614e421518efd01b08188e194100: 10/10 packages (100%), 29/29 local rows and 40/40 scenarios. P2-10 and the shared local predicates are complete under the final same-source acceptance. Phase 3 remains not_started. GitHub Actions remains owner-deferred and unverified, with no CI pass claim. The final Phase 2 release evidence SHA is 3998426aa7e7614e421518efd01b08188e194100. See [final P210 local evidence](../../docs/implementation/evidence/phase-2-p2-10-3998426.json).
+P2-09 and its assigned S33 authorization scenario are complete at `bd47329cca5c1409486fff40d48e92163ab4a8af` in the [S33 supplement](../../docs/implementation/evidence/phase-2-p2-09-s33-bd47329.json). This adds authorization and relevant build/security evidence; it does not create new widget/browser/visual observations. Phase 2 is locally complete at 3998426aa7e7614e421518efd01b08188e194100: 10/10 packages (100%), 29/29 local rows and 40/40 scenarios. P2-10 and the shared local predicates are complete under the final same-source acceptance. At that historical checkpoint Phase3 was not_started. GitHub Actions remains owner-deferred and unverified, with no CI pass claim. The final Phase 2 release evidence SHA is 3998426aa7e7614e421518efd01b08188e194100. See [final P210 local evidence](../../docs/implementation/evidence/phase-2-p2-10-3998426.json).
 
 The five static resources keep their existing URI, MIME, and Python export names:
 
@@ -14,7 +20,7 @@ The five static resources keep their existing URI, MIME, and Python export names
 | `ui://trading212-portfolio/xray-v1.html` | `XRAY_WIDGET_HTML` | Effective exposure and overlap |
 | `ui://trading212-portfolio/report-status-v1.html` | `REPORT_WIDGET_HTML` | Private report job status |
 
-All remain `text/html;profile=mcp-app`. Registry metadata and the exact 25 tools,
+All five remain `text/html;profile=mcp-app`. Their registry metadata and25 tools,
 including the original nine input/output contracts, belong to the server layer.
 
 Rendering uses canonical returned strings and explicit units. No widget converts
@@ -64,11 +70,24 @@ Protocol reference: [MCP Apps stable 2026-01-26 specification](https://github.co
 Host-to-View notifications and lifecycle sections. The installed mcp/mcp_types
 2.1.1 source supplies the CallToolResult structured_content/is_error Python names.
 
-## Historical P209 implementation status
+## Additive risk resource
 
-The five MCP resources present canonical results within local display bounds.
-P209 implementation is in progress. Focused desktop/mobile browser and image
-review checks passed on the corrected working source; immutable acceptance remains
-pending. Registry and service
-acceptance are tracked in the
-[P209 implementation record](../../docs/integrations/P2_09_MCP_REGISTRY_ACCEPTANCE.md).
+ui://trading212-portfolio/risk-v1.html uses the same MIME and CSP rules. Its three
+attached tools return canonical risk run/matrix DTOs. The widget does not create
+runs; it exposes explicit authorized reads through tools/call after ui/initialize
+negotiates host serverTools support. The compatibility callTool fallback is used
+only when available. No external asset, provider, download or arbitrary tool is
+accessible. Error text and untrusted source/definition text enter textContent.
+
+Only one read is pending, with a15-second timeout. Request IDs and a selection
+generation bind responses to the current account/run; partial input notifications,
+account changes, cancellation and teardown discard old responses. No financial
+state is persisted. Canonical strings are displayed without float conversion;
+matrices are at most32 square, rolling tables show50 of at most3660 points, and
+source/warning previews show exact omissions. The full UTF-8 result bound is2MiB.
+
+Local iframe tests cover the standard lifecycle, fallback, keyboard, reduced motion,
+360/768/1440-pixel layouts, exact/unavailable states, malformed numeric input,
+untrusted markup, wrong senders, late replies and read timeout. Source-bound logs
+and reviewed synthetic captures are retained as component evidence. This is not a
+live ChatGPT test or final premium accessibility/performance acceptance.

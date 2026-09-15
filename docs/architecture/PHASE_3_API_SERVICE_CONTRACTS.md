@@ -50,6 +50,13 @@ same named RiskResult, ScenarioResult or ProjectionResult across API/MCP/reports
 
 ## Risk contracts
 
+Risk MCP preserves accepted correlation IDs up to128 characters in response
+metadata. Audit storage retains IDs up to120 characters unchanged; longer accepted
+IDs use `sha256:` followed by the full SHA-256 hex digest of the UTF-8 identity.
+This reference never truncates the ID or changes semantic idempotency. Stored
+command/audit fields remain bounded to120. HTTP retains its existing120-character
+correlation acceptance rule and replaces invalid supplied IDs with a generated UUID.
+
 RiskDefinitionContent contains name, description, return_kind=simple|log,
 frequency=daily|monthly, calendar reference, annual risk-free and minimum acceptable
 return assumptions, rolling window count, confidence=.90|.95|.99, horizon,

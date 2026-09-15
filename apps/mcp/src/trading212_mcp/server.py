@@ -23,6 +23,7 @@ from trading212_application.alerts import AlertService
 from trading212_application.historical import PerformanceIntelligenceService
 from trading212_application.planning import PlanningService
 from trading212_application.reports import ReportService
+from trading212_application.risk import RiskService
 from trading212_application.services import PortfolioService, SyntheticPortfolioService
 from trading212_application.targets import TargetService
 from trading212_application.xray import XrayService
@@ -46,6 +47,8 @@ from .planning_gateway import PlanningMcpGateway
 from .planning_tools import PLANNING_TOOL_NAMES, register_planning_tools
 from .report_gateway import ReportMcpGateway
 from .report_tools import REPORT_TOOL_NAMES, register_report_tools
+from .risk_gateway import RiskMcpGateway
+from .risk_tools import RISK_TOOL_NAMES, register_risk_tools
 from .schemas import (
     AccountSummaryResult,
     ActivityTypeFilter,
@@ -84,6 +87,7 @@ FROZEN_TOOL_NAMES = (
     *XRAY_TOOL_NAMES,
     *REPORT_TOOL_NAMES,
     *ALERT_TOOL_NAMES,
+    *RISK_TOOL_NAMES,
 )
 
 AccountId = Annotated[
@@ -118,6 +122,7 @@ class McpRuntime:
     xray_service: XrayService | None = None
     report_service: ReportService | None = None
     alert_service: AlertService | None = None
+    risk_service: RiskService | None = None
 
     def asgi_app(self) -> ASGIApp:
         transport_security = TransportSecuritySettings(
@@ -149,6 +154,7 @@ def create_runtime(
     xray_service: XrayService | None = None,
     report_service: ReportService | None = None,
     alert_service: AlertService | None = None,
+    risk_service: RiskService | None = None,
     database_url: str | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -245,6 +251,17 @@ def create_runtime(
                 cursor_ttl_seconds=security.cursor_ttl_seconds,
             )
 
+        if risk_service is None:
+            from trading212_analytics.risk_history import validate_risk_capacity
+            from trading212_persistence.risk_service import PostgresRiskService
+
+            risk_service = PostgresRiskService(
+                create_session_factory(engine),
+                clock=runtime_clock,
+                cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+                preflight=validate_risk_capacity,
+            )
+
         async def database_readiness() -> bool:
             def probe() -> bool:
                 try:
@@ -293,8 +310,8 @@ def create_runtime(
         title="Trading 212 Portfolio Intelligence",
         description="Private portfolio observations, canonical analytics, and virtual targets.",
         instructions=(
-            "Read the authenticated user's canonical portfolio and create only authorized "
-            "internal manual contribution-planning requests with an idempotency identity. "
+            "Read the authenticated user's canonical portfolio. Create only the registered, "
+            "authorized internal planning, report and risk requests with idempotency identities. "
             "Values are observations or deterministic analytics, never trade instructions; "
             "preserve quality warnings, timestamps, unavailable fields, and reporting currency."
         ),
@@ -351,6 +368,11 @@ def create_runtime(
         server,
         AlertMcpGateway(service=alert_service, principals=principal_resolver, clock=runtime_clock),
     )
+    register_risk_tools(
+        server,
+        RiskMcpGateway(service=risk_service, principals=principal_resolver, clock=runtime_clock),
+        widget_domain=transport.widget_domain,
+    )
     return McpRuntime(
         server=server,
         service=portfolio_service,
@@ -363,6 +385,7 @@ def create_runtime(
         xray_service=xray_service,
         report_service=report_service,
         alert_service=alert_service,
+        risk_service=risk_service,
     )
 
 

@@ -449,7 +449,8 @@
       "rest_and_generated_client": "implemented",
       "shared_physical_retention": "implemented",
       "web_workspace": "implemented",
-      "mcp_and_reports": "pending",
+      "mcp_tools_and_widget": "implemented",
+      "reports": "pending",
       "package_acceptance": "pending"
     }
   },

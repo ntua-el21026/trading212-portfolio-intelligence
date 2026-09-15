@@ -23,7 +23,8 @@ Phase 3 is in progress toward `1.0.0`. P3-01 now has canonical history and a
 complete calculation object, normalized storage, bounded durable worker, typed REST
 operations, a generated client, shared physical retention and the authenticated risk
 workspace. Web component tests and the actual API/isolated-worker browser flow pass;
-MCP/report delivery and package-wide verification remain pending.
+The three risk MCP tools and sixth resource are implemented with signed transport
+and widget component checks. Risk reports and package-wide verification remain pending.
 Final local validation remains pending; independent review will remain pending for the new
 candidate. GitHub Actions is `deferred_by_owner`, unverified. Production
 release/deployment, paid-provider purchases and Live are not authorized.

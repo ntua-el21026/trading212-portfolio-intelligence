@@ -1279,6 +1279,7 @@ version = "0.2.0"
 source = { editable = "apps/mcp" }
 dependencies = [
     { name = "mcp" },
+    { name = "trading212-analytics" },
     { name = "trading212-api-contracts" },
     { name = "trading212-application" },
     { name = "trading212-domain" },
@@ -1290,6 +1291,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "mcp", specifier = "==2.1.1" },
+    { name = "trading212-analytics", editable = "packages/analytics" },
     { name = "trading212-api-contracts", editable = "packages/api-contracts" },
     { name = "trading212-application", editable = "packages/application" },
     { name = "trading212-domain", editable = "packages/domain" },

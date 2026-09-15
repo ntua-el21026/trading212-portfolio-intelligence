@@ -236,3 +236,94 @@ These are unchanged working-tree component receipts, not a final immutable relea
 Full P3-01 acceptance, MCP/report integration, all other
 packages and immutable final-candidate validation remain pending; completion counts
 are unchanged. GitHub Actions remains deferred_by_owner and unverified.
+
+
+## P3-01 MCP tools and risk resource
+
+The web workspace was delivered at e27f8b408c6613ea8f1b6762877840a328e70b42,
+tree2e0e14b3d6ec1e894932ba732567ecac7a6a50dc. Its source-bound component receipts
+and reviewed patch are retained in web-delivery.json. Inactive Next development
+outputs of233,442,692 logical bytes were removed after checking consumers; the
+production build, dependencies and evidence were preserved.
+
+The MCP registry now appends create_risk_run, get_risk_summary and get_risk_matrix
+to the original25 names, with exactly6 resources. The gateway uses the canonical
+PostgreSQL risk service, existing current grants/licenses and the unchanged pinned
+SDK. Scope, strict nested input, output schema, source/owner identity,64KiB input
+and2MiB complete output bounds are enforced. Malformed server result objects fail
+as INTERNAL_ERROR, not as user validation errors. Audit logs contain only fixed
+operation/outcome names and hashed account/correlation references. The only lock
+change adds the existing workspace analytics package to MCP composition.
+
+The risk resource uses the stable MCP Apps2026-01-26 postMessage lifecycle with
+host-capability negotiation. Refresh calls only the two frozen risk reads, with one
+pending request, a15-second timeout and account/run generation checks. Standard
+structuredContent and compatibility callTool/toolOutput are supported. Canonical
+Decimal strings, unavailable reasons, source/omission counts, regularization,
+contribution residuals and risk conventions are rendered through textContent;
+no browser financial recomputation, private persisted state or network requests.
+Tables have captions, focusable scroll regions, keyboard controls and reduced motion.
+The complete UTF-8 envelope is bounded before rendering.
+
+Focused evidence:38 new unit cases passed, plus the original registry contract
+checks. risk-mcp-widget-02 passed7 iframe host tests in6.5 seconds, including
+1440/768/360-pixel presentation, exact values, keyboard/reduced motion, closed reads,
+late foreign-account replies, malformed inputs, cancellation, timeout, teardown and
+compatibility fallback. Three real PostgreSQL/signed SDK tests passed in81.16 seconds
+under risk-mcp-postgres-03 (82.859-second harness): concurrent semantic replay,
+actual isolated worker, HTTP/MCP/canonical parity, revoked current scopes, strict
+issuer/audience/expiry claims, denied source rights before private decode, and a
+real X-ray capture pinned through the worker and returned digest. The latter
+registers the required policy; it does not invent missing issuer/source coverage.
+
+Original failed attempts remain retained. The first widget attempt found a fixture
+using Locator.evaluate's element argument as its supplied payload. The first PG
+attempt found lazy SDK lifespan initialization and missing X-ray policy setup;
+the second found that the SDK validates OAuth expiry against real wall time.
+Authentication tests now mint current ephemeral tokens with the real authentication
+clock, while source/calculation time stays fixed. Rights-revocation cases use
+separate disposable databases in the same PostgreSQL container. No authentication
+check or financial source policy was weakened. The broader final component gate
+and UTF-8/absent-result browser follow-up are recorded separately before delivery.
+Risk reports, full P3-01 acceptance, P3-02..P3-10 and final immutable validation remain
+pending; no package/acceptance/scenario completion count is advanced. CI remains
+deferred_by_owner/unverified and independent review is pending.
+
+
+The 2026-09-15 component follow-up retained the initial broad-gate failure:
+3,204 Python cases passed and one stale assertion still expected the original25th
+tool to be last. The corrected contract verifies that original position plus all
+three appended names. A read-only internal review then found and corrected two
+edge cases: complete invalid/uppercase input notifications could lose widget
+account/run guards, and MCP accepts128-character correlation IDs while durable
+audit storage permits120. The widget now canonicalizes valid UUIDs, blocks invalid
+or incomplete pins and verifies nullable X-ray pins. Longer MCP correlation IDs
+use a full SHA-256 audit reference; response metadata retains the original ID.
+HTTP keeps its existing120-character acceptance rule. No migration or financial
+identity changed. New tests cover these boundaries and current replay semantics.
+
+risk-mcp-final-local-04 retained unchanged source throughout: all3,208 Python
+unit/property/contract/security cases passed in193.61 seconds, all19 iframe widget
+cases passed in24.3 seconds (including9 risk cases), and the MCP sdist/wheel built.
+Ruff, strict typing (665 files), generated-contract freshness, web lint/typecheck,
+repository/workspace/architecture/secrets/broker-boundary checks passed. The harness
+exit was2 solely because git diff --check found a trailing documentation blank
+line; that line was removed without changing executable bytes. The original
+failed receipt is preserved, not relabelled. The final360-pixel capture was visually
+inspected; three widths have actual captures and no-overflow/keyboard checks.
+
+risk-mcp-final-postgres-05 then passed51 real PostgreSQL cases in114.54 seconds:
+three risk SDK/worker cases,46 preserved signed-JWT transport cases and two API/MCP
+parity cases. The risk command case also checks the actual persisted bounded audit
+reference and unchanged semantic replay under a different accepted correlation ID.
+The earlier resumed PG attempt failed before execution because Docker was stopped.
+Desktop recovery moved only obsolete runtime sockets and restored process-local
+Windows executable lookup. The same sole PostgreSQL container became healthy,
+with1 CPU/1 GiB limits; no volumes/images/configuration were reset or replaced.
+Recovery originals and receipts live in the portable Windows artifacts directory.
+
+The exact pre-documentation file hash/mode manifest and gate receipts are retained
+outside the checkout. Only this report and the widget documentation whitespace
+changed after the broad local gate; the PostgreSQL gate uses the final executable
+bytes. These are component pre-commit checks, not an immutable final-candidate run.
+Risk report delivery and all Phase3 package acceptance remain pending.
