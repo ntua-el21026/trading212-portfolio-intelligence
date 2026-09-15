@@ -799,3 +799,12 @@ export type {
 } from "./risk-transport";
 
 export * from "./premium-reports.generated";
+
+export * from "./scenarios.generated";
+export { ScenarioApiError } from "./scenario-transport";
+export type {
+  ScenarioApiResponse,
+  ScenarioClientOptions,
+  ScenarioReadOptions,
+  ScenarioCommandOptions,
+} from "./scenario-transport";

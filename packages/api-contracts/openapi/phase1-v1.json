@@ -5411,6 +5411,12 @@
         "title": "CancelRiskRunRequest",
         "type": "object"
       },
+      "CancelScenarioRunRequest": {
+        "additionalProperties": false,
+        "properties": {},
+        "title": "CancelScenarioRunRequest",
+        "type": "object"
+      },
       "CapabilityQualityResponse": {
         "additionalProperties": false,
         "properties": {
@@ -7016,6 +7022,84 @@
           "content"
         ],
         "title": "CreateRiskVersionRequest",
+        "type": "object"
+      },
+      "CreateScenarioRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/ScenarioVersionContent"
+          }
+        },
+        "required": [
+          "content"
+        ],
+        "title": "CreateScenarioRequest",
+        "type": "object"
+      },
+      "CreateScenarioRunRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "portfolio_snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Portfolio Snapshot Id",
+            "type": "string"
+          },
+          "replay": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScenarioReplaySelection"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "scenario_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Scenario Version Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "xray_run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Xray Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_version_id",
+          "portfolio_snapshot_id",
+          "xray_run_id",
+          "reporting_currency",
+          "source_cutoff_at"
+        ],
+        "title": "CreateScenarioRunRequest",
+        "type": "object"
+      },
+      "CreateScenarioVersionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/ScenarioVersionContent"
+          }
+        },
+        "required": [
+          "content"
+        ],
+        "title": "CreateScenarioVersionRequest",
         "type": "object"
       },
       "CreateTargetVersionRequest": {
@@ -21526,6 +21610,3370 @@
         "title": "RiskWindow",
         "type": "object"
       },
+      "ScenarioBasisMismatch": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "enum": [
+              "method",
+              "numerical_profile",
+              "currency",
+              "holdings_basis",
+              "holdings_partition",
+              "knowledge_basis",
+              "market_window",
+              "source_cutoff"
+            ],
+            "title": "Field",
+            "type": "string"
+          },
+          "left": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Left",
+            "type": "string"
+          },
+          "right": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Right",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "left",
+          "right"
+        ],
+        "title": "ScenarioBasisMismatch",
+        "type": "object"
+      },
+      "ScenarioClassificationView": {
+        "additionalProperties": false,
+        "properties": {
+          "assignment_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "bucket_key": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bucket Key"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "decision_key": {
+            "anyOf": [
+              {
+                "maxLength": 1024,
+                "minLength": 1,
+                "pattern": "^[^\\x00]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Key"
+          },
+          "dimension": {
+            "enum": [
+              "sector",
+              "region"
+            ],
+            "title": "Dimension",
+            "type": "string"
+          },
+          "evidence_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "incompatible_taxonomy",
+                  "missing_economic_currency",
+                  "unsupported_economic_currency",
+                  "uncertain_exclusion",
+                  "uncertain_price_priority",
+                  "missing_sensitivity",
+                  "ambiguous_sensitivity",
+                  "unsupported_sensitivity",
+                  "incompatible_sensitivity_currency",
+                  "unknown_driver_equivalence",
+                  "missing_replay_mapping",
+                  "ambiguous_replay_mapping",
+                  "missing_replay_source",
+                  "fx_decomposition_unavailable",
+                  "historical_holdings_unavailable",
+                  "incompatible_basis",
+                  "uncertain_money",
+                  "zero_denominator"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "source_reference_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "state": {
+            "enum": [
+              "known",
+              "unknown",
+              "not_applicable"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "taxonomy_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taxonomy Id"
+          },
+          "taxonomy_version": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taxonomy Version"
+          },
+          "upstream_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_fx",
+                  "incomplete_valuation",
+                  "zero_denominator",
+                  "missing_mapping",
+                  "missing_source",
+                  "source_gap",
+                  "ambiguous_source",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "source_remainder",
+                  "depth_limit",
+                  "path_limit",
+                  "proof_limit",
+                  "cycle",
+                  "partial_basis",
+                  "unconfigured",
+                  "inconclusive_lower_bound",
+                  "reconciliation_difference"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstream Reason"
+          }
+        },
+        "required": [
+          "dimension",
+          "state",
+          "taxonomy_id",
+          "taxonomy_version",
+          "bucket_key",
+          "decision_key",
+          "assignment_ids",
+          "evidence_ids",
+          "source_reference_ids",
+          "reason",
+          "upstream_reason",
+          "confidence"
+        ],
+        "title": "ScenarioClassificationView",
+        "type": "object"
+      },
+      "ScenarioComparisonComponentView": {
+        "additionalProperties": false,
+        "properties": {
+          "after": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScenarioComponentView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "before": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScenarioComponentView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "impact": {
+            "$ref": "#/components/schemas/ScenarioDeltaView"
+          },
+          "path_key": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Path Key",
+            "type": "string"
+          },
+          "post_value": {
+            "$ref": "#/components/schemas/ScenarioDeltaView"
+          },
+          "root_key": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Root Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "root_key",
+          "path_key",
+          "before",
+          "after",
+          "post_value",
+          "impact"
+        ],
+        "title": "ScenarioComparisonComponentView",
+        "type": "object"
+      },
+      "ScenarioComparisonPage": {
+        "additionalProperties": false,
+        "properties": {
+          "after": {
+            "$ref": "#/components/schemas/ScenarioResultContextView"
+          },
+          "before": {
+            "$ref": "#/components/schemas/ScenarioResultContextView"
+          },
+          "compatible": {
+            "title": "Compatible",
+            "type": "boolean"
+          },
+          "components": {
+            "$ref": "#/components/schemas/ScenarioComponentPage_ScenarioComparisonComponentView_"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "impact": {
+            "$ref": "#/components/schemas/ScenarioDeltaView"
+          },
+          "mismatches": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioBasisMismatch"
+            },
+            "maxItems": 8,
+            "title": "Mismatches",
+            "type": "array"
+          },
+          "post_value": {
+            "$ref": "#/components/schemas/ScenarioDeltaView"
+          },
+          "view_version": {
+            "const": "scenario_compact_v1",
+            "default": "scenario_compact_v1",
+            "title": "View Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "before",
+          "after",
+          "compatible",
+          "mismatches",
+          "post_value",
+          "impact",
+          "components",
+          "content_digest"
+        ],
+        "title": "ScenarioComparisonPage",
+        "type": "object"
+      },
+      "ScenarioComponentPage_ScenarioComparisonComponentView_": {
+        "additionalProperties": false,
+        "properties": {
+          "component_limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Component Limit",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioComparisonComponentView"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "start_ordinal": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Start Ordinal",
+            "type": "integer"
+          },
+          "total": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "component_limit",
+          "total",
+          "start_ordinal"
+        ],
+        "title": "ScenarioComponentPage[ScenarioComparisonComponentView]",
+        "type": "object"
+      },
+      "ScenarioComponentPage_ScenarioComponentView_": {
+        "additionalProperties": false,
+        "properties": {
+          "component_limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Component Limit",
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioComponentView"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "start_ordinal": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Start Ordinal",
+            "type": "integer"
+          },
+          "total": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "component_limit",
+          "total",
+          "start_ordinal"
+        ],
+        "title": "ScenarioComponentPage[ScenarioComponentView]",
+        "type": "object"
+      },
+      "ScenarioComponentView": {
+        "additionalProperties": false,
+        "properties": {
+          "diagnostic_keys": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__"
+          },
+          "effects": {
+            "$ref": "#/components/schemas/ScenarioEffectsView"
+          },
+          "exposure": {
+            "$ref": "#/components/schemas/ScenarioExposureView"
+          },
+          "impact": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "matching_exclusion_keys": {
+            "items": {
+              "maxLength": 1024,
+              "minLength": 1,
+              "pattern": "^[^\\x00]*$",
+              "type": "string"
+            },
+            "maxItems": 128,
+            "title": "Matching Exclusion Keys",
+            "type": "array"
+          },
+          "money_basis": {
+            "enum": [
+              "resolved",
+              "zero_pre_value",
+              "provably_zero_effect",
+              "unavailable"
+            ],
+            "title": "Money Basis",
+            "type": "string"
+          },
+          "partition": {
+            "enum": [
+              "covered",
+              "uncovered",
+              "excluded"
+            ],
+            "title": "Partition",
+            "type": "string"
+          },
+          "post_value": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "replay_change": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScenarioReplayChangeView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rounding_residual": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "sensitivity_uses": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioSensitivityView"
+            },
+            "maxItems": 128,
+            "title": "Sensitivity Uses",
+            "type": "array"
+          },
+          "uncertain_rule_keys": {
+            "items": {
+              "maxLength": 1024,
+              "minLength": 1,
+              "pattern": "^[^\\x00]*$",
+              "type": "string"
+            },
+            "maxItems": 128,
+            "title": "Uncertain Rule Keys",
+            "type": "array"
+          },
+          "winning_price_rule_key": {
+            "anyOf": [
+              {
+                "maxLength": 1024,
+                "minLength": 1,
+                "pattern": "^[^\\x00]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Winning Price Rule Key"
+          }
+        },
+        "required": [
+          "exposure",
+          "partition",
+          "winning_price_rule_key",
+          "matching_exclusion_keys",
+          "uncertain_rule_keys",
+          "sensitivity_uses",
+          "effects",
+          "post_value",
+          "impact",
+          "rounding_residual",
+          "money_basis",
+          "diagnostic_keys",
+          "replay_change"
+        ],
+        "title": "ScenarioComponentView",
+        "type": "object"
+      },
+      "ScenarioCurrencySelector": {
+        "additionalProperties": false,
+        "properties": {
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "kind": {
+            "const": "economic_currency",
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "currency"
+        ],
+        "title": "ScenarioCurrencySelector",
+        "type": "object"
+      },
+      "ScenarioCurrencyView": {
+        "additionalProperties": false,
+        "properties": {
+          "assignment_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "basis": {
+            "enum": [
+              "economic_classification",
+              "snapshot_cash",
+              "constituent_cash",
+              "unknown"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "candidate_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Candidate Id"
+          },
+          "cash_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cash Id"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "decision_key": {
+            "anyOf": [
+              {
+                "maxLength": 1024,
+                "minLength": 1,
+                "pattern": "^[^\\x00]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Key"
+          },
+          "evidence_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "holding_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Holding Id"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "incompatible_taxonomy",
+                  "missing_economic_currency",
+                  "unsupported_economic_currency",
+                  "uncertain_exclusion",
+                  "uncertain_price_priority",
+                  "missing_sensitivity",
+                  "ambiguous_sensitivity",
+                  "unsupported_sensitivity",
+                  "incompatible_sensitivity_currency",
+                  "unknown_driver_equivalence",
+                  "missing_replay_mapping",
+                  "ambiguous_replay_mapping",
+                  "missing_replay_source",
+                  "fx_decomposition_unavailable",
+                  "historical_holdings_unavailable",
+                  "incompatible_basis",
+                  "uncertain_money",
+                  "zero_denominator"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "source_reference_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "state": {
+            "enum": [
+              "known",
+              "unknown"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "taxonomy_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taxonomy Id"
+          },
+          "taxonomy_version": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Taxonomy Version"
+          },
+          "upstream_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_fx",
+                  "incomplete_valuation",
+                  "zero_denominator",
+                  "missing_mapping",
+                  "missing_source",
+                  "source_gap",
+                  "ambiguous_source",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "source_remainder",
+                  "depth_limit",
+                  "path_limit",
+                  "proof_limit",
+                  "cycle",
+                  "partial_basis",
+                  "unconfigured",
+                  "inconclusive_lower_bound",
+                  "reconciliation_difference"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstream Reason"
+          }
+        },
+        "required": [
+          "state",
+          "currency",
+          "basis",
+          "decision_key",
+          "taxonomy_id",
+          "taxonomy_version",
+          "cash_id",
+          "candidate_id",
+          "holding_id",
+          "assignment_ids",
+          "evidence_ids",
+          "source_reference_ids",
+          "reason",
+          "upstream_reason"
+        ],
+        "title": "ScenarioCurrencyView",
+        "type": "object"
+      },
+      "ScenarioDefinitionResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "archived": {
+            "title": "Archived",
+            "type": "boolean"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "current_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Current Version Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "revision": {
+            "maximum": 512.0,
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "account_id",
+          "name",
+          "revision",
+          "archived",
+          "current_version_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ScenarioDefinitionResponse",
+        "type": "object"
+      },
+      "ScenarioDeltaView": {
+        "additionalProperties": false,
+        "properties": {
+          "after": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "before": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "difference": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          }
+        },
+        "required": [
+          "before",
+          "after",
+          "difference"
+        ],
+        "title": "ScenarioDeltaView",
+        "type": "object"
+      },
+      "ScenarioDiagnosticView": {
+        "additionalProperties": false,
+        "properties": {
+          "key": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Key",
+            "type": "string"
+          },
+          "path_key": {
+            "anyOf": [
+              {
+                "maxLength": 1024,
+                "minLength": 1,
+                "pattern": "^[^\\x00]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Path Key"
+          },
+          "reason": {
+            "enum": [
+              "missing_value",
+              "missing_identity",
+              "ambiguous_identity",
+              "missing_classification",
+              "ambiguous_classification",
+              "incompatible_taxonomy",
+              "missing_economic_currency",
+              "unsupported_economic_currency",
+              "uncertain_exclusion",
+              "uncertain_price_priority",
+              "missing_sensitivity",
+              "ambiguous_sensitivity",
+              "unsupported_sensitivity",
+              "incompatible_sensitivity_currency",
+              "unknown_driver_equivalence",
+              "missing_replay_mapping",
+              "ambiguous_replay_mapping",
+              "missing_replay_source",
+              "fx_decomposition_unavailable",
+              "historical_holdings_unavailable",
+              "incompatible_basis",
+              "uncertain_money",
+              "zero_denominator"
+            ],
+            "title": "Reason",
+            "type": "string"
+          },
+          "rule_key": {
+            "anyOf": [
+              {
+                "maxLength": 1024,
+                "minLength": 1,
+                "pattern": "^[^\\x00]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Key"
+          },
+          "source_reference_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "source_use_keys": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__"
+          },
+          "upstream_historical_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "unavailable_opening_evidence",
+                  "unavailable_opening_reconciliation",
+                  "unavailable_event_coverage",
+                  "unavailable_unknown_economic_effect",
+                  "unavailable_ambiguous_economic_revision",
+                  "unavailable_unreconciled_knowledge_transition",
+                  "unavailable_valuation",
+                  "unavailable_price",
+                  "unavailable_fx",
+                  "unavailable_corporate_action_coverage",
+                  "unavailable_corporate_action_accounting",
+                  "unavailable_mapping",
+                  "unavailable_classification",
+                  "unavailable_cost_basis",
+                  "unavailable_gross_income",
+                  "unavailable_withholding",
+                  "unavailable_fee",
+                  "unavailable_positive_denominator",
+                  "unavailable_exact_flow_valuation",
+                  "unavailable_numeric_result",
+                  "unavailable_conventional_xirr_root",
+                  "unavailable_xirr_root",
+                  "unavailable_xirr_bracket",
+                  "unavailable_xirr_convergence",
+                  "unavailable_annualization_period",
+                  "unavailable_rolling_boundary",
+                  "unavailable_complete_calendar_period",
+                  "unavailable_benchmark_inputs",
+                  "unavailable_benchmark_alignment",
+                  "benchmark_price_only_comparison",
+                  "unavailable_reporting_currency_alignment",
+                  "unavailable_tracking_error_observations",
+                  "unavailable_positive_income",
+                  "unavailable_comparable_calendar_period",
+                  "unavailable_cash_counterfactual_inputs",
+                  "unavailable_price_quantity_basis",
+                  "partial_covered_subtotal",
+                  "historical_reconstruction_restated",
+                  "explicit_target_comparison_grouping",
+                  "output_quantization_residual",
+                  "unavailable_source_license",
+                  "unavailable_source_retention",
+                  "historical_source_stale",
+                  "unavailable_resource_capacity",
+                  "unavailable_income_assignment",
+                  "unavailable_benchmark_constituent_attribution"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstream Historical Reason"
+          },
+          "upstream_xray_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_fx",
+                  "incomplete_valuation",
+                  "zero_denominator",
+                  "missing_mapping",
+                  "missing_source",
+                  "source_gap",
+                  "ambiguous_source",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "source_remainder",
+                  "depth_limit",
+                  "path_limit",
+                  "proof_limit",
+                  "cycle",
+                  "partial_basis",
+                  "unconfigured",
+                  "inconclusive_lower_bound",
+                  "reconciliation_difference"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstream Xray Reason"
+          }
+        },
+        "required": [
+          "key",
+          "reason",
+          "path_key",
+          "rule_key",
+          "upstream_xray_reason",
+          "upstream_historical_reason",
+          "source_reference_ids",
+          "source_use_keys"
+        ],
+        "title": "ScenarioDiagnosticView",
+        "type": "object"
+      },
+      "ScenarioEffectsView": {
+        "additionalProperties": false,
+        "properties": {
+          "factor": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "factor_ratio": {
+            "$ref": "#/components/schemas/ScenarioRatioMetric"
+          },
+          "fx": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "fx_ratio": {
+            "$ref": "#/components/schemas/ScenarioRatioMetric"
+          },
+          "interaction": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "price": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "price_ratio": {
+            "$ref": "#/components/schemas/ScenarioRatioMetric"
+          }
+        },
+        "required": [
+          "price_ratio",
+          "factor_ratio",
+          "fx_ratio",
+          "price",
+          "factor",
+          "fx",
+          "interaction"
+        ],
+        "title": "ScenarioEffectsView",
+        "type": "object"
+      },
+      "ScenarioEntitySelector": {
+        "additionalProperties": false,
+        "properties": {
+          "entity_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "kind": {
+            "const": "entity",
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "entity_id"
+        ],
+        "title": "ScenarioEntitySelector",
+        "type": "object"
+      },
+      "ScenarioExclusion": {
+        "additionalProperties": false,
+        "properties": {
+          "selector": {
+            "discriminator": {
+              "mapping": {
+                "economic_currency": "#/components/schemas/ScenarioCurrencySelector",
+                "entity": "#/components/schemas/ScenarioEntitySelector",
+                "instrument": "#/components/schemas/ScenarioInstrumentSelector",
+                "region": "#/components/schemas/ScenarioRegionSelector",
+                "sector": "#/components/schemas/ScenarioSectorSelector"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ScenarioInstrumentSelector"
+              },
+              {
+                "$ref": "#/components/schemas/ScenarioEntitySelector"
+              },
+              {
+                "$ref": "#/components/schemas/ScenarioSectorSelector"
+              },
+              {
+                "$ref": "#/components/schemas/ScenarioRegionSelector"
+              },
+              {
+                "$ref": "#/components/schemas/ScenarioCurrencySelector"
+              }
+            ],
+            "title": "Selector"
+          }
+        },
+        "required": [
+          "selector"
+        ],
+        "title": "ScenarioExclusion",
+        "type": "object"
+      },
+      "ScenarioExposureView": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "economic_currency": {
+            "$ref": "#/components/schemas/ScenarioCurrencyView"
+          },
+          "entity": {
+            "$ref": "#/components/schemas/ScenarioSubjectView"
+          },
+          "explicit_cash": {
+            "title": "Explicit Cash",
+            "type": "boolean"
+          },
+          "instrument": {
+            "$ref": "#/components/schemas/ScenarioSubjectView"
+          },
+          "path_key": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Path Key",
+            "type": "string"
+          },
+          "position_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position Id"
+          },
+          "pre_value": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "region": {
+            "$ref": "#/components/schemas/ScenarioClassificationView"
+          },
+          "root_instrument_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Root Instrument Id"
+          },
+          "root_key": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Root Key",
+            "type": "string"
+          },
+          "root_kind": {
+            "enum": [
+              "position",
+              "cash"
+            ],
+            "title": "Root Kind",
+            "type": "string"
+          },
+          "sector": {
+            "$ref": "#/components/schemas/ScenarioClassificationView"
+          },
+          "snapshot_cash_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Cash Id"
+          },
+          "source_reference_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "upstream_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_fx",
+                  "incomplete_valuation",
+                  "zero_denominator",
+                  "missing_mapping",
+                  "missing_source",
+                  "source_gap",
+                  "ambiguous_source",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "source_remainder",
+                  "depth_limit",
+                  "path_limit",
+                  "proof_limit",
+                  "cycle",
+                  "partial_basis",
+                  "unconfigured",
+                  "inconclusive_lower_bound",
+                  "reconciliation_difference"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstream Reason"
+          }
+        },
+        "required": [
+          "path_key",
+          "root_key",
+          "root_kind",
+          "position_id",
+          "snapshot_cash_id",
+          "root_instrument_id",
+          "explicit_cash",
+          "instrument",
+          "entity",
+          "sector",
+          "region",
+          "economic_currency",
+          "pre_value",
+          "quality",
+          "confidence",
+          "upstream_reason",
+          "source_reference_ids"
+        ],
+        "title": "ScenarioExposureView",
+        "type": "object"
+      },
+      "ScenarioFactorShock": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "factor",
+            "title": "Kind",
+            "type": "string"
+          },
+          "size": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Size",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ScenarioSensitivityVersionPin"
+          }
+        },
+        "required": [
+          "kind",
+          "source",
+          "size"
+        ],
+        "title": "ScenarioFactorShock",
+        "type": "object"
+      },
+      "ScenarioFxShock": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "fx",
+            "title": "Kind",
+            "type": "string"
+          },
+          "selector": {
+            "$ref": "#/components/schemas/ScenarioCurrencySelector"
+          },
+          "size": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Size",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "selector",
+          "size"
+        ],
+        "title": "ScenarioFxShock",
+        "type": "object"
+      },
+      "ScenarioHistoricalWarningView": {
+        "additionalProperties": false,
+        "properties": {
+          "coverage_key": {
+            "anyOf": [
+              {
+                "enum": [
+                  "opening",
+                  "quantity",
+                  "cash",
+                  "cost",
+                  "events",
+                  "valuation_cells",
+                  "actions",
+                  "fx_cells",
+                  "benchmark_sessions",
+                  "prior_income"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coverage Key"
+          },
+          "reason_code": {
+            "enum": [
+              "unavailable_opening_evidence",
+              "unavailable_opening_reconciliation",
+              "unavailable_event_coverage",
+              "unavailable_unknown_economic_effect",
+              "unavailable_ambiguous_economic_revision",
+              "unavailable_unreconciled_knowledge_transition",
+              "unavailable_valuation",
+              "unavailable_price",
+              "unavailable_fx",
+              "unavailable_corporate_action_coverage",
+              "unavailable_corporate_action_accounting",
+              "unavailable_mapping",
+              "unavailable_classification",
+              "unavailable_cost_basis",
+              "unavailable_gross_income",
+              "unavailable_withholding",
+              "unavailable_fee",
+              "unavailable_positive_denominator",
+              "unavailable_exact_flow_valuation",
+              "unavailable_numeric_result",
+              "unavailable_conventional_xirr_root",
+              "unavailable_xirr_root",
+              "unavailable_xirr_bracket",
+              "unavailable_xirr_convergence",
+              "unavailable_annualization_period",
+              "unavailable_rolling_boundary",
+              "unavailable_complete_calendar_period",
+              "unavailable_benchmark_inputs",
+              "unavailable_benchmark_alignment",
+              "benchmark_price_only_comparison",
+              "unavailable_reporting_currency_alignment",
+              "unavailable_tracking_error_observations",
+              "unavailable_positive_income",
+              "unavailable_comparable_calendar_period",
+              "unavailable_cash_counterfactual_inputs",
+              "unavailable_price_quantity_basis",
+              "partial_covered_subtotal",
+              "historical_reconstruction_restated",
+              "explicit_target_comparison_grouping",
+              "output_quantization_residual",
+              "unavailable_source_license",
+              "unavailable_source_retention",
+              "historical_source_stale",
+              "unavailable_resource_capacity",
+              "unavailable_income_assignment",
+              "unavailable_benchmark_constituent_attribution"
+            ],
+            "title": "Reason Code",
+            "type": "string"
+          },
+          "reference_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__"
+          }
+        },
+        "required": [
+          "reason_code",
+          "coverage_key",
+          "reference_ids"
+        ],
+        "title": "ScenarioHistoricalWarningView",
+        "type": "object"
+      },
+      "ScenarioInputPins": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "owner_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "portfolio_snapshot_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Portfolio Snapshot Digest",
+            "type": "string"
+          },
+          "portfolio_snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Portfolio Snapshot Id",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "scenario_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "scenario_version_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Scenario Version Digest",
+            "type": "string"
+          },
+          "scenario_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Scenario Version Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "xray_input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Xray Input Digest",
+            "type": "string"
+          },
+          "xray_input_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Xray Input Id",
+            "type": "string"
+          },
+          "xray_result_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Xray Result Digest",
+            "type": "string"
+          },
+          "xray_run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Xray Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "owner_id",
+          "account_id",
+          "scenario_id",
+          "scenario_version_id",
+          "scenario_version_digest",
+          "portfolio_snapshot_id",
+          "portfolio_snapshot_digest",
+          "xray_run_id",
+          "xray_input_id",
+          "xray_input_digest",
+          "xray_result_digest",
+          "reporting_currency",
+          "source_cutoff_at"
+        ],
+        "title": "ScenarioInputPins",
+        "type": "object"
+      },
+      "ScenarioInstrumentSelector": {
+        "additionalProperties": false,
+        "properties": {
+          "instrument_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Instrument Id",
+            "type": "string"
+          },
+          "kind": {
+            "const": "instrument",
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "instrument_id"
+        ],
+        "title": "ScenarioInstrumentSelector",
+        "type": "object"
+      },
+      "ScenarioMoney": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Amount",
+            "type": "string"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "title": "ScenarioMoney",
+        "type": "object"
+      },
+      "ScenarioMoneyView": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "incompatible_taxonomy",
+                  "missing_economic_currency",
+                  "unsupported_economic_currency",
+                  "uncertain_exclusion",
+                  "uncertain_price_priority",
+                  "missing_sensitivity",
+                  "ambiguous_sensitivity",
+                  "unsupported_sensitivity",
+                  "incompatible_sensitivity_currency",
+                  "unknown_driver_equivalence",
+                  "missing_replay_mapping",
+                  "ambiguous_replay_mapping",
+                  "missing_replay_source",
+                  "fx_decomposition_unavailable",
+                  "historical_holdings_unavailable",
+                  "incompatible_basis",
+                  "uncertain_money",
+                  "zero_denominator"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "source_reference_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScenarioMoney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "value",
+          "quality",
+          "reason",
+          "confidence",
+          "source_reference_ids"
+        ],
+        "title": "ScenarioMoneyView",
+        "type": "object"
+      },
+      "ScenarioOperationalRunResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "failure_code": {
+            "anyOf": [
+              {
+                "enum": [
+                  "publication_unavailable",
+                  "consumer_unavailable",
+                  "lease_expired",
+                  "invalid_message",
+                  "input_unavailable",
+                  "input_changed",
+                  "access_denied",
+                  "calculation_failed",
+                  "storage_unavailable",
+                  "attempts_exhausted",
+                  "limit_exceeded",
+                  "source_restricted"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Code"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "job_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "portfolio_snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Portfolio Snapshot Id",
+            "type": "string"
+          },
+          "result": {
+            "title": "Result",
+            "type": "null"
+          },
+          "result_availability": {
+            "enum": [
+              "pending",
+              "not_loaded",
+              "expired",
+              "unavailable"
+            ],
+            "title": "Result Availability",
+            "type": "string"
+          },
+          "scenario_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Scenario Version Id",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "expired",
+              "cancelled"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "xray_run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Xray Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "account_id",
+          "scenario_version_id",
+          "portfolio_snapshot_id",
+          "xray_run_id",
+          "job_id",
+          "state",
+          "failure_code",
+          "created_at",
+          "expires_at",
+          "completed_at",
+          "input_digest",
+          "result",
+          "result_availability"
+        ],
+        "title": "ScenarioOperationalRunResponse",
+        "type": "object"
+      },
+      "ScenarioPageResponse_ScenarioDefinitionResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioDefinitionResponse"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 250000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "ScenarioPageResponse[ScenarioDefinitionResponse]",
+        "type": "object"
+      },
+      "ScenarioPageResponse_ScenarioOperationalRunResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioOperationalRunResponse"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 250000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "ScenarioPageResponse[ScenarioOperationalRunResponse]",
+        "type": "object"
+      },
+      "ScenarioPageResponse_ScenarioVersionResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioVersionResponse"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 250000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "ScenarioPageResponse[ScenarioVersionResponse]",
+        "type": "object"
+      },
+      "ScenarioPreview_Annotated_str__StringConstraints__": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "maxLength": 1024,
+              "minLength": 1,
+              "pattern": "^[^\\x00]*$",
+              "type": "string"
+            },
+            "maxItems": 16,
+            "title": "Items",
+            "type": "array"
+          },
+          "omitted_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Omitted Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "omitted_count"
+        ],
+        "title": "ScenarioPreview[Annotated[str, StringConstraints]]",
+        "type": "object"
+      },
+      "ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 16,
+            "title": "Items",
+            "type": "array"
+          },
+          "omitted_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Omitted Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "omitted_count"
+        ],
+        "title": "ScenarioPreview[Annotated[str, StringConstraints, AfterValidator, FieldInfo(annotation=NoneType, required=True, json_schema_extra={'format': 'uuid'})]]",
+        "type": "object"
+      },
+      "ScenarioPreview_ScenarioDiagnosticView_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioDiagnosticView"
+            },
+            "maxItems": 16,
+            "title": "Items",
+            "type": "array"
+          },
+          "omitted_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Omitted Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "omitted_count"
+        ],
+        "title": "ScenarioPreview[ScenarioDiagnosticView]",
+        "type": "object"
+      },
+      "ScenarioPreview_ScenarioHistoricalWarningView_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioHistoricalWarningView"
+            },
+            "maxItems": 16,
+            "title": "Items",
+            "type": "array"
+          },
+          "omitted_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Omitted Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "omitted_count"
+        ],
+        "title": "ScenarioPreview[ScenarioHistoricalWarningView]",
+        "type": "object"
+      },
+      "ScenarioPriceShock": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "price",
+            "title": "Kind",
+            "type": "string"
+          },
+          "selector": {
+            "discriminator": {
+              "mapping": {
+                "entity": "#/components/schemas/ScenarioEntitySelector",
+                "instrument": "#/components/schemas/ScenarioInstrumentSelector",
+                "region": "#/components/schemas/ScenarioRegionSelector",
+                "sector": "#/components/schemas/ScenarioSectorSelector"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ScenarioInstrumentSelector"
+              },
+              {
+                "$ref": "#/components/schemas/ScenarioEntitySelector"
+              },
+              {
+                "$ref": "#/components/schemas/ScenarioSectorSelector"
+              },
+              {
+                "$ref": "#/components/schemas/ScenarioRegionSelector"
+              }
+            ],
+            "title": "Selector"
+          },
+          "size": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Size",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "selector",
+          "size"
+        ],
+        "title": "ScenarioPriceShock",
+        "type": "object"
+      },
+      "ScenarioRateShock": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "rate",
+            "title": "Kind",
+            "type": "string"
+          },
+          "size": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Size",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ScenarioSensitivityVersionPin"
+          }
+        },
+        "required": [
+          "kind",
+          "source",
+          "size"
+        ],
+        "title": "ScenarioRateShock",
+        "type": "object"
+      },
+      "ScenarioRatioMetric": {
+        "additionalProperties": false,
+        "properties": {
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "incompatible_taxonomy",
+                  "missing_economic_currency",
+                  "unsupported_economic_currency",
+                  "uncertain_exclusion",
+                  "uncertain_price_priority",
+                  "missing_sensitivity",
+                  "ambiguous_sensitivity",
+                  "unsupported_sensitivity",
+                  "incompatible_sensitivity_currency",
+                  "unknown_driver_equivalence",
+                  "missing_replay_mapping",
+                  "ambiguous_replay_mapping",
+                  "missing_replay_source",
+                  "fx_decomposition_unavailable",
+                  "historical_holdings_unavailable",
+                  "incompatible_basis",
+                  "uncertain_money",
+                  "zero_denominator"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "value",
+          "quality",
+          "reason"
+        ],
+        "title": "ScenarioRatioMetric",
+        "type": "object"
+      },
+      "ScenarioRegionSelector": {
+        "additionalProperties": false,
+        "properties": {
+          "bucket_key": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Bucket Key",
+            "type": "string"
+          },
+          "kind": {
+            "const": "region",
+            "title": "Kind",
+            "type": "string"
+          },
+          "taxonomy_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Taxonomy Id",
+            "type": "string"
+          },
+          "taxonomy_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Taxonomy Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "taxonomy_id",
+          "taxonomy_version",
+          "bucket_key"
+        ],
+        "title": "ScenarioRegionSelector",
+        "type": "object"
+      },
+      "ScenarioReplayChangeView": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "enum": [
+              "local_with_fx",
+              "unavailable"
+            ],
+            "title": "Basis",
+            "type": "string"
+          },
+          "conversion_keys": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__"
+          },
+          "fx_return": {
+            "$ref": "#/components/schemas/ScenarioRatioMetric"
+          },
+          "local_return": {
+            "$ref": "#/components/schemas/ScenarioRatioMetric"
+          },
+          "path_key": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Path Key",
+            "type": "string"
+          },
+          "reporting_return": {
+            "$ref": "#/components/schemas/ScenarioRatioMetric"
+          },
+          "source_use_keys": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__"
+          }
+        },
+        "required": [
+          "path_key",
+          "local_return",
+          "fx_return",
+          "reporting_return",
+          "basis",
+          "source_use_keys",
+          "conversion_keys"
+        ],
+        "title": "ScenarioReplayChangeView",
+        "type": "object"
+      },
+      "ScenarioReplayContextView": {
+        "additionalProperties": false,
+        "properties": {
+          "accounting_policy_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Accounting Policy Version",
+            "type": "string"
+          },
+          "assumptions": {
+            "items": {
+              "maxLength": 1024,
+              "minLength": 1,
+              "pattern": "^[^\\x00]*$",
+              "type": "string"
+            },
+            "maxItems": 16,
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "availability": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "change_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Change Count",
+            "type": "integer"
+          },
+          "conversion_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Conversion Count",
+            "type": "integer"
+          },
+          "coverage": {
+            "$ref": "#/components/schemas/HistoricalCoverage"
+          },
+          "diagnostics": {
+            "$ref": "#/components/schemas/ScenarioPreview_ScenarioDiagnosticView_"
+          },
+          "holdings_evidence_at": {
+            "format": "date-time",
+            "title": "Holdings Evidence At",
+            "type": "string"
+          },
+          "holdings_knowledge_cutoff_at": {
+            "format": "date-time",
+            "title": "Holdings Knowledge Cutoff At",
+            "type": "string"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "method": {
+            "$ref": "#/components/schemas/HistoricalMethodMetadata"
+          },
+          "primitive_methods": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalMethodMetadata"
+            },
+            "maxItems": 16,
+            "title": "Primitive Methods",
+            "type": "array"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reconstruction": {
+            "enum": [
+              "point_in_time",
+              "restated"
+            ],
+            "title": "Reconstruction",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "selection": {
+            "$ref": "#/components/schemas/ScenarioReplaySelection"
+          },
+          "source_policy_version": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Policy Version"
+          },
+          "source_reference_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__"
+          },
+          "source_use_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Source Use Count",
+            "type": "integer"
+          },
+          "warnings": {
+            "$ref": "#/components/schemas/ScenarioPreview_ScenarioHistoricalWarningView_"
+          },
+          "window": {
+            "$ref": "#/components/schemas/HistoricalWindow"
+          }
+        },
+        "required": [
+          "selection",
+          "input_digest",
+          "window",
+          "method",
+          "primitive_methods",
+          "source_policy_version",
+          "accounting_policy_version",
+          "coverage",
+          "quality",
+          "availability",
+          "reconstruction",
+          "schema_version",
+          "holdings_evidence_at",
+          "holdings_knowledge_cutoff_at",
+          "change_count",
+          "source_use_count",
+          "conversion_count",
+          "source_reference_ids",
+          "warnings",
+          "assumptions",
+          "diagnostics"
+        ],
+        "title": "ScenarioReplayContextView",
+        "type": "object"
+      },
+      "ScenarioReplaySelection": {
+        "additionalProperties": false,
+        "properties": {
+          "end_date": {
+            "format": "date",
+            "title": "End Date",
+            "type": "string"
+          },
+          "historical_input_snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Historical Input Snapshot Id",
+            "type": "string"
+          },
+          "holdings_basis": {
+            "enum": [
+              "current_holdings",
+              "historical_holdings"
+            ],
+            "title": "Holdings Basis",
+            "type": "string"
+          },
+          "knowledge_basis": {
+            "enum": [
+              "point_in_time",
+              "retrospective"
+            ],
+            "title": "Knowledge Basis",
+            "type": "string"
+          },
+          "market_knowledge_cutoff_at": {
+            "format": "date-time",
+            "title": "Market Knowledge Cutoff At",
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "historical_input_snapshot_id",
+          "start_date",
+          "end_date",
+          "market_knowledge_cutoff_at",
+          "holdings_basis",
+          "knowledge_basis"
+        ],
+        "title": "ScenarioReplaySelection",
+        "type": "object"
+      },
+      "ScenarioResultContextView": {
+        "additionalProperties": false,
+        "properties": {
+          "assumptions": {
+            "items": {
+              "enum": [
+                "owner_defined_shocks",
+                "additional_price_component",
+                "first_order_formula",
+                "compounded_formula",
+                "canonical_terminal_basis",
+                "counterfactual_replay",
+                "fixed_cash_balance_replay",
+                "retrospective_market_knowledge",
+                "known_only_subtotals",
+                "no_listing_currency_inference"
+              ],
+              "type": "string"
+            },
+            "maxItems": 16,
+            "title": "Assumptions",
+            "type": "array"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/ScenarioVersionContent"
+          },
+          "diagnostics": {
+            "$ref": "#/components/schemas/ScenarioPreview_ScenarioDiagnosticView_"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "method_version": {
+            "const": "1.0.0",
+            "title": "Method Version",
+            "type": "string"
+          },
+          "numerical_profile": {
+            "const": "premium_decimal96_q18_v1",
+            "title": "Numerical Profile",
+            "type": "string"
+          },
+          "pins": {
+            "$ref": "#/components/schemas/ScenarioInputPins"
+          },
+          "replay": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScenarioReplayContextView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Result Id",
+            "type": "string"
+          },
+          "run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "saved_result_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Saved Result Digest",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "sensitivity_source_row_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Sensitivity Source Row Count",
+            "type": "integer"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ScenarioSummaryView"
+          },
+          "upstream_partition_difference": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "upstream_portfolio_value": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "upstream_residual_keys": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "result_id",
+          "saved_result_digest",
+          "input_digest",
+          "pins",
+          "definition",
+          "valuation_at",
+          "summary",
+          "upstream_portfolio_value",
+          "upstream_partition_difference",
+          "upstream_residual_keys",
+          "replay",
+          "diagnostics",
+          "assumptions",
+          "sensitivity_source_row_count",
+          "method_version",
+          "schema_version",
+          "numerical_profile"
+        ],
+        "title": "ScenarioResultContextView",
+        "type": "object"
+      },
+      "ScenarioResultPage": {
+        "additionalProperties": false,
+        "properties": {
+          "components": {
+            "$ref": "#/components/schemas/ScenarioComponentPage_ScenarioComponentView_"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "context": {
+            "$ref": "#/components/schemas/ScenarioResultContextView"
+          },
+          "view_version": {
+            "const": "scenario_compact_v1",
+            "default": "scenario_compact_v1",
+            "title": "View Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "context",
+          "components",
+          "content_digest"
+        ],
+        "title": "ScenarioResultPage",
+        "type": "object"
+      },
+      "ScenarioRunResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "failure_code": {
+            "anyOf": [
+              {
+                "enum": [
+                  "publication_unavailable",
+                  "consumer_unavailable",
+                  "lease_expired",
+                  "invalid_message",
+                  "input_unavailable",
+                  "input_changed",
+                  "access_denied",
+                  "calculation_failed",
+                  "storage_unavailable",
+                  "attempts_exhausted",
+                  "limit_exceeded",
+                  "source_restricted"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Code"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "job_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "portfolio_snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Portfolio Snapshot Id",
+            "type": "string"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScenarioResultPage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_availability": {
+            "enum": [
+              "pending",
+              "available",
+              "not_loaded",
+              "expired",
+              "unavailable"
+            ],
+            "title": "Result Availability",
+            "type": "string"
+          },
+          "scenario_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Scenario Version Id",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "expired",
+              "cancelled"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "xray_run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Xray Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "account_id",
+          "scenario_version_id",
+          "portfolio_snapshot_id",
+          "xray_run_id",
+          "job_id",
+          "state",
+          "failure_code",
+          "created_at",
+          "expires_at",
+          "completed_at",
+          "input_digest",
+          "result",
+          "result_availability"
+        ],
+        "title": "ScenarioRunResponse",
+        "type": "object"
+      },
+      "ScenarioSectorSelector": {
+        "additionalProperties": false,
+        "properties": {
+          "bucket_key": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Bucket Key",
+            "type": "string"
+          },
+          "kind": {
+            "const": "sector",
+            "title": "Kind",
+            "type": "string"
+          },
+          "taxonomy_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Taxonomy Id",
+            "type": "string"
+          },
+          "taxonomy_version": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$",
+            "title": "Taxonomy Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "taxonomy_id",
+          "taxonomy_version",
+          "bucket_key"
+        ],
+        "title": "ScenarioSectorSelector",
+        "type": "object"
+      },
+      "ScenarioSensitivityVersionPin": {
+        "additionalProperties": false,
+        "properties": {
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "driver_definition_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Driver Definition Version Id",
+            "type": "string"
+          },
+          "driver_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Driver Id",
+            "type": "string"
+          },
+          "version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version_id",
+          "content_digest",
+          "driver_id",
+          "driver_definition_version_id"
+        ],
+        "title": "ScenarioSensitivityVersionPin",
+        "type": "object"
+      },
+      "ScenarioSensitivityView": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_observation_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "coefficient": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coefficient"
+          },
+          "driver_definition_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Driver Definition Digest",
+            "type": "string"
+          },
+          "driver_definition_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Driver Definition Version Id",
+            "type": "string"
+          },
+          "driver_evidence_reference_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "driver_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Driver Id",
+            "type": "string"
+          },
+          "driver_kind": {
+            "enum": [
+              "rate",
+              "factor"
+            ],
+            "title": "Driver Kind",
+            "type": "string"
+          },
+          "effect_ratio": {
+            "$ref": "#/components/schemas/ScenarioRatioMetric"
+          },
+          "observation_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observation Id"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "incompatible_taxonomy",
+                  "missing_economic_currency",
+                  "unsupported_economic_currency",
+                  "uncertain_exclusion",
+                  "uncertain_price_priority",
+                  "missing_sensitivity",
+                  "ambiguous_sensitivity",
+                  "unsupported_sensitivity",
+                  "incompatible_sensitivity_currency",
+                  "unknown_driver_equivalence",
+                  "missing_replay_mapping",
+                  "ambiguous_replay_mapping",
+                  "missing_replay_source",
+                  "fx_decomposition_unavailable",
+                  "historical_holdings_unavailable",
+                  "incompatible_basis",
+                  "uncertain_money",
+                  "zero_denominator"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "rule_key": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Rule Key",
+            "type": "string"
+          },
+          "shock_size": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Shock Size",
+            "type": "string"
+          },
+          "shock_unit": {
+            "enum": [
+              "absolute_rate_change",
+              "simple_factor_return"
+            ],
+            "title": "Shock Unit",
+            "type": "string"
+          },
+          "version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Version Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule_key",
+          "driver_id",
+          "driver_definition_version_id",
+          "driver_definition_digest",
+          "driver_kind",
+          "shock_unit",
+          "driver_evidence_reference_ids",
+          "version_id",
+          "candidate_observation_ids",
+          "observation_id",
+          "coefficient",
+          "shock_size",
+          "effect_ratio",
+          "reason"
+        ],
+        "title": "ScenarioSensitivityView",
+        "type": "object"
+      },
+      "ScenarioSubjectView": {
+        "additionalProperties": false,
+        "properties": {
+          "dimension": {
+            "enum": [
+              "instrument",
+              "entity"
+            ],
+            "title": "Dimension",
+            "type": "string"
+          },
+          "identity_decision_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "incompatible_taxonomy",
+                  "missing_economic_currency",
+                  "unsupported_economic_currency",
+                  "uncertain_exclusion",
+                  "uncertain_price_priority",
+                  "missing_sensitivity",
+                  "ambiguous_sensitivity",
+                  "unsupported_sensitivity",
+                  "incompatible_sensitivity_currency",
+                  "unknown_driver_equivalence",
+                  "missing_replay_mapping",
+                  "ambiguous_replay_mapping",
+                  "missing_replay_source",
+                  "fx_decomposition_unavailable",
+                  "historical_holdings_unavailable",
+                  "incompatible_basis",
+                  "uncertain_money",
+                  "zero_denominator"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "source_reference_ids": {
+            "$ref": "#/components/schemas/ScenarioPreview_Annotated_str__StringConstraints__AfterValidator__FieldInfo_annotation_NoneType__required_True__json_schema_extra___format___"
+          },
+          "state": {
+            "enum": [
+              "known",
+              "unknown",
+              "not_applicable"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "subject_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject Id"
+          },
+          "upstream_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "missing_value",
+                  "missing_fx",
+                  "incomplete_valuation",
+                  "zero_denominator",
+                  "missing_mapping",
+                  "missing_source",
+                  "source_gap",
+                  "ambiguous_source",
+                  "missing_identity",
+                  "ambiguous_identity",
+                  "missing_classification",
+                  "ambiguous_classification",
+                  "source_remainder",
+                  "depth_limit",
+                  "path_limit",
+                  "proof_limit",
+                  "cycle",
+                  "partial_basis",
+                  "unconfigured",
+                  "inconclusive_lower_bound",
+                  "reconciliation_difference"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Upstream Reason"
+          }
+        },
+        "required": [
+          "dimension",
+          "state",
+          "subject_id",
+          "reason",
+          "upstream_reason",
+          "identity_decision_ids",
+          "source_reference_ids"
+        ],
+        "title": "ScenarioSubjectView",
+        "type": "object"
+      },
+      "ScenarioSummaryView": {
+        "additionalProperties": false,
+        "properties": {
+          "component_sum_residual": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "covered_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Covered Count",
+            "type": "integer"
+          },
+          "covered_post_value": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "covered_pre_value": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "effects": {
+            "$ref": "#/components/schemas/ScenarioEffectsView"
+          },
+          "excluded_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Excluded Count",
+            "type": "integer"
+          },
+          "excluded_post_value": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "excluded_pre_value": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "impact": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "missing_pre_value_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Missing Pre Value Count",
+            "type": "integer"
+          },
+          "post_value": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "provably_unchanged_uncovered_value": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "rounding_residual": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "terminal_pre_value": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          },
+          "uncertain_money_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Uncertain Money Count",
+            "type": "integer"
+          },
+          "uncovered_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Uncovered Count",
+            "type": "integer"
+          },
+          "uncovered_pre_value": {
+            "$ref": "#/components/schemas/ScenarioMoneyView"
+          }
+        },
+        "required": [
+          "terminal_pre_value",
+          "covered_pre_value",
+          "uncovered_pre_value",
+          "excluded_pre_value",
+          "covered_count",
+          "uncovered_count",
+          "excluded_count",
+          "missing_pre_value_count",
+          "uncertain_money_count",
+          "covered_post_value",
+          "excluded_post_value",
+          "provably_unchanged_uncovered_value",
+          "post_value",
+          "impact",
+          "effects",
+          "rounding_residual",
+          "component_sum_residual"
+        ],
+        "title": "ScenarioSummaryView",
+        "type": "object"
+      },
+      "ScenarioVersionContent": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "default": "",
+            "maxLength": 1024,
+            "pattern": "^[^\\x00]*$",
+            "title": "Description",
+            "type": "string"
+          },
+          "exclusions": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioExclusion"
+            },
+            "maxItems": 128,
+            "title": "Exclusions",
+            "type": "array"
+          },
+          "method_version": {
+            "const": "1.0.0",
+            "default": "1.0.0",
+            "title": "Method Version",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "first_order",
+              "compounded"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "shocks": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "factor": "#/components/schemas/ScenarioFactorShock",
+                  "fx": "#/components/schemas/ScenarioFxShock",
+                  "price": "#/components/schemas/ScenarioPriceShock",
+                  "rate": "#/components/schemas/ScenarioRateShock"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/ScenarioPriceShock"
+                },
+                {
+                  "$ref": "#/components/schemas/ScenarioFxShock"
+                },
+                {
+                  "$ref": "#/components/schemas/ScenarioRateShock"
+                },
+                {
+                  "$ref": "#/components/schemas/ScenarioFactorShock"
+                }
+              ]
+            },
+            "maxItems": 128,
+            "title": "Shocks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "mode"
+        ],
+        "title": "ScenarioVersionContent",
+        "type": "object"
+      },
+      "ScenarioVersionResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/ScenarioVersionContent"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "definition_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Definition Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "predecessor_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Predecessor Id"
+          },
+          "version_number": {
+            "maximum": 512.0,
+            "minimum": 1.0,
+            "title": "Version Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "account_id",
+          "definition_id",
+          "version_number",
+          "predecessor_id",
+          "content",
+          "content_digest",
+          "created_at"
+        ],
+        "title": "ScenarioVersionResponse",
+        "type": "object"
+      },
       "SnapshotComparisonResponse": {
         "additionalProperties": false,
         "properties": {
@@ -30919,6 +34367,416 @@
         ]
       }
     },
+    "/api/v1/accounts/{account_id}/scenario-comparison": {
+      "get": {
+        "operationId": "compare_scenarios",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "component_limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Component Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "component_cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Component Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "run_ids",
+            "required": true,
+            "schema": {
+              "items": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "maxItems": 2,
+              "minItems": 2,
+              "title": "Run Ids",
+              "type": "array"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioComparisonPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Compare",
+        "tags": [
+          "scenario"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/scenario-runs": {
+      "get": {
+        "operationId": "list_scenario_runs",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioPageResponse_ScenarioOperationalRunResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Runs",
+        "tags": [
+          "scenario"
+        ]
+      },
+      "post": {
+        "operationId": "create_scenario_run",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScenarioRunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioOperationalRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Run",
+        "tags": [
+          "scenario"
+        ]
+      }
+    },
+    "/api/v1/accounts/{account_id}/scenarios": {
+      "get": {
+        "operationId": "list_scenarios",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioPageResponse_ScenarioDefinitionResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Definitions",
+        "tags": [
+          "scenario"
+        ]
+      },
+      "post": {
+        "operationId": "create_scenario",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScenarioRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioDefinitionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Definition",
+        "tags": [
+          "scenario"
+        ]
+      }
+    },
     "/api/v1/accounts/{account_id}/snapshots": {
       "get": {
         "operationId": "snapshots_api_v1_accounts__account_id__snapshots_get",
@@ -36160,6 +40018,438 @@
         "summary": "Get Matrix",
         "tags": [
           "risk"
+        ]
+      }
+    },
+    "/api/v1/scenario-runs/{run_id}": {
+      "get": {
+        "operationId": "get_scenario_run",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "component_limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Component Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "component_cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Component Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Run",
+        "tags": [
+          "scenario"
+        ]
+      }
+    },
+    "/api/v1/scenario-runs/{run_id}/cancel": {
+      "post": {
+        "operationId": "cancel_scenario_run",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelScenarioRunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioOperationalRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Cancel Run",
+        "tags": [
+          "scenario"
+        ]
+      }
+    },
+    "/api/v1/scenario-versions/{version_id}": {
+      "get": {
+        "operationId": "get_scenario_version",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Version Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioVersionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Version",
+        "tags": [
+          "scenario"
+        ]
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}": {
+      "get": {
+        "operationId": "get_scenario",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioDefinitionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Definition",
+        "tags": [
+          "scenario"
+        ]
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/versions": {
+      "get": {
+        "operationId": "list_scenario_versions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioPageResponse_ScenarioVersionResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Versions",
+        "tags": [
+          "scenario"
+        ]
+      },
+      "post": {
+        "operationId": "create_scenario_version",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "scenario_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Scenario Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-Match",
+            "required": true,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScenarioVersionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioVersionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Version",
+        "tags": [
+          "scenario"
         ]
       }
     },

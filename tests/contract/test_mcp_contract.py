@@ -33,7 +33,7 @@ async def test_tool_discovery_is_exact_typed_bounded_and_annotated() -> None:
     tools = await runtime.server.list_tools()
 
     assert tuple(tool.name for tool in tools) == FROZEN_TOOL_NAMES
-    assert len(tools) == 28
+    assert len(tools) == 32
     for tool in tools:
         descriptor = tool.model_dump(mode="json", by_alias=True, exclude_none=True)
         assert descriptor["inputSchema"]["type"] == "object"
@@ -42,7 +42,12 @@ async def test_tool_discovery_is_exact_typed_bounded_and_annotated() -> None:
         assert descriptor["outputSchema"]["additionalProperties"] is False
         assert descriptor["annotations"] == {
             "readOnlyHint": tool.name
-            not in {"create_contribution_plan", "generate_portfolio_report", "create_risk_run"},
+            not in {
+                "create_contribution_plan",
+                "generate_portfolio_report",
+                "create_risk_run",
+                "create_scenario_run",
+            },
             "destructiveHint": False,
             "idempotentHint": True,
             "openWorldHint": False,
@@ -97,6 +102,9 @@ async def test_snapshot_widget_is_preserved_and_only_declared_tools_add_resource
             "create_risk_run",
             "get_risk_summary",
             "get_risk_matrix",
+            "create_scenario_run",
+            "get_scenario_result",
+            "compare_scenarios",
         }:
             assert "ui" not in descriptor["_meta"]
             assert "openai/outputTemplate" not in descriptor["_meta"]

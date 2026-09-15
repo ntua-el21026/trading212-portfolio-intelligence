@@ -141,6 +141,7 @@ class LocalSyntheticAuthenticator:
                     Scope.ALERTS_READ,
                     Scope.ALERTS_WRITE,
                     Scope.RISK_WRITE,
+                    Scope.SCENARIOS_WRITE,
                 }
             ),
             authenticated_at=now,

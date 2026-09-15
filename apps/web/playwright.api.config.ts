@@ -1,5 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const production = process.env.T212PI_E2E_PRODUCTION ?? "0";
+if (!["0", "1"].includes(production))
+  throw new Error("The production browser fixture selector must be 0 or 1.");
+
 export default defineConfig({
   testDir: "../../tests/e2e/api-web",
   fullyParallel: true,
@@ -51,7 +55,10 @@ export default defineConfig({
       url: "http://127.0.0.1:18000/health/live",
     },
     {
-      command: "corepack pnpm dev --hostname 127.0.0.1 --port 3001",
+      command:
+        production === "1"
+          ? "node ../../scripts/run_production_web_e2e.mjs"
+          : "corepack pnpm dev --hostname 127.0.0.1 --port 3001",
       env: {
         PORTFOLIO_DEMO_MODE: "0",
         T212PI_ACCOUNT_ID: "f0f5c66e-b128-59b2-a620-83bc8faa4a57",

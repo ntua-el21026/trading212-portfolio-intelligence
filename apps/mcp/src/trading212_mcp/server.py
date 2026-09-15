@@ -24,6 +24,7 @@ from trading212_application.historical import PerformanceIntelligenceService
 from trading212_application.planning import PlanningService
 from trading212_application.reports import ReportService
 from trading212_application.risk import RiskService
+from trading212_application.scenario import ScenarioService
 from trading212_application.services import PortfolioService, SyntheticPortfolioService
 from trading212_application.targets import TargetService
 from trading212_application.xray import XrayService
@@ -49,6 +50,8 @@ from .report_gateway import ReportMcpGateway
 from .report_tools import REPORT_TOOL_NAMES, register_report_tools
 from .risk_gateway import RiskMcpGateway
 from .risk_tools import RISK_TOOL_NAMES, register_risk_tools
+from .scenario_gateway import ScenarioMcpGateway
+from .scenario_tools import SCENARIO_TOOL_NAMES, register_scenario_tools
 from .schemas import (
     AccountSummaryResult,
     ActivityTypeFilter,
@@ -88,6 +91,7 @@ FROZEN_TOOL_NAMES = (
     *REPORT_TOOL_NAMES,
     *ALERT_TOOL_NAMES,
     *RISK_TOOL_NAMES,
+    *SCENARIO_TOOL_NAMES,
 )
 
 AccountId = Annotated[
@@ -123,6 +127,7 @@ class McpRuntime:
     report_service: ReportService | None = None
     alert_service: AlertService | None = None
     risk_service: RiskService | None = None
+    scenario_service: ScenarioService | None = None
 
     def asgi_app(self) -> ASGIApp:
         transport_security = TransportSecuritySettings(
@@ -155,6 +160,7 @@ def create_runtime(
     report_service: ReportService | None = None,
     alert_service: AlertService | None = None,
     risk_service: RiskService | None = None,
+    scenario_service: ScenarioService | None = None,
     database_url: str | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -260,6 +266,17 @@ def create_runtime(
                 clock=runtime_clock,
                 cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
                 preflight=validate_risk_capacity,
+            )
+
+        if scenario_service is None:
+            from trading212_analytics.scenario_replay import resolve_scenario_replay
+            from trading212_persistence.scenario_service import PostgresScenarioService
+
+            scenario_service = PostgresScenarioService(
+                create_session_factory(engine),
+                clock=runtime_clock,
+                cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+                replay_resolver=resolve_scenario_replay,
             )
 
         async def database_readiness() -> bool:
@@ -373,6 +390,13 @@ def create_runtime(
         RiskMcpGateway(service=risk_service, principals=principal_resolver, clock=runtime_clock),
         widget_domain=transport.widget_domain,
     )
+    register_scenario_tools(
+        server,
+        ScenarioMcpGateway(
+            service=scenario_service, principals=principal_resolver, clock=runtime_clock
+        ),
+        widget_domain=transport.widget_domain,
+    )
     return McpRuntime(
         server=server,
         service=portfolio_service,
@@ -386,6 +410,7 @@ def create_runtime(
         report_service=report_service,
         alert_service=alert_service,
         risk_service=risk_service,
+        scenario_service=scenario_service,
     )
 
 

@@ -39,6 +39,7 @@ class TargetClientGenerator:
             "premium-reports",
             "alerts",
             "risk",
+            "scenario",
         }:
             raise ValueError(
                 "Only fixed target, planning, source, historical and X-ray operations are supported"
@@ -104,7 +105,7 @@ class TargetClientGenerator:
             "pattern",
             "format",
         }
-        if self.tag in {"sources", "xray", "reports", "premium-reports", "alerts"}:
+        if self.tag in {"sources", "xray", "reports", "premium-reports", "alerts", "scenario"}:
             supported.update({"oneOf", "discriminator"})
         if set(schema) - supported:
             raise ValueError(f"Unsupported target schema fields: {sorted(set(schema) - supported)}")
@@ -306,6 +307,13 @@ class TargetClientGenerator:
                 f"try {{ return await {invocation}; }} catch (error) {{ "
                 "if (error instanceof z.ZodError) throw new RiskApiError("
                 '"VALIDATION_FAILED", 422, "The bounded risk request is invalid."); '
+                "throw error; }\n"
+            )
+        if self.tag == "scenario":
+            body_text = (
+                f"try {{ return await {invocation}; }} catch (error) {{ "
+                "if (error instanceof z.ZodError) throw new ScenarioApiError("
+                '"VALIDATION_FAILED", 422, "The bounded scenario request is invalid."); '
                 "throw error; }\n"
             )
         return (
@@ -680,3 +688,74 @@ def render_risk_client(contract: dict[str, Any]) -> str:
     if len(actual) != len(expected) or set(actual) != expected:
         raise ValueError("The frozen risk operation registry differs.")
     return RiskClientGenerator(contract).render()
+
+
+class ScenarioClientGenerator(TargetClientGenerator):
+    """Reuse the canonical source and historical schemas without duplicate exports."""
+
+    def __init__(self, contract: dict[str, Any]) -> None:
+        source = TargetClientGenerator(contract, tag="sources")
+        source.render()
+        historical = TargetClientGenerator(
+            contract, tag="historical", imported_schemas=frozenset(source.rendered)
+        )
+        historical.render()
+        super().__init__(contract, tag="scenario", imported_schemas=frozenset(source.rendered))
+        self.historical_schemas = frozenset(historical.rendered)
+        self.used_historical: set[str] = set()
+
+    def reference(self, reference: str) -> str:
+        prefix = "#/components/schemas/"
+        name = reference.removeprefix(prefix)
+        if reference.startswith(prefix) and name in self.historical_schemas:
+            self.used_historical.add(name)
+            return f"{_name(name)}Schema"
+        return super().reference(reference)
+
+    def render(self) -> str:
+        rendered = super().render()
+        if self.used_historical:
+            imported = ", ".join(f"{_name(name)}Schema" for name in sorted(self.used_historical))
+            rendered = rendered.replace(
+                'import { z } from "zod";',
+                'import { z } from "zod";\nimport { '
+                + imported
+                + ' } from "./historical.generated";',
+            )
+        for name in (
+            "Transport",
+            "ApiClient",
+            "ApiResponse",
+            "ReadOptions",
+            "CommandOptions",
+            "ClientOptions",
+        ):
+            rendered = rendered.replace(f"Target{name}", f"Scenario{name}")
+        return rendered.replace("./target-transport", "./scenario-transport").replace(
+            "ScenarioTransport, type", "ScenarioTransport, ScenarioApiError, type"
+        )
+
+
+def render_scenario_client(contract: dict[str, Any]) -> str:
+    expected = {
+        ("get", "/api/v1/accounts/{account_id}/scenarios", "list_scenarios"),
+        ("post", "/api/v1/accounts/{account_id}/scenarios", "create_scenario"),
+        ("get", "/api/v1/scenarios/{scenario_id}", "get_scenario"),
+        ("get", "/api/v1/scenarios/{scenario_id}/versions", "list_scenario_versions"),
+        ("post", "/api/v1/scenarios/{scenario_id}/versions", "create_scenario_version"),
+        ("get", "/api/v1/scenario-versions/{version_id}", "get_scenario_version"),
+        ("get", "/api/v1/accounts/{account_id}/scenario-runs", "list_scenario_runs"),
+        ("post", "/api/v1/accounts/{account_id}/scenario-runs", "create_scenario_run"),
+        ("get", "/api/v1/scenario-runs/{run_id}", "get_scenario_run"),
+        ("get", "/api/v1/accounts/{account_id}/scenario-comparison", "compare_scenarios"),
+        ("post", "/api/v1/scenario-runs/{run_id}/cancel", "cancel_scenario_run"),
+    }
+    actual = [
+        (method, path, operation["operationId"])
+        for path, methods in contract["paths"].items()
+        for method, operation in methods.items()
+        if "scenario" in operation.get("tags", [])
+    ]
+    if len(actual) != len(expected) or set(actual) != expected:
+        raise ValueError("The frozen scenario operation registry differs.")
+    return ScenarioClientGenerator(contract).render()

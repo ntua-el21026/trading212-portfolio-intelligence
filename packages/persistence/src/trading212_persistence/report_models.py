@@ -504,7 +504,9 @@ class ApplicationCommandIdentityModel(ReportOwned):
         CheckConstraint(
             "command IN ('reports.generate.v1','reports.generate.v2','exports.generate.v1',"
             "'risk.definition.create.v1',"
-            "'risk.version.create.v1','risk.run.create.v1','risk.run.cancel.v1')",
+            "'risk.version.create.v1','risk.run.create.v1','risk.run.cancel.v1','scenario.d"
+            "efinition.create.v1','scenario.version.create.v1','scenario.run.create.v1','sc"
+            "enario.run.cancel.v1')",
             name="command_allowed",
         ),
         CheckConstraint("idempotency_key ~ '^[A-Za-z0-9._:-]{1,180}$'", name="key_format"),
@@ -518,7 +520,9 @@ class ApplicationCommandIdentityModel(ReportOwned):
             "report_job_id IS NULL AND premium_resource_id IS NULL AND premium"
             "_actor_id IS NULL AND premium_correlation_id IS NULL) OR "
             "(command IN ('risk.definition.create.v1','risk.version.create.v1'"
-            ",'risk.run.create.v1','risk.run.cancel.v1') AND report_job_id IS "
+            ",'risk.run.create.v1','risk.run.cancel.v1','scenario.definition.create.v1','sc"
+            "enario.version.create.v1','scenario.run.create.v1','scenario.run.cancel.v1') A"
+            "ND report_job_id IS "
             "NULL AND export_job_id IS NULL AND premium_resource_id IS NOT NUL"
             "L AND premium_actor_id IS NOT NULL AND premium_correlation_id IS "
             "NOT NULL)",

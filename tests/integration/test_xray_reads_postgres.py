@@ -62,7 +62,7 @@ class XrayReadCase:
 
 
 @pytest.fixture
-def xray_read_case() -> Iterator[XrayReadCase]:
+def xray_read_case(monkeypatch: pytest.MonkeyPatch) -> Iterator[XrayReadCase]:
     """Each test owns one disposable database in the single shared PostgreSQL service."""
     parsed = make_url(os.environ["TEST_DATABASE_URL"])
     name = "t212pi_xray_reads_" + uuid4().hex[:12]
@@ -78,7 +78,11 @@ def xray_read_case() -> Iterator[XrayReadCase]:
     try:
         cfg = Config("alembic.ini")
         cfg.set_main_option("sqlalchemy.url", url)
-        command.upgrade(cfg, "head")
+        # Alembic intentionally prefers DATABASE_URL; a coexisting migration
+        # fixture may own that variable, so pin this database for migration only.
+        with monkeypatch.context() as migration_environment:
+            migration_environment.setenv("DATABASE_URL", url)
+            command.upgrade(cfg, "head")
         asyncio.run(seed_materialized_synthetic(url, app_environment="test"))
         engine = create_database_engine(url)
         sessions = create_session_factory(engine)

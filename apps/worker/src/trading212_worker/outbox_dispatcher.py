@@ -62,6 +62,7 @@ from .report_tasks import (
     dispatch_reports_once,
 )
 from .risk_tasks import CeleryRiskPublisher, dispatch_risks_once
+from .scenario_tasks import CeleryScenarioPublisher, dispatch_scenarios_once
 
 _LOGGER = logging.getLogger("trading212_worker.outbox_dispatcher")
 _PUBLISH_ERROR_CODE = "broker_publish_failed"
@@ -1384,6 +1385,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             preflight=validate_risk_capacity,
         )
         risk_publisher = CeleryRiskPublisher(celery)
+        from trading212_analytics.scenario_replay import resolve_scenario_replay
+        from trading212_persistence.scenario_job_store import PostgresScenarioJobStore
+
+        scenario_store = PostgresScenarioJobStore(
+            create_session_factory(engine),
+            cursor_signing_key=secrets.token_bytes(32),
+            replay_resolver=resolve_scenario_replay,
+        )
+        scenario_publisher = CeleryScenarioPublisher(celery)
 
         source_service = PostgresSourceService(
             sessions=create_session_factory(engine),
@@ -1494,6 +1504,24 @@ def main(argv: Sequence[str] | None = None) -> int:
                     count
                 )
             metrics.queue_delivery_failures.labels(queue="risk_dispatch").inc(risk_result.deferred)
+            with metrics.duration.labels(operation="scenario_dispatch").time():
+                scenario_result = await dispatch_scenarios_once(
+                    scenario_store,
+                    scenario_publisher,
+                    dispatcher_id=settings.dispatcher_id,
+                    limit=1,
+                )
+            for outcome, count in (
+                ("success", scenario_result.published),
+                ("failure", scenario_result.deferred),
+                ("fenced", scenario_result.fenced),
+            ):
+                metrics.queue_delivery_attempts.labels(
+                    queue="scenario_dispatch", outcome=outcome
+                ).inc(count)
+            metrics.queue_delivery_failures.labels(queue="scenario_dispatch").inc(
+                scenario_result.deferred
+            )
             with metrics.duration.labels(operation="plan_dispatch").time():
                 result = await dispatch_plans_once(
                     plan_service,

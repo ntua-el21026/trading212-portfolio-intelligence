@@ -348,7 +348,7 @@ def test_mcp_source_has_no_provider_transport_orm_or_generic_proxy_surface() -> 
 
     assert all(value not in sources for value in forbidden_imports)
     assert forbidden_tools.isdisjoint(FROZEN_TOOL_NAMES)
-    assert len(FROZEN_TOOL_NAMES) == 28
+    assert len(FROZEN_TOOL_NAMES) == 32
     assert FROZEN_TOOL_NAMES[15:] == (
         "get_performance_summary",
         "get_benchmark_comparison",
@@ -363,4 +363,8 @@ def test_mcp_source_has_no_provider_transport_orm_or_generic_proxy_surface() -> 
         "create_risk_run",
         "get_risk_summary",
         "get_risk_matrix",
+        "list_scenarios",
+        "create_scenario_run",
+        "get_scenario_result",
+        "compare_scenarios",
     )

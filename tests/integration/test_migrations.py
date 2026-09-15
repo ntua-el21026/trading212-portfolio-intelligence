@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import os
 from collections.abc import Iterator
 from datetime import UTC, datetime
@@ -187,7 +188,7 @@ def test_empty_to_head_is_idempotent_and_matches_metadata(database_engine: Engin
     expected = set(Base.metadata.tables)
     assert actual == expected
     with database_engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260915_0019"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260915_0020"
 
 
 def test_export_url_cleanup_is_scoped_null_safe_and_repeatable(database_engine: Engine) -> None:
@@ -676,6 +677,17 @@ def test_migration_is_current_and_downgrade_policy_is_explicit(database_engine: 
     premium_report_revision = Path(
         "migrations/versions/20260915_0019_premium_reports.py"
     ).read_text()
+    scenario_revision = Path("migrations/versions/20260915_0020_scenarios.py").read_text()
+    scenario_tables = next(
+        ast.literal_eval(node.value)
+        for node in ast.parse(scenario_revision).body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(target, ast.Name) and target.id == "_TABLES" for target in node.targets)
+    )
+    assert len(scenario_tables) == 23 and len(set(scenario_tables)) == 23
+    assert 'revision = "20260915_0020"' in scenario_revision
+    assert 'down_revision = "20260915_0019"' in scenario_revision
+    assert "trading212_persistence" not in scenario_revision
     assert revision.count("op.drop_table(") + metadata_revision.count(
         "op.drop_table("
     ) + occurrence_revision.count("op.drop_table(") + outbox_revision.count(
@@ -692,7 +704,7 @@ def test_migration_is_current_and_downgrade_policy_is_explicit(database_engine: 
         "op.drop_table("
     ) + retention_revision.count("op.drop_table(") + premium_report_revision.count(
         "op.drop_table("
-    ) == len(Base.metadata.tables)
+    ) + len(scenario_tables) == len(Base.metadata.tables)
     assert 'revision = "20260915_0019"' in premium_report_revision
     assert 'down_revision = "20260914_0018"' in premium_report_revision
     assert "trading212_persistence" not in premium_report_revision

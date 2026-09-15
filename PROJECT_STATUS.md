@@ -28,12 +28,16 @@ and widget component checks. Versioned premium risk reports now share the existi
 worker, artifact pipeline and retention controls. Their local component gates pass:
 3,371 Python tests, 614 web tests, three real browser viewports and 145
 PostgreSQL cases across the broad run and corrected-fixture rerun. Package-wide verification remains pending.
-P3-02 now includes canonical terminal exposure, source-bound stress, historical
-replay and saved-result comparison. P3-03 includes the reproducible Decimal projection
-kernel, strict retained-result validation and explicit calendar/goal capture. Their
-persistence, workers and public interface integration remain pending. P3-05 is in
-progress with the delivered risk MCP slice. The complete numerical foundation gate passed 3,638 Python tests, static checks
-and all 12 Python package builds; it required no additional container.
+P3-02 now includes immutable scenario versions, retained source-bound runs, a fenced
+worker, authenticated REST/web/MCP results and saved comparisons. Migration 0020
+has 254 normalized tables. The current API has 109 paths/123 operations and MCP has
+32 tools/seven resources; the original contracts and ten broker GETs remain preserved.
+The scenario component passed 3,903 Python tests, 662 web tests, schema/retention
+PostgreSQL checks and actual API/worker browser journeys at three widths. Scenario
+reports remain in progress. P3-03 currently has the reproducible Decimal numerical
+kernel and calendar/goal capture; its persistence, worker and interfaces remain pending.
+These are component observations, with exact source boundaries in the implementation
+report. P3-05 includes the risk and scenario MCP slices.
 Final local validation remains pending; independent review will remain pending for the new
 candidate. GitHub Actions is `deferred_by_owner`, unverified. Production
 release/deployment, paid-provider purchases and Live are not authorized.

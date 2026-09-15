@@ -1,0 +1,70 @@
+{
+  "tools": {
+    "get_account_summary": "6a442c53410a4ae4ebcbba338e1d31d49a4dca8600a20b3ade027d660be620d8",
+    "get_portfolio_snapshot": "aaaf2e4363efa60c82aeac25cc3978735718c9e8800f1a44538c655085ca5143",
+    "list_positions": "524fa349e56b1456efbac8f40cd9355222dc6436f8e074e65a95bcda39576614",
+    "list_recent_transactions": "c045e6737c13d0bb4edac4ae5d1ff3badfdfb7be56ecbb967244daef7f7d06e4",
+    "get_dividend_summary": "413a6b80dc8d3fb15a9bc6d7cb93f66940643827596528d240975923d91b43f4",
+    "get_direct_allocation": "0f099fd2645295942340b9a9b7308f9f2c8bd5fba9c1e36976713a7d424f8674",
+    "compare_portfolio_snapshots": "257c01b72fa61a553ff0d37d4e6659dbcd0798a3e12fadd1a8b8446932bca84e",
+    "get_reconciliation_status": "e42586aaca84a72b01749be09b3cb85c75000ca0921791dcb418ff145504edf4",
+    "get_data_quality_summary": "4d4a876e9da0ed1c50cefc172fcf305f332706261a17006aa322df8bf3531011",
+    "list_virtual_pies": "a4ccf472ba3f135058f46796b6e4f2411a5775e7c2f5808e7d677b219ff11e37",
+    "get_virtual_pie": "7d614c68ad6b722b4d7bff3b74c008471c87b079647953bc59b5d5c13e0accd0",
+    "get_actual_vs_target": "2974808abfdf70cfdc34397b8804c60c8242a10dfbac8861901aaeba1aefbce8",
+    "get_drift_analysis": "34184c201ddb958ebe0d2d33ee4f055aa1a0b67fb3ba081524586c59d0709a37",
+    "get_contribution_plan": "55a2bb3ef637c6538a22eecc93af5a5ea5b389e33a45ba8e0361b869c13fb67d",
+    "create_contribution_plan": "139ab2fe7d03b5fb0fae7b347a0981534ad80de43c293d7775f558fb73d16ece",
+    "get_performance_summary": "0f8d797b00fca0deba862dc7a0207b3b19eac4b9f0949680e497cc1020ccbe67",
+    "get_benchmark_comparison": "2ff625aff7c319283f3856e4ea889210564832901538f21ff63ed26baf4fd29a",
+    "get_dividend_intelligence": "b1dad4ba1e3c39ea7cdad6db5b4b1cfea9025f712492f4ffebc2fa14b6c7d254",
+    "get_attribution_summary": "fbd2a1fed7ee968428f779c40c66aa27f1ac743b574e12b9d01fff6acf92e42f",
+    "get_effective_exposure": "d5437d829a6517b558f4f01f4e9f711d856762082f223bd914253344cc367aba",
+    "get_etf_overlap": "7b49c7474c0e40d73e06fc7d0604107adef506ad3e39ba1e744ca1ac9444d78b",
+    "get_report_status": "c8558b2f4996d917dc9573741d284cfdef2f4c124292e3da1434fd20d00d2873",
+    "list_reports": "6ea502a4f051689a4035f1ad9252c846f49d95f56e66563651e4235843dee110",
+    "generate_portfolio_report": "91326f339f879c956b2345374cf3bc2642f3a8d2b0b1aa06b3c1759b2ce37d04",
+    "get_alert_summary": "d5c9f478bce19b5dab592f7041cba315e42194b420056225152747b17dc125eb",
+    "create_risk_run": "6d6102368468a19c5a5d7e7e68ecf85900072a27a090dbcc63cf8e4777ca7ec0",
+    "get_risk_summary": "b15d5779bbc5197e4dae1395546376d0edbf862619ad621c56f669e1c6bb5aa7",
+    "get_risk_matrix": "26207a442d55533bb32abf1b373deb2ab409d62b5d535e1ac6b9925121f7ae5a"
+  },
+  "resources": {
+    "ui://trading212-portfolio/snapshot-v1.html": {
+      "descriptor_sha256": "b946d289a8a91180519629b8e9b4bee49c7b0e74a4cd86d94838724c13be9ac1",
+      "content_sha256": [
+        "c1edd67413f42fe3e4cf1c747214e896bfd4de94047e2b06decbd3f57aaa326d"
+      ]
+    },
+    "ui://trading212-portfolio/contribution-plan-v1.html": {
+      "descriptor_sha256": "ec2fef685b5d09c7330d03abebe1cd9f6559bab91a34fcb989ece233b42ee063",
+      "content_sha256": [
+        "e9fb3ba20654a4078af4824214288b14a3cd8f1bcf5174359bcee437ed580cf2"
+      ]
+    },
+    "ui://trading212-portfolio/performance-comparison-v1.html": {
+      "descriptor_sha256": "5f08075768e012daea4efcfb16c04910a278c83897c2f72db193eebd388984fc",
+      "content_sha256": [
+        "3cfe623995544c168bced580fd84ffaceb613a0798b5c5898ba3698fcae52a17"
+      ]
+    },
+    "ui://trading212-portfolio/xray-v1.html": {
+      "descriptor_sha256": "a5c962e89e9db604591c08361a1608b67ffebb5095dbde6b585f6492f2bd3758",
+      "content_sha256": [
+        "28dd17b9aa4f35c8769643cb9315780720f3b1d48b966339ed2ce8bf11b7806d"
+      ]
+    },
+    "ui://trading212-portfolio/report-status-v1.html": {
+      "descriptor_sha256": "8156b997756545d51af5aefb4ce9d48280be8d58a366dc2c1f901b4033c2f32b",
+      "content_sha256": [
+        "8bc4757d39c67d8f28128265359352d4b37af847dd2f47e954fb0bd0816f1c4a"
+      ]
+    },
+    "ui://trading212-portfolio/risk-v1.html": {
+      "descriptor_sha256": "667db2a18d5b656e69cf9938c51f589d1c05d98c593c6366bd124541f104bb69",
+      "content_sha256": [
+        "1238bb8e9fa13576d0954ee5d79e038b8ac130e73ca37af8d849d57313cddffc"
+      ]
+    }
+  }
+}

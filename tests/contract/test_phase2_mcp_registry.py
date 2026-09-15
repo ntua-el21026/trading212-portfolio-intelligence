@@ -38,8 +38,16 @@ async def test_independent_exact_25_names_fields_scopes_and_annotations_after_p2
     tools = await server.list_tools()
     expected_names = tuple(case.name for case in CASES)
     assert len(set(expected_names)) == 25
-    premium = {"create_risk_run", "get_risk_summary", "get_risk_matrix"}
-    assert len(tools) == 28
+    premium = {
+        "create_risk_run",
+        "get_risk_summary",
+        "get_risk_matrix",
+        "list_scenarios",
+        "create_scenario_run",
+        "get_scenario_result",
+        "compare_scenarios",
+    }
+    assert len(tools) == 32
     assert {tool.name for tool in tools} == set(expected_names) | premium
     assert tuple(tool.name for tool in tools[:9]) == expected_names[:9]
     assert set(RESULT_MODELS) == set(expected_names) | premium

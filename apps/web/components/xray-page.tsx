@@ -240,6 +240,14 @@ export async function XrayPage({ search }: Readonly<{ search: XraySearch }>) {
                 Held funds and overlap
               </Link>
             </nav>
+            <p>
+              <Link
+                prefetch={false}
+                href={`/scenarios?${new URLSearchParams({ account: account.id, view: "new", snapshot: data.context.snapshot_id, xray: data.context.run_id, currency: data.context.reporting_currency, cutoff: data.context.source_cutoff_at })}`}
+              >
+                Use this saved X-ray in a scenario
+              </Link>
+            </p>
             <XraySummary summary={data.summary} />
             <XrayResults data={data} query={query} />
             <XrayContextDetails context={data.context} query={query} />

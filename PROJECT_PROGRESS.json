@@ -4211,10 +4211,12 @@
           "scenario_domain_and_calculation": "implemented",
           "scenario_replay_and_comparison": "implemented",
           "projection_kernel_and_calendar_capture": "implemented",
-          "scenario_persistence_and_worker": "pending",
-          "scenario_public_interfaces_and_reports": "pending",
+          "scenario_persistence_and_worker": "implemented",
+          "scenario_public_interfaces_and_reports": "in_progress",
           "projection_persistence_worker_and_interfaces": "pending",
-          "package_acceptance": "pending"
+          "package_acceptance": "pending",
+          "scenario_public_interfaces": "implemented",
+          "scenario_reports": "pending"
         }
       },
       "candidate_validation": {

@@ -16,8 +16,8 @@ Run/item reads require account_id and exact retained ID; Page is signed and boun
 | 28 | get_risk_matrix | GetRiskMatrix | none | READ | account_id, run_id; matrix/coverage |
 | 29 | list_scenarios | ListScenarios | none | READ | account_id, Page; scenario summaries |
 | 30 | create_scenario_run | CreateScenarioRun | scenarios:write | COMMAND | CreateScenarioRunRequest + idempotency_key; ScenarioRunView |
-| 31 | get_scenario_result | GetScenarioRun | none | READ | account_id, run_id; ScenarioRunView |
-| 32 | compare_scenarios | CompareScenarios | none | READ | account_id, two distinct run IDs; comparison |
+| 31 | get_scenario_result | GetScenarioRun | none | READ | account_id, run_id, component_limit/cursor; ScenarioRunView with result page |
+| 32 | compare_scenarios | CompareScenarios | none | READ | account_id, two distinct ordered run IDs, component_limit/cursor; comparison page |
 | 33 | create_projection_run | CreateProjectionRun | projections:write | COMMAND | ProjectionRequest + idempotency_key; ProjectionRunView |
 | 34 | get_projection | GetProjectionRun | none | READ | account_id, run_id; ProjectionRunView |
 | 35 | list_goals | ListGoals | none | READ | account_id, Page; goal summaries |
@@ -34,6 +34,11 @@ Commands create private records using retained inputs, never broker/provider cal
 Recheck grants/licenses on reads, execution and replay. Failures/expiry/cancellation
 have safe reasons and no result before atomic publication. Result<=2 MiB, bounded
 previews/exact omissions, declared outputSchema. Annotations never replace auth.
+
+Scenario page fields follow [ADR-0028](../adr/ADR-0028-SCENARIO-PUBLIC-PAGES.md):
+component_limit defaults to 25 (maximum 100), component_cursor is at most 2048
+characters, and all financial rows remain traversable. Compact source previews
+show exact omissions; no complete private result is implied by the public view.
 
 ## Resources
 

@@ -180,8 +180,13 @@ def expire_enrichment_payloads(
                 return completed
             if work.phase == "copies":
                 from .risk_retention import expire_risk_payloads
+                from .scenario_retention import expire_scenario_payloads
 
                 if not expire_risk_payloads(session, at=at, owner=source.owner_id, budget=budget):
+                    continue
+                if not expire_scenario_payloads(
+                    session, at=at, owner=source.owner_id, budget=budget
+                ):
                     continue
                 from .alert_retention import purge_alert_source_copies
                 from .report_retention import purge_report_source_copies

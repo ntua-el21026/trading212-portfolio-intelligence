@@ -27,6 +27,19 @@ The v1.0 additive freeze has 30 local acceptance rows and 48 mandatory scenarios
 all pending. Design/governance checks do not stand in for premium runtime tests.
 Final candidate and independent review remain pending.
 
+## Phase 3 persisted scenario component checks
+
+Scenario storage/worker/API/web/MCP integration passed 3,903 Python cases, 662 web
+cases, strict static/generated-contract checks, 12 Python package builds and a
+production web build. The schema gate passed 13 PostgreSQL cases; 38 distinct runtime
+cases have passing executions across a 36-pass/two-fixture-error run and its corrected
+ten-case rerun. Three production standalone/API/isolated-worker browser journeys
+passed at 1440/768/360 pixels, and the scenario widget passed ten browser cases.
+The [component report](docs/implementation/PHASE_3_IMPLEMENTATION_REPORT.md#p3-02-persisted-scenarios-and-public-interfaces)
+records source boundaries, failed attempts, corrections, exact receipt names and
+remaining work. These populations are not added across overlapping runs. No full
+Phase 3 acceptance, new coverage, SLO, RSS or genuine restore result is claimed.
+
 ## Phase 3 scenario and projection foundation checks
 
 The final working-source foundation gate passed 3,638 Python cases in 204.14 seconds,

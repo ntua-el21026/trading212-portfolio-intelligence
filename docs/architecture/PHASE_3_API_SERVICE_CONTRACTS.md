@@ -45,8 +45,9 @@ variants. Financial digests exclude operational envelopes, not material assumpti
 Run status is separate from result availability. RiskRunView, ScenarioRunView and
 ProjectionRunView contain typed request/job/run references and durable execution
 state; result is null until atomic publication. Failed/expired/cancelled work has
-safe categories and no fabricated financial result. Published views contain the
-same named RiskResult, ScenarioResult or ProjectionResult across API/MCP/reports.
+safe categories and no fabricated financial result. Published views preserve the same canonical financial values across API/MCP/reports.
+Bounded public pages have distinct types and view digests; canonical private results
+and reports retain complete authorized proof. ADR-0028 specifies scenario pages.
 
 ## Risk contracts
 
@@ -137,6 +138,18 @@ covered/uncovered mass, pre/post/impact components, interaction residual, source
 dates and assumptions. A fund wrapper is replaced by its terminal partition;
 never count both. Unsupported sensitivities remain unavailable, and total post
 value cannot silently assume an unknown shocked component was unaffected.
+
+[ADR-0028](../adr/ADR-0028-SCENARIO-PUBLIC-PAGES.md) defines distinct compact
+ScenarioResultPage/ScenarioComparisonPage views. GetScenarioRun and CompareScenarios
+accept component_limit (default 25, 1..100) and component_cursor (up to 2048 characters).
+Pages preserve all financial rows across immutable ordinal traversal, with at most
+16 source IDs per preview and exact omitted counts. Selected sensitivity observations
+remain visible. Each page uses a 1 MiB canonical UTF-8 subbudget including common
+context, under the 2 MiB complete transport envelope. A component is never split or
+silently truncated. Current authentication, grants, source rights and expiry precede
+private decode, cursor handling and conditional responses; cursors bind stable issuer
+and subject, owner/account, ordered run/result identities and digests, view/limit/expiry.
+Creation, cancellation and run lists return operational metadata without financial pages.
 
 ## Assumptions, projections and goals
 

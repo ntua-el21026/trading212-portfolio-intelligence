@@ -41,6 +41,9 @@ class CollectionSnapshotResource(StrEnum):
     RISK_DEFINITIONS = "risk_definitions"
     RISK_VERSIONS = "risk_versions"
     RISK_RUNS = "risk_runs"
+    SCENARIO_DEFINITIONS = "scenario_definitions"
+    SCENARIO_VERSIONS = "scenario_versions"
+    SCENARIO_RUNS = "scenario_runs"
     INTELLIGENCE_QUALITY_SOURCES = "intelligence_quality_sources"
     PORTFOLIOS_NAME = "portfolios_name"
     PORTFOLIOS_UPDATED = "portfolios_updated"
@@ -89,6 +92,9 @@ _SORT_SPECIFICATIONS = {
     CollectionSnapshotResource.RISK_DEFINITIONS: "created_at_desc_id_desc",
     CollectionSnapshotResource.RISK_VERSIONS: "version_number_desc_id_desc",
     CollectionSnapshotResource.RISK_RUNS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.SCENARIO_DEFINITIONS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.SCENARIO_VERSIONS: "version_number_desc_id_desc",
+    CollectionSnapshotResource.SCENARIO_RUNS: "created_at_desc_id_desc",
     CollectionSnapshotResource.INTELLIGENCE_QUALITY_SOURCES: "ordinal_asc",
     CollectionSnapshotResource.XRAY_EXPOSURES: "ordinal_asc",
     CollectionSnapshotResource.XRAY_PATHS: "ordinal_asc",
@@ -166,6 +172,9 @@ _ACCOUNT_RESOURCES = frozenset(
         CollectionSnapshotResource.RISK_DEFINITIONS,
         CollectionSnapshotResource.RISK_VERSIONS,
         CollectionSnapshotResource.RISK_RUNS,
+        CollectionSnapshotResource.SCENARIO_DEFINITIONS,
+        CollectionSnapshotResource.SCENARIO_VERSIONS,
+        CollectionSnapshotResource.SCENARIO_RUNS,
         CollectionSnapshotResource.INTELLIGENCE_QUALITY_SOURCES,
         CollectionSnapshotResource.XRAY_EXPOSURES,
         CollectionSnapshotResource.XRAY_PATHS,

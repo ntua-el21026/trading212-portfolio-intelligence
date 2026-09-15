@@ -4,6 +4,8 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+- Add immutable scenario definitions, source-bound retained runs, fenced asynchronous execution, exact REST/client/web/MCP results and comparison, with original-license retention and one-container PostgreSQL/browser verification. Scenario reports and package acceptance remain in progress.
+
 - Add source-bound stress/replay/comparison foundations, reproducible Decimal projection paths and explicit calendar/goal capture, with retained financial integrity checks. Scenario/projection persistence and interfaces remain in progress.
 
 - Add versioned premium risk reports with complete canonical proof, six fixed V2 routes, authenticated web downloads and source-bound physical retention; preserve V1 API/MCP contracts.

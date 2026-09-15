@@ -511,3 +511,109 @@ exactly ten sealed broker GETs. P3-02/P3-03/P3-05 are in progress; all 30 accept
 unverified. Full candidate validation, SLO/load evidence and genuine backup/restore
 remain required. Docker recovery retained the same sole scoped PostgreSQL container;
 no database, volume or configuration reset occurred.
+
+## P3-02 persisted scenarios and public interfaces
+
+Migration `20260915_0020` adds the normalized scenario source, definition/version,
+run/input/result and component records (254 total tables). Published inputs and
+saved results retain canonical digests, owner/account/snapshot identity and original
+source lifetimes. Final authorization checks cover every original observation and
+membership before private decoding and again after potentially time-consuming reads.
+Replay proof binds the original total-return membership, FX legs, calendar closes and
+knowledge dates. Revoked or expired sources fail closed; derived financial copies
+are physically drained within the existing shared retention budget before parents.
+
+Admission uses existing semantic command identities, transactional outbox, owner
+locks and shared premium capacity: two active jobs per owner, one globally running,
+512 versions, 32 MiB per run and 256 MiB per owner. Isolated scenario execution has
+an absolute 240-second lifetime across retries, 60-second leases/15-second renewal,
+bounded dispatcher batches and a 512 MiB address-space limit. Cancellation and
+expired leases fence final publication. These are enforced limits; peak RSS and
+load SLOs have not yet been measured.
+
+Eight new paths/eleven operations expose immutable scenario revisions, saved runs,
+complete paged components and comparisons. The total inventory is 109 REST paths,
+123 operations and 419 schemas. ADR-0028 bounds financial pages to 1 MiB, envelopes
+to 2 MiB and whole components to 25 by default/100 maximum. Sixteen source previews
+carry exact omission counts; canonical full proof stays retained. Cursors bind
+principal, account, ordered results/digests, page size and current expiry. Current
+authorization precedes cursor decoding and conditional 304 responses.
+
+The four scenario MCP tools bring the implemented registry to 32 tools/seven
+resources; only internal `create_scenario_run` adds a write. Prior 28 tool descriptors
+and six resources retain byte-bound compatibility. Signed transport, private errors,
+closed input schemas, source/account boundaries and the 2 MiB response cap have
+regressions. The scenario resource provides named tables, keyboard scrolling and
+three-width browser captures. The web workspace implements editing/version history,
+saved X-ray input selection, bounded polling/cancellation, comparison, exact API
+financial strings, browser URL state and account-safe selection clearing.
+
+The unchanged-source `scenario-local-01` gate passed 3,903 Python unit/property/
+contract/security cases (252.728 seconds; total gate 279.289 seconds), mypy over 799
+files, Ruff over 804 files, generated-contract/secret/architecture/broker checks and
+all 12 Python package builds. The subsequent `scenario-web-full-02` passed 662 web
+cases, lint/typecheck and the production build. The one-worker Next build passed
+`scenario-web-build-03`; production browser fixtures now use the actual standalone
+server and symlink its existing static assets without duplicating builds. The
+widget table-width correction passed two focused Python and ten browser cases in
+`scenario-widget-02`. These later executable differences are retained in the
+source manifests and verified by their relevant gates, not attributed retroactively
+to the earlier full Python run.
+
+PostgreSQL schema gate `scenario-schema-postgres-04` passed 13 cases covering fresh
+head, metadata parity, repeat migration, populated 0019 preservation, downgrade and
+re-upgrade. Runtime attempt `scenario-runtime-postgres-02` had 36 passing cases and
+two fixture setup errors: a coexisting fixture's DATABASE_URL redirected Alembic to
+the wrong database. Scoping DATABASE_URL to the fixture's own migration corrected
+this; `scenario-runtime-postgres-03` passed all ten selected cases. Thus 38 distinct
+runtime cases have passing executions across those two attempts; the original
+failed gate remains failed. The real production API/isolated-worker journey passed
+at 1440/768/360 pixels in `scenario-web-browser-04` (223.820 seconds), creating two
+immutable versions/runs and checking canonical fields, pagination, comparison,
+keyboard clearance, no document overflow and account switching. Earlier browser
+attempts preserve the strict-label locator issue, generated Next type-path mutation
+and empty hidden React streaming-table diagnostic. Financial parity assertions
+were preserved. The final `scenario-delivery-local-01` static/662-web/build gate
+passed in 35.671 seconds. Visual review then identified oversized identifier columns;
+fixed column widths, wrapped identities and contained disclosures corrected them.
+The focused `scenario-web-layout-01` gate passed component tests, lint/typecheck and
+production build in 10.299 seconds. The final `scenario-web-browser-06` passed all
+three journeys in 220.865 seconds with unchanged source, including new bounded-column
+and mobile summary-width assertions. ROOT reviewed the three final result captures.
+All 21 journey captures retain their original viewport dimensions; fixed mobile
+navigation appears at the viewport boundary in full-page captures. Prior passing
+browser05 remains an earlier source observation, not the final layout evidence.
+
+All receipts, commands, source manifests, failed attempts, JUnit/Playwright outputs
+and original captures are retained under the task's external `phase3-20260914`
+evidence directory. The delivery receipt binds this component commit separately.
+No new coverage percentage, final immutable candidate pass, full accessibility audit,
+SLO, genuine restore or package acceptance is claimed. All 30 acceptance rows and
+48 scenarios remain pending. Scenario reports and projection integration are next;
+CI remains owner-deferred/unverified. The same sole task PostgreSQL container is
+reused, with each synthetic test database removed by its fixture.
+
+At this delivery boundary, active-consumer checks preceded removal of inactive
+Next development output and a superseded Python package build: 213,745,664 allocated
+file bytes. The cleanup receipt retains exact paths and SHA256 inventories. Current
+production output, required dependencies, source, evidence, handoffs and both database
+volumes remain intact. Docker inventory confirms only the existing task PostgreSQL
+container is running; it is still required by subsequent Phase 3 runtime checks.
+
+The final staged diff check detected trailing whitespace inside the newly added
+migration's SQL literals; earlier unstaged checks did not inspect new files.
+Only line-ending whitespace was removed. The failure and exact before/after hash
+are retained. The subsequent schema05 gate exposed a missing pytest fixture alias
+in the final source (seven passes, one setup error); explicitly registering the
+shared risk fixture corrected it. `scenario-schema-postgres-06` then passed all
+13 cases in 8.26 seconds (9.475-second gate), with unchanged source. These two paths
+are the only executable differences from browser06 and are covered by this fresh
+schema gate; final documentation/static checks and the delivery receipt bind them.
+
+The extra migration lint check flagged runtime string construction from the frozen
+table tuple. The identical downgrade predicate is now a literal SQL statement and
+the new migration is formatted. Final `scenario-schema-postgres-07` passed all 13
+cases in 8.15 seconds (9.351 seconds total), plus migration/fixture lint and format.
+The preceding documentation02 gate passed mypy/secret/governance/format checks but
+remains failed at migration lint. The two final executable differences from
+browser06 are covered by schema07; no earlier failing gate is relabelled.

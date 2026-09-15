@@ -328,6 +328,14 @@ def purge_xray_source_copies(
             return False
         if not budget.metadata_limit:
             return False
+        from .scenario_retention import purge_scenario_xray_copies
+
+        if not purge_scenario_xray_copies(
+            session, source.owner_id, candidate.id, at=at, budget=budget
+        ):
+            return False
+        if not budget.metadata_limit:
+            return False
         event = session.scalar(
             select(xm.XrayRetentionEventModel.id)
             .where(

@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
   devIndicators: false,
   experimental: {
+    // Keep production page-data generation serial on the development laptop.
+    cpus: 1,
     useTypeScriptCli: true,
   },
   output: "standalone",

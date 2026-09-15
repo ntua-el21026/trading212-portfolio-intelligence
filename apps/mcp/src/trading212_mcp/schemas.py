@@ -23,6 +23,12 @@ from .planning_schemas import (
 )
 from .report_schemas import GenerateReportToolResult, ReportListToolResult, ReportStatusToolResult
 from .risk_schemas import RiskMatrixToolResult, RiskRunToolResult
+from .scenario_schemas import (
+    ScenarioComparisonToolResult,
+    ScenarioCreateToolResult,
+    ScenarioListToolResult,
+    ScenarioRunToolResult,
+)
 from .target_schemas import VirtualPieResult, VirtualPiesResult
 from .xray_schemas import XrayExposureToolResult, XrayOverlapToolResult
 
@@ -430,4 +436,8 @@ RESULT_MODELS: dict[str, type[BaseModel]] = {
     "create_risk_run": RiskRunToolResult,
     "get_risk_summary": RiskRunToolResult,
     "get_risk_matrix": RiskMatrixToolResult,
+    "list_scenarios": ScenarioListToolResult,
+    "create_scenario_run": ScenarioCreateToolResult,
+    "get_scenario_result": ScenarioRunToolResult,
+    "compare_scenarios": ScenarioComparisonToolResult,
 }

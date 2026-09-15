@@ -16,6 +16,7 @@ from trading212_api_contracts.typescript import (
     render_premium_report_client,
     render_report_client,
     render_risk_client,
+    render_scenario_client,
     render_source_client,
     render_target_client,
     render_xray_client,
@@ -34,6 +35,7 @@ REPORT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/reports.generated.
 PREMIUM_REPORT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/premium-reports.generated.ts"
 ALERT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/alerts.generated.ts"
 RISK_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/risk.generated.ts"
+SCENARIO_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/scenarios.generated.ts"
 
 
 def render_contract() -> str:
@@ -73,6 +75,7 @@ def main() -> int:
         (PREMIUM_REPORT_OUTPUT, render_premium_report_client),
         (ALERT_OUTPUT, render_alert_client),
         (RISK_OUTPUT, render_risk_client),
+        (SCENARIO_OUTPUT, render_scenario_client),
     ):
         clients[output] = subprocess.run(  # noqa: S603
             [*package_manager, "exec", "prettier", "--stdin-filepath", str(output)],

@@ -11,6 +11,7 @@ import {
   ListTree,
   RefreshCw,
   Settings,
+  SlidersHorizontal,
   ShieldCheck,
   TrendingUp,
 } from "lucide-react";
@@ -35,6 +36,7 @@ const primaryItems = [
   { href: "/sources", icon: ShieldCheck, label: "Sources" },
   { href: "/performance", icon: TrendingUp, label: "Performance" },
   { href: "/risk", icon: ShieldCheck, label: "Risk" },
+  { href: "/scenarios", icon: SlidersHorizontal, label: "Scenarios" },
   { href: "/income", icon: CircleDollarSign, label: "Income" },
   { href: "/xray", icon: ChartPie, label: "X-ray" },
   { href: "/reports", icon: FileText, label: "Reports" },

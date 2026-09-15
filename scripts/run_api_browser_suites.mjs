@@ -71,6 +71,7 @@ function run(arguments_, fixture, reportPath) {
           ? "1"
           : "0",
         T212PI_E2E_XRAY: fixture === "xray.spec.ts" ? "1" : "0",
+        T212PI_E2E_SCENARIOS: fixture === "scenarios.spec.ts" ? "1" : "0",
         T212PI_E2E_REPORTS: [
           "reports.spec.ts",
           "premium-reports.spec.ts",

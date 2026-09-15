@@ -100,6 +100,14 @@ def purge_source_copies(
             return False
         if not budget.metadata_limit:
             return False
+        from .scenario_retention import purge_scenario_historical_copies
+
+        if not purge_scenario_historical_copies(
+            session, snapshot.owner_id, candidate.id, at=at, budget=budget
+        ):
+            return False
+        if not budget.metadata_limit:
+            return False
         tombstone = session.scalar(
             select(hm.HistoricalRetentionEventModel.id)
             .where(
