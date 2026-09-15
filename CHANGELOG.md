@@ -4,6 +4,8 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+- Add source-bound stress/replay/comparison foundations, reproducible Decimal projection paths and explicit calendar/goal capture, with retained financial integrity checks. Scenario/projection persistence and interfaces remain in progress.
+
 - Add versioned premium risk reports with complete canonical proof, six fixed V2 routes, authenticated web downloads and source-bound physical retention; preserve V1 API/MCP contracts.
 
 - Add three scoped risk MCP tools and an isolated interactive resource over canonical persisted results.

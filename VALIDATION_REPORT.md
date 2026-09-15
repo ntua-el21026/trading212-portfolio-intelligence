@@ -27,6 +27,19 @@ The v1.0 additive freeze has 30 local acceptance rows and 48 mandatory scenarios
 all pending. Design/governance checks do not stand in for premium runtime tests.
 Final candidate and independent review remain pending.
 
+## Phase 3 scenario and projection foundation checks
+
+The final working-source foundation gate passed 3,638 Python cases in 204.14 seconds,
+strict typing, format/lint, contract and secret checks, and all 12 Python package
+builds. Its content, type and mode stayed unchanged throughout the 230.184-second
+gate. Earlier focused populations overlap and are not added to this total. Coverage
+includes reference arithmetic, retained financial/source-identity integrity,
+source/date/mapping uncertainty, cash/FX treatment, reproducible chunk identities,
+calendar capture and malformed saved financial records. The [implementation report](docs/implementation/PHASE_3_IMPLEMENTATION_REPORT.md#p3-02-and-p3-03-numerical-foundations)
+records receipt names, source boundaries and remaining work. These are component
+observations; no package acceptance, final immutable candidate pass or new PostgreSQL
+migration validation is claimed. Current CI remains deferred and unverified.
+
 ## Phase 3 premium report component checks
 
 Versioned risk reports passed the local component gate:3,371 Python cases,614 web

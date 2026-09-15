@@ -28,6 +28,12 @@ and widget component checks. Versioned premium risk reports now share the existi
 worker, artifact pipeline and retention controls. Their local component gates pass:
 3,371 Python tests, 614 web tests, three real browser viewports and 145
 PostgreSQL cases across the broad run and corrected-fixture rerun. Package-wide verification remains pending.
+P3-02 now includes canonical terminal exposure, source-bound stress, historical
+replay and saved-result comparison. P3-03 includes the reproducible Decimal projection
+kernel, strict retained-result validation and explicit calendar/goal capture. Their
+persistence, workers and public interface integration remain pending. P3-05 is in
+progress with the delivered risk MCP slice. The complete numerical foundation gate passed 3,638 Python tests, static checks
+and all 12 Python package builds; it required no additional container.
 Final local validation remains pending; independent review will remain pending for the new
 candidate. GitHub Actions is `deferred_by_owner`, unverified. Production
 release/deployment, paid-provider purchases and Live are not authorized.

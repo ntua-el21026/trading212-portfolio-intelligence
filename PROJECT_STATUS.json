@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-14",
+  "updated_at": "2026-09-15",
   "current_candidate": {
     "phase": "phase_3",
     "release": "1.0.0",
@@ -140,7 +140,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "phase_3_P3_01_web_mcp_reports_retention_and_acceptance",
+  "next_gate": "phase_3_scenario_persistence_worker_retention_and_interfaces",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -436,7 +436,7 @@
     "verification_after_limits_reset": "pending"
   },
   "current_work_package": {
-    "id": "P3-01",
+    "id": "P3-02",
     "implementation_report": "docs/implementation/PHASE_3_IMPLEMENTATION_REPORT.md",
     "status": "in_progress",
     "source_sha": null,
@@ -444,13 +444,12 @@
     "current_candidate_pointer": "/current_candidate",
     "historical_evidence_pointer": "/historical_evidence/phase_2",
     "component_status": {
-      "calculation": "implemented",
-      "persistence_and_worker": "implemented",
-      "rest_and_generated_client": "implemented",
-      "shared_physical_retention": "implemented",
-      "web_workspace": "implemented",
-      "mcp_tools_and_widget": "implemented",
-      "reports": "implemented",
+      "scenario_domain_and_calculation": "implemented",
+      "scenario_replay_and_comparison": "implemented",
+      "projection_kernel_and_calendar_capture": "implemented",
+      "scenario_persistence_and_worker": "pending",
+      "scenario_public_interfaces_and_reports": "pending",
+      "projection_persistence_worker_and_interfaces": "pending",
       "package_acceptance": "pending"
     }
   },

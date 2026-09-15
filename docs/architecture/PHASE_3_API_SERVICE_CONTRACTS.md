@@ -150,7 +150,7 @@ assumed values separately from any explicitly pinned calibration evidence.
 
 ProjectionRequest pins assumption_version_id, optional goal_version_id and explicit
 initial_basis: observed_snapshot (owned snapshot_id; canonical server-derived value)
-or modeled_value (explicit modeled Money). It also specifies allocation, seed uint32,1..600 monthly steps,1..4096 paths, up to 121 requested
+or modeled_value (explicit modeled Money and anchor date). It also specifies allocation, seed uint32,1..600 monthly steps,1..4096 paths, up to 121 requested
 retained month indices including 0 and the terminal month, and up to 128 schedule
 entries. The asset-month-path work product, including sensitivity variants, must
 fit 1,000,000 before admission. Negative money, duplicate schedule identity,
@@ -162,6 +162,14 @@ the declared reporting currency. Sensitivity is optional and contains one monthl
 contribution delta and one annual mean-log-return delta. It requests baseline plus
 two separate variants with common random numbers and counts all three toward
 admission. No silent reduction in paths/horizon/points or different random seed.
+
+The ADR-0027 `calendar_anniversary_clamped_v1` convention derives an observed
+anchor from the actual snapshot valuation timestamp in UTC, retaining its full
+instant. It computes anniversaries from the original day with destination-month
+clamping. Dated flows and pauses must match exact starts; mid-period and
+outside-horizon entries fail with typed errors. Target date equals the terminal
+boundary. Retain the original dated request and a distinct complete capture digest;
+the numerical digest alone does not identify calendar/source intent.
 
 GoalVersionContent pins currency, target amount/date/month horizon, nominal|real
 basis, probability objective in[0,1], assumption version and schedule. GoalAnalysis

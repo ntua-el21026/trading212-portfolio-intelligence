@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-14",
+  "updated_at": "2026-09-15",
   "current_candidate": {
     "phase": "phase_3",
     "release": "1.0.0",
@@ -4189,10 +4189,10 @@
       "progress_percent": 0,
       "work_packages": {
         "P3-01": "in_progress",
-        "P3-02": "not_started",
-        "P3-03": "not_started",
+        "P3-02": "in_progress",
+        "P3-03": "in_progress",
         "P3-04": "not_started",
-        "P3-05": "not_started",
+        "P3-05": "in_progress",
         "P3-06": "not_started",
         "P3-07": "not_started",
         "P3-08": "not_started",
@@ -4200,7 +4200,7 @@
         "P3-10": "not_started"
       },
       "current_implementation": {
-        "work_package": "P3-01",
+        "work_package": "P3-02",
         "implementation_report": "docs/implementation/PHASE_3_IMPLEMENTATION_REPORT.md",
         "status": "in_progress",
         "source_sha": null,
@@ -4208,13 +4208,12 @@
         "current_candidate_pointer": "/current_candidate",
         "historical_evidence_pointer": "/historical_evidence/phase_2",
         "component_status": {
-          "calculation": "implemented",
-          "persistence_and_worker": "implemented",
-          "rest_and_generated_client": "implemented",
-          "shared_physical_retention": "implemented",
-          "web_workspace": "implemented",
-          "mcp_tools_and_widget": "implemented",
-          "reports": "implemented",
+          "scenario_domain_and_calculation": "implemented",
+          "scenario_replay_and_comparison": "implemented",
+          "projection_kernel_and_calendar_capture": "implemented",
+          "scenario_persistence_and_worker": "pending",
+          "scenario_public_interfaces_and_reports": "pending",
+          "projection_persistence_worker_and_interfaces": "pending",
           "package_acceptance": "pending"
         }
       },

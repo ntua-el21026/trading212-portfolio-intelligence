@@ -1,6 +1,6 @@
 # Phase 3 Implementation Report
 
-**Current:** P3-01 calculation, storage, worker, REST, web and MCP delivered; versioned risk reports pass local component verification
+**Current:** P3-01 interfaces and risk reports delivered; P3-02/P3-03 numerical foundations and calendar capture implemented; full vertical integration pending
 **Target:** 1.0.0; independent review pending; production not authorized
 
 Start main d2ebdaf96d1b61aacea5c6492824946540f88803. Governance delivery
@@ -420,3 +420,94 @@ cache directories (309,301,248 allocated bytes). Exact IDs, fresh ownership/recl
 checks and removals are recorded externally. One PostgreSQL container is reused;
 both the task and unrelated database volumes remain intact. Runtime cleanup is still
 required after all dependent Phase3 verification. CI remains owner-deferred/unverified.
+
+## P3-02 and P3-03 numerical foundations
+
+ADR-0025 now specifies original total-return source membership and dated holdings
+for historical replay; ADR-0027 fixes canonical projection paths and the monthly
+calendar representation. The earlier scenario design was delivered at 3819134; ADR-0027 records the
+accepted projection and calendar policy for this foundation.
+Neither decision accepts a completed package.
+
+Scenario execution retains the complete original X-ray input/result, exact terminal
+partition, sensitivity memberships and optional historical input in bounded codecs.
+No fund wrapper is counted alongside its constituents. Economic currency requires
+selected evidence; explicit cash never becomes a security sensitivity subject.
+Exclusions and price precedence preserve unknown applicability, and missing positive
+shocked mass denies complete money. Zero-effect exceptions require an unchanged
+outcome under every admissible treatment. Coefficients, dates, source aliases, units,
+FX and known negative multipliers are validated before calculation. Derived source
+confidence propagates conservatively. Reporting-currency FX cannot receive a nonzero
+shock. Channel amounts, compound interactions, original-value partitions and rounding
+residuals remain separate. Saved comparisons retain incompatible sides without deltas.
+
+Replay resolves only the original captured total-return series membership and sourced
+FX at the fixed historical engine boundaries. Missing or ambiguous mappings remain
+unavailable; reporting-return series cannot be converted twice. Current and historical
+holdings retain actual evidence and knowledge dates. Point-in-time mode rejects later
+known holdings. Explicit cash uses a fixed principal and sourced currency movement;
+its assumption is disclosed. There is no current lookup or invented FX identity.
+
+Projection paths use the frozen SHA-256 counter/polar sampler with Decimal96 evolution,
+canonical asset axes, absolute path identities, three bounded sensitivity variants,
+Q18 checkpoints and a separate ever-unpaid flag. Deterministic flows, optional fee/tax,
+inflation and rebalance timing are explicit. Saved paths drive nearest-rank percentiles,
+enclosing histograms and Wilson intervals. Complete path/chunk inventories are required;
+no checkpoint prefix becomes a final result. Strict decoding rejects material residuals,
+wrong initial allocation or schedule totals, inconsistent inflation, and summaries or
+probabilities contradicting retained paths. This validates retained relationships,
+not a cryptographic proof that every return came from the declared random stream.
+
+Calendar capture keeps the observed snapshot's actual UTC timestamp or an explicit
+modeled anchor. Independently clamped calendar anniversaries preserve the original day;
+flows must lie on supported month-start boundaries and immutable goals must agree with
+the exact terminal date and complete schedule. Capture identity includes original dates
+and source pins separately from numerical input identity. It does not grant ownership
+or source rights; those remain the forthcoming transactional service's responsibility.
+
+The unchanged working-source foundation gate passed 3,520 Python unit/property/contract/
+security tests in 198.39 seconds, strict typing, format/lint, closed broker/architecture/
+secret checks and all 12 Python package builds. It preceded the final calculator and
+integrity changes. The subsequent scenario/projection integrity gate passed 163 focused
+cases in 2.46 seconds; the scenario retained-money gate passed 99 cases in 3.46 seconds.
+These populations overlap and are not added into a fabricated test total. Receipts
+`scenario-projection-foundation-local-01`, `scenario-calculator-projection-integrity-01`
+and `scenario-retained-integrity-01` bind their actual working-tree content externally
+under `phase3-20260914`. Earlier fixture/type/format failures are retained. Independent
+contributor review found the corrected projection integrity gaps; it does not establish
+independent package acceptance. The final component delivery receipt records subsequent
+confidence and static corrections without relabeling these earlier executions.
+The subsequent confidence gate passed 58 cases in 2.72 seconds and complete replay
+orchestration passed 23 in 1.62 seconds. The final focused scenario integrity gate
+passed 128 in 5.18 seconds: independently rounded channel/interaction envelopes,
+known partial effects, absent original money, negative multipliers and conservative
+quality are checked on retained records. Large-value and negative-thirds rational
+references prevent false rejection from multiplying rounded published ratios.
+These additional populations also overlap and do not represent package acceptance.
+
+The unchanged-source gate `scenario-projection-foundation-local-03` passed
+3,625 Python tests in 204.58 seconds, strict mypy across 737 source files, Ruff,
+repository/generated-contract/architecture/broker/secret checks, formatting and
+all 12 Python package builds. Total gate duration was 230.407 seconds. Attempt
+`scenario-projection-foundation-local-02` stopped on one formatting check before
+tests or builds; its failed receipt remains intact. Subsequent independent contributor
+review found three retained-identity gaps: definition content versus its source pin,
+resolved sensitivity coefficients versus Q18 effects, and funding failure without a
+positive scheduled withdrawal. All three are corrected with focused regressions;
+the combined retained-integrity files passed 68 cases in 2.10 seconds. The final full
+component gate `scenario-projection-foundation-local-04` then passed 3,638 Python
+tests in 204.14 seconds, all static/contract checks and 12 package builds. Its total
+duration was 230.184 seconds, with unchanged source content, type and mode recorded
+in a complete file manifest. Final documentation is checked separately; the delivery
+receipt binds executable files to this passing gate. This is foundation verification,
+not completion of either vertical package.
+
+Scenario schema/runtime work remains external staging until its private capture,
+retention, fenced worker and real PostgreSQL checks are integrated. No migration 0020
+or new public route/tool is claimed at this foundation boundary. Current inventory
+remains 0019,231 tables,101 REST paths/112 operations,28 MCP tools/six resources and
+exactly ten sealed broker GETs. P3-02/P3-03/P3-05 are in progress; all 30 acceptance rows,
+48 scenarios and ten package completions remain pending. CI is owner-deferred and
+unverified. Full candidate validation, SLO/load evidence and genuine backup/restore
+remain required. Docker recovery retained the same sole scoped PostgreSQL container;
+no database, volume or configuration reset occurred.

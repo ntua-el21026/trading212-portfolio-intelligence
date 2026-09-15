@@ -163,6 +163,18 @@ cutoff. A then-known-at-start claim additionally requires evidence available the
 a later cutoff or retrospectively retrieved valid historical fact cannot support that
 claim. Retrospective retrieval is labeled explicitly without changing holdings basis.
 
+Replay retains canonical historical UTC accounting endpoints, including the declared
+previous-completed-session selection policy and actual selected observation times.
+Local series must be an explicitly mapped instrument total-return series in the
+proven economic currency. Explicit cash uses the named `fixed_cash_balance_replay`
+assumption: its original principal has zero local change, with separately sourced FX;
+no interest or reinvestment yield is invented. Preserve raw Decimal96 channel ratios
+for the calculation and Q18 representations in replay proof. A reporting-return
+index without the local/FX decomposition remains unavailable. Historical holdings
+with a point-in-time claim require both actual valuation and their own knowledge
+cutoff at or before replay start; later-known historical reconstruction must use the
+explicit retrospective policy. Current holdings retain their separate actual dates.
+
 Comparison reads exactly two authorized retained runs. Different scenario assumptions
 are expected; method/numeric/currency and declared holdings/market basis compatibility
 must be established before deltas. Preserve mismatches and original values separately;

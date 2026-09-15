@@ -114,7 +114,9 @@ cutoff remain separate from market knowledge. All complete source proof is bound
 
 ## Projections and goals
 
-Use ADR-0019 correlated monthly lognormal model/stateless sampler. Sort assets by
+Use ADR-0019 correlated monthly lognormal model/stateless sampler and
+[ADR-0027](../adr/ADR-0027-PROJECTION-CANONICAL-PATHS.md) canonical path,
+summary and chunk representations. Sort assets by
 canonical key before factorization/sampling. Expected annual mean log return is an
 explicit modeled parameter, never an inferred CAGR. Initial basis is observed_snapshot
 with authorized canonical converted value, or modeled_value with explicit Money.
@@ -135,7 +137,11 @@ Retain requested path months only with cash conservation and unpaid/insolvency s
 Any numerical/public bound violation produces a typed failure, never truncated success.
 Quantile nearest rank=ceil(p*n); p=0 selects minimum. Fixed percentiles .05,.25,.50,.75,.95.
 Sort equal values by absolute path index. Terminal histogram <=20 equal-width bins,
-last inclusive; equal terminals one bin. Counts integer, limits Decimal.
+last inclusive; equal terminals one bin. Use the ADR-0027 Q18 ceiling-enclosing
+boundary rule and retain observed extrema separately. Counts integer, limits Decimal.
+Summary and goal values come from retained Q18 paths. Preserve a separate funding
+failure flag for positive pre-rounding unpaid amounts, including Q18 zero. Rounded
+checkpoints never become numerical restart states.
 
 Goal success: terminal nominal/real value>=target AND no unpaid withdrawal.
 Probability=successes/paths; shortfall=max(target-value,0), separately from unpaid
