@@ -88,4 +88,6 @@ def annual_performance_document(
         builder.add_table(descriptor.table, rows, section=descriptor.section)
     context = _context(builder, result)
     project_historical(builder, context, value, result)
-    return ReportFixture(builder.finish(), tuple(sink.chunks))
+    capture = builder.finish()
+    assert isinstance(capture, r.ReportCaptureSummary)
+    return ReportFixture(capture, tuple(sink.chunks))

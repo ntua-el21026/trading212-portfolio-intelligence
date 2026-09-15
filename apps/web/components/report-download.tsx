@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { ReportArtifactMetadata } from "@trading212/api-contracts";
+import type {
+  ReportArtifactMetadata,
+  PremiumReportProfile,
+} from "@trading212/api-contracts";
 import { Button } from "@trading212/ui";
 import { useNavigationVersionRef } from "./navigation-intent";
 
@@ -10,23 +13,28 @@ export function ReportDownloadButton({
   parentId,
   family,
   artifact,
+  profile,
 }: Readonly<{
   accountId: string;
   parentId: string;
   family: "reports" | "exports" | "premium-reports";
   artifact: ReportArtifactMetadata;
+  profile?: PremiumReportProfile;
 }>) {
   const [busy, setBusy] = useState(false);
   const alive = useRef(true);
   const controller = useRef<AbortController | null>(null);
   const navigation = useNavigationVersionRef();
+  const selection = `${family}:${profile ?? "report_sections_v2"}:${accountId}:${parentId}:${artifact.artifact_id}:${artifact.content_digest}`;
+  const activeSelection = useRef(selection);
   useEffect(() => {
     alive.current = true;
+    activeSelection.current = selection;
     return () => {
       alive.current = false;
       controller.current?.abort();
     };
-  }, []);
+  }, [selection]);
   const [error, setError] = useState<string | null>(null);
   async function download() {
     if (busy) return;
@@ -34,7 +42,10 @@ export function ReportDownloadButton({
     const request = new AbortController();
     controller.current = request;
     const timeout = window.setTimeout(() => request.abort(), 30_000);
-    const current = () => alive.current && navigation.current === stamp;
+    const current = () =>
+      alive.current &&
+      activeSelection.current === selection &&
+      navigation.current === stamp;
     setBusy(true);
     setError(null);
     try {
@@ -46,7 +57,10 @@ export function ReportDownloadButton({
           cache: "no-store",
           signal: request.signal,
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({ account_id: accountId }),
+          body: new URLSearchParams({
+            account_id: accountId,
+            ...(profile === "report_sections_v3" ? { profile } : {}),
+          }),
         },
       );
       if (!current()) {

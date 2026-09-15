@@ -3,10 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Notice, Surface } from "@trading212/ui";
-import { submitPremiumReportCommand } from "../lib/premium-report-actions";
 import {
-  premiumReportHref,
+  submitPremiumReportCommand,
+  submitPremiumReportV3Command,
+} from "../lib/premium-report-actions";
+import {
+  premiumReportSourceHref,
   type PremiumReportSource,
+  type PremiumReportSourceV3,
 } from "../lib/premium-report-query";
 import { formatDateTime } from "../lib/format";
 import { useNavigationVersionRef } from "./navigation-intent";
@@ -17,7 +21,12 @@ type Format = (typeof FORMATS)[number];
 export function PremiumReportSelection({
   source,
   canCreate,
-}: Readonly<{ source: PremiumReportSource; canCreate: boolean }>) {
+}: Readonly<{
+  source: PremiumReportSource | PremiumReportSourceV3;
+  canCreate: boolean;
+}>) {
+  const profile = "profile" in source ? source.profile : "report_sections_v2";
+  const family = "family" in source ? source.family : "risk";
   const router = useRouter();
   const navigation = useNavigationVersionRef();
   const [formats, setFormats] = useState<Format[]>(["pdf"]);
@@ -26,7 +35,7 @@ export function PremiumReportSelection({
   const [error, setError] = useState<string | null>(null);
   const identity = useRef<{ selection: string; key: string } | null>(null);
   const alive = useRef(true);
-  const selection = `${source.accountId}:${source.runId}:${source.resultDigest}`;
+  const selection = `${profile}:${family}:${source.accountId}:${source.runId}:${source.resultDigest}`;
   const activeSelection = useRef(selection);
   useEffect(() => {
     alive.current = true;
@@ -44,19 +53,29 @@ export function PremiumReportSelection({
     if (identity.current?.selection !== fingerprint)
       identity.current = {
         selection: fingerprint,
-        key: `risk-report:${crypto.randomUUID()}`,
+        key: `${profile === "report_sections_v3" ? "premium-report" : "risk-report"}:${crypto.randomUUID()}`,
       };
     setPending(true);
     setError(null);
     try {
-      const response = await submitPremiumReportCommand({
+      const values = {
         account_id: source.accountId,
-        risk_run_id: source.runId,
         expected_result_digest: source.resultDigest,
         idempotency_key: identity.current.key,
         formats,
         ttl_days: Number(ttl),
-      });
+      };
+      const response =
+        profile === "report_sections_v3"
+          ? await submitPremiumReportV3Command({
+              ...values,
+              profile_version: profile,
+              premium_run: { family, run_id: source.runId },
+            })
+          : await submitPremiumReportCommand({
+              ...values,
+              risk_run_id: source.runId,
+            });
       if (
         !alive.current ||
         activeSelection.current !== selection ||
@@ -67,17 +86,16 @@ export function PremiumReportSelection({
         setError(`${response.code}: ${response.message}`);
         return;
       }
-      if (response.job.account_id !== source.accountId) {
+      if (
+        response.job.account_id !== source.accountId ||
+        (profile === "report_sections_v3" &&
+          (!("profile_version" in response.job) ||
+            response.job.profile_version !== profile))
+      ) {
         setError("The report response could not be verified.");
         return;
       }
-      router.push(
-        premiumReportHref({
-          account: source.accountId,
-          run: source.runId,
-          report: response.job.job_id,
-        }),
-      );
+      router.push(premiumReportSourceHref(source, response.job.job_id));
     } catch {
       if (
         alive.current &&
@@ -93,18 +111,18 @@ export function PremiumReportSelection({
     }
   }
   return (
-    <Surface aria-label="Create risk report" className={styles.surface}>
+    <Surface aria-label={`Create ${family} report`} className={styles.surface}>
       <h2>Report from {source.name}</h2>
       <p>
         The report copies this saved analysis, including unavailable values and
-        complete source evidence. It does not recalculate risk.
+        complete source evidence. It does not recalculate {family}.
       </p>
       <dl className={styles.definition}>
-        <dt>Risk run</dt>
+        <dt>{family === "scenario" ? "Scenario run" : "Risk run"}</dt>
         <dd className="mono">{source.runId}</dd>
         <dt>Snapshot</dt>
         <dd className="mono">{source.snapshotId}</dd>
-        <dt>Historical window</dt>
+        <dt>{family === "scenario" ? "Report period" : "Historical window"}</dt>
         <dd>
           {source.startDate} to {source.endDate}
         </dd>
@@ -150,13 +168,14 @@ export function PremiumReportSelection({
           type="submit"
           disabled={pending || !canCreate || !formats.length}
         >
-          {pending ? "Creating report…" : "Create risk report"}
+          {pending ? "Creating report…" : `Create ${family} report`}
         </Button>
       </form>
       {!canCreate ? (
         <Notice title="Report creation unavailable">
-          This session needs report creation, analytics and activity read
-          access.
+          {family === "risk"
+            ? "This session needs report creation, analytics and activity read access."
+            : "This session needs report creation and analytics read access. Historical replay also requires activity read access."}
         </Notice>
       ) : null}
       {error ? <p role="alert">{error}</p> : null}

@@ -16,7 +16,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from trading212_application import report_jobs as jobs
 from trading212_application import reports as app
-from trading212_domain.report_manifest import decode_report_manifest, encode_report_manifest
+from trading212_domain.report_manifest import encode_report_manifest
+from trading212_domain.report_v3 import ReportManifestContract
 from trading212_domain.reports import ReportFailureCode, ReportManifest
 from trading212_security.principals import AuthorizationError
 
@@ -494,7 +495,10 @@ class PostgresReportJobStore(ReportStore):
         return self._open_document(claim)
 
     async def _complete(
-        self, claim: JobClaim, manifest: ReportManifest, artifacts: tuple[app.RenderedArtifact, ...]
+        self,
+        claim: JobClaim,
+        manifest: ReportManifestContract,
+        artifacts: tuple[app.RenderedArtifact, ...],
     ) -> bool:
         payload = encode_report_manifest(manifest)
         if (
@@ -527,7 +531,7 @@ class PostgresReportJobStore(ReportStore):
                 if original != payload or {a.format.value for a in artifacts} != expected:
                     raise jobs.ReportJobInputError(ReportFailureCode.INPUT_CHANGED)
                 # Independently re-decode and compare the exact captured semantic manifest.
-                if original is None or decode_report_manifest(original) != manifest:
+                if original is None or self._decode_manifest(job, original) != manifest:
                     raise jobs.ReportJobInputError(ReportFailureCode.INPUT_CHANGED)
                 manifest_model = (
                     ReportManifestModel if isinstance(job, ReportJobModel) else ExportManifestModel
@@ -604,7 +608,7 @@ class PostgresReportJobStore(ReportStore):
         self,
         claim: jobs.ReportJobClaim,
         *,
-        manifest: ReportManifest,
+        manifest: ReportManifestContract,
         artifacts: tuple[app.RenderedArtifact, ...],
     ) -> bool:
         return await self._complete(claim, manifest, artifacts)

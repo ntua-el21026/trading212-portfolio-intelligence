@@ -10,6 +10,13 @@ from trading212_application.reports import ReportCaptureSink
 from trading212_domain import reports as r
 from trading212_domain.errors import fail_validation
 from trading212_domain.report_schema import report_tables
+from trading212_domain.report_v3 import (
+    ReportCaptureContract,
+    ReportSelectionContract,
+    ReportSelectionV3,
+    selected_risk_run_id,
+    selected_scenario_run_id,
+)
 from trading212_domain.sources import SourceUse
 
 from .report_authorization import ReportAuthorization
@@ -40,10 +47,10 @@ class PostgresReportCapture:
 
     def capture_report(
         self,
-        selection: r.ReportSelection,
+        selection: r.ReportSelection | ReportSelectionV3,
         *,
         sink: ReportCaptureSink,
-    ) -> r.ReportCaptureSummary:
+    ) -> ReportCaptureContract:
         if self._source_use is not r.ReportSourceUse.REPORT:
             fail_validation("The report source-use contract does not match.", field="source_use")
         return self._capture(selection, sink=sink)
@@ -58,14 +65,17 @@ class PostgresReportCapture:
             fail_validation(
                 "The export dataset or source-use contract is unavailable.", field="dataset"
             )
-        return self._capture(selection, sink=sink)
+        result = self._capture(selection, sink=sink)
+        if not isinstance(result, r.ReportCaptureSummary):
+            fail_validation("The export document profile differs.", field="profile_version")
+        return result
 
     def _capture(
         self,
-        selection: r.ReportSelection | r.ExportSelection,
+        selection: ReportSelectionContract,
         *,
         sink: ReportCaptureSink,
-    ) -> r.ReportCaptureSummary:
+    ) -> ReportCaptureContract:
         from .report_capture_historical import capture_historical
         from .report_capture_xray import capture_xray
 
@@ -119,10 +129,10 @@ class PostgresReportCapture:
                 cursor_signing_key=self._cursor_key,
                 source_use=SourceUse(self._source_use.value),
             )
-        if isinstance(selection, r.ReportSelection) and selection.risk_run_id is not None:
+        if selected_risk_run_id(selection) is not None:
             from .report_capture_risk_store import capture_risk
 
-            capture_risk(
+            builder.premium_binding = capture_risk(
                 builder,
                 self._session,
                 self._authorization,
@@ -130,6 +140,17 @@ class PostgresReportCapture:
                 clock=self._clock,
                 cursor_signing_key=self._cursor_key,
                 preflight=self._risk_preflight,
+            )
+        if selected_scenario_run_id(selection) is not None:
+            from .report_capture_scenario_store import capture_scenario
+
+            builder.premium_binding = capture_scenario(
+                builder,
+                self._session,
+                self._authorization,
+                sessions=self._sessions,
+                clock=self._clock,
+                cursor_signing_key=self._cursor_key,
             )
         capture_alerts(builder, self._session, self._authorization, clock=self._clock)
         capture_quality_tables(builder)

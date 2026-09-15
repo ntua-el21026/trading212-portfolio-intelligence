@@ -30,7 +30,8 @@ def test_premium_client_has_exact_methods_and_preserves_legacy_generation() -> N
     }
     assert all(f"async {name}(" in generated for name in expected)
     assert "class PremiumReportApiClient" in generated
-    assert "new ReportTransport(options, 2)" in generated
+    assert "new PremiumReportTransport(options, this.#profile)" in generated
+    assert 'P extends PremiumReportProfile = "report_sections_v2"' in generated
     assert 'from "./reports.generated"' in generated
     assert "export const ReportArtifactMetadataSchema" not in generated
     assert "export const ReportRowSchema" not in generated

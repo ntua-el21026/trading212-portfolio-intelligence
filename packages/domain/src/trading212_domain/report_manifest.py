@@ -10,9 +10,10 @@ from dataclasses import fields
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import cast, get_args, get_origin
+from typing import cast, get_args, get_origin, overload
 from uuid import UUID
 
+from . import report_v3 as v3
 from . import reports as r
 from .errors import DomainError, fail_validation
 from .values import CurrencyCode
@@ -43,6 +44,16 @@ _RECORDS = (
     r.ReportFontReference,
     r.ReportRendererProfile,
     r.ReportManifest,
+    v3.ReportRiskRunSelection,
+    v3.ReportScenarioRunSelection,
+    v3.ReportSelectionV3,
+    v3.ReportXrayRunBinding,
+    v3.ReportHistoricalInputBinding,
+    v3.ReportRiskRunBinding,
+    v3.ReportScenarioRunBinding,
+    v3.ReportDocumentHeaderV3,
+    v3.ReportCaptureSummaryV3,
+    v3.ReportManifestV3,
 )
 type JsonValue = bool | int | str | list[JsonValue] | dict[str, JsonValue] | None
 _OPTIONAL_CELL_FIELDS = frozenset(
@@ -64,6 +75,13 @@ _OPTIONAL_CELL_FIELDS = frozenset(
 )
 
 
+_OPTIONAL_V3_FIELDS: dict[type[r.ReportRecord], frozenset[str]] = {
+    v3.ReportSelectionV3: frozenset({"xray_run_id"}),
+    v3.ReportRiskRunBinding: frozenset({"xray", "benchmark_version_id"}),
+    v3.ReportScenarioRunBinding: frozenset({"historical"}),
+}
+
+
 def _field_names(value: r.ReportRecord) -> tuple[str, ...]:
     return tuple(
         field.name
@@ -77,6 +95,7 @@ def _field_names(value: r.ReportRecord) -> tuple[str, ...]:
                     and field.name == "xray_run_id"
                 )
                 or (type(value) is r.ReportSelection and field.name == "risk_run_id")
+                or field.name in _OPTIONAL_V3_FIELDS.get(type(value), frozenset())
             )
         )
     )
@@ -236,7 +255,7 @@ def _decode(value: JsonValue, annotation: object) -> object:
             if annotation is r.ReportSelection
             else frozenset({"xray_run_id"})
             if annotation is r.ExportSelection
-            else frozenset()
+            else _OPTIONAL_V3_FIELDS.get(annotation, frozenset())
         )
         if type(value) is not dict or not names - optional <= set(value) <= names:
             fail_validation("Report record fields differ from its schema.", field="record")
@@ -254,6 +273,10 @@ def _decode(value: JsonValue, annotation: object) -> object:
             and value["risk_run_id"] is None
         ):
             fail_validation("A present risk run pin must be a UUID.", field="risk_run_id")
+        if annotation in _OPTIONAL_V3_FIELDS and any(
+            name in value and value[name] is None for name in _OPTIONAL_V3_FIELDS[annotation]
+        ):
+            fail_validation("Optional profile-three pins are omitted when absent.", field="record")
         hints = r._record_hints(annotation)
         result = {
             name: _decode(item, hints[name])
@@ -320,7 +343,7 @@ def decode_report_row(payload: bytes) -> r.ReportRow:
     return _read(payload, r.ReportRow, r.MAX_REPORT_CHUNK_BYTES)
 
 
-def encode_report_header(value: r.ReportDocumentHeader) -> bytes:
+def encode_report_header(value: v3.ReportHeaderContract) -> bytes:
     return _encode(value, r.MAX_REPORT_MANIFEST_BYTES)
 
 
@@ -328,7 +351,7 @@ def decode_report_header(payload: bytes) -> r.ReportDocumentHeader:
     return _read(payload, r.ReportDocumentHeader, r.MAX_REPORT_MANIFEST_BYTES)
 
 
-def encode_report_selection(value: r.ReportSelection | r.ExportSelection) -> bytes:
+def encode_report_selection(value: v3.ReportSelectionContract) -> bytes:
     return _encode(value, 64 * 1024)
 
 
@@ -365,10 +388,20 @@ def encode_report_context(value: r.ReportContext) -> bytes:
 
 
 def decode_report_context(payload: bytes) -> r.ReportContext:
-    return _read(payload, r.ReportContext, r.MAX_REPORT_MANIFEST_BYTES)
+    result = _read(payload, r.ReportContext, r.MAX_REPORT_MANIFEST_BYTES)
+    if result.schema_version not in {r.REPORT_SCHEMA_VERSION, r.PREMIUM_REPORT_SCHEMA_VERSION}:
+        fail_validation("An earlier report context is required.", field="schema_version")
+    return result
 
 
-def encode_report_capture(value: r.ReportCaptureSummary) -> bytes:
+def decode_report_context_v3(payload: bytes) -> r.ReportContext:
+    result = _read(payload, r.ReportContext, r.MAX_REPORT_MANIFEST_BYTES)
+    if result.schema_version != v3.REPORT_V3_SCHEMA_VERSION:
+        fail_validation("A profile-three report context is required.", field="schema_version")
+    return result
+
+
+def encode_report_capture(value: v3.ReportCaptureContract) -> bytes:
     return _encode(value, r.MAX_REPORT_DOCUMENT_BYTES)
 
 
@@ -422,7 +455,7 @@ def decode_report_chunk(payload: bytes) -> r.ReportChunk:
     return result
 
 
-def _proof_of(value: r.ReportManifest) -> r.ReportProof:
+def _proof_of(value: v3.ReportManifestContract) -> r.ReportProof:
     return r.ReportProof(**{item.name: getattr(value, item.name) for item in fields(r.ReportProof)})
 
 
@@ -543,14 +576,14 @@ def _validate_proof(proof: r.ReportProof) -> None:
     validate_report_references(proof)
 
 
-def encode_report_manifest(value: r.ReportManifest) -> bytes:
-    if type(value) is not r.ReportManifest:
+def encode_report_manifest(value: v3.ReportManifestContract) -> bytes:
+    if type(value) not in (r.ReportManifest, v3.ReportManifestV3):
         fail_validation("A typed report manifest is required.", field="manifest")
     _validate_manifest(value)
     return _encode(value, r.MAX_REPORT_MANIFEST_BYTES)
 
 
-def _validate_manifest(value: r.ReportManifest) -> None:
+def _validate_manifest(value: v3.ReportManifestContract) -> None:
     from .report_schema import table_schema
 
     proof = _proof_of(value)
@@ -572,7 +605,7 @@ def _validate_manifest(value: r.ReportManifest) -> None:
     selection = value.document.selection
     formats = (
         selection.formats
-        if isinstance(selection, r.ReportSelection)
+        if not isinstance(selection, r.ExportSelection)
         else (r.ReportFormat(selection.format.value),)
     )
     if {item.format for item in value.renderer_profile.renderer_versions} != set(formats):
@@ -588,16 +621,43 @@ def decode_report_manifest(payload: bytes) -> r.ReportManifest:
     return result
 
 
-def report_manifest_digest(value: r.ReportManifest) -> str:
+def report_manifest_digest(value: v3.ReportManifestContract) -> str:
     return hashlib.sha256(encode_report_manifest(value)).hexdigest()
 
 
+@overload
 def build_report_manifest(
     capture: r.ReportCaptureSummary,
     *,
     proof: r.ReportProof | None = None,
     profile: r.ReportRendererProfile | None = None,
-) -> r.ReportManifest:
+) -> r.ReportManifest: ...
+
+
+@overload
+def build_report_manifest(
+    capture: v3.ReportCaptureSummaryV3,
+    *,
+    proof: r.ReportProof | None = None,
+    profile: r.ReportRendererProfile | None = None,
+) -> v3.ReportManifestV3: ...
+
+
+@overload
+def build_report_manifest(
+    capture: v3.ReportCaptureContract,
+    *,
+    proof: r.ReportProof | None = None,
+    profile: r.ReportRendererProfile | None = None,
+) -> v3.ReportManifestContract: ...
+
+
+def build_report_manifest(
+    capture: v3.ReportCaptureContract,
+    *,
+    proof: r.ReportProof | None = None,
+    profile: r.ReportRendererProfile | None = None,
+) -> v3.ReportManifestContract:
     proof = capture.proof if proof is None else proof
     profile = capture.renderer_profile if profile is None else profile
     if (
@@ -606,12 +666,21 @@ def build_report_manifest(
         or hashlib.sha256(encode_report_proof(proof)).hexdigest() != capture.proof_digest
     ):
         fail_validation("Pinned report proof/profile differs.", field="capture")
-    result = r.ReportManifest(
-        document=capture.header,
-        renderer_profile=profile,
-        bindings=capture.immutable_bindings,
-        **{item.name: getattr(proof, item.name) for item in fields(r.ReportProof)},
-    )
+    result: v3.ReportManifestContract
+    if isinstance(capture, v3.ReportCaptureSummaryV3):
+        result = v3.ReportManifestV3(
+            document=capture.header,
+            renderer_profile=profile,
+            bindings=capture.immutable_bindings,
+            **{item.name: getattr(proof, item.name) for item in fields(r.ReportProof)},
+        )
+    else:
+        result = r.ReportManifest(
+            document=capture.header,
+            renderer_profile=profile,
+            bindings=capture.immutable_bindings,
+            **{item.name: getattr(proof, item.name) for item in fields(r.ReportProof)},
+        )
     encode_report_manifest(result)
     return result
 
@@ -632,7 +701,26 @@ def report_table_digest(table: r.ReportTableKey, rows: Iterable[r.ReportRow]) ->
     return digest.hexdigest()
 
 
-def report_document_digest(value: r.ReportDocumentHeader) -> str:
+def report_document_digest(value: v3.ReportHeaderContract) -> str:
     raw = cast("dict[str, JsonValue]", _primitive(value))
     del raw["document_digest"]
     return hashlib.sha256(_json(raw, r.MAX_REPORT_MANIFEST_BYTES)).hexdigest()
+
+
+def decode_report_selection_v3(payload: bytes) -> v3.ReportSelectionV3:
+    """Called only after the explicit profile-three request/metadata boundary."""
+    return _read(payload, v3.ReportSelectionV3, 64 * 1024)
+
+
+def decode_report_header_v3(payload: bytes) -> v3.ReportDocumentHeaderV3:
+    return _read(payload, v3.ReportDocumentHeaderV3, r.MAX_REPORT_MANIFEST_BYTES)
+
+
+def decode_report_capture_v3(payload: bytes) -> v3.ReportCaptureSummaryV3:
+    return _read(payload, v3.ReportCaptureSummaryV3, r.MAX_REPORT_DOCUMENT_BYTES)
+
+
+def decode_report_manifest_v3(payload: bytes) -> v3.ReportManifestV3:
+    result = _read(payload, v3.ReportManifestV3, r.MAX_REPORT_MANIFEST_BYTES)
+    _validate_manifest(result)
+    return result

@@ -13,16 +13,14 @@ from trading212_application import reports as app
 from trading212_domain.errors import DomainError
 from trading212_domain.report_manifest import (
     decode_report_chunk,
-    decode_report_manifest,
     encode_report_row,
     encode_report_schema,
 )
 from trading212_domain.report_schema import table_schema
+from trading212_domain.report_v3 import ReportHeaderContract, ReportManifestContract
 from trading212_domain.reports import (
     ReportChunk,
-    ReportDocumentHeader,
     ReportFailureCode,
-    ReportManifest,
     ReportTableKey,
 )
 from trading212_security.principals import AuthorizationError
@@ -39,9 +37,9 @@ class PostgresReportDocumentReader:
         self._store = store
         self._claim = claim
         self._closed = False
-        self._manifest: ReportManifest | None = self._load_manifest()
+        self._manifest: ReportManifestContract | None = self._load_manifest()
 
-    def _load_manifest(self) -> ReportManifest:
+    def _load_manifest(self) -> ReportManifestContract:
         try:
             with self._store._sessions() as session, session.begin():
                 report_owner_lock(session, self._claim.message.owner_id)
@@ -57,7 +55,7 @@ class PostgresReportDocumentReader:
                 )
                 if payload is None or hashlib.sha256(payload).hexdigest() != job.input_digest:
                     raise jobs.ReportJobInputError(ReportFailureCode.INPUT_CHANGED)
-                value = decode_report_manifest(payload)
+                value = self._store._decode_manifest(job, payload)
                 self._store._manifest_contract(job, value)
                 self._store._sources(session, authorization, job)
                 if self._store._live(session, self._claim) is None:
@@ -90,14 +88,14 @@ class PostgresReportDocumentReader:
             ) from None
 
     @property
-    def manifest(self) -> ReportManifest:
+    def manifest(self) -> ReportManifestContract:
         self._check()
         if self._manifest is None:
             raise jobs.ReportJobInputError(ReportFailureCode.INPUT_UNAVAILABLE)
         return self._manifest
 
     @property
-    def header(self) -> ReportDocumentHeader:
+    def header(self) -> ReportHeaderContract:
         return self.manifest.document
 
     def _read_chunk(self, table: ReportTableKey, ordinal: int) -> ReportChunk | None:

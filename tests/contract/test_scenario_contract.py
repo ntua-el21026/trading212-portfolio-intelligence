@@ -10,6 +10,12 @@ from trading212_api.main import create_app
 from trading212_application.services import SyntheticPortfolioService
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 
+from tests.contract.premium_report_profile_oracle import (
+    PROFILE_TWO,
+    assert_profile_two_client_declarations,
+    assert_profiled_path,
+)
+
 pytestmark = pytest.mark.contract
 OPERATIONS = {
     "list_scenarios": ("get", "/api/v1/accounts/{account_id}/scenarios"),
@@ -55,7 +61,12 @@ def test_frozen_eight_paths_eleven_operations_and_only_additive_legacy_descripto
     assert len(document["paths"]) == 109
     assert sum(len(methods) for methods in document["paths"].values()) == 123
     for path, expected in legacy["paths"].items():
-        assert digest(document["paths"][path]) == expected, path
+        if path in PROFILE_TWO["paths"]:
+            # ADR-0026 permits exactly the explicit profile selector and closed unions.
+            assert digest(PROFILE_TWO["paths"][path]) == expected, path
+            assert_profiled_path(path, document["paths"][path])
+        else:
+            assert digest(document["paths"][path]) == expected, path
     for name, expected in legacy["schemas"].items():
         assert digest(document["components"]["schemas"][name]) == expected, name
     for name, (method, path) in actual.items():
@@ -151,9 +162,12 @@ def test_scenario_generator_exports_requested_client_and_rejects_changed_fixed_p
         render_scenario_client(document)
 
 
-def test_delivered_generated_clients_remain_byte_identical() -> None:
+def test_delivered_generated_clients_preserve_bytes_or_explicit_profile_two_contracts() -> None:
     legacy = json.loads(
         (Path(__file__).parent / "fixtures/pre_scenario_api_fingerprints.json").read_text()
     )
     for relative, expected in legacy["generated_clients"].items():
-        assert sha256(Path(relative).read_bytes()).hexdigest() == expected, relative
+        if relative == "packages/api-contracts/src/premium-reports.generated.ts":
+            assert_profile_two_client_declarations(expected)
+        else:
+            assert sha256(Path(relative).read_bytes()).hexdigest() == expected, relative

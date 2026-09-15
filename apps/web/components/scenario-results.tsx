@@ -11,6 +11,10 @@ import { Notice, Surface } from "@trading212/ui";
 import { titleCase } from "../lib/format";
 import { scenarioHref, type ScenarioQuery } from "../lib/scenario-query";
 import Link from "./navigation-intent";
+import {
+  premiumScenarioReportSource,
+  premiumReportSourceHref,
+} from "../lib/premium-report-query";
 import styles from "./scenario-workspace.module.css";
 
 type Preview<T> = { items: readonly T[]; omitted_count: number };
@@ -598,8 +602,16 @@ export function ScenarioResults({
       </Notice>
     );
   const result = run.result;
+  const reportSource = query.account
+    ? premiumScenarioReportSource(run, query.account)
+    : null;
   return (
     <>
+      {reportSource ? (
+        <Link prefetch={false} href={premiumReportSourceHref(reportSource)}>
+          Create a report from this saved scenario
+        </Link>
+      ) : null}
       <ScenarioContext context={result.context} />
       <Surface className={styles.surface}>
         <h2>Terminal component values</h2>

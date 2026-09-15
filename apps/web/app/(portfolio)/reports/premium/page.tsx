@@ -1,5 +1,15 @@
 import { Button, Notice, Surface } from "@trading212/ui";
-import { ReportApiError, RiskApiError } from "@trading212/api-contracts";
+import {
+  ReportApiError,
+  RiskApiError,
+  ScenarioApiError,
+  type PremiumReportJobStatus,
+  type PremiumReportJobStatusV3,
+  type PremiumReportManifest,
+  type PremiumReportManifestV3,
+  type PremiumReportPage,
+  type PremiumReportPageV3,
+} from "@trading212/api-contracts";
 import {
   AccountRequired,
   AccountView,
@@ -16,11 +26,15 @@ import { requireWebAccess } from "../../../../lib/auth";
 import { resolveAccountSelection } from "../../../../lib/account-selection";
 import { reportClients, reportData } from "../../../../lib/report-adapter";
 import { riskData } from "../../../../lib/risk-adapter";
+import { scenarioData } from "../../../../lib/scenario-adapter";
 import { formatDateTime, titleCase } from "../../../../lib/format";
 import {
   parsePremiumReportQuery,
   premiumReportHref,
   premiumReportSource,
+  premiumRiskReportSourceV3,
+  premiumScenarioReportSource,
+  premiumSourceMatchesQuery,
   type PremiumReportQuery,
 } from "../../../../lib/premium-report-query";
 import type { ReportSearch } from "../../../../lib/report-query";
@@ -34,7 +48,9 @@ async function result<T>(
     return {
       data: null,
       error:
-        error instanceof ReportApiError || error instanceof RiskApiError
+        error instanceof ReportApiError ||
+        error instanceof RiskApiError ||
+        error instanceof ScenarioApiError
           ? `${error.code}: ${error.message}`
           : "The selected report source is temporarily unavailable.",
     };
@@ -67,7 +83,11 @@ export default async function PremiumReportsPage({
       </Notice>
     );
   }
+  const profile3 = query.profile === "report_sections_v3";
+  const family = profile3 ? (query.family ?? "risk") : "risk";
+  const label = family === "scenario" ? "scenario" : "risk";
   const clients = await reportClients();
+  const premium = profile3 ? clients.premiumReportsV3 : clients.premiumReports;
   const accounts = await clients.portfolio.listAccounts();
   const selected = resolveAccountSelection(
     accounts,
@@ -80,31 +100,40 @@ export default async function PremiumReportsPage({
   const canRead =
     scopes.includes("reports:read") &&
     scopes.includes("analytics:read") &&
-    scopes.includes("activity:read");
+    (family === "scenario" || scopes.includes("activity:read"));
   const canCreate = canRead && scopes.includes("reports:write");
   if (!canRead)
     return (
       <AccountView accountId={account.id}>
-        <Notice title="Risk reports unavailable">
-          This session needs report, analytics and activity read access.
+        <Notice title={`${titleCase(label)} reports unavailable`}>
+          This session needs report and analytics read access. Risk and
+          historical replay also require activity read access.
         </Notice>
       </AccountView>
     );
   const [runs, history, selectedRun, selectedJob] = await Promise.all([
     result(async () => {
-      const page = riskData(
-        await clients.risk.list_risk_runs(account.id, {
-          limit: 25,
-          cursor: query.runs_cursor,
-        }),
-      );
+      const page =
+        family === "scenario"
+          ? scenarioData(
+              await clients.scenarios.list_scenario_runs(account.id, {
+                limit: 25,
+                cursor: query.runs_cursor,
+              }),
+            )
+          : riskData(
+              await clients.risk.list_risk_runs(account.id, {
+                limit: 25,
+                cursor: query.runs_cursor,
+              }),
+            );
       if (page.items.some((run) => run.account_id !== account.id))
         throw new Error("account mismatch");
       return page;
     }),
     result(async () => {
-      const page = reportData(
-        await clients.premiumReports.list_premium_reports({
+      const page = reportData<PremiumReportPage | PremiumReportPageV3>(
+        await premium.list_premium_reports({
           account_id: account.id,
           limit: 25,
           cursor: query.cursor,
@@ -117,14 +146,40 @@ export default async function PremiumReportsPage({
     }),
     result(async () => {
       if (!query.run) return null;
-      const run = riskData(await clients.risk.get_risk_run(query.run));
-      if (run.account_id !== account.id) throw new Error("account mismatch");
-      return run;
+      const source =
+        family === "scenario"
+          ? premiumScenarioReportSource(
+              scenarioData(
+                await clients.scenarios.get_scenario_run(query.run, {
+                  component_limit: 1,
+                }),
+              ),
+              account.id,
+            )
+          : profile3
+            ? premiumRiskReportSourceV3(
+                riskData(await clients.risk.get_risk_run(query.run)),
+                account.id,
+              )
+            : premiumReportSource(
+                riskData(await clients.risk.get_risk_run(query.run)),
+                account.id,
+              );
+      if (
+        source &&
+        !premiumSourceMatchesQuery(source, {
+          ...query,
+          account: account.id,
+          ...(profile3 ? { family } : {}),
+        })
+      )
+        throw new Error("source mismatch");
+      return source;
     }),
     result(async () => {
       if (!query.report) return null;
-      const job = reportData(
-        await clients.premiumReports.get_premium_report_status(query.report, {
+      const job = reportData<PremiumReportJobStatus | PremiumReportJobStatusV3>(
+        await premium.get_premium_report_status(query.report, {
           account_id: account.id,
         }),
       );
@@ -132,14 +187,12 @@ export default async function PremiumReportsPage({
       return job;
     }),
   ]);
-  const source = selectedRun.data
-    ? premiumReportSource(selectedRun.data, account.id)
-    : null;
+  const source = selectedRun.data;
   const job = selectedJob.data;
   const manifest = await result(async () => {
     if (!job?.report_id || job.state !== "succeeded") return null;
-    const value = reportData(
-      await clients.premiumReports.get_premium_report_manifest(job.report_id, {
+    const value = reportData<PremiumReportManifest | PremiumReportManifestV3>(
+      await premium.get_premium_report_manifest(job.report_id, {
         account_id: account.id,
       }),
     );
@@ -157,7 +210,7 @@ export default async function PremiumReportsPage({
     <AccountView accountId={account.id}>
       <div className="page-stack">
         <PageHeader
-          title="Risk reports"
+          title={profile3 ? "Scenario and risk reports" : "Risk reports"}
           description="Copy a saved analysis and its source evidence into private downloadable reports."
         />
         <nav className="historical-tabs" aria-label="Report collections">
@@ -169,15 +222,38 @@ export default async function PremiumReportsPage({
           </Link>
           <Link
             prefetch={false}
-            aria-current="page"
+            aria-current={!profile3 ? "page" : undefined}
             href={premiumReportHref({ account: account.id })}
           >
             Risk reports
+          </Link>
+          <Link
+            prefetch={false}
+            aria-current={profile3 ? "page" : undefined}
+            href={premiumReportHref({
+              account: account.id,
+              profile: "report_sections_v3",
+              family: "scenario",
+            })}
+          >
+            Scenario and risk reports
           </Link>
         </nav>
         <Surface>
           <h2>Choose an account and saved analysis</h2>
           <form action="/reports/premium" method="get" className="target-form">
+            {profile3 ? (
+              <input type="hidden" name="profile" value="report_sections_v3" />
+            ) : null}
+            {profile3 ? (
+              <label>
+                Saved analysis family
+                <select name="family" defaultValue={family}>
+                  <option value="scenario">Scenario</option>
+                  <option value="risk">Risk</option>
+                </select>
+              </label>
+            ) : null}
             <label>
               Account
               <select name="account" defaultValue={account.id}>
@@ -193,7 +269,10 @@ export default async function PremiumReportsPage({
             </Button>
           </form>
           {runs.error ? (
-            <Notice title="Risk analyses unavailable" tone="danger">
+            <Notice
+              title={`${titleCase(label)} analyses unavailable`}
+              tone="danger"
+            >
               {runs.error}
             </Notice>
           ) : null}
@@ -204,8 +283,18 @@ export default async function PremiumReportsPage({
               className="target-form"
             >
               <input type="hidden" name="account" value={account.id} />
+              {profile3 ? (
+                <>
+                  <input
+                    type="hidden"
+                    name="profile"
+                    value="report_sections_v3"
+                  />
+                  <input type="hidden" name="family" value={family} />
+                </>
+              ) : null}
               <label>
-                Saved risk analysis
+                Saved {label} analysis
                 <select name="run" defaultValue={query.run ?? ""} required>
                   <option value="" disabled>
                     Choose an analysis
@@ -223,12 +312,12 @@ export default async function PremiumReportsPage({
             </form>
           ) : (
             <p>
-              No available completed risk analyses on this page.{" "}
+              No available completed {label} analyses on this page.{" "}
               <Link
                 prefetch={false}
-                href={`/risk?account=${encodeURIComponent(account.id)}`}
+                href={`/${family === "scenario" ? "scenarios" : "risk"}?account=${encodeURIComponent(account.id)}`}
               >
-                Open risk analyses
+                Open {label} analyses
               </Link>
               .
             </p>
@@ -275,20 +364,28 @@ export default async function PremiumReportsPage({
           </Notice>
         ) : null}
         {query.run && !source && !selectedRun.error ? (
-          <Notice title="Risk result unavailable">
+          <Notice title={`${titleCase(label)} result unavailable`}>
             This run is incomplete, expired or no longer permitted. Choose an
             available completed analysis.
           </Notice>
         ) : null}
         {source ? (
           <PremiumReportSelection
-            key={`${account.id}:${source.runId}`}
+            key={`${query.profile ?? "report_sections_v2"}:${family}:${account.id}:${source.runId}:${source.resultDigest}`}
             source={source}
             canCreate={canCreate}
           />
         ) : null}
-        <Surface aria-label="Risk report history">
-          <h2>Saved risk reports</h2>
+        <Surface
+          aria-label={
+            profile3 ? "Premium report history" : "Risk report history"
+          }
+        >
+          <h2>
+            {profile3
+              ? "Saved scenario and risk reports"
+              : "Saved risk reports"}
+          </h2>
           {history.error ? (
             <Notice title="Report history unavailable" tone="danger">
               {history.error}
@@ -299,10 +396,19 @@ export default async function PremiumReportsPage({
               className="table-scroll"
               role="region"
               tabIndex={0}
-              aria-label="Saved risk reports"
+              aria-label={
+                profile3
+                  ? "Saved scenario and risk reports"
+                  : "Saved risk reports"
+              }
             >
               <table className="data-table">
-                <caption>Saved risk reports for {account.display_name}</caption>
+                <caption>
+                  {profile3
+                    ? "Saved scenario and risk reports"
+                    : "Saved risk reports"}{" "}
+                  for {account.display_name}
+                </caption>
                 <thead>
                   <tr>
                     <th scope="col">Requested</th>
@@ -321,6 +427,16 @@ export default async function PremiumReportsPage({
                             account: account.id,
                             report: item.job_id,
                             run: query.run,
+                            ...(profile3
+                              ? {
+                                  profile: "report_sections_v3",
+                                  family,
+                                  snapshot: query.snapshot,
+                                  currency: query.currency,
+                                  cutoff: query.cutoff,
+                                  result_digest: query.result_digest,
+                                }
+                              : {}),
                           })}
                         >
                           {formatDateTime(item.requested_at)}
@@ -339,12 +455,19 @@ export default async function PremiumReportsPage({
               </table>
             </div>
           ) : history.data ? (
-            <p>No saved risk reports on this page.</p>
+            <p>
+              No saved {profile3 ? "scenario and risk" : "risk"} reports on this
+              page.
+            </p>
           ) : null}
           {history.data ? (
             <nav
               className="collection-pagination"
-              aria-label="Risk report pagination"
+              aria-label={
+                profile3
+                  ? "Premium report pagination"
+                  : "Risk report pagination"
+              }
             >
               <p>
                 {history.data.items.length} of {history.data.total} reports.
@@ -384,10 +507,14 @@ export default async function PremiumReportsPage({
         {job ? (
           <>
             <ReportJobStatusCard
-              key={`${account.id}:${job.job_id}`}
+              key={`${query.profile ?? "report_sections_v2"}:${account.id}:${job.job_id}`}
               job={job}
             />
-            <ReportArtifacts job={job} premium />
+            <ReportArtifacts
+              job={job}
+              premium
+              profile={profile3 ? "report_sections_v3" : undefined}
+            />
           </>
         ) : null}
         {manifest.error ? (

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import fields, replace
 from datetime import UTC, datetime, timedelta
 from inspect import unwrap
 from uuid import UUID, uuid4
@@ -18,6 +18,7 @@ from trading212_application.xray_ingestion import XrayPolicyRegistration, XrayTa
 from trading212_domain import reports as r
 from trading212_domain.historical import HistoricalFrequency
 from trading212_domain.historical_results import PerformanceOptions
+from trading212_domain.report_v3 import ReportRiskRunSelection, ReportSelectionV3
 from trading212_persistence.historical_service import PostgresHistoricalService
 from trading212_persistence.models import PrincipalModel
 from trading212_persistence.principal_grants import provision_principal_scopes
@@ -30,6 +31,7 @@ from trading212_worker.historical_seed import CURSOR_KEY
 from trading212_worker.report_tasks import ReportExecutionState, execute_report_message
 from trading212_worker.xray_fixture import synthetic_xray_policy
 
+from tests.integration.premium_report_v3_artifacts import download_v3
 from tests.integration.test_historical_postgres import historical_database as _historical_database
 from tests.integration.test_historical_seed import NOW
 from tests.integration.test_historical_seed import seeded_history as _seeded_history
@@ -95,9 +97,10 @@ async def selected_xray(case: RunCase) -> xray_app.PathsView:
     return paths
 
 
+@pytest.mark.parametrize("profile", [2, 3])
 @pytest.mark.parametrize("with_xray", [False, True])
 async def test_selected_risk_all_formats_and_sql_version_collections(
-    run_case: RunCase, with_xray: bool
+    run_case: RunCase, with_xray: bool, profile: int
 ) -> None:
     case = run_case
     with case.sessions() as session, session.begin():
@@ -148,10 +151,10 @@ async def test_selected_risk_all_formats_and_sql_version_collections(
         expires_at=auth_now + timedelta(hours=2),
     )
     v1 = PostgresReportService(case.sessions, cursor_signing_key=CURSOR_KEY)
-    v2 = PostgresReportService(
+    premium = PostgresReportService(
         case.sessions,
         cursor_signing_key=CURSOR_KEY,
-        contract_version=2,
+        contract_version=profile,
         risk_preflight=validate_risk_capacity,
     )
     selection = r.ReportSelection(
@@ -172,10 +175,25 @@ async def test_selected_risk_all_formats_and_sql_version_collections(
         risk_run_id=run.id,
     )
     key = uuid4().hex
-    command = app.GenerateReportCommand(selection=selection, idempotency_key=key)
-    queued = await v2.generate_report(case.principal, command)
-    assert queued.context is not None and queued.context.profile_version == "report_sections_v2"
-    assert await v2.generate_report(case.principal, command) == queued
+    selected = (
+        ReportSelectionV3(
+            **{
+                field.name: getattr(selection, field.name)
+                for field in fields(selection)
+                if field.name != "risk_run_id"
+            },
+            premium_run=ReportRiskRunSelection(run_id=run.id),
+        )
+        if profile == 3
+        else selection
+    )
+    command = app.GenerateReportCommand(selection=selected, idempotency_key=key)
+    queued = await premium.generate_report(case.principal, command)
+    assert (
+        queued.context is not None
+        and queued.context.profile_version == f"report_sections_v{profile}"
+    )
+    assert await premium.generate_report(case.principal, command) == queued
     legacy_selection = replace(
         selection,
         risk_run_id=None,
@@ -193,11 +211,11 @@ async def test_selected_risk_all_formats_and_sql_version_collections(
         ),
     )
     assert legacy.job_id != queued.job_id
-    for service, foreign in ((v1, queued), (v2, legacy)):
+    for service, foreign in ((v1, queued), (premium, legacy)):
         with pytest.raises(app.ReportServiceError) as error:
             await service.get_report_status(case.principal, selection.account_id, foreign.job_id)
         assert error.value.code is app.ReportServiceErrorCode.NOT_FOUND
-    for service, expected in ((v1, legacy), (v2, queued)):
+    for service, expected in ((v1, legacy), (premium, queued)):
         page = await service.list_reports(
             case.principal, selection.account_id, query=app.ReportListQuery(limit=1)
         )
@@ -224,11 +242,15 @@ async def test_selected_risk_all_formats_and_sql_version_collections(
         message,
         consumer_id="premium-report-test",
     )
-    completed = await v2.get_report_status(case.principal, selection.account_id, queued.job_id)
+    completed = await premium.get_report_status(case.principal, selection.account_id, queued.job_id)
     assert state is ReportExecutionState.COMPLETED, completed.failure_code
-    report = await _download(v2, case.principal, selection.account_id, completed)
-    assert report.manifest.document.document_schema_version == "2.0.0"
-    assert all(context.schema_version == "2.0.0" for context in report.manifest.contexts)
+    report = (
+        await download_v3(premium, case.principal, selection.account_id, completed)
+        if profile == 3
+        else await _download(premium, case.principal, selection.account_id, completed)
+    )
+    assert report.manifest.document.document_schema_version == f"{profile}.0.0"
+    assert all(context.schema_version == f"{profile}.0.0" for context in report.manifest.contexts)
     observed = report.rows(r.ReportTableKey.RISK_OBSERVED_V1)[0]
     assert (
         observed["volatility_annualized"].value == run.result.observed.volatility_annualized.value

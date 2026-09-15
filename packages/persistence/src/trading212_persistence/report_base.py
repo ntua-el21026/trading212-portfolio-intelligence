@@ -12,17 +12,19 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 from trading212_application import reports as app
 from trading212_domain.errors import DomainError, ErrorCode
+from trading212_domain.report_v3 import (
+    ReportManifestContract,
+    ReportSelectionContract,
+    is_report_selection,
+)
 from trading212_domain.reports import (
     ExportDataset,
     ExportFieldSet,
     ExportFormat,
-    ExportSelection,
     ReportFailureCode,
     ReportFormat,
     ReportJobState,
-    ReportManifest,
     ReportMimeType,
-    ReportSelection,
     ReportSourceUse,
     ReportType,
     report_schema_version,
@@ -97,8 +99,8 @@ def report_scopes(
     return frozenset(result)
 
 
-def selection_scopes(selection: ReportSelection | ExportSelection) -> frozenset[Scope]:
-    if isinstance(selection, ReportSelection):
+def selection_scopes(selection: ReportSelectionContract) -> frozenset[Scope]:
+    if is_report_selection(selection):
         return report_scopes(sections=tuple(s.value for s in selection.sections), create=True)
     return report_scopes(dataset=selection.dataset.value, create=True)
 
@@ -183,7 +185,7 @@ class ReportStore:
             or row.sealed_at is None
             or row.input_digest != job.input_digest
             or row.contract_version != version
-            or version not in (1, 2)
+            or version not in (1, 2, 3)
         ):
             raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
         if not allow_expired and (
@@ -203,7 +205,22 @@ class ReportStore:
             raise report_error(app.ReportServiceErrorCode.ARTIFACT_EXPIRED)
         return row
 
-    def _manifest_contract(self, job: StoredJob, manifest: ReportManifest) -> None:
+    def _decode_manifest(self, job: StoredJob, payload: bytes) -> ReportManifestContract:
+        from trading212_domain.report_manifest import (
+            decode_report_manifest,
+            decode_report_manifest_v3,
+        )
+
+        version = job.contract_version if isinstance(job, ReportJobModel) else 1
+        if version not in (1, 2, 3):
+            raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
+        result = (
+            decode_report_manifest_v3(payload) if version == 3 else decode_report_manifest(payload)
+        )
+        self._manifest_contract(job, result)
+        return result
+
+    def _manifest_contract(self, job: StoredJob, manifest: ReportManifestContract) -> None:
         version = job.contract_version if isinstance(job, ReportJobModel) else 1
         if (
             manifest.document.document_schema_version != f"{version}.0.0"
@@ -262,7 +279,7 @@ class ReportStore:
             is not None
         )
         state = ReportJobState.EXPIRED if expired or pending else ReportJobState(job.state)
-        context = None
+        context: app.ReportPinnedContext | app.ReportPinnedContextV3 | None = None
         if state not in {ReportJobState.EXPIRED, ReportJobState.CANCELLED}:
             from trading212_application.reports import decode_report_pinned_context
 
@@ -275,7 +292,11 @@ class ReportStore:
             )
             if payload is None:
                 raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
-            context = decode_report_pinned_context(payload)
+            context = (
+                app.decode_report_pinned_context_v3(payload)
+                if row.contract_version == 3
+                else decode_report_pinned_context(payload)
+            )
             if (
                 context.input_digest != job.input_digest
                 or context.document_digest != row.document_digest
@@ -316,6 +337,8 @@ class ReportStore:
                 manifest_digest=job.manifest_digest,
                 artifacts=artifacts,
             )
+        if context is not None and type(context) is not app.ReportPinnedContext:
+            raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
         return app.ExportJobStatus(
             account_id=job.account_id,
             context=context,

@@ -21,13 +21,15 @@ from trading212_domain.report_manifest import (
     validate_report_references,
 )
 from trading212_domain.report_schema import table_schema
+from trading212_domain.report_v3 import (
+    ReportCaptureContract,
+    ReportSelectionContract,
+    is_report_selection,
+)
 from trading212_domain.reports import (
     MAX_REPORT_DATASET_ROWS,
     MAX_REPORT_DOCUMENT_BYTES,
-    ExportSelection,
-    ReportCaptureSummary,
     ReportChunk,
-    ReportSelection,
     ReportSourceUse,
     ReportTableKey,
     report_profile_version,
@@ -76,7 +78,7 @@ class ReportInputSink:
         session: Session,
         authorization: ReportAuthorization,
         *,
-        selection: ReportSelection | ExportSelection,
+        selection: ReportSelectionContract,
         expires_at: datetime,
         clock: Callable[[], datetime],
     ) -> None:
@@ -108,8 +110,8 @@ class ReportInputSink:
             owner_id=authorization.owner_id,
             account_id=authorization.account_id,
             created_at=at,
-            kind="report" if isinstance(selection, ReportSelection) else "export",
-            contract_version=2 if report_schema_version(selection) == "2.0.0" else 1,
+            kind="report" if is_report_selection(selection) else "export",
+            contract_version={"1.0.0": 1, "2.0.0": 2, "3.0.0": 3}[report_schema_version(selection)],
             snapshot_id=selection.snapshot_id,
             start_date=selection.start_date,
             end_date=selection.end_date,
@@ -182,7 +184,7 @@ class ReportInputSink:
         # Flush each bounded chunk and release ORM payload ownership immediately.
         self._session.flush()
 
-    def finish(self, summary: ReportCaptureSummary) -> None:
+    def finish(self, summary: ReportCaptureContract) -> None:
         from trading212_application.reports import encode_report_pinned_context
 
         from .report_sources import project_report_dependencies
@@ -254,7 +256,10 @@ class ReportInputSink:
             default=QualityState.FRESH,
         )
         warnings = summary.proof.notes
-        context = app.ReportPinnedContext(
+        context_type = (
+            app.ReportPinnedContextV3 if self.row.contract_version == 3 else app.ReportPinnedContext
+        )
+        context = context_type(
             profile_version=report_profile_version(self._selection),
             schema_version=report_schema_version(self._selection),
             snapshot_id=self.row.snapshot_id,
@@ -285,7 +290,7 @@ class ReportInputSink:
             input_id=self.row.id,
             proof=summary.proof,
             source_use=ReportSourceUse.REPORT
-            if isinstance(self._selection, ReportSelection)
+            if is_report_selection(self._selection)
             else ReportSourceUse.EXPORT,
             now=self._clock(),
         )
@@ -353,6 +358,15 @@ class ReportInputSink:
         self.row.source_count = len(dependencies)
         # Flush the children while the database still sees an open input, then seal.
         self._session.flush()
+        if self.row.contract_version == 3:
+            from .report_premium_sources import authorize_report_premium_sources
+
+            authorize_report_premium_sources(
+                self._session,
+                self._authorization,
+                input_id=self.row.id,
+                now=self._clock(),
+            )
         self.row.sealed_at = self._clock()
         self._session.flush()
         self._finished = True

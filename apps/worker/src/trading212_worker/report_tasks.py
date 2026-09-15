@@ -17,6 +17,7 @@ from trading212_application import report_jobs as jobs
 from trading212_application import reports as app
 from trading212_application.operational_telemetry import Operation, record_operation
 from trading212_domain.errors import DomainError
+from trading212_domain.report_v3 import ReportManifestContract
 from trading212_domain.reports import ReportFailureCode, ReportManifest
 from trading212_persistence import create_database_engine, create_session_factory
 
@@ -137,7 +138,7 @@ def _render(
     claim: JobClaim,
     cancelled: threading.Event,
     renderer: app.ReportRendererPort | None,
-) -> tuple[ReportManifest, tuple[app.RenderedArtifact, ...]]:
+) -> tuple[ReportManifestContract, tuple[app.RenderedArtifact, ...]]:
     from .report_render_process import render_private_artifact
     from .report_renderers import BoundedArtifactBuffer
 
@@ -271,15 +272,16 @@ async def _execute(
         if cancelled.is_set():
             return ReportExecutionState.FENCED
         try:
-            retained = (
-                await cast(jobs.ReportJobStore, store).complete_report_job(
+            if isinstance(claim, jobs.ReportJobClaim):
+                retained = await cast(jobs.ReportJobStore, store).complete_report_job(
                     claim, manifest=manifest, artifacts=artifacts
                 )
-                if isinstance(claim, jobs.ReportJobClaim)
-                else await cast(jobs.ExportJobStore, store).complete_export_job(
+            else:
+                if not isinstance(manifest, ReportManifest):
+                    raise jobs.ReportJobInputError(ReportFailureCode.INPUT_CHANGED)
+                retained = await cast(jobs.ExportJobStore, store).complete_export_job(
                     claim, manifest=manifest, artifacts=artifacts
                 )
-            )
         except jobs.ReportJobInputError as error:
             return await fail(error.code, error.retryable)
         except Exception:

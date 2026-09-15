@@ -12,6 +12,13 @@ from trading212_application import risk as risk_app
 from trading212_application import sources as source_app
 from trading212_application import xray as xray_app
 from trading212_domain import reports as r
+from trading212_domain.report_v3 import (
+    ReportHistoricalInputBinding,
+    ReportRiskRunBinding,
+    ReportSelectionV3,
+    ReportXrayRunBinding,
+    selected_risk_run_id,
+)
 from trading212_domain.sources import SourceUse
 from trading212_domain.xray_codec import decode_xray_input
 
@@ -38,14 +45,15 @@ def capture_risk(
     clock: Callable[[], datetime],
     cursor_signing_key: bytes,
     preflight: RiskPreflight | None,
-) -> None:
+) -> ReportRiskRunBinding | None:
     selection = builder.selection
-    if not isinstance(selection, r.ReportSelection) or selection.risk_run_id is None:
+    selected_run = selected_risk_run_id(selection)
+    if selected_run is None:
         raise report_error(app.ReportServiceErrorCode.VALIDATION_FAILED)
     if preflight is None:
         raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
     root, run, job, row = authorize_risk_report_metadata(
-        session, authorization, selection.risk_run_id, now=clock()
+        session, authorization, selected_run, now=clock()
     )
     # Reject a mismatched request from normalized headers before any private decode.
     if (
@@ -144,6 +152,51 @@ def capture_risk(
                 input_id=xray_handle.input_id,
             )
         authorize_risk_report_metadata(session, authorization, root.id, now=clock())
+        if isinstance(selection, ReportSelectionV3):
+            snapshots = tuple(
+                pin
+                for pin in builder.bindings
+                if pin.family is r.ReportFamily.SNAPSHOT
+                and pin.role is r.ReportInputRole.SNAPSHOT
+                and pin.subject_id == selection.snapshot_id
+            )
+            if len(snapshots) != 1:
+                raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
+            return ReportRiskRunBinding(
+                run_id=root.id,
+                result_id=row.id,
+                input_digest=root.input_digest,
+                result_digest=row.content_digest,
+                owner_id=authorization.owner_id,
+                account_id=authorization.account_id,
+                snapshot_id=selection.snapshot_id,
+                snapshot_digest=snapshots[0].content_digest,
+                reporting_currency=selection.reporting_currency,
+                source_cutoff_at=selection.source_cutoff_at,
+                valuation_at=builder.valuation_at,
+                created_at=root.created_at,
+                completed_at=job.completed_at,
+                expires_at=root.expires_at,
+                definition_id=version.definition_id,
+                definition_version_id=version.id,
+                definition_digest=version.content_digest,
+                start_date=selection.start_date,
+                end_date=selection.end_date,
+                historical=ReportHistoricalInputBinding(
+                    input_snapshot_id=run.historical_input_id,
+                    input_digest=value.history.historical_input_digest,
+                ),
+                xray=ReportXrayRunBinding(
+                    run_id=xray_handle.run_id,
+                    input_id=xray_handle.input_id,
+                    input_digest=execution.xray.input_digest,
+                    result_digest=execution.xray.content_digest,
+                )
+                if xray_handle is not None and execution.xray is not None
+                else None,
+                benchmark_version_id=run.benchmark_version_id,
+            )
+        return None
     except RiskIntegrityError:
         raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE) from None
     except risk_app.RiskServiceError as error:

@@ -160,7 +160,25 @@ def test_complete_section_selection_keeps_legacy_order_and_appends_risk() -> Non
     original = selection()
     chosen = replace(
         original,
-        sections=tuple(r.ReportSection),
+        sections=tuple(
+            r.ReportSection(x)
+            for x in (
+                "overview",
+                "allocation",
+                "targets",
+                "drift",
+                "contribution_plan",
+                "performance",
+                "benchmark",
+                "income",
+                "cash_flows",
+                "attribution",
+                "xray",
+                "quality",
+                "activity",
+                "risk",
+            )
+        ),
         risk_run_id=uid(90),
         target_version_id=uid(7),
         plan_revision_id=uid(8),

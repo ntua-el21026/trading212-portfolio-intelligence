@@ -8574,6 +8574,219 @@
         "title": "GeneratePremiumReportRequest",
         "type": "object"
       },
+      "GeneratePremiumReportRequestV3": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "benchmark_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Benchmark Version Id"
+          },
+          "constituent_snapshot_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constituent Snapshot Id"
+          },
+          "end_date": {
+            "format": "date",
+            "title": "End Date",
+            "type": "string"
+          },
+          "formats": {
+            "items": {
+              "enum": [
+                "pdf",
+                "csv",
+                "json",
+                "xlsx"
+              ],
+              "type": "string"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Formats",
+            "type": "array"
+          },
+          "plan_revision_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Revision Id"
+          },
+          "premium_run": {
+            "discriminator": {
+              "mapping": {
+                "risk": "#/components/schemas/PremiumReportRiskRunSelectionV3",
+                "scenario": "#/components/schemas/PremiumReportScenarioRunSelectionV3"
+              },
+              "propertyName": "family"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PremiumReportRiskRunSelectionV3"
+              },
+              {
+                "$ref": "#/components/schemas/PremiumReportScenarioRunSelectionV3"
+              }
+            ],
+            "title": "Premium Run"
+          },
+          "profile_version": {
+            "const": "report_sections_v3",
+            "title": "Profile Version",
+            "type": "string"
+          },
+          "report_type": {
+            "enum": [
+              "monthly",
+              "quarterly",
+              "annual",
+              "portfolio_summary",
+              "target_drift",
+              "contribution_plan",
+              "performance_benchmark",
+              "dividend_income",
+              "portfolio_xray",
+              "quality_reconciliation"
+            ],
+            "title": "Report Type",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "sections": {
+            "items": {
+              "enum": [
+                "overview",
+                "allocation",
+                "targets",
+                "drift",
+                "contribution_plan",
+                "performance",
+                "benchmark",
+                "income",
+                "cash_flows",
+                "attribution",
+                "xray",
+                "quality",
+                "activity",
+                "risk",
+                "scenario",
+                "projection",
+                "goal",
+                "research"
+              ],
+              "type": "string"
+            },
+            "maxItems": 14,
+            "minItems": 1,
+            "title": "Sections",
+            "type": "array"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          },
+          "target_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Version Id"
+          },
+          "template_version": {
+            "const": "report_template_v1",
+            "default": "report_template_v1",
+            "title": "Template Version",
+            "type": "string"
+          },
+          "ttl_days": {
+            "default": 7,
+            "maximum": 30.0,
+            "minimum": 1.0,
+            "title": "Ttl Days",
+            "type": "integer"
+          },
+          "xray_run_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Xray Run Id"
+          }
+        },
+        "required": [
+          "account_id",
+          "start_date",
+          "end_date",
+          "source_cutoff_at",
+          "snapshot_id",
+          "reporting_currency",
+          "report_type",
+          "sections",
+          "formats",
+          "premium_run",
+          "profile_version"
+        ],
+        "title": "GeneratePremiumReportRequestV3",
+        "type": "object"
+      },
       "GenerateReportRequest": {
         "additionalProperties": false,
         "properties": {
@@ -14154,6 +14367,88 @@
         "title": "PremiumReportBoundFact",
         "type": "object"
       },
+      "PremiumReportBoundFactV3": {
+        "additionalProperties": false,
+        "properties": {
+          "family": {
+            "enum": [
+              "snapshot",
+              "activity",
+              "target",
+              "planning",
+              "performance",
+              "benchmark",
+              "income",
+              "cash_flows",
+              "attribution",
+              "xray",
+              "reconciliation",
+              "alerts",
+              "risk",
+              "scenario"
+            ],
+            "title": "Family",
+            "type": "string"
+          },
+          "key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "exact",
+              "lower_bound",
+              "unavailable"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "positive_below_quantum": {
+            "title": "Positive Below Quantum",
+            "type": "boolean"
+          },
+          "quantum": {
+            "anyOf": [
+              {
+                "maxLength": 4096,
+                "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantum"
+          },
+          "rounding": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rounding"
+          }
+        },
+        "required": [
+          "key",
+          "family",
+          "kind",
+          "quantum",
+          "rounding",
+          "positive_below_quantum"
+        ],
+        "title": "PremiumReportBoundFactV3",
+        "type": "object"
+      },
       "PremiumReportContext": {
         "additionalProperties": false,
         "properties": {
@@ -14290,6 +14585,143 @@
         "title": "PremiumReportContext",
         "type": "object"
       },
+      "PremiumReportContextV3": {
+        "additionalProperties": false,
+        "properties": {
+          "coverage_set_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Coverage Set Key",
+            "type": "string"
+          },
+          "family": {
+            "enum": [
+              "snapshot",
+              "activity",
+              "target",
+              "planning",
+              "performance",
+              "benchmark",
+              "income",
+              "cash_flows",
+              "attribution",
+              "xray",
+              "reconciliation",
+              "alerts",
+              "risk",
+              "scenario"
+            ],
+            "title": "Family",
+            "type": "string"
+          },
+          "key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Key",
+            "type": "string"
+          },
+          "method_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Method Key",
+            "type": "string"
+          },
+          "method_version": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Method Version",
+            "type": "string"
+          },
+          "note_set_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Note Set Key",
+            "type": "string"
+          },
+          "provenance_set_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Provenance Set Key",
+            "type": "string"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reconciliation_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reconciliation Key"
+          },
+          "schema_version": {
+            "const": "3.0.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source At"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "family",
+          "method_key",
+          "method_version",
+          "valuation_at",
+          "source_cutoff_at",
+          "quality",
+          "provenance_set_key",
+          "coverage_set_key",
+          "note_set_key",
+          "source_at",
+          "reconciliation_key",
+          "schema_version"
+        ],
+        "title": "PremiumReportContextV3",
+        "type": "object"
+      },
       "PremiumReportCoverageFact": {
         "additionalProperties": false,
         "properties": {
@@ -14337,6 +14769,56 @@
           "value"
         ],
         "title": "PremiumReportCoverageFact",
+        "type": "object"
+      },
+      "PremiumReportCoverageFactV3": {
+        "additionalProperties": false,
+        "properties": {
+          "family": {
+            "enum": [
+              "snapshot",
+              "activity",
+              "target",
+              "planning",
+              "performance",
+              "benchmark",
+              "income",
+              "cash_flows",
+              "attribution",
+              "xray",
+              "reconciliation",
+              "alerts",
+              "risk",
+              "scenario"
+            ],
+            "title": "Family",
+            "type": "string"
+          },
+          "metric_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Metric Key",
+            "type": "string"
+          },
+          "set_key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Set Key",
+            "type": "string"
+          },
+          "value": {
+            "$ref": "#/components/schemas/ReportCell"
+          }
+        },
+        "required": [
+          "set_key",
+          "family",
+          "metric_key",
+          "value"
+        ],
+        "title": "PremiumReportCoverageFactV3",
         "type": "object"
       },
       "PremiumReportDocumentHeader": {
@@ -14390,6 +14872,100 @@
           "document_schema_version"
         ],
         "title": "PremiumReportDocumentHeader",
+        "type": "object"
+      },
+      "PremiumReportDocumentHeaderV3": {
+        "additionalProperties": false,
+        "properties": {
+          "context_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Context Digest",
+            "type": "string"
+          },
+          "document_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Document Digest",
+            "type": "string"
+          },
+          "document_schema_version": {
+            "const": "3.0.0",
+            "title": "Document Schema Version",
+            "type": "string"
+          },
+          "owner_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "premium_binding": {
+            "discriminator": {
+              "mapping": {
+                "risk": "#/components/schemas/PremiumReportRiskRunBindingV3",
+                "scenario": "#/components/schemas/PremiumReportScenarioRunBindingV3"
+              },
+              "propertyName": "family"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PremiumReportRiskRunBindingV3"
+              },
+              {
+                "$ref": "#/components/schemas/PremiumReportScenarioRunBindingV3"
+              }
+            ],
+            "title": "Premium Binding"
+          },
+          "selection": {
+            "$ref": "#/components/schemas/PremiumReportSelectionV3"
+          },
+          "tables": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumReportTableDescriptorV3"
+            },
+            "maxItems": 128,
+            "title": "Tables",
+            "type": "array"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "selection",
+          "owner_id",
+          "valuation_at",
+          "context_digest",
+          "tables",
+          "document_digest",
+          "document_schema_version",
+          "premium_binding"
+        ],
+        "title": "PremiumReportDocumentHeaderV3",
+        "type": "object"
+      },
+      "PremiumReportHistoricalInputBindingV3": {
+        "additionalProperties": false,
+        "properties": {
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "input_snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Input Snapshot Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "input_snapshot_id",
+          "input_digest"
+        ],
+        "title": "PremiumReportHistoricalInputBindingV3",
         "type": "object"
       },
       "PremiumReportInputPin": {
@@ -14497,6 +15073,114 @@
           "method_version"
         ],
         "title": "PremiumReportInputPin",
+        "type": "object"
+      },
+      "PremiumReportInputPinV3": {
+        "additionalProperties": false,
+        "properties": {
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "family": {
+            "enum": [
+              "snapshot",
+              "activity",
+              "target",
+              "planning",
+              "performance",
+              "benchmark",
+              "income",
+              "cash_flows",
+              "attribution",
+              "xray",
+              "reconciliation",
+              "alerts",
+              "risk",
+              "scenario"
+            ],
+            "title": "Family",
+            "type": "string"
+          },
+          "method_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Key"
+          },
+          "method_version": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Method Version"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "role": {
+            "enum": [
+              "snapshot",
+              "input",
+              "result",
+              "calculation",
+              "policy",
+              "target_version",
+              "plan_revision",
+              "benchmark_version",
+              "source",
+              "mapping",
+              "license",
+              "calendar",
+              "event_revision",
+              "reconciliation"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "subject_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Subject Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "family",
+          "role",
+          "subject_id",
+          "content_digest",
+          "parent_id",
+          "method_key",
+          "method_version"
+        ],
+        "title": "PremiumReportInputPinV3",
         "type": "object"
       },
       "PremiumReportJobStatus": {
@@ -14665,6 +15349,178 @@
         "title": "PremiumReportJobStatus",
         "type": "object"
       },
+      "PremiumReportJobStatusV3": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ReportArtifactMetadata"
+            },
+            "maxItems": 4,
+            "title": "Artifacts",
+            "type": "array"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PremiumReportPinnedContextV3"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "failure_code": {
+            "anyOf": [
+              {
+                "enum": [
+                  "invalid_input",
+                  "input_unavailable",
+                  "input_changed",
+                  "access_denied",
+                  "source_restricted",
+                  "limit_exceeded",
+                  "render_failed",
+                  "storage_unavailable",
+                  "publication_unavailable",
+                  "lease_expired",
+                  "attempts_exhausted"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Code"
+          },
+          "formats": {
+            "items": {
+              "enum": [
+                "pdf",
+                "csv",
+                "json",
+                "xlsx"
+              ],
+              "type": "string"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Formats",
+            "type": "array"
+          },
+          "job_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "manifest_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manifest Digest"
+          },
+          "profile_version": {
+            "const": "report_sections_v3",
+            "title": "Profile Version",
+            "type": "string"
+          },
+          "report_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Id"
+          },
+          "report_type": {
+            "enum": [
+              "monthly",
+              "quarterly",
+              "annual",
+              "portfolio_summary",
+              "target_drift",
+              "contribution_plan",
+              "performance_benchmark",
+              "dividend_income",
+              "portfolio_xray",
+              "quality_reconciliation"
+            ],
+            "title": "Report Type",
+            "type": "string"
+          },
+          "requested_at": {
+            "format": "date-time",
+            "title": "Requested At",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "expired",
+              "cancelled"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile_version",
+          "account_id",
+          "context",
+          "job_id",
+          "report_id",
+          "state",
+          "requested_at",
+          "completed_at",
+          "expires_at",
+          "failure_code",
+          "report_type",
+          "formats",
+          "manifest_digest",
+          "artifacts"
+        ],
+        "title": "PremiumReportJobStatusV3",
+        "type": "object"
+      },
       "PremiumReportManifest": {
         "additionalProperties": false,
         "properties": {
@@ -14799,6 +15655,140 @@
         "title": "PremiumReportManifest",
         "type": "object"
       },
+      "PremiumReportManifestV3": {
+        "additionalProperties": false,
+        "properties": {
+          "bindings": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumReportInputPinV3"
+            },
+            "maxItems": 256,
+            "title": "Bindings",
+            "type": "array"
+          },
+          "bounds": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumReportBoundFactV3"
+            },
+            "maxItems": 100000,
+            "title": "Bounds",
+            "type": "array"
+          },
+          "contexts": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumReportContextV3"
+            },
+            "maxItems": 256,
+            "title": "Contexts",
+            "type": "array"
+          },
+          "coverage": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumReportCoverageFactV3"
+            },
+            "maxItems": 100000,
+            "title": "Coverage",
+            "type": "array"
+          },
+          "document": {
+            "$ref": "#/components/schemas/PremiumReportDocumentHeaderV3"
+          },
+          "escaping_version": {
+            "const": "report_csv_text_v1",
+            "title": "Escaping Version",
+            "type": "string"
+          },
+          "license_references": {
+            "items": {
+              "$ref": "#/components/schemas/ReportLicenseReference"
+            },
+            "maxItems": 256,
+            "title": "License References",
+            "type": "array"
+          },
+          "method": {
+            "const": "report_manifest_v1",
+            "title": "Method",
+            "type": "string"
+          },
+          "method_version": {
+            "const": "1.0.0",
+            "title": "Method Version",
+            "type": "string"
+          },
+          "note_memberships": {
+            "items": {
+              "$ref": "#/components/schemas/ReportNoteMembership"
+            },
+            "maxItems": 100000,
+            "title": "Note Memberships",
+            "type": "array"
+          },
+          "notes": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumReportNoteV3"
+            },
+            "maxItems": 100000,
+            "title": "Notes",
+            "type": "array"
+          },
+          "proof_relations": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumReportProofRelationV3"
+            },
+            "maxItems": 100000,
+            "title": "Proof Relations",
+            "type": "array"
+          },
+          "reconciliation": {
+            "items": {
+              "$ref": "#/components/schemas/ReportReconciliationBinding"
+            },
+            "maxItems": 100000,
+            "title": "Reconciliation",
+            "type": "array"
+          },
+          "renderer_profile": {
+            "$ref": "#/components/schemas/ReportRendererProfile"
+          },
+          "source_memberships": {
+            "items": {
+              "$ref": "#/components/schemas/ReportSourceMembership"
+            },
+            "maxItems": 100000,
+            "title": "Source Memberships",
+            "type": "array"
+          },
+          "source_references": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumReportSourceReferenceV3"
+            },
+            "maxItems": 100000,
+            "title": "Source References",
+            "type": "array"
+          }
+        },
+        "required": [
+          "document",
+          "renderer_profile",
+          "bindings",
+          "contexts",
+          "source_references",
+          "source_memberships",
+          "note_memberships",
+          "license_references",
+          "coverage",
+          "bounds",
+          "notes",
+          "proof_relations",
+          "reconciliation",
+          "method",
+          "method_version",
+          "escaping_version"
+        ],
+        "title": "PremiumReportManifestV3",
+        "type": "object"
+      },
       "PremiumReportNote": {
         "additionalProperties": false,
         "properties": {
@@ -14878,6 +15868,86 @@
         "title": "PremiumReportNote",
         "type": "object"
       },
+      "PremiumReportNoteV3": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Code",
+            "type": "string"
+          },
+          "family": {
+            "enum": [
+              "snapshot",
+              "activity",
+              "target",
+              "planning",
+              "performance",
+              "benchmark",
+              "income",
+              "cash_flows",
+              "attribution",
+              "xray",
+              "reconciliation",
+              "alerts",
+              "risk",
+              "scenario"
+            ],
+            "title": "Family",
+            "type": "string"
+          },
+          "key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "warning",
+              "assumption",
+              "limitation",
+              "unavailable_reason",
+              "reconciliation"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "related_provenance_set_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Related Provenance Set Key"
+          },
+          "text": {
+            "maxLength": 4096,
+            "pattern": "^[^\\x00]*$",
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "kind",
+          "family",
+          "code",
+          "text",
+          "related_provenance_set_key"
+        ],
+        "title": "PremiumReportNoteV3",
+        "type": "object"
+      },
       "PremiumReportPage": {
         "additionalProperties": false,
         "properties": {
@@ -14923,6 +15993,59 @@
           "total"
         ],
         "title": "PremiumReportPage",
+        "type": "object"
+      },
+      "PremiumReportPageV3": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumReportJobStatusV3"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "profile_version": {
+            "const": "report_sections_v3",
+            "title": "Profile Version",
+            "type": "string"
+          },
+          "total": {
+            "maximum": 9.223372036854776e+18,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "profile_version",
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "PremiumReportPageV3",
         "type": "object"
       },
       "PremiumReportPinnedContext": {
@@ -14994,6 +16117,77 @@
           "quality"
         ],
         "title": "PremiumReportPinnedContext",
+        "type": "object"
+      },
+      "PremiumReportPinnedContextV3": {
+        "additionalProperties": false,
+        "properties": {
+          "document_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Document Digest",
+            "type": "string"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "pins": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumReportInputPinV3"
+            },
+            "maxItems": 256,
+            "title": "Pins",
+            "type": "array"
+          },
+          "profile_version": {
+            "const": "report_sections_v3",
+            "title": "Profile Version",
+            "type": "string"
+          },
+          "quality": {
+            "$ref": "#/components/schemas/PremiumReportQualitySummaryV3"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "3.0.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "valuation_at",
+          "source_cutoff_at",
+          "reporting_currency",
+          "input_digest",
+          "document_digest",
+          "profile_version",
+          "schema_version",
+          "pins",
+          "quality"
+        ],
+        "title": "PremiumReportPinnedContextV3",
         "type": "object"
       },
       "PremiumReportProofRelation": {
@@ -15167,6 +16361,204 @@
         "title": "PremiumReportProofRelation",
         "type": "object"
       },
+      "PremiumReportProofRelationV3": {
+        "additionalProperties": false,
+        "properties": {
+          "row": {
+            "$ref": "#/components/schemas/ReportRow"
+          },
+          "table": {
+            "enum": [
+              "alert_events",
+              "alert_evaluations",
+              "alert_observations",
+              "alert_rule_versions",
+              "alert_predicates",
+              "alert_rule_destinations",
+              "alert_acknowledgments",
+              "alert_notifications",
+              "alert_transitions",
+              "alert_source_references",
+              "alert_canonical_bindings",
+              "alert_context_details",
+              "alert_context_members",
+              "alert_fx_conversions",
+              "alert_fx_legs",
+              "benchmark_composite",
+              "benchmark_components",
+              "benchmark_component_members",
+              "benchmark_observations",
+              "historical_options",
+              "historical_warning_coverage",
+              "xray_direct_positions",
+              "xray_fund_entities",
+              "xray_path_weights",
+              "xray_members",
+              "xray_policy",
+              "xray_policy_components",
+              "xray_policy_limits",
+              "xray_taxonomies",
+              "xray_threshold_policy",
+              "plan_input_header",
+              "plan_valuation",
+              "plan_valuation_positions",
+              "plan_valuation_cash",
+              "plan_fx",
+              "plan_options",
+              "plan_input_members",
+              "plan_listing_preferences",
+              "plan_holding_constraints",
+              "plan_allocation_constraints",
+              "plan_node_identities",
+              "plan_catalog_instruments",
+              "plan_catalog_listings",
+              "plan_source_details",
+              "plan_effective_constraints",
+              "snapshot_totals",
+              "positions",
+              "allocation_buckets",
+              "target_nodes",
+              "target_holdings",
+              "target_constraints",
+              "drift_rows",
+              "drift_totals",
+              "plan_summary",
+              "plan_lines",
+              "plan_objectives",
+              "plan_relations",
+              "performance_summary",
+              "performance_points",
+              "performance_periods",
+              "benchmark_summary",
+              "benchmark_points",
+              "benchmark_periods",
+              "income_summary",
+              "income_components",
+              "income_totals",
+              "income_periods",
+              "income_reporting_periods",
+              "cash_flow_summary",
+              "cash_flow_totals",
+              "cash_flow_periods",
+              "cash_flow_events",
+              "attribution_summary",
+              "attribution_components",
+              "attribution_effects",
+              "planning_company_actuals_v1",
+              "planning_company_basis_v1",
+              "xray_summary",
+              "xray_quality",
+              "xray_dimensions",
+              "xray_exposures",
+              "xray_paths",
+              "xray_held_funds",
+              "xray_overlap_pairs",
+              "xray_overlap_entities",
+              "xray_concentrations",
+              "xray_concentration_members",
+              "xray_thresholds",
+              "xray_residuals",
+              "xray_path_relations",
+              "reconciliation",
+              "reconciliation_issues",
+              "coverage",
+              "notes",
+              "activity",
+              "historical_use_consumers",
+              "historical_observation_uses",
+              "historical_evidence_uses",
+              "historical_missing_uses",
+              "historical_use_candidates",
+              "historical_conversion_uses",
+              "historical_conversion_legs",
+              "historical_event_memberships",
+              "xray_selections",
+              "xray_selection_evidence",
+              "xray_source_uses",
+              "xray_fund_edges",
+              "xray_path_classifications",
+              "xray_classification_decisions",
+              "xray_classification_memberships",
+              "dividends",
+              "contexts",
+              "source_references",
+              "source_memberships",
+              "note_memberships",
+              "license_references",
+              "coverage_facts",
+              "bound_facts",
+              "bindings",
+              "reconciliation_bindings",
+              "historical_source_details",
+              "historical_source_parents",
+              "historical_event_identities",
+              "xray_valuation_roots",
+              "xray_broker_fx",
+              "xray_licensed_fx",
+              "xray_fx_legs",
+              "xray_dependency_identities",
+              "target_exclusions",
+              "historical_anchor_reconciliation",
+              "historical_reconciliation_lines",
+              "historical_reconciliation_anchors",
+              "xray_reconciliation",
+              "xray_warning_paths",
+              "risk_basis_v1",
+              "risk_definition_v1",
+              "risk_observed_v1",
+              "risk_rolling_v1",
+              "risk_matrix_summary_v1",
+              "risk_matrix_axes_v1",
+              "risk_matrix_cells_v1",
+              "risk_tails_v1",
+              "risk_modeled_v1",
+              "risk_components_v1",
+              "risk_concentration_v1",
+              "risk_run_assets_v1",
+              "risk_series_v1",
+              "risk_intervals_v1",
+              "risk_history_context_v1",
+              "risk_history_members_v1",
+              "risk_xray_paths_v1",
+              "scenario_basis_v1",
+              "scenario_definition_v1",
+              "scenario_shocks_v1",
+              "scenario_exclusions_v1",
+              "scenario_summary_v1",
+              "scenario_components_v1",
+              "scenario_channels_v1",
+              "scenario_applied_sensitivities_v1",
+              "scenario_diagnostics_v1",
+              "scenario_replay_changes_v1",
+              "scenario_subjects_v1",
+              "scenario_classifications_v1",
+              "scenario_currencies_v1",
+              "scenario_members_v1",
+              "scenario_sensitivity_versions_v1",
+              "scenario_drivers_v1",
+              "scenario_sensitivity_observations_v1",
+              "scenario_sensitivity_memberships_v1",
+              "scenario_sensitivity_evidence_v1",
+              "scenario_source_licenses_v1",
+              "scenario_replay_basis_v1",
+              "scenario_replay_bindings_v1",
+              "scenario_replay_methods_v1",
+              "scenario_replay_coverage_v1",
+              "scenario_replay_warnings_v1",
+              "scenario_xray_paths_v1",
+              "scenario_source_headers_v1"
+            ],
+            "title": "Table",
+            "type": "string"
+          }
+        },
+        "required": [
+          "table",
+          "row"
+        ],
+        "title": "PremiumReportProofRelationV3",
+        "type": "object"
+      },
       "PremiumReportQualitySummary": {
         "additionalProperties": false,
         "properties": {
@@ -15227,6 +16619,425 @@
           "warning_omitted_count"
         ],
         "title": "PremiumReportQualitySummary",
+        "type": "object"
+      },
+      "PremiumReportQualitySummaryV3": {
+        "additionalProperties": false,
+        "properties": {
+          "availability": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "evaluated_at": {
+            "format": "date-time",
+            "title": "Evaluated At",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "warning_count": {
+            "maximum": 9.223372036854776e+18,
+            "minimum": 0.0,
+            "title": "Warning Count",
+            "type": "integer"
+          },
+          "warning_omitted_count": {
+            "maximum": 9.223372036854776e+18,
+            "minimum": 0.0,
+            "title": "Warning Omitted Count",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumReportNoteV3"
+            },
+            "maxItems": 64,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "state",
+          "availability",
+          "evaluated_at",
+          "warnings",
+          "warning_count",
+          "warning_omitted_count"
+        ],
+        "title": "PremiumReportQualitySummaryV3",
+        "type": "object"
+      },
+      "PremiumReportRiskRunBindingV3": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "benchmark_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Benchmark Version Id"
+          },
+          "completed_at": {
+            "format": "date-time",
+            "title": "Completed At",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "definition_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Definition Digest",
+            "type": "string"
+          },
+          "definition_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Definition Id",
+            "type": "string"
+          },
+          "definition_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Definition Version Id",
+            "type": "string"
+          },
+          "end_date": {
+            "format": "date",
+            "title": "End Date",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "family": {
+            "const": "risk",
+            "title": "Family",
+            "type": "string"
+          },
+          "historical": {
+            "$ref": "#/components/schemas/PremiumReportHistoricalInputBindingV3"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "owner_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "result_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Result Digest",
+            "type": "string"
+          },
+          "result_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Result Id",
+            "type": "string"
+          },
+          "run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "snapshot_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Snapshot Digest",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          },
+          "state": {
+            "const": "succeeded",
+            "title": "State",
+            "type": "string"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          },
+          "xray": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PremiumReportXrayRunBindingV3"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "run_id",
+          "result_id",
+          "input_digest",
+          "result_digest",
+          "owner_id",
+          "account_id",
+          "snapshot_id",
+          "snapshot_digest",
+          "reporting_currency",
+          "source_cutoff_at",
+          "valuation_at",
+          "created_at",
+          "completed_at",
+          "expires_at",
+          "state",
+          "definition_id",
+          "definition_version_id",
+          "definition_digest",
+          "start_date",
+          "end_date",
+          "historical",
+          "family"
+        ],
+        "title": "PremiumReportRiskRunBindingV3",
+        "type": "object"
+      },
+      "PremiumReportRiskRunSelectionV3": {
+        "additionalProperties": false,
+        "properties": {
+          "family": {
+            "const": "risk",
+            "title": "Family",
+            "type": "string"
+          },
+          "run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "family"
+        ],
+        "title": "PremiumReportRiskRunSelectionV3",
+        "type": "object"
+      },
+      "PremiumReportScenarioRunBindingV3": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "completed_at": {
+            "format": "date-time",
+            "title": "Completed At",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "family": {
+            "const": "scenario",
+            "title": "Family",
+            "type": "string"
+          },
+          "historical": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PremiumReportHistoricalInputBindingV3"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "owner_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "result_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Result Digest",
+            "type": "string"
+          },
+          "result_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Result Id",
+            "type": "string"
+          },
+          "run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenario_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Scenario Id",
+            "type": "string"
+          },
+          "scenario_version_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Scenario Version Digest",
+            "type": "string"
+          },
+          "scenario_version_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Scenario Version Id",
+            "type": "string"
+          },
+          "snapshot_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Snapshot Digest",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "state": {
+            "const": "succeeded",
+            "title": "State",
+            "type": "string"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          },
+          "xray": {
+            "$ref": "#/components/schemas/PremiumReportXrayRunBindingV3"
+          }
+        },
+        "required": [
+          "run_id",
+          "result_id",
+          "input_digest",
+          "result_digest",
+          "owner_id",
+          "account_id",
+          "snapshot_id",
+          "snapshot_digest",
+          "reporting_currency",
+          "source_cutoff_at",
+          "valuation_at",
+          "created_at",
+          "completed_at",
+          "expires_at",
+          "state",
+          "scenario_id",
+          "scenario_version_id",
+          "scenario_version_digest",
+          "xray",
+          "family"
+        ],
+        "title": "PremiumReportScenarioRunBindingV3",
+        "type": "object"
+      },
+      "PremiumReportScenarioRunSelectionV3": {
+        "additionalProperties": false,
+        "properties": {
+          "family": {
+            "const": "scenario",
+            "title": "Family",
+            "type": "string"
+          },
+          "run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "family"
+        ],
+        "title": "PremiumReportScenarioRunSelectionV3",
         "type": "object"
       },
       "PremiumReportSelection": {
@@ -15411,6 +17222,383 @@
           "risk_run_id"
         ],
         "title": "PremiumReportSelection",
+        "type": "object"
+      },
+      "PremiumReportSelectionV3": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "benchmark_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Benchmark Version Id"
+          },
+          "constituent_snapshot_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constituent Snapshot Id"
+          },
+          "end_date": {
+            "format": "date",
+            "title": "End Date",
+            "type": "string"
+          },
+          "formats": {
+            "items": {
+              "enum": [
+                "pdf",
+                "csv",
+                "json",
+                "xlsx"
+              ],
+              "type": "string"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Formats",
+            "type": "array"
+          },
+          "plan_revision_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Revision Id"
+          },
+          "premium_run": {
+            "discriminator": {
+              "mapping": {
+                "risk": "#/components/schemas/PremiumReportRiskRunSelectionV3",
+                "scenario": "#/components/schemas/PremiumReportScenarioRunSelectionV3"
+              },
+              "propertyName": "family"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PremiumReportRiskRunSelectionV3"
+              },
+              {
+                "$ref": "#/components/schemas/PremiumReportScenarioRunSelectionV3"
+              }
+            ],
+            "title": "Premium Run"
+          },
+          "profile_version": {
+            "const": "report_sections_v3",
+            "title": "Profile Version",
+            "type": "string"
+          },
+          "report_type": {
+            "enum": [
+              "monthly",
+              "quarterly",
+              "annual",
+              "portfolio_summary",
+              "target_drift",
+              "contribution_plan",
+              "performance_benchmark",
+              "dividend_income",
+              "portfolio_xray",
+              "quality_reconciliation"
+            ],
+            "title": "Report Type",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "sections": {
+            "items": {
+              "enum": [
+                "overview",
+                "allocation",
+                "targets",
+                "drift",
+                "contribution_plan",
+                "performance",
+                "benchmark",
+                "income",
+                "cash_flows",
+                "attribution",
+                "xray",
+                "quality",
+                "activity",
+                "risk",
+                "scenario",
+                "projection",
+                "goal",
+                "research"
+              ],
+              "type": "string"
+            },
+            "maxItems": 14,
+            "minItems": 1,
+            "title": "Sections",
+            "type": "array"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          },
+          "target_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Version Id"
+          },
+          "template_version": {
+            "const": "report_template_v1",
+            "default": "report_template_v1",
+            "title": "Template Version",
+            "type": "string"
+          },
+          "xray_run_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Xray Run Id"
+          }
+        },
+        "required": [
+          "account_id",
+          "start_date",
+          "end_date",
+          "source_cutoff_at",
+          "snapshot_id",
+          "reporting_currency",
+          "report_type",
+          "sections",
+          "formats",
+          "premium_run",
+          "profile_version"
+        ],
+        "title": "PremiumReportSelectionV3",
+        "type": "object"
+      },
+      "PremiumReportSourceReferenceV3": {
+        "additionalProperties": false,
+        "properties": {
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "first_observed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Observed At"
+          },
+          "key": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "broker_source_record",
+              "broker_source_occurrence",
+              "ingestion_run",
+              "portfolio_snapshot",
+              "snapshot_position",
+              "snapshot_cash",
+              "calculation",
+              "activity_revision",
+              "activity_revision_evidence",
+              "activity_coverage",
+              "reconciliation",
+              "target_version",
+              "plan_revision",
+              "historical_input",
+              "historical_result",
+              "xray_input",
+              "xray_result",
+              "price_snapshot",
+              "fx_snapshot",
+              "fx_observation",
+              "fx_coverage_gap",
+              "benchmark",
+              "constituent_snapshot",
+              "constituent_holding",
+              "identity",
+              "classification",
+              "fund_mapping",
+              "mapping",
+              "taxonomy",
+              "policy",
+              "calendar",
+              "license",
+              "opening",
+              "corporate_action",
+              "source_coverage",
+              "historical_evidence",
+              "fund_definition",
+              "price_observation",
+              "reconciliation_discrepancy",
+              "entity_evidence_version",
+              "entity_evidence_reference",
+              "relationship",
+              "classification_snapshot",
+              "classification_assignment",
+              "historical_classification",
+              "benchmark_version",
+              "scenario_run",
+              "scenario_result",
+              "scenario_version",
+              "scenario_sensitivity_version",
+              "scenario_sensitivity_observation",
+              "scenario_sensitivity_evidence"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "license_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Version Id"
+          },
+          "mapping_version_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mapping Version Id"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id"
+          },
+          "source_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source At"
+          },
+          "subject_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Subject Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "kind",
+          "subject_id",
+          "content_digest",
+          "parent_id",
+          "source_at",
+          "first_observed_at",
+          "provider_id",
+          "license_version_id",
+          "mapping_version_id"
+        ],
+        "title": "PremiumReportSourceReferenceV3",
         "type": "object"
       },
       "PremiumReportTableDescriptor": {
@@ -15656,6 +17844,317 @@
           "reason_key"
         ],
         "title": "PremiumReportTableDescriptor",
+        "type": "object"
+      },
+      "PremiumReportTableDescriptorV3": {
+        "additionalProperties": false,
+        "properties": {
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "dataset": {
+            "title": "Dataset",
+            "type": "null"
+          },
+          "reason_key": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Key"
+          },
+          "row_count": {
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Row Count",
+            "type": "integer"
+          },
+          "schema_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Schema Digest",
+            "type": "string"
+          },
+          "section": {
+            "anyOf": [
+              {
+                "enum": [
+                  "overview",
+                  "allocation",
+                  "targets",
+                  "drift",
+                  "contribution_plan",
+                  "performance",
+                  "benchmark",
+                  "income",
+                  "cash_flows",
+                  "attribution",
+                  "xray",
+                  "quality",
+                  "activity",
+                  "risk",
+                  "scenario",
+                  "projection",
+                  "goal",
+                  "research"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Section"
+          },
+          "state": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable",
+              "failed"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "table": {
+            "enum": [
+              "alert_events",
+              "alert_evaluations",
+              "alert_observations",
+              "alert_rule_versions",
+              "alert_predicates",
+              "alert_rule_destinations",
+              "alert_acknowledgments",
+              "alert_notifications",
+              "alert_transitions",
+              "alert_source_references",
+              "alert_canonical_bindings",
+              "alert_context_details",
+              "alert_context_members",
+              "alert_fx_conversions",
+              "alert_fx_legs",
+              "benchmark_composite",
+              "benchmark_components",
+              "benchmark_component_members",
+              "benchmark_observations",
+              "historical_options",
+              "historical_warning_coverage",
+              "xray_direct_positions",
+              "xray_fund_entities",
+              "xray_path_weights",
+              "xray_members",
+              "xray_policy",
+              "xray_policy_components",
+              "xray_policy_limits",
+              "xray_taxonomies",
+              "xray_threshold_policy",
+              "plan_input_header",
+              "plan_valuation",
+              "plan_valuation_positions",
+              "plan_valuation_cash",
+              "plan_fx",
+              "plan_options",
+              "plan_input_members",
+              "plan_listing_preferences",
+              "plan_holding_constraints",
+              "plan_allocation_constraints",
+              "plan_node_identities",
+              "plan_catalog_instruments",
+              "plan_catalog_listings",
+              "plan_source_details",
+              "plan_effective_constraints",
+              "snapshot_totals",
+              "positions",
+              "allocation_buckets",
+              "target_nodes",
+              "target_holdings",
+              "target_constraints",
+              "drift_rows",
+              "drift_totals",
+              "plan_summary",
+              "plan_lines",
+              "plan_objectives",
+              "plan_relations",
+              "performance_summary",
+              "performance_points",
+              "performance_periods",
+              "benchmark_summary",
+              "benchmark_points",
+              "benchmark_periods",
+              "income_summary",
+              "income_components",
+              "income_totals",
+              "income_periods",
+              "income_reporting_periods",
+              "cash_flow_summary",
+              "cash_flow_totals",
+              "cash_flow_periods",
+              "cash_flow_events",
+              "attribution_summary",
+              "attribution_components",
+              "attribution_effects",
+              "planning_company_actuals_v1",
+              "planning_company_basis_v1",
+              "xray_summary",
+              "xray_quality",
+              "xray_dimensions",
+              "xray_exposures",
+              "xray_paths",
+              "xray_held_funds",
+              "xray_overlap_pairs",
+              "xray_overlap_entities",
+              "xray_concentrations",
+              "xray_concentration_members",
+              "xray_thresholds",
+              "xray_residuals",
+              "xray_path_relations",
+              "reconciliation",
+              "reconciliation_issues",
+              "coverage",
+              "notes",
+              "activity",
+              "historical_use_consumers",
+              "historical_observation_uses",
+              "historical_evidence_uses",
+              "historical_missing_uses",
+              "historical_use_candidates",
+              "historical_conversion_uses",
+              "historical_conversion_legs",
+              "historical_event_memberships",
+              "xray_selections",
+              "xray_selection_evidence",
+              "xray_source_uses",
+              "xray_fund_edges",
+              "xray_path_classifications",
+              "xray_classification_decisions",
+              "xray_classification_memberships",
+              "dividends",
+              "contexts",
+              "source_references",
+              "source_memberships",
+              "note_memberships",
+              "license_references",
+              "coverage_facts",
+              "bound_facts",
+              "bindings",
+              "reconciliation_bindings",
+              "historical_source_details",
+              "historical_source_parents",
+              "historical_event_identities",
+              "xray_valuation_roots",
+              "xray_broker_fx",
+              "xray_licensed_fx",
+              "xray_fx_legs",
+              "xray_dependency_identities",
+              "target_exclusions",
+              "historical_anchor_reconciliation",
+              "historical_reconciliation_lines",
+              "historical_reconciliation_anchors",
+              "xray_reconciliation",
+              "xray_warning_paths",
+              "risk_basis_v1",
+              "risk_definition_v1",
+              "risk_observed_v1",
+              "risk_rolling_v1",
+              "risk_matrix_summary_v1",
+              "risk_matrix_axes_v1",
+              "risk_matrix_cells_v1",
+              "risk_tails_v1",
+              "risk_modeled_v1",
+              "risk_components_v1",
+              "risk_concentration_v1",
+              "risk_run_assets_v1",
+              "risk_series_v1",
+              "risk_intervals_v1",
+              "risk_history_context_v1",
+              "risk_history_members_v1",
+              "risk_xray_paths_v1",
+              "scenario_basis_v1",
+              "scenario_definition_v1",
+              "scenario_shocks_v1",
+              "scenario_exclusions_v1",
+              "scenario_summary_v1",
+              "scenario_components_v1",
+              "scenario_channels_v1",
+              "scenario_applied_sensitivities_v1",
+              "scenario_diagnostics_v1",
+              "scenario_replay_changes_v1",
+              "scenario_subjects_v1",
+              "scenario_classifications_v1",
+              "scenario_currencies_v1",
+              "scenario_members_v1",
+              "scenario_sensitivity_versions_v1",
+              "scenario_drivers_v1",
+              "scenario_sensitivity_observations_v1",
+              "scenario_sensitivity_memberships_v1",
+              "scenario_sensitivity_evidence_v1",
+              "scenario_source_licenses_v1",
+              "scenario_replay_basis_v1",
+              "scenario_replay_bindings_v1",
+              "scenario_replay_methods_v1",
+              "scenario_replay_coverage_v1",
+              "scenario_replay_warnings_v1",
+              "scenario_xray_paths_v1",
+              "scenario_source_headers_v1"
+            ],
+            "title": "Table",
+            "type": "string"
+          }
+        },
+        "required": [
+          "table",
+          "schema_digest",
+          "row_count",
+          "content_digest",
+          "section",
+          "dataset",
+          "state",
+          "reason_key"
+        ],
+        "title": "PremiumReportTableDescriptorV3",
+        "type": "object"
+      },
+      "PremiumReportXrayRunBindingV3": {
+        "additionalProperties": false,
+        "properties": {
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "input_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Input Id",
+            "type": "string"
+          },
+          "result_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Result Digest",
+            "type": "string"
+          },
+          "run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "input_id",
+          "input_digest",
+          "result_digest"
+        ],
+        "title": "PremiumReportXrayRunBindingV3",
         "type": "object"
       },
       "PriceObservation": {
@@ -41791,6 +44290,20 @@
         "operationId": "generate_premium_portfolio_report",
         "parameters": [
           {
+            "in": "query",
+            "name": "profile",
+            "required": false,
+            "schema": {
+              "default": "report_sections_v2",
+              "enum": [
+                "report_sections_v2",
+                "report_sections_v3"
+              ],
+              "title": "Profile",
+              "type": "string"
+            }
+          },
+          {
             "description": "Required with a session cookie and configured trusted Origin.",
             "in": "header",
             "name": "X-CSRF-Token",
@@ -41816,7 +44329,15 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GeneratePremiumReportRequest"
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/GeneratePremiumReportRequest"
+                  },
+                  {
+                    "$ref": "#/components/schemas/GeneratePremiumReportRequestV3"
+                  }
+                ],
+                "title": "Body"
               }
             }
           },
@@ -41827,7 +44348,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PremiumReportJobStatus"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/PremiumReportJobStatus"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PremiumReportJobStatusV3"
+                    }
+                  ],
+                  "title": "Response Generate Premium Portfolio Report"
                 }
               }
             },
@@ -41885,6 +44414,20 @@
             }
           },
           {
+            "in": "query",
+            "name": "profile",
+            "required": false,
+            "schema": {
+              "default": "report_sections_v2",
+              "enum": [
+                "report_sections_v2",
+                "report_sections_v3"
+              ],
+              "title": "Profile",
+              "type": "string"
+            }
+          },
+          {
             "in": "header",
             "name": "If-None-Match",
             "required": false,
@@ -41899,7 +44442,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PremiumReportJobStatus"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/PremiumReportJobStatus"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PremiumReportJobStatusV3"
+                    }
+                  ],
+                  "title": "Response Get Premium Report Status"
                 }
               }
             },
@@ -42078,6 +44629,20 @@
             }
           },
           {
+            "in": "query",
+            "name": "profile",
+            "required": false,
+            "schema": {
+              "default": "report_sections_v2",
+              "enum": [
+                "report_sections_v2",
+                "report_sections_v3"
+              ],
+              "title": "Profile",
+              "type": "string"
+            }
+          },
+          {
             "in": "header",
             "name": "If-None-Match",
             "required": false,
@@ -42092,7 +44657,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PremiumReportPage"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/PremiumReportPage"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PremiumReportPageV3"
+                    }
+                  ],
+                  "title": "Response List Premium Reports"
                 }
               }
             },
@@ -42150,6 +44723,20 @@
             }
           },
           {
+            "in": "query",
+            "name": "profile",
+            "required": false,
+            "schema": {
+              "default": "report_sections_v2",
+              "enum": [
+                "report_sections_v2",
+                "report_sections_v3"
+              ],
+              "title": "Profile",
+              "type": "string"
+            }
+          },
+          {
             "in": "header",
             "name": "If-None-Match",
             "required": false,
@@ -42164,7 +44751,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PremiumReportManifest"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/PremiumReportManifest"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PremiumReportManifestV3"
+                    }
+                  ],
+                  "title": "Response Get Premium Report Manifest"
                 }
               }
             },
@@ -42229,6 +44824,20 @@
               "format": "uuid",
               "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
               "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "profile",
+            "required": false,
+            "schema": {
+              "default": "report_sections_v2",
+              "enum": [
+                "report_sections_v2",
+                "report_sections_v3"
+              ],
+              "title": "Profile",
               "type": "string"
             }
           },
@@ -42334,6 +44943,20 @@
               "format": "uuid",
               "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
               "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "profile",
+            "required": false,
+            "schema": {
+              "default": "report_sections_v2",
+              "enum": [
+                "report_sections_v2",
+                "report_sections_v3"
+              ],
+              "title": "Profile",
               "type": "string"
             }
           },

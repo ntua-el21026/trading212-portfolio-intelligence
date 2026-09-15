@@ -29,12 +29,15 @@ worker, artifact pipeline and retention controls. Their local component gates pa
 3,371 Python tests, 614 web tests, three real browser viewports and 145
 PostgreSQL cases across the broad run and corrected-fixture rerun. Package-wide verification remains pending.
 P3-02 now includes immutable scenario versions, retained source-bound runs, a fenced
-worker, authenticated REST/web/MCP results and saved comparisons. Migration 0020
-has 254 normalized tables. The current API has 109 paths/123 operations and MCP has
-32 tools/seven resources; the original contracts and ten broker GETs remain preserved.
-The scenario component passed 3,903 Python tests, 662 web tests, schema/retention
-PostgreSQL checks and actual API/worker browser journeys at three widths. Scenario
-reports remain in progress. P3-03 currently has the reproducible Decimal numerical
+worker, authenticated REST/web/MCP results, saved comparisons and four-format reports.
+Migration 0021 extends report lineage while retaining 254 normalized tables. The API
+has 109 paths/123 operations/441 schemas and MCP has 32 tools/seven resources;
+the original contracts and ten broker GETs remain preserved. Explicit report profile3
+copies complete saved scenario/risk evidence while default profile2 and V1 remain
+compatible. The current report component passed 4,329 Python tests, 707 web tests,
+15 final schema/retention PostgreSQL cases and three actual production browser
+journeys. Ten distinct additional artifact/source cases have passing executions
+across retained gates. P3-03 currently has the reproducible Decimal numerical
 kernel and calendar/goal capture; its persistence, worker and interfaces remain pending.
 These are component observations, with exact source boundaries in the implementation
 report. P3-05 includes the risk and scenario MCP slices.

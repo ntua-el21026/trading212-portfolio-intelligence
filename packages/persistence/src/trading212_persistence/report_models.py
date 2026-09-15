@@ -113,7 +113,7 @@ class ReportInputSnapshotModel(ReportOwned):
         UniqueConstraint("owner_id", "account_id", "id", name="uq_report_inputs_account_id"),
         CheckConstraint("kind IN ('report','export')", name="kind_allowed"),
         CheckConstraint(
-            "contract_version IN (1,2) AND (kind='report' OR contract_version=1)",
+            "contract_version IN (1,2,3) AND (kind='report' OR contract_version=1)",
             name="contract_version_allowed",
         ),
         UniqueConstraint(
@@ -308,7 +308,24 @@ class ReportInputPremiumDependencyModel(ReportOwned):
             ondelete="RESTRICT",
             name="fk_report_premium_run",
         ),
-        CheckConstraint("kind='risk'", name="kind_allowed"),
+        ForeignKeyConstraint(
+            ["snapshot_id"],
+            ["portfolio_snapshots.id"],
+            name="fk_report_premium_snapshot",
+            ondelete="RESTRICT",
+        ),
+        CheckConstraint("kind IN ('risk','scenario')", name="kind_allowed"),
+        CheckConstraint(
+            "num_nonnulls(result_id,definition_version_id,definition_digest,snapshot_id,"
+            "snapshot_digest,reporting_currency,source_cutoff_at,valuation_at) IN (0,8)",
+            name="premium_basis_complete",
+        ),
+        CheckConstraint(
+            "(definition_digest IS NULL OR definition_digest ~ '^[0-9a-f]{64}$') AND "
+            "(snapshot_digest IS NULL OR snapshot_digest ~ '^[0-9a-f]{64}$') AND "
+            "(reporting_currency IS NULL OR reporting_currency ~ '^[A-Z]{3}$')",
+            name="premium_basis_format",
+        ),
         CheckConstraint(
             "input_digest ~ '^[0-9a-f]{64}$' AND result_digest ~ '^[0-9a-f]{64}$'",
             name="digest_format",
@@ -321,6 +338,14 @@ class ReportInputPremiumDependencyModel(ReportOwned):
     kind: Mapped[str] = mapped_column(String(20))
     input_digest: Mapped[str] = mapped_column(String(64))
     result_digest: Mapped[str] = mapped_column(String(64))
+    result_id: Mapped[UUID | None] = mapped_column()
+    definition_version_id: Mapped[UUID | None] = mapped_column()
+    definition_digest: Mapped[str | None] = mapped_column(String(64))
+    snapshot_id: Mapped[UUID | None] = mapped_column()
+    snapshot_digest: Mapped[str | None] = mapped_column(String(64))
+    reporting_currency: Mapped[str | None] = mapped_column(String(3))
+    source_cutoff_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    valuation_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
     expires_at: Mapped[datetime] = mapped_column(UTCDateTime())
 
 
@@ -428,7 +453,7 @@ class ReportJobModel(ReportJobBase):
     __tablename__ = "report_jobs"
     __table_args__ = (
         *_job_constraints("report_jobs"),
-        CheckConstraint("contract_version IN (1,2)", name="contract_version_allowed"),
+        CheckConstraint("contract_version IN (1,2,3)", name="contract_version_allowed"),
         ForeignKeyConstraint(
             ["owner_id", "account_id", "input_id", "contract_version"],
             [

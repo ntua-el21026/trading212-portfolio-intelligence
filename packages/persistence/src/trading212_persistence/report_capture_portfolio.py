@@ -13,6 +13,7 @@ from trading212_application.views import ViewQuality
 from trading212_domain import reports as r
 from trading212_domain.enums import QualityState
 from trading212_domain.report_schema import report_tables
+from trading212_domain.report_v3 import ReportSelectionContract, ReportSelectionV3
 from trading212_domain.values import CurrencyCode
 
 from .models import (
@@ -42,7 +43,7 @@ from .report_capture_common import capture_note, capture_row, capture_stored_war
 def selected_snapshot(
     session: Session,
     authorization: ReportAuthorization,
-    selection: r.ReportSelection | r.ExportSelection,
+    selection: ReportSelectionContract,
     *,
     now: datetime,
 ) -> PortfolioSnapshotModel:
@@ -57,7 +58,10 @@ def selected_snapshot(
     if snapshot is None:
         raise report_error(app.ReportServiceErrorCode.NOT_FOUND)
     if (
-        snapshot.reporting_currency != selection.reporting_currency.value
+        (
+            not isinstance(selection, ReportSelectionV3)
+            and snapshot.reporting_currency != selection.reporting_currency.value
+        )
         or snapshot.valuation_at > selection.source_cutoff_at
         or selection.source_cutoff_at > now
     ):
@@ -98,6 +102,24 @@ def capture_portfolio(
         note_set_key="notes.snapshot",
     )
     builder.add_context(context)
+    if (
+        isinstance(builder.selection, ReportSelectionV3)
+        and snapshot.reporting_currency != builder.selection.reporting_currency.value
+    ):
+        capture_note(
+            builder,
+            context,
+            key="snapshot.original_currency",
+            code="snapshot_original_currency",
+            kind=r.ReportNoteKind.WARNING,
+            text=(
+                f"Snapshot totals retain their original {snapshot.reporting_currency} currency. "
+                "The selected premium analysis reports in "
+                f"{builder.selection.reporting_currency.value}. "
+                "Each source money cell retains its stated currency; "
+                "the report does not convert values."
+            ),
+        )
     if not (
         builder.selection.start_date <= snapshot.valuation_at.date() <= builder.selection.end_date
     ):
@@ -126,6 +148,12 @@ def capture_portfolio(
             calculation.output_fingerprint,
         )
     )
+    if isinstance(builder.selection, ReportSelectionV3):
+        # Profile three uses the original X-ray/scenario snapshot identity.
+        # Legacy report view hashes remain unchanged for profiles one and two.
+        from .source_store import digest as xray_snapshot_digest
+
+        fingerprint = xray_snapshot_digest((str(snapshot.id), calculation.output_fingerprint))
     builder.add_binding(
         r.ReportBinding(
             family=r.ReportFamily.SNAPSHOT,

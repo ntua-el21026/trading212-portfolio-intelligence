@@ -425,7 +425,7 @@ def expire_report_payloads(
             .where(
                 or_(
                     ReportInputSnapshotModel.expires_at <= at,
-                    (ReportInputSnapshotModel.contract_version == 2)
+                    (ReportInputSnapshotModel.contract_version.in_((2, 3)))
                     & or_(
                         func.report_premium_restricted(
                             ReportInputSnapshotModel.owner_id, ReportInputSnapshotModel.id, at

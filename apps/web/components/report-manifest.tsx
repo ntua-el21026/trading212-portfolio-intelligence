@@ -5,6 +5,9 @@ import type {
   ReportManifest,
   PremiumReportManifest,
   PremiumReportJobStatus,
+  PremiumReportJobStatusV3,
+  PremiumReportManifestV3,
+  PremiumReportProfile,
 } from "@trading212/api-contracts";
 import { Surface } from "@trading212/ui";
 import { formatDateTime, titleCase } from "../lib/format";
@@ -13,9 +16,15 @@ import { ReportDownloadButton } from "./report-download";
 export function ReportArtifacts({
   job,
   premium = false,
+  profile,
 }: Readonly<{
-  job: ReportJobStatus | ExportJobStatus | PremiumReportJobStatus;
+  job:
+    | ReportJobStatus
+    | ExportJobStatus
+    | PremiumReportJobStatus
+    | PremiumReportJobStatusV3;
   premium?: boolean;
+  profile?: PremiumReportProfile;
 }>) {
   if (job.state !== "succeeded") return null;
   const family = premium
@@ -37,6 +46,8 @@ export function ReportArtifacts({
             </p>
             <p className="mono">SHA-256 {artifact.content_digest}</p>
             <ReportDownloadButton
+              key={`${family}:${profile ?? "report_sections_v2"}:${job.account_id}:${parentId}:${artifact.artifact_id}`}
+              profile={profile}
               accountId={job.account_id}
               parentId={parentId}
               family={family}
@@ -51,7 +62,9 @@ export function ReportArtifacts({
 
 export function ReportManifestCard({
   manifest,
-}: Readonly<{ manifest: ReportManifest | PremiumReportManifest }>) {
+}: Readonly<{
+  manifest: ReportManifest | PremiumReportManifest | PremiumReportManifestV3;
+}>) {
   return (
     <Surface className={styles.surface} aria-label="Report manifest">
       <h2>Manifest and provenance</h2>
@@ -70,6 +83,42 @@ export function ReportManifestCard({
         {manifest.renderer_profile.accessibility_profile_version}; PDF/UA
         compliance is not claimed.
       </p>
+      {"premium_binding" in manifest.document ? (
+        <details>
+          <summary>
+            Selected saved {manifest.document.premium_binding.family} result
+          </summary>
+          <dl className={styles.definition}>
+            <dt>Run</dt>
+            <dd className="mono">{manifest.document.premium_binding.run_id}</dd>
+            <dt>Result</dt>
+            <dd className="mono">
+              {manifest.document.premium_binding.result_id}
+            </dd>
+            <dt>Saved input digest</dt>
+            <dd className="mono">
+              {manifest.document.premium_binding.input_digest}
+            </dd>
+            <dt>Saved result digest</dt>
+            <dd className="mono">
+              {manifest.document.premium_binding.result_digest}
+            </dd>
+            <dt>Saved result expiry</dt>
+            <dd>
+              {formatDateTime(manifest.document.premium_binding.expires_at)}
+            </dd>
+            <dt>X-ray run</dt>
+            <dd className="mono">
+              {manifest.document.premium_binding.xray?.run_id ?? "Not selected"}
+            </dd>
+            <dt>Historical input</dt>
+            <dd className="mono">
+              {manifest.document.premium_binding.historical
+                ?.input_snapshot_id ?? "Not selected"}
+            </dd>
+          </dl>
+        </details>
+      ) : null}
       <details>
         <summary>Complete section and dataset coverage</summary>
         <ul>

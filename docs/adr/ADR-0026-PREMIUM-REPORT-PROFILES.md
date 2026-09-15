@@ -58,6 +58,20 @@ compatible-basis checks. The separately frozen two-run scenario comparison is no
 permission to mix incompatible currencies or snapshots in a report with one declared
 monetary basis.
 
+For profile3, `reporting_currency` identifies the selected premium analysis currency.
+Ordinary snapshot totals and source money cells retain their original explicit currencies.
+A saved analysis converted through its retained licensed FX may therefore report in a
+currency different from the original snapshot. Such a document includes a snapshot
+warning naming both currencies. Capture does not convert or relabel source values.
+This does not permit combining different premium run bases. Profile1/2 currency
+validation remains unchanged.
+
+The profile3 snapshot binding uses the existing canonical X-ray/scenario identity:
+`source_store.digest((str(snapshot.id), calculation.output_fingerprint))`. The exact
+snapshot ID and calculation fingerprint therefore match the selected run's retained
+proof. Profile1/2 retain their original report-view snapshot digest without rewriting
+any selection, context or artifact bytes.
+
 Keep actual table key enums closed. Each newly implemented family's reviewed fixed
 schemas add explicit enum members and typed binding variants as needed. Table keys
 carry their semantic version and descriptors retain their schema digest. No arbitrary,

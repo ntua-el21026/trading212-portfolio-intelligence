@@ -17,10 +17,9 @@ from trading212_application.queries import (
     CursorValidationError,
 )
 from trading212_application.views import Page
-from trading212_domain.report_manifest import decode_report_manifest, encode_report_selection
+from trading212_domain.report_manifest import encode_report_selection
+from trading212_domain.report_v3 import ReportManifestContract, is_report_selection
 from trading212_domain.reports import (
-    ReportManifest,
-    ReportSelection,
     ReportSourceUse,
     report_schema_version,
 )
@@ -79,7 +78,7 @@ class PostgresReportService(ReportStore):
         max_active_collection_members_per_owner: int = 250_000,
     ) -> None:
         super().__init__(sessions, clock=clock)
-        if type(contract_version) is not int or contract_version not in (1, 2):
+        if type(contract_version) is not int or contract_version not in (1, 2, 3):
             raise ValueError("Report contract version is unsupported.")
         self._contract_version = contract_version
         self._cursor_key = cursor_signing_key
@@ -131,7 +130,7 @@ class PostgresReportService(ReportStore):
         task = "reports.generate.v1" if use is ReportSourceUse.REPORT else "exports.generate.v1"
         command_name = (
             "reports.generate.v2"
-            if use is ReportSourceUse.REPORT and self._contract_version == 2
+            if use is ReportSourceUse.REPORT and self._contract_version in (2, 3)
             else task
         )
         digest = _command_digest(command)
@@ -145,7 +144,9 @@ class PostgresReportService(ReportStore):
                     required_scopes=selection_scopes(selection),
                     now=self._now(),
                 )
-                selected_version = 2 if report_schema_version(selection) == "2.0.0" else 1
+                selected_version = {"1.0.0": 1, "2.0.0": 2, "3.0.0": 3}[
+                    report_schema_version(selection)
+                ]
                 if selected_version != self._contract_version:
                     raise report_error(app.ReportServiceErrorCode.VALIDATION_FAILED)
                 report_owner_lock(session, authorization.owner_id)
@@ -186,7 +187,7 @@ class PostgresReportService(ReportStore):
                 capture = self._capture_port(session, authorization, use)
                 summary = (
                     capture.capture_report(selection, sink=sink)
-                    if isinstance(selection, ReportSelection)
+                    if is_report_selection(selection)
                     else capture.capture_export(selection, sink=sink)
                 )
                 authorization.check(session, now=self._now())
@@ -216,7 +217,7 @@ class PostgresReportService(ReportStore):
                     manifest_digest=None,
                 )
                 outbox_model: type[ReportDispatchOutboxModel] | type[ExportDispatchOutboxModel]
-                if isinstance(selection, ReportSelection):
+                if is_report_selection(selection):
                     definition_digest = hashlib.sha256(
                         encode_report_selection(selection)
                     ).hexdigest()
@@ -380,10 +381,10 @@ class PostgresReportService(ReportStore):
 
     async def get_report_manifest(
         self, principal: Principal, account_id: UUID, report_id: UUID
-    ) -> ReportManifest:
+    ) -> ReportManifestContract:
         def read(
             session: Session, authorization: ReportAuthorization, job: StoredJob
-        ) -> ReportManifest:
+        ) -> ReportManifestContract:
             self._sources(session, authorization, job)
             if job.state != "succeeded":
                 raise report_error(app.ReportServiceErrorCode.INVALID_STATE_TRANSITION)
@@ -395,7 +396,7 @@ class PostgresReportService(ReportStore):
             )
             if payload is None or hashlib.sha256(payload).hexdigest() != job.manifest_digest:
                 raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
-            result = decode_report_manifest(payload)
+            result = self._decode_manifest(job, payload)
             self._manifest_contract(job, result)
             self._sources(session, authorization, job)
             return result
@@ -447,14 +448,16 @@ class PostgresReportService(ReportStore):
                     if isinstance(query, app.ExportListQuery) and query.dataset
                     else None,
                 )
-                if is_report and self._contract_version == 2:
-                    fingerprint = collection_filter_fingerprint("premium_reports_v2", fingerprint)
+                if is_report and self._contract_version in (2, 3):
+                    fingerprint = collection_filter_fingerprint(
+                        f"premium_reports_v{self._contract_version}", fingerprint
+                    )
                 if not is_report and self._contract_version != 1:
                     raise report_error(app.ReportServiceErrorCode.NOT_FOUND)
                 definition = CollectionSnapshotDefinition(
                     resource=(
                         CollectionSnapshotResource.PREMIUM_REPORTS
-                        if self._contract_version == 2
+                        if self._contract_version in (2, 3)
                         else CollectionSnapshotResource.REPORTS
                     )
                     if is_report

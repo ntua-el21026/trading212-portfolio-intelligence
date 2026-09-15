@@ -1,12 +1,23 @@
 import "server-only";
 
-import { ReportApiError, TargetApiError } from "@trading212/api-contracts";
+import {
+  ReportApiError,
+  TargetApiError,
+  type PremiumReportJobStatus,
+  type PremiumReportJobStatusV3,
+} from "@trading212/api-contracts";
 import { z } from "zod";
 import { reportClients, reportData } from "./report-adapter";
 
 const uuid = z.string().uuid();
 
-async function accountFromForm(request: Request): Promise<string> {
+async function selectionFromForm(
+  request: Request,
+  premium: boolean,
+): Promise<{
+  account: string;
+  profile?: "report_sections_v2" | "report_sections_v3";
+}> {
   if (
     request.headers.get("content-type")?.split(";")[0].trim() !==
     "application/x-www-form-urlencoded"
@@ -52,13 +63,29 @@ async function accountFromForm(request: Request): Promise<string> {
   const form = new URLSearchParams(
     new TextDecoder("utf-8", { fatal: true }).decode(bytes),
   );
-  if ([...form.keys()].length !== 1 || form.getAll("account_id").length !== 1)
+  if (
+    new URL(request.url).searchParams.size !== 0 ||
+    form.getAll("account_id").length !== 1 ||
+    form.getAll("profile").length > 1 ||
+    [...form.keys()].some(
+      (key) => key !== "account_id" && !(premium && key === "profile"),
+    )
+  )
     throw new ReportApiError(
       "VALIDATION_FAILED",
       422,
       "The download request is invalid.",
     );
-  return uuid.parse(form.get("account_id"));
+  return {
+    account: uuid.parse(form.get("account_id")),
+    ...(form.has("profile")
+      ? {
+          profile: z
+            .enum(["report_sections_v2", "report_sections_v3"])
+            .parse(form.get("profile")),
+        }
+      : {}),
+  };
 }
 
 export async function serveReportArtifact(
@@ -68,20 +95,40 @@ export async function serveReportArtifact(
   artifactId: string,
 ): Promise<Response> {
   // Authenticate and verify same-origin command access before parsing caller input.
-  const { reports, premiumReports } = await reportClients(true);
+  const { reports, premiumReports, premiumReportsV3 } =
+    await reportClients(true);
   try {
     const parent = uuid.parse(parentId),
       artifact = uuid.parse(artifactId);
-    const account = await accountFromForm(request);
+    const selection = await selectionFromForm(
+      request,
+      family === "premium-reports",
+    );
+    const account = selection.account;
+    const premium =
+      selection.profile === "report_sections_v3"
+        ? premiumReportsV3
+        : premiumReports;
     const query = { account_id: account };
     const job =
       family === "premium-reports"
-        ? reportData(
-            await premiumReports.get_premium_report_status(parent, query),
+        ? reportData<PremiumReportJobStatus | PremiumReportJobStatusV3>(
+            await premium.get_premium_report_status(parent, query),
           )
         : family === "reports"
           ? reportData(await reports.get_report_status(parent, query))
           : reportData(await reports.get_export_status(parent, query));
+    if (
+      selection.profile === "report_sections_v3" &&
+      (job.account_id !== account ||
+        !("profile_version" in job) ||
+        job.profile_version !== selection.profile)
+    )
+      throw new ReportApiError(
+        "INVALID_RESPONSE",
+        502,
+        "The private report could not be verified.",
+      );
     if (job.state === "expired")
       throw new ReportApiError(
         "ARTIFACT_EXPIRED",
@@ -99,7 +146,7 @@ export async function serveReportArtifact(
       );
     const grant = reportData(
       family === "premium-reports"
-        ? await premiumReports.create_premium_report_download_grant(
+        ? await premium.create_premium_report_download_grant(
             parent,
             artifact,
             query,
@@ -127,7 +174,7 @@ export async function serveReportArtifact(
       );
     const result =
       family === "premium-reports"
-        ? await premiumReports.download_premium_report_artifact(
+        ? await premium.download_premium_report_artifact(
             parent,
             artifact,
             query,

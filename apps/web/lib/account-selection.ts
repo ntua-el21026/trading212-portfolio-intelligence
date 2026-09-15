@@ -65,6 +65,16 @@ export function accountSwitchHref(
     ? `/${section}`
     : pathname;
   const next = new URLSearchParams({ account: accountId });
+  if (
+    destination === "/reports/premium" &&
+    query.getAll("profile").length === 1 &&
+    query.getAll("profile")[0] === "report_sections_v3"
+  ) {
+    next.set("profile", "report_sections_v3");
+    const families = query.getAll("family");
+    if (families.length === 1 && ["risk", "scenario"].includes(families[0]))
+      next.set("family", families[0]);
+  }
   const dateKeys = ["/performance", "/income", "/risk"].includes(destination)
     ? ["start", "end"]
     : ["start_date", "end_date"];

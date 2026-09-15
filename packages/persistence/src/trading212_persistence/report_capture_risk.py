@@ -18,6 +18,7 @@ from trading212_domain.enums import QualityState
 from trading212_domain.errors import fail_validation
 from trading212_domain.historical_serialization import historical_input_digest
 from trading212_domain.report_schema import table_schema
+from trading212_domain.report_v3 import is_report_selection, selected_risk_run_id
 from trading212_domain.risk import (
     RISK_METHOD,
     RiskDefinitionContent,
@@ -272,8 +273,9 @@ def _check_selection(
     selection, history = builder.selection, value.history
     actual = history.canonical_performance_context
     window = actual.window
-    if not isinstance(selection, r.ReportSelection) or (
-        r.ReportSection.RISK not in selection.sections or selection.risk_run_id != metadata.run_id
+    if not is_report_selection(selection) or (
+        r.ReportSection.RISK not in selection.sections
+        or selected_risk_run_id(selection) != metadata.run_id
     ):
         fail_validation("An explicit risk report selection is required.", field="risk_run_id")
     if (

@@ -3,9 +3,15 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from typing import TYPE_CHECKING
 
 from .errors import fail_validation
 from .report_risk_schema import RISK_PROOF_TABLES, RISK_REPORT_TABLES, RISK_TABLE_COLUMNS
+from .report_scenario_schema import (
+    SCENARIO_PROOF_TABLES,
+    SCENARIO_REPORT_TABLES,
+    SCENARIO_TABLE_COLUMNS,
+)
 from .reports import (
     CellKind,
     CellState,
@@ -20,6 +26,9 @@ from .reports import (
     ReportTableKey,
     ReportTableSchema,
 )
+
+if TYPE_CHECKING:
+    from .report_v3 import ReportSelectionV3
 
 # Each tuple is a literal ordered schema. Codes are decoded only from this module.
 _COLUMNS: dict[ReportTableKey, tuple[tuple[str, str], ...]] = {
@@ -1365,6 +1374,7 @@ _COLUMNS: dict[ReportTableKey, tuple[tuple[str, str], ...]] = {
 
 # Premium schemas are registered without adding them to legacy section selections.
 _COLUMNS.update(RISK_TABLE_COLUMNS)
+_COLUMNS.update(SCENARIO_TABLE_COLUMNS)
 
 _SECTION_TABLES: dict[ReportSection, tuple[ReportTableKey, ...]] = {
     ReportSection.OVERVIEW: (ReportTableKey.SNAPSHOT_TOTALS,),
@@ -1438,6 +1448,7 @@ _SECTION_TABLES: dict[ReportSection, tuple[ReportTableKey, ...]] = {
     ),
     ReportSection.ACTIVITY: (ReportTableKey.ACTIVITY,),
     ReportSection.RISK: RISK_REPORT_TABLES,
+    ReportSection.SCENARIO: SCENARIO_REPORT_TABLES,
 }
 
 
@@ -1494,11 +1505,16 @@ def validate_report_row(table: ReportTableKey, row: ReportRow) -> None:
             fail_validation("Report cell type differs from its fixed column.", field="cells")
         if cell.state is CellState.NOT_APPLICABLE and not column.optional:
             fail_validation("Required report column cannot be inapplicable.", field="cells")
+    from .report_scenario_schema import validate_scenario_report_relation
+
+    validate_scenario_report_relation(table, row)
 
 
 def section_tables(section: ReportSection) -> tuple[ReportTableKey, ...]:
     if type(section) is not ReportSection:
         fail_validation("Report section is invalid.", field="section")
+    if section not in _SECTION_TABLES:
+        fail_validation("Report section is not implemented.", field="section")
     return _SECTION_TABLES[section]
 
 
@@ -1562,7 +1578,11 @@ COMPANY_REPORT_TABLES = frozenset(
 )
 
 
-def report_tables(selection: ReportSelection | ExportSelection) -> tuple[ReportTableKey, ...]:
+def report_tables(
+    selection: ReportSelection | ExportSelection | ReportSelectionV3,
+) -> tuple[ReportTableKey, ...]:
+    from .report_v3 import ReportSelectionV3
+
     selected = (
         set(dataset_tables(selection.dataset, selection.field_set))
         if isinstance(selection, ExportSelection)
@@ -1570,6 +1590,12 @@ def report_tables(selection: ReportSelection | ExportSelection) -> tuple[ReportT
     )
     if isinstance(selection, ReportSelection) and selection.risk_run_id is not None:
         selected.update(RISK_PROOF_TABLES)
+    if isinstance(selection, ReportSelectionV3):
+        selected.update(
+            RISK_PROOF_TABLES
+            if selection.premium_run.family.value == "risk"
+            else SCENARIO_PROOF_TABLES
+        )
     if selection.xray_run_id is not None:
         # Additive, explicitly pinned actuals. Existing table schemas/order and
         # absent-pin selections are unchanged, including plan postweights.

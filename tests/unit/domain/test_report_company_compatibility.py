@@ -121,6 +121,7 @@ def test_request_idempotency_framing_remains_exact_without_pin_and_binds_present
     command = GenerateReportCommand(
         selection=drift_selection(), idempotency_key="same-request", ttl_days=7
     )
+    assert isinstance(command.selection, r.ReportSelection)
     legacy = legacy_bytes(command.selection)
     expected = hashlib.sha256(
         b"report_request_v1\0GenerateReportCommand\0"

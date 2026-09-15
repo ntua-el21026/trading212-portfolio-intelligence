@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, FastAPI, Query, Request, Response
 from fastapi.routing import APIRoute
 from pydantic import TypeAdapter, ValidationError
 from trading212_api_contracts import premium_reports as wire
+from trading212_api_contracts import premium_reports_v3 as profiles
 from trading212_api_contracts.reports import ArtifactToken
 from trading212_api_contracts.targets import IdempotencyKey, UUIDString
 from trading212_application import reports as application_reports
@@ -32,6 +33,8 @@ _GRANT = TypeAdapter(ArtifactToken)
 class PremiumReportApiContext(Protocol):
     @property
     def premium_report_service(self) -> application_reports.ReportService | None: ...
+    @property
+    def premium_report_v3_service(self) -> application_reports.ReportService | None: ...
     @property
     def settings(self) -> SecuritySettings: ...
     @property
@@ -57,9 +60,19 @@ def register_premium_report_routes(
                 for scope in (
                     Scope.PORTFOLIO_READ,
                     Scope.REPORTS_WRITE if create else Scope.REPORTS_READ,
-                    *((Scope.ANALYTICS_READ, Scope.ACTIVITY_READ) if create else ()),
+                    *((Scope.ANALYTICS_READ,) if create else ()),
                 ):
                     Authorizer().require_scope(principal, scope, now=context.clock())
+                try:
+                    profile = profiles.premium_report_profile_from_query(
+                        request.query_params.multi_items()
+                    )
+                except ValueError:
+                    return _error(
+                        request, 422, "VALIDATION_FAILED", "The report profile is invalid."
+                    )
+                if create and profile == "report_sections_v2":
+                    Authorizer().require_scope(principal, Scope.ACTIVITY_READ, now=context.clock())
                 for name in (
                     "x-idempotency-key",
                     "x-artifact-grant",
@@ -113,8 +126,15 @@ def register_premium_report_routes(
         prefix="/api/v2", tags=["premium-reports"], route_class=AuthorizedPremiumReportRoute
     )
 
-    def service(request: Request) -> application_reports.ReportService:
-        reports = context_provider(request).premium_report_service
+    def service(
+        request: Request, profile: profiles.PremiumReportProfile
+    ) -> application_reports.ReportService:
+        context = context_provider(request)
+        reports = (
+            context.premium_report_v3_service
+            if profile == "report_sections_v3"
+            else context.premium_report_service
+        )
         if reports is None:
             raise application_reports.ReportServiceError(
                 application_reports.ReportServiceErrorCode.REPORT_UNAVAILABLE,
@@ -127,47 +147,70 @@ def register_premium_report_routes(
         now = context_provider(request).clock()
         if sections & {"targets", "drift", "contribution_plan"}:
             Authorizer().require_scope(principal, Scope.TARGETS_READ, now=now)
-        if sections & {"income", "cash_flows", "activity"}:
+        if sections & {"income", "cash_flows", "activity", "risk"}:
             Authorizer().require_scope(principal, Scope.ACTIVITY_READ, now=now)
 
     @router.post(
         "/report-jobs",
         status_code=202,
-        response_model=wire.ReportJobStatus,
+        response_model=profiles.PremiumReportJobStatus,
         operation_id="generate_premium_portfolio_report",
     )
     async def generate_premium_portfolio_report(
-        request: Request, body: wire.GenerateReportRequest, principal: Principal = principal_dep
+        request: Request,
+        body: profiles.GeneratePremiumReportRequest,
+        query: Annotated[profiles.PremiumReportProfileQuery, Query()],
+        principal: Principal = principal_dep,
     ) -> Response:
-        reports = service(request)
+        try:
+            profiles.validate_premium_request_profile(query.profile, body)
+        except ValueError:
+            return _error(request, 422, "VALIDATION_FAILED", "The report profile is invalid.")
         section_scopes(request, principal, set(body.sections))
+        reports = service(request, query.profile)
         key = request.state.premium_report_key
         result = await reports.generate_report(principal, report_command(body, key))
-        return report_response(request, result, wire.ReportJobStatus, status_code=202)
+        return report_response(
+            request,
+            result,
+            profiles.PremiumReportJobStatusV3
+            if query.profile == "report_sections_v3"
+            else wire.ReportJobStatus,
+            status_code=202,
+        )
 
     @router.get(
         "/report-jobs/{job_id}",
-        response_model=wire.ReportJobStatus,
+        response_model=profiles.PremiumReportJobStatus,
         operation_id="get_premium_report_status",
     )
     async def get_premium_report_status(
         request: Request,
         job_id: UUIDString,
-        query: Annotated[wire.ReportAccountQuery, Query()],
+        query: Annotated[profiles.ProfiledReportAccountQuery, Query()],
         principal: Principal = principal_dep,
     ) -> Response:
-        result = await service(request).get_report_status(
+        result = await service(request, query.profile).get_report_status(
             principal, UUID(query.account_id), UUID(job_id)
         )
-        return report_response(request, result, wire.ReportJobStatus, conditional=True)
+        return report_response(
+            request,
+            result,
+            profiles.PremiumReportJobStatusV3
+            if query.profile == "report_sections_v3"
+            else wire.ReportJobStatus,
+            conditional=True,
+        )
 
-    @router.get("/reports", response_model=wire.ReportPage, operation_id="list_premium_reports")
+    @router.get(
+        "/reports", response_model=profiles.PremiumReportPage, operation_id="list_premium_reports"
+    )
     async def list_premium_reports(
         request: Request,
-        query: Annotated[wire.ReportListQuery, Query()],
+        query: Annotated[profiles.ProfiledReportListQuery, Query()],
         principal: Principal = principal_dep,
     ) -> Response:
-        result = await service(request).list_reports(
+        result = await service(request, query.profile).list_reports(
             principal,
             UUID(query.account_id),
             query=application_reports.ReportListQuery(
@@ -182,23 +225,37 @@ def register_premium_report_routes(
                 sort=query.sort,
             ),
         )
-        return report_response(request, result, wire.ReportPage, conditional=True)
+        return report_response(
+            request,
+            result,
+            profiles.PremiumReportPageV3
+            if query.profile == "report_sections_v3"
+            else wire.ReportPage,
+            conditional=True,
+        )
 
     @router.get(
         "/reports/{report_id}",
-        response_model=wire.ReportManifest,
+        response_model=profiles.PremiumReportManifest,
         operation_id="get_premium_report_manifest",
     )
     async def get_premium_report_manifest(
         request: Request,
         report_id: UUIDString,
-        query: Annotated[wire.ReportAccountQuery, Query()],
+        query: Annotated[profiles.ProfiledReportAccountQuery, Query()],
         principal: Principal = principal_dep,
     ) -> Response:
-        result = await service(request).get_report_manifest(
+        result = await service(request, query.profile).get_report_manifest(
             principal, UUID(query.account_id), UUID(report_id)
         )
-        return report_response(request, result, wire.ReportManifest, conditional=True)
+        return report_response(
+            request,
+            result,
+            profiles.PremiumReportManifestV3
+            if query.profile == "report_sections_v3"
+            else wire.ReportManifest,
+            conditional=True,
+        )
 
     @router.post(
         "/reports/{report_id}/artifacts/{artifact_id}/grants",
@@ -211,10 +268,10 @@ def register_premium_report_routes(
         report_id: UUIDString,
         artifact_id: UUIDString,
         body: wire.EmptyReportRequest,
-        query: Annotated[wire.ReportAccountQuery, Query()],
+        query: Annotated[profiles.ProfiledReportAccountQuery, Query()],
         principal: Principal = principal_dep,
     ) -> Response:
-        reports = service(request)
+        reports = service(request, query.profile)
         result = await reports.create_report_download_grant(
             principal, UUID(query.account_id), UUID(report_id), UUID(artifact_id)
         )
@@ -245,10 +302,10 @@ def register_premium_report_routes(
         request: Request,
         report_id: UUIDString,
         artifact_id: UUIDString,
-        query: Annotated[wire.ReportAccountQuery, Query()],
+        query: Annotated[profiles.ProfiledReportAccountQuery, Query()],
         principal: Principal = principal_dep,
     ) -> Response:
-        reports = service(request)
+        reports = service(request, query.profile)
         token = request.state.premium_report_grant
         result = await reports.download_report_artifact(
             principal, UUID(query.account_id), UUID(report_id), UUID(artifact_id), grant_token=token

@@ -17,7 +17,8 @@ from reportlab.pdfbase.pdfdoc import (  # type: ignore[import-untyped]
 from trading212_application.reports import ReportRenderError, ReportRenderGuard
 from trading212_domain.report_manifest import encode_report_manifest
 from trading212_domain.report_schema import table_schema
-from trading212_domain.reports import ReportCell, ReportFailureCode, ReportManifest
+from trading212_domain.report_v3 import ReportManifestContract
+from trading212_domain.reports import ReportCell, ReportFailureCode
 from trading212_domain.values import decimal_string
 
 from .common import METRIC_COLUMNS, display_cell, metric_metadata
@@ -42,7 +43,7 @@ class ManifestLayout(Protocol):
     def heading(self, title: str, *, key: str, major: bool = False) -> None: ...
 
 
-def attach_manifest(canvas: Any, manifest: ReportManifest, guard: ReportRenderGuard) -> str:
+def attach_manifest(canvas: Any, manifest: ReportManifestContract, guard: ReportRenderGuard) -> str:
     """Use only fixed PDF objects; no file reads, annotations, URLs or actions.
 
     ReportLab 5.0.1 exposes these PDFDictionary/PDFStream/Reference primitives but
@@ -88,7 +89,7 @@ def attach_manifest(canvas: Any, manifest: ReportManifest, guard: ReportRenderGu
     return sha256(payload).hexdigest()
 
 
-def _identity(layout: ManifestLayout, manifest: ReportManifest, digest: str) -> None:
+def _identity(layout: ManifestLayout, manifest: ReportManifestContract, digest: str) -> None:
     layout.heading("Sources, methods and quality", key="provenance", major=True)
     layout.text(
         "This appendix identifies the exact inputs, methods, source rights and quality behind "
@@ -129,7 +130,7 @@ def _identity(layout: ManifestLayout, manifest: ReportManifest, digest: str) -> 
         layout.text(f"Schema SHA-256: {table.schema_digest}", size=8)
 
 
-def _contexts(layout: ManifestLayout, manifest: ReportManifest) -> None:
+def _contexts(layout: ManifestLayout, manifest: ReportManifestContract) -> None:
     layout.heading("Methods and quality by context", key="manifest-contexts")
     if not manifest.contexts:
         layout.text("No result contexts are recorded.")
@@ -184,7 +185,7 @@ def _contexts(layout: ManifestLayout, manifest: ReportManifest) -> None:
         )
 
 
-def _notes(layout: ManifestLayout, manifest: ReportManifest) -> None:
+def _notes(layout: ManifestLayout, manifest: ReportManifestContract) -> None:
     memberships: dict[str, list[str]] = defaultdict(list)
     for member in manifest.note_memberships:
         memberships[member.note_key].append(member.note_set_key)
@@ -210,7 +211,7 @@ def _notes(layout: ManifestLayout, manifest: ReportManifest) -> None:
             layout.text(f"Run ID: {binding.run_id}; SHA-256: {binding.content_digest}", size=8)
 
 
-def _sources(layout: ManifestLayout, manifest: ReportManifest) -> None:
+def _sources(layout: ManifestLayout, manifest: ReportManifestContract) -> None:
     memberships: dict[str, list[str]] = defaultdict(list)
     for member in manifest.source_memberships:
         memberships[member.source_key].append(member.provenance_set_key)
@@ -262,7 +263,9 @@ def _sources(layout: ManifestLayout, manifest: ReportManifest) -> None:
         )
 
 
-def render_manifest_appendix(layout: ManifestLayout, manifest: ReportManifest, digest: str) -> None:
+def render_manifest_appendix(
+    layout: ManifestLayout, manifest: ReportManifestContract, digest: str
+) -> None:
     _identity(layout, manifest, digest)
     _contexts(layout, manifest)
     _notes(layout, manifest)

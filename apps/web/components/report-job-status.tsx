@@ -8,6 +8,7 @@ import type {
   ExportJobStatus,
   ReportJobStatus,
   PremiumReportJobStatus,
+  PremiumReportJobStatusV3,
 } from "@trading212/api-contracts";
 
 import { formatDateTime, titleCase } from "../lib/format";
@@ -15,7 +16,11 @@ import { formatDateTime, titleCase } from "../lib/format";
 export function ReportJobStatusCard({
   job,
 }: Readonly<{
-  job: ReportJobStatus | ExportJobStatus | PremiumReportJobStatus;
+  job:
+    | ReportJobStatus
+    | ExportJobStatus
+    | PremiumReportJobStatus
+    | PremiumReportJobStatusV3;
 }>) {
   const router = useRouter();
   const [polls, setPolls] = useState(0);

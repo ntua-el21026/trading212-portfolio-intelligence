@@ -12,6 +12,12 @@ from uuid import UUID
 
 from trading212_domain.enums import QualityState
 from trading212_domain.errors import fail_validation
+from trading212_domain.report_v3 import (
+    ReportCaptureContract,
+    ReportHeaderContract,
+    ReportManifestContract,
+    ReportSelectionV3,
+)
 from trading212_domain.reports import (
     MAX_REPORT_ARTIFACT_BYTES,
     MAX_REPORT_JOB_BYTES,
@@ -61,10 +67,13 @@ __all__ = [
     "ReportArtifactMetadata",
     "ReportCapturePort",
     "ReportCaptureSink",
+    "ReportChunkSink",
+    "ReportDocumentHeader",
     "ReportDocumentReader",
     "ReportInputPin",
     "ReportJobStatus",
     "ReportListQuery",
+    "ReportManifest",
     "ReportPinnedContext",
     "ReportQualitySummary",
     "ReportRenderError",
@@ -122,7 +131,7 @@ def _command(key: str, ttl: int) -> None:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class GenerateReportCommand(ReportRecord):
-    selection: ReportSelection
+    selection: ReportSelection | ReportSelectionV3
     idempotency_key: str
     ttl_days: int = 7
 
@@ -186,6 +195,20 @@ class ReportPinnedContext(ReportRecord):
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
+class ReportPinnedContextV3(ReportPinnedContext):
+    """Explicit V3 status copy; the legacy decoder remains closed to this profile."""
+
+    profile_version: str = "report_sections_v3"
+    schema_version: str = "3.0.0"
+
+    def __post_init__(self) -> None:
+        ReportRecord.__post_init__(self)
+        report_limit(len(self.pins) <= 256, "pins")
+        if (self.profile_version, self.schema_version) != ("report_sections_v3", "3.0.0"):
+            fail_validation("Report context profile is unsupported.", field="profile_version")
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
 class ReportArtifactMetadata(ReportRecord):
     artifact_id: UUID
     format: ReportFormat
@@ -203,7 +226,7 @@ class ReportArtifactMetadata(ReportRecord):
 
 def _status(
     state: ReportJobState,
-    context: ReportPinnedContext | None,
+    context: ReportPinnedContext | ReportPinnedContextV3 | None,
     digest: str | None,
     artifacts: tuple[ReportArtifactMetadata, ...],
     completed: datetime | None,
@@ -234,7 +257,7 @@ def _status(
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ReportJobStatus(ReportRecord):
     account_id: UUID
-    context: ReportPinnedContext | None
+    context: ReportPinnedContext | ReportPinnedContextV3 | None
     job_id: UUID
     state: ReportJobState
     requested_at: datetime
@@ -397,15 +420,18 @@ class ExportListQuery(ReportRecord):
             fail_validation("Export listing is outside its bound.", field="query")
 
 
-class ReportCaptureSink(Protocol):
+class ReportChunkSink(Protocol):
     def append(self, chunk: ReportChunk) -> None: ...
-    def finish(self, summary: ReportCaptureSummary) -> None: ...
+
+
+class ReportCaptureSink(ReportChunkSink, Protocol):
+    def finish(self, summary: ReportCaptureContract) -> None: ...
 
 
 class ReportCapturePort(Protocol):
     def capture_report(
-        self, selection: ReportSelection, *, sink: ReportCaptureSink
-    ) -> ReportCaptureSummary: ...
+        self, selection: ReportSelection | ReportSelectionV3, *, sink: ReportCaptureSink
+    ) -> ReportCaptureContract: ...
     def capture_export(
         self, selection: ExportSelection, *, sink: ReportCaptureSink
     ) -> ReportCaptureSummary: ...
@@ -413,9 +439,9 @@ class ReportCapturePort(Protocol):
 
 class ReportDocumentReader(Protocol):
     @property
-    def header(self) -> ReportDocumentHeader: ...
+    def header(self) -> ReportHeaderContract: ...
     @property
-    def manifest(self) -> ReportManifest: ...
+    def manifest(self) -> ReportManifestContract: ...
     def iter_chunks(self, table: ReportTableKey) -> Iterator[ReportChunk]: ...
 
 
@@ -457,7 +483,7 @@ class ReportService(Protocol):
     ) -> Page[ReportJobStatus]: ...
     async def get_report_manifest(
         self, principal: Principal, account_id: UUID, report_id: UUID
-    ) -> ReportManifest: ...
+    ) -> ReportManifestContract: ...
     async def create_report_download_grant(
         self, principal: Principal, account_id: UUID, report_id: UUID, artifact_id: UUID
     ) -> ArtifactGrant: ...
@@ -496,13 +522,13 @@ class ReportService(Protocol):
 ReportsService = ReportService
 
 
-def encode_report_pinned_context(value: ReportPinnedContext) -> bytes:
+def encode_report_pinned_context(value: ReportPinnedContext | ReportPinnedContextV3) -> bytes:
     """Encode only the safe status projection; grants and artifact bytes are excluded."""
     from dataclasses import fields
 
     from trading212_domain import report_manifest as codec
 
-    if type(value) is not ReportPinnedContext:
+    if type(value) not in (ReportPinnedContext, ReportPinnedContextV3):
         fail_validation("A typed report context is required.", field="context")
     raw = {
         item.name: (
@@ -513,20 +539,29 @@ def encode_report_pinned_context(value: ReportPinnedContext) -> bytes:
             if item.name == "quality"
             else codec._primitive(getattr(value, item.name))
         )
-        for item in fields(ReportPinnedContext)
+        for item in fields(type(value))
     }
     return codec._json(raw, 2 * 1024 * 1024)
 
 
 def decode_report_pinned_context(payload: bytes) -> ReportPinnedContext:
+    return _decode_report_pinned_context(payload, ReportPinnedContext)
+
+
+def decode_report_pinned_context_v3(payload: bytes) -> ReportPinnedContextV3:
+    return _decode_report_pinned_context(payload, ReportPinnedContextV3)
+
+
+def _decode_report_pinned_context[T: ReportPinnedContext](payload: bytes, kind: type[T]) -> T:
     from dataclasses import fields
-    from typing import Any, cast
+    from typing import Any, cast, get_type_hints
 
     from trading212_domain import report_manifest as codec
     from trading212_domain.reports import _record_hints
 
+    hints = get_type_hints(kind)
     raw = codec._load(payload, 2 * 1024 * 1024)
-    if type(raw) is not dict or set(raw) != {item.name for item in fields(ReportPinnedContext)}:
+    if type(raw) is not dict or set(raw) != {item.name for item in fields(kind)}:
         fail_validation("Pinned report context fields are invalid.", field="context")
     quality = raw["quality"]
     if type(quality) is not dict or set(quality) != {
@@ -543,11 +578,9 @@ def decode_report_pinned_context(payload: bytes) -> ReportPinnedContext:
         )
     )
     values = {
-        name: codec._decode(item, _record_hints(ReportPinnedContext)[name])
-        for name, item in raw.items()
-        if name != "quality"
+        name: codec._decode(item, hints[name]) for name, item in raw.items() if name != "quality"
     }
-    result = ReportPinnedContext(quality=quality_value, **cast("Any", values))
+    result = kind(quality=quality_value, **cast("Any", values))
     if encode_report_pinned_context(result) != payload:
         fail_validation("Pinned report context is not canonical.", field="context")
     return result
@@ -563,7 +596,9 @@ def report_request_digest(command: GenerateReportCommand | CreateExportCommand) 
         fail_validation("A typed report command is required.", field="command")
     selection = encode_report_selection(command.selection)
     version = (
-        b"report_request_v2\0"
+        b"report_request_v3\0"
+        if report_schema_version(command.selection) == "3.0.0"
+        else b"report_request_v2\0"
         if report_schema_version(command.selection) == "2.0.0"
         else b"report_request_v1\0"
     )

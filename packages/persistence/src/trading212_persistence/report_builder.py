@@ -8,7 +8,7 @@ from datetime import datetime
 from hashlib import sha256
 from uuid import UUID
 
-from trading212_application.reports import ReportCaptureSink
+from trading212_application.reports import ReportChunkSink
 from trading212_domain import reports as r
 from trading212_domain.errors import fail_validation
 from trading212_domain.report_manifest import (
@@ -22,6 +22,17 @@ from trading212_domain.report_manifest import (
 )
 from trading212_domain.report_profile import renderer_profile
 from trading212_domain.report_schema import dataset_tables, table_schema, validate_report_row
+from trading212_domain.report_v3 import (
+    ReportCaptureContract,
+    ReportCaptureSummaryV3,
+    ReportDocumentHeaderV3,
+    ReportHeaderContract,
+    ReportRiskRunBinding,
+    ReportScenarioRunBinding,
+    ReportSelectionContract,
+    ReportSelectionV3,
+    selected_report_formats,
+)
 from trading212_domain.sources import SourceAvailability
 from trading212_domain.values import require_utc
 
@@ -46,11 +57,11 @@ class _ProofTable:
 class ReportBuilder:
     def __init__(
         self,
-        selection: r.ReportSelection | r.ExportSelection,
+        selection: ReportSelectionContract,
         *,
         owner_id: UUID,
         valuation_at: datetime,
-        sink: ReportCaptureSink,
+        sink: ReportChunkSink,
     ) -> None:
         self.selection, self.owner_id, self.valuation_at, self.sink = (
             selection,
@@ -73,6 +84,7 @@ class ReportBuilder:
         self._pending_proof_bytes = 0
         self.byte_length = 0
         self.chunk_count = 0
+        self.premium_binding: ReportRiskRunBinding | ReportScenarioRunBinding | None = None
         self.copy_expires_at: datetime | None = None
         self._empty_proof_bytes = len(encode_report_proof(r.ReportProof()))
         self._proof_bytes = self._empty_proof_bytes
@@ -323,7 +335,7 @@ class ReportBuilder:
             reason_key=reason_key,
         )
 
-    def finish(self) -> r.ReportCaptureSummary:
+    def finish(self) -> ReportCaptureContract:
         """Return a candidate; only the service may authorize and seal the sink."""
         self.complete_proof_tables()
         proof = r.ReportProof(
@@ -340,38 +352,65 @@ class ReportBuilder:
         )
         proof_bytes = encode_report_proof(proof)
         proof_digest = sha256(proof_bytes).hexdigest()
-        header = r.ReportDocumentHeader(
-            document_schema_version=r.report_schema_version(self.selection),
-            selection=self.selection,
-            owner_id=self.owner_id,
-            valuation_at=self.valuation_at,
-            context_digest=proof_digest,
-            tables=tuple(
-                self.descriptors[table] for table in r.ReportTableKey if table in self.descriptors
-            ),
-            document_digest="0" * 64,
+        tables = tuple(
+            self.descriptors[table] for table in r.ReportTableKey if table in self.descriptors
         )
-        header = replace(header, document_digest=report_document_digest(header))
-        formats = (
-            self.selection.formats
-            if isinstance(self.selection, r.ReportSelection)
-            else (r.ReportFormat(self.selection.format.value),)
-        )
-        capture = r.ReportCaptureSummary(
-            header=header,
-            canonical_byte_length=self.byte_length,
-            chunk_count=self.chunk_count,
-            immutable_bindings=tuple(
-                sorted(
-                    self.bindings,
-                    key=lambda value: (value.family.value, value.role.value, str(value.subject_id)),
+        header: ReportHeaderContract
+        if isinstance(self.selection, ReportSelectionV3):
+            if self.premium_binding is None:
+                fail_validation(
+                    "The selected premium run binding is missing.", field="premium_binding"
                 )
-            ),
-            proof=proof,
-            proof_digest=proof_digest,
-            renderer_profile=renderer_profile(formats),
-            copy_expires_at=self.copy_expires_at,
+            header = ReportDocumentHeaderV3(
+                selection=self.selection,
+                owner_id=self.owner_id,
+                valuation_at=self.valuation_at,
+                context_digest=proof_digest,
+                tables=tables,
+                document_digest="0" * 64,
+                premium_binding=self.premium_binding,
+            )
+        else:
+            header = r.ReportDocumentHeader(
+                document_schema_version=r.report_schema_version(self.selection),
+                selection=self.selection,
+                owner_id=self.owner_id,
+                valuation_at=self.valuation_at,
+                context_digest=proof_digest,
+                tables=tables,
+                document_digest="0" * 64,
+            )
+        header = replace(header, document_digest=report_document_digest(header))
+        bindings = tuple(
+            sorted(
+                self.bindings,
+                key=lambda value: (value.family.value, value.role.value, str(value.subject_id)),
+            )
         )
+        profile = renderer_profile(selected_report_formats(self.selection))
+        capture: ReportCaptureContract
+        if isinstance(header, ReportDocumentHeaderV3):
+            capture = ReportCaptureSummaryV3(
+                header=header,
+                canonical_byte_length=self.byte_length,
+                chunk_count=self.chunk_count,
+                immutable_bindings=bindings,
+                proof=proof,
+                proof_digest=proof_digest,
+                renderer_profile=profile,
+                copy_expires_at=self.copy_expires_at,
+            )
+        else:
+            capture = r.ReportCaptureSummary(
+                header=header,
+                canonical_byte_length=self.byte_length,
+                chunk_count=self.chunk_count,
+                immutable_bindings=bindings,
+                proof=proof,
+                proof_digest=proof_digest,
+                renderer_profile=profile,
+                copy_expires_at=self.copy_expires_at,
+            )
         total = self.byte_length + len(encode_report_manifest(build_report_manifest(capture)))
         r.report_limit(total <= r.MAX_REPORT_DOCUMENT_BYTES, "document_bytes")
         return replace(capture, canonical_byte_length=total)

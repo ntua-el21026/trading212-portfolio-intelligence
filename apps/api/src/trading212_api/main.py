@@ -167,6 +167,7 @@ class ApiContext:
     xray_service: XrayService | None
     report_service: ReportService | None
     premium_report_service: ReportService | None
+    premium_report_v3_service: ReportService | None
     alert_service: AlertService | None
     sessions: SessionManager
     local_authenticator: LocalSyntheticAuthenticator | None
@@ -191,6 +192,7 @@ def create_app(
     xray_service: XrayService | None = None,
     report_service: ReportService | None = None,
     premium_report_service: ReportService | None = None,
+    premium_report_v3_service: ReportService | None = None,
     alert_service: AlertService | None = None,
     session_manager: SessionManager | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
@@ -229,6 +231,7 @@ def create_app(
             default_xray,
             default_reports,
             default_premium_reports,
+            default_premium_v3_reports,
             default_alerts,
             default_readiness,
         ) = _local_runtime_defaults(
@@ -247,6 +250,7 @@ def create_app(
         xray_service = xray_service or default_xray
         report_service = report_service or default_reports
         premium_report_service = premium_report_service or default_premium_reports
+        premium_report_v3_service = premium_report_v3_service or default_premium_v3_reports
         alert_service = alert_service or default_alerts
     else:
         portfolio_service = service
@@ -274,6 +278,7 @@ def create_app(
         xray_service=xray_service,
         report_service=report_service,
         premium_report_service=premium_report_service,
+        premium_report_v3_service=premium_report_v3_service,
         alert_service=alert_service,
         sessions=sessions,
         local_authenticator=local_authenticator,
@@ -349,6 +354,7 @@ def _local_runtime_defaults(
     ScenarioService,
     IntelligenceDataQualityService,
     XrayService,
+    ReportService,
     ReportService,
     ReportService,
     AlertService,
@@ -461,6 +467,14 @@ def _local_runtime_defaults(
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
             cursor_ttl_seconds=settings.cursor_ttl_seconds,
             contract_version=2,
+            risk_preflight=validate_risk_capacity,
+        ),
+        PostgresReportService(
+            sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=settings.cursor_ttl_seconds,
+            contract_version=3,
             risk_preflight=validate_risk_capacity,
         ),
         PostgresAlertService(

@@ -14,6 +14,7 @@ from trading212_domain import reports as r
 from trading212_domain.enums import QualityState
 from trading212_domain.errors import fail_validation
 from trading212_domain.report_schema import report_tables, section_tables, table_schema
+from trading212_domain.report_v3 import is_report_selection
 from trading212_domain.sources import SourceAvailability
 from trading212_domain.values import CurrencyCode, Money
 
@@ -252,7 +253,7 @@ def capture_table(
         fail_validation("The table was not selected for this report.", field="table")
     section = None
     dataset = None
-    if isinstance(builder.selection, r.ReportSelection):
+    if is_report_selection(builder.selection):
         section = next(
             (section for section in builder.selection.sections if table in section_tables(section)),
             None,

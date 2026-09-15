@@ -808,3 +808,8 @@ export type {
   ScenarioReadOptions,
   ScenarioCommandOptions,
 } from "./scenario-transport";
+
+export type {
+  PremiumReportProfile,
+  PremiumReportClientOptions,
+} from "./premium-report-transport";

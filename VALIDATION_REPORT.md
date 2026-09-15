@@ -27,6 +27,32 @@ The v1.0 additive freeze has 30 local acceptance rows and 48 mandatory scenarios
 all pending. Design/governance checks do not stand in for premium runtime tests.
 Final candidate and independent review remain pending.
 
+## Phase 3 scenario report component checks
+
+The final working-source `premium-report-v3-local-04` gate passed 4,329 Python
+cases, 707 web cases, Ruff (834 files), mypy (829 files), repository/secret/broker/
+generated-contract checks and all 12 Python package builds in 310.918 seconds.
+The production web build passed in `premium-report-v3-artifacts-04`. Final
+`premium-report-v3-postgres-05` passed all 15 schema/retention cases in
+143.245 seconds. Eight distinct actual four-format risk/scenario artifact cases
+have passing executions across artifacts02/04; sources02 passed two licensed
+sensitivity/historical-replay cases. Earlier overall failures remain failed.
+
+`premium-report-v3-browser-04` passed desktop/tablet/mobile journeys in 419.766
+seconds over the actual production web server, API and isolated workers, reusing
+one PostgreSQL container. Nine original captures are retained; ROOT reviewed the
+three completed-report captures. Financial/source parity, safe account/profile
+navigation and the existing accessibility/layout checks passed. The measured
+action-to-navigation times were 8162/8168/8182 ms; these are not API-admission or
+performance acceptance measurements. SLO investigation remains required.
+
+The [component report](docs/implementation/PHASE_3_IMPLEMENTATION_REPORT.md#p3-02-explicit-scenario-and-risk-report-profile3)
+records exact source boundaries, retained failures and corrections. Production
+content/type/mode is identical between browser04 and local04; their eight changed
+paths are test fixtures/oracles only. No new coverage percentage, full Phase 3
+acceptance, external approval or genuine restore result is claimed. CI remains
+owner-deferred and unverified.
+
 ## Phase 3 persisted scenario component checks
 
 Scenario storage/worker/API/web/MCP integration passed 3,903 Python cases, 662 web

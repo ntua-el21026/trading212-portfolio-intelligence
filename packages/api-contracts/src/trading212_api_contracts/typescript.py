@@ -587,36 +587,10 @@ def render_report_client(contract: dict[str, Any]) -> str:
 
 
 def render_premium_report_client(contract: dict[str, Any]) -> str:
-    """Generate only the six V2 report routes and reuse frozen V1 cell/artifact schemas."""
-    expected = {
-        ("post", "/api/v2/report-jobs", "generate_premium_portfolio_report"),
-        ("get", "/api/v2/report-jobs/{job_id}", "get_premium_report_status"),
-        ("get", "/api/v2/reports", "list_premium_reports"),
-        ("get", "/api/v2/reports/{report_id}", "get_premium_report_manifest"),
-        (
-            "post",
-            "/api/v2/reports/{report_id}/artifacts/{artifact_id}/grants",
-            "create_premium_report_download_grant",
-        ),
-        (
-            "get",
-            "/api/v2/reports/{report_id}/artifacts/{artifact_id}/content",
-            "download_premium_report_artifact",
-        ),
-    }
-    actual = {
-        (method, path, operation["operationId"])
-        for path, methods in contract["paths"].items()
-        for method, operation in methods.items()
-        if "premium-reports" in operation.get("tags", [])
-    }
-    if actual != expected:
-        raise ValueError("The fixed premium report operation inventory differs.")
-    legacy = ReportClientGenerator(contract)
-    legacy.render()
-    return ReportClientGenerator(
-        contract, premium=True, imported_schemas=frozenset(legacy.rendered)
-    ).render()
+    """Generate the same six premium routes with explicit profile-specific schemas."""
+    from .premium_report_typescript import render_profiled_premium_report_client
+
+    return render_profiled_premium_report_client(contract)
 
 
 class RiskClientGenerator(TargetClientGenerator):

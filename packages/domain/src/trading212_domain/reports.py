@@ -10,13 +10,16 @@ from datetime import date, datetime
 from decimal import Decimal
 from enum import StrEnum
 from functools import lru_cache
-from typing import cast, get_args, get_origin, get_type_hints
+from typing import TYPE_CHECKING, cast, get_args, get_origin, get_type_hints
 from uuid import UUID
 
 from .enums import QualityState
 from .errors import DomainError, ErrorCode, fail_validation
 from .sources import LicensePermission, SourceAvailability
 from .values import CurrencyCode, require_utc
+
+if TYPE_CHECKING:
+    from .report_v3 import ReportSelectionV3
 
 REPORT_SCHEMA_VERSION = "1.0.0"
 PREMIUM_REPORT_SCHEMA_VERSION = "2.0.0"
@@ -80,6 +83,10 @@ class ReportSection(StrEnum):
     QUALITY = "quality"
     ACTIVITY = "activity"
     RISK = "risk"
+    SCENARIO = "scenario"
+    PROJECTION = "projection"
+    GOAL = "goal"
+    RESEARCH = "research"
 
 
 class ExportDataset(StrEnum):
@@ -140,6 +147,10 @@ class ReportFamily(StrEnum):
     RECONCILIATION = "reconciliation"
     ALERTS = "alerts"
     RISK = "risk"
+    SCENARIO = "scenario"
+    PROJECTION = "projection"
+    GOAL = "goal"
+    RESEARCH = "research"
 
 
 class ReportInputRole(StrEnum):
@@ -206,6 +217,24 @@ class ReportSourceKind(StrEnum):
     CLASSIFICATION_ASSIGNMENT = "classification_assignment"
     HISTORICAL_CLASSIFICATION = "historical_classification"
     BENCHMARK_VERSION = "benchmark_version"
+    SCENARIO_RUN = "scenario_run"
+    SCENARIO_RESULT = "scenario_result"
+    SCENARIO_VERSION = "scenario_version"
+    SCENARIO_SENSITIVITY_VERSION = "scenario_sensitivity_version"
+    SCENARIO_SENSITIVITY_OBSERVATION = "scenario_sensitivity_observation"
+    SCENARIO_SENSITIVITY_EVIDENCE = "scenario_sensitivity_evidence"
+
+
+SCENARIO_REPORT_SOURCE_KINDS = frozenset(
+    {
+        ReportSourceKind.SCENARIO_RUN,
+        ReportSourceKind.SCENARIO_RESULT,
+        ReportSourceKind.SCENARIO_VERSION,
+        ReportSourceKind.SCENARIO_SENSITIVITY_VERSION,
+        ReportSourceKind.SCENARIO_SENSITIVITY_OBSERVATION,
+        ReportSourceKind.SCENARIO_SENSITIVITY_EVIDENCE,
+    }
+)
 
 
 class CellKind(StrEnum):
@@ -395,6 +424,15 @@ class ReportSelection(ReportRecord):
         if self.template_version != REPORT_TEMPLATE_VERSION:
             fail_validation("Report template is unsupported.", field="template_version")
         selected = set(self.sections)
+        if selected & {
+            ReportSection.SCENARIO,
+            ReportSection.PROJECTION,
+            ReportSection.GOAL,
+            ReportSection.RESEARCH,
+        }:
+            fail_validation(
+                "The selected section requires an explicit implemented profile.", field="sections"
+            )
         if (ReportSection.RISK in selected) != (self.risk_run_id is not None):
             fail_validation(
                 "Risk sections require exactly one retained run pin.", field="risk_run_id"
@@ -489,8 +527,12 @@ class ExportSelection(ReportRecord):
             fail_validation("A plan revision is required.", field="plan_revision_id")
 
 
-def report_schema_version(selection: ReportSelection | ExportSelection) -> str:
-    """An explicit premium pin selects V2; every legacy selection retains V1."""
+def report_schema_version(selection: ReportSelection | ExportSelection | ReportSelectionV3) -> str:
+    """Profile three is explicit; earlier selection bytes keep their original version."""
+    from .report_v3 import REPORT_V3_SCHEMA_VERSION, ReportSelectionV3
+
+    if isinstance(selection, ReportSelectionV3):
+        return REPORT_V3_SCHEMA_VERSION
     return (
         PREMIUM_REPORT_SCHEMA_VERSION
         if isinstance(selection, ReportSelection) and selection.risk_run_id is not None
@@ -498,7 +540,11 @@ def report_schema_version(selection: ReportSelection | ExportSelection) -> str:
     )
 
 
-def report_profile_version(selection: ReportSelection | ExportSelection) -> str:
+def report_profile_version(selection: ReportSelection | ExportSelection | ReportSelectionV3) -> str:
+    from .report_v3 import REPORT_V3_PROFILE_VERSION, ReportSelectionV3
+
+    if isinstance(selection, ReportSelectionV3):
+        return REPORT_V3_PROFILE_VERSION
     return (
         PREMIUM_REPORT_PROFILE_VERSION
         if report_schema_version(selection) == PREMIUM_REPORT_SCHEMA_VERSION
@@ -805,6 +851,33 @@ class ReportTableKey(StrEnum):
     RISK_HISTORY_CONTEXT_V1 = "risk_history_context_v1"
     RISK_HISTORY_MEMBERS_V1 = "risk_history_members_v1"
     RISK_XRAY_PATHS_V1 = "risk_xray_paths_v1"
+    SCENARIO_BASIS_V1 = "scenario_basis_v1"
+    SCENARIO_DEFINITION_V1 = "scenario_definition_v1"
+    SCENARIO_SHOCKS_V1 = "scenario_shocks_v1"
+    SCENARIO_EXCLUSIONS_V1 = "scenario_exclusions_v1"
+    SCENARIO_SUMMARY_V1 = "scenario_summary_v1"
+    SCENARIO_COMPONENTS_V1 = "scenario_components_v1"
+    SCENARIO_CHANNELS_V1 = "scenario_channels_v1"
+    SCENARIO_APPLIED_SENSITIVITIES_V1 = "scenario_applied_sensitivities_v1"
+    SCENARIO_DIAGNOSTICS_V1 = "scenario_diagnostics_v1"
+    SCENARIO_REPLAY_CHANGES_V1 = "scenario_replay_changes_v1"
+    SCENARIO_SUBJECTS_V1 = "scenario_subjects_v1"
+    SCENARIO_CLASSIFICATIONS_V1 = "scenario_classifications_v1"
+    SCENARIO_CURRENCIES_V1 = "scenario_currencies_v1"
+    SCENARIO_MEMBERS_V1 = "scenario_members_v1"
+    SCENARIO_SENSITIVITY_VERSIONS_V1 = "scenario_sensitivity_versions_v1"
+    SCENARIO_DRIVERS_V1 = "scenario_drivers_v1"
+    SCENARIO_SENSITIVITY_OBSERVATIONS_V1 = "scenario_sensitivity_observations_v1"
+    SCENARIO_SENSITIVITY_MEMBERSHIPS_V1 = "scenario_sensitivity_memberships_v1"
+    SCENARIO_SENSITIVITY_EVIDENCE_V1 = "scenario_sensitivity_evidence_v1"
+    SCENARIO_SOURCE_LICENSES_V1 = "scenario_source_licenses_v1"
+    SCENARIO_REPLAY_BASIS_V1 = "scenario_replay_basis_v1"
+    SCENARIO_REPLAY_BINDINGS_V1 = "scenario_replay_bindings_v1"
+    SCENARIO_REPLAY_METHODS_V1 = "scenario_replay_methods_v1"
+    SCENARIO_REPLAY_COVERAGE_V1 = "scenario_replay_coverage_v1"
+    SCENARIO_REPLAY_WARNINGS_V1 = "scenario_replay_warnings_v1"
+    SCENARIO_XRAY_PATHS_V1 = "scenario_xray_paths_v1"
+    SCENARIO_SOURCE_HEADERS_V1 = "scenario_source_headers_v1"
 
 
 class ReportRowOrder(StrEnum):
@@ -897,6 +970,21 @@ class ReportDocumentHeader(ReportRecord):
 
         premium_tables = frozenset((*RISK_REPORT_TABLES, *RISK_PROOF_TABLES))
         supplied = {item.table for item in self.tables}
+        from .report_scenario_schema import SCENARIO_PROOF_TABLES, SCENARIO_REPORT_TABLES
+
+        if supplied & frozenset((*SCENARIO_REPORT_TABLES, *SCENARIO_PROOF_TABLES)) or any(
+            item.section
+            in {
+                ReportSection.SCENARIO,
+                ReportSection.PROJECTION,
+                ReportSection.GOAL,
+                ReportSection.RESEARCH,
+            }
+            for item in self.tables
+        ):
+            fail_validation(
+                "Earlier report documents cannot contain newer profile tables.", field="tables"
+            )
         if self.document_schema_version == PREMIUM_REPORT_SCHEMA_VERSION:
             report_limit(len(self.tables) <= 128, "tables")
             if not premium_tables <= supplied:
@@ -925,9 +1013,12 @@ class ReportContext(ReportRecord):
 
     def __post_init__(self) -> None:
         ReportRecord.__post_init__(self)
-        if self.schema_version not in {REPORT_SCHEMA_VERSION, PREMIUM_REPORT_SCHEMA_VERSION} or (
-            self.family is ReportFamily.RISK
-            and self.schema_version != PREMIUM_REPORT_SCHEMA_VERSION
+        if (
+            self.schema_version
+            not in {REPORT_SCHEMA_VERSION, PREMIUM_REPORT_SCHEMA_VERSION, "3.0.0"}
+            or self.family in {ReportFamily.PROJECTION, ReportFamily.GOAL, ReportFamily.RESEARCH}
+            or (self.family is ReportFamily.RISK and self.schema_version == REPORT_SCHEMA_VERSION)
+            or (self.family is ReportFamily.SCENARIO and self.schema_version != "3.0.0")
         ):
             fail_validation("Report context schema is unsupported.", field="schema_version")
 
@@ -1150,6 +1241,29 @@ def validate_report_profile(
 ) -> None:
     """Prevent new-family proof from being relabeled as a legacy document."""
     expected = report_schema_version(header.selection)
+    from .report_scenario_schema import SCENARIO_PROOF_TABLES, SCENARIO_REPORT_TABLES
+
+    newer = {
+        ReportFamily.SCENARIO,
+        ReportFamily.PROJECTION,
+        ReportFamily.GOAL,
+        ReportFamily.RESEARCH,
+    }
+    if (
+        any(
+            item.family in newer
+            for group in (proof.contexts, proof.coverage, proof.bounds, proof.notes, bindings)
+            for item in group
+        )
+        or any(item.kind in SCENARIO_REPORT_SOURCE_KINDS for item in proof.source_references)
+        or any(
+            item.table in (*SCENARIO_REPORT_TABLES, *SCENARIO_PROOF_TABLES)
+            for item in proof.proof_relations
+        )
+    ):
+        fail_validation(
+            "Earlier report proof cannot contain newer profile vocabulary.", field="family"
+        )
     if any(item.schema_version != expected for item in proof.contexts):
         fail_validation("Report context and document versions differ.", field="schema_version")
     if expected == PREMIUM_REPORT_SCHEMA_VERSION:

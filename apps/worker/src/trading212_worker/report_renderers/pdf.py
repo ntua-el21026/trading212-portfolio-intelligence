@@ -17,12 +17,12 @@ from trading212_application.reports import (
     ReportRenderGuard,
 )
 from trading212_domain.report_schema import COMPANY_REPORT_TABLES, section_tables, table_schema
+from trading212_domain.report_v3 import is_report_selection
 from trading212_domain.reports import (
     MAX_REPORT_PDF_PAGES,
     ExportDataset,
     ReportFailureCode,
     ReportSection,
-    ReportSelection,
     ReportTableDescriptor,
     ReportTableKey,
 )
@@ -171,7 +171,7 @@ def render_pdf(
     selection = document.header.selection
     title = (
         label(selection.report_type.value)
-        if isinstance(selection, ReportSelection)
+        if is_report_selection(selection)
         else label(selection.dataset.value)
     )
     layout.heading(title, key="report", major=True)

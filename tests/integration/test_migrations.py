@@ -188,7 +188,7 @@ def test_empty_to_head_is_idempotent_and_matches_metadata(database_engine: Engin
     expected = set(Base.metadata.tables)
     assert actual == expected
     with database_engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260915_0020"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260915_0021"
 
 
 def test_export_url_cleanup_is_scoped_null_safe_and_repeatable(database_engine: Engine) -> None:

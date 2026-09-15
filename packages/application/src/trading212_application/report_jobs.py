@@ -10,6 +10,7 @@ from typing import Protocol, Self
 from uuid import UUID
 
 from trading212_domain.errors import fail_validation
+from trading212_domain.report_v3 import ReportManifestContract
 from trading212_domain.reports import ReportFailureCode, ReportManifest, ReportRecord
 
 from .reports import RenderedArtifact, ReportDocumentReader
@@ -156,7 +157,7 @@ class ReportJobStore(Protocol):
         self,
         claim: ReportJobClaim,
         *,
-        manifest: ReportManifest,
+        manifest: ReportManifestContract,
         artifacts: tuple[RenderedArtifact, ...],
     ) -> bool: ...
     async def fail_report_job(

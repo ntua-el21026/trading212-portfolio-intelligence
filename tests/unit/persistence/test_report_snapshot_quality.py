@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from trading212_domain import reports as r
 from trading212_domain.enums import QualityState
 from trading212_domain.report_schema import table_schema
+from trading212_domain.report_v3 import ReportSelectionV3
 from trading212_domain.values import CurrencyCode
 from trading212_persistence.models import (
     CalculationRunModel,
@@ -44,6 +45,7 @@ def _capture(
     intrinsic: QualityState = QualityState.FRESH,
     snapshot_quality: QualityState = QualityState.FRESH,
     unavailable: bool = False,
+    request: r.ReportSelection | ReportSelectionV3 | None = None,
 ) -> tuple[ReportBuilder, dict[str, dict[str, r.ReportCell]]]:
     snapshot = PortfolioSnapshotModel(
         id=uid(2),
@@ -103,7 +105,7 @@ def _capture(
     session.scalars.return_value.yield_per.return_value = (cash,)
     sink = _Sink()
     builder = ReportBuilder(
-        replace(selection(), source_cutoff_at=AT + age),
+        replace(request or selection(), source_cutoff_at=AT + age),
         owner_id=uid(8),
         valuation_at=AT,
         sink=sink,

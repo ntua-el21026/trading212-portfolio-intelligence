@@ -20,14 +20,17 @@ from trading212_application import reports as app
 from trading212_domain.report_manifest import (
     decode_report_chunk,
     decode_report_manifest,
+    decode_report_manifest_v3,
     encode_report_manifest,
 )
+from trading212_domain.report_v3 import ReportManifestContract
 from trading212_domain.reports import (
     ReportChunk,
     ReportFailureCode,
     ReportFormat,
-    ReportManifest,
     ReportTableKey,
+    report_profile_version,
+    report_schema_version,
 )
 
 
@@ -42,7 +45,7 @@ class _ChildGuard:
 
 
 class _PipeDocument:
-    def __init__(self, connection: Connection, manifest: ReportManifest) -> None:
+    def __init__(self, connection: Connection, manifest: ReportManifestContract) -> None:
         self._connection = connection
         self.manifest = manifest
         self.header = manifest.document
@@ -64,7 +67,26 @@ class _PipeDocument:
             ordinal += 1
 
 
-def _child(connection: Connection, payload: bytes, format_value: str, scratch: str) -> None:
+def _decode_manifest(payload: bytes, profile: str) -> ReportManifestContract:
+    # The authorized parent supplies the profile separately; private JSON cannot
+    # choose its decoder or turn an earlier report/export into a V3 document.
+    if profile not in {"1", "2", "3"}:
+        raise app.ReportRenderError(ReportFailureCode.INPUT_CHANGED)
+    manifest: ReportManifestContract = (
+        decode_report_manifest_v3(payload) if profile == "3" else decode_report_manifest(payload)
+    )
+    if (
+        manifest.document.document_schema_version != f"{profile}.0.0"
+        or report_schema_version(manifest.document.selection) != f"{profile}.0.0"
+        or report_profile_version(manifest.document.selection) != f"report_sections_v{profile}"
+    ):
+        raise app.ReportRenderError(ReportFailureCode.INPUT_CHANGED)
+    return manifest
+
+
+def _child(
+    connection: Connection, payload: bytes, format_value: str, scratch: str, profile: str
+) -> None:
     try:
         import resource
 
@@ -72,7 +94,7 @@ def _child(connection: Connection, payload: bytes, format_value: str, scratch: s
         from .report_renderers import BoundedArtifactBuffer, PrivateReportRenderer
 
         tempfile.tempdir = scratch
-        manifest = decode_report_manifest(payload)
+        manifest = _decode_manifest(payload, profile)
         document = _PipeDocument(connection, manifest)
         guard = _ChildGuard(connection)
         with BoundedArtifactBuffer(guard=guard) as buffer:
@@ -142,6 +164,10 @@ def render_private_artifact(
 ) -> app.RenderedArtifact:
     """One subprocess works with both standalone and Celery prefork workers."""
     manifest = document.manifest
+    versions = {"report_sections_v1": "1", "report_sections_v2": "2", "report_sections_v3": "3"}
+    profile = versions.get(report_profile_version(manifest.document.selection))
+    if profile is None or manifest.document.document_schema_version != f"{profile}.0.0":
+        raise app.ReportRenderError(ReportFailureCode.INPUT_CHANGED)
     parent, child = multiprocessing.Pipe(duplex=True)
     workspace = _workspace()
     process: subprocess.Popen[bytes] | None = None
@@ -156,6 +182,7 @@ def render_private_artifact(
                 format.value,
                 workspace.name,
                 str(os.getpid()),
+                profile,
             ],
             pass_fds=(child.fileno(),),
             stdin=subprocess.DEVNULL,
@@ -232,9 +259,11 @@ def render_private_artifact(
 def _main() -> None:
     import ctypes
 
-    if len(sys.argv) != 5:
+    if len(sys.argv) != 6:
         raise SystemExit(2)
-    descriptor, format_value, scratch, parent_pid = sys.argv[1:]
+    descriptor, format_value, scratch, parent_pid, profile = sys.argv[1:]
+    if profile not in {"1", "2", "3"}:
+        raise SystemExit(2)
     # Linux closes the entire renderer immediately if its owning worker dies.
     # Check the parent again after installing the signal to close the start race.
     libc = ctypes.CDLL(None, use_errno=True)
@@ -242,7 +271,7 @@ def _main() -> None:
         raise SystemExit(2)
     connection = Connection(int(descriptor))
     payload = connection.recv_bytes(maxlength=2 * 1024 * 1024)
-    _child(connection, payload, format_value, scratch)
+    _child(connection, payload, format_value, scratch, profile)
 
 
 if __name__ == "__main__":

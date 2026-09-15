@@ -1,6 +1,6 @@
 # Phase 3 Implementation Report
 
-**Current:** P3-01 interfaces and risk reports delivered; P3-02/P3-03 numerical foundations and calendar capture implemented; full vertical integration pending
+**Current:** P3-01 interfaces and risk reports delivered; P3-02 scenarios and profile3 reports implemented; P3-03 kernel/calendar capture implemented with persistence and public integration pending
 **Target:** 1.0.0; independent review pending; production not authorized
 
 Start main d2ebdaf96d1b61aacea5c6492824946540f88803. Governance delivery
@@ -617,3 +617,101 @@ cases in 8.15 seconds (9.351 seconds total), plus migration/fixture lint and for
 The preceding documentation02 gate passed mypy/secret/governance/format checks but
 remains failed at migration lint. The two final executable differences from
 browser06 are covered by schema07; no earlier failing gate is relabelled.
+
+
+## P3-02 explicit scenario and risk report profile3
+
+ADR-0026 is implemented with the explicit `report_sections_v3` selection and
+document schema `3.0.0`. The same six premium routes retain their operation IDs and
+default profile2 behavior. V1/default V2 values, original codecs and schemas remain
+compatible. The generated premium client chooses its closed schema through an
+explicit constructor profile; query/body conflicts, duplicates, cross-profile
+IDs, cursors, grants and conditional reads fail before private decoding. Existing
+MCP tools continue to use their preserved contracts. The current inventory is
+109 paths, 123 operations, 441 schemas, 32 MCP tools/seven resources and ten broker
+GETs. Migration `20260915_0021` adds eight normalized actual-run binding fields
+without adding tables (254 remain).
+
+Scenario reports copy the complete original saved result through ten analytical
+and seventeen proof tables, including unavailable components, factor/rate witnesses,
+X-ray paths and original historical replay/FX/calendar evidence. No simulation or
+scenario calculation runs during report capture. Original and current STORE,
+DISPLAY and REPORT rights precede private data and are checked again before sealing
+and artifact reads. Source lifetimes clamp every retained copy; report payloads
+drain before scenario/source parents. Profile3 may retain an analysis currency
+different from the snapshot currency only while preserving every original money
+cell's currency and an explicit warning; V1/V2 currency restrictions remain intact.
+Reserved projection/goal/research vocabulary remains unavailable until implemented.
+
+The real EUR and GBP source fixtures compare PDF, CSV, JSON and XLSX back to the
+complete canonical report. They preserve exact numbers, quality inheritance,
+original IDs/digests, source clocks and all proof membership, with no formula or
+external spreadsheet execution. The established 32 MiB document, 2 MiB manifest,
+256-license, 100,000-row/table, 10 MiB/artifact and 25 MiB/artifact-set limits remain.
+The licensed sensitivity fixture independently expects coefficient -2 times .01
+to produce -.02. The historical fixture independently expects total-return
+100/110/121 and USD/EUR .8/.84/.88 to produce local .21, FX .1 and reporting .331.
+REPORT-only revocation denies new capture and retained report reads before private
+decoding while the separately permitted scenario read remains usable.
+
+Final `premium-report-v3-local-04` passed all 4,329 unit/property/contract/security
+Python cases (270.413 seconds), all 707 web cases, Ruff 834 files, strict mypy
+829 files, workspace/repository/secret/architecture/broker/generated-contract checks
+and all twelve Python package builds. Total gate: 310.918 seconds, unchanged source.
+`premium-report-v3-postgres-05` passed all 15 cases (140.902 seconds; total
+143.245 seconds), including empty/head/repeat/parity, populated 0020 preservation,
+exact downgrade guard restoration/re-upgrade, altered source pins, V3 downgrade
+denial, shortened original lifetimes, permission revocation and bounded physical
+purge with busy-owner exclusion. Eight distinct artifact cases have passing
+executions across artifacts02 (seven pass/one fixture failure) and artifacts04
+(corrected EUR case). Sources02 passed both actual licensed source cases. These
+populations are deduplicated rather than added across overlapping attempts.
+
+The real browser04 gate passed all three 1440/768/360-width journeys in 419.766
+seconds using the production standalone web build and actual API/scenario/report
+workers against one PostgreSQL container. It checked all four formats, exact values
+and proof, profile/account isolation, saved-result selection, keyboard/focus and
+no document overflow. Nine original captures remain; ROOT reviewed the three
+completed views. Action-to-navigation annotations were 8162/8168/8182 ms. These
+include the whole server action/navigation and do not establish the API admission
+SLO; performance investigation and the full accessibility audit remain pending.
+
+Failed attempts are preserved with their own original source manifests and logs.
+Earlier focused/typing gates exposed narrow type and synthetic fixture issues.
+Postgres01 rejected an unescaped SQLAlchemy colon inside a quoted SQL string;
+later Postgres02/03 fixture corrections were verified and final Postgres05 is green.
+Artifacts02's EUR fixture incorrectly required an optional absent FX table; GBP
+and the other seven cases passed. Artifacts03 caught an unused transport binding;
+artifacts04 passed the corrected EUR case, all static checks and production build.
+Sources01 caught fixture constructor/typing errors; sources02 passed both cases.
+Browser01's five-second navigation expectation was too short; browser02 introduced
+a wait for a Next streaming response to finish even after the actual report had
+succeeded; browser03 overlooked canonical inherited quality. Browser04 retains
+the real 30-second navigation bound and exact effective-quality assertions.
+Local01 stopped on formatting of four new JSON fixtures. Local02 passed 4,327 cases
+and failed two old assertions requiring byte-identical premium descriptors despite
+the accepted explicit-profile change. The new independent oracle binds the original
+six routes and 38 original client declarations, permitting only the closed selector
+and V3 variants while preserving all other descriptors. A prematurely started
+local03 was explicitly interrupted; it is not a pass. Compatibility01 and local04
+passed the corrected oracle. No production behavior was weakened to satisfy tests.
+
+Browser04 and local04 have identical production content/type/mode; the eight
+intervening differences are test-only formatting/compatibility-oracle changes.
+The final documentation gate and external delivery receipt bind the eventual
+commit/tree separately. Original commands, logs, source manifests, JUnit outputs,
+Playwright data and screenshots are under the task's external `phase3-20260914`
+directory; they will be included in the final portable candidate pack. The bounded
+agent code review found no actionable issue in its profile/source/retention/parity
+scope, performed no checks and is not external acceptance. No new coverage,
+SLO/RSS/load/restore or package acceptance claim is made. All 30 acceptance rows,
+48 scenarios and final immutable Phase 3 validation remain pending. CI remains
+owner-deferred/unverified; P3-03 integration is next.
+
+At the delivery boundary, scoped consumer checks preceded deletion of unused Next
+build cache and the superseded scenario Python build: 218988544 allocated file bytes.
+The cleanup receipt preserves every removed file hash and records unrelated system
+daemons whose proc descriptors are restricted. Current standalone assets/types,
+new package builds, dependencies, source and evidence remain. The sole task
+PostgreSQL container is still needed for projection integration; unrelated volumes
+are preserved.
