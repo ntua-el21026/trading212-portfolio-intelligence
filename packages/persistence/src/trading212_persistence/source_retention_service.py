@@ -81,7 +81,9 @@ def _expire_snapshot(
     budget: SourcePurgeBudget,
 ) -> bool:
     reference = str(row.__tablename__).removesuffix("s") + "_id"
-    if not budget.metadata_limit:
+    # Reserve all four possible marker phase writes' new indexed projection
+    # parent checks before admitting any mutation in this exact-source pass.
+    if budget.rows_inspected < 5 or not budget.inspect(rows=4):
         return False
     work = session.scalar(
         select(sm.SourceRetentionWorkModel)
@@ -109,6 +111,7 @@ def _expire_snapshot(
         if work.phase == "complete":
             return False
     if work.phase == "copies":
+        from .projection_retention import ProjectionParentKind, purge_projection_source_copies
         from .risk_retention import expire_risk_payloads
         from .scenario_retention import expire_scenario_payloads
 
@@ -117,6 +120,10 @@ def _expire_snapshot(
         if not expire_scenario_payloads(session, at=at, owner=row.owner_id, budget=budget):
             return False
         kind = str(row.__tablename__).removesuffix("_snapshots")
+        if isinstance(row, sm.SourceSnapshotFields) and not purge_projection_source_copies(
+            session, row.owner_id, cast(ProjectionParentKind, kind), row.id, at=at, budget=budget
+        ):
+            return False
         if not purge_alert_source_copies(
             session, owner=row.owner_id, kind=kind, source_id=row.id, at=at, budget=budget
         ):

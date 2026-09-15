@@ -100,6 +100,15 @@ class ProviderLicenseVersionModel(SourceOwned):
             name="retention_bounded",
         ),
         Index("ix_source_licenses_effective", "owner_id", "provider_id", "effective_at", "id"),
+        Index("ix_projection_retention_policy_activation", "owner_id", "effective_at"),
+        Index(
+            "ix_projection_retention_policy_selection",
+            "owner_id",
+            "provider_id",
+            "effective_at",
+            "version_number",
+            "id",
+        ),
     )
     provider_id: Mapped[UUID] = mapped_column()
     version_number: Mapped[int] = mapped_column(Integer)

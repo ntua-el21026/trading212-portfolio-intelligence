@@ -12,12 +12,13 @@ import {
 } from "./report-transport";
 import type { ReportArtifactMetadata } from "./reports.generated";
 
-export type PremiumReportProfile = "report_sections_v2" | "report_sections_v3";
+export type PremiumReportProfile =
+  "report_sections_v2" | "report_sections_v3" | "report_sections_v4";
 export type PremiumReportClientOptions<
   P extends PremiumReportProfile = "report_sections_v2",
-> = ReportClientOptions & { profile?: P } & (P extends "report_sections_v3"
-    ? { profile: P }
-    : unknown);
+> = ReportClientOptions & { profile?: P } & (P extends "report_sections_v2"
+    ? unknown
+    : { profile: P });
 export type PremiumReportQuery<P extends PremiumReportProfile, Q> = Omit<
   Q,
   "profile"
@@ -26,12 +27,18 @@ export type PremiumReportValue<
   P extends PremiumReportProfile,
   V2,
   V3,
-> = P extends "report_sections_v3" ? V3 : V2;
+  V4 = never,
+> = P extends "report_sections_v4"
+  ? V4
+  : P extends "report_sections_v3"
+    ? V3
+    : V2;
 
 export function premiumReportProfile(value: unknown): PremiumReportProfile {
   if (value === undefined || value === "report_sections_v2")
     return "report_sections_v2";
   if (value === "report_sections_v3") return "report_sections_v3";
+  if (value === "report_sections_v4") return "report_sections_v4";
   throw invalidProfile();
 }
 
@@ -43,15 +50,26 @@ function invalidProfile(): ReportApiError {
   );
 }
 
-/** The two closed branches are selected by the constructor, never by response shape. */
-export function premiumReportSchema<P extends PremiumReportProfile, V2, V3>(
+/** Constructor-pinned schemas never infer a report profile from response shape. */
+export function premiumReportSchema<
+  P extends PremiumReportProfile,
+  V2,
+  V3,
+  V4 = never,
+>(
   profile: P,
   previous: z.ZodType<V2>,
   current: z.ZodType<V3>,
-): z.ZodType<PremiumReportValue<P, V2, V3>> {
-  return (profile === "report_sections_v3" ? current : previous) as z.ZodType<
-    PremiumReportValue<P, V2, V3>
-  >;
+  projection?: z.ZodType<V4>,
+): z.ZodType<PremiumReportValue<P, V2, V3, V4>> {
+  if (profile === "report_sections_v4" && !projection) throw invalidProfile();
+  return (
+    profile === "report_sections_v4"
+      ? projection
+      : profile === "report_sections_v3"
+        ? current
+        : previous
+  ) as z.ZodType<PremiumReportValue<P, V2, V3, V4>>;
 }
 
 function scopedQuery(
@@ -92,7 +110,7 @@ export class PremiumReportTransport extends ReportTransport {
             (supplied.length === 1 && supplied[0] !== profile)
           )
             throw invalidProfile();
-          if (profile === "report_sections_v3")
+          if (profile !== "report_sections_v2")
             url.searchParams.set("profile", profile);
           else url.searchParams.delete("profile");
           return (options.fetchImpl ?? fetch)(url, init);
@@ -118,10 +136,39 @@ export class PremiumReportTransport extends ReportTransport {
         "profile_version" in body ? body.profile_version : undefined;
       if (
         (this.#profile === "report_sections_v2" && supplied !== undefined) ||
-        (this.#profile === "report_sections_v3" &&
-          supplied !== "report_sections_v3")
+        (this.#profile !== "report_sections_v2" && supplied !== this.#profile)
       )
         throw invalidProfile();
+      if (this.#profile === "report_sections_v4") {
+        if (!("premium_run" in body) || !("sections" in body))
+          throw invalidProfile();
+        const pin = body.premium_run;
+        if (
+          typeof pin !== "object" ||
+          pin === null ||
+          !("family" in pin) ||
+          pin.family !== "projection" ||
+          !Array.isArray(body.sections)
+        )
+          throw invalidProfile();
+        const selected = body.sections.filter(
+          (item: unknown) =>
+            item === "risk" ||
+            item === "scenario" ||
+            item === "projection" ||
+            item === "goal" ||
+            item === "research",
+        );
+        if (
+          selected.filter((item: unknown) => item === "projection").length !==
+            1 ||
+          selected.filter((item: unknown) => item === "goal").length > 1 ||
+          selected.some(
+            (item: unknown) => item !== "projection" && item !== "goal",
+          )
+        )
+          throw invalidProfile();
+      }
       if (this.#profile === "report_sections_v3") {
         if (!("premium_run" in body) || !("sections" in body))
           throw invalidProfile();

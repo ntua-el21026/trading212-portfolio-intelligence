@@ -51,7 +51,8 @@ class ProfiledPremiumReportClientGenerator(ReportClientGenerator):
         schema = selector["schema"]
         if (
             selector.get("required", False)
-            or schema.get("enum") != ["report_sections_v2", "report_sections_v3"]
+            or schema.get("enum")
+            != ["report_sections_v2", "report_sections_v3", "report_sections_v4"]
             or schema.get("default") != "report_sections_v2"
         ):
             raise ValueError("The premium profile must retain its exact profile-two default.")
@@ -108,16 +109,21 @@ class ProfiledPremiumReportClientGenerator(ReportClientGenerator):
             if _branches(schema) != {
                 "GeneratePremiumReportRequest",
                 "GeneratePremiumReportRequestV3",
+                "GeneratePremiumReportRequestV4",
             }:
-                raise ValueError("Premium creation must expose exactly its two typed profiles.")
+                raise ValueError("Premium creation must expose exactly its three typed profiles.")
             previous = self.reference("#/components/schemas/GeneratePremiumReportRequest")
             current = self.reference("#/components/schemas/GeneratePremiumReportRequestV3")
+            projection = self.reference("#/components/schemas/GeneratePremiumReportRequestV4")
             arguments.append(
                 f"body: PremiumReportValue<P, z.input<typeof {previous}>, "
-                f"z.input<typeof {current}>>"
+                f"z.input<typeof {current}>, z.input<typeof {projection}>>"
             )
             # The shared conditional helper chooses by the constructor's explicit profile.
-            body = f"premiumReportSchema(this.#profile, {previous}, {current}).parse(body)"
+            body = (
+                f"premiumReportSchema(this.#profile, {previous}, {current}, "
+                f"{projection}).parse(body)"
+            )
         elif "requestBody" in operation:
             schema = operation["requestBody"]["content"]["application/json"]["schema"]
             if _branches(schema) != {"EmptyReportRequest"}:
@@ -145,7 +151,7 @@ class ProfiledPremiumReportClientGenerator(ReportClientGenerator):
             "get_premium_report_manifest": "PremiumReportManifest",
             "create_premium_report_download_grant": "ArtifactGrant",
         }[name]
-        expected = {base} if base == "ArtifactGrant" else {base, base + "V3"}
+        expected = {base} if base == "ArtifactGrant" else {base, base + "V3", base + "V4"}
         if _branches(schema) != expected:
             raise ValueError("The premium success response differs from its closed profiles.")
         previous = self.reference("#/components/schemas/" + base)
@@ -154,9 +160,11 @@ class ProfiledPremiumReportClientGenerator(ReportClientGenerator):
             output = f"z.output<typeof {previous}>"
         else:
             current = self.reference("#/components/schemas/" + base + "V3")
-            response = f"premiumReportSchema(this.#profile, {previous}, {current})"
+            projection = self.reference("#/components/schemas/" + base + "V4")
+            response = f"premiumReportSchema(this.#profile, {previous}, {current}, {projection})"
             output = (
-                f"PremiumReportValue<P, z.output<typeof {previous}>, z.output<typeof {current}>>"
+                f"PremiumReportValue<P, z.output<typeof {previous}>, "
+                f"z.output<typeof {current}>, z.output<typeof {projection}>>"
             )
         return (
             f"async {name}({', '.join(arguments)}): Promise<ReportApiResponse<{output}>> {{\n"

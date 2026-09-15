@@ -185,7 +185,7 @@ class ReportStore:
             or row.sealed_at is None
             or row.input_digest != job.input_digest
             or row.contract_version != version
-            or version not in (1, 2, 3)
+            or version not in (1, 2, 3, 4)
         ):
             raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
         if not allow_expired and (
@@ -212,10 +212,16 @@ class ReportStore:
         )
 
         version = job.contract_version if isinstance(job, ReportJobModel) else 1
-        if version not in (1, 2, 3):
+        if version not in (1, 2, 3, 4):
             raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
+        from trading212_domain.report_manifest_v4 import decode_report_manifest_v4
+
         result = (
-            decode_report_manifest_v3(payload) if version == 3 else decode_report_manifest(payload)
+            decode_report_manifest_v4(payload)
+            if version == 4
+            else decode_report_manifest_v3(payload)
+            if version == 3
+            else decode_report_manifest(payload)
         )
         self._manifest_contract(job, result)
         return result
@@ -279,7 +285,9 @@ class ReportStore:
             is not None
         )
         state = ReportJobState.EXPIRED if expired or pending else ReportJobState(job.state)
-        context: app.ReportPinnedContext | app.ReportPinnedContextV3 | None = None
+        context: (
+            app.ReportPinnedContext | app.ReportPinnedContextV3 | app.ReportPinnedContextV4 | None
+        ) = None
         if state not in {ReportJobState.EXPIRED, ReportJobState.CANCELLED}:
             from trading212_application.reports import decode_report_pinned_context
 
@@ -293,7 +301,9 @@ class ReportStore:
             if payload is None:
                 raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
             context = (
-                app.decode_report_pinned_context_v3(payload)
+                app.decode_report_pinned_context_v4(payload)
+                if row.contract_version == 4
+                else app.decode_report_pinned_context_v3(payload)
                 if row.contract_version == 3
                 else decode_report_pinned_context(payload)
             )

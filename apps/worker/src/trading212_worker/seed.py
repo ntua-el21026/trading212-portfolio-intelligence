@@ -75,7 +75,14 @@ async def seed_complete_synthetic(database_url: str, *, app_environment: str) ->
             app_environment=app_environment,
             at=SEED_TIME,
             scopes=frozenset(
-                {Scope.ALERTS_READ, Scope.ALERTS_WRITE, Scope.RISK_WRITE, Scope.SCENARIOS_WRITE}
+                {
+                    Scope.ALERTS_READ,
+                    Scope.ALERTS_WRITE,
+                    Scope.RISK_WRITE,
+                    Scope.SCENARIOS_WRITE,
+                    Scope.PROJECTIONS_WRITE,
+                    Scope.GOALS_WRITE,
+                }
             ),
         )
     finally:

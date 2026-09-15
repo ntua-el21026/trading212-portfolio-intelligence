@@ -109,7 +109,7 @@ async def test_independent_three_names_nested_closed_fields_and_annotations() ->
         model = RiskMatrixToolResult if name == "get_risk_matrix" else RiskRunToolResult
         assert descriptor["outputSchema"] == model.model_json_schema(by_alias=True)
     resources = await server.list_resources()
-    assert len(resources) == 7
+    assert len(resources) == 11
     resource = next(x for x in resources if str(x.uri) == RISK_WIDGET_URI)
     assert resource.mime_type == "text/html;profile=mcp-app"
     assert resource.meta is not None

@@ -248,6 +248,14 @@ export async function XrayPage({ search }: Readonly<{ search: XraySearch }>) {
                 Use this saved X-ray in a scenario
               </Link>
             </p>
+            <p>
+              <Link
+                prefetch={false}
+                href={`/research?${new URLSearchParams({ account: account.id, xray: data.context.run_id })}`}
+              >
+                Research with this saved X-ray
+              </Link>
+            </p>
             <XraySummary summary={data.summary} />
             <XrayResults data={data} query={query} />
             <XrayContextDetails context={data.context} query={query} />

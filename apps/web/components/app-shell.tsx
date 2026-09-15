@@ -1,5 +1,6 @@
 "use client";
 
+import { CommandPalette } from "./command-palette";
 import { NavigationIntentProvider } from "./navigation-intent";
 
 import { Info, LockKeyhole, RotateCw, UserRound } from "lucide-react";
@@ -114,6 +115,7 @@ function SelectedAppShell({
           </span>
         </div>
         <div className="topbar__account">
+          <CommandPalette />
           <UserRound aria-hidden="true" size={22} strokeWidth={1.6} />
           <span>
             <strong>{access.displayName}</strong>

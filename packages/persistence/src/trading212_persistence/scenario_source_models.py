@@ -14,6 +14,7 @@ from sqlalchemy import (
     LargeBinary,
     String,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -85,6 +86,8 @@ class ScenarioSensitivityVersionModel(SourceOwned):
 
     __tablename__ = "scenario_sensitivity_versions"
     __table_args__ = (
+        Index("ix_sensitivity_cleanup_global", "sealed", "retention_closed", "id"),
+        Index("ix_sensitivity_cleanup_owner", "owner_id", "sealed", "retention_closed", "id"),
         owned(),
         source_license(),
         ForeignKeyConstraint(
@@ -126,6 +129,8 @@ class ScenarioSensitivityVersionModel(SourceOwned):
     evidence_count: Mapped[int] = mapped_column(Integer)
     expires_at: Mapped[datetime] = mapped_column(UTCDateTime())
     sealed: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    retention_closed: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
 
 
 class ScenarioSensitivityVersionPayloadModel(SourceOwned):
@@ -241,6 +246,9 @@ class ScenarioSensitivityVersionPayloadModel(SourceOwned):
 class ScenarioSensitivityObservationModel(SourceOwned):
     __tablename__ = "scenario_sensitivity_observations"
     __table_args__ = (
+        Index(
+            "ix_sensitivity_observation_pending", "owner_id", "version_id", "payload_present", "id"
+        ),
         owned(),
         source_license(),
         owner_fk("version_id", "scenario_sensitivity_versions"),
@@ -265,6 +273,8 @@ class ScenarioSensitivityObservationModel(SourceOwned):
     content_digest: Mapped[str] = mapped_column(String(64))
     driver_id: Mapped[UUID] = mapped_column()
     driver_definition_version_id: Mapped[UUID] = mapped_column()
+
+    payload_present: Mapped[bool] = mapped_column(Boolean, server_default=text("false"))
 
 
 class ScenarioSensitivityObservationPayloadModel(SourceOwned):
@@ -430,6 +440,10 @@ class ScenarioSensitivityEvidencePayloadModel(SourceOwned):
 class ScenarioSensitivityEvidenceLinkModel(SourceOwned):
     __tablename__ = "scenario_sensitivity_evidence_links"
     __table_args__ = (
+        Index("ix_sensitivity_evidence_owned", "owner_id", "evidence_id", "copy_pending", "id"),
+        Index("ix_sensitivity_version_owned", "owner_id", "version_id", "copy_pending", "id"),
+        Index("ix_sensitivity_version_payload", "owner_id", "version_id", "payload_pending", "id"),
+        Index("ix_sensitivity_link_scan", "owner_id", "version_id", "id"),
         owned(),
         owner_fk("version_id", "scenario_sensitivity_versions"),
         owner_fk("evidence_id", "scenario_sensitivity_evidence"),
@@ -451,6 +465,9 @@ class ScenarioSensitivityEvidenceLinkModel(SourceOwned):
     observation_id: Mapped[UUID | None] = mapped_column()
     evidence_id: Mapped[UUID] = mapped_column()
 
+    copy_pending: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
+    payload_pending: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
+
 
 class ScenarioSensitivityRetentionModel(SourceOwned):
     __tablename__ = "scenario_sensitivity_retention"
@@ -469,6 +486,7 @@ class ScenarioSensitivityRetentionModel(SourceOwned):
     )
     version_id: Mapped[UUID] = mapped_column()
     reason: Mapped[str] = mapped_column(String(30))
+    evidence_after_id: Mapped[UUID | None] = mapped_column()
     completed_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
 
 

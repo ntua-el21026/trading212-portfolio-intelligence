@@ -7,6 +7,7 @@ from dataclasses import replace
 from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
+from typing import Protocol
 from uuid import UUID
 
 from trading212_application.views import MetricView
@@ -24,9 +25,32 @@ type ReportScalar = str | Decimal | int | bool | date | datetime | UUID | Enum |
 type ReportValue = ReportScalar | Money | MetricView | r.ReportCell
 
 
+class ReportCellContext(Protocol):
+    @property
+    def key(self) -> str: ...
+    @property
+    def family(self) -> r.ReportFamily: ...
+    @property
+    def method_key(self) -> str: ...
+    @property
+    def method_version(self) -> str: ...
+    @property
+    def quality(self) -> QualityState: ...
+    @property
+    def provenance_set_key(self) -> str: ...
+    @property
+    def coverage_set_key(self) -> str: ...
+    @property
+    def note_set_key(self) -> str: ...
+
+
+class ReportNoteSink(Protocol):
+    def add_note(self, note: r.ReportNote, *, note_set_key: str) -> None: ...
+
+
 def capture_note(
-    builder: ReportBuilder,
-    context: r.ReportContext,
+    builder: ReportNoteSink,
+    context: ReportCellContext,
     *,
     key: str,
     text: str,
@@ -98,8 +122,8 @@ def capture_stored_warnings(
 
 
 def capture_row(
-    builder: ReportBuilder,
-    context: r.ReportContext,
+    builder: ReportNoteSink,
+    context: ReportCellContext,
     table: r.ReportTableKey,
     *,
     key: str,
@@ -217,7 +241,7 @@ def capture_row(
     )
 
 
-def _compact_cell(cell: r.ReportCell, context: r.ReportContext) -> r.ReportCell:
+def _compact_cell(cell: r.ReportCell, context: ReportCellContext) -> r.ReportCell:
     """Factor only metadata identical to the explicitly named row context."""
     if cell.context_key is not None and cell.context_key != context.key:
         return cell

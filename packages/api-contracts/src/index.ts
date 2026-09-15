@@ -800,6 +800,15 @@ export type {
 
 export * from "./premium-reports.generated";
 
+export * from "./projections.generated";
+export { ProjectionApiError } from "./projection-transport";
+export type {
+  ProjectionApiResponse,
+  ProjectionClientOptions,
+  ProjectionReadOptions,
+  ProjectionCommandOptions,
+} from "./projection-transport";
+
 export * from "./scenarios.generated";
 export { ScenarioApiError } from "./scenario-transport";
 export type {
@@ -813,3 +822,12 @@ export type {
   PremiumReportProfile,
   PremiumReportClientOptions,
 } from "./premium-report-transport";
+
+export * from "./research.generated";
+export { ResearchApiError } from "./research-transport";
+export type {
+  ResearchApiResponse,
+  ResearchClientOptions,
+  ResearchReadOptions,
+  ResearchCommandOptions,
+} from "./research-transport";

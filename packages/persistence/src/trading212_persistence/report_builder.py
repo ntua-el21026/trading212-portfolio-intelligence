@@ -9,6 +9,7 @@ from hashlib import sha256
 from uuid import UUID
 
 from trading212_application.reports import ReportChunkSink
+from trading212_domain import report_v4 as v4
 from trading212_domain import reports as r
 from trading212_domain.errors import fail_validation
 from trading212_domain.report_manifest import (
@@ -71,7 +72,7 @@ class ReportBuilder:
         )
         self.descriptors: dict[r.ReportTableKey, r.ReportTableDescriptor] = {}
         self.bindings: list[r.ReportBinding] = []
-        self.contexts: dict[str, r.ReportContext] = {}
+        self.contexts: dict[str, r.ReportContext | v4.ReportContextV4] = {}
         self.references: dict[str, r.ReportSourceReference] = {}
         self.source_memberships: set[r.ReportSourceMembership] = set()
         self.notes: dict[str, r.ReportNote] = {}
@@ -84,12 +85,14 @@ class ReportBuilder:
         self._pending_proof_bytes = 0
         self.byte_length = 0
         self.chunk_count = 0
-        self.premium_binding: ReportRiskRunBinding | ReportScenarioRunBinding | None = None
+        self.premium_binding: (
+            ReportRiskRunBinding | ReportScenarioRunBinding | v4.ReportProjectionRunBinding | None
+        ) = None
         self.copy_expires_at: datetime | None = None
         self._empty_proof_bytes = len(encode_report_proof(r.ReportProof()))
         self._proof_bytes = self._empty_proof_bytes
 
-    def _reserve(self, part: r.ReportProof) -> None:
+    def _reserve(self, part: r.ReportProof | v4.ReportProofV4) -> None:
         self._proof_bytes += len(encode_report_proof(part)) - self._empty_proof_bytes + 1
         r.report_limit(self._proof_bytes <= r.MAX_REPORT_MANIFEST_BYTES, "proof_bytes")
 
@@ -210,10 +213,18 @@ class ReportBuilder:
         self._reserve(r.ReportProof(reconciliation=(fact,)))
         self.reconciliation.append(fact)
 
-    def add_context(self, context: r.ReportContext) -> None:
-        context = replace(context, schema_version=r.report_schema_version(self.selection))
-        if context.key not in self.contexts:
-            self._reserve(r.ReportProof(contexts=(context,)))
+    def add_context(self, context: r.ReportContext | v4.ReportContextV4) -> None:
+        if isinstance(self.selection, v4.ReportSelectionV4):
+            if isinstance(context, r.ReportContext):
+                context = v4.promote_report_context_v4(context)
+            if context.key not in self.contexts:
+                self._reserve(v4.ReportProofV4(contexts=(context,)))
+        else:
+            if not isinstance(context, r.ReportContext):
+                fail_validation("Report context profile differs.", field="context")
+            context = replace(context, schema_version=r.report_schema_version(self.selection))
+            if context.key not in self.contexts:
+                self._reserve(r.ReportProof(contexts=(context,)))
         old = self.contexts.setdefault(context.key, context)
         if old != context:
             fail_validation("Report context identity conflicts.", field="context")
@@ -339,7 +350,7 @@ class ReportBuilder:
         """Return a candidate; only the service may authorize and seal the sink."""
         self.complete_proof_tables()
         proof = r.ReportProof(
-            contexts=tuple(self.contexts.values()),
+            contexts=(),
             source_references=tuple(self.references.values()),
             source_memberships=tuple(self.source_memberships),
             note_memberships=tuple(self.note_memberships),
@@ -350,14 +361,55 @@ class ReportBuilder:
             proof_relations=(),
             reconciliation=tuple(self.reconciliation),
         )
-        proof_bytes = encode_report_proof(proof)
+        complete_proof: r.ReportProof | v4.ReportProofV4
+        if isinstance(self.selection, v4.ReportSelectionV4):
+            from dataclasses import fields
+
+            if any(not isinstance(item, v4.ReportContextV4) for item in self.contexts.values()):
+                fail_validation("Report context profile differs.", field="context")
+            complete_proof = v4.ReportProofV4(
+                contexts=tuple(
+                    item for item in self.contexts.values() if isinstance(item, v4.ReportContextV4)
+                ),
+                **{
+                    item.name: getattr(proof, item.name)
+                    for item in fields(r.ReportProof)
+                    if item.name != "contexts"
+                },
+            )
+        else:
+            if any(not isinstance(item, r.ReportContext) for item in self.contexts.values()):
+                fail_validation("Report context profile differs.", field="context")
+            complete_proof = replace(
+                proof,
+                contexts=tuple(
+                    item for item in self.contexts.values() if isinstance(item, r.ReportContext)
+                ),
+            )
+        proof_bytes = encode_report_proof(complete_proof)
         proof_digest = sha256(proof_bytes).hexdigest()
         tables = tuple(
             self.descriptors[table] for table in r.ReportTableKey if table in self.descriptors
         )
         header: ReportHeaderContract
-        if isinstance(self.selection, ReportSelectionV3):
-            if self.premium_binding is None:
+        if isinstance(self.selection, v4.ReportSelectionV4):
+            if not isinstance(self.premium_binding, v4.ReportProjectionRunBinding):
+                fail_validation(
+                    "The selected projection run binding is missing.", field="premium_binding"
+                )
+            header = v4.ReportDocumentHeaderV4(
+                selection=self.selection,
+                owner_id=self.owner_id,
+                valuation_at=self.valuation_at,
+                context_digest=proof_digest,
+                tables=tables,
+                document_digest="0" * 64,
+                premium_binding=self.premium_binding,
+            )
+        elif isinstance(self.selection, ReportSelectionV3):
+            if not isinstance(
+                self.premium_binding, (ReportRiskRunBinding, ReportScenarioRunBinding)
+            ):
                 fail_validation(
                     "The selected premium run binding is missing.", field="premium_binding"
                 )
@@ -389,24 +441,41 @@ class ReportBuilder:
         )
         profile = renderer_profile(selected_report_formats(self.selection))
         capture: ReportCaptureContract
-        if isinstance(header, ReportDocumentHeaderV3):
+        if isinstance(header, v4.ReportDocumentHeaderV4):
+            if not isinstance(complete_proof, v4.ReportProofV4):
+                fail_validation("Report proof profile differs.", field="proof")
+            capture = v4.ReportCaptureSummaryV4(
+                header=header,
+                canonical_byte_length=self.byte_length,
+                chunk_count=self.chunk_count,
+                immutable_bindings=bindings,
+                proof=complete_proof,
+                proof_digest=proof_digest,
+                renderer_profile=profile,
+                copy_expires_at=self.copy_expires_at,
+            )
+        elif isinstance(header, ReportDocumentHeaderV3):
+            if not isinstance(complete_proof, r.ReportProof):
+                fail_validation("Report proof profile differs.", field="proof")
             capture = ReportCaptureSummaryV3(
                 header=header,
                 canonical_byte_length=self.byte_length,
                 chunk_count=self.chunk_count,
                 immutable_bindings=bindings,
-                proof=proof,
+                proof=complete_proof,
                 proof_digest=proof_digest,
                 renderer_profile=profile,
                 copy_expires_at=self.copy_expires_at,
             )
         else:
+            if not isinstance(complete_proof, r.ReportProof):
+                fail_validation("Report proof profile differs.", field="proof")
             capture = r.ReportCaptureSummary(
                 header=header,
                 canonical_byte_length=self.byte_length,
                 chunk_count=self.chunk_count,
                 immutable_bindings=bindings,
-                proof=proof,
+                proof=complete_proof,
                 proof_digest=proof_digest,
                 renderer_profile=profile,
                 copy_expires_at=self.copy_expires_at,

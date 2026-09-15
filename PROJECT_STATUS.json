@@ -140,7 +140,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "phase_3_scenario_persistence_worker_retention_and_interfaces",
+  "next_gate": "phase_3_physical_retention_provider_preferences_and_full_local_validation",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -436,7 +436,7 @@
     "verification_after_limits_reset": "pending"
   },
   "current_work_package": {
-    "id": "P3-02",
+    "id": "P3-06",
     "implementation_report": "docs/implementation/PHASE_3_IMPLEMENTATION_REPORT.md",
     "status": "in_progress",
     "source_sha": null,
@@ -449,10 +449,26 @@
       "projection_kernel_and_calendar_capture": "implemented",
       "scenario_persistence_and_worker": "implemented",
       "scenario_public_interfaces_and_reports": "implemented",
-      "projection_persistence_worker_and_interfaces": "pending",
+      "projection_persistence_worker_and_interfaces": "implemented",
       "package_acceptance": "pending",
       "scenario_public_interfaces": "implemented",
-      "scenario_reports": "implemented"
+      "scenario_reports": "implemented",
+      "projection_runtime_and_interfaces": "implemented",
+      "projection_retention_physical_budget": "in_progress",
+      "projection_report_profile4": "implemented",
+      "research_domain_and_application": "implemented",
+      "research_persistence_and_interfaces": "implemented",
+      "projection_indexed_retained_membership": "implemented",
+      "research_rest_and_generated_client": "implemented",
+      "research_bounded_pages": "implemented",
+      "legacy_report_physical_retention": "in_progress",
+      "research_web_and_mcp": "implemented",
+      "research_report_profile": "pending",
+      "mcp_registry_38_tools_11_resources": "implemented",
+      "pwa_public_shell_and_command_palette": "implemented",
+      "owner_saved_layouts": "in_progress",
+      "provider_acquisition": "in_progress",
+      "shared_physical_retention_closure": "in_progress"
     }
   },
   "phase_transition": {

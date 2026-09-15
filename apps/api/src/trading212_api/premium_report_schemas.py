@@ -8,12 +8,14 @@ from uuid import UUID
 from fastapi import Request, Response
 from pydantic import BaseModel
 from trading212_api_contracts import premium_reports as wire
-from trading212_api_contracts import premium_reports_v3 as profiles
+from trading212_api_contracts import premium_reports_v4 as profiles
 from trading212_application import reports as application
 from trading212_domain import report_v3 as v3
+from trading212_domain import report_v4 as v4
 from trading212_domain import reports as domain
 from trading212_domain.errors import DomainError
 from trading212_domain.report_manifest import encode_report_manifest
+from trading212_domain.report_manifest_v4 import encode_report_manifest_v4
 from trading212_domain.serialization import to_primitive
 from trading212_domain.values import CurrencyCode
 
@@ -24,6 +26,30 @@ from .target_routes import _error
 def report_command(
     value: profiles.GeneratePremiumReportRequest, key: str
 ) -> application.GenerateReportCommand:
+    if isinstance(value, profiles.GeneratePremiumReportRequestV4):
+        return application.GenerateReportCommand(
+            selection=v4.ReportSelectionV4(
+                account_id=UUID(value.account_id),
+                start_date=value.start_date,
+                end_date=value.end_date,
+                source_cutoff_at=value.source_cutoff_at,
+                snapshot_id=UUID(value.snapshot_id),
+                reporting_currency=CurrencyCode(value.reporting_currency),
+                report_type=domain.ReportType(value.report_type),
+                sections=tuple(domain.ReportSection(item) for item in value.sections),
+                formats=tuple(domain.ReportFormat(item) for item in value.formats),
+                premium_run=v4.ReportProjectionRunSelection(run_id=UUID(value.premium_run.run_id)),
+                target_version_id=_uuid(value.target_version_id),
+                plan_revision_id=_uuid(value.plan_revision_id),
+                benchmark_version_id=_uuid(value.benchmark_version_id),
+                constituent_snapshot_id=_uuid(value.constituent_snapshot_id),
+                xray_run_id=_uuid(value.xray_run_id),
+                template_version=value.template_version,
+                profile_version=value.profile_version,
+            ),
+            idempotency_key=key,
+            ttl_days=value.ttl_days,
+        )
     if isinstance(value, profiles.GeneratePremiumReportRequestV3):
         return application.GenerateReportCommand(
             selection=v3.ReportSelectionV3(
@@ -85,7 +111,12 @@ def report_response[T: BaseModel](
     conditional: bool = False,
 ) -> Response:
     try:
-        if schema is profiles.PremiumReportManifestV3:
+        if schema is profiles.PremiumReportManifestV4:
+            if not isinstance(value, v4.ReportManifestV4):
+                raise TypeError
+            payload = encode_report_manifest_v4(value)
+            schema.model_validate_json(payload)
+        elif schema is profiles.PremiumReportManifestV3:
             if not isinstance(value, v3.ReportManifestV3):
                 raise TypeError
             # Canonical V3 serialization deliberately omits absent optional pins.
@@ -99,21 +130,29 @@ def report_response[T: BaseModel](
             payload = encode_report_manifest(value)
         else:
             primitive = to_primitive(value)
-            if schema in (profiles.PremiumReportJobStatusV3, profiles.PremiumReportPageV3):
+            if schema in (
+                profiles.PremiumReportJobStatusV3,
+                profiles.PremiumReportPageV3,
+                profiles.PremiumReportJobStatusV4,
+                profiles.PremiumReportPageV4,
+            ):
                 # This mapper is selected only after the profile-specific service
                 # has authorized normalized owner/account/profile metadata.
                 if not isinstance(primitive, dict) or "profile_version" in primitive:
                     raise TypeError
-                primitive = {**primitive, "profile_version": "report_sections_v3"}
-                if schema is profiles.PremiumReportPageV3:
+                profile = (
+                    "report_sections_v4"
+                    if schema in (profiles.PremiumReportJobStatusV4, profiles.PremiumReportPageV4)
+                    else "report_sections_v3"
+                )
+                primitive = {**primitive, "profile_version": profile}
+                if schema in (profiles.PremiumReportPageV3, profiles.PremiumReportPageV4):
                     items = primitive.get("items")
                     if not isinstance(items, list) or any(
                         not isinstance(item, dict) or "profile_version" in item for item in items
                     ):
                         raise TypeError
-                    primitive["items"] = [
-                        {**item, "profile_version": "report_sections_v3"} for item in items
-                    ]
+                    primitive["items"] = [{**item, "profile_version": profile} for item in items]
             checked = schema.model_validate(primitive)
             payload = checked.model_dump_json().encode("utf-8")
     except (DomainError, KeyError, TypeError, ValueError):

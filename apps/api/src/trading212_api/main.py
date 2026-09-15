@@ -12,7 +12,7 @@ import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
-from typing import Annotated, Any, Literal, cast
+from typing import TYPE_CHECKING, Annotated, Any, Literal, cast
 
 from fastapi import (
     Cookie,
@@ -40,6 +40,7 @@ from trading212_application.ingestion import (
 )
 from trading212_application.intelligence_quality import IntelligenceDataQualityService
 from trading212_application.planning import PlanningService, PlanningServiceError
+from trading212_application.projection import ProjectionService
 from trading212_application.queries import (
     ActivityQuery,
     ActivityTypeFilter,
@@ -54,6 +55,7 @@ from trading212_application.queries import (
 )
 from trading212_application.refresh_semantics import RefreshIdempotencyConflictError
 from trading212_application.reports import ReportService
+from trading212_application.research import ResearchService
 from trading212_application.risk import RiskService
 from trading212_application.scenario import ScenarioService
 from trading212_application.services import (
@@ -102,8 +104,10 @@ from .historical_routes import register_historical_routes
 from .intelligence_quality_routes import register_intelligence_quality_routes
 from .planning_routes import register_planning_routes
 from .premium_report_routes import register_premium_report_routes
+from .projection_routes import register_projection_routes
 from .refresh_queue import PostgresRefreshQueue
 from .report_routes import register_report_routes
+from .research_routes import register_research_routes
 from .risk_routes import register_risk_routes
 from .scenario_routes import register_scenario_routes
 from .schemas import (
@@ -149,6 +153,10 @@ CursorParameter = Annotated[
 ]
 
 
+if TYPE_CHECKING:
+    from trading212_persistence.research_permissions import ResearchCapabilityAuthority
+
+
 async def _ready() -> bool:
     return True
 
@@ -163,11 +171,14 @@ class ApiContext:
     historical_service: PerformanceIntelligenceService | None
     risk_service: RiskService | None
     scenario_service: ScenarioService | None
+    projection_service: ProjectionService | None
+    research_service: ResearchService | None
     intelligence_quality_service: IntelligenceDataQualityService | None
     xray_service: XrayService | None
     report_service: ReportService | None
     premium_report_service: ReportService | None
     premium_report_v3_service: ReportService | None
+    premium_report_v4_service: ReportService | None
     alert_service: AlertService | None
     sessions: SessionManager
     local_authenticator: LocalSyntheticAuthenticator | None
@@ -188,11 +199,15 @@ def create_app(
     historical_service: PerformanceIntelligenceService | None = None,
     risk_service: RiskService | None = None,
     scenario_service: ScenarioService | None = None,
+    projection_service: ProjectionService | None = None,
+    research_service: ResearchService | None = None,
+    research_capability_authority: ResearchCapabilityAuthority | None = None,
     intelligence_quality_service: IntelligenceDataQualityService | None = None,
     xray_service: XrayService | None = None,
     report_service: ReportService | None = None,
     premium_report_service: ReportService | None = None,
     premium_report_v3_service: ReportService | None = None,
+    premium_report_v4_service: ReportService | None = None,
     alert_service: AlertService | None = None,
     session_manager: SessionManager | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
@@ -227,11 +242,14 @@ def create_app(
             default_historical,
             default_risk,
             default_scenarios,
+            default_projections,
+            default_research,
             default_intelligence_quality,
             default_xray,
             default_reports,
             default_premium_reports,
             default_premium_v3_reports,
+            default_premium_v4_reports,
             default_alerts,
             default_readiness,
         ) = _local_runtime_defaults(
@@ -239,6 +257,7 @@ def create_app(
             runtime_clock,
             cursor_signing_key=cursor_signing_key,
             query_observer=metrics.observe_database_query,
+            research_capability_authority=research_capability_authority,
         )
         target_service = target_service or default_targets
         planning_service = planning_service or default_planning
@@ -246,11 +265,14 @@ def create_app(
         historical_service = historical_service or default_historical
         risk_service = risk_service or default_risk
         scenario_service = scenario_service or default_scenarios
+        projection_service = projection_service or default_projections
+        research_service = research_service or default_research
         intelligence_quality_service = intelligence_quality_service or default_intelligence_quality
         xray_service = xray_service or default_xray
         report_service = report_service or default_reports
         premium_report_service = premium_report_service or default_premium_reports
         premium_report_v3_service = premium_report_v3_service or default_premium_v3_reports
+        premium_report_v4_service = premium_report_v4_service or default_premium_v4_reports
         alert_service = alert_service or default_alerts
     else:
         portfolio_service = service
@@ -274,11 +296,14 @@ def create_app(
         historical_service=historical_service,
         risk_service=risk_service,
         scenario_service=scenario_service,
+        projection_service=projection_service,
+        research_service=research_service,
         intelligence_quality_service=intelligence_quality_service,
         xray_service=xray_service,
         report_service=report_service,
         premium_report_service=premium_report_service,
         premium_report_v3_service=premium_report_v3_service,
+        premium_report_v4_service=premium_report_v4_service,
         alert_service=alert_service,
         sessions=sessions,
         local_authenticator=local_authenticator,
@@ -329,6 +354,8 @@ def create_app(
     register_historical_routes(application, _principal, _context)
     register_risk_routes(application, _principal, _context)
     register_scenario_routes(application, _principal, _context)
+    register_projection_routes(application, _principal, _context)
+    register_research_routes(application, _principal, _context)
     register_intelligence_quality_routes(application, _principal, _context)
     register_xray_routes(application, _principal, _context)
     register_report_routes(application, _principal, _context)
@@ -344,6 +371,7 @@ def _local_runtime_defaults(
     *,
     cursor_signing_key: bytes | None,
     query_observer: Callable[[float, bool], None] | None = None,
+    research_capability_authority: ResearchCapabilityAuthority | None = None,
 ) -> tuple[
     PortfolioService,
     TargetService,
@@ -352,8 +380,11 @@ def _local_runtime_defaults(
     PerformanceIntelligenceService,
     RiskService,
     ScenarioService,
+    ProjectionService,
+    ResearchService,
     IntelligenceDataQualityService,
     XrayService,
+    ReportService,
     ReportService,
     ReportService,
     ReportService,
@@ -368,7 +399,9 @@ def _local_runtime_defaults(
         PostgresIntelligenceDataQualityService,
     )
     from trading212_persistence.planning_service import PostgresPlanningService
+    from trading212_persistence.projection_service import PostgresProjectionService
     from trading212_persistence.report_service import PostgresReportService
+    from trading212_persistence.research_service import PostgresResearchService
     from trading212_persistence.risk_service import PostgresRiskService
     from trading212_persistence.scenario_service import PostgresScenarioService
     from trading212_persistence.source_service import PostgresSourceService
@@ -421,6 +454,7 @@ def _local_runtime_defaults(
         ),
         PostgresSourceService(
             sessions=sessions,
+            research_capability_authority=research_capability_authority,
             clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
             cursor_ttl_seconds=settings.cursor_ttl_seconds,
@@ -442,6 +476,17 @@ def _local_runtime_defaults(
             clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
             replay_resolver=resolve_scenario_replay,
+        ),
+        PostgresProjectionService(
+            sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+        ),
+        PostgresResearchService(
+            sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            capability_authority=research_capability_authority,
         ),
         PostgresIntelligenceDataQualityService(
             sessions,
@@ -476,6 +521,13 @@ def _local_runtime_defaults(
             cursor_ttl_seconds=settings.cursor_ttl_seconds,
             contract_version=3,
             risk_preflight=validate_risk_capacity,
+        ),
+        PostgresReportService(
+            sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=settings.cursor_ttl_seconds,
+            contract_version=4,
         ),
         PostgresAlertService(
             sessions,

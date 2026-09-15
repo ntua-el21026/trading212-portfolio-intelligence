@@ -8,6 +8,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import select, text
 from sqlalchemy.orm import InstrumentedAttribute, Session
+from trading212_domain.report_v4 import ReportProofV4
 from trading212_domain.reports import (
     MAX_REPORT_DATASET_ROWS,
     ReportProof,
@@ -289,7 +290,7 @@ def project_report_dependencies(
     authorization: ReportAuthorization,
     *,
     input_id: UUID,
-    proof: ReportProof,
+    proof: ReportProof | ReportProofV4,
     source_use: ReportSourceUse,
     now: datetime,
 ) -> tuple[ReportInputDependencyModel, ...]:

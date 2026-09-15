@@ -60,8 +60,8 @@ def test_exact_six_historical_get_routes_leave_existing_performance_summary() ->
             "download_premium_report_artifact",
         ),
     }
-    # The 95 preserved operations, eleven risk, six V2 report and eleven scenario operations.
-    assert sum(len(methods) for methods in contract["paths"].values()) == 123
+    # The 95 preserved, 11 risk, 6 premium report, 11 scenario, 17 projection and 8 research.
+    assert sum(len(methods) for methods in contract["paths"].values()) == 148
     assert contract == json.loads(
         (ROOT / "packages/api-contracts/openapi/phase1-v1.json").read_text()
     )
@@ -72,7 +72,7 @@ async def test_exact_four_historical_tools_have_frozen_scopes_fields_annotations
 ):
     server = create_runtime().server
     tools = await server.list_tools()
-    assert len(tools) == 32 and tuple(tool.name for tool in tools[15:19]) == HISTORICAL_TOOL_NAMES
+    assert len(tools) == 38 and tuple(tool.name for tool in tools[15:19]) == HISTORICAL_TOOL_NAMES
     common = {"account_id", "start_date", "end_date", "source_cutoff_at", "reporting_currency"}
     extras = (
         {"method", "frequency"},

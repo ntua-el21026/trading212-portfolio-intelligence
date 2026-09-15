@@ -31,6 +31,7 @@ from trading212_analytics.risk_history import validate_risk_capacity
 from trading212_analytics.scenario_replay import resolve_scenario_replay
 from trading212_api.main import create_app
 from trading212_application.planning_jobs import PlanTaskMessage
+from trading212_application.projection_jobs import ProjectionTaskMessage
 from trading212_application.report_jobs import ExportTaskMessage, ReportTaskMessage
 from trading212_application.risk_jobs import RiskTaskMessage
 from trading212_application.scenario_jobs import ScenarioTaskMessage
@@ -41,11 +42,14 @@ from trading212_persistence import (
     create_session_factory,
 )
 from trading212_persistence.models import SourceRecordModel, TransactionModel
+from trading212_persistence.projection_job_store import PostgresProjectionJobStore
 from trading212_persistence.report_job_store import PostgresReportJobStore
+from trading212_persistence.research_permissions import ResearchCapabilityAuthority
 from trading212_persistence.risk_job_store import PostgresRiskJobStore
 from trading212_persistence.scenario_job_store import PostgresScenarioJobStore
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 from trading212_worker.plan_tasks import dispatch_plans_once, execute_plan_message
+from trading212_worker.projection_tasks import dispatch_projections_once, execute_projection_message
 from trading212_worker.report_seed import seed_synthetic_report_grants
 from trading212_worker.report_tasks import (
     dispatch_exports_once,
@@ -285,6 +289,33 @@ async def _deliver_fixture_scenarios(
             await asyncio.wait_for(stopped.wait(), timeout=0.25)
 
 
+class _FixtureProjectionPublisher:
+    """Metadata-only browser delivery through the real isolated projection worker."""
+
+    def __init__(self) -> None:
+        self.messages: Queue[ProjectionTaskMessage] = Queue(maxsize=4)
+
+    async def publish_projection(self, message: ProjectionTaskMessage) -> None:
+        self.messages.put_nowait(message)
+
+
+async def _deliver_fixture_projections(
+    store: PostgresProjectionJobStore, stopped: asyncio.Event, paused: asyncio.Event
+) -> None:
+    publisher = _FixtureProjectionPublisher()
+    while not stopped.is_set():
+        if not paused.is_set():
+            await dispatch_projections_once(store, publisher, dispatcher_id="browser-fixture")
+            while not publisher.messages.empty():
+                try:
+                    message = publisher.messages.get_nowait()
+                except Empty:
+                    break
+                await execute_projection_message(store, message, consumer_id="browser-fixture")
+        with suppress(TimeoutError):
+            await asyncio.wait_for(stopped.wait(), timeout=0.25)
+
+
 class _FixtureReportPublisher:
     """Bounded test transport for the production report dispatcher and consumer."""
 
@@ -350,9 +381,16 @@ def _exit_fixture(signum: int, frame: FrameType | None) -> NoReturn:
 def _serve_fixture(database_url: str) -> None:
     from scripts.api_e2e_timings import fixture_timings, timings_enabled
 
+    research = os.environ.get("T212PI_E2E_RESEARCH", "0")
+    if research not in {"0", "1"}:
+        raise RuntimeError("The research browser fixture selector must be 0 or 1.")
+    research_authority: ResearchCapabilityAuthority | None = None
     risk = os.environ.get("T212PI_E2E_RISK", "0")
     if risk not in {"0", "1"}:
         raise RuntimeError("The risk browser fixture selector must be 0 or 1.")
+    projections = os.environ.get("T212PI_E2E_PROJECTIONS", "0")
+    if projections not in {"0", "1"}:
+        raise RuntimeError("The projection browser fixture selector must be 0 or 1.")
     scenarios = os.environ.get("T212PI_E2E_SCENARIOS", "0")
     if scenarios not in {"0", "1"}:
         raise RuntimeError("The scenario browser fixture selector must be 0 or 1.")
@@ -374,7 +412,7 @@ def _serve_fixture(database_url: str) -> None:
     command.upgrade(migration_config, "head")
     seed = (
         seed_complete_synthetic
-        if historical == "1" or risk == "1" or scenarios == "1"
+        if historical == "1" or risk == "1" or scenarios == "1" or projections == "1"
         else seed_materialized_synthetic
     )
     asyncio.run(seed(database_url, app_environment="test"))
@@ -411,6 +449,12 @@ def _serve_fixture(database_url: str) -> None:
                 listing_id=identity.listing.id,
                 as_of=scenario_time,
             )
+        if research == "1":
+            from scripts.api_e2e_research import seed_research_browser_scenario
+
+            research_authority = asyncio.run(
+                seed_research_browser_scenario(create_session_factory(engine))
+            )
         if alerts == "1":
             from scripts.api_e2e_alerts import seed_alert_browser_scenario
 
@@ -429,6 +473,7 @@ def _serve_fixture(database_url: str) -> None:
             allowed_hosts=("127.0.0.1", "localhost"),
         ),
         clock=lambda: datetime.now(UTC),
+        research_capability_authority=research_authority,
     )
 
     control_engine = create_database_engine(database_url)
@@ -447,6 +492,11 @@ def _serve_fixture(database_url: str) -> None:
         cursor_signing_key=b"browser-fixture-scenario-cursor-v1",
         replay_resolver=resolve_scenario_replay,
     )
+    fixture_projections = PostgresProjectionJobStore(
+        create_session_factory(control_engine),
+        cursor_signing_key=b"browser-fixture-projection-cursor-v1",
+    )
+    projection_delivery_paused = asyncio.Event()
     original_lifespan = app.router.lifespan_context
 
     @asynccontextmanager
@@ -462,6 +512,12 @@ def _serve_fixture(database_url: str) -> None:
                         deliveries.create_task(
                             _deliver_fixture_scenarios(fixture_scenarios, stopped)
                         )
+                    if projections == "1":
+                        deliveries.create_task(
+                            _deliver_fixture_projections(
+                                fixture_projections, stopped, projection_delivery_paused
+                            )
+                        )
                     if reports == "1" or alerts == "1":
                         deliveries.create_task(_deliver_fixture_reports(fixture_reports, stopped))
                     try:
@@ -472,6 +528,13 @@ def _serve_fixture(database_url: str) -> None:
                 control_engine.dispose()
 
     app.router.lifespan_context = fixture_lifespan
+
+    if projections == "1":
+
+        @app.post("/__e2e__/pause-projection-delivery", include_in_schema=False)
+        def pause_projection_delivery() -> dict[str, bool]:
+            projection_delivery_paused.set()
+            return {"paused": True}
 
     @app.post("/__e2e__/insert-newer-activity", include_in_schema=False)
     def insert_newer_activity() -> dict[str, str]:

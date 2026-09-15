@@ -31,6 +31,9 @@ from sqlalchemy.engine import CursorResult
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.elements import ColumnElement
 
+from .premium_retention_costs import premium_mutation_cost
+from .projection_retention_costs import projection_mutation_cost
+from .research_retention_costs import research_mutation_cost
 from .source_retention import PayloadCopyCost, SourcePurgeBudget
 from .types import UTCDateTime
 
@@ -111,16 +114,33 @@ def purge_payload_rows(
         )
     )
     size = logical_payload_size(table, payload_columns)
+    cost = (
+        premium_mutation_cost(table.name, delete_rows=delete_rows)
+        or research_mutation_cost(table.name, delete_rows=delete_rows)
+        or projection_mutation_cost(table.name, delete_rows=delete_rows)
+    )
     removed_rows = 0
     removed_bytes = 0
     while budget.metadata_limit:
+        # Parent scope joins and all triggered row inspections are reserved before
+        # choosing a batch. A small remainder never fetches a row it cannot mutate.
+        if budget.rows_inspected < cost.scope_rows + 1 + cost.mutation_rows:
+            break
+        if not budget.inspect(rows=cost.scope_rows):
+            break
         metadata = session.execute(
             select(table.c.id, size.label("payload_bytes"))
             .where(remaining)
             .order_by(table.c.id)
             # Metadata and mutation each inspect the row. Reserve room for both
             # so a small remaining allowance cannot spend every pass on metadata.
-            .limit(min(budget.metadata_limit, max(1, budget.rows_inspected // 2)))
+            .limit(
+                min(
+                    budget.metadata_limit,
+                    budget.rows_inspected // (1 + cost.mutation_rows),
+                    512 // cost.mutation_rows,
+                )
+            )
             .with_for_update(skip_locked=True)
         ).all()
         if not budget.inspect(rows=len(metadata)):
@@ -128,7 +148,9 @@ def purge_payload_rows(
         if not metadata:
             # SKIP LOCKED alone cannot prove completion while another writer owns
             # a remaining row. This indexed probe is charged if it returns an ID.
-            if not budget.metadata_limit:
+            if budget.rows_inspected < cost.scope_rows + 1:
+                break
+            if not budget.inspect(rows=cost.scope_rows):
                 break
             pending = session.scalar(select(table.c.id).where(remaining).limit(1))
             if pending is not None:
@@ -139,7 +161,13 @@ def purge_payload_rows(
                 complete=True, removed_rows=removed_rows, removed_bytes=removed_bytes
             )
         costs = tuple(
-            PayloadCopyCost(row_id=row.id, payload_bytes=row.payload_bytes) for row in metadata
+            PayloadCopyCost(
+                row_id=row.id,
+                payload_bytes=row.payload_bytes,
+                inspection_rows=cost.mutation_rows,
+                payload_inspections=cost.payload_inspections,
+            )
+            for row in metadata
         )
         ids = budget.reserve_clear_batch(costs)
         if not ids:

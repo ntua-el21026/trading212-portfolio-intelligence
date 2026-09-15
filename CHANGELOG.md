@@ -4,6 +4,16 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+- Add public-only PWA installation/offline support and an account-safe keyboard command palette, with actual three-width production browser/cache checks. Private account responses and reports are never cached for offline use.
+
+- Add guarded premium physical-copy counters and indexed resumable cleanup; defer concurrent newer report captures without relaxing source-witness authority. Actual migration and focused compatibility checks pass; shared source-family closure remains in progress.
+
+- Add saved projection/goal workflows, exact paged REST/MCP/web results and explicit profile4 reports with complete canonical evidence. Actual four-format and source-rights component checks pass; final verification remains pending.
+
+- Add bounded research source/event/note storage, eight authenticated REST operations, a generated client and source-authorized page composition. Bounded PostgreSQL pages, three-width web journeys and the completed 38-tool/eleven-resource MCP registry have component passes; research reports and final acceptance remain pending.
+
+- Add indexed projection memberships and resumable report copy cleanup, with guarded physical progress and serial one-container verification; shared retention accounting remains under validation.
+
 - Add explicit premium report profile3 for saved scenarios and risk, full canonical source/replay proof in PDF/CSV/JSON/XLSX, current-license retention and account-safe downloads; preserve default V2 and legacy V1 contracts. Local component checks pass; Phase 3 acceptance remains pending.
 
 - Add immutable scenario definitions, source-bound retained runs, fenced asynchronous execution, exact REST/client/web/MCP results and comparison, with original-license retention and one-container PostgreSQL/browser verification. Package acceptance remains pending.

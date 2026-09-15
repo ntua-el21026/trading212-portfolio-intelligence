@@ -16,6 +16,7 @@ import {
 } from "../../../../components/account-context";
 import Link from "../../../../components/navigation-intent";
 import { PageHeader } from "../../../../components/page-header";
+import { ProjectionReportsPage } from "../../../../components/projection-report-page";
 import { PremiumReportSelection } from "../../../../components/premium-report-selection";
 import { ReportJobStatusCard } from "../../../../components/report-job-status";
 import {
@@ -83,6 +84,8 @@ export default async function PremiumReportsPage({
       </Notice>
     );
   }
+  if (query.profile === "report_sections_v4")
+    return <ProjectionReportsPage query={query} access={access} />;
   const profile3 = query.profile === "report_sections_v3";
   const family = profile3 ? (query.family ?? "risk") : "risk";
   const label = family === "scenario" ? "scenario" : "risk";
@@ -237,6 +240,16 @@ export default async function PremiumReportsPage({
             })}
           >
             Scenario and risk reports
+          </Link>
+          <Link
+            prefetch={false}
+            href={premiumReportHref({
+              account: account.id,
+              profile: "report_sections_v4",
+              family: "projection",
+            })}
+          >
+            Projection and goal reports
           </Link>
         </nav>
         <Surface>

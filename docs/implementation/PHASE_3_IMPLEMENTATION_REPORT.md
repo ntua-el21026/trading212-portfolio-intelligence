@@ -715,3 +715,249 @@ daemons whose proc descriptors are restricted. Current standalone assets/types,
 new package builds, dependencies, source and evidence remain. The sole task
 PostgreSQL container is still needed for projection integration; unrelated volumes
 are preserved.
+
+## P3-03 projection and profile4 integration checkpoint
+
+Working-tree observations on 2026-09-15; final source acceptance remains pending.
+Migration 0022 currently defines 289 tables. Generated OpenAPI currently contains
+121 paths, 140 operations and 513 schemas; MCP has 36 tools/eight resources and
+exactly ten sealed broker GET capabilities remain unchanged. The accepted
+ADR-0029 point-page contract preserves complete retained financial rows, exact
+Decimal money strings and bounded owner/account/source-bound cursors. Saved
+assumption and goal versions, isolated projection workers, current source rights,
+REST/MCP transport and the production web workspace are integrated.
+
+Earlier component receipts include projection-postgres-schema-04 (21 cases),
+projection-api-runtime-01 (actual signed-JWT transport), projection-mcp-runtime-03
+(actual signed SDK transport), projection-widget-01 (nine viewport checks), and
+projection-web-browser-04 (three production journeys with all 84 financial points
+across four pages, cancellation, version immutability and account switching).
+These source-bound receipts predate later retention/report changes and are not
+claims that the final working tree passed their full populations.
+
+The normalized retention frontier, sweep cursor, source-policy epochs and
+trigger-maintained physical storage counter have component checks. The PostgreSQL
+retention-budget run02 passed seven cases before a fixture-key failure; run03
+passed two source cases before an unsupported nested-evidence fixture failed.
+Run04 passed the three corrected remaining cases in 11.98 seconds, including
+legal historical evidence, future activation and live-owner isolation. The
+accepted historical admission rule rejects evidence nesting beyond its supported
+level; the fixture now checks that rejection rather than relaxing the rule.
+SQL source-parent and report-copy guards still need their indexed membership/
+restriction-witness changes before the total 4,096-inspection budget can be accepted.
+
+ADR-0030 profile4 adds explicit projection/goal report composition while preserving
+V1/defaultV2/V3 contracts. It copies complete saved paths and all 12 money values,
+assets, distributions, goals and original source proofs into 24 fixed tables. Model
+dates and optional original observations remain distinct from the separately
+selected report-context snapshot. Selection requires actual immutable run IDs;
+no caller result arrays or numerical recalculation enter report capture. Original
+and current STORE/DISPLAY/REPORT rights precede private decoding and final sealing.
+The domain/capture/worker-codec focused gate04 passed 334 tests with strict mypy (925 files).
+Transport-focused04 passed 257 Python tests, 221 web tests across 21 files, Ruff,
+strict mypy (930 files), all workspace TypeScript, ESLint and
+exact generated-contract checking in 47.858 seconds with unchanged source.
+The source manifest is authoritative for each gate; prior failed attempts stay
+failed. SQL0023, actual report4 PostgreSQL/four-format output and three browser
+viewports are still pending; these component checks do not imply runtime acceptance.
+
+ADR-0031 research item/review/retention design is accepted. Its domain and eight
+application operations are integrated; research-foundation-focused03 passed all 18
+tests in 0.66 seconds, Ruff and strict mypy (941 files) in an unchanged-source 1.211-second
+gate. Research persistence/provider authority and public interfaces remain pending.
+
+All originals remain in the external phase3-20260914 evidence directory for the
+final portable pack. No package, acceptance row or mandatory scenario is marked
+complete. Coverage, SLO, whole-worker RSS, restore and independent review remain
+pending; GitHub Actions remains owner-deferred/unverified. At this checkpoint,
+consumer checks preceded deletion of 158421949 logical bytes of unused task caches
+and temporary pytest metadata. Source, dependencies, accepted evidence and current
+build products were preserved. One healthy PostgreSQL container remains in use.
+
+Research runtime modules and shared source-cleanup composition are now integrated;
+research-runtime-focused02 passed 23 tests in 1.81 seconds, Ruff and strict mypy
+(955 files; 4.762-second unchanged-source gate). Migration 0024 remains externally
+staged until its 0023 predecessor is integrated. No research PostgreSQL/schema
+result is claimed.
+
+
+## Projection reports, research pages and retention continuation
+
+This subsequent working-source checkpoint integrates migrations0023/0024/0025 and
+317 ORM tables. The generated API has127 paths,148 operations and533 schemas; MCP
+remains36 tools/eight resources. All thirty acceptance rows and forty-eight scenarios
+remain pending. Earlier checkpoint paragraphs preserve their then-current scope.
+
+`projection-research-postgres-schema-02` passed five fresh/populated/repeat/parity/
+downgrade cases through0024 before later research-index and0025 changes. Independent
+normalized projection membership and cleanup checks passed17 PostgreSQL cases in
+`projection-membership-postgres-01` (85.447-second gate). Research physical cleanup
+unit checks passed38 cases in `research-retention-focused-03`; runtime is still pending.
+
+Actual report4 admission found and corrected invalid pin-account column references,
+PostgreSQL JSON operator precedence, and an old profile allowlist. Real isolated PDF
+rendering then exposed a missing projection/goal analytical section mapping; its fix
+preserves the old section registry. `projection-report4-postgres-05` passed both actual
+four-format/goal modes and ten PDF tests before failing the subsequent source cleanup
+case. The new date-cell assertion compares typed dates to typed calendar boundaries;
+financial values are unchanged. Separate original/current rights/copy-witness runtime
+checks passed all three cases in `projection-report4-sources-postgres-01` (68.104s).
+The report-only cleanup regression retains its80-inspection/10-removal/one-artifact
+allowance. Diagnostic-only additional metadata counters showed repeated source scans
+starved atomic artifact/grant removal after a permanent marker. Exact pending-copy
+resumption resolves it; a unit negative proves it cannot authorize an unmarked sibling.
+These PostgreSQL passes predate0025's additional guarded physical dependency flags.
+
+The eight research REST operations, strict DTOs, actual OpenAPI/client generation,
+account/session/CSRF/current-source checks and unchanged eleven previous client renders
+are integrated. API/schema/contract/PDF tests passed96 cases in the otherwise failing
+`research-api-focused-03`; its only remaining failures were four invalid RFC UUID client
+fixtures. `research-api-focused-04` passed the corrected five client cases, nineteen
+repeated contract cases, exact generation, Ruff, mypy980 and workspace TypeScript.
+Bounded research pages now use the actual retained X-ray two-read/final-read helper,
+current and original capability batches, exact eligible-set cursor fingerprints and
+whole-record envelope packing. The proposed twelve-statement complete summary bound
+still requires real PostgreSQL measurement; it is not a latency or whole-service claim.
+
+`research-legacy-focused-04` passed71 focused cases, Ruff1003 files and mypy998 files
+in5.725s. It includes exact-source batches, saved-byte X-ray checks, pending-copy sibling
+isolation and the newly integrated0025 legacy report sweeps/flags. SQL identifier
+composition uses only closed internal registries with bound external values; its few
+S608 exceptions are local and documented at those expressions. Actual0025 migration,
+research runtime and legacy report PostgreSQL checks are next. The0025 epoch triggers
+add three physical inspections to separate enrichment/scenario marker insertion;
+that participant accounting and further shared run cleanup remain in progress.
+
+The earlier broad `projection-research-isolated-01` passed4924 Python cases and800
+web cases but failed two real projection child memory checks. Linux pre-exec inherited
+ru_maxrss caused the incorrect child-only peak measurement; `/proc` VmHWM records the
+executed child instead. The fixed512MiB limits remain, and the inherited-memory
+regression passed in the102-case focused gate. This is a kernel child estimate, not a
+whole-worker RSS/SLO pass. A fresh broad rerun, actual report4 browser verification,
+remaining Phase3 work, restore/security/portable evidence and independent review remain
+required. CI stays owner-deferred/unverified; no production or live-provider claim.
+
+
+## Research, report4, widgets and public PWA component evidence
+
+Subsequent unchanged-working-source observations:
+
+| Gate | Observed result | Total seconds |
+| --- | --- | ---: |
+| research-postgres-03 | 16 runtime, retention and bounded-page PostgreSQL cases | 179.029 |
+| research-web-browser-03 | Three production API-backed research journeys | 104.080 |
+| projection-report4-browser-04 | Three production journeys; complete original PDF/CSV/JSON/XLSX proof | 208.135 |
+| research-mcp-focused-06 | 177 contract/security/unit cases; exact 38 tools and eleven resources | 53.968 |
+| research-widget-browser-02 | Four Python and 17 actual iframe browser cases | 12.233 |
+| pwa-shell-browser-02 | Three production offline/cache/palette/account/logout journeys | 44.629 |
+| premium-retention-static-02 | 22 Python and four web worker-cache tests, Ruff1026, mypy1021, TS/ESLint/build | 14.619 |
+
+The real complete research summary used twelve SQL statements. Single-item/write
+paths and latency remain separately unverified. Research browser checks cover exact
+saved X-ray amounts, 25+4 pagination, immutable note history, review and account
+isolation. A Gzip drain-listener warning remains under investigation; no process
+memory or performance acceptance is inferred. Widget checks cover three widths,
+current account bindings, cancellation and offset instants without microsecond loss.
+Report4 preserves the original saved run, exact dated flows and all older profiles.
+
+PWA checks exercise actual service-worker control, manifest/icon dimensions, only
+five public cached assets, network-only private responses, offline unavailability,
+keyboard navigation and sign-out. ROOT inspected the mobile offline capture.
+An earlier browser attempt selected an account absent from its fixture; the corrected
+run enables the existing two-account fixture. An earlier PWA build completed but
+rewrote Next's generated route-type imports, so its gate remains unaccepted as
+changed-source evidence. The later stable build is recorded above. Earlier incorrect
+report/widget oracle and locator attempts remain failed in their original receipts.
+
+`legacy-report-research-postgres-02` passed actual signed SDK/PostgreSQL research
+transport and two V2 cases, then failed V3 retention. Its fixture froze maintenance
+time before capture. A real concurrent capture can have the same later original
+clock: the corrected one-row metadata selection defers captures created after the
+sweep timestamp, without weakening SQL witness authority or pre-filtering unbounded
+descendants. The regression preserves the actual payload before refreshing the
+fixture clock. The subsequent `premium-retention-postgres-02` passed all 19 migration, physical
+cleanup, signed research transport, report-copy and bounded-page cases in 284.150
+seconds with unchanged source, including this regression.
+
+Migration0026 adds four guarded operational tables, exact original retained-parent
+memberships, physical counters, source-owner scheduling and charged risk/scenario/
+sensitivity cleanup. Canonical financial bytes and original authority are preserved.
+The first actual migration run passed upgrade/repeat/old-byte/downgrade checks before
+its expected error text assertion mismatched the exact continuation refusal; the
+corrected assertion and final parity/runtime suite passed in the 19-case gate. Phase2 source,
+X-ray, historical and alert physical-budget closure remain explicit unfinished work.
+
+Whole-worker RSS, broad isolated rerun, provider acquisition, saved layouts, aggregate
+accounts, research reports, final security/restore and portable immutable evidence
+remain pending.
+
+The later `pwa-shell-browser-05` rebuilt production and passed all three viewports
+with the installed axe-core 4.13.0 auditor: zero serious/critical WCAG findings on
+the palette, fully loaded settings and public offline page. The audit first exposed
+nested interactive roles in the palette; the fix puts the option role on the link
+itself, preserving keyboard and ordinary navigation semantics. The previous failure
+remains recorded. Readiness assertions now prevent capturing loading placeholders.
+This is scoped accessibility evidence, not the final whole-product audit or CWV gate.
+
+No acceptance row/scenario or final candidate is completed by these
+component gates. GitHub Actions remains owner-deferred/unverified.
+
+At a consumer-free boundary, inspected Next cache and pytest metadata totaling
+123308310 logical bytes were removed. Source, dependencies, current build, original
+proof/captures and PostgreSQL state were preserved. Originals are retained externally
+under phase3-20260914 for the final portable pack. One existing PostgreSQL container
+remains in use. Receipts do not replace their referenced originals.
+
+
+## Checkpoint retention compatibility, 2026-09-15
+
+`phase3-checkpoint-isolated-02` passed 5,127 Python tests and all 831 web tests,
+plus Ruff, mypy, TypeScript/ESLint and repository/generated-contract boundaries,
+but failed two old unit fixtures: a legacy report metadata double omitted its
+newly selected `created_at`, and the current ORM profile assertion still excluded
+explicit profile4. Their corrected 25-case focused suite passed. The original
+failed receipt remains retained. The subsequent `phase3-checkpoint-isolated-03`
+passed all 5,129 Python tests and 831 web tests, plus the same complete static,
+generated-contract and repository checks, in 506.768 seconds with unchanged source.
+Three existing pytest `record_property`/JUnit2 warnings remain recorded; there
+were no failed, skipped or errored Python tests. This is an isolated component
+checkpoint, not final Phase3 acceptance or a replacement for PostgreSQL/browser
+evidence at its recorded source.
+
+`premium-retention-compat-postgres-02` passed 47 cases and failed one in 479.841
+seconds. The real annual risk fixture now resumes within each original 4,096-row
+allowance because mutation accounting includes SQL guards and counter work. Its
+small 96-row allowance is unchanged; the finite pass ceiling accommodates the
+365-day fixture's charged mutations. Busy-owner, fencing, source isolation,
+canonical-last and final physical-capacity assertions remain enforced.
+
+The remaining scenario test assumed private input survives until terminal metadata
+completion. The corrected test keeps its 128 inspected-row/one-removal budget and
+independently proves that canonical input can disappear only after all normalized
+financial rows and result bytes are gone, with a zero protected financial counter.
+The retained capacity charge stays unchanged until indexed parent cleanup and the
+terminal marker finish. This stronger regression passed in
+`premium-retention-compat-targeted-03` (one test, 13.960 seconds). Thus all 48 distinct
+compatibility selectors have passing executions across these two source-bound
+receipts; this is not a claim of a single all-green aggregate run. No production
+implementation was changed by these compatibility-fixture corrections.
+
+The one existing PostgreSQL container was reused; fixture databases were disposable.
+No provider stage, saved-layout stage, paid/live request or remote Actions run was
+introduced by this checkpoint verification. Full Phase3 and final acceptance remain
+pending, with original failed evidence preserved.
+
+The checkpoint source-security pass found no Semgrep findings after replacing only
+three test-local nested type arguments with equivalent named TypeScript aliases;
+28 focused web tests, TypeScript and ESLint passed. The strict scan retained all
+seven rules and parsed the selected source successfully. Python and production
+JavaScript dependency audits reported no known vulnerabilities, and the unchanged
+Gitleaks exception-policy regression passed its 16 approved lines/21 negative cases.
+
+The additional entire staged-tree Gitleaks scan retained exit1 with 54 findings in
+five unchanged historical files. Exact review independently recomputed the original
+API/client SHA256 values, verified existing historical fingerprints against complete
+Git blob bytes, and inspected the synthetic report-row/idempotency syntax. All 54
+are noncredentials; the raw redacted result and exact classification remain separate
+originals. No scanner exception, inherited rule or historical artifact was modified.
+The changed-file secret scan and Python package build are recorded separately.

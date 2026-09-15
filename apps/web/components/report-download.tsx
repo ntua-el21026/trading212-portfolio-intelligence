@@ -59,7 +59,7 @@ export function ReportDownloadButton({
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({
             account_id: accountId,
-            ...(profile === "report_sections_v3" ? { profile } : {}),
+            ...(profile && profile !== "report_sections_v2" ? { profile } : {}),
           }),
         },
       );

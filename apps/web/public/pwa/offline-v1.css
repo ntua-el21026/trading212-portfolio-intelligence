@@ -1,0 +1,46 @@
+:root {
+  color-scheme: dark;
+  font-family: system-ui, sans-serif;
+  background: #101b20;
+  color: #f1f6f5;
+}
+body {
+  margin: 0;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+}
+main {
+  box-sizing: border-box;
+  width: min(100%, 36rem);
+  padding: 2rem;
+}
+h1 {
+  font-size: clamp(2rem, 8vw, 3rem);
+  line-height: 1.1;
+  margin-block: 1rem;
+}
+p {
+  line-height: 1.6;
+}
+.brand {
+  color: #60dcc4;
+  font-weight: 700;
+}
+.detail {
+  color: #b5c6c9;
+  font-size: 0.9rem;
+}
+a {
+  display: inline-block;
+  margin-block: 1rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.5rem;
+  background: #60dcc4;
+  color: #101b20;
+  font-weight: 700;
+}
+a:focus-visible {
+  outline: 3px solid #f1f6f5;
+  outline-offset: 4px;
+}

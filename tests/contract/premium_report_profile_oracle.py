@@ -1,4 +1,4 @@
-"""Independent pre-profile contracts permit only the ADR-0026 additive boundary."""
+"""Independent pre-profile contracts permit only the ADR-0026 and ADR-0030 additive boundaries."""
 
 import json
 import re
@@ -24,7 +24,7 @@ def assert_profiled_path(path: str, current: dict[str, Any]) -> None:
                 "in": "query",
                 "required": False,
                 "schema": {
-                    "enum": ["report_sections_v2", "report_sections_v3"],
+                    "enum": ["report_sections_v2", "report_sections_v3", "report_sections_v4"],
                     "type": "string",
                     "default": "report_sections_v2",
                     "title": "Profile",
@@ -35,7 +35,7 @@ def assert_profiled_path(path: str, current: dict[str, Any]) -> None:
             schema = operation["requestBody"]["content"]["application/json"]["schema"]
             assert schema == {"$ref": "#/components/schemas/GeneratePremiumReportRequest"}
             operation["requestBody"]["content"]["application/json"]["schema"] = {
-                "anyOf": [schema, {"$ref": schema["$ref"] + "V3"}],
+                "anyOf": [schema, {"$ref": schema["$ref"] + "V3"}, {"$ref": schema["$ref"] + "V4"}],
                 "title": "Body",
             }
         for status, response in operation["responses"].items():
@@ -52,7 +52,7 @@ def assert_profiled_path(path: str, current: dict[str, Any]) -> None:
             }:
                 continue
             content["schema"] = {
-                "anyOf": [schema, {"$ref": schema["$ref"] + "V3"}],
+                "anyOf": [schema, {"$ref": schema["$ref"] + "V3"}, {"$ref": schema["$ref"] + "V4"}],
                 "title": "Response " + operation["operationId"].replace("_", " ").title(),
             }
     assert current == expected, path
@@ -74,7 +74,12 @@ def assert_profile_two_client_declarations(original_client_sha256: str) -> None:
     )
     assert baseline["original_client_sha256"] == original_client_sha256
     declarations = client_declarations(Path(baseline["path"]).read_text())
-    query_addition = '  profile: z.enum(["report_sections_v2", "report_sections_v3"]).optional(),\n'
+    # Match formatting only; the exact order, literals and optionality stay frozen.
+    query_addition = re.compile(
+        r'  profile: z\s*\.enum\(\[\s*"report_sections_v2",\s*'
+        r'"report_sections_v3",\s*"report_sections_v4",?\s*\]\)'
+        r"\s*\.optional\(\),\n"
+    )
     for name, expected in baseline["declarations"].items():
         current = declarations[name]
         if name in {
@@ -83,6 +88,6 @@ def assert_profile_two_client_declarations(original_client_sha256: str) -> None:
             "get_premium_report_manifestQuerySchema",
             "create_premium_report_download_grantQuerySchema",
         }:
-            assert current.count(query_addition) == 1
-            current = current.replace(query_addition, "")
+            assert len(query_addition.findall(current)) == 1
+            current = query_addition.sub("", current)
         assert sha256(current.encode()).hexdigest() == expected, name

@@ -9,6 +9,7 @@ from uuid import UUID, uuid4
 import pytest
 from sqlalchemy import Table
 from sqlalchemy.orm import Session
+from trading212_persistence import premium_retention_runtime as lifecycle
 from trading212_persistence import scenario_retention as retention
 from trading212_persistence.premium_models import (
     PremiumCapacityModel,
@@ -17,6 +18,7 @@ from trading212_persistence.premium_models import (
     PremiumRetentionModel,
     PremiumRunModel,
 )
+from trading212_persistence.premium_retention_models import PremiumRetentionStateModel
 from trading212_persistence.scenario_models import ScenarioAppliedSensitivityModel
 from trading212_persistence.scenario_source_models import (
     ScenarioSensitivityEvidencePayloadModel,
@@ -96,12 +98,12 @@ def test_run_input_and_result_copies_hold_capacity_until_physical_completion(
     session.scalar.side_effect = (
         None,
         value.job,
-        value.capacity,
         value.outbox,
         value.result_id,
     )
-    monkeypatch.setattr(retention, "premium_attempt", Mock())
-    monkeypatch.setattr(retention, "purge_report_premium_copies", lambda *args, **kwargs: True)
+    session.get.return_value = value.capacity
+    monkeypatch.setattr(lifecycle, "premium_attempt", Mock())
+    monkeypatch.setattr(lifecycle, "purge_report_premium_copies", lambda *args, **kwargs: True)
     cleared: list[str] = []
 
     def purge(
@@ -131,7 +133,21 @@ def test_run_input_and_result_copies_hold_capacity_until_physical_completion(
     assert (value.root.reserved_bytes, value.root.retained_bytes) == (1200, 300)
     assert (value.capacity.reserved_bytes, value.capacity.retained_bytes) == (1700, 1000)
 
-    session.scalar.side_effect = (marker, value.job, value.capacity, value.result_id)
+    session.scalar.side_effect = (marker, value.job, value.result_id)
+    session.get.side_effect = (
+        PremiumRetentionStateModel(
+            run_id=value.root.id,
+            owner_id=value.root.owner_id,
+            account_id=value.root.account_id,
+            kind="scenario",
+            financial_rows=0,
+            stored_bytes=0,
+            metadata_bytes=0,
+            closed=False,
+        ),
+        value.capacity,
+    )
+    session.scalars.return_value = ()
     monkeypatch.setattr(
         retention,
         "purge_payload_rows",
@@ -160,9 +176,10 @@ def test_incomplete_applied_use_purge_keeps_components_and_all_canonical_copies(
 ) -> None:
     value = case()
     session = Mock(spec=Session)
-    session.scalar.side_effect = (None, value.job, value.capacity, value.outbox, value.result_id)
-    monkeypatch.setattr(retention, "premium_attempt", Mock())
-    monkeypatch.setattr(retention, "purge_report_premium_copies", lambda *args, **kwargs: True)
+    session.scalar.side_effect = (None, value.job, value.outbox, value.result_id)
+    session.get.return_value = value.capacity
+    monkeypatch.setattr(lifecycle, "premium_attempt", Mock())
+    monkeypatch.setattr(lifecycle, "purge_report_premium_copies", lambda *args, **kwargs: True)
     purge = Mock(return_value=PayloadPurgeResult(complete=False, removed_rows=0, removed_bytes=0))
     monkeypatch.setattr(retention, "purge_payload_rows", purge)
     assert not retention._purge_run(session, value.root, at=NOW, budget=SourcePurgeBudget())

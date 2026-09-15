@@ -23,6 +23,7 @@ from trading212_persistence.premium_models import (
     PremiumRunLicenseModel,
     PremiumRunModel,
 )
+from trading212_persistence.premium_retention_models import PremiumRetentionStateModel
 from trading212_persistence.scenario_input_store import ScenarioInputStore
 from trading212_persistence.scenario_job_store import PostgresScenarioJobStore
 from trading212_persistence.scenario_models import (
@@ -225,25 +226,42 @@ async def test_bounded_cleanup_resumes_and_releases_capacity_only_after_last_cop
         assert original > 0
     assert not cleanup(case, at=later, budget=SourcePurgeBudget(bytes_removed=0))
     incomplete = 0
+    metadata_only = False
     for _ in range(100):
         budget = SourcePurgeBudget(rows_inspected=128, rows_removed=1)
-        if cleanup(case, at=later, budget=budget):
+        done = cleanup(case, at=later, budget=budget)
+        assert 0 <= budget.rows_inspected <= 128 and 0 <= budget.rows_removed <= 1
+        if done:
             break
         incomplete += 1
         with case.sessions() as session:
             root = session.get_one(PremiumRunModel, case.run.id)
             assert root.retained_bytes == original
-            assert (
-                session.scalar(
-                    select(ScenarioRunPayloadModel.id).where(
-                        ScenarioRunPayloadModel.run_id == root.id,
-                    )
+            payload = session.scalar(
+                select(ScenarioRunPayloadModel.id).where(
+                    ScenarioRunPayloadModel.run_id == root.id,
                 )
-                is not None
             )
+            if payload is None:
+                # Removing the last financial copy can consume this pass's
+                # allowance. Indexed parent removal and final capacity release
+                # then resume separately, without retaining private input bytes.
+                metadata_only = True
+                state = session.get_one(PremiumRetentionStateModel, root.id)
+                assert state.financial_rows == 0 and not state.closed
+                assert session.get_one(ScenarioResultModel, result_id).canonical_result == b""
+                for model, _ in SCENARIO_PAYLOADS:
+                    assert (
+                        session.scalar(
+                            select(func.count())
+                            .select_from(model)
+                            .where(model.result_id == result_id)
+                        )
+                        == 0
+                    )
     else:
         pytest.fail("Shared bounded scenario cleanup did not converge")
-    assert incomplete > 1
+    assert incomplete > 1 and metadata_only
     assert_empty(case, result_id)
 
 

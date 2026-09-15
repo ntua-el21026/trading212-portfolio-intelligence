@@ -189,3 +189,17 @@ certify runtime completion, independent acceptance, deferred CI or production. R
 - [ADR-0026-PREMIUM-REPORT-PROFILES](adr/ADR-0026-PREMIUM-REPORT-PROFILES.md)
 - [ADR-0027-PROJECTION-CANONICAL-PATHS](adr/ADR-0027-PROJECTION-CANONICAL-PATHS.md)
 - [ADR-0028-SCENARIO-PUBLIC-PAGES](adr/ADR-0028-SCENARIO-PUBLIC-PAGES.md)
+
+Projection saved point pages and compact goal analysis follow the accepted
+[ADR-0029](adr/ADR-0029-PROJECTION-PUBLIC-POINT-PAGES.md). This representation
+decision preserves all canonical paths and requires separate runtime validation.
+
+[ADR-0030](adr/ADR-0030-EXPLICIT-PROJECTION-REPORT-PROFILE.md) defines explicit
+profile4 report composition with original modeled/observed clocks and complete saved
+projection/goal evidence, preserving earlier profiles.
+
+[ADR-0031](adr/ADR-0031-RESEARCH-ITEMS-AND-RETENTION.md) defines account-scoped research
+item identities, provenance, review semantics and bounded retention. Its design is
+accepted; domain integration does not imply runtime or Phase 3 acceptance.
+
+[ADR-0032](adr/ADR-0032-INDEXED-PREMIUM-RETENTION-MEMBERSHIP.md) specifies indexed premium source membership, guarded report-copy progress, and physical SQL inspection accounting within the existing retention ceilings.

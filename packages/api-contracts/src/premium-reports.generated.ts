@@ -334,6 +334,152 @@ export const GeneratePremiumReportRequestV3Schema = z.strictObject({
 export type GeneratePremiumReportRequestV3 = z.infer<
   typeof GeneratePremiumReportRequestV3Schema
 >;
+export const PremiumReportProjectionRunSelectionV4Schema = z.strictObject({
+  family: z.literal("projection"),
+  run_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+});
+export type PremiumReportProjectionRunSelectionV4 = z.infer<
+  typeof PremiumReportProjectionRunSelectionV4Schema
+>;
+export const GeneratePremiumReportRequestV4Schema = z.strictObject({
+  account_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  benchmark_version_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
+  constituent_snapshot_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
+  end_date: z.string().date(),
+  formats: z
+    .array(z.enum(["pdf", "csv", "json", "xlsx"]))
+    .min(1)
+    .max(4),
+  plan_revision_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
+  premium_run: PremiumReportProjectionRunSelectionV4Schema,
+  profile_version: z.literal("report_sections_v4"),
+  report_type: z.enum([
+    "monthly",
+    "quarterly",
+    "annual",
+    "portfolio_summary",
+    "target_drift",
+    "contribution_plan",
+    "performance_benchmark",
+    "dividend_income",
+    "portfolio_xray",
+    "quality_reconciliation",
+  ]),
+  reporting_currency: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  sections: z
+    .array(
+      z.enum([
+        "overview",
+        "allocation",
+        "targets",
+        "drift",
+        "contribution_plan",
+        "performance",
+        "benchmark",
+        "income",
+        "cash_flows",
+        "attribution",
+        "xray",
+        "quality",
+        "activity",
+        "projection",
+        "goal",
+      ]),
+    )
+    .min(1)
+    .max(15),
+  snapshot_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  source_cutoff_at: z.string().datetime({ offset: true }),
+  start_date: z.string().date(),
+  target_version_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
+  template_version: z.literal("report_template_v1").optional(),
+  ttl_days: z.number().int().min(1.0).max(30.0).optional(),
+  xray_run_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
+});
+export type GeneratePremiumReportRequestV4 = z.infer<
+  typeof GeneratePremiumReportRequestV4Schema
+>;
 export const PremiumReportInputPinSchema = z.strictObject({
   content_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
   family: z.enum([
@@ -809,6 +955,246 @@ export const PremiumReportJobStatusV3Schema = z.strictObject({
 export type PremiumReportJobStatusV3 = z.infer<
   typeof PremiumReportJobStatusV3Schema
 >;
+export const PremiumReportInputPinV4Schema = z.strictObject({
+  content_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  family: z.enum([
+    "snapshot",
+    "activity",
+    "target",
+    "planning",
+    "performance",
+    "benchmark",
+    "income",
+    "cash_flows",
+    "attribution",
+    "xray",
+    "reconciliation",
+    "alerts",
+    "projection",
+    "goal",
+  ]),
+  method_key: z.union([
+    z
+      .string()
+      .min(1)
+      .max(256)
+      .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+    z.null(),
+  ]),
+  method_version: z.union([
+    z
+      .string()
+      .min(1)
+      .max(256)
+      .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+    z.null(),
+  ]),
+  parent_id: z.union([
+    z
+      .string()
+      .regex(
+        new RegExp(
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        ),
+      )
+      .uuid(),
+    z.null(),
+  ]),
+  role: z.enum([
+    "snapshot",
+    "input",
+    "result",
+    "calculation",
+    "policy",
+    "target_version",
+    "plan_revision",
+    "benchmark_version",
+    "source",
+    "mapping",
+    "license",
+    "calendar",
+    "event_revision",
+    "reconciliation",
+  ]),
+  subject_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+});
+export type PremiumReportInputPinV4 = z.infer<
+  typeof PremiumReportInputPinV4Schema
+>;
+export const PremiumReportNoteV4Schema = z.strictObject({
+  code: z
+    .string()
+    .min(1)
+    .max(256)
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+  family: z.enum([
+    "snapshot",
+    "activity",
+    "target",
+    "planning",
+    "performance",
+    "benchmark",
+    "income",
+    "cash_flows",
+    "attribution",
+    "xray",
+    "reconciliation",
+    "alerts",
+    "projection",
+    "goal",
+  ]),
+  key: z
+    .string()
+    .min(1)
+    .max(256)
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+  kind: z.enum([
+    "warning",
+    "assumption",
+    "limitation",
+    "unavailable_reason",
+    "reconciliation",
+  ]),
+  related_provenance_set_key: z.union([
+    z
+      .string()
+      .min(1)
+      .max(256)
+      .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+    z.null(),
+  ]),
+  text: z.string().max(4096).regex(new RegExp("^[^\\x00]*$")),
+});
+export type PremiumReportNoteV4 = z.infer<typeof PremiumReportNoteV4Schema>;
+export const PremiumReportQualitySummaryV4Schema = z.strictObject({
+  availability: z.enum(["available", "partial", "unavailable", "failed"]),
+  evaluated_at: z.string().datetime({ offset: true }),
+  state: z.enum([
+    "fresh",
+    "stale",
+    "partial",
+    "estimated",
+    "unreconciled",
+    "failed",
+  ]),
+  warning_count: z.number().int().min(0.0).max(9.223372036854776e18),
+  warning_omitted_count: z.number().int().min(0.0).max(9.223372036854776e18),
+  warnings: z.array(PremiumReportNoteV4Schema).max(64),
+});
+export type PremiumReportQualitySummaryV4 = z.infer<
+  typeof PremiumReportQualitySummaryV4Schema
+>;
+export const PremiumReportPinnedContextV4Schema = z.strictObject({
+  document_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  input_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  pins: z.array(PremiumReportInputPinV4Schema).max(256),
+  profile_version: z.literal("report_sections_v4"),
+  quality: PremiumReportQualitySummaryV4Schema,
+  reporting_currency: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  schema_version: z.literal("4.0.0"),
+  snapshot_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  source_cutoff_at: z.string().datetime({ offset: true }),
+  valuation_at: z.string().datetime({ offset: true }),
+});
+export type PremiumReportPinnedContextV4 = z.infer<
+  typeof PremiumReportPinnedContextV4Schema
+>;
+export const PremiumReportJobStatusV4Schema = z.strictObject({
+  account_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  artifacts: z.array(ReportArtifactMetadataSchema).max(4),
+  completed_at: z.union([z.string().datetime({ offset: true }), z.null()]),
+  context: z.union([PremiumReportPinnedContextV4Schema, z.null()]),
+  expires_at: z.string().datetime({ offset: true }),
+  failure_code: z.union([
+    z.enum([
+      "invalid_input",
+      "input_unavailable",
+      "input_changed",
+      "access_denied",
+      "source_restricted",
+      "limit_exceeded",
+      "render_failed",
+      "storage_unavailable",
+      "publication_unavailable",
+      "lease_expired",
+      "attempts_exhausted",
+    ]),
+    z.null(),
+  ]),
+  formats: z
+    .array(z.enum(["pdf", "csv", "json", "xlsx"]))
+    .min(1)
+    .max(4),
+  job_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  manifest_digest: z.union([
+    z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+    z.null(),
+  ]),
+  profile_version: z.literal("report_sections_v4"),
+  report_id: z.union([
+    z
+      .string()
+      .regex(
+        new RegExp(
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        ),
+      )
+      .uuid(),
+    z.null(),
+  ]),
+  report_type: z.enum([
+    "monthly",
+    "quarterly",
+    "annual",
+    "portfolio_summary",
+    "target_drift",
+    "contribution_plan",
+    "performance_benchmark",
+    "dividend_income",
+    "portfolio_xray",
+    "quality_reconciliation",
+  ]),
+  requested_at: z.string().datetime({ offset: true }),
+  state: z.enum([
+    "queued",
+    "running",
+    "succeeded",
+    "failed",
+    "expired",
+    "cancelled",
+  ]),
+});
+export type PremiumReportJobStatusV4 = z.infer<
+  typeof PremiumReportJobStatusV4Schema
+>;
 export const get_premium_report_statusQuerySchema = z.strictObject({
   account_id: z
     .string()
@@ -818,7 +1204,9 @@ export const get_premium_report_statusQuerySchema = z.strictObject({
       ),
     )
     .uuid(),
-  profile: z.enum(["report_sections_v2", "report_sections_v3"]).optional(),
+  profile: z
+    .enum(["report_sections_v2", "report_sections_v3", "report_sections_v4"])
+    .optional(),
 });
 export type get_premium_report_statusQuery = z.infer<
   typeof get_premium_report_statusQuerySchema
@@ -840,7 +1228,9 @@ export const list_premium_reportsQuerySchema = z.strictObject({
     .optional(),
   end_date: z.union([z.string().date(), z.null()]).optional(),
   limit: z.number().int().min(1).max(100).optional(),
-  profile: z.enum(["report_sections_v2", "report_sections_v3"]).optional(),
+  profile: z
+    .enum(["report_sections_v2", "report_sections_v3", "report_sections_v4"])
+    .optional(),
   report_type: z
     .union([
       z.enum([
@@ -898,6 +1288,17 @@ export const PremiumReportPageV3Schema = z.strictObject({
   total: z.number().int().min(0.0).max(9.223372036854776e18),
 });
 export type PremiumReportPageV3 = z.infer<typeof PremiumReportPageV3Schema>;
+export const PremiumReportPageV4Schema = z.strictObject({
+  items: z.array(PremiumReportJobStatusV4Schema).max(100),
+  limit: z.number().int().min(1.0).max(100.0),
+  next_cursor: z.union([
+    z.string().min(1).max(2048).regex(new RegExp("^[A-Za-z0-9_-]+$")),
+    z.null(),
+  ]),
+  profile_version: z.literal("report_sections_v4"),
+  total: z.number().int().min(0.0).max(9.223372036854776e18),
+});
+export type PremiumReportPageV4 = z.infer<typeof PremiumReportPageV4Schema>;
 export const get_premium_report_manifestQuerySchema = z.strictObject({
   account_id: z
     .string()
@@ -907,7 +1308,9 @@ export const get_premium_report_manifestQuerySchema = z.strictObject({
       ),
     )
     .uuid(),
-  profile: z.enum(["report_sections_v2", "report_sections_v3"]).optional(),
+  profile: z
+    .enum(["report_sections_v2", "report_sections_v3", "report_sections_v4"])
+    .optional(),
 });
 export type get_premium_report_manifestQuery = z.infer<
   typeof get_premium_report_manifestQuerySchema
@@ -2633,6 +3036,946 @@ export const PremiumReportManifestV3Schema = z.strictObject({
 export type PremiumReportManifestV3 = z.infer<
   typeof PremiumReportManifestV3Schema
 >;
+export const PremiumReportBoundFactV4Schema = z.strictObject({
+  family: z.enum([
+    "snapshot",
+    "activity",
+    "target",
+    "planning",
+    "performance",
+    "benchmark",
+    "income",
+    "cash_flows",
+    "attribution",
+    "xray",
+    "reconciliation",
+    "alerts",
+    "projection",
+    "goal",
+  ]),
+  key: z
+    .string()
+    .min(1)
+    .max(256)
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+  kind: z.enum(["exact", "lower_bound", "unavailable"]),
+  positive_below_quantum: z.boolean(),
+  quantum: z.union([
+    z
+      .string()
+      .max(4096)
+      .regex(new RegExp("^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$")),
+    z.null(),
+  ]),
+  rounding: z.union([
+    z
+      .string()
+      .min(1)
+      .max(256)
+      .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+    z.null(),
+  ]),
+});
+export type PremiumReportBoundFactV4 = z.infer<
+  typeof PremiumReportBoundFactV4Schema
+>;
+export const PremiumReportContextV4Schema = z.strictObject({
+  coverage_set_key: z
+    .string()
+    .min(1)
+    .max(256)
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+  family: z.enum([
+    "snapshot",
+    "activity",
+    "target",
+    "planning",
+    "performance",
+    "benchmark",
+    "income",
+    "cash_flows",
+    "attribution",
+    "xray",
+    "reconciliation",
+    "alerts",
+    "projection",
+    "goal",
+  ]),
+  key: z
+    .string()
+    .min(1)
+    .max(256)
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+  method_key: z
+    .string()
+    .min(1)
+    .max(256)
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+  method_version: z
+    .string()
+    .min(1)
+    .max(256)
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+  note_set_key: z
+    .string()
+    .min(1)
+    .max(256)
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+  provenance_set_key: z
+    .string()
+    .min(1)
+    .max(256)
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+  quality: z.enum([
+    "fresh",
+    "stale",
+    "partial",
+    "estimated",
+    "unreconciled",
+    "failed",
+  ]),
+  reconciliation_key: z.union([
+    z
+      .string()
+      .min(1)
+      .max(256)
+      .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+    z.null(),
+  ]),
+  schema_version: z.literal("4.0.0"),
+  source_at: z.union([z.string().datetime({ offset: true }), z.null()]),
+  source_cutoff_at: z.union([z.string().datetime({ offset: true }), z.null()]),
+  valuation_at: z.union([z.string().datetime({ offset: true }), z.null()]),
+});
+export type PremiumReportContextV4 = z.infer<
+  typeof PremiumReportContextV4Schema
+>;
+export const PremiumReportCoverageFactV4Schema = z.strictObject({
+  family: z.enum([
+    "snapshot",
+    "activity",
+    "target",
+    "planning",
+    "performance",
+    "benchmark",
+    "income",
+    "cash_flows",
+    "attribution",
+    "xray",
+    "reconciliation",
+    "alerts",
+    "projection",
+    "goal",
+  ]),
+  metric_key: z
+    .string()
+    .min(1)
+    .max(256)
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+  set_key: z
+    .string()
+    .min(1)
+    .max(256)
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+  value: ReportCellSchema,
+});
+export type PremiumReportCoverageFactV4 = z.infer<
+  typeof PremiumReportCoverageFactV4Schema
+>;
+export const PremiumReportProjectionVersionBindingV4Schema = z.strictObject({
+  aggregate_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  content_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  created_at: z.string().datetime({ offset: true }),
+  description: z.string().max(1024),
+  name: z.string().min(1).max(120),
+  predecessor_id: z.union([
+    z
+      .string()
+      .regex(
+        new RegExp(
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        ),
+      )
+      .uuid(),
+    z.null(),
+  ]),
+  version_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  version_number: z.number().int().min(1.0).max(512.0),
+});
+export type PremiumReportProjectionVersionBindingV4 = z.infer<
+  typeof PremiumReportProjectionVersionBindingV4Schema
+>;
+export const PremiumReportProjectionObservedBindingV4Schema = z.strictObject({
+  snapshot_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  snapshot_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  valuation_at: z.string().datetime({ offset: true }),
+});
+export type PremiumReportProjectionObservedBindingV4 = z.infer<
+  typeof PremiumReportProjectionObservedBindingV4Schema
+>;
+export const PremiumReportContextSnapshotBindingV4Schema = z.strictObject({
+  snapshot_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  snapshot_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  source_cutoff_at: z.string().datetime({ offset: true }),
+  valuation_at: z.string().datetime({ offset: true }),
+});
+export type PremiumReportContextSnapshotBindingV4 = z.infer<
+  typeof PremiumReportContextSnapshotBindingV4Schema
+>;
+export const PremiumReportProjectionRunBindingV4Schema = z.strictObject({
+  account_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  anchor_date: z.string().date(),
+  asset_count: z.number().int().min(1.0).max(12.0),
+  assumption: PremiumReportProjectionVersionBindingV4Schema,
+  calculated_at: z.string().datetime({ offset: true }),
+  capture_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  completed_at: z.string().datetime({ offset: true }),
+  created_at: z.string().datetime({ offset: true }),
+  expires_at: z.string().datetime({ offset: true }),
+  family: z.literal("projection"),
+  goal: z.union([PremiumReportProjectionVersionBindingV4Schema, z.null()]),
+  initial_kind: z.enum(["modeled_value", "observed_snapshot"]),
+  input_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  months: z.number().int().min(1.0).max(600.0),
+  numerical_input_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  observed: z.union([PremiumReportProjectionObservedBindingV4Schema, z.null()]),
+  owner_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  path_count: z.number().int().min(1.0).max(4096.0),
+  report_context: PremiumReportContextSnapshotBindingV4Schema,
+  reporting_currency: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  result_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  result_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  retained_point_count: z.number().int().min(2.0).max(121.0),
+  root_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  run_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  source_count: z.number().int().min(0.0).max(257.0),
+  source_cutoff_at: z.union([z.string().datetime({ offset: true }), z.null()]),
+  state: z.literal("succeeded"),
+  terminal_date: z.string().date(),
+  variant_count: z.number().int().min(1.0).max(3.0),
+});
+export type PremiumReportProjectionRunBindingV4 = z.infer<
+  typeof PremiumReportProjectionRunBindingV4Schema
+>;
+export const PremiumReportSelectionV4Schema = z.strictObject({
+  account_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  benchmark_version_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
+  constituent_snapshot_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
+  end_date: z.string().date(),
+  formats: z
+    .array(z.enum(["pdf", "csv", "json", "xlsx"]))
+    .min(1)
+    .max(4),
+  plan_revision_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
+  premium_run: PremiumReportProjectionRunSelectionV4Schema,
+  profile_version: z.literal("report_sections_v4"),
+  report_type: z.enum([
+    "monthly",
+    "quarterly",
+    "annual",
+    "portfolio_summary",
+    "target_drift",
+    "contribution_plan",
+    "performance_benchmark",
+    "dividend_income",
+    "portfolio_xray",
+    "quality_reconciliation",
+  ]),
+  reporting_currency: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  sections: z
+    .array(
+      z.enum([
+        "overview",
+        "allocation",
+        "targets",
+        "drift",
+        "contribution_plan",
+        "performance",
+        "benchmark",
+        "income",
+        "cash_flows",
+        "attribution",
+        "xray",
+        "quality",
+        "activity",
+        "projection",
+        "goal",
+      ]),
+    )
+    .min(1)
+    .max(15),
+  snapshot_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  source_cutoff_at: z.string().datetime({ offset: true }),
+  start_date: z.string().date(),
+  target_version_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
+  template_version: z.literal("report_template_v1").optional(),
+  xray_run_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
+});
+export type PremiumReportSelectionV4 = z.infer<
+  typeof PremiumReportSelectionV4Schema
+>;
+export const PremiumReportTableDescriptorV4Schema = z.strictObject({
+  content_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  dataset: z.null(),
+  reason_key: z.union([
+    z
+      .string()
+      .min(1)
+      .max(256)
+      .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+    z.null(),
+  ]),
+  row_count: z.number().int().min(0.0).max(100000.0),
+  schema_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  section: z.union([
+    z.enum([
+      "overview",
+      "allocation",
+      "targets",
+      "drift",
+      "contribution_plan",
+      "performance",
+      "benchmark",
+      "income",
+      "cash_flows",
+      "attribution",
+      "xray",
+      "quality",
+      "activity",
+      "projection",
+      "goal",
+    ]),
+    z.null(),
+  ]),
+  state: z.enum(["available", "partial", "unavailable", "failed"]),
+  table: z.enum([
+    "alert_events",
+    "alert_evaluations",
+    "alert_observations",
+    "alert_rule_versions",
+    "alert_predicates",
+    "alert_rule_destinations",
+    "alert_acknowledgments",
+    "alert_notifications",
+    "alert_transitions",
+    "alert_source_references",
+    "alert_canonical_bindings",
+    "alert_context_details",
+    "alert_context_members",
+    "alert_fx_conversions",
+    "alert_fx_legs",
+    "benchmark_composite",
+    "benchmark_components",
+    "benchmark_component_members",
+    "benchmark_observations",
+    "historical_options",
+    "historical_warning_coverage",
+    "xray_direct_positions",
+    "xray_fund_entities",
+    "xray_path_weights",
+    "xray_members",
+    "xray_policy",
+    "xray_policy_components",
+    "xray_policy_limits",
+    "xray_taxonomies",
+    "xray_threshold_policy",
+    "plan_input_header",
+    "plan_valuation",
+    "plan_valuation_positions",
+    "plan_valuation_cash",
+    "plan_fx",
+    "plan_options",
+    "plan_input_members",
+    "plan_listing_preferences",
+    "plan_holding_constraints",
+    "plan_allocation_constraints",
+    "plan_node_identities",
+    "plan_catalog_instruments",
+    "plan_catalog_listings",
+    "plan_source_details",
+    "plan_effective_constraints",
+    "snapshot_totals",
+    "positions",
+    "allocation_buckets",
+    "target_nodes",
+    "target_holdings",
+    "target_constraints",
+    "drift_rows",
+    "drift_totals",
+    "plan_summary",
+    "plan_lines",
+    "plan_objectives",
+    "plan_relations",
+    "performance_summary",
+    "performance_points",
+    "performance_periods",
+    "benchmark_summary",
+    "benchmark_points",
+    "benchmark_periods",
+    "income_summary",
+    "income_components",
+    "income_totals",
+    "income_periods",
+    "income_reporting_periods",
+    "cash_flow_summary",
+    "cash_flow_totals",
+    "cash_flow_periods",
+    "cash_flow_events",
+    "attribution_summary",
+    "attribution_components",
+    "attribution_effects",
+    "planning_company_actuals_v1",
+    "planning_company_basis_v1",
+    "xray_summary",
+    "xray_quality",
+    "xray_dimensions",
+    "xray_exposures",
+    "xray_paths",
+    "xray_held_funds",
+    "xray_overlap_pairs",
+    "xray_overlap_entities",
+    "xray_concentrations",
+    "xray_concentration_members",
+    "xray_thresholds",
+    "xray_residuals",
+    "xray_path_relations",
+    "reconciliation",
+    "reconciliation_issues",
+    "coverage",
+    "notes",
+    "activity",
+    "historical_use_consumers",
+    "historical_observation_uses",
+    "historical_evidence_uses",
+    "historical_missing_uses",
+    "historical_use_candidates",
+    "historical_conversion_uses",
+    "historical_conversion_legs",
+    "historical_event_memberships",
+    "xray_selections",
+    "xray_selection_evidence",
+    "xray_source_uses",
+    "xray_fund_edges",
+    "xray_path_classifications",
+    "xray_classification_decisions",
+    "xray_classification_memberships",
+    "dividends",
+    "contexts",
+    "source_references",
+    "source_memberships",
+    "note_memberships",
+    "license_references",
+    "coverage_facts",
+    "bound_facts",
+    "bindings",
+    "reconciliation_bindings",
+    "historical_source_details",
+    "historical_source_parents",
+    "historical_event_identities",
+    "xray_valuation_roots",
+    "xray_broker_fx",
+    "xray_licensed_fx",
+    "xray_fx_legs",
+    "xray_dependency_identities",
+    "target_exclusions",
+    "historical_anchor_reconciliation",
+    "historical_reconciliation_lines",
+    "historical_reconciliation_anchors",
+    "xray_reconciliation",
+    "xray_warning_paths",
+    "projection_basis_v1",
+    "projection_definitions_v1",
+    "projection_assumptions_v1",
+    "projection_assets_v1",
+    "projection_correlations_v1",
+    "projection_calendar_v1",
+    "projection_schedule_v1",
+    "projection_sensitivity_v1",
+    "projection_variants_v1",
+    "projection_paths_v1",
+    "projection_points_v1",
+    "projection_point_assets_v1",
+    "projection_distributions_v1",
+    "projection_quantiles_v1",
+    "projection_histograms_v1",
+    "projection_histogram_bins_v1",
+    "projection_goal_state_v1",
+    "projection_goal_definition_v1",
+    "projection_goal_results_v1",
+    "projection_members_v1",
+    "projection_source_headers_v1",
+    "projection_source_nodes_v1",
+    "projection_source_members_v1",
+    "projection_source_scalars_v1",
+  ]),
+});
+export type PremiumReportTableDescriptorV4 = z.infer<
+  typeof PremiumReportTableDescriptorV4Schema
+>;
+export const PremiumReportDocumentHeaderV4Schema = z.strictObject({
+  context_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  document_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  document_schema_version: z.literal("4.0.0"),
+  owner_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  premium_binding: PremiumReportProjectionRunBindingV4Schema,
+  selection: PremiumReportSelectionV4Schema,
+  tables: z.array(PremiumReportTableDescriptorV4Schema).max(128),
+  valuation_at: z.string().datetime({ offset: true }),
+});
+export type PremiumReportDocumentHeaderV4 = z.infer<
+  typeof PremiumReportDocumentHeaderV4Schema
+>;
+export const PremiumReportProofRelationV4Schema = z.strictObject({
+  row: ReportRowSchema,
+  table: z.enum([
+    "alert_events",
+    "alert_evaluations",
+    "alert_observations",
+    "alert_rule_versions",
+    "alert_predicates",
+    "alert_rule_destinations",
+    "alert_acknowledgments",
+    "alert_notifications",
+    "alert_transitions",
+    "alert_source_references",
+    "alert_canonical_bindings",
+    "alert_context_details",
+    "alert_context_members",
+    "alert_fx_conversions",
+    "alert_fx_legs",
+    "benchmark_composite",
+    "benchmark_components",
+    "benchmark_component_members",
+    "benchmark_observations",
+    "historical_options",
+    "historical_warning_coverage",
+    "xray_direct_positions",
+    "xray_fund_entities",
+    "xray_path_weights",
+    "xray_members",
+    "xray_policy",
+    "xray_policy_components",
+    "xray_policy_limits",
+    "xray_taxonomies",
+    "xray_threshold_policy",
+    "plan_input_header",
+    "plan_valuation",
+    "plan_valuation_positions",
+    "plan_valuation_cash",
+    "plan_fx",
+    "plan_options",
+    "plan_input_members",
+    "plan_listing_preferences",
+    "plan_holding_constraints",
+    "plan_allocation_constraints",
+    "plan_node_identities",
+    "plan_catalog_instruments",
+    "plan_catalog_listings",
+    "plan_source_details",
+    "plan_effective_constraints",
+    "snapshot_totals",
+    "positions",
+    "allocation_buckets",
+    "target_nodes",
+    "target_holdings",
+    "target_constraints",
+    "drift_rows",
+    "drift_totals",
+    "plan_summary",
+    "plan_lines",
+    "plan_objectives",
+    "plan_relations",
+    "performance_summary",
+    "performance_points",
+    "performance_periods",
+    "benchmark_summary",
+    "benchmark_points",
+    "benchmark_periods",
+    "income_summary",
+    "income_components",
+    "income_totals",
+    "income_periods",
+    "income_reporting_periods",
+    "cash_flow_summary",
+    "cash_flow_totals",
+    "cash_flow_periods",
+    "cash_flow_events",
+    "attribution_summary",
+    "attribution_components",
+    "attribution_effects",
+    "planning_company_actuals_v1",
+    "planning_company_basis_v1",
+    "xray_summary",
+    "xray_quality",
+    "xray_dimensions",
+    "xray_exposures",
+    "xray_paths",
+    "xray_held_funds",
+    "xray_overlap_pairs",
+    "xray_overlap_entities",
+    "xray_concentrations",
+    "xray_concentration_members",
+    "xray_thresholds",
+    "xray_residuals",
+    "xray_path_relations",
+    "reconciliation",
+    "reconciliation_issues",
+    "coverage",
+    "notes",
+    "activity",
+    "historical_use_consumers",
+    "historical_observation_uses",
+    "historical_evidence_uses",
+    "historical_missing_uses",
+    "historical_use_candidates",
+    "historical_conversion_uses",
+    "historical_conversion_legs",
+    "historical_event_memberships",
+    "xray_selections",
+    "xray_selection_evidence",
+    "xray_source_uses",
+    "xray_fund_edges",
+    "xray_path_classifications",
+    "xray_classification_decisions",
+    "xray_classification_memberships",
+    "dividends",
+    "contexts",
+    "source_references",
+    "source_memberships",
+    "note_memberships",
+    "license_references",
+    "coverage_facts",
+    "bound_facts",
+    "bindings",
+    "reconciliation_bindings",
+    "historical_source_details",
+    "historical_source_parents",
+    "historical_event_identities",
+    "xray_valuation_roots",
+    "xray_broker_fx",
+    "xray_licensed_fx",
+    "xray_fx_legs",
+    "xray_dependency_identities",
+    "target_exclusions",
+    "historical_anchor_reconciliation",
+    "historical_reconciliation_lines",
+    "historical_reconciliation_anchors",
+    "xray_reconciliation",
+    "xray_warning_paths",
+    "projection_basis_v1",
+    "projection_definitions_v1",
+    "projection_assumptions_v1",
+    "projection_assets_v1",
+    "projection_correlations_v1",
+    "projection_calendar_v1",
+    "projection_schedule_v1",
+    "projection_sensitivity_v1",
+    "projection_variants_v1",
+    "projection_paths_v1",
+    "projection_points_v1",
+    "projection_point_assets_v1",
+    "projection_distributions_v1",
+    "projection_quantiles_v1",
+    "projection_histograms_v1",
+    "projection_histogram_bins_v1",
+    "projection_goal_state_v1",
+    "projection_goal_definition_v1",
+    "projection_goal_results_v1",
+    "projection_members_v1",
+    "projection_source_headers_v1",
+    "projection_source_nodes_v1",
+    "projection_source_members_v1",
+    "projection_source_scalars_v1",
+  ]),
+});
+export type PremiumReportProofRelationV4 = z.infer<
+  typeof PremiumReportProofRelationV4Schema
+>;
+export const PremiumReportSourceReferenceV4Schema = z.strictObject({
+  content_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  first_observed_at: z.union([z.string().datetime({ offset: true }), z.null()]),
+  key: z
+    .string()
+    .min(1)
+    .max(256)
+    .regex(new RegExp("^[A-Za-z0-9][A-Za-z0-9._:/-]*$")),
+  kind: z.enum([
+    "broker_source_record",
+    "broker_source_occurrence",
+    "ingestion_run",
+    "portfolio_snapshot",
+    "snapshot_position",
+    "snapshot_cash",
+    "calculation",
+    "activity_revision",
+    "activity_revision_evidence",
+    "activity_coverage",
+    "reconciliation",
+    "target_version",
+    "plan_revision",
+    "historical_input",
+    "historical_result",
+    "xray_input",
+    "xray_result",
+    "price_snapshot",
+    "fx_snapshot",
+    "fx_observation",
+    "fx_coverage_gap",
+    "benchmark",
+    "constituent_snapshot",
+    "constituent_holding",
+    "identity",
+    "classification",
+    "fund_mapping",
+    "mapping",
+    "taxonomy",
+    "policy",
+    "calendar",
+    "license",
+    "opening",
+    "corporate_action",
+    "source_coverage",
+    "historical_evidence",
+    "fund_definition",
+    "price_observation",
+    "reconciliation_discrepancy",
+    "entity_evidence_version",
+    "entity_evidence_reference",
+    "relationship",
+    "classification_snapshot",
+    "classification_assignment",
+    "historical_classification",
+    "benchmark_version",
+  ]),
+  license_version_id: z.union([
+    z
+      .string()
+      .regex(
+        new RegExp(
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        ),
+      )
+      .uuid(),
+    z.null(),
+  ]),
+  mapping_version_id: z.union([
+    z
+      .string()
+      .regex(
+        new RegExp(
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        ),
+      )
+      .uuid(),
+    z.null(),
+  ]),
+  parent_id: z.union([
+    z
+      .string()
+      .regex(
+        new RegExp(
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        ),
+      )
+      .uuid(),
+    z.null(),
+  ]),
+  provider_id: z.union([
+    z
+      .string()
+      .regex(
+        new RegExp(
+          "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        ),
+      )
+      .uuid(),
+    z.null(),
+  ]),
+  source_at: z.union([z.string().datetime({ offset: true }), z.null()]),
+  subject_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+});
+export type PremiumReportSourceReferenceV4 = z.infer<
+  typeof PremiumReportSourceReferenceV4Schema
+>;
+export const PremiumReportManifestV4Schema = z.strictObject({
+  bindings: z.array(PremiumReportInputPinV4Schema).max(256),
+  bounds: z.array(PremiumReportBoundFactV4Schema).max(100000),
+  contexts: z.array(PremiumReportContextV4Schema).max(256),
+  coverage: z.array(PremiumReportCoverageFactV4Schema).max(100000),
+  document: PremiumReportDocumentHeaderV4Schema,
+  escaping_version: z.literal("report_csv_text_v1"),
+  license_references: z.array(ReportLicenseReferenceSchema).max(256),
+  method: z.literal("report_manifest_v1"),
+  method_version: z.literal("1.0.0"),
+  note_memberships: z.array(ReportNoteMembershipSchema).max(100000),
+  notes: z.array(PremiumReportNoteV4Schema).max(100000),
+  proof_relations: z.array(PremiumReportProofRelationV4Schema).max(100000),
+  reconciliation: z.array(ReportReconciliationBindingSchema).max(100000),
+  renderer_profile: ReportRendererProfileSchema,
+  source_memberships: z.array(ReportSourceMembershipSchema).max(100000),
+  source_references: z.array(PremiumReportSourceReferenceV4Schema).max(100000),
+});
+export type PremiumReportManifestV4 = z.infer<
+  typeof PremiumReportManifestV4Schema
+>;
 export const download_premium_report_artifactQuerySchema = z.strictObject({
   account_id: z
     .string()
@@ -2642,7 +3985,9 @@ export const download_premium_report_artifactQuerySchema = z.strictObject({
       ),
     )
     .uuid(),
-  profile: z.enum(["report_sections_v2", "report_sections_v3"]).optional(),
+  profile: z
+    .enum(["report_sections_v2", "report_sections_v3", "report_sections_v4"])
+    .optional(),
 });
 export type download_premium_report_artifactQuery = z.infer<
   typeof download_premium_report_artifactQuerySchema
@@ -2656,7 +4001,9 @@ export const create_premium_report_download_grantQuerySchema = z.strictObject({
       ),
     )
     .uuid(),
-  profile: z.enum(["report_sections_v2", "report_sections_v3"]).optional(),
+  profile: z
+    .enum(["report_sections_v2", "report_sections_v3", "report_sections_v4"])
+    .optional(),
 });
 export type create_premium_report_download_grantQuery = z.infer<
   typeof create_premium_report_download_grantQuerySchema
@@ -2674,7 +4021,8 @@ export class PremiumReportApiClient<
     body: PremiumReportValue<
       P,
       z.input<typeof GeneratePremiumReportRequestSchema>,
-      z.input<typeof GeneratePremiumReportRequestV3Schema>
+      z.input<typeof GeneratePremiumReportRequestV3Schema>,
+      z.input<typeof GeneratePremiumReportRequestV4Schema>
     >,
     options: ReportCommandOptions,
   ): Promise<
@@ -2682,7 +4030,8 @@ export class PremiumReportApiClient<
       PremiumReportValue<
         P,
         z.output<typeof PremiumReportJobStatusSchema>,
-        z.output<typeof PremiumReportJobStatusV3Schema>
+        z.output<typeof PremiumReportJobStatusV3Schema>,
+        z.output<typeof PremiumReportJobStatusV4Schema>
       >
     >
   > {
@@ -2694,12 +4043,14 @@ export class PremiumReportApiClient<
           this.#profile,
           PremiumReportJobStatusSchema,
           PremiumReportJobStatusV3Schema,
+          PremiumReportJobStatusV4Schema,
         ),
         undefined,
         premiumReportSchema(
           this.#profile,
           GeneratePremiumReportRequestSchema,
           GeneratePremiumReportRequestV3Schema,
+          GeneratePremiumReportRequestV4Schema,
         ).parse(body),
         options,
       );
@@ -2725,7 +4076,8 @@ export class PremiumReportApiClient<
       PremiumReportValue<
         P,
         z.output<typeof PremiumReportJobStatusSchema>,
-        z.output<typeof PremiumReportJobStatusV3Schema>
+        z.output<typeof PremiumReportJobStatusV3Schema>,
+        z.output<typeof PremiumReportJobStatusV4Schema>
       >
     >
   > {
@@ -2737,6 +4089,7 @@ export class PremiumReportApiClient<
           this.#profile,
           PremiumReportJobStatusSchema,
           PremiumReportJobStatusV3Schema,
+          PremiumReportJobStatusV4Schema,
         ),
         get_premium_report_statusQuerySchema.parse(query),
         undefined,
@@ -2763,7 +4116,8 @@ export class PremiumReportApiClient<
       PremiumReportValue<
         P,
         z.output<typeof PremiumReportPageSchema>,
-        z.output<typeof PremiumReportPageV3Schema>
+        z.output<typeof PremiumReportPageV3Schema>,
+        z.output<typeof PremiumReportPageV4Schema>
       >
     >
   > {
@@ -2775,6 +4129,7 @@ export class PremiumReportApiClient<
           this.#profile,
           PremiumReportPageSchema,
           PremiumReportPageV3Schema,
+          PremiumReportPageV4Schema,
         ),
         list_premium_reportsQuerySchema.parse(query),
         undefined,
@@ -2802,7 +4157,8 @@ export class PremiumReportApiClient<
       PremiumReportValue<
         P,
         z.output<typeof PremiumReportManifestSchema>,
-        z.output<typeof PremiumReportManifestV3Schema>
+        z.output<typeof PremiumReportManifestV3Schema>,
+        z.output<typeof PremiumReportManifestV4Schema>
       >
     >
   > {
@@ -2814,6 +4170,7 @@ export class PremiumReportApiClient<
           this.#profile,
           PremiumReportManifestSchema,
           PremiumReportManifestV3Schema,
+          PremiumReportManifestV4Schema,
         ),
         get_premium_report_manifestQuerySchema.parse(query),
         undefined,

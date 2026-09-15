@@ -1,15 +1,39 @@
 """Canonical PDF assertions survive actual page breaks without losing record scope."""
 
+from dataclasses import replace
 from io import BytesIO
 
 import pytest
 from pypdf import PdfReader
-from trading212_worker.report_renderers.pdf import _Layout
+from trading212_application.reports import ReportRenderError
+from trading212_domain.report_projection_schema import GOAL_REPORT_TABLES, PROJECTION_REPORT_TABLES
+from trading212_domain.reports import ReportFailureCode, ReportSection
+from trading212_worker.report_renderers.pdf import _analytical_order, _Layout
 
 from tests.report_pdf import report_body_text
 from tests.unit.worker.test_private_report_renderers import Guard
+from tests.unit.worker.test_report_profile_decoder import manifests
 
 pytestmark = pytest.mark.unit
+
+
+def test_projection_pdf_orders_both_new_sections_and_rejects_cross_section_tables() -> None:
+    descriptors = manifests()[3].document.tables
+    for section, tables in (
+        (ReportSection.PROJECTION, PROJECTION_REPORT_TABLES),
+        (ReportSection.GOAL, GOAL_REPORT_TABLES),
+    ):
+        actual = sorted(
+            (descriptor for descriptor in descriptors if descriptor.section is section),
+            key=_analytical_order,
+        )
+        assert tuple(descriptor.table for descriptor in actual) == tables
+        other = (
+            ReportSection.GOAL if section is ReportSection.PROJECTION else ReportSection.PROJECTION
+        )
+        with pytest.raises(ReportRenderError) as caught:
+            _analytical_order(replace(actual[0], section=other))
+        assert caught.value.code is ReportFailureCode.INVALID_INPUT
 
 
 class PdfSink(BytesIO):

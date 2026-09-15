@@ -73,6 +73,20 @@ def pass_cleanup(
         )
 
 
+def drain_cleanup(case: RunCase, *, at: datetime = NOW) -> None:
+    # The 365-day fixture now charges each row's SQL guards/counters as well as
+    # the payload deletion. Each committed invocation keeps the original 4096
+    # ceiling; continuation must finish instead of silently exceeding it.
+    for _ in range(64):
+        budget = SourcePurgeBudget()
+        done = pass_cleanup(case, at=at, budget=budget)
+        assert 0 <= budget.rows_inspected <= 4096
+        assert 0 <= budget.rows_removed <= 4096
+        if done:
+            return
+    pytest.fail("Default-budget risk cleanup did not converge")
+
+
 def assert_empty(case: RunCase, run: app.RiskRunView) -> None:
     with case.sessions() as session:
         result = session.scalar(select(RiskResultModel).where(RiskResultModel.run_id == run.id))
@@ -112,7 +126,7 @@ async def test_current_license_cleanup_without_decode(
     with patch.object(
         HistoricalCaptureStore, "_capture_view", side_effect=AssertionError("private decode")
     ) as decode:
-        assert pass_cleanup(case, at=NOW + timedelta(days=later))
+        drain_cleanup(case, at=NOW + timedelta(days=later))
         decode.assert_not_called()
     assert_empty(case, run)
     page = await case.service.list_runs(
@@ -122,7 +136,7 @@ async def test_current_license_cleanup_without_decode(
     with pytest.raises(app.RiskServiceError) as failure:
         await case.service.get_run(case.principal, run.id)
     assert failure.value.code is app.RiskErrorCode.RUN_EXPIRED
-    assert pass_cleanup(case, at=NOW + timedelta(days=later))
+    drain_cleanup(case, at=NOW + timedelta(days=later))
     assert_empty(case, run)
 
 
@@ -139,7 +153,7 @@ async def test_budgeted_resume_canonical_last_and_capacity_retained(run_case: Ru
         row = session.scalar(select(RiskResultModel).where(RiskResultModel.run_id == run.id))
         assert row is not None and row.canonical_result
     incomplete = 0
-    for _ in range(100):
+    for _ in range(512):
         budget = SourcePurgeBudget(rows_inspected=96, rows_removed=32)
         done = pass_cleanup(case, at=later, budget=budget)
         assert 0 <= budget.rows_inspected <= 96 and 0 <= budget.rows_removed <= 32
@@ -246,7 +260,7 @@ async def test_future_license_and_busy_owner_do_not_authorize_cleanup(run_case: 
             {"key": f"sources:{case.principal.owner_id}"},
         )
         assert not pass_cleanup(case, at=NOW + timedelta(days=2))
-    assert pass_cleanup(case, at=NOW + timedelta(days=2))
+    drain_cleanup(case, at=NOW + timedelta(days=2))
     assert_empty(case, run)
 
 
@@ -275,7 +289,7 @@ async def test_source_cleanup_stays_pending_until_risk_payloads_are_gone(run_cas
             select(PremiumRetentionModel).where(PremiumRetentionModel.run_id == run.id)
         )
         assert marker is not None and marker.completed_at is None
-    assert pass_cleanup(case, at=later)
+    drain_cleanup(case, at=later)
     assert_empty(case, run)
 
 

@@ -55,6 +55,7 @@ from trading212_security.settings import RuntimeEnvironment
 from .alert_tasks import CeleryAlertPublisher, dispatch_alerts_once, dispatch_notifications_once
 from .phase2_metrics import QUEUE_SAMPLE_INTERVAL_SECONDS, observe_phase2_queues
 from .plan_tasks import CeleryPlanPublisher, dispatch_plans_once
+from .projection_tasks import CeleryProjectionPublisher, dispatch_projections_once
 from .report_tasks import (
     CeleryExportPublisher,
     CeleryReportPublisher,
@@ -1394,6 +1395,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             replay_resolver=resolve_scenario_replay,
         )
         scenario_publisher = CeleryScenarioPublisher(celery)
+        from trading212_persistence.projection_job_store import PostgresProjectionJobStore
+
+        projection_store = PostgresProjectionJobStore(
+            create_session_factory(engine), cursor_signing_key=secrets.token_bytes(32)
+        )
+        projection_publisher = CeleryProjectionPublisher(celery)
 
         source_service = PostgresSourceService(
             sessions=create_session_factory(engine),
@@ -1521,6 +1528,24 @@ def main(argv: Sequence[str] | None = None) -> int:
                 ).inc(count)
             metrics.queue_delivery_failures.labels(queue="scenario_dispatch").inc(
                 scenario_result.deferred
+            )
+            with metrics.duration.labels(operation="projection_dispatch").time():
+                projection_result = await dispatch_projections_once(
+                    projection_store,
+                    projection_publisher,
+                    dispatcher_id=settings.dispatcher_id,
+                    limit=1,
+                )
+            for outcome, count in (
+                ("success", projection_result.published),
+                ("failure", projection_result.deferred),
+                ("fenced", projection_result.fenced),
+            ):
+                metrics.queue_delivery_attempts.labels(
+                    queue="projection_dispatch", outcome=outcome
+                ).inc(count)
+            metrics.queue_delivery_failures.labels(queue="projection_dispatch").inc(
+                projection_result.deferred
             )
             with metrics.duration.labels(operation="plan_dispatch").time():
                 result = await dispatch_plans_once(

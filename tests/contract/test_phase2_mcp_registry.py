@@ -46,8 +46,14 @@ async def test_independent_exact_25_names_fields_scopes_and_annotations_after_p2
         "create_scenario_run",
         "get_scenario_result",
         "compare_scenarios",
+        "create_projection_run",
+        "get_projection",
+        "list_goals",
+        "get_goal_analysis",
+        "get_research_summary",
+        "get_research_item",
     }
-    assert len(tools) == 32
+    assert len(tools) == 38
     assert {tool.name for tool in tools} == set(expected_names) | premium
     assert tuple(tool.name for tool in tools[:9]) == expected_names[:9]
     assert set(RESULT_MODELS) == set(expected_names) | premium

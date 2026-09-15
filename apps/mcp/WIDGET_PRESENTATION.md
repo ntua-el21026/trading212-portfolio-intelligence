@@ -1,8 +1,8 @@
 # Widget presentation boundaries
 
-Current Phase3 implementation exposes28 tools and6 resources. The five Phase2
-resources retain their accepted contracts; risk-v1.html is the additive resource
-described below. Phase3 local acceptance and independent review remain pending.
+Current Phase3 implementation exposes 36 tools and 8 resources. The five Phase2
+resources retain their accepted contracts; risk, scenario and projection are
+additive resources. Final Phase3 acceptance remains separate from implementation.
 
 ## Historical Phase2 evidence
 
@@ -91,3 +91,41 @@ Local iframe tests cover the standard lifecycle, fallback, keyboard, reduced mot
 untrusted markup, wrong senders, late replies and read timeout. Source-bound logs
 and reviewed synthetic captures are retained as component evidence. This is not a
 live ChatGPT test or final premium accessibility/performance acceptance.
+
+
+## Additive projection resource
+
+`ui://trading212-portfolio/projection-v1.html` is attached to tools 33, 34 and 36:
+`create_projection_run`, `get_projection` and `get_goal_analysis`. Tool 35,
+`list_goals`, remains a structured text collection. The first 32 tool contracts
+and seven resource documents are preserved. This section describes implementation
+boundaries; it does not assert executed validation or live ChatGPT acceptance.
+
+The widget reads only `get_projection` and `get_goal_analysis` through the
+negotiated host bridge. It does not create a run or a goal, cancel a job, resample
+paths, obtain credentials, call a provider, or submit a broker action. The sole
+new MCP command creates a private application run under current account grants,
+portfolio/analytics read scopes and projections write scope. Signed principal
+resolution and source authorization remain server responsibilities; widget inputs
+and source IDs do not grant authority. No cookie-authenticated browser mutation
+is introduced, so no additional CSRF mechanism is added to this bearer transport.
+
+Saved assumptions, dated schedules, every variant's retained distributions and
+terminal histograms, cash-flow summaries, goal targets and Wilson intervals are
+available as semantic tables. A point page contains at most 100 complete rows;
+explicit continuation preserves account/run, signed cursor, requested page size,
+next ordinal and saved result digest. Inspecting a point reveals all 12 monetary
+fields, all asset values, funding flags and residuals. Financial strings retain
+the exact returned decimal representation and currency; model estimates and
+unavailable states stay explicit. Source and warning previews disclose their
+omitted counts, and unavailable original source clocks stay unavailable.
+
+The bounded public view is at most 1 MiB and the complete MCP result, including
+text and metadata, is at most 2 MiB of UTF-8 JSON. The host bridge supports one
+pending read with a 15-second deadline. Account/run changes, partial arguments,
+cancellation and teardown discard prior results and late replies. A host without
+tool-read capability can still render the canonical tables. The existing
+feature-detected `window.openai.callTool` compatibility path remains available;
+standard MCP Apps initialization and `tools/call` are preferred. The resource
+uses the same MIME, script/style hashes and empty network/asset CSP allowlists as
+the existing resources. There is no browser persistence or financial arithmetic.

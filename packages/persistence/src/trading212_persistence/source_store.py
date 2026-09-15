@@ -6,7 +6,11 @@ import asyncio
 import hashlib
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
+
+if TYPE_CHECKING:
+    from .research_permissions import ResearchCapabilityAuthority
 
 from sqlalchemy import func, select, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
@@ -120,6 +124,7 @@ class SourceStore:
         max_active_collection_snapshots_per_owner: int = 64,
         max_active_collection_members_per_owner: int = 250_000,
         required_copy_use: SourceUse | None = None,
+        research_capability_authority: ResearchCapabilityAuthority | None = None,
     ) -> None:
         if required_copy_use is not None and (
             not isinstance(required_copy_use, SourceUse)
@@ -131,6 +136,7 @@ class SourceStore:
         ):
             raise ValueError("Only fixed report/export copy uses are supported.")
         self._required_copy_use = required_copy_use
+        self._research_capabilities = research_capability_authority
         self._sessions = sessions
         self._clock = clock or (lambda: datetime.now(UTC))
         self._authorizer = Authorizer()

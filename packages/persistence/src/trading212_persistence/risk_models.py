@@ -291,6 +291,8 @@ class RiskIntervalModel(PremiumOwned):
 class RiskMatrixCellModel(PremiumOwned):
     __tablename__ = "risk_matrix_cells"
     __table_args__ = (
+        Index("ix_risk_matrix_col_cleanup", "result_id", "column_series_id"),
+        Index("ix_risk_matrix_row_cleanup", "result_id", "row_series_id"),
         scoped(),
         parent("result_id", "risk_results"),
         ForeignKeyConstraint(

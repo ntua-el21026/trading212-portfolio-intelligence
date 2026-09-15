@@ -845,3 +845,17 @@ Index(
     HistoricalDependencyModel.id,
 )
 Index("ix_retention_runs_input", HistoricalRunModel.input_id, HistoricalRunModel.id)
+
+# Projection calibration traverses immutable original dependency identities only.
+Index(
+    "ix_projection_history_input",
+    HistoricalDependencyModel.owner_id,
+    HistoricalDependencyModel.input_id,
+    HistoricalDependencyModel.id,
+)
+Index(
+    "ix_projection_history_evidence",
+    HistoricalDependencyModel.owner_id,
+    HistoricalDependencyModel.evidence_id,
+    HistoricalDependencyModel.id,
+)

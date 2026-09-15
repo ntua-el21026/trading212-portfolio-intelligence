@@ -496,7 +496,7 @@ class PortfolioMcpGateway:
             return (
                 result,
                 f"Retrieved {len(selected)} direct allocation rows, including cash when available.",
-                {},
+                {"accountId": summary.account.id},
             )
 
         return await self._execute(

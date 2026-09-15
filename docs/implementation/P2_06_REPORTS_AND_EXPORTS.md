@@ -64,24 +64,47 @@ All enum values below are exact lowercase wire values. Requests reject extra fie
 
 ```python
 ReportType = Literal[
-    'monthly', 'quarterly', 'annual', 'portfolio_summary', 'target_drift',
-    'contribution_plan', 'performance_benchmark', 'dividend_income',
-    'portfolio_xray', 'quality_reconciliation',
+    "monthly",
+    "quarterly",
+    "annual",
+    "portfolio_summary",
+    "target_drift",
+    "contribution_plan",
+    "performance_benchmark",
+    "dividend_income",
+    "portfolio_xray",
+    "quality_reconciliation",
 ]
-ReportFormat = Literal['pdf', 'csv', 'json', 'xlsx']
-ExportFormat = Literal['csv', 'json', 'xlsx']
+ReportFormat = Literal["pdf", "csv", "json", "xlsx"]
+ExportFormat = Literal["csv", "json", "xlsx"]
 ReportSection = Literal[
-    'overview', 'allocation', 'targets', 'drift', 'contribution_plan',
-    'performance', 'benchmark', 'income', 'cash_flows', 'attribution',
-    'xray', 'quality', 'activity',
+    "overview",
+    "allocation",
+    "targets",
+    "drift",
+    "contribution_plan",
+    "performance",
+    "benchmark",
+    "income",
+    "cash_flows",
+    "attribution",
+    "xray",
+    "quality",
+    "activity",
 ]
 ExportDataset = Literal[
-    'positions', 'activity', 'dividends', 'targets', 'plans',
-    'performance', 'xray', 'alerts',
+    "positions",
+    "activity",
+    "dividends",
+    "targets",
+    "plans",
+    "performance",
+    "xray",
+    "alerts",
 ]
-ExportFieldSet = Literal['standard', 'audit']
-ReportJobState = Literal['queued', 'running', 'succeeded', 'failed', 'expired', 'cancelled']
-ReportSourceUse = Literal['report', 'export']  # adapter maps to existing SourceUse
+ExportFieldSet = Literal["standard", "audit"]
+ReportJobState = Literal["queued", "running", "succeeded", "failed", "expired", "cancelled"]
+ReportSourceUse = Literal["report", "export"]  # adapter maps to existing SourceUse
 ```
 
 Use actual StrEnum classes in implementation. `cancelled` has no public command and is
@@ -97,22 +120,24 @@ class ReportSelection:
     account_id: UUID
     start_date: date
     end_date: date
-    source_cutoff_at: datetime                 # aware UTC
+    source_cutoff_at: datetime  # aware UTC
     snapshot_id: UUID
     reporting_currency: CurrencyCode
     report_type: ReportType
-    sections: tuple[ReportSection, ...]         # unique, nonempty, <=13
-    formats: tuple[ReportFormat, ...]           # unique, nonempty, <=4
+    sections: tuple[ReportSection, ...]  # unique, nonempty, <=13
+    formats: tuple[ReportFormat, ...]  # unique, nonempty, <=4
     target_version_id: UUID | None = None
     plan_revision_id: UUID | None = None
     benchmark_version_id: UUID | None = None
     constituent_snapshot_id: UUID | None = None
     template_version: str = FIXED_REPORT_TEMPLATE_VERSION
 
+
 class GenerateReportCommand:
     selection: ReportSelection
     idempotency_key: str
-    ttl_days: int = 7                          # 1..30, reject bool
+    ttl_days: int = 7  # 1..30, reject bool
+
 
 class ExportSelection:
     account_id: UUID
@@ -128,6 +153,7 @@ class ExportSelection:
     plan_revision_id: UUID | None = None
     benchmark_version_id: UUID | None = None
     constituent_snapshot_id: UUID | None = None
+
 
 class CreateExportCommand:
     selection: ExportSelection
@@ -190,59 +216,65 @@ use native UUID internally and canonical UUID strings on HTTP/MCP/JSON boundarie
 No user/provider text becomes a table key, column key, expression, path or markup.
 
 ```python
-CellKind = Literal['text', 'identifier', 'enum', 'decimal', 'integer', 'boolean', 'date', 'instant']
-CellState = Literal['available', 'partial', 'unavailable', 'failed', 'not_applicable']
-DecimalRole = Literal['money', 'quantity', 'price', 'fx', 'ratio', 'score', 'residual']
+CellKind = Literal["text", "identifier", "enum", "decimal", "integer", "boolean", "date", "instant"]
+CellState = Literal["available", "partial", "unavailable", "failed", "not_applicable"]
+DecimalRole = Literal["money", "quantity", "price", "fx", "ratio", "score", "residual"]
+
 
 class ReportCell:
     kind: CellKind
     value: str | Decimal | int | bool | date | datetime | None
-    state: CellState = 'available'
+    state: CellState = "available"
     decimal_role: DecimalRole | None = None
     currency: CurrencyCode | None = None
     context_key: str | None = None
-    reason_key: str | None = None               # typed note registry reference
-    bound_key: str | None = None                # captured canonical bound descriptor
+    reason_key: str | None = None  # typed note registry reference
+    bound_key: str | None = None  # captured canonical bound descriptor
     quality: QualityState | None = None
-    origin: ReportMetricOrigin | None = None    # exact closed canonical origin vocabulary
+    origin: ReportMetricOrigin | None = None  # exact closed canonical origin vocabulary
     coverage_key: str | None = None
-    confidence: Decimal | None = None          # finite Q18 ratio in [0, 1]
+    confidence: Decimal | None = None  # finite Q18 ratio in [0, 1]
     method_key: str | None = None
-    method_version: str | None = None          # present exactly with method_key
+    method_version: str | None = None  # present exactly with method_key
     provenance_set_key: str | None = None
     note_set_key: str | None = None
 
+
 class ReportColumn:
-    key: ReportColumnKey                       # str; exact membership/order in fixed table registry
-    kind: CellKind | None                     # None only for fixed metric-union columns
+    key: ReportColumnKey  # str; exact membership/order in fixed table registry
+    kind: CellKind | None  # None only for fixed metric-union columns
     decimal_role: DecimalRole | None
-    optional: bool                            # schema applicability, never missing=zero
+    optional: bool  # schema applicability, never missing=zero
+
 
 class ReportTableSchema:
-    key: ReportTableKey                        # finite registry listed in §4
-    schema_version: Literal['1.0.0']
-    columns: tuple[ReportColumn, ...]           # exactly registered order, <=64
-    order: ReportRowOrder                      # fixed for this table, not caller supplied
+    key: ReportTableKey  # finite registry listed in §4
+    schema_version: Literal["1.0.0"]
+    columns: tuple[ReportColumn, ...]  # exactly registered order, <=64
+    order: ReportRowOrder  # fixed for this table, not caller supplied
+
 
 class ReportRow:
-    key: str                                  # actual source identity or stable semantic key
+    key: str  # actual source identity or stable semantic key
     context_key: str
-    cells: tuple[ReportCell, ...]              # exactly one cell per registered column
+    cells: tuple[ReportCell, ...]  # exactly one cell per registered column
+
 
 class ReportTableDescriptor:
     table: ReportTableKey
-    section: ReportSection | None              # none only for standalone export/common proof
+    section: ReportSection | None  # none only for standalone export/common proof
     dataset: ExportDataset | None
     schema_digest: Sha256
-    state: Literal['available', 'partial', 'unavailable', 'failed']
+    state: Literal["available", "partial", "unavailable", "failed"]
     reason_key: str | None
     row_count: int
     content_digest: Sha256
 
+
 class ReportDocumentHeader:
-    document_schema_version: Literal['1.0.0']
+    document_schema_version: Literal["1.0.0"]
     selection: ReportSelection | ExportSelection
-    owner_id: UUID                             # captured authorized scope, not caller input
+    owner_id: UUID  # captured authorized scope, not caller input
     valuation_at: datetime
     context_digest: Sha256
     tables: tuple[ReportTableDescriptor, ...]
@@ -553,9 +585,14 @@ class CanonicalFamilyBinding:
     method_key: str
     method_version: str
 
+
 class ReportCapturePort(Protocol):
-    def capture_report(self, selection: ReportSelection, *, sink: ReportCaptureSink) -> ReportCaptureSummary: ...
-    def capture_export(self, selection: ExportSelection, *, sink: ReportCaptureSink) -> ReportCaptureSummary: ...
+    def capture_report(
+        self, selection: ReportSelection, *, sink: ReportCaptureSink
+    ) -> ReportCaptureSummary: ...
+    def capture_export(
+        self, selection: ExportSelection, *, sink: ReportCaptureSink
+    ) -> ReportCaptureSummary: ...
 ```
 
 The implementing object is bound to the creation transaction, authorized current
@@ -677,12 +714,14 @@ class ReportChunk:
     table: ReportTableKey
     ordinal: int
     rows: tuple[ReportRow, ...]
-    canonical_bytes: bytes                     # <=1 MiB; codec-verified exact match
+    canonical_bytes: bytes  # <=1 MiB; codec-verified exact match
     digest: Sha256
+
 
 class ReportCaptureSink(Protocol):
     def append(self, chunk: ReportChunk) -> None: ...
     def finish(self, summary: ReportCaptureSummary) -> None: ...
+
 
 class ReportCaptureSummary:
     header: ReportDocumentHeader
@@ -693,9 +732,10 @@ class ReportCaptureSummary:
     proof_digest: Sha256
     renderer_profile: ReportRendererProfile
 
+
 class ReportManifest:
-    method: Literal['report_manifest_v1']
-    method_version: Literal['1.0.0']
+    method: Literal["report_manifest_v1"]
+    method_version: Literal["1.0.0"]
     document: ReportDocumentHeader
     renderer_profile: ReportRendererProfile
     bindings: tuple[ReportBinding, ...]
@@ -707,24 +747,29 @@ class ReportManifest:
     coverage: tuple[ReportCoverageFact, ...]
     bounds: tuple[ReportBoundFact, ...]
     notes: tuple[ReportNote, ...]
-    proof_relations: tuple[ReportProofRelation, ...]  # supports small inline fixtures; production streams these registered rows as chunk tables
+    proof_relations: tuple[
+        ReportProofRelation, ...
+    ]  # supports small inline fixtures; production streams these registered rows as chunk tables
     reconciliation: tuple[ReportReconciliationBinding, ...]
     escaping_version: str
+
 
 class ReportRendererProfile:
     profile_version: str
     template_version: str
     locale: str
-    timezone: Literal['UTC']
+    timezone: Literal["UTC"]
     renderer_versions: tuple[ReportRendererVersion, ...]  # one per selected format
-    fonts: tuple[ReportFontReference, ...]                # version/hash/license ref
+    fonts: tuple[ReportFontReference, ...]  # version/hash/license ref
     chart_order_version: str
     accessibility_profile_version: str
 
+
 def encode_report_manifest(value: ReportManifest) -> bytes: ...
 def decode_report_manifest(payload: bytes) -> ReportManifest: ...
-def build_report_manifest(capture: ReportCaptureSummary, *, proof: ReportProof,
-                          profile: ReportRendererProfile) -> ReportManifest: ...
+def build_report_manifest(
+    capture: ReportCaptureSummary, *, proof: ReportProof, profile: ReportRendererProfile
+) -> ReportManifest: ...
 def report_manifest_digest(value: ReportManifest) -> Sha256: ...
 ```
 
@@ -765,32 +810,44 @@ class ReportDocumentReader(Protocol):
     def manifest(self) -> ReportManifest: ...
     def iter_chunks(self, table: ReportTableKey) -> Iterator[ReportChunk]: ...
 
+
 class BoundedArtifactSink(Protocol):
-    def write(self, chunk: bytes) -> int: ...     # reject before crossing 10 MiB
+    def write(self, chunk: bytes) -> int: ...  # reject before crossing 10 MiB
     @property
     def byte_length(self) -> int: ...
 
+
 class RenderedArtifact:
     format: ReportFormat
-    mime_type: ReportMimeType                   # fixed format-to-MIME registry
-    content: bytes                             # <=10 MiB; no path/URL
+    mime_type: ReportMimeType  # fixed format-to-MIME registry
+    content: bytes  # <=10 MiB; no path/URL
     byte_length: int
     content_digest: Sha256
+
 
 class ReportRenderReceipt:
     format: ReportFormat
     mime_type: ReportMimeType
 
+
 class BoundedArtifactBuffer(BoundedArtifactSink, Protocol):
     def finish(self, receipt: ReportRenderReceipt) -> RenderedArtifact: ...
 
+
 class ReportRendererPort(Protocol):
-    def render(self, document: ReportDocumentReader, *, format: ReportFormat,
-               profile: ReportRendererProfile, sink: BoundedArtifactSink,
-               guard: ReportRenderGuard) -> ReportRenderReceipt: ...
+    def render(
+        self,
+        document: ReportDocumentReader,
+        *,
+        format: ReportFormat,
+        profile: ReportRendererProfile,
+        sink: BoundedArtifactSink,
+        guard: ReportRenderGuard,
+    ) -> ReportRenderReceipt: ...
+
 
 class ReportRenderGuard(Protocol):
-    def check(self) -> None: ...                # cancellation/lease/access/time/budget
+    def check(self) -> None: ...  # cancellation/lease/access/time/budget
 ```
 
 `open_report_document(claim)` is a synchronous context manager opened, consumed and
@@ -857,8 +914,9 @@ fixed tasks and outboxes. Existing planning UUID leases alone do not satisfy met
 report/export claims additionally require a monotonically increasing integer fence.
 
 ```python
-REPORT_TASK_NAME = 'reports.generate.v1'
-EXPORT_TASK_NAME = 'exports.generate.v1'
+REPORT_TASK_NAME = "reports.generate.v1"
+EXPORT_TASK_NAME = "exports.generate.v1"
+
 
 class ReportTaskMessage:
     job_id: UUID
@@ -867,28 +925,41 @@ class ReportTaskMessage:
     capture_id: UUID
     input_digest: Sha256
 
-class ExportTaskMessage:                        # distinct class, same strict fields
+
+class ExportTaskMessage:  # distinct class, same strict fields
     job_id: UUID
     owner_id: UUID
     account_id: UUID
     capture_id: UUID
     input_digest: Sha256
 
+
 class ReportJobClaim:
     message: ReportTaskMessage
     lease_id: UUID
-    fence: int                                 # positive, monotonic on each claim
+    fence: int  # positive, monotonic on each claim
     lease_expires_at: datetime
-    consumer_attempt: int                      # 1..4
+    consumer_attempt: int  # 1..4
+
 
 class ReportJobStore(Protocol):
-    async def claim_report_job(self, message: ReportTaskMessage, *, consumer_id: str) -> ReportJobClaim | None: ...
+    async def claim_report_job(
+        self, message: ReportTaskMessage, *, consumer_id: str
+    ) -> ReportJobClaim | None: ...
     async def heartbeat_report_job(self, claim: ReportJobClaim) -> bool: ...
-    def open_report_document(self, claim: ReportJobClaim) -> ContextManager[ReportDocumentReader]: ...
-    async def complete_report_job(self, claim: ReportJobClaim, *, manifest: ReportManifest,
-                            artifacts: tuple[RenderedArtifact, ...]) -> bool: ...
-    async def fail_report_job(self, claim: ReportJobClaim, *, failure: ReportFailureCode,
-                        retryable: bool) -> bool: ...
+    def open_report_document(
+        self, claim: ReportJobClaim
+    ) -> ContextManager[ReportDocumentReader]: ...
+    async def complete_report_job(
+        self,
+        claim: ReportJobClaim,
+        *,
+        manifest: ReportManifest,
+        artifacts: tuple[RenderedArtifact, ...],
+    ) -> bool: ...
+    async def fail_report_job(
+        self, claim: ReportJobClaim, *, failure: ReportFailureCode, retryable: bool
+    ) -> bool: ...
 ```
 
 Public and durable store methods are async, following existing application conventions.
@@ -928,11 +999,12 @@ class ReportArtifactMetadata:
     content_digest: Sha256
     expires_at: datetime
 
+
 class ReportJobStatus:
     account_id: UUID
-    context: ReportPinnedContext | None          # only expired/cancelled after lawful purge
+    context: ReportPinnedContext | None  # only expired/cancelled after lawful purge
     job_id: UUID
-    report_id: UUID | None                      # same job ID only after success
+    report_id: UUID | None  # same job ID only after success
     state: ReportJobState
     requested_at: datetime
     completed_at: datetime | None
@@ -943,10 +1015,11 @@ class ReportJobStatus:
     manifest_digest: Sha256 | None
     artifacts: tuple[ReportArtifactMetadata, ...]
 
+
 class ExportJobStatus:
     account_id: UUID
-    context: ReportPinnedContext | None          # only expired/cancelled after lawful purge
-    export_id: UUID                             # stable job identity
+    context: ReportPinnedContext | None  # only expired/cancelled after lawful purge
+    export_id: UUID  # stable job identity
     state: ReportJobState
     requested_at: datetime
     completed_at: datetime | None
@@ -958,9 +1031,10 @@ class ExportJobStatus:
     manifest_digest: Sha256 | None
     artifacts: tuple[ReportArtifactMetadata, ...]  # zero pending/failed; exactly one success
 
+
 class ArtifactGrant:
     artifact_id: UUID
-    token: str                                 # sensitive response only; never MCP/log
+    token: str  # sensitive response only; never MCP/log
     expires_at: datetime
 ```
 
@@ -1116,20 +1190,22 @@ same safe bounded pins and quality required by MCP; it must not wait for a manif
 ```python
 class ReportInputPin:
     family: ReportFamily
-    role: ReportInputRole                     # fixed family-specific registry
+    role: ReportInputRole  # fixed family-specific registry
     subject_id: UUID
     content_digest: Sha256
     parent_id: UUID | None
     method_key: str | None
     method_version: str | None
 
+
 class ReportQualitySummary:
     state: QualityState
-    availability: SourceAvailability          # available/partial/unavailable/failed
+    availability: SourceAvailability  # available/partial/unavailable/failed
     evaluated_at: datetime
-    warnings: tuple[ReportNote, ...]           # <=64 safe preview records
+    warnings: tuple[ReportNote, ...]  # <=64 safe preview records
     warning_count: int
     warning_omitted_count: int
+
 
 class ReportPinnedContext:
     snapshot_id: UUID
@@ -1138,9 +1214,9 @@ class ReportPinnedContext:
     reporting_currency: CurrencyCode
     input_digest: Sha256
     document_digest: Sha256
-    profile_version: Literal['report_sections_v1']
-    schema_version: Literal['1.0.0']
-    pins: tuple[ReportInputPin, ...]            # <=256 actual input/run/policy/version pins
+    profile_version: Literal["report_sections_v1"]
+    schema_version: Literal["1.0.0"]
+    pins: tuple[ReportInputPin, ...]  # <=256 actual input/run/policy/version pins
     quality: ReportQualitySummary
 ```
 
@@ -1152,38 +1228,75 @@ Statuses/lists use the same context schema under the ordinary 2 MiB JSON ceiling
 
 ```python
 class ReportListQuery:
-    limit: int = 25                           # 1..100
+    limit: int = 25  # 1..100
     cursor: str | None = None
     state: ReportJobState | None = None
     report_type: ReportType | None = None
     start_date: date | None = None
     end_date: date | None = None
-    sort: Literal['created_desc'] = 'created_desc'
+    sort: Literal["created_desc"] = "created_desc"
+
 
 class ExportListQuery:
     limit: int = 25
     cursor: str | None = None
     state: ReportJobState | None = None
     dataset: ExportDataset | None = None
-    sort: Literal['created_desc'] = 'created_desc'
+    sort: Literal["created_desc"] = "created_desc"
+
 
 class ReportService(Protocol):
-    async def generate_report(self, principal: Principal, command: GenerateReportCommand) -> ReportJobStatus: ...
-    async def get_report_status(self, principal: Principal, account_id: UUID, job_id: UUID) -> ReportJobStatus: ...
-    async def list_reports(self, principal: Principal, account_id: UUID, *, query: ReportListQuery) -> Page[ReportJobStatus]: ...
-    async def get_report_manifest(self, principal: Principal, account_id: UUID, report_id: UUID) -> ReportManifest: ...
-    async def create_report_download_grant(self, principal: Principal, account_id: UUID, report_id: UUID, artifact_id: UUID) -> ArtifactGrant: ...
-    async def download_report_artifact(self, principal: Principal, account_id: UUID, report_id: UUID, artifact_id: UUID, *, grant_token: str) -> ReportArtifactDownload: ...
-    async def create_export(self, principal: Principal, command: CreateExportCommand) -> ExportJobStatus: ...
-    async def get_export_status(self, principal: Principal, account_id: UUID, export_id: UUID) -> ExportJobStatus: ...
-    async def list_exports(self, principal: Principal, account_id: UUID, *, query: ExportListQuery) -> Page[ExportJobStatus]: ...
-    async def create_export_download_grant(self, principal: Principal, account_id: UUID, export_id: UUID, artifact_id: UUID) -> ArtifactGrant: ...
-    async def download_export_artifact(self, principal: Principal, account_id: UUID, export_id: UUID, artifact_id: UUID, *, grant_token: str) -> ReportArtifactDownload: ...
+    async def generate_report(
+        self, principal: Principal, command: GenerateReportCommand
+    ) -> ReportJobStatus: ...
+    async def get_report_status(
+        self, principal: Principal, account_id: UUID, job_id: UUID
+    ) -> ReportJobStatus: ...
+    async def list_reports(
+        self, principal: Principal, account_id: UUID, *, query: ReportListQuery
+    ) -> Page[ReportJobStatus]: ...
+    async def get_report_manifest(
+        self, principal: Principal, account_id: UUID, report_id: UUID
+    ) -> ReportManifest: ...
+    async def create_report_download_grant(
+        self, principal: Principal, account_id: UUID, report_id: UUID, artifact_id: UUID
+    ) -> ArtifactGrant: ...
+    async def download_report_artifact(
+        self,
+        principal: Principal,
+        account_id: UUID,
+        report_id: UUID,
+        artifact_id: UUID,
+        *,
+        grant_token: str,
+    ) -> ReportArtifactDownload: ...
+    async def create_export(
+        self, principal: Principal, command: CreateExportCommand
+    ) -> ExportJobStatus: ...
+    async def get_export_status(
+        self, principal: Principal, account_id: UUID, export_id: UUID
+    ) -> ExportJobStatus: ...
+    async def list_exports(
+        self, principal: Principal, account_id: UUID, *, query: ExportListQuery
+    ) -> Page[ExportJobStatus]: ...
+    async def create_export_download_grant(
+        self, principal: Principal, account_id: UUID, export_id: UUID, artifact_id: UUID
+    ) -> ArtifactGrant: ...
+    async def download_export_artifact(
+        self,
+        principal: Principal,
+        account_id: UUID,
+        export_id: UUID,
+        artifact_id: UUID,
+        *,
+        grant_token: str,
+    ) -> ReportArtifactDownload: ...
+
 
 class ReportArtifactDownload:
     metadata: ReportArtifactMetadata
-    filename: str                             # fixed server profile, never caller input
-    content: bytes                            # <=10 MiB, digest/length/MIME verified
+    filename: str  # fixed server profile, never caller input
+    content: bytes  # <=10 MiB, digest/length/MIME verified
 ```
 
 Status methods map directly to the eleven named frozen HTTP operations; there is no

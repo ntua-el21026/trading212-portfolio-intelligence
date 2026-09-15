@@ -14,6 +14,7 @@ from trading212_domain import reports as r
 from trading212_domain.enums import QualityState
 from trading212_domain.report_schema import report_tables
 from trading212_domain.report_v3 import ReportSelectionContract, ReportSelectionV3
+from trading212_domain.report_v4 import ReportSelectionV4
 from trading212_domain.values import CurrencyCode
 
 from .models import (
@@ -59,7 +60,7 @@ def selected_snapshot(
         raise report_error(app.ReportServiceErrorCode.NOT_FOUND)
     if (
         (
-            not isinstance(selection, ReportSelectionV3)
+            not isinstance(selection, (ReportSelectionV3, ReportSelectionV4))
             and snapshot.reporting_currency != selection.reporting_currency.value
         )
         or snapshot.valuation_at > selection.source_cutoff_at
@@ -103,7 +104,7 @@ def capture_portfolio(
     )
     builder.add_context(context)
     if (
-        isinstance(builder.selection, ReportSelectionV3)
+        isinstance(builder.selection, (ReportSelectionV3, ReportSelectionV4))
         and snapshot.reporting_currency != builder.selection.reporting_currency.value
     ):
         capture_note(
@@ -148,8 +149,8 @@ def capture_portfolio(
             calculation.output_fingerprint,
         )
     )
-    if isinstance(builder.selection, ReportSelectionV3):
-        # Profile three uses the original X-ray/scenario snapshot identity.
+    if isinstance(builder.selection, (ReportSelectionV3, ReportSelectionV4)):
+        # Explicit premium profiles use the original source snapshot identity.
         # Legacy report view hashes remain unchanged for profiles one and two.
         from .source_store import digest as xray_snapshot_digest
 

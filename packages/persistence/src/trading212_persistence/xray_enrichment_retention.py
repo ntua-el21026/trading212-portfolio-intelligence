@@ -6,10 +6,12 @@ from datetime import datetime
 from typing import cast
 from uuid import UUID
 
-from sqlalchemy import Table, select, text, tuple_
+from sqlalchemy import Table, select, text
 from sqlalchemy.orm import Session
 
 from . import xray_catalog_models as cm
+from .premium_retention_costs import ENRICHMENT_MARKER_EPOCH_ROWS
+from .premium_retention_runtime import charge, finish_sweep, open_sweep
 from .source_retention import SourcePurgeBudget
 from .source_retention_sql import purge_payload_rows
 from .xray_lifecycle_models import EnrichmentExpiryEventModel, EnrichmentRetentionWorkModel
@@ -113,27 +115,44 @@ def expire_enrichment_payloads(
     completed = 0
     busy_owners: set[UUID] = set()
     for model, reference in _FAMILIES:
-        after: tuple[datetime, UUID] | None = None
-        while completed < limit and budget.metadata_limit >= 2:
-            query = select(model.id, model.owner_id, model.expires_at).where(
-                model.expires_at <= at,
-                ~select(EnrichmentExpiryEventModel.id)
-                .where(
-                    EnrichmentExpiryEventModel.owner_id == model.owner_id,
-                    getattr(EnrichmentExpiryEventModel, reference) == model.id,
-                )
-                .exists(),
-            )
-            if busy_owners:
-                query = query.where(model.owner_id.not_in(busy_owners))
-            if after is not None:
-                query = query.where(tuple_(model.expires_at, model.id) > after)
-            candidate = session.execute(query.order_by(model.expires_at, model.id).limit(1)).first()
+        kind = {
+            "entity_evidence_version_id": "entity_evidence",
+            "classification_snapshot_id": "classification",
+            "fund_definition_id": "fund_definition",
+            "fund_mapping_id": "fund_mapping",
+        }[reference]
+        sweep = open_sweep(session, kind, None, at, budget)
+        if sweep is None:
+            return completed
+        while completed < limit and budget.metadata_limit >= 12:
+            # Keyset actual source rows before expiry/completion predicates. Every
+            # healthy or completed candidate consumes one physical inspection.
+            query = select(model.id, model.owner_id, model.expires_at)
+            if sweep.after_id is not None:
+                query = query.where(model.id > sweep.after_id)
+            charge(budget, 1)
+            candidate = session.execute(query.order_by(model.id).limit(1)).first()
             if candidate is None:
+                finish_sweep(session, sweep, budget)
                 break
-            if not budget.inspect(rows=1):
-                return completed
-            after = (candidate.expires_at, candidate.id)
+            charge(budget, 1)
+            sweep.after_id = candidate.id
+            session.flush()
+            if candidate.expires_at > at or candidate.owner_id in busy_owners:
+                continue
+            charge(budget, 1)
+            if (
+                session.scalar(
+                    select(EnrichmentExpiryEventModel.id)
+                    .where(
+                        EnrichmentExpiryEventModel.owner_id == candidate.owner_id,
+                        getattr(EnrichmentExpiryEventModel, reference) == candidate.id,
+                    )
+                    .limit(1)
+                )
+                is not None
+            ):
+                continue
             # Share the maintenance lock order without stalling other families.
             if not all(
                 session.scalar(
@@ -146,6 +165,7 @@ def expire_enrichment_payloads(
                 # Defer this owner across families without spending the pass on its backlog.
                 busy_owners.add(candidate.owner_id)
                 continue
+            charge(budget, 1)
             source = session.scalar(
                 select(model)
                 .where(model.id == candidate.id, model.owner_id == candidate.owner_id)
@@ -153,7 +173,7 @@ def expire_enrichment_payloads(
             )
             if source is None:
                 continue
-            if not budget.inspect(rows=1) or not budget.metadata_limit:
+            if not budget.inspect(rows=1):
                 return completed
             work = session.scalar(
                 select(EnrichmentRetentionWorkModel)
@@ -164,6 +184,8 @@ def expire_enrichment_payloads(
                 .limit(1)
             )
             if work is None:
+                if not budget.inspect(rows=8 + ENRICHMENT_MARKER_EPOCH_ROWS):
+                    return completed
                 work = EnrichmentRetentionWorkModel(
                     owner_id=source.owner_id,
                     **{reference: source.id},
@@ -176,8 +198,6 @@ def expire_enrichment_payloads(
                 )
                 session.add(work)
                 session.flush()
-            elif not budget.inspect(rows=1):
-                return completed
             if work.phase == "copies":
                 from .risk_retention import expire_risk_payloads
                 from .scenario_retention import expire_scenario_payloads
@@ -217,14 +237,22 @@ def expire_enrichment_payloads(
                     continue
                 if not purge_xray_source_copies(session, source, at=at, budget=budget):
                     continue
+                # The old SQL transition additionally traverses X-ray copies;
+                # its transitive physical closure is tracked separately in ADR0032.
+                if not budget.inspect(rows=3):
+                    return completed
                 work.phase = "payloads"
                 session.flush()
             if work.phase == "payloads":
+                if not budget.inspect(rows=3):
+                    return completed
                 complete, removed = _payloads(session, source, budget)
                 work.removed_row_count += removed
                 session.flush()
                 if not complete:
                     continue
+                if not budget.inspect(rows=12 + ENRICHMENT_MARKER_EPOCH_ROWS):
+                    return completed
                 session.add(
                     EnrichmentExpiryEventModel(
                         owner_id=source.owner_id,

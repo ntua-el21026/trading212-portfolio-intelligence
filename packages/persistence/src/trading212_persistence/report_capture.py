@@ -17,6 +17,7 @@ from trading212_domain.report_v3 import (
     selected_risk_run_id,
     selected_scenario_run_id,
 )
+from trading212_domain.report_v4 import ReportSelectionV4
 from trading212_domain.sources import SourceUse
 
 from .report_authorization import ReportAuthorization
@@ -47,7 +48,7 @@ class PostgresReportCapture:
 
     def capture_report(
         self,
-        selection: r.ReportSelection | ReportSelectionV3,
+        selection: r.ReportSelection | ReportSelectionV3 | ReportSelectionV4,
         *,
         sink: ReportCaptureSink,
     ) -> ReportCaptureContract:
@@ -145,6 +146,17 @@ class PostgresReportCapture:
             from .report_capture_scenario_store import capture_scenario
 
             builder.premium_binding = capture_scenario(
+                builder,
+                self._session,
+                self._authorization,
+                sessions=self._sessions,
+                clock=self._clock,
+                cursor_signing_key=self._cursor_key,
+            )
+        if isinstance(selection, ReportSelectionV4):
+            from .report_capture_projection_store import capture_projection
+
+            builder.premium_binding = capture_projection(
                 builder,
                 self._session,
                 self._authorization,

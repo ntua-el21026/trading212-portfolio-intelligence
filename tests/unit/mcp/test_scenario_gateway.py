@@ -89,7 +89,7 @@ async def test_exact_four_names_closed_inputs_outputs_scopes_and_annotations() -
     names = ("list_scenarios", "create_scenario_run", "get_scenario_result", "compare_scenarios")
     assert names == SCENARIO_TOOL_NAMES
     tools = await server.list_tools()
-    assert len(tools) == 32 and tuple(x.name for x in tools[28:]) == names
+    assert len(tools) == 38 and tuple(x.name for x in tools[28:32]) == names
     required = (
         {"account_id"},
         set(arguments()),
@@ -109,7 +109,7 @@ async def test_exact_four_names_closed_inputs_outputs_scopes_and_annotations() -
         ScenarioComparisonToolResult,
     )
     for tool, required_fields, optional_fields, model in zip(
-        tools[28:], required, optional, models, strict=True
+        tools[28:32], required, optional, models, strict=True
     ):
         descriptor = tool.model_dump(mode="json", by_alias=True, exclude_none=True)
         schema = descriptor["inputSchema"]

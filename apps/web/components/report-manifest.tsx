@@ -6,7 +6,9 @@ import type {
   PremiumReportManifest,
   PremiumReportJobStatus,
   PremiumReportJobStatusV3,
+  PremiumReportJobStatusV4,
   PremiumReportManifestV3,
+  PremiumReportManifestV4,
   PremiumReportProfile,
 } from "@trading212/api-contracts";
 import { Surface } from "@trading212/ui";
@@ -22,7 +24,8 @@ export function ReportArtifacts({
     | ReportJobStatus
     | ExportJobStatus
     | PremiumReportJobStatus
-    | PremiumReportJobStatusV3;
+    | PremiumReportJobStatusV3
+    | PremiumReportJobStatusV4;
   premium?: boolean;
   profile?: PremiumReportProfile;
 }>) {
@@ -63,7 +66,11 @@ export function ReportArtifacts({
 export function ReportManifestCard({
   manifest,
 }: Readonly<{
-  manifest: ReportManifest | PremiumReportManifest | PremiumReportManifestV3;
+  manifest:
+    | ReportManifest
+    | PremiumReportManifest
+    | PremiumReportManifestV3
+    | PremiumReportManifestV4;
 }>) {
   return (
     <Surface className={styles.surface} aria-label="Report manifest">
@@ -97,7 +104,9 @@ export function ReportManifestCard({
             </dd>
             <dt>Saved input digest</dt>
             <dd className="mono">
-              {manifest.document.premium_binding.input_digest}
+              {manifest.document.premium_binding.family === "projection"
+                ? manifest.document.premium_binding.capture_digest
+                : manifest.document.premium_binding.input_digest}
             </dd>
             <dt>Saved result digest</dt>
             <dd className="mono">
@@ -107,15 +116,57 @@ export function ReportManifestCard({
             <dd>
               {formatDateTime(manifest.document.premium_binding.expires_at)}
             </dd>
-            <dt>X-ray run</dt>
-            <dd className="mono">
-              {manifest.document.premium_binding.xray?.run_id ?? "Not selected"}
-            </dd>
-            <dt>Historical input</dt>
-            <dd className="mono">
-              {manifest.document.premium_binding.historical
-                ?.input_snapshot_id ?? "Not selected"}
-            </dd>
+            {manifest.document.premium_binding.family === "projection" ? (
+              <>
+                <dt>Numerical input digest</dt>
+                <dd className="mono">
+                  {manifest.document.premium_binding.numerical_input_digest}
+                </dd>
+                <dt>Model dates</dt>
+                <dd>
+                  {manifest.document.premium_binding.anchor_date} to{" "}
+                  {manifest.document.premium_binding.terminal_date}
+                </dd>
+                <dt>Original observed valuation</dt>
+                <dd>
+                  {manifest.document.premium_binding.observed
+                    ? formatDateTime(
+                        manifest.document.premium_binding.observed.valuation_at,
+                      )
+                    : "No observed valuation; modeled starting value"}
+                </dd>
+                <dt>Original source cutoff</dt>
+                <dd>
+                  {manifest.document.premium_binding.source_cutoff_at
+                    ? formatDateTime(
+                        manifest.document.premium_binding.source_cutoff_at,
+                      )
+                    : "Not supplied by every original source"}
+                </dd>
+                <dt>Report-context snapshot</dt>
+                <dd className="mono">
+                  {manifest.document.premium_binding.report_context.snapshot_id}
+                </dd>
+                <dt>Pinned goal version</dt>
+                <dd className="mono">
+                  {manifest.document.premium_binding.goal?.version_id ??
+                    "No goal pinned"}
+                </dd>
+              </>
+            ) : (
+              <>
+                <dt>X-ray run</dt>
+                <dd className="mono">
+                  {manifest.document.premium_binding.xray?.run_id ??
+                    "Not selected"}
+                </dd>
+                <dt>Historical input</dt>
+                <dd className="mono">
+                  {manifest.document.premium_binding.historical
+                    ?.input_snapshot_id ?? "Not selected"}
+                </dd>
+              </>
+            )}
           </dl>
         </details>
       ) : null}

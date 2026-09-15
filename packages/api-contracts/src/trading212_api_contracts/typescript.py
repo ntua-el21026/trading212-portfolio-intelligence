@@ -40,6 +40,8 @@ class TargetClientGenerator:
             "alerts",
             "risk",
             "scenario",
+            "projection",
+            "research",
         }:
             raise ValueError(
                 "Only fixed target, planning, source, historical and X-ray operations are supported"
@@ -105,7 +107,15 @@ class TargetClientGenerator:
             "pattern",
             "format",
         }
-        if self.tag in {"sources", "xray", "reports", "premium-reports", "alerts", "scenario"}:
+        if self.tag in {
+            "sources",
+            "xray",
+            "reports",
+            "premium-reports",
+            "alerts",
+            "scenario",
+            "research",
+        }:
             supported.update({"oneOf", "discriminator"})
         if set(schema) - supported:
             raise ValueError(f"Unsupported target schema fields: {sorted(set(schema) - supported)}")
@@ -316,6 +326,20 @@ class TargetClientGenerator:
                 '"VALIDATION_FAILED", 422, "The bounded scenario request is invalid."); '
                 "throw error; }\n"
             )
+        if self.tag == "projection":
+            body_text = (
+                f"try {{ return await {invocation}; }} catch (error) {{ "
+                "if (error instanceof z.ZodError) throw new ProjectionApiError("
+                '"VALIDATION_FAILED", 422, "The bounded projection request is invalid."); '
+                "throw error; }\n"
+            )
+        if self.tag == "research":
+            body_text = (
+                f"try {{ return await {invocation}; }} catch (error) {{ "
+                "if (error instanceof z.ZodError) throw new ResearchApiError("
+                '"VALIDATION_FAILED", 422, "The bounded research request is invalid."); '
+                "throw error; }\n"
+            )
         return (
             f"async {name}({', '.join(arguments)}): "
             f"Promise<TargetApiResponse<z.output<typeof {response_schema}>>> {{\n"
@@ -364,6 +388,12 @@ class TargetClientGenerator:
             + "\n".join(operations)
             + "\n}\n"
         )
+
+
+def render_projection_client(contract: dict[str, Any]) -> str:
+    from .projection_typescript import render_projection_client as render
+
+    return render(contract)
 
 
 def render_target_client(contract: dict[str, Any]) -> str:
@@ -733,3 +763,9 @@ def render_scenario_client(contract: dict[str, Any]) -> str:
     if len(actual) != len(expected) or set(actual) != expected:
         raise ValueError("The frozen scenario operation registry differs.")
     return ScenarioClientGenerator(contract).render()
+
+
+def render_research_client(contract: dict[str, Any]) -> str:
+    from .research_typescript import render_research_client as render
+
+    return render(contract)

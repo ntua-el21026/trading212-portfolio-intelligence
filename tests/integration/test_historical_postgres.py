@@ -54,9 +54,12 @@ def historical_database() -> Iterator[tuple[Engine, sessionmaker[Session]]]:
     try:
         cfg = Config("alembic.ini")
         cfg.set_main_option("sqlalchemy.url", url)
-        command.upgrade(cfg, "head")
-        command.upgrade(cfg, "head")
-        command.check(cfg)
+        # env.py prioritizes DATABASE_URL; another module fixture may retain its own DB.
+        with pytest.MonkeyPatch.context() as environment:
+            environment.setenv("DATABASE_URL", url)
+            command.upgrade(cfg, "head")
+            command.upgrade(cfg, "head")
+            command.check(cfg)
         asyncio.run(seed_materialized_synthetic(url, app_environment="test"))
         engine = create_database_engine(url)
         yield engine, create_session_factory(engine)

@@ -100,7 +100,13 @@ def purge_source_copies(
             return False
         if not budget.metadata_limit:
             return False
+        from .projection_retention import purge_projection_source_copies
         from .scenario_retention import purge_scenario_historical_copies
+
+        if not purge_projection_source_copies(
+            session, snapshot.owner_id, "historical", candidate.id, at=at, budget=budget
+        ):
+            return False
 
         if not purge_scenario_historical_copies(
             session, snapshot.owner_id, candidate.id, at=at, budget=budget
@@ -120,6 +126,10 @@ def purge_source_copies(
             if not budget.inspect(rows=1):
                 raise RuntimeError("Historical expiry tombstone exceeded its row allowance.")
         else:
+            # Marker insertion and its indexed projection-parent blocker are
+            # physical work even though the marker contains no financial bytes.
+            if not budget.inspect(rows=2):
+                return False
             session.add(
                 hm.HistoricalRetentionEventModel(
                     owner_id=snapshot.owner_id,

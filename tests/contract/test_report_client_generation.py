@@ -120,10 +120,37 @@ def test_public_finite_vocabularies_match_canonical_contract(name: str) -> None:
         "scenario_xray_paths_v1",
         "scenario_source_headers_v1",
     }
+    # ADR-0030 adds exactly these V4 tables; prior wire literals remain unchanged.
+    projection_tables = {
+        "projection_basis_v1",
+        "projection_definitions_v1",
+        "projection_assumptions_v1",
+        "projection_assets_v1",
+        "projection_correlations_v1",
+        "projection_calendar_v1",
+        "projection_schedule_v1",
+        "projection_sensitivity_v1",
+        "projection_variants_v1",
+        "projection_paths_v1",
+        "projection_points_v1",
+        "projection_point_assets_v1",
+        "projection_distributions_v1",
+        "projection_quantiles_v1",
+        "projection_histograms_v1",
+        "projection_histogram_bins_v1",
+        "projection_goal_state_v1",
+        "projection_goal_definition_v1",
+        "projection_goal_results_v1",
+        "projection_members_v1",
+        "projection_source_headers_v1",
+        "projection_source_nodes_v1",
+        "projection_source_members_v1",
+        "projection_source_scalars_v1",
+    }
     premium_only = {
         "ReportSection": {"risk", "scenario", "projection", "goal", "research"},
         "ReportFamily": {"risk", "scenario", "projection", "goal", "research"},
-        "ReportTableKey": premium_tables | scenario_tables,
+        "ReportTableKey": premium_tables | scenario_tables | projection_tables,
         "ReportSourceKind": {
             "scenario_run",
             "scenario_result",

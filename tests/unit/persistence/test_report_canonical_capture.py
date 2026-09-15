@@ -212,7 +212,7 @@ def test_xray_empty_metric_provenance_is_declared_without_inheriting_root_source
         item.provenance_set_key == cell.provenance_set_key for item in builder.source_memberships
     )
     proof = r.ReportProof(
-        contexts=tuple(builder.contexts.values()),
+        contexts=tuple(_legacy_context(item) for item in builder.contexts.values()),
         bounds=tuple(builder.bounds.values()),
         coverage=(
             r.ReportCoverageFact(
@@ -251,7 +251,8 @@ def test_historical_warning_source_absence_has_no_inherited_or_unresolved_set(
         assert note.related_provenance_set_key is None
         validate_report_references(
             r.ReportProof(
-                contexts=tuple(builder.contexts.values()), notes=tuple(builder.notes.values())
+                contexts=tuple(_legacy_context(item) for item in builder.contexts.values()),
+                notes=tuple(builder.notes.values()),
             )
         )
 
@@ -846,3 +847,8 @@ def test_public_trace_keeps_event_fx_and_boundary_legs_without_mutating_daily_ru
         tuple((source.id, source.semantic_digest) for source in value.sources)
         == source_fingerprints
     )
+
+
+def _legacy_context(value: object) -> r.ReportContext:
+    assert isinstance(value, r.ReportContext)
+    return value

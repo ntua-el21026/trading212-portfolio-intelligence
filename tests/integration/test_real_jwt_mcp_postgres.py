@@ -146,7 +146,7 @@ async def test_real_jwt_discovery_resources_and_original_phase2_reads(
                     tool.name: tool.model_dump(mode="json", by_alias=True, exclude_none=True)
                     for tool in listed.tools
                 }
-                assert len(listed.tools) == len(descriptors) == 28
+                assert len(listed.tools) == len(descriptors) == 36
                 assert set(descriptors) == {expected.name for expected in CASES} | {
                     "create_risk_run",
                     "get_risk_summary",

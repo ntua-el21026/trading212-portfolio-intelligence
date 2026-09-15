@@ -1,4 +1,4 @@
-"""The explicit V3 boundary preserves all prior premium components and V1 bytes."""
+"""The explicit V3 and V4 boundaries preserves all prior premium components and V1 bytes."""
 
 import hashlib
 import json
@@ -53,7 +53,11 @@ def test_the_same_six_premium_operations_add_only_the_explicit_defaulted_profile
         ]
         assert len(profiles) == 1
         assert profiles[0]["required"] is False
-        assert profiles[0]["schema"]["enum"] == ["report_sections_v2", "report_sections_v3"]
+        assert profiles[0]["schema"]["enum"] == [
+            "report_sections_v2",
+            "report_sections_v3",
+            "report_sections_v4",
+        ]
         assert profiles[0]["schema"]["default"] == "report_sections_v2"
 
 
@@ -78,6 +82,9 @@ def test_profiled_generation_is_deterministic_closed_and_keeps_constructor_type_
     assert "PremiumReportJobStatusV3Schema" in rendered
     assert "PremiumReportPageV3Schema" in rendered
     assert "PremiumReportManifestV3Schema" in rendered
+    assert "PremiumReportManifestV4Schema" in rendered
+    assert "PremiumReportJobStatusV4Schema" in rendered
+    assert "PremiumReportPageV4Schema" in rendered
     assert "z.any(" not in rendered and "z.unknown(" not in rendered
     assert "exports" not in rendered
     assert rendered.count("async ") == 6

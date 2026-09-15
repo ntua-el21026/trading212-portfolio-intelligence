@@ -38,9 +38,20 @@ async def test_previous_28_descriptors_and_six_resources_are_byte_equivalent() -
     assert tuple(item.name for item in tools[:28]) == tuple(expected["tools"])
     for tool in tools[:28]:
         descriptor = tool.model_dump(mode="json", by_alias=True, exclude_none=True)
+        attachment = {"get_direct_allocation": "allocation", "get_drift_analysis": "drift"}.get(
+            tool.name
+        )
+        if attachment is not None:
+            uri = f"ui://trading212-portfolio/{attachment}-v1.html"
+            assert descriptor["_meta"].pop("ui") == {
+                "resourceUri": uri,
+                "visibility": ["model", "app"],
+            }
+            assert descriptor["_meta"].pop("openai/outputTemplate") == uri
+            assert descriptor["_meta"].pop("openai/widgetAccessible") is True
         assert fingerprint(descriptor) == expected["tools"][tool.name], tool.name
     resources = await server.list_resources()
-    assert len(resources) == 7
+    assert len(resources) == 11
     assert tuple(str(item.uri) for item in resources[:6]) == tuple(expected["resources"])
     for item in resources[:6]:
         previous = expected["resources"][str(item.uri)]

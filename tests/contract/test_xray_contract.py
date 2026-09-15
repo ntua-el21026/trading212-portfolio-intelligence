@@ -65,7 +65,7 @@ def test_discriminator_admission_rejects_ambiguous_or_open_branches(mutation: st
 async def test_exact_xray_tool_fields_scopes_bounds_and_isolated_resource() -> None:
     server = create_runtime().server
     tools = await server.list_tools()
-    assert len(tools) == 32 and tuple(tool.name for tool in tools[19:21]) == XRAY_TOOL_NAMES
+    assert len(tools) == 38 and tuple(tool.name for tool in tools[19:21]) == XRAY_TOOL_NAMES
     common = {"account_id", "snapshot_id", "source_cutoff_at"}
     extra = (
         {"reporting_currency", "dimension", "cursor", "limit"},

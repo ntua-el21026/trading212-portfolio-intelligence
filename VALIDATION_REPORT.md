@@ -27,6 +27,134 @@ The v1.0 additive freeze has 30 local acceptance rows and 48 mandatory scenarios
 all pending. Design/governance checks do not stand in for premium runtime tests.
 Final candidate and independent review remain pending.
 
+## Checkpoint retention compatibility, 2026-09-15
+
+`phase3-checkpoint-isolated-02` passed 5,127 Python tests and all 831 web tests,
+plus Ruff, mypy, TypeScript/ESLint and repository/generated-contract boundaries,
+but failed two old unit fixtures: a legacy report metadata double omitted its
+newly selected `created_at`, and the current ORM profile assertion still excluded
+explicit profile4. Their corrected 25-case focused suite passed. The original
+failed receipt remains retained. The subsequent `phase3-checkpoint-isolated-03`
+passed all 5,129 Python tests and 831 web tests, plus the same complete static,
+generated-contract and repository checks, in 506.768 seconds with unchanged source.
+Three existing pytest `record_property`/JUnit2 warnings remain recorded; there
+were no failed, skipped or errored Python tests. This is an isolated component
+checkpoint, not final Phase3 acceptance or a replacement for PostgreSQL/browser
+evidence at its recorded source.
+
+`premium-retention-compat-postgres-02` passed 47 cases and failed one in 479.841
+seconds. The real annual risk fixture now resumes within each original 4,096-row
+allowance because mutation accounting includes SQL guards and counter work. Its
+small 96-row allowance is unchanged; the finite pass ceiling accommodates the
+365-day fixture's charged mutations. Busy-owner, fencing, source isolation,
+canonical-last and final physical-capacity assertions remain enforced.
+
+The remaining scenario test assumed private input survives until terminal metadata
+completion. The corrected test keeps its 128 inspected-row/one-removal budget and
+independently proves that canonical input can disappear only after all normalized
+financial rows and result bytes are gone, with a zero protected financial counter.
+The retained capacity charge stays unchanged until indexed parent cleanup and the
+terminal marker finish. This stronger regression passed in
+`premium-retention-compat-targeted-03` (one test, 13.960 seconds). Thus all 48 distinct
+compatibility selectors have passing executions across these two source-bound
+receipts; this is not a claim of a single all-green aggregate run. No production
+implementation was changed by these compatibility-fixture corrections.
+
+The one existing PostgreSQL container was reused; fixture databases were disposable.
+No provider stage, saved-layout stage, paid/live request or remote Actions run was
+introduced by this checkpoint verification. Full Phase3 and final acceptance remain
+pending, with original failed evidence preserved.
+
+## Research, report4, widgets and public PWA component evidence
+
+Subsequent unchanged-working-source observations:
+
+| Gate | Observed result | Total seconds |
+| --- | --- | ---: |
+| research-postgres-03 | 16 runtime, retention and bounded-page PostgreSQL cases | 179.029 |
+| research-web-browser-03 | Three production API-backed research journeys | 104.080 |
+| projection-report4-browser-04 | Three production journeys; complete original PDF/CSV/JSON/XLSX proof | 208.135 |
+| research-mcp-focused-06 | 177 contract/security/unit cases; exact 38 tools and eleven resources | 53.968 |
+| research-widget-browser-02 | Four Python and 17 actual iframe browser cases | 12.233 |
+| pwa-shell-browser-02 | Three production offline/cache/palette/account/logout journeys | 44.629 |
+| premium-retention-static-02 | 22 Python and four web worker-cache tests, Ruff1026, mypy1021, TS/ESLint/build | 14.619 |
+
+The real complete research summary used twelve SQL statements. Single-item/write
+paths and latency remain separately unverified. Research browser checks cover exact
+saved X-ray amounts, 25+4 pagination, immutable note history, review and account
+isolation. A Gzip drain-listener warning remains under investigation; no process
+memory or performance acceptance is inferred. Widget checks cover three widths,
+current account bindings, cancellation and offset instants without microsecond loss.
+Report4 preserves the original saved run, exact dated flows and all older profiles.
+
+PWA checks exercise actual service-worker control, manifest/icon dimensions, only
+five public cached assets, network-only private responses, offline unavailability,
+keyboard navigation and sign-out. ROOT inspected the mobile offline capture.
+An earlier browser attempt selected an account absent from its fixture; the corrected
+run enables the existing two-account fixture. An earlier PWA build completed but
+rewrote Next's generated route-type imports, so its gate remains unaccepted as
+changed-source evidence. The later stable build is recorded above. Earlier incorrect
+report/widget oracle and locator attempts remain failed in their original receipts.
+
+`legacy-report-research-postgres-02` passed actual signed SDK/PostgreSQL research
+transport and two V2 cases, then failed V3 retention. Its fixture froze maintenance
+time before capture. A real concurrent capture can have the same later original
+clock: the corrected one-row metadata selection defers captures created after the
+sweep timestamp, without weakening SQL witness authority or pre-filtering unbounded
+descendants. The regression preserves the actual payload before refreshing the
+fixture clock. The subsequent `premium-retention-postgres-02` passed all 19 migration, physical
+cleanup, signed research transport, report-copy and bounded-page cases in 284.150
+seconds with unchanged source, including this regression.
+
+Migration0026 adds four guarded operational tables, exact original retained-parent
+memberships, physical counters, source-owner scheduling and charged risk/scenario/
+sensitivity cleanup. Canonical financial bytes and original authority are preserved.
+The first actual migration run passed upgrade/repeat/old-byte/downgrade checks before
+its expected error text assertion mismatched the exact continuation refusal; the
+corrected assertion and final parity/runtime suite passed in the 19-case gate. Phase2 source,
+X-ray, historical and alert physical-budget closure remain explicit unfinished work.
+
+Whole-worker RSS, broad isolated rerun, provider acquisition, saved layouts, aggregate
+accounts, research reports, final security/restore and portable immutable evidence
+remain pending.
+
+The later `pwa-shell-browser-05` rebuilt production and passed all three viewports
+with the installed axe-core 4.13.0 auditor: zero serious/critical WCAG findings on
+the palette, fully loaded settings and public offline page. The audit first exposed
+nested interactive roles in the palette; the fix puts the option role on the link
+itself, preserving keyboard and ordinary navigation semantics. The previous failure
+remains recorded. Readiness assertions now prevent capturing loading placeholders.
+This is scoped accessibility evidence, not the final whole-product audit or CWV gate.
+
+No acceptance row/scenario or final candidate is completed by these
+component gates. GitHub Actions remains owner-deferred/unverified.
+
+At a consumer-free boundary, inspected Next cache and pytest metadata totaling
+123308310 logical bytes were removed. Source, dependencies, current build, original
+proof/captures and PostgreSQL state were preserved. Originals are retained externally
+under phase3-20260914 for the final portable pack. One existing PostgreSQL container
+remains in use. Receipts do not replace their referenced originals.
+
+## Phase 3 projection and research checkpoint
+
+Projection API/worker/MCP and three production web journeys retain source-bound
+component passes. Actual profile4 four-format tests now pass with and without goals;
+three original/current REPORT-rights, copy-guard and tiny-budget PostgreSQL cases
+passed in `projection-report4-sources-postgres-01` before migration0025. The complete
+source suite first exposed repeated-source-scan starvation after a permanent marker;
+resuming that exact copy fixed it without increasing the80-inspection test allowance.
+
+Research API/schema/contracts/PDF checks passed96 Python cases; its corrected RFC UUID
+client fixtures passed5 web cases,19 repeated generation contracts and exact generator
+checking. `research-legacy-focused-04` passed71 tests, Ruff1003 files and strict mypy998
+files after integrating bounded research pages/X-ray reads and legacy report cleanup.
+Research PostgreSQL, whole-page12-query measurement, migration0025 and report4 browser
+checks remain pending. The earlier broad isolated gate had4924 passes and2 child RSS
+failures; the child-only VmHWM correction has focused coverage, but the broad population
+still needs rerunning. No final immutable candidate, whole-worker RSS/SLO or package
+acceptance is claimed. Original failed gates remain failed; see the implementation
+report for exact evidence boundaries. GitHub Actions remains deferred/unverified.
+
 ## Phase 3 scenario report component checks
 
 The final working-source `premium-report-v3-local-04` gate passed 4,329 Python
@@ -790,3 +918,18 @@ GitHub Actions remains owner-deferred/unverified.
 [Failure history with exact original references and hashes](docs/implementation/evidence/phase-2-p2-10-03105f4-failed-security.json)
 binds the full/coverage/security records, APT diagnostic and separate working
 correction. This documentation update ran no tests, builds or scanners.
+
+The checkpoint source-security pass found no Semgrep findings after replacing only
+three test-local nested type arguments with equivalent named TypeScript aliases;
+28 focused web tests, TypeScript and ESLint passed. The strict scan retained all
+seven rules and parsed the selected source successfully. Python and production
+JavaScript dependency audits reported no known vulnerabilities, and the unchanged
+Gitleaks exception-policy regression passed its 16 approved lines/21 negative cases.
+
+The additional entire staged-tree Gitleaks scan retained exit1 with 54 findings in
+five unchanged historical files. Exact review independently recomputed the original
+API/client SHA256 values, verified existing historical fingerprints against complete
+Git blob bytes, and inspected the synthetic report-row/idempotency syntax. All 54
+are noncredentials; the raw redacted result and exact classification remain separate
+originals. No scanner exception, inherited rule or historical artifact was modified.
+The changed-file secret scan and Python package build are recorded separately.

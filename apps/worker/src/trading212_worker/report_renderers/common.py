@@ -20,6 +20,7 @@ from trading212_domain.report_manifest import (
     encode_report_schema,
 )
 from trading212_domain.report_schema import table_schema
+from trading212_domain.report_v4 import ReportContextV4
 from trading212_domain.reports import (
     CellKind,
     CellState,
@@ -43,7 +44,9 @@ METRIC_COLUMNS = (
 )
 
 
-def metric_metadata(cell: ReportCell, context: ReportContext | None = None) -> tuple[str, ...]:
+def metric_metadata(
+    cell: ReportCell, context: ReportContext | ReportContextV4 | None = None
+) -> tuple[str, ...]:
     """Expand declared context inheritance; cell-specific metadata always wins."""
     if cell.kind is not CellKind.DECIMAL:
         context = None

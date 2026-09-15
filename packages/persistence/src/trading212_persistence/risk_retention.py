@@ -1,29 +1,21 @@
-"""Resumable physical risk expiry under the existing shared source purge budget.
+"""Indexed, resumable risk cleanup under the shared physical allowance."""
 
-Only fixed ORM participants are used. License lineage contains identities, not
-licensed values; cleanup neither decodes a result nor fetches an external source.
-"""
+from datetime import datetime
+from typing import Literal, cast
+from uuid import UUID
 
-from __future__ import annotations
+from sqlalchemy import Table, select
+from sqlalchemy.orm import Session
 
-from datetime import datetime, timedelta
-from typing import cast
-from uuid import UUID, uuid4
-
-from sqlalchemy import Table, and_, literal, or_, select, text
-from sqlalchemy.orm import Session, aliased
-from sqlalchemy.sql.elements import ColumnElement
-
-from .premium_attempts import premium_attempt
-from .premium_models import (
-    PremiumCapacityModel,
-    PremiumJobModel,
-    PremiumOutboxModel,
-    PremiumRetentionModel,
-    PremiumRunLicenseModel,
-    PremiumRunModel,
+from .premium_models import PremiumRunModel
+from .premium_retention_runtime import (
+    begin_run,
+    charge,
+    drain_parent,
+    expire_runs,
+    finish_run,
+    lock_owner,
 )
-from .report_retention import purge_report_premium_copies
 from .risk_models import (
     RiskComponentModel,
     RiskIntervalModel,
@@ -33,11 +25,9 @@ from .risk_models import (
     RiskRunAssetModel,
     RiskSeriesModel,
 )
-from .source_models import ProviderLicenseVersionModel
 from .source_retention import SourcePurgeBudget
 from .source_retention_sql import purge_payload_rows
 
-# Child references are removed before series; the canonical blob is cleared last.
 RISK_PAYLOADS = (
     (
         RiskIntervalModel,
@@ -62,179 +52,28 @@ RISK_PAYLOADS = (
 
 
 def _charge(budget: SourcePurgeBudget, rows: int) -> None:
-    if not budget.inspect(rows=rows):
-        raise RuntimeError("Risk retention exceeded its metadata allowance.")
-
-
-def _complete() -> ColumnElement[bool]:
-    return (
-        select(PremiumRetentionModel.id)
-        .where(
-            PremiumRetentionModel.owner_id == PremiumRunModel.owner_id,
-            PremiumRetentionModel.run_id == PremiumRunModel.id,
-            PremiumRetentionModel.completed_at.is_not(None),
-        )
-        .exists()
-    )
-
-
-def _eligible(at: datetime) -> ColumnElement[bool]:
-    lineage = PremiumRunLicenseModel
-    current = aliased(ProviderLicenseVersionModel)
-    latest = aliased(ProviderLicenseVersionModel)
-    latest_id = (
-        select(latest.id)
-        .where(
-            latest.owner_id == lineage.owner_id,
-            latest.provider_id == lineage.provider_id,
-            latest.effective_at <= at,
-        )
-        .order_by(latest.effective_at.desc(), latest.version_number.desc(), latest.id.desc())
-        .limit(1)
-        .correlate(lineage)
-        .scalar_subquery()
-    )
-    permitted = (
-        select(current.id)
-        .where(
-            current.id == latest_id,
-            current.owner_id == lineage.owner_id,
-            current.store_permission == "allowed",
-            current.display_permission == "allowed",
-            current.retention_days.is_not(None),
-            PremiumRunModel.created_at + current.retention_days * literal(timedelta(days=1)) > at,
-        )
-        .correlate(lineage, PremiumRunModel)
-        .exists()
-    )
-    restricted = (
-        select(lineage.id)
-        .where(
-            lineage.owner_id == PremiumRunModel.owner_id,
-            lineage.run_id == PremiumRunModel.id,
-            ~permitted,
-        )
-        .exists()
-    )
-    pending = (
-        select(PremiumRetentionModel.id)
-        .where(
-            PremiumRetentionModel.owner_id == PremiumRunModel.owner_id,
-            PremiumRetentionModel.run_id == PremiumRunModel.id,
-            PremiumRetentionModel.completed_at.is_(None),
-        )
-        .exists()
-    )
-    return and_(
-        PremiumRunModel.kind == "risk",
-        ~_complete(),
-        or_(
-            PremiumRunModel.expires_at <= at,
-            pending,
-            restricted,
-        ),
-    )
+    charge(budget, rows)
 
 
 def _lock_owner(session: Session, owner: UUID) -> bool:
-    # No execution-slot lock: a worker holds that lock before these owner locks.
-    return all(
-        session.scalar(
-            text("SELECT pg_try_advisory_xact_lock(hashtextextended(:key,0))"),
-            {"key": f"{namespace}:{owner}"},
-        )
-        is True
-        for namespace in ("sources", "xray", "historical", "premium")
-    )
+    return lock_owner(session, owner)
 
 
 def _purge_run(
-    session: Session, root: PremiumRunModel, *, at: datetime, budget: SourcePurgeBudget
+    session: Session,
+    root: PremiumRunModel,
+    *,
+    at: datetime,
+    budget: SourcePurgeBudget,
+    reason: Literal["run_expired", "source_restricted", "owner_erasure"] | None = None,
 ) -> bool:
-    if not budget.enter_run("risk", root.id) or budget.metadata_limit < 7:
+    marker = begin_run(session, root, at, budget, reason=reason)
+    if marker is None:
         return False
-    marker = session.scalar(
-        select(PremiumRetentionModel).where(
-            PremiumRetentionModel.owner_id == root.owner_id,
-            PremiumRetentionModel.run_id == root.id,
-        )
-    )
-    if marker is not None:
-        _charge(budget, 1)
-        if marker.completed_at is not None:
-            return True
-    else:
-        marker = PremiumRetentionModel(
-            id=uuid4(),
-            owner_id=root.owner_id,
-            account_id=root.account_id,
-            run_id=root.id,
-            reason="run_expired" if root.expires_at <= at else "source_restricted",
-            created_at=at,
-        )
-        session.add(marker)
-        session.flush()
-    if not purge_report_premium_copies(session, root.owner_id, root.id, at=at, budget=budget):
+    if marker.completed_at is not None:
+        return True
+    if not budget.inspect(rows=1):
         return False
-    # Report copies share this allowance. Keep source payload and capacity until
-    # a later invocation can inspect and clear the remaining run participants.
-    if budget.metadata_limit < 6:
-        return False
-    job = session.scalar(
-        select(PremiumJobModel)
-        .where(
-            PremiumJobModel.owner_id == root.owner_id,
-            PremiumJobModel.run_id == root.id,
-        )
-        .with_for_update()
-    )
-    capacity = session.scalar(
-        select(PremiumCapacityModel)
-        .where(
-            PremiumCapacityModel.owner_id == root.owner_id,
-        )
-        .with_for_update()
-    )
-    if job is None or capacity is None:
-        raise RuntimeError("Risk retention authority is incomplete.")
-    _charge(budget, 2)
-    if job.state in ("queued", "running"):
-        # Fence publication immediately. Byte reservations remain charged until
-        # every payload row is physically gone, even across cleanup invocations.
-        _charge(budget, 1)
-        premium_attempt(
-            session,
-            job,
-            kind="consumer",
-            event="expired",
-            number=job.consumer_attempts,
-            token=job.lease_token,
-            at=at,
-            failure="source_restricted",
-        )
-        job.state = "expired"
-        job.failure_code = "source_restricted"
-        job.completed_at = at
-        job.lease_token = job.lease_expires_at = job.heartbeat_at = job.deadline_at = (
-            job.consumer_id
-        ) = None
-        capacity.active_jobs -= 1
-        capacity.updated_at = at
-        outbox = session.scalar(
-            select(PremiumOutboxModel)
-            .where(
-                PremiumOutboxModel.owner_id == root.owner_id,
-                PremiumOutboxModel.job_id == job.id,
-            )
-            .with_for_update()
-        )
-        if outbox is None:
-            raise RuntimeError("Risk retention dispatch identity is missing.")
-        _charge(budget, 1)
-        outbox.state = "dead_letter"
-        outbox.failure_code = "source_restricted"
-        outbox.claim_token = outbox.claim_expires_at = outbox.dispatcher_id = None
-        session.flush()
     result_id = session.scalar(
         select(RiskResultModel.id).where(
             RiskResultModel.owner_id == root.owner_id,
@@ -242,7 +81,6 @@ def _purge_run(
         )
     )
     if result_id is not None:
-        _charge(budget, 1)
         for model, columns in RISK_PAYLOADS:
             table = cast(Table, model.__table__)
             if not purge_payload_rows(
@@ -275,55 +113,29 @@ def _purge_run(
             budget=budget,
         ).complete:
             return False
-    capacity.reserved_bytes -= root.reserved_bytes
-    capacity.retained_bytes -= root.retained_bytes
-    capacity.updated_at = at
-    root.reserved_bytes = root.retained_bytes = 0
-    marker.completed_at = at
-    session.flush()
-    return True
+    return finish_run(session, root, marker, at, budget)
 
 
 def expire_risk_payloads(
     session: Session, *, at: datetime, budget: SourcePurgeBudget, owner: UUID | None = None
 ) -> bool:
-    """True only if no eligible risk run remains in the requested scope.
+    return expire_runs(
+        session,
+        "risk",
+        lambda session, root, at, budget: _purge_run(session, root, at=at, budget=budget),
+        at=at,
+        budget=budget,
+        owner=owner,
+    )
 
-    Sources call this before dropping their copies. Independent dispatch also
-    calls it for current license revocation/tightening and ordinary run expiry.
-    Busy owners are skipped with nonblocking locks; incomplete work stays indexed.
-    """
-    busy: set[UUID] = set()
-    after: UUID | None = None
-    while budget.metadata_limit >= 2:
-        query = select(PremiumRunModel.id, PremiumRunModel.owner_id).where(_eligible(at))
-        if owner is not None:
-            query = query.where(PremiumRunModel.owner_id == owner)
-        if busy:
-            query = query.where(PremiumRunModel.owner_id.not_in(busy))
-        if after is not None:
-            query = query.where(PremiumRunModel.id > after)
-        candidate = session.execute(query.order_by(PremiumRunModel.id).limit(1)).first()
-        if candidate is None:
-            return not busy
-        _charge(budget, 1)
-        after = candidate.id
-        if not _lock_owner(session, candidate.owner_id):
-            busy.add(candidate.owner_id)
-            continue
-        root = session.scalar(
-            select(PremiumRunModel)
-            .where(
-                PremiumRunModel.id == candidate.id,
-                PremiumRunModel.owner_id == candidate.owner_id,
-                _eligible(at),
-            )
-            .with_for_update(skip_locked=True)
-        )
-        if root is None:
-            busy.add(candidate.owner_id)
-            continue
-        _charge(budget, 1)
-        if not _purge_run(session, root, at=at, budget=budget):
-            return False
-    return False
+
+def purge_risk_xray_copies(
+    session: Session, owner: UUID, input_id: UUID, *, at: datetime, budget: SourcePurgeBudget
+) -> bool:
+    return drain_parent(session, owner, "xray_input", input_id, at=at, budget=budget)
+
+
+def purge_risk_historical_copies(
+    session: Session, owner: UUID, input_id: UUID, *, at: datetime, budget: SourcePurgeBudget
+) -> bool:
+    return drain_parent(session, owner, "historical", input_id, at=at, budget=budget)

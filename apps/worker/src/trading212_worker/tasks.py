@@ -64,6 +64,7 @@ from .postgres_store import (
     PostgresIngestionStore,
     RunLeaseBusyError,
 )
+from .projection_tasks import register_projection_tasks
 from .rate_coordinator import RedisRateCoordinator
 from .report_tasks import register_report_tasks
 from .risk_tasks import register_risk_tasks
@@ -241,6 +242,7 @@ def create_celery_app(settings: WorkerSettings) -> Celery:
     register_report_tasks(application, database_url=settings.database_url)
     register_risk_tasks(application, database_url=settings.database_url)
     register_scenario_tasks(application, database_url=settings.database_url)
+    register_projection_tasks(application, database_url=settings.database_url)
     register_alert_tasks(
         application,
         database_url=settings.database_url,

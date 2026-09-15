@@ -1,0 +1,15 @@
+.offline {
+  position: fixed;
+  inset: auto 1rem 5.5rem;
+  z-index: 90;
+  max-width: 36rem;
+  margin-inline: auto;
+  padding: 0.7rem 1rem;
+  border: 1px solid #d2a44c;
+  border-radius: 0.5rem;
+  background: #302614;
+  color: #fff3d4;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  pointer-events: none;
+}

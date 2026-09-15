@@ -192,7 +192,7 @@ async def test_signed_sdk_command_concurrent_replay_worker_and_http_canonical_pa
     async with transport(case, signer, guard) as connection, connection.session() as client:
         descriptors = await client.list_tools()
         guard.check(descriptors.model_dump_json())
-        assert len(descriptors.tools) == 28
+        assert len(descriptors.tools) == 36
         correlation = "c" * 128
         connection.client.headers["X-Correlation-ID"] = correlation
         results = await asyncio.gather(

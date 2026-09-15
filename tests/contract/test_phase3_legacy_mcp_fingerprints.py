@@ -53,6 +53,20 @@ async def test_original_25_complete_tool_descriptors_remain_unchanged() -> None:
     assert tuple(tool.name for tool in tools[:25]) == tuple(EXPECTED)
     for tool in tools[:25]:
         descriptor = tool.model_dump(mode="json", by_alias=True, exclude_none=True)
+        # The accepted Phase 3 registry authorizes precisely these additive UI
+        # links. Assert them independently before projecting the original complete
+        # descriptor into its immutable fingerprint; the old digest oracle stays fixed.
+        attachment = {"get_direct_allocation": "allocation", "get_drift_analysis": "drift"}.get(
+            tool.name
+        )
+        if attachment is not None:
+            uri = f"ui://trading212-portfolio/{attachment}-v1.html"
+            assert descriptor["_meta"].pop("ui") == {
+                "resourceUri": uri,
+                "visibility": ["model", "app"],
+            }
+            assert descriptor["_meta"].pop("openai/outputTemplate") == uri
+            assert descriptor["_meta"].pop("openai/widgetAccessible") is True
         digest = hashlib.sha256(
             json.dumps(descriptor, sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest()

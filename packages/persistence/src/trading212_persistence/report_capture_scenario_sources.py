@@ -305,6 +305,8 @@ def capture_scenario_history_sources(
     if value.replay is None or execution.replay is None:
         return
     child = builder.contexts[f"{context.key}.history"]
+    if not isinstance(child, r.ReportContext):
+        fail_validation("Scenario context profile differs.", field="context")
     _sources(builder, child, execution.replay.historical_input, service, session, SourceUse.REPORT)
     originals = {(item.kind, item.id): item for item in execution.replay.historical_input.sources}
     for source in value.replay.context.sources:

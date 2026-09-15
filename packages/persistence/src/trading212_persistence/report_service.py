@@ -78,7 +78,7 @@ class PostgresReportService(ReportStore):
         max_active_collection_members_per_owner: int = 250_000,
     ) -> None:
         super().__init__(sessions, clock=clock)
-        if type(contract_version) is not int or contract_version not in (1, 2, 3):
+        if type(contract_version) is not int or contract_version not in (1, 2, 3, 4):
             raise ValueError("Report contract version is unsupported.")
         self._contract_version = contract_version
         self._cursor_key = cursor_signing_key
@@ -130,7 +130,7 @@ class PostgresReportService(ReportStore):
         task = "reports.generate.v1" if use is ReportSourceUse.REPORT else "exports.generate.v1"
         command_name = (
             "reports.generate.v2"
-            if use is ReportSourceUse.REPORT and self._contract_version in (2, 3)
+            if use is ReportSourceUse.REPORT and self._contract_version in (2, 3, 4)
             else task
         )
         digest = _command_digest(command)
@@ -144,7 +144,7 @@ class PostgresReportService(ReportStore):
                     required_scopes=selection_scopes(selection),
                     now=self._now(),
                 )
-                selected_version = {"1.0.0": 1, "2.0.0": 2, "3.0.0": 3}[
+                selected_version = {"1.0.0": 1, "2.0.0": 2, "3.0.0": 3, "4.0.0": 4}[
                     report_schema_version(selection)
                 ]
                 if selected_version != self._contract_version:
@@ -448,7 +448,7 @@ class PostgresReportService(ReportStore):
                     if isinstance(query, app.ExportListQuery) and query.dataset
                     else None,
                 )
-                if is_report and self._contract_version in (2, 3):
+                if is_report and self._contract_version in (2, 3, 4):
                     fingerprint = collection_filter_fingerprint(
                         f"premium_reports_v{self._contract_version}", fingerprint
                     )
@@ -457,7 +457,7 @@ class PostgresReportService(ReportStore):
                 definition = CollectionSnapshotDefinition(
                     resource=(
                         CollectionSnapshotResource.PREMIUM_REPORTS
-                        if self._contract_version in (2, 3)
+                        if self._contract_version in (2, 3, 4)
                         else CollectionSnapshotResource.REPORTS
                     )
                     if is_report

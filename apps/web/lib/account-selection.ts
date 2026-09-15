@@ -68,13 +68,21 @@ export function accountSwitchHref(
   if (
     destination === "/reports/premium" &&
     query.getAll("profile").length === 1 &&
-    query.getAll("profile")[0] === "report_sections_v3"
+    ["report_sections_v3", "report_sections_v4"].includes(
+      query.getAll("profile")[0],
+    )
   ) {
-    next.set("profile", "report_sections_v3");
+    const profile = query.getAll("profile")[0];
+    next.set("profile", profile);
     const families = query.getAll("family");
-    if (families.length === 1 && ["risk", "scenario"].includes(families[0]))
+    const allowed =
+      profile === "report_sections_v4" ? ["projection"] : ["risk", "scenario"];
+    if (families.length === 1 && allowed.includes(families[0]))
       next.set("family", families[0]);
   }
+  // Projection calendars belong to saved inputs; an account switch clears them.
+  if (destination === "/projections" || destination === "/research")
+    return `${destination}?${next}`;
   const dateKeys = ["/performance", "/income", "/risk"].includes(destination)
     ? ["start", "end"]
     : ["start_date", "end_date"];

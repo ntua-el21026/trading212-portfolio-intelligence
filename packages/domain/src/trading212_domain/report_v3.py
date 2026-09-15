@@ -11,6 +11,7 @@ from datetime import date, datetime
 from typing import TypeIs
 from uuid import UUID
 
+from . import report_v4 as v4
 from . import reports as r
 from .errors import fail_validation
 from .values import CurrencyCode
@@ -237,6 +238,10 @@ class ReportDocumentHeaderV3(r.ReportRecord):
             fail_validation("The selected risk history window differs.", field="premium_binding")
         r.report_limit(len(self.tables) <= 128, "tables")
         supplied = {x.table for x in self.tables}
+        from .report_projection_schema import PROJECTION_TABLE_COLUMNS
+
+        if supplied & set(PROJECTION_TABLE_COLUMNS):
+            fail_validation("Projection tables require profile four.", field="tables")
         if len(supplied) != len(self.tables):
             fail_validation("Report document tables are duplicated.", field="tables")
         risk = frozenset((*RISK_REPORT_TABLES, *RISK_PROOF_TABLES))
@@ -342,9 +347,12 @@ def validate_report_profile_v3(
     header: ReportDocumentHeaderV3, proof: r.ReportProof, bindings: tuple[r.ReportBinding, ...]
 ) -> None:
     """Resolve the singular typed run into the shared immutable proof graph."""
+    from .report_projection_schema import PROJECTION_TABLE_COLUMNS
     from .report_risk_schema import RISK_PROOF_TABLES, RISK_REPORT_TABLES
     from .report_scenario_schema import SCENARIO_PROOF_TABLES, SCENARIO_REPORT_TABLES
 
+    if any(item.table in PROJECTION_TABLE_COLUMNS for item in proof.proof_relations):
+        fail_validation("Projection proof requires profile four.", field="proof_relations")
     r.report_limit(len(proof.contexts) <= 256, "contexts")
     r.report_limit(len(proof.license_references) <= 256, "license_references")
     pin = header.premium_binding
@@ -439,17 +447,23 @@ def validate_report_profile_v3(
         fail_validation("Report proof contains an unrelated premium run.", field="bindings")
 
 
-type ReportSelectionContract = r.ReportSelection | r.ExportSelection | ReportSelectionV3
-type ReportHeaderContract = r.ReportDocumentHeader | ReportDocumentHeaderV3
-type ReportCaptureContract = r.ReportCaptureSummary | ReportCaptureSummaryV3
-type ReportManifestContract = r.ReportManifest | ReportManifestV3
+type ReportSelectionContract = (
+    r.ReportSelection | r.ExportSelection | ReportSelectionV3 | v4.ReportSelectionV4
+)
+type ReportHeaderContract = (
+    r.ReportDocumentHeader | ReportDocumentHeaderV3 | v4.ReportDocumentHeaderV4
+)
+type ReportCaptureContract = (
+    r.ReportCaptureSummary | ReportCaptureSummaryV3 | v4.ReportCaptureSummaryV4
+)
+type ReportManifestContract = r.ReportManifest | ReportManifestV3 | v4.ReportManifestV4
 
 
 def is_report_selection(
     selection: ReportSelectionContract,
-) -> TypeIs[r.ReportSelection | ReportSelectionV3]:
-    """Distinguish report formats/sections from exports without losing explicit V3."""
-    return isinstance(selection, (r.ReportSelection, ReportSelectionV3))
+) -> TypeIs[r.ReportSelection | ReportSelectionV3 | v4.ReportSelectionV4]:
+    """Distinguish report formats/sections from exports without losing explicit premium profiles."""
+    return isinstance(selection, (r.ReportSelection, ReportSelectionV3, v4.ReportSelectionV4))
 
 
 def selected_risk_run_id(selection: ReportSelectionContract) -> UUID | None:

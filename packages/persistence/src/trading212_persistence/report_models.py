@@ -12,6 +12,7 @@ from uuid import UUID
 from sqlalchemy import (
     ARRAY,
     BigInteger,
+    Boolean,
     CheckConstraint,
     Date,
     ForeignKey,
@@ -21,6 +22,7 @@ from sqlalchemy import (
     LargeBinary,
     String,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -94,7 +96,7 @@ class ReportDefinitionModel(ReportOwned):
         CheckConstraint("revision >= 1", name="revision_positive"),
         CheckConstraint("content_digest ~ '^[0-9a-f]{64}$'", name="digest_format"),
         CheckConstraint("reporting_currency ~ '^[A-Z]{3}$'", name="currency_format"),
-        CheckConstraint("cardinality(sections) BETWEEN 1 AND 14", name="section_bound"),
+        CheckConstraint("cardinality(sections) BETWEEN 1 AND 15", name="section_bound"),
     )
     account_id: Mapped[UUID] = mapped_column(ForeignKey("broker_accounts.id", ondelete="RESTRICT"))
     report_type: Mapped[str] = mapped_column(String(40))
@@ -113,7 +115,7 @@ class ReportInputSnapshotModel(ReportOwned):
         UniqueConstraint("owner_id", "account_id", "id", name="uq_report_inputs_account_id"),
         CheckConstraint("kind IN ('report','export')", name="kind_allowed"),
         CheckConstraint(
-            "contract_version IN (1,2,3) AND (kind='report' OR contract_version=1)",
+            "contract_version IN (1,2,3,4) AND (kind='report' OR contract_version=1)",
             name="contract_version_allowed",
         ),
         UniqueConstraint(
@@ -139,6 +141,18 @@ class ReportInputSnapshotModel(ReportOwned):
             name="payload_state",
         ),
         Index("ix_report_inputs_owner_expiry", "owner_id", "expires_at", "id"),
+        Index(
+            "ix_report_inputs_pending_ttl",
+            "expires_at",
+            "id",
+            postgresql_where=text("purged_at IS NULL"),
+        ),
+        Index(
+            "ix_report_inputs_legacy_source_expiry",
+            "expires_at",
+            "id",
+            postgresql_where=text("purged_at IS NULL AND contract_version IN (2,3)"),
+        ),
     )
     account_id: Mapped[UUID] = mapped_column(ForeignKey("broker_accounts.id", ondelete="RESTRICT"))
     kind: Mapped[str] = mapped_column(String(10))
@@ -178,6 +192,13 @@ class ReportInputChunkModel(ReportOwned):
         ),
         CheckConstraint("(purged_at IS NULL) = (payload IS NOT NULL)", name="payload_state"),
         Index("ix_report_chunks_input_id", "owner_id", "input_id", "id"),
+        Index(
+            "ix_report_chunks_pending",
+            "owner_id",
+            "input_id",
+            "id",
+            postgresql_where=text("payload IS NOT NULL"),
+        ),
     )
     input_id: Mapped[UUID] = mapped_column()
     table_key: Mapped[str] = mapped_column(String(80))
@@ -264,7 +285,18 @@ class ReportInputDependencyModel(ReportOwned):
         Index("ix_report_dependencies_input", "owner_id", "input_id", "id"),
         Index("ix_report_dependencies_license", "owner_id", "license_version_id", "input_id"),
         Index("ix_report_dependencies_source", "owner_id", "kind", "source_id", "input_id"),
+        Index(
+            "ix_report_source_pending",
+            "owner_id",
+            "kind",
+            "source_id",
+            "copy_pending",
+            "input_id",
+            "id",
+        ),
+        Index("ix_report_source_pending_input", "owner_id", "input_id", "copy_pending", "id"),
     )
+    copy_pending: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
     input_id: Mapped[UUID] = mapped_column()
     source_key: Mapped[str] = mapped_column(String(200))
     kind: Mapped[str] = mapped_column(String(80))
@@ -290,6 +322,11 @@ class ReportInputPremiumDependencyModel(ReportOwned):
 
     __tablename__ = "report_input_premium_dependencies"
     __table_args__ = (
+        Index(
+            "ix_report_legacy_pending",
+            "id",
+            postgresql_where=text("copy_pending AND kind IN ('risk','scenario')"),
+        ),
         _owned("report_input_premium_dependencies"),
         UniqueConstraint("input_id", name="uq_report_premium_input"),
         ForeignKeyConstraint(
@@ -314,7 +351,7 @@ class ReportInputPremiumDependencyModel(ReportOwned):
             name="fk_report_premium_snapshot",
             ondelete="RESTRICT",
         ),
-        CheckConstraint("kind IN ('risk','scenario')", name="kind_allowed"),
+        CheckConstraint("kind IN ('risk','scenario','projection')", name="kind_allowed"),
         CheckConstraint(
             "num_nonnulls(result_id,definition_version_id,definition_digest,snapshot_id,"
             "snapshot_digest,reporting_currency,source_cutoff_at,valuation_at) IN (0,8)",
@@ -331,6 +368,7 @@ class ReportInputPremiumDependencyModel(ReportOwned):
             name="digest_format",
         ),
         Index("ix_report_premium_run", "owner_id", "run_id", "input_id"),
+        Index("ix_report_premium_pending", "owner_id", "run_id", "copy_pending", "input_id"),
     )
     account_id: Mapped[UUID] = mapped_column(ForeignKey("broker_accounts.id", ondelete="RESTRICT"))
     input_id: Mapped[UUID] = mapped_column()
@@ -338,6 +376,7 @@ class ReportInputPremiumDependencyModel(ReportOwned):
     kind: Mapped[str] = mapped_column(String(20))
     input_digest: Mapped[str] = mapped_column(String(64))
     result_digest: Mapped[str] = mapped_column(String(64))
+    copy_pending: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
     result_id: Mapped[UUID | None] = mapped_column()
     definition_version_id: Mapped[UUID | None] = mapped_column()
     definition_digest: Mapped[str | None] = mapped_column(String(64))
@@ -453,7 +492,7 @@ class ReportJobModel(ReportJobBase):
     __tablename__ = "report_jobs"
     __table_args__ = (
         *_job_constraints("report_jobs"),
-        CheckConstraint("contract_version IN (1,2,3)", name="contract_version_allowed"),
+        CheckConstraint("contract_version IN (1,2,3,4)", name="contract_version_allowed"),
         ForeignKeyConstraint(
             ["owner_id", "account_id", "input_id", "contract_version"],
             [
@@ -524,33 +563,62 @@ class ApplicationCommandIdentityModel(ReportOwned):
         UniqueConstraint(
             "owner_id", "command", "idempotency_key", name="uq_application_command_owner_key"
         ),
+        Index(
+            "ix_application_command_report_job",
+            "owner_id",
+            "report_job_id",
+            "account_id",
+            "command_digest",
+            postgresql_where=text("report_job_id IS NOT NULL"),
+        ),
+        Index(
+            "ix_application_command_export_job",
+            "owner_id",
+            "export_job_id",
+            "account_id",
+            "command_digest",
+            postgresql_where=text("export_job_id IS NOT NULL"),
+        ),
         _parent("application_command_identities", "report_job_id", "report_jobs"),
         _parent("application_command_identities", "export_job_id", "export_jobs"),
         CheckConstraint(
-            "command IN ('reports.generate.v1','reports.generate.v2','exports.generate.v1',"
-            "'risk.definition.create.v1',"
-            "'risk.version.create.v1','risk.run.create.v1','risk.run.cancel.v1','scenario.d"
-            "efinition.create.v1','scenario.version.create.v1','scenario.run.create.v1','sc"
-            "enario.run.cancel.v1')",
+            (
+                "command IN ('reports.generate.v1','reports.generate.v2','exp"
+                "orts.generate.v1','risk.definition.create.v1','risk.version."
+                "create.v1','risk.run.create.v1','risk.run.cancel.v1','scenar"
+                "io.definition.create.v1','scenario.version.create.v1','scena"
+                "rio.run.create.v1','scenario.run.cancel.v1','projection.assu"
+                "mption.create.v1','projection.assumption.version.create.v1',"
+                "'projection.goal.create.v1','projection.goal.version.create."
+                "v1','projection.run.create.v1','projection.run.cancel.v1','r"
+                "esearch.note.create.v1','research.note.version.create.v1','r"
+                "esearch.event.review.v1')"
+            ),
             name="command_allowed",
         ),
         CheckConstraint("idempotency_key ~ '^[A-Za-z0-9._:-]{1,180}$'", name="key_format"),
         CheckConstraint("command_digest ~ '^[0-9a-f]{64}$'", name="digest_format"),
         CheckConstraint(
-            "(command IN ('reports.generate.v1','reports.generate.v2') AND "
-            "report_job_id IS NOT NULL AND "
-            "export_job_id IS NULL AND premium_resource_id IS NULL AND premium"
-            "_actor_id IS NULL AND premium_correlation_id IS NULL) OR "
-            "(command='exports.generate.v1' AND export_job_id IS NOT NULL AND "
-            "report_job_id IS NULL AND premium_resource_id IS NULL AND premium"
-            "_actor_id IS NULL AND premium_correlation_id IS NULL) OR "
-            "(command IN ('risk.definition.create.v1','risk.version.create.v1'"
-            ",'risk.run.create.v1','risk.run.cancel.v1','scenario.definition.create.v1','sc"
-            "enario.version.create.v1','scenario.run.create.v1','scenario.run.cancel.v1') A"
-            "ND report_job_id IS "
-            "NULL AND export_job_id IS NULL AND premium_resource_id IS NOT NUL"
-            "L AND premium_actor_id IS NOT NULL AND premium_correlation_id IS "
-            "NOT NULL)",
+            (
+                "(command IN ('reports.generate.v1','reports.generate.v2') AN"
+                "D report_job_id IS NOT NULL AND export_job_id IS NULL AND pr"
+                "emium_resource_id IS NULL AND premium_actor_id IS NULL AND p"
+                "remium_correlation_id IS NULL) OR (command='exports.generate"
+                ".v1' AND export_job_id IS NOT NULL AND report_job_id IS NULL"
+                " AND premium_resource_id IS NULL AND premium_actor_id IS NUL"
+                "L AND premium_correlation_id IS NULL) OR (command IN ('risk."
+                "definition.create.v1','risk.version.create.v1','risk.run.cre"
+                "ate.v1','risk.run.cancel.v1','scenario.definition.create.v1'"
+                ",'scenario.version.create.v1','scenario.run.create.v1','scen"
+                "ario.run.cancel.v1','projection.assumption.create.v1','proje"
+                "ction.assumption.version.create.v1','projection.goal.create."
+                "v1','projection.goal.version.create.v1','projection.run.crea"
+                "te.v1','projection.run.cancel.v1','research.note.create.v1',"
+                "'research.note.version.create.v1','research.event.review.v1'"
+                ") AND report_job_id IS NULL AND export_job_id IS NULL AND pr"
+                "emium_resource_id IS NOT NULL AND premium_actor_id IS NOT NU"
+                "LL AND premium_correlation_id IS NOT NULL)"
+            ),
             name="parent_kind",
         ),
     )
@@ -578,12 +646,19 @@ class ReportManifestBase(ReportOwned):
 
 def _manifest_constraints(
     table: str, jobs: str
-) -> tuple[UniqueConstraint | ForeignKeyConstraint | CheckConstraint, ...]:
+) -> tuple[UniqueConstraint | ForeignKeyConstraint | CheckConstraint | Index, ...]:
     return (
         _owned(table),
         _parent(table, "job_id", jobs),
         _parent(table, "input_id", "report_input_snapshots"),
         UniqueConstraint("job_id", name=f"uq_{table}_job"),
+        Index(
+            f"ix_{table}_pending",
+            "owner_id",
+            "input_id",
+            "id",
+            postgresql_where=text("payload IS NOT NULL"),
+        ),
         CheckConstraint("byte_length BETWEEN 1 AND 2097152", name="byte_bound"),
         CheckConstraint("publication_fence > 0", name="fence_positive"),
         CheckConstraint("content_digest ~ '^[0-9a-f]{64}$'", name="digest_format"),
@@ -639,6 +714,13 @@ def _artifact_constraints(
         CheckConstraint("expires_at > created_at", name="expiry_order"),
         CheckConstraint("filename ~ '^[A-Za-z0-9._-]{1,160}$'", name="filename_safe"),
         Index(f"ix_{table}_expiry", "owner_id", "expires_at", "id"),
+        Index(
+            f"ix_{table}_pending",
+            "owner_id",
+            "job_id",
+            "id",
+            postgresql_where=text("contents IS NOT NULL"),
+        ),
     )
 
 
@@ -766,17 +848,39 @@ class ReportAttemptModel(ReportOwned):
 class ReportRetentionWorkModel(ReportOwned):
     __tablename__ = "report_retention_work"
     __table_args__ = (
+        CheckConstraint(
+            (
+                "(legacy_source_kind IS NULL AND legacy_source_id IS NULL) OR "
+                "(reason='source' AND legacy_source_kind IN ('physical','root','report_licens"
+                "e','premium_license','parents','history','version','observation','evidence')"
+                " AND legacy_source_id IS NOT NULL AND projection_source_kind IS NULL AND "
+                "projection_source_id IS NULL)"
+            ),
+            name="legacy_witness_bound",
+        ),
         _owned("report_retention_work"),
         _parent("report_retention_work", "input_id", "report_input_snapshots"),
         UniqueConstraint("input_id", name="uq_report_retention_input"),
         CheckConstraint("reason IN ('ttl','source','owner')", name="reason_allowed"),
         CheckConstraint("completed_at IS NULL OR completed_at >= started_at", name="time_order"),
         Index("ix_report_retention_pending", "owner_id", "completed_at", "input_id"),
+        Index("ix_report_pending_work", "id", postgresql_where=text("completed_at IS NULL")),
+        CheckConstraint(
+            "(projection_source_kind IS NULL AND projection_source_id IS "
+            "NULL) OR (reason='source' AND projection_source_kind IN ('pr"
+            "ice','fx','corporate_action','benchmark','historical','licen"
+            "se','classification') AND projection_source_id IS NOT NULL)",
+            name="projection_witness_bound",
+        ),
     )
     input_id: Mapped[UUID] = mapped_column()
     reason: Mapped[str] = mapped_column(String(10))
     started_at: Mapped[datetime] = mapped_column(UTCDateTime())
     completed_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    projection_source_kind: Mapped[str | None] = mapped_column(String(20))
+    projection_source_id: Mapped[UUID | None] = mapped_column()
+    legacy_source_kind: Mapped[str | None] = mapped_column(String(20))
+    legacy_source_id: Mapped[UUID | None] = mapped_column()
 
 
 REPORT_MODELS = (

@@ -17,7 +17,9 @@ MAX_PURGE_ROWS = 4096
 MAX_PURGE_BYTES = 64 * 1024 * 1024
 MAX_PURGE_BATCH_ROWS = 512
 
-PurgeFamily = Literal["historical", "xray", "report", "export", "alert", "risk", "scenario"]
+PurgeFamily = Literal[
+    "historical", "xray", "report", "export", "alert", "risk", "scenario", "projection", "research"
+]
 
 
 def _count(value: int, maximum: int, field_name: str) -> None:
@@ -36,6 +38,9 @@ class PayloadCopyCost:
 
     row_id: UUID
     payload_bytes: int
+    # Includes fixed SQL trigger/constraint work performed by this exact mutation.
+    inspection_rows: int = 1
+    payload_inspections: int = 1
 
     def __post_init__(self) -> None:
         if not isinstance(self.row_id, UUID):
@@ -43,6 +48,13 @@ class PayloadCopyCost:
         # An oversized existing row must remain pending, not wrap or be rounded.
         if type(self.payload_bytes) is not int or self.payload_bytes < 0:
             raise ValueError("A nonnegative logical payload byte size is required.")
+        if (
+            type(self.inspection_rows) is not int
+            or not 1 <= self.inspection_rows <= MAX_PURGE_BATCH_ROWS
+        ):
+            raise ValueError("A bounded positive physical inspection cost is required.")
+        if type(self.payload_inspections) is not int or not 1 <= self.payload_inspections <= 2:
+            raise ValueError("A bounded payload inspection multiplicity is required.")
 
 
 @dataclass(slots=True, kw_only=True)
@@ -87,6 +99,8 @@ class SourcePurgeBudget:
             "alert",
             "risk",
             "scenario",
+            "projection",
+            "research",
         ) or not isinstance(identifier, UUID):
             raise ValueError("A typed purge participant is required.")
         seen = self._captures_seen if capture else self._runs_seen
@@ -147,19 +161,26 @@ class SourcePurgeBudget:
             raise ValueError("Typed payload size metadata is required.")
         if len({cost.row_id for cost in costs}) != len(costs):
             raise ValueError("A physical row must occur once in a payload batch.")
-        count = 0
-        size = 0
-        row_limit = min(self.rows_inspected, self.rows_removed, MAX_PURGE_BATCH_ROWS)
-        byte_limit = min(self.bytes_inspected, self.bytes_removed)
+        count = size = inspected_rows = inspected_bytes = 0
+        row_limit = min(self.rows_removed, MAX_PURGE_BATCH_ROWS)
+        inspection_limit = min(self.rows_inspected, MAX_PURGE_BATCH_ROWS)
         for cost in costs:
-            if count == row_limit or cost.payload_bytes > byte_limit - size:
+            inspect_bytes = cost.payload_bytes * cost.payload_inspections
+            if (
+                count == row_limit
+                or cost.inspection_rows > inspection_limit - inspected_rows
+                or cost.payload_bytes > self.bytes_removed - size
+                or inspect_bytes > self.bytes_inspected - inspected_bytes
+            ):
                 break
             count += 1
             size += cost.payload_bytes
+            inspected_rows += cost.inspection_rows
+            inspected_bytes += inspect_bytes
         if count == 0:
             return ()
-        self.rows_inspected -= count
+        self.rows_inspected -= inspected_rows
         self.rows_removed -= count
-        self.bytes_inspected -= size
+        self.bytes_inspected -= inspected_bytes
         self.bytes_removed -= size
         return tuple(cost.row_id for cost in costs[:count])

@@ -35,7 +35,7 @@ async def test_four_tools_have_exact_scopes_annotations_and_no_future_registry_p
         )
     ).server
     tools = await server.list_tools()
-    assert len(tools) == 32 and tuple(tool.name for tool in tools[11:15]) == NAMES
+    assert len(tools) == 38 and tuple(tool.name for tool in tools[11:15]) == NAMES
     assert tools[24].name == "get_alert_summary"
     assert tuple(tool.name for tool in tools[25:]) == (
         "create_risk_run",
@@ -45,6 +45,12 @@ async def test_four_tools_have_exact_scopes_annotations_and_no_future_registry_p
         "create_scenario_run",
         "get_scenario_result",
         "compare_scenarios",
+        "create_projection_run",
+        "get_projection",
+        "list_goals",
+        "get_goal_analysis",
+        "get_research_summary",
+        "get_research_item",
     )
     for tool in tools[11:15]:
         descriptor = tool.model_dump(mode="json", by_alias=True, exclude_none=True)

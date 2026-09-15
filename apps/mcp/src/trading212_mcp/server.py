@@ -22,7 +22,9 @@ from trading212_api_contracts.targets import UUIDString
 from trading212_application.alerts import AlertService
 from trading212_application.historical import PerformanceIntelligenceService
 from trading212_application.planning import PlanningService
+from trading212_application.projection import ProjectionService
 from trading212_application.reports import ReportService
+from trading212_application.research import ResearchService
 from trading212_application.risk import RiskService
 from trading212_application.scenario import ScenarioService
 from trading212_application.services import PortfolioService, SyntheticPortfolioService
@@ -33,6 +35,7 @@ from trading212_persistence import (
     create_database_engine,
     create_session_factory,
 )
+from trading212_persistence.research_permissions import ResearchCapabilityAuthority
 from trading212_persistence.target_service import PostgresTargetService
 from trading212_security.principals import Scope as PortfolioScope
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
@@ -46,8 +49,13 @@ from .historical_gateway import HistoricalMcpGateway
 from .historical_tools import HISTORICAL_TOOL_NAMES, register_historical_tools
 from .planning_gateway import PlanningMcpGateway
 from .planning_tools import PLANNING_TOOL_NAMES, register_planning_tools
+from .projection_gateway import ProjectionMcpGateway
+from .projection_tools import PROJECTION_TOOL_NAMES, register_projection_tools
 from .report_gateway import ReportMcpGateway
 from .report_tools import REPORT_TOOL_NAMES, register_report_tools
+from .research_gateway import ResearchMcpGateway
+from .research_tools import RESEARCH_TOOL_NAMES, register_research_tools
+from .research_widget_resources import register_analysis_widgets
 from .risk_gateway import RiskMcpGateway
 from .risk_tools import RISK_TOOL_NAMES, register_risk_tools
 from .scenario_gateway import ScenarioMcpGateway
@@ -92,6 +100,8 @@ FROZEN_TOOL_NAMES = (
     *ALERT_TOOL_NAMES,
     *RISK_TOOL_NAMES,
     *SCENARIO_TOOL_NAMES,
+    *PROJECTION_TOOL_NAMES,
+    *RESEARCH_TOOL_NAMES,
 )
 
 AccountId = Annotated[
@@ -128,6 +138,8 @@ class McpRuntime:
     alert_service: AlertService | None = None
     risk_service: RiskService | None = None
     scenario_service: ScenarioService | None = None
+    projection_service: ProjectionService | None = None
+    research_service: ResearchService | None = None
 
     def asgi_app(self) -> ASGIApp:
         transport_security = TransportSecuritySettings(
@@ -161,6 +173,9 @@ def create_runtime(
     alert_service: AlertService | None = None,
     risk_service: RiskService | None = None,
     scenario_service: ScenarioService | None = None,
+    projection_service: ProjectionService | None = None,
+    research_service: ResearchService | None = None,
+    research_capability_authority: ResearchCapabilityAuthority | None = None,
     database_url: str | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
     clock: Callable[[], datetime] | None = None,
@@ -277,6 +292,25 @@ def create_runtime(
                 clock=runtime_clock,
                 cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
                 replay_resolver=resolve_scenario_replay,
+            )
+
+        if projection_service is None:
+            from trading212_persistence.projection_service import PostgresProjectionService
+
+            projection_service = PostgresProjectionService(
+                create_session_factory(engine),
+                clock=runtime_clock,
+                cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            )
+
+        if research_service is None:
+            from trading212_persistence.research_service import PostgresResearchService
+
+            research_service = PostgresResearchService(
+                create_session_factory(engine),
+                clock=runtime_clock,
+                cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+                capability_authority=research_capability_authority,
             )
 
         async def database_readiness() -> bool:
@@ -397,6 +431,21 @@ def create_runtime(
         ),
         widget_domain=transport.widget_domain,
     )
+    register_projection_tools(
+        server,
+        ProjectionMcpGateway(
+            service=projection_service, principals=principal_resolver, clock=runtime_clock
+        ),
+        widget_domain=transport.widget_domain,
+    )
+    register_research_tools(
+        server,
+        ResearchMcpGateway(
+            service=research_service, principals=principal_resolver, clock=runtime_clock
+        ),
+        widget_domain=transport.widget_domain,
+    )
+    register_analysis_widgets(server, widget_domain=transport.widget_domain)
     return McpRuntime(
         server=server,
         service=portfolio_service,
@@ -411,6 +460,8 @@ def create_runtime(
         alert_service=alert_service,
         risk_service=risk_service,
         scenario_service=scenario_service,
+        projection_service=projection_service,
+        research_service=research_service,
     )
 
 

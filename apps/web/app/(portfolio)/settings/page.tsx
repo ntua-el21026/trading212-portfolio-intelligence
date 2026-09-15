@@ -13,6 +13,7 @@ import {
 
 import { Notice, StatusPill, Surface } from "@trading212/ui";
 
+import { PwaSettings } from "../../../components/pwa-settings";
 import { PageHeader } from "../../../components/page-header";
 import { loadSettings } from "../../../lib/api-adapter";
 import { requireWebAccess } from "../../../lib/auth";
@@ -39,6 +40,7 @@ export default async function SettingsPage({
           title="Connection & settings"
         />
         <div className="settings-grid">
+          <PwaSettings />
           <Surface className="settings-card" compact>
             <h2>
               <UserRound aria-hidden="true" size={19} /> Access

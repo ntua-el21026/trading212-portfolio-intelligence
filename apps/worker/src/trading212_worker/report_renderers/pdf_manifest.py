@@ -140,11 +140,15 @@ def _contexts(layout: ManifestLayout, manifest: ReportManifestContract) -> None:
             f"Method: {context.method_key} / {context.method_version}; "
             f"quality: {context.quality.value}; schema: {context.schema_version}"
         )
-        layout.text(
-            f"Valuation: {context.valuation_at.isoformat()}; "
-            f"source cutoff: {context.source_cutoff_at.isoformat()}",
-            size=8,
+        valuation = (
+            context.valuation_at.isoformat() if context.valuation_at is not None else "not observed"
         )
+        cutoff = (
+            context.source_cutoff_at.isoformat()
+            if context.source_cutoff_at is not None
+            else "not supplied"
+        )
+        layout.text(f"Valuation: {valuation}; source cutoff: {cutoff}", size=8)
         layout.text(
             "Source time: "
             + (context.source_at.isoformat() if context.source_at else "not recorded"),

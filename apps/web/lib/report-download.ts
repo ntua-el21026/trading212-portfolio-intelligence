@@ -5,6 +5,7 @@ import {
   TargetApiError,
   type PremiumReportJobStatus,
   type PremiumReportJobStatusV3,
+  type PremiumReportJobStatusV4,
 } from "@trading212/api-contracts";
 import { z } from "zod";
 import { reportClients, reportData } from "./report-adapter";
@@ -16,7 +17,7 @@ async function selectionFromForm(
   premium: boolean,
 ): Promise<{
   account: string;
-  profile?: "report_sections_v2" | "report_sections_v3";
+  profile?: "report_sections_v2" | "report_sections_v3" | "report_sections_v4";
 }> {
   if (
     request.headers.get("content-type")?.split(";")[0].trim() !==
@@ -81,7 +82,11 @@ async function selectionFromForm(
     ...(form.has("profile")
       ? {
           profile: z
-            .enum(["report_sections_v2", "report_sections_v3"])
+            .enum([
+              "report_sections_v2",
+              "report_sections_v3",
+              "report_sections_v4",
+            ])
             .parse(form.get("profile")),
         }
       : {}),
@@ -95,7 +100,7 @@ export async function serveReportArtifact(
   artifactId: string,
 ): Promise<Response> {
   // Authenticate and verify same-origin command access before parsing caller input.
-  const { reports, premiumReports, premiumReportsV3 } =
+  const { reports, premiumReports, premiumReportsV3, premiumReportsV4 } =
     await reportClients(true);
   try {
     const parent = uuid.parse(parentId),
@@ -106,20 +111,25 @@ export async function serveReportArtifact(
     );
     const account = selection.account;
     const premium =
-      selection.profile === "report_sections_v3"
-        ? premiumReportsV3
-        : premiumReports;
+      selection.profile === "report_sections_v4"
+        ? premiumReportsV4
+        : selection.profile === "report_sections_v3"
+          ? premiumReportsV3
+          : premiumReports;
     const query = { account_id: account };
     const job =
       family === "premium-reports"
-        ? reportData<PremiumReportJobStatus | PremiumReportJobStatusV3>(
-            await premium.get_premium_report_status(parent, query),
-          )
+        ? reportData<
+            | PremiumReportJobStatus
+            | PremiumReportJobStatusV3
+            | PremiumReportJobStatusV4
+          >(await premium.get_premium_report_status(parent, query))
         : family === "reports"
           ? reportData(await reports.get_report_status(parent, query))
           : reportData(await reports.get_export_status(parent, query));
     if (
-      selection.profile === "report_sections_v3" &&
+      selection.profile !== undefined &&
+      selection.profile !== "report_sections_v2" &&
       (job.account_id !== account ||
         !("profile_version" in job) ||
         job.profile_version !== selection.profile)

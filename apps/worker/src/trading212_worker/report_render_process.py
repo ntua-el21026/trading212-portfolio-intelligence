@@ -70,10 +70,16 @@ class _PipeDocument:
 def _decode_manifest(payload: bytes, profile: str) -> ReportManifestContract:
     # The authorized parent supplies the profile separately; private JSON cannot
     # choose its decoder or turn an earlier report/export into a V3 document.
-    if profile not in {"1", "2", "3"}:
+    if profile not in {"1", "2", "3", "4"}:
         raise app.ReportRenderError(ReportFailureCode.INPUT_CHANGED)
+    from trading212_domain.report_manifest_v4 import decode_report_manifest_v4
+
     manifest: ReportManifestContract = (
-        decode_report_manifest_v3(payload) if profile == "3" else decode_report_manifest(payload)
+        decode_report_manifest_v4(payload)
+        if profile == "4"
+        else decode_report_manifest_v3(payload)
+        if profile == "3"
+        else decode_report_manifest(payload)
     )
     if (
         manifest.document.document_schema_version != f"{profile}.0.0"
@@ -164,7 +170,12 @@ def render_private_artifact(
 ) -> app.RenderedArtifact:
     """One subprocess works with both standalone and Celery prefork workers."""
     manifest = document.manifest
-    versions = {"report_sections_v1": "1", "report_sections_v2": "2", "report_sections_v3": "3"}
+    versions = {
+        "report_sections_v1": "1",
+        "report_sections_v2": "2",
+        "report_sections_v3": "3",
+        "report_sections_v4": "4",
+    }
     profile = versions.get(report_profile_version(manifest.document.selection))
     if profile is None or manifest.document.document_schema_version != f"{profile}.0.0":
         raise app.ReportRenderError(ReportFailureCode.INPUT_CHANGED)
@@ -262,7 +273,7 @@ def _main() -> None:
     if len(sys.argv) != 6:
         raise SystemExit(2)
     descriptor, format_value, scratch, parent_pid, profile = sys.argv[1:]
-    if profile not in {"1", "2", "3"}:
+    if profile not in {"1", "2", "3", "4"}:
         raise SystemExit(2)
     # Linux closes the entire renderer immediately if its owning worker dies.
     # Check the parent again after installing the signal to close the start race.

@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, FastAPI, Query, Request, Response
 from fastapi.routing import APIRoute
 from pydantic import TypeAdapter, ValidationError
 from trading212_api_contracts import premium_reports as wire
-from trading212_api_contracts import premium_reports_v3 as profiles
+from trading212_api_contracts import premium_reports_v4 as profiles
 from trading212_api_contracts.reports import ArtifactToken
 from trading212_api_contracts.targets import IdempotencyKey, UUIDString
 from trading212_application import reports as application_reports
@@ -35,6 +35,8 @@ class PremiumReportApiContext(Protocol):
     def premium_report_service(self) -> application_reports.ReportService | None: ...
     @property
     def premium_report_v3_service(self) -> application_reports.ReportService | None: ...
+    @property
+    def premium_report_v4_service(self) -> application_reports.ReportService | None: ...
     @property
     def settings(self) -> SecuritySettings: ...
     @property
@@ -131,7 +133,9 @@ def register_premium_report_routes(
     ) -> application_reports.ReportService:
         context = context_provider(request)
         reports = (
-            context.premium_report_v3_service
+            context.premium_report_v4_service
+            if profile == "report_sections_v4"
+            else context.premium_report_v3_service
             if profile == "report_sections_v3"
             else context.premium_report_service
         )
@@ -173,7 +177,9 @@ def register_premium_report_routes(
         return report_response(
             request,
             result,
-            profiles.PremiumReportJobStatusV3
+            profiles.PremiumReportJobStatusV4
+            if query.profile == "report_sections_v4"
+            else profiles.PremiumReportJobStatusV3
             if query.profile == "report_sections_v3"
             else wire.ReportJobStatus,
             status_code=202,
@@ -196,7 +202,9 @@ def register_premium_report_routes(
         return report_response(
             request,
             result,
-            profiles.PremiumReportJobStatusV3
+            profiles.PremiumReportJobStatusV4
+            if query.profile == "report_sections_v4"
+            else profiles.PremiumReportJobStatusV3
             if query.profile == "report_sections_v3"
             else wire.ReportJobStatus,
             conditional=True,
@@ -228,7 +236,9 @@ def register_premium_report_routes(
         return report_response(
             request,
             result,
-            profiles.PremiumReportPageV3
+            profiles.PremiumReportPageV4
+            if query.profile == "report_sections_v4"
+            else profiles.PremiumReportPageV3
             if query.profile == "report_sections_v3"
             else wire.ReportPage,
             conditional=True,
@@ -251,7 +261,9 @@ def register_premium_report_routes(
         return report_response(
             request,
             result,
-            profiles.PremiumReportManifestV3
+            profiles.PremiumReportManifestV4
+            if query.profile == "report_sections_v4"
+            else profiles.PremiumReportManifestV3
             if query.profile == "report_sections_v3"
             else wire.ReportManifest,
             conditional=True,

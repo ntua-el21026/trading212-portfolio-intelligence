@@ -70,7 +70,16 @@ function run(arguments_, fixture, reportPath) {
         )
           ? "1"
           : "0",
-        T212PI_E2E_XRAY: fixture === "xray.spec.ts" ? "1" : "0",
+        T212PI_E2E_PROJECTIONS: [
+          "projections.spec.ts",
+          "projection-reports.spec.ts",
+        ].includes(fixture)
+          ? "1"
+          : "0",
+        T212PI_E2E_XRAY: ["xray.spec.ts", "research.spec.ts"].includes(fixture)
+          ? "1"
+          : "0",
+        T212PI_E2E_RESEARCH: fixture === "research.spec.ts" ? "1" : "0",
         T212PI_E2E_SCENARIOS: [
           "scenarios.spec.ts",
           "scenario-reports.spec.ts",
@@ -81,6 +90,7 @@ function run(arguments_, fixture, reportPath) {
           "reports.spec.ts",
           "premium-reports.spec.ts",
           "scenario-reports.spec.ts",
+          "projection-reports.spec.ts",
         ].includes(fixture)
           ? "1"
           : "0",

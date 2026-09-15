@@ -201,7 +201,7 @@ accepted merely because modeled success exceeds its chosen objective.
 | GET/POST /goals/{goal_id}/versions | ListGoalVersions / CreateGoalVersion; POST adds goals:write and If-Match |
 | GET /goal-versions/{version_id} | GetGoalVersion; P+A |
 | GET/POST /accounts/{account_id}/projection-runs | ListProjectionRuns / CreateProjectionRun; POST adds projections:write |
-| GET /projection-runs/{run_id} | GetProjectionRun; P+A |
+| GET /projection-runs/{run_id} | GetProjectionRun; P+A; optional point_limit/point_cursor per ADR-0029 |
 | GET /projection-runs/{run_id}/goal-analysis | GetGoalAnalysis; P+A; explicit unavailable when no goal was pinned |
 | POST /projection-runs/{run_id}/cancel | CancelProjectionRun; P+A+projections:write |
 
@@ -293,3 +293,9 @@ emitted documents and existing table meanings; original V1/MCP descriptors stay 
 Unsupported sections fail before work, never create placeholder success. SQL lists,
 counts, cursors, direct IDs, grants and retention all remain profile-scoped. This
 profile3 evolution is an accepted design decision, not implemented runtime support.
+
+Projection reads use [ADR-0029](../adr/ADR-0029-PROJECTION-PUBLIC-POINT-PAGES.md):
+complete saved checkpoint rows, default 25/maximum 100 per page, signed cursor up
+to 2048 characters, all sensitivity summaries on every page, 1 MiB financial-page
+and 2 MiB complete-envelope bounds. Previews show at most 16 references with exact
+omissions. Grant/source authorization precedes private reads and cursors.

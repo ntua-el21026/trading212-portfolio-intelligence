@@ -361,6 +361,7 @@ class ScenarioRunPayloadModel(PremiumOwned):
 class ScenarioRunSensitivityVersionModel(PremiumOwned):
     __tablename__ = "scenario_run_sensitivity_versions"
     __table_args__ = (
+        Index("ix_scenario_version_scan", "owner_id", "run_id", "id"),
         scoped(),
         parent("run_id", "scenario_runs"),
         ForeignKeyConstraint(
@@ -520,6 +521,7 @@ class ScenarioComponentModel(PremiumOwned):
 
     __tablename__ = "scenario_components"
     __table_args__ = (
+        Index("ix_scenario_component_cleanup", "owner_id", "result_id", "id"),
         scoped(),
         parent("result_id", "scenario_results"),
         UniqueConstraint("result_id", "path_key"),
@@ -590,6 +592,7 @@ class ScenarioComponentModel(PremiumOwned):
 class ScenarioAppliedSensitivityModel(PremiumOwned):
     __tablename__ = "scenario_applied_sensitivities"
     __table_args__ = (
+        Index("ix_scenario_applied_cleanup", "owner_id", "result_id", "id"),
         scoped(),
         parent("result_id", "scenario_results"),
         ForeignKeyConstraint(

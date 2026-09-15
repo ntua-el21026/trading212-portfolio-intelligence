@@ -1,0 +1,149 @@
+.page,
+.page section,
+.page article,
+.form,
+.form fieldset,
+.fields,
+.columns {
+  min-width: 0;
+}
+.page h2,
+.page h3,
+.page p,
+.page li,
+.page dd,
+.page code,
+.page a {
+  overflow-wrap: anywhere;
+}
+.form {
+  display: grid;
+  gap: 1rem;
+  margin-block: 1rem;
+}
+.form fieldset {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+.form legend {
+  font-weight: 600;
+  padding-inline: 0.25rem;
+}
+.form label {
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.form input,
+.form select,
+.form textarea {
+  min-height: 2.75rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  color: var(--color-navy);
+  padding: 0.65rem;
+  font: inherit;
+}
+.form textarea {
+  min-height: 6rem;
+}
+.form input:focus-visible,
+.form select:focus-visible,
+.form textarea:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.form .checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.checkbox input {
+  width: 1.2rem;
+  min-width: 1.2rem;
+}
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+}
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-block: 1rem;
+}
+.actions p:last-of-type {
+  flex-basis: 100%;
+}
+.context {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) minmax(0, 3fr);
+  gap: 0.5rem 1rem;
+  margin-block: 1rem;
+}
+.context dt {
+  font-weight: 600;
+}
+.context dd {
+  margin: 0;
+}
+.definition {
+  display: contents;
+}
+.prose {
+  white-space: pre-wrap;
+}
+.exposure {
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.note,
+.citation {
+  border-block-start: 1px solid var(--color-border);
+  padding-block: 1rem;
+}
+.noteList {
+  padding-inline-start: 1.25rem;
+}
+.page details {
+  margin-block: 0.8rem;
+}
+.page summary {
+  cursor: pointer;
+  padding-block: 0.5rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 64rem) {
+  .columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 40rem) {
+  .context {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
+  }
+  .context dd {
+    margin-bottom: 0.75rem;
+  }
+  .form fieldset {
+    padding: 0.75rem;
+  }
+}

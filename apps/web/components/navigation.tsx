@@ -37,6 +37,8 @@ const primaryItems = [
   { href: "/performance", icon: TrendingUp, label: "Performance" },
   { href: "/risk", icon: ShieldCheck, label: "Risk" },
   { href: "/scenarios", icon: SlidersHorizontal, label: "Scenarios" },
+  { href: "/projections", icon: TrendingUp, label: "Projections" },
+  { href: "/research", icon: FileText, label: "Research" },
   { href: "/income", icon: CircleDollarSign, label: "Income" },
   { href: "/xray", icon: ChartPie, label: "X-ray" },
   { href: "/reports", icon: FileText, label: "Reports" },
@@ -46,6 +48,10 @@ const primaryItems = [
 const secondaryItems = [
   { href: "/settings", icon: Settings, label: "Settings" },
 ] as const;
+
+export const commandRoutes = [...primaryItems, ...secondaryItems].map(
+  ({ href, label }) => ({ href, label }),
+);
 
 const mobileItems = [
   primaryItems[0],

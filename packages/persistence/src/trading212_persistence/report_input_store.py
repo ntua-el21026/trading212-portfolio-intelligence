@@ -111,7 +111,9 @@ class ReportInputSink:
             account_id=authorization.account_id,
             created_at=at,
             kind="report" if is_report_selection(selection) else "export",
-            contract_version={"1.0.0": 1, "2.0.0": 2, "3.0.0": 3}[report_schema_version(selection)],
+            contract_version={"1.0.0": 1, "2.0.0": 2, "3.0.0": 3, "4.0.0": 4}[
+                report_schema_version(selection)
+            ],
             snapshot_id=selection.snapshot_id,
             start_date=selection.start_date,
             end_date=selection.end_date,
@@ -257,7 +259,11 @@ class ReportInputSink:
         )
         warnings = summary.proof.notes
         context_type = (
-            app.ReportPinnedContextV3 if self.row.contract_version == 3 else app.ReportPinnedContext
+            app.ReportPinnedContextV4
+            if self.row.contract_version == 4
+            else app.ReportPinnedContextV3
+            if self.row.contract_version == 3
+            else app.ReportPinnedContext
         )
         context = context_type(
             profile_version=report_profile_version(self._selection),
@@ -358,7 +364,7 @@ class ReportInputSink:
         self.row.source_count = len(dependencies)
         # Flush the children while the database still sees an open input, then seal.
         self._session.flush()
-        if self.row.contract_version == 3:
+        if self.row.contract_version in (3, 4):
             from .report_premium_sources import authorize_report_premium_sources
 
             authorize_report_premium_sources(

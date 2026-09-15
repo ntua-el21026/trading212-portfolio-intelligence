@@ -993,13 +993,19 @@ class SourceIngestion(SourceStore):
 
                 at = self._now()
                 budget = SourcePurgeBudget()
+                from .projection_retention import expire_projection_payloads
+                from .research_retention import expire_research_payloads
                 from .risk_retention import expire_risk_payloads
                 from .scenario_retention import expire_scenario_payloads
                 from .scenario_source_retention import expire_scenario_sensitivity_payloads
 
                 expire_risk_payloads(session, at=at, budget=budget)
                 expire_scenario_payloads(session, at=at, budget=budget)
+                expire_projection_payloads(session, at=at, budget=budget)
                 expire_scenario_sensitivity_payloads(session, at=at, budget=budget)
+                expire_research_payloads(
+                    session, at=at, budget=budget, capability_authority=self._research_capabilities
+                )
                 completed = expire_source_payloads(session, at=at, limit=limit, budget=budget)
                 if completed < limit:
                     completed += expire_enrichment_payloads(

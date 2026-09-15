@@ -28,10 +28,15 @@ from .alert_models import ALERT_MODELS
 from .base import Base, CreatedAtMixin, UpdatedAtMixin, UUIDPrimaryKeyMixin
 from .historical_models import HISTORICAL_MODELS
 from .intelligence_quality_models import INTELLIGENCE_QUALITY_MODELS
+from .legacy_report_retention_models import LEGACY_REPORT_RETENTION_MODELS
 from .planning_models import PLANNING_MODELS
 from .premium_models import PREMIUM_MODELS
+from .premium_retention_models import PREMIUM_RETENTION_MODELS
+from .projection_models import PROJECTION_MODELS
+from .projection_retention_models import PROJECTION_RETENTION_MODELS
 from .provider_observation_models import PROVIDER_OBSERVATION_MODELS
 from .report_models import REPORT_MODELS
+from .research_models import RESEARCH_MODELS
 from .risk_models import RISK_MODELS
 from .scenario_models import SCENARIO_MODELS
 from .scenario_source_models import SCENARIO_SOURCE_MODELS
@@ -354,96 +359,106 @@ class CollectionQuerySnapshotModel(UUIDPrimaryKeyMixin, CreatedAtMixin, Base):
         CheckConstraint(
             (
                 "resource IN ('risk_definitions','risk_versions','risk_runs',"
-                "'scenario_definitions','scenario_versions','scenario_runs',"
-                "'intelligence_quality_sources','activity','dividends','instruments',"
-                "'positions_market_value','positions_weight','positions_ticker',"
-                "'portfolios_name','portfolios_updated','target_versions',"
-                "'target_events','target_nodes','contribution_plans','plan_lines',"
-                "'actual_target_rows','plan_revisions','market_source_status',"
-                "'benchmark_source_status','fx_source_status','price_observations',"
-                "'fx_observations','benchmark_observations','benchmark_defs_name',"
-                "'benchmark_defs_created','benchmark_versions','historical_performance',"
-                "'historical_cash_flows','composite_benchmark_points','xray_exposures',"
-                "'xray_paths','xray_held_funds','xray_pairs','xray_common_entities',"
-                "'constituent_holdings','reports','premium_reports','exports','alert_rules'"
-                ",'alert_versions','alert_events','alert_evaluations','notification_destina"
-                "tions')"
+                "'scenario_definitions','scenario_versions','scenario_runs','"
+                "assumption_sets','assumption_versions','goals','goal_version"
+                "s','projection_runs','intelligence_quality_sources','activit"
+                "y','dividends','instruments','positions_market_value','posit"
+                "ions_weight','positions_ticker','portfolios_name','portfolio"
+                "s_updated','target_versions','target_events','target_nodes',"
+                "'contribution_plans','plan_lines','actual_target_rows','plan"
+                "_revisions','market_source_status','benchmark_source_status'"
+                ",'fx_source_status','price_observations','fx_observations','"
+                "benchmark_observations','benchmark_defs_name','benchmark_def"
+                "s_created','benchmark_versions','historical_performance','hi"
+                "storical_cash_flows','composite_benchmark_points','xray_expo"
+                "sures','xray_paths','xray_held_funds','xray_pairs','xray_com"
+                "mon_entities','constituent_holdings','reports','premium_repo"
+                "rts','exports','alert_rules','alert_versions','alert_events'"
+                ",'alert_evaluations','notification_destinations','research_i"
+                "tems','research_notes','research_note_versions')"
             ),
             name="resource_allowed",
         ),
         CheckConstraint(
             (
-                "(resource IN ('intelligence_quality_sources','historical_performance',"
-                "'historical_cash_flows',"
-                "'composite_benchmark_points','xray_exposures','xray_paths',"
-                "'xray_held_funds','xray_pairs','xray_common_entities',"
-                "'constituent_holdings') AND sort_specification = 'ordinal_asc') OR "
-                "(resource = 'activity' AND sort_specification = "
-                "'occurred_at_desc_id_desc') OR (resource = 'dividends' AND "
-                "sort_specification = 'paid_on_desc_id_desc') OR (resource = "
-                "'instruments' AND sort_specification = "
-                "'provider_asc_environment_asc_ticker_asc_name_asc_listing_id_asc') OR "
-                "(resource = 'positions_market_value' AND sort_specification = "
-                "'market_value_desc_ticker_asc_listing_id_asc') OR (resource = "
-                "'positions_weight' AND sort_specification = "
-                "'direct_weight_desc_ticker_asc_listing_id_asc') OR (resource = "
-                "'positions_ticker' AND sort_specification = "
-                "'ticker_asc_listing_id_asc') OR (resource = 'portfolios_name' AND "
-                "sort_specification = 'name_asc_id_asc') OR (resource = "
-                "'portfolios_updated' AND sort_specification = "
-                "'updated_at_desc_id_desc') OR (resource = 'target_versions' AND "
-                "sort_specification = 'version_number_desc_id_desc') OR (resource = "
-                "'target_events' AND sort_specification = 'created_at_desc_id_desc') OR "
-                "(resource = 'target_nodes' AND sort_specification = "
-                "'depth_first_order_key') OR (resource = 'plan_revisions' AND "
-                "sort_specification = 'revision_number_desc_id_desc') OR (resource = "
-                "'contribution_plans' AND sort_specification = "
-                "'created_at_desc_id_desc') OR (resource IN ('plan_lines',"
-                "'actual_target_rows','plan_revisions') AND sort_specification = "
-                "'ordinal_asc') OR (resource = 'market_source_status' AND "
-                "sort_specification = 'source_key_asc_id_asc') OR (resource = "
-                "'benchmark_source_status' AND sort_specification = "
-                "'source_key_asc_id_asc') OR (resource = 'fx_source_status' AND "
-                "sort_specification = 'base_quote_provider_asc') OR (resource = "
-                "'price_observations' AND sort_specification = 'ordinal_asc') OR "
-                "(resource = 'fx_observations' AND sort_specification = 'ordinal_asc') "
-                "OR (resource = 'benchmark_observations' AND sort_specification = "
-                "'ordinal_asc') OR (resource = 'benchmark_defs_name' AND "
-                "sort_specification = 'name_asc_id_asc') OR (resource = "
-                "'benchmark_defs_created' AND sort_specification = "
-                "'created_at_desc_id_desc') OR (resource = 'benchmark_versions' AND "
-                "sort_specification = 'version_number_desc_id_desc') OR (resource IN "
-                "('reports','premium_reports','exports','alert_rules','alert_versions','ale"
-                "rt_events',"
-                "'alert_evaluations','notification_destinations') AND sort_specification = "
-                "'created_at_desc_id_desc') OR "
-                "(resource IN ('risk_definitions','risk_runs',"
-                "'scenario_definitions','scenario_runs') AND "
-                "sort_specification='created_at_desc_id_desc') OR "
-                "(resource IN ('risk_versions','scenario_versions') AND "
-                "sort_specification='version_number_desc_id_desc')"
+                "((resource IN ('intelligence_quality_sources','historical_pe"
+                "rformance','historical_cash_flows','composite_benchmark_poin"
+                "ts','xray_exposures','xray_paths','xray_held_funds','xray_pa"
+                "irs','xray_common_entities','constituent_holdings') AND sort"
+                "_specification = 'ordinal_asc') OR (resource = 'activity' AN"
+                "D sort_specification = 'occurred_at_desc_id_desc') OR (resou"
+                "rce = 'dividends' AND sort_specification = 'paid_on_desc_id_"
+                "desc') OR (resource = 'instruments' AND sort_specification ="
+                " 'provider_asc_environment_asc_ticker_asc_name_asc_listing_i"
+                "d_asc') OR (resource = 'positions_market_value' AND sort_spe"
+                "cification = 'market_value_desc_ticker_asc_listing_id_asc') "
+                "OR (resource = 'positions_weight' AND sort_specification = '"
+                "direct_weight_desc_ticker_asc_listing_id_asc') OR (resource "
+                "= 'positions_ticker' AND sort_specification = 'ticker_asc_li"
+                "sting_id_asc') OR (resource = 'portfolios_name' AND sort_spe"
+                "cification = 'name_asc_id_asc') OR (resource = 'portfolios_u"
+                "pdated' AND sort_specification = 'updated_at_desc_id_desc') "
+                "OR (resource = 'target_versions' AND sort_specification = 'v"
+                "ersion_number_desc_id_desc') OR (resource = 'target_events' "
+                "AND sort_specification = 'created_at_desc_id_desc') OR (reso"
+                "urce = 'target_nodes' AND sort_specification = 'depth_first_"
+                "order_key') OR (resource = 'plan_revisions' AND sort_specifi"
+                "cation = 'revision_number_desc_id_desc') OR (resource = 'con"
+                "tribution_plans' AND sort_specification = 'created_at_desc_i"
+                "d_desc') OR (resource IN ('plan_lines','actual_target_rows',"
+                "'plan_revisions') AND sort_specification = 'ordinal_asc') OR"
+                " (resource = 'market_source_status' AND sort_specification ="
+                " 'source_key_asc_id_asc') OR (resource = 'benchmark_source_s"
+                "tatus' AND sort_specification = 'source_key_asc_id_asc') OR "
+                "(resource = 'fx_source_status' AND sort_specification = 'bas"
+                "e_quote_provider_asc') OR (resource = 'price_observations' A"
+                "ND sort_specification = 'ordinal_asc') OR (resource = 'fx_ob"
+                "servations' AND sort_specification = 'ordinal_asc') OR (reso"
+                "urce = 'benchmark_observations' AND sort_specification = 'or"
+                "dinal_asc') OR (resource = 'benchmark_defs_name' AND sort_sp"
+                "ecification = 'name_asc_id_asc') OR (resource = 'benchmark_d"
+                "efs_created' AND sort_specification = 'created_at_desc_id_de"
+                "sc') OR (resource = 'benchmark_versions' AND sort_specificat"
+                "ion = 'version_number_desc_id_desc') OR (resource IN ('repor"
+                "ts','premium_reports','exports','alert_rules','alert_version"
+                "s','alert_events','alert_evaluations','notification_destinat"
+                "ions') AND sort_specification = 'created_at_desc_id_desc') O"
+                "R (resource IN ('risk_definitions','risk_runs','scenario_def"
+                "initions','scenario_runs','assumption_sets','goals','project"
+                "ion_runs') AND sort_specification='created_at_desc_id_desc')"
+                " OR (resource IN ('risk_versions','scenario_versions','assum"
+                "ption_versions','goal_versions') AND sort_specification='ver"
+                "sion_number_desc_id_desc')) OR (resource='research_items' AN"
+                "D sort_specification='ordinal_asc') OR (resource='research_n"
+                "otes' AND sort_specification='created_at_desc_id_desc') OR ("
+                "resource='research_note_versions' AND sort_specification='ve"
+                "rsion_number_desc_id_desc')"
             ),
             name="resource_sort_match",
         ),
         CheckConstraint(
             (
-                "((resource IN ('risk_definitions','risk_versions','risk_runs',"
-                "'scenario_definitions','scenario_versions','scenario_runs',"
-                "'intelligence_quality_sources','alert_rules','alert_versions',"
-                "'alert_events','alert_evaluations',"
-                "'notification_destinations','reports','premium_reports','exports','activit"
-                "y','dividends',"
-                "'positions_market_value','positions_weight','positions_ticker',"
-                "'contribution_plans','plan_lines','actual_target_rows','plan_revisions',"
-                "'historical_performance','historical_cash_flows','xray_exposures',"
-                "'xray_paths','xray_held_funds','xray_pairs','xray_common_entities') AND "
-                "broker_account_id IS NOT NULL) OR (resource = 'instruments' AND "
-                "broker_account_id IS NULL) OR resource IN ('portfolios_name',"
-                "'portfolios_updated','target_versions','target_events','target_nodes',"
-                "'market_source_status','benchmark_source_status','fx_source_status',"
-                "'price_observations','fx_observations','benchmark_observations',"
-                "'benchmark_defs_name','benchmark_defs_created','benchmark_versions',"
-                "'composite_benchmark_points','constituent_holdings'))"
+                "(((resource IN ('risk_definitions','risk_versions','risk_run"
+                "s','scenario_definitions','scenario_versions','scenario_runs"
+                "','assumption_sets','assumption_versions','goals','goal_vers"
+                "ions','projection_runs','intelligence_quality_sources','aler"
+                "t_rules','alert_versions','alert_events','alert_evaluations'"
+                ",'notification_destinations','reports','premium_reports','ex"
+                "ports','activity','dividends','positions_market_value','posi"
+                "tions_weight','positions_ticker','contribution_plans','plan_"
+                "lines','actual_target_rows','plan_revisions','historical_per"
+                "formance','historical_cash_flows','xray_exposures','xray_pat"
+                "hs','xray_held_funds','xray_pairs','xray_common_entities') A"
+                "ND broker_account_id IS NOT NULL) OR (resource = 'instrument"
+                "s' AND broker_account_id IS NULL) OR resource IN ('portfolio"
+                "s_name','portfolios_updated','target_versions','target_event"
+                "s','target_nodes','market_source_status','benchmark_source_s"
+                "tatus','fx_source_status','price_observations','fx_observati"
+                "ons','benchmark_observations','benchmark_defs_name','benchma"
+                "rk_defs_created','benchmark_versions','composite_benchmark_p"
+                "oints','constituent_holdings'))) OR (resource IN ('research_"
+                "items','research_notes','research_note_versions') AND broker"
+                "_account_id IS NOT NULL)"
             ),
             name="account_scope_match",
         ),
@@ -1124,12 +1139,17 @@ ALL_MODELS = (
     *SOURCE_MODELS,
     *HISTORICAL_MODELS,
     *INTELLIGENCE_QUALITY_MODELS,
+    *RESEARCH_MODELS,
     *XRAY_MODELS,
     *REPORT_MODELS,
+    *LEGACY_REPORT_RETENTION_MODELS,
     *ALERT_MODELS,
     ActivityRevisionEvidenceModel,
     *PROVIDER_OBSERVATION_MODELS,
     *PREMIUM_MODELS,
+    *PREMIUM_RETENTION_MODELS,
+    *PROJECTION_MODELS,
+    *PROJECTION_RETENTION_MODELS,
     *RISK_MODELS,
     *SCENARIO_MODELS,
     *SCENARIO_SOURCE_MODELS,

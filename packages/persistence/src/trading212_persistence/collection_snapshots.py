@@ -38,12 +38,20 @@ _INSERT_BATCH_SIZE = 1_000
 
 
 class CollectionSnapshotResource(StrEnum):
+    RESEARCH_ITEMS = "research_items"
+    RESEARCH_NOTES = "research_notes"
+    RESEARCH_NOTE_VERSIONS = "research_note_versions"
     RISK_DEFINITIONS = "risk_definitions"
     RISK_VERSIONS = "risk_versions"
     RISK_RUNS = "risk_runs"
     SCENARIO_DEFINITIONS = "scenario_definitions"
     SCENARIO_VERSIONS = "scenario_versions"
     SCENARIO_RUNS = "scenario_runs"
+    ASSUMPTION_SETS = "assumption_sets"
+    ASSUMPTION_VERSIONS = "assumption_versions"
+    GOALS = "goals"
+    GOAL_VERSIONS = "goal_versions"
+    PROJECTION_RUNS = "projection_runs"
     INTELLIGENCE_QUALITY_SOURCES = "intelligence_quality_sources"
     PORTFOLIOS_NAME = "portfolios_name"
     PORTFOLIOS_UPDATED = "portfolios_updated"
@@ -89,12 +97,20 @@ class CollectionSnapshotResource(StrEnum):
 
 
 _SORT_SPECIFICATIONS = {
+    CollectionSnapshotResource.RESEARCH_ITEMS: "ordinal_asc",
+    CollectionSnapshotResource.RESEARCH_NOTES: "created_at_desc_id_desc",
+    CollectionSnapshotResource.RESEARCH_NOTE_VERSIONS: "version_number_desc_id_desc",
     CollectionSnapshotResource.RISK_DEFINITIONS: "created_at_desc_id_desc",
     CollectionSnapshotResource.RISK_VERSIONS: "version_number_desc_id_desc",
     CollectionSnapshotResource.RISK_RUNS: "created_at_desc_id_desc",
     CollectionSnapshotResource.SCENARIO_DEFINITIONS: "created_at_desc_id_desc",
     CollectionSnapshotResource.SCENARIO_VERSIONS: "version_number_desc_id_desc",
     CollectionSnapshotResource.SCENARIO_RUNS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.ASSUMPTION_SETS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.ASSUMPTION_VERSIONS: "version_number_desc_id_desc",
+    CollectionSnapshotResource.GOALS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.GOAL_VERSIONS: "version_number_desc_id_desc",
+    CollectionSnapshotResource.PROJECTION_RUNS: "created_at_desc_id_desc",
     CollectionSnapshotResource.INTELLIGENCE_QUALITY_SOURCES: "ordinal_asc",
     CollectionSnapshotResource.XRAY_EXPOSURES: "ordinal_asc",
     CollectionSnapshotResource.XRAY_PATHS: "ordinal_asc",
@@ -144,6 +160,9 @@ _SORT_SPECIFICATIONS = {
 }
 _OPTIONAL_ACCOUNT_RESOURCES = frozenset(
     {
+        CollectionSnapshotResource.RESEARCH_ITEMS,
+        CollectionSnapshotResource.RESEARCH_NOTES,
+        CollectionSnapshotResource.RESEARCH_NOTE_VERSIONS,
         CollectionSnapshotResource.XRAY_EXPOSURES,
         CollectionSnapshotResource.XRAY_PATHS,
         CollectionSnapshotResource.XRAY_HELD_FUNDS,
@@ -169,12 +188,20 @@ _OPTIONAL_ACCOUNT_RESOURCES = frozenset(
 )
 _ACCOUNT_RESOURCES = frozenset(
     {
+        CollectionSnapshotResource.RESEARCH_ITEMS,
+        CollectionSnapshotResource.RESEARCH_NOTES,
+        CollectionSnapshotResource.RESEARCH_NOTE_VERSIONS,
         CollectionSnapshotResource.RISK_DEFINITIONS,
         CollectionSnapshotResource.RISK_VERSIONS,
         CollectionSnapshotResource.RISK_RUNS,
         CollectionSnapshotResource.SCENARIO_DEFINITIONS,
         CollectionSnapshotResource.SCENARIO_VERSIONS,
         CollectionSnapshotResource.SCENARIO_RUNS,
+        CollectionSnapshotResource.ASSUMPTION_SETS,
+        CollectionSnapshotResource.ASSUMPTION_VERSIONS,
+        CollectionSnapshotResource.GOALS,
+        CollectionSnapshotResource.GOAL_VERSIONS,
+        CollectionSnapshotResource.PROJECTION_RUNS,
         CollectionSnapshotResource.INTELLIGENCE_QUALITY_SOURCES,
         CollectionSnapshotResource.XRAY_EXPOSURES,
         CollectionSnapshotResource.XRAY_PATHS,

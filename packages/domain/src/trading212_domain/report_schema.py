@@ -6,6 +6,7 @@ from functools import lru_cache
 from typing import TYPE_CHECKING
 
 from .errors import fail_validation
+from .report_projection_schema import PROJECTION_TABLE_COLUMNS
 from .report_risk_schema import RISK_PROOF_TABLES, RISK_REPORT_TABLES, RISK_TABLE_COLUMNS
 from .report_scenario_schema import (
     SCENARIO_PROOF_TABLES,
@@ -29,6 +30,7 @@ from .reports import (
 
 if TYPE_CHECKING:
     from .report_v3 import ReportSelectionV3
+    from .report_v4 import ReportSelectionV4
 
 # Each tuple is a literal ordered schema. Codes are decoded only from this module.
 _COLUMNS: dict[ReportTableKey, tuple[tuple[str, str], ...]] = {
@@ -1376,6 +1378,8 @@ _COLUMNS: dict[ReportTableKey, tuple[tuple[str, str], ...]] = {
 _COLUMNS.update(RISK_TABLE_COLUMNS)
 _COLUMNS.update(SCENARIO_TABLE_COLUMNS)
 
+_COLUMNS.update(PROJECTION_TABLE_COLUMNS)
+
 _SECTION_TABLES: dict[ReportSection, tuple[ReportTableKey, ...]] = {
     ReportSection.OVERVIEW: (ReportTableKey.SNAPSHOT_TOTALS,),
     ReportSection.ALLOCATION: (
@@ -1508,6 +1512,9 @@ def validate_report_row(table: ReportTableKey, row: ReportRow) -> None:
     from .report_scenario_schema import validate_scenario_report_relation
 
     validate_scenario_report_relation(table, row)
+    from .report_projection_schema import validate_projection_report_row
+
+    validate_projection_report_row(table, row)
 
 
 def section_tables(section: ReportSection) -> tuple[ReportTableKey, ...]:
@@ -1579,10 +1586,15 @@ COMPANY_REPORT_TABLES = frozenset(
 
 
 def report_tables(
-    selection: ReportSelection | ExportSelection | ReportSelectionV3,
+    selection: ReportSelection | ExportSelection | ReportSelectionV3 | ReportSelectionV4,
 ) -> tuple[ReportTableKey, ...]:
     from .report_v3 import ReportSelectionV3
+    from .report_v4 import ReportSelectionV4
 
+    if isinstance(selection, ReportSelectionV4):
+        from .report_v4 import report_tables_v4
+
+        return report_tables_v4(selection)
     selected = (
         set(dataset_tables(selection.dataset, selection.field_set))
         if isinstance(selection, ExportSelection)

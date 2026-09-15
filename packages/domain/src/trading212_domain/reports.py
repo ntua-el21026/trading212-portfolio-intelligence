@@ -20,6 +20,7 @@ from .values import CurrencyCode, require_utc
 
 if TYPE_CHECKING:
     from .report_v3 import ReportSelectionV3
+    from .report_v4 import ReportSelectionV4
 
 REPORT_SCHEMA_VERSION = "1.0.0"
 PREMIUM_REPORT_SCHEMA_VERSION = "2.0.0"
@@ -527,9 +528,15 @@ class ExportSelection(ReportRecord):
             fail_validation("A plan revision is required.", field="plan_revision_id")
 
 
-def report_schema_version(selection: ReportSelection | ExportSelection | ReportSelectionV3) -> str:
+def report_schema_version(
+    selection: ReportSelection | ExportSelection | ReportSelectionV3 | ReportSelectionV4,
+) -> str:
     """Profile three is explicit; earlier selection bytes keep their original version."""
     from .report_v3 import REPORT_V3_SCHEMA_VERSION, ReportSelectionV3
+    from .report_v4 import REPORT_V4_SCHEMA_VERSION, ReportSelectionV4
+
+    if isinstance(selection, ReportSelectionV4):
+        return REPORT_V4_SCHEMA_VERSION
 
     if isinstance(selection, ReportSelectionV3):
         return REPORT_V3_SCHEMA_VERSION
@@ -540,8 +547,14 @@ def report_schema_version(selection: ReportSelection | ExportSelection | ReportS
     )
 
 
-def report_profile_version(selection: ReportSelection | ExportSelection | ReportSelectionV3) -> str:
+def report_profile_version(
+    selection: ReportSelection | ExportSelection | ReportSelectionV3 | ReportSelectionV4,
+) -> str:
     from .report_v3 import REPORT_V3_PROFILE_VERSION, ReportSelectionV3
+    from .report_v4 import REPORT_V4_PROFILE_VERSION, ReportSelectionV4
+
+    if isinstance(selection, ReportSelectionV4):
+        return REPORT_V4_PROFILE_VERSION
 
     if isinstance(selection, ReportSelectionV3):
         return REPORT_V3_PROFILE_VERSION
@@ -878,6 +891,30 @@ class ReportTableKey(StrEnum):
     SCENARIO_REPLAY_WARNINGS_V1 = "scenario_replay_warnings_v1"
     SCENARIO_XRAY_PATHS_V1 = "scenario_xray_paths_v1"
     SCENARIO_SOURCE_HEADERS_V1 = "scenario_source_headers_v1"
+    PROJECTION_BASIS_V1 = "projection_basis_v1"
+    PROJECTION_DEFINITIONS_V1 = "projection_definitions_v1"
+    PROJECTION_ASSUMPTIONS_V1 = "projection_assumptions_v1"
+    PROJECTION_ASSETS_V1 = "projection_assets_v1"
+    PROJECTION_CORRELATIONS_V1 = "projection_correlations_v1"
+    PROJECTION_CALENDAR_V1 = "projection_calendar_v1"
+    PROJECTION_SCHEDULE_V1 = "projection_schedule_v1"
+    PROJECTION_SENSITIVITY_V1 = "projection_sensitivity_v1"
+    PROJECTION_VARIANTS_V1 = "projection_variants_v1"
+    PROJECTION_PATHS_V1 = "projection_paths_v1"
+    PROJECTION_POINTS_V1 = "projection_points_v1"
+    PROJECTION_POINT_ASSETS_V1 = "projection_point_assets_v1"
+    PROJECTION_DISTRIBUTIONS_V1 = "projection_distributions_v1"
+    PROJECTION_QUANTILES_V1 = "projection_quantiles_v1"
+    PROJECTION_HISTOGRAMS_V1 = "projection_histograms_v1"
+    PROJECTION_HISTOGRAM_BINS_V1 = "projection_histogram_bins_v1"
+    PROJECTION_GOAL_STATE_V1 = "projection_goal_state_v1"
+    PROJECTION_GOAL_DEFINITION_V1 = "projection_goal_definition_v1"
+    PROJECTION_GOAL_RESULTS_V1 = "projection_goal_results_v1"
+    PROJECTION_MEMBERS_V1 = "projection_members_v1"
+    PROJECTION_SOURCE_HEADERS_V1 = "projection_source_headers_v1"
+    PROJECTION_SOURCE_NODES_V1 = "projection_source_nodes_v1"
+    PROJECTION_SOURCE_MEMBERS_V1 = "projection_source_members_v1"
+    PROJECTION_SOURCE_SCALARS_V1 = "projection_source_scalars_v1"
 
 
 class ReportRowOrder(StrEnum):
@@ -970,6 +1007,10 @@ class ReportDocumentHeader(ReportRecord):
 
         premium_tables = frozenset((*RISK_REPORT_TABLES, *RISK_PROOF_TABLES))
         supplied = {item.table for item in self.tables}
+        from .report_projection_schema import PROJECTION_TABLE_COLUMNS
+
+        if supplied & set(PROJECTION_TABLE_COLUMNS):
+            fail_validation("Projection tables require explicit profile four.", field="tables")
         from .report_scenario_schema import SCENARIO_PROOF_TABLES, SCENARIO_REPORT_TABLES
 
         if supplied & frozenset((*SCENARIO_REPORT_TABLES, *SCENARIO_PROOF_TABLES)) or any(
@@ -1240,6 +1281,10 @@ def validate_report_profile(
     header: ReportDocumentHeader, proof: ReportProof, bindings: tuple[ReportBinding, ...]
 ) -> None:
     """Prevent new-family proof from being relabeled as a legacy document."""
+    from .report_projection_schema import PROJECTION_TABLE_COLUMNS
+
+    if any(item.table in PROJECTION_TABLE_COLUMNS for item in proof.proof_relations):
+        fail_validation("Projection proof requires profile four.", field="proof_relations")
     expected = report_schema_version(header.selection)
     from .report_scenario_schema import SCENARIO_PROOF_TABLES, SCENARIO_REPORT_TABLES
 

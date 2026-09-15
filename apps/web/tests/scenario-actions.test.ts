@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ScenarioApiError } from "@trading212/api-contracts";
+type AdapterModule = typeof import("../lib/scenario-adapter");
 const mocks = vi.hoisted(() => ({
   authorize: vi.fn(),
   create: vi.fn(),
@@ -14,7 +15,7 @@ const mocks = vi.hoisted(() => ({
 }));
 vi.mock("server-only", () => ({}));
 vi.mock("../lib/scenario-adapter", async (original) => ({
-  ...(await original<typeof import("../lib/scenario-adapter")>()),
+  ...(await original<AdapterModule>()),
   scenarioClients: mocks.authorize,
   savedScenarioXray: mocks.pins,
 }));

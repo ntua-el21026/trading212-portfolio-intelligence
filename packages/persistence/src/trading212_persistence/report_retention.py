@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Literal, cast
 from uuid import UUID, uuid4
 
-from sqlalchemy import Table, delete, func, or_, select, update
+from sqlalchemy import Table, delete, or_, select, update
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.elements import ColumnElement
 
@@ -28,8 +28,28 @@ from .report_models import (
     ReportManifestModel,
     ReportRetentionWorkModel,
 )
+from .report_physical_retention import LegacyReportWitness, clear_report_source_flags
 from .source_retention import PayloadCopyCost, SourcePurgeBudget
 from .source_retention_sql import logical_payload_size
+
+# Largest fixed projection report-copy guard: two normalized parent rows, the
+# premium root lock, and one indexed live dependency probe. Included by the
+# projection cleanup participant in each physical mutation's reservation.
+REPORT_PREMIUM_COPY_GUARD_MAX_ROWS_PER_MUTATION = 4
+# Exact report_capture_pending uses <=24 indexed rows (one job per family, four
+# formats per job). Reserve its marker read/write, flag update + marker proof,
+# audit insert and fixed foreign-key checks conservatively before completion.
+REPORT_PURGE_COMPLETION_MAX_ROWS = 48
+# New work: marker/FKs, exact dependency/root/marker authorization, then at most
+# one sealed source membership + physical/header/pinned/current witness proof.
+REPORT_PURGE_MARKER_MAX_ROWS = 48
+REPORT_PAYLOAD_MUTATION_ROWS = 21
+REPORT_GRANT_MUTATION_ROWS = 13
+REPORT_JOB_RETIREMENT_ROWS = 40
+ProjectionReportWitnessKind = Literal[
+    "price", "fx", "corporate_action", "benchmark", "historical", "license", "classification"
+]
+ProjectionReportWitness = tuple[ProjectionReportWitnessKind, UUID]
 
 
 def _clear_payloads(
@@ -47,20 +67,28 @@ def _clear_payloads(
             select(table.c.id, logical_payload_size(table, columns).label("size"))
             .where(remaining)
             .order_by(table.c.id)
-            .limit(budget.metadata_limit)
+            .limit(max(1, budget.metadata_limit // (REPORT_PAYLOAD_MUTATION_ROWS + 1)))
             .with_for_update(skip_locked=True)
         ).all()
-        if not budget.inspect(rows=len(rows)):
+        if not budget.inspect(rows=max(1, len(rows))):
             return False
         if not rows:
             if not budget.metadata_limit:
                 return False
+            if not budget.inspect(rows=1):
+                return False
             pending = session.scalar(select(table.c.id).where(remaining).limit(1))
-            if pending is not None:
-                budget.inspect(rows=1)
             return pending is None
         ids = budget.reserve_clear_batch(
-            tuple(PayloadCopyCost(row_id=row.id, payload_bytes=row.size) for row in rows)
+            tuple(
+                PayloadCopyCost(
+                    row_id=row.id,
+                    payload_bytes=row.size,
+                    inspection_rows=REPORT_PAYLOAD_MUTATION_ROWS,
+                    payload_inspections=2,
+                )
+                for row in rows
+            )
         )
         if not ids:
             return False
@@ -87,14 +115,14 @@ def _artifact(
         return False
     model = ExportArtifactModel if export else ReportArtifactModel
     table = cast(Table, model.__table__)
+    if not budget.inspect(rows=1):
+        return False
     metadata = session.execute(
         select(model.id, model.byte_length)
         .where(model.owner_id == owner, model.id == identifier, model.purged_at.is_(None))
         .with_for_update(skip_locked=True)
     ).first()
     if metadata is None:
-        return False
-    if not budget.inspect(rows=1):
         return False
     grant = ArtifactDownloadGrantModel
     parent = grant.export_artifact_id if export else grant.report_artifact_id
@@ -116,19 +144,30 @@ def _artifact(
     # Invalid tokens can be cleared independently in bounded batches; only the
     # at-most-ten still valid grants must commit together with artifact bytes.
     while budget.metadata_limit:
+        # The exact artifact index may pass at most ten still-valid tokens before
+        # finding inactive rows. Reserve those rejected rows before each query.
+        if budget.metadata_limit <= 10 or not budget.inspect(rows=10):
+            return False
         expired = session.execute(
             select(grant.id, logical_payload_size(grants_table, columns).label("size"))
             .where(inactive)
-            .order_by(grant.id)
-            .limit(budget.metadata_limit)
+            .order_by(grant.expires_at, grant.id)
+            .limit(max(1, budget.metadata_limit // (REPORT_GRANT_MUTATION_ROWS + 1)))
             .with_for_update()
         ).all()
-        if not budget.inspect(rows=len(expired)):
+        if not budget.inspect(rows=max(1, len(expired))):
             return False
         if not expired:
             break
         identifiers = budget.reserve_clear_batch(
-            tuple(PayloadCopyCost(row_id=row.id, payload_bytes=row.size) for row in expired)
+            tuple(
+                PayloadCopyCost(
+                    row_id=row.id,
+                    payload_bytes=row.size,
+                    inspection_rows=REPORT_GRANT_MUTATION_ROWS,
+                )
+                for row in expired
+            )
         )
         if identifiers:
             session.execute(delete(grant).where(inactive, grant.id.in_(identifiers)))
@@ -143,16 +182,32 @@ def _artifact(
         .limit(11)
         .with_for_update()
     ).all()
-    if not budget.inspect(rows=len(grants)):
+    if not budget.inspect(rows=max(1, len(grants))):
         return False
     # The extra bounded row detects a broken active-token capacity invariant.
     if len(grants) > 10:
         return False
-    costs = tuple(PayloadCopyCost(row_id=row.id, payload_bytes=row.size) for row in grants)
-    costs += (PayloadCopyCost(row_id=identifier, payload_bytes=metadata.byte_length),)
-    if len(costs) > min(budget.rows_inspected, budget.rows_removed) or sum(
-        cost.payload_bytes for cost in costs
-    ) > min(budget.bytes_inspected, budget.bytes_removed):
+    costs = tuple(
+        PayloadCopyCost(
+            row_id=row.id, payload_bytes=row.size, inspection_rows=REPORT_GRANT_MUTATION_ROWS
+        )
+        for row in grants
+    )
+    costs += (
+        PayloadCopyCost(
+            row_id=identifier,
+            payload_bytes=metadata.byte_length,
+            inspection_rows=REPORT_PAYLOAD_MUTATION_ROWS,
+            payload_inspections=2,
+        ),
+    )
+    if (
+        sum(cost.inspection_rows for cost in costs) > min(512, budget.rows_inspected)
+        or len(costs) > budget.rows_removed
+        or sum(cost.payload_bytes * cost.payload_inspections for cost in costs)
+        > budget.bytes_inspected
+        or sum(cost.payload_bytes for cost in costs) > budget.bytes_removed
+    ):
         return False
     ids = budget.reserve_clear_batch(costs)
     if len(ids) != len(costs):
@@ -180,8 +235,12 @@ def purge_report_input(
     reason: Literal["ttl", "source", "owner"],
     at: datetime,
     budget: SourcePurgeBudget,
+    projection_witness: ProjectionReportWitness | None = None,
+    legacy_witness: LegacyReportWitness | None = None,
 ) -> bool:
     if budget.metadata_limit < 2:
+        return False
+    if not budget.inspect(rows=1):
         return False
     row = session.execute(
         select(
@@ -195,10 +254,10 @@ def purge_report_input(
     ).first()
     if row is None:
         return True
-    if not budget.inspect(rows=1):
-        return False
     family = cast(Literal["report", "export"], row.kind)
     if not budget.enter_capture(family, input_id):
+        return False
+    if not budget.inspect(rows=1):
         return False
     work = session.scalar(
         select(ReportRetentionWorkModel)
@@ -208,9 +267,11 @@ def purge_report_input(
         )
         .with_for_update()
     )
-    if work is not None and not budget.inspect(rows=1):
-        return False
     if work is None:
+        if budget.rows_inspected < REPORT_PURGE_MARKER_MAX_ROWS:
+            return False
+        if not budget.inspect(rows=REPORT_PURGE_MARKER_MAX_ROWS):
+            return False
         work = ReportRetentionWorkModel(
             id=uuid4(),
             owner_id=owner,
@@ -219,6 +280,10 @@ def purge_report_input(
             started_at=at,
             reason=reason,
             completed_at=None,
+            projection_source_kind=None if projection_witness is None else projection_witness[0],
+            projection_source_id=None if projection_witness is None else projection_witness[1],
+            legacy_source_kind=None if legacy_witness is None else legacy_witness[0],
+            legacy_source_id=None if legacy_witness is None else legacy_witness[1],
         )
         session.add(work)
         session.flush()
@@ -239,12 +304,16 @@ def purge_report_input(
                 .with_for_update()
             )
         )
-        if not budget.inspect(rows=len(jobs)):
+        if not budget.inspect(rows=max(1, len(jobs))):
             return False
         for job in jobs:
             if not budget.enter_run(family, job.id):
                 return False
             if job.state not in {"expired", "cancelled"}:
+                if budget.rows_inspected < REPORT_JOB_RETIREMENT_ROWS:
+                    return False
+                if not budget.inspect(rows=REPORT_JOB_RETIREMENT_ROWS):
+                    return False
                 job.state = "expired"
                 audit_report_job(
                     session,
@@ -267,19 +336,21 @@ def purge_report_input(
                 )
                 session.flush()
             while budget.metadata_limit:
+                if not budget.inspect(rows=1):
+                    return False
                 artifact = session.scalar(
                     select(artifact_model.id)
                     .where(
                         artifact_model.owner_id == owner,
                         artifact_model.job_id == job.id,
-                        artifact_model.purged_at.is_(None),
+                        artifact_model.contents.is_not(None),
                     )
                     .order_by(artifact_model.id)
                     .limit(1)
                 )
                 if artifact is None:
                     break
-                if not budget.inspect(rows=1) or not _artifact(
+                if not _artifact(
                     session,
                     owner,
                     artifact,
@@ -320,6 +391,12 @@ def purge_report_input(
         budget=budget,
     ):
         return False
+    if not clear_report_source_flags(session, owner, input_id, budget=budget):
+        return False
+    if budget.rows_inspected < REPORT_PURGE_COMPLETION_MAX_ROWS:
+        return False
+    if not budget.inspect(rows=REPORT_PURGE_COMPLETION_MAX_ROWS):
+        return False
     work.completed_at = at
     audit_report_purge(
         session,
@@ -344,25 +421,30 @@ def purge_report_source_copies(
     budget: SourcePurgeBudget,
 ) -> bool:
     dependency = ReportInputDependencyModel
-    capture = ReportInputSnapshotModel
-    while budget.metadata_limit >= 2:
-        candidate = session.scalar(
-            select(capture.id)
-            .join(dependency, dependency.input_id == capture.id)
+    while budget.metadata_limit >= 3:
+        if not budget.inspect(rows=1):
+            return False
+        candidate = session.execute(
+            select(dependency.id, dependency.input_id)
             .where(
-                capture.owner_id == owner,
                 dependency.owner_id == owner,
                 dependency.kind == kind,
                 dependency.source_id == source_id,
-                capture.purged_at.is_(None),
+                dependency.copy_pending.is_(True),
             )
-            .order_by(capture.id)
+            .order_by(dependency.input_id, dependency.id)
             .limit(1)
-        )
+        ).first()
         if candidate is None:
             return True
-        if not budget.inspect(rows=2) or not purge_report_input(
-            session, owner=owner, input_id=candidate, reason="source", at=at, budget=budget
+        if not purge_report_input(
+            session,
+            owner=owner,
+            input_id=candidate.input_id,
+            reason="source",
+            at=at,
+            budget=budget,
+            legacy_witness=("physical", candidate.id),
         ):
             return False
     return False
@@ -375,6 +457,7 @@ def purge_report_premium_copies(
     *,
     at: datetime,
     budget: SourcePurgeBudget,
+    projection_witness: ProjectionReportWitness | None = None,
 ) -> bool:
     """Drain retained run copies before the caller clears any premium payload.
 
@@ -382,27 +465,30 @@ def purge_report_premium_copies(
     premium retention marker. That marker denies reads immediately, even when
     this shared invocation budget cannot yet finish the report artifacts.
     """
-    capture = ReportInputSnapshotModel
     dependency = ReportInputPremiumDependencyModel
     while budget.metadata_limit >= 2:
+        if not budget.inspect(rows=1):
+            return False
         identifier = session.scalar(
-            select(capture.id)
-            .join(
-                dependency,
-                (dependency.input_id == capture.id) & (dependency.owner_id == capture.owner_id),
-            )
+            select(dependency.input_id)
             .where(
-                capture.owner_id == owner,
+                dependency.owner_id == owner,
                 dependency.run_id == run_id,
-                capture.purged_at.is_(None),
+                dependency.copy_pending.is_(True),
             )
-            .order_by(capture.id)
+            .order_by(dependency.input_id)
             .limit(1)
         )
         if identifier is None:
             return True
-        if not budget.inspect(rows=2) or not purge_report_input(
-            session, owner=owner, input_id=identifier, reason="source", at=at, budget=budget
+        if not purge_report_input(
+            session,
+            owner=owner,
+            input_id=identifier,
+            reason="source",
+            at=at,
+            budget=budget,
+            projection_witness=projection_witness,
         ):
             return False
     return False
@@ -414,39 +500,26 @@ def expire_report_payloads(
     if type(limit) is not int or not 1 <= limit <= 100:
         raise ValueError("Report expiry is bounded to one hundred artifacts.")
     budget = budget or SourcePurgeBudget(artifacts=limit)
-    completed = 0
+    from .legacy_report_retention import resume_report_retention_work
+
+    completed = resume_report_retention_work(session, at=at, budget=budget)
+    query = (
+        select(
+            ReportInputSnapshotModel.id,
+            ReportInputSnapshotModel.owner_id,
+            ReportInputSnapshotModel.expires_at,
+        )
+        .where(ReportInputSnapshotModel.purged_at.is_(None))
+        .order_by(ReportInputSnapshotModel.expires_at, ReportInputSnapshotModel.id)
+        .limit(1)
+    )
     while budget.metadata_limit >= 2 and completed < 100:
-        row = session.execute(
-            select(
-                ReportInputSnapshotModel.id,
-                ReportInputSnapshotModel.owner_id,
-                ReportInputSnapshotModel.expires_at,
-            )
-            .where(
-                or_(
-                    ReportInputSnapshotModel.expires_at <= at,
-                    (ReportInputSnapshotModel.contract_version.in_((2, 3)))
-                    & or_(
-                        func.report_premium_restricted(
-                            ReportInputSnapshotModel.owner_id, ReportInputSnapshotModel.id, at
-                        ),
-                        select(ReportRetentionWorkModel.id)
-                        .where(
-                            ReportRetentionWorkModel.owner_id == ReportInputSnapshotModel.owner_id,
-                            ReportRetentionWorkModel.input_id == ReportInputSnapshotModel.id,
-                            ReportRetentionWorkModel.completed_at.is_(None),
-                        )
-                        .exists(),
-                    ),
-                ),
-                ReportInputSnapshotModel.purged_at.is_(None),
-            )
-            .order_by(ReportInputSnapshotModel.expires_at, ReportInputSnapshotModel.id)
-            .limit(1)
-        ).first()
+        if not budget.inspect(rows=1):
+            break
+        row = session.execute(query.where(ReportInputSnapshotModel.expires_at <= at)).first()
         if row is None:
             break
-        if not budget.inspect(rows=1) or not report_owner_lock(session, row.owner_id, wait=False):
+        if not report_owner_lock(session, row.owner_id, wait=False):
             break
         if not purge_report_input(
             session,
@@ -458,4 +531,12 @@ def expire_report_payloads(
         ):
             break
         completed += 1
+    from .legacy_report_retention import expire_legacy_report_payloads
+
+    completed += expire_legacy_report_payloads(session, at=at, budget=budget)
+    # Projection REPORT-only revocation has its own resumable metadata sweep.
+    # Its cursor and witness remain separate from the legacy report phases.
+    from .projection_report_retention import expire_projection_report_payloads
+
+    expire_projection_report_payloads(session, at=at, budget=budget)
     return completed

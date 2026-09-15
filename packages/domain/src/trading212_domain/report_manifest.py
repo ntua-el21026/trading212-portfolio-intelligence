@@ -14,6 +14,7 @@ from typing import cast, get_args, get_origin, overload
 from uuid import UUID
 
 from . import report_v3 as v3
+from . import report_v4 as v4
 from . import reports as r
 from .errors import DomainError, fail_validation
 from .values import CurrencyCode
@@ -54,6 +55,17 @@ _RECORDS = (
     v3.ReportDocumentHeaderV3,
     v3.ReportCaptureSummaryV3,
     v3.ReportManifestV3,
+    v4.ReportProjectionRunSelection,
+    v4.ReportSelectionV4,
+    v4.ReportContextV4,
+    v4.ReportProjectionVersionBinding,
+    v4.ReportProjectionObservedBinding,
+    v4.ReportContextSnapshotBinding,
+    v4.ReportProjectionRunBinding,
+    v4.ReportDocumentHeaderV4,
+    v4.ReportProofV4,
+    v4.ReportCaptureSummaryV4,
+    v4.ReportManifestV4,
 )
 type JsonValue = bool | int | str | list[JsonValue] | dict[str, JsonValue] | None
 _OPTIONAL_CELL_FIELDS = frozenset(
@@ -371,7 +383,7 @@ def decode_report_profile(payload: bytes) -> r.ReportRendererProfile:
     return _read(payload, r.ReportRendererProfile, 64 * 1024)
 
 
-def encode_report_proof(value: r.ReportProof) -> bytes:
+def encode_report_proof(value: r.ReportProof | v4.ReportProofV4) -> bytes:
     return _encode(value, r.MAX_REPORT_MANIFEST_BYTES)
 
 
@@ -383,7 +395,7 @@ def encode_report_schema(value: r.ReportTableSchema) -> bytes:
     return _encode(value, r.MAX_REPORT_MANIFEST_BYTES)
 
 
-def encode_report_context(value: r.ReportContext) -> bytes:
+def encode_report_context(value: r.ReportContext | v4.ReportContextV4) -> bytes:
     return _encode(value, r.MAX_REPORT_MANIFEST_BYTES)
 
 
@@ -455,12 +467,16 @@ def decode_report_chunk(payload: bytes) -> r.ReportChunk:
     return result
 
 
-def _proof_of(value: v3.ReportManifestContract) -> r.ReportProof:
+def _proof_of(value: v3.ReportManifestContract) -> r.ReportProof | v4.ReportProofV4:
+    if isinstance(value, v4.ReportManifestV4):
+        return v4.ReportProofV4(
+            **{item.name: getattr(value, item.name) for item in fields(v4.ReportProofV4)}
+        )
     return r.ReportProof(**{item.name: getattr(value, item.name) for item in fields(r.ReportProof)})
 
 
 def validate_report_references(
-    proof: r.ReportProof,
+    proof: r.ReportProof | v4.ReportProofV4,
     *,
     context_keys: Collection[str] = (),
     reason_keys: Collection[str] = (),
@@ -540,7 +556,7 @@ def validate_report_references(
             fail_validation("Report cell reference is unresolved.", field=name)
 
 
-def _validate_proof(proof: r.ReportProof) -> None:
+def _validate_proof(proof: r.ReportProof | v4.ReportProofV4) -> None:
     sources = {item.key for item in proof.source_references}
     contexts = {item.key for item in proof.contexts}
     notes = {item.key for item in proof.notes}
@@ -577,6 +593,10 @@ def _validate_proof(proof: r.ReportProof) -> None:
 
 
 def encode_report_manifest(value: v3.ReportManifestContract) -> bytes:
+    if isinstance(value, v4.ReportManifestV4):
+        from .report_manifest_v4 import encode_report_manifest_v4
+
+        return encode_report_manifest_v4(value)
     if type(value) not in (r.ReportManifest, v3.ReportManifestV3):
         fail_validation("A typed report manifest is required.", field="manifest")
     _validate_manifest(value)
@@ -629,7 +649,7 @@ def report_manifest_digest(value: v3.ReportManifestContract) -> str:
 def build_report_manifest(
     capture: r.ReportCaptureSummary,
     *,
-    proof: r.ReportProof | None = None,
+    proof: r.ReportProof | v4.ReportProofV4 | None = None,
     profile: r.ReportRendererProfile | None = None,
 ) -> r.ReportManifest: ...
 
@@ -638,16 +658,25 @@ def build_report_manifest(
 def build_report_manifest(
     capture: v3.ReportCaptureSummaryV3,
     *,
-    proof: r.ReportProof | None = None,
+    proof: r.ReportProof | v4.ReportProofV4 | None = None,
     profile: r.ReportRendererProfile | None = None,
 ) -> v3.ReportManifestV3: ...
 
 
 @overload
 def build_report_manifest(
+    capture: v4.ReportCaptureSummaryV4,
+    *,
+    proof: r.ReportProof | v4.ReportProofV4 | None = None,
+    profile: r.ReportRendererProfile | None = None,
+) -> v4.ReportManifestV4: ...
+
+
+@overload
+def build_report_manifest(
     capture: v3.ReportCaptureContract,
     *,
-    proof: r.ReportProof | None = None,
+    proof: r.ReportProof | v4.ReportProofV4 | None = None,
     profile: r.ReportRendererProfile | None = None,
 ) -> v3.ReportManifestContract: ...
 
@@ -655,9 +684,17 @@ def build_report_manifest(
 def build_report_manifest(
     capture: v3.ReportCaptureContract,
     *,
-    proof: r.ReportProof | None = None,
+    proof: r.ReportProof | v4.ReportProofV4 | None = None,
     profile: r.ReportRendererProfile | None = None,
 ) -> v3.ReportManifestContract:
+    if isinstance(capture, v4.ReportCaptureSummaryV4):
+        from .report_manifest_v4 import build_report_manifest_v4
+
+        if (proof is not None and proof != capture.proof) or (
+            profile is not None and profile != capture.renderer_profile
+        ):
+            fail_validation("Pinned report proof/profile differs.", field="capture")
+        return build_report_manifest_v4(capture)
     proof = capture.proof if proof is None else proof
     profile = capture.renderer_profile if profile is None else profile
     if (

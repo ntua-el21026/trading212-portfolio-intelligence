@@ -1,32 +1,48 @@
-"""Bounded licensed sensitivity removal, preserving permanent identity and audit.
+"""Bounded sensitivity cleanup with independent logical and physical evidence flags.
 
-A shared evidence payload remains while any linked version is still permitted.
-Version completion consequently stays pending; it never claims physical erasure
-while another version still retains that evidence. All selection is metadata-only.
+A marked version releases its ownership before shared evidence is considered.
+Physical absence is then confirmed for each link separately. A permitted sibling
+keeps the payload and leaves the marked version truthfully pending.
 """
-
-from __future__ import annotations
 
 from datetime import datetime
 from typing import cast
 from uuid import UUID, uuid4
 
-from sqlalchemy import SQLColumnExpression, Table, and_, literal, or_, select
-from sqlalchemy.orm import Session, aliased
-from sqlalchemy.sql.elements import ColumnElement
+from sqlalchemy import Table, select, update
+from sqlalchemy.orm import Session
 
-from .scenario_models import ScenarioRunSensitivityVersionModel
-from .scenario_retention import _charge, _lock_owner, purge_scenario_sensitivity_copies
-from .scenario_retention_policy import scenario_run_has_payload, sensitivity_version_restricted
+from .premium_retention_costs import (
+    SCENARIO_LINK_ROWS,
+    SCENARIO_SOURCE_COMPLETE_ROWS,
+    SCENARIO_SOURCE_MARKER_ROWS,
+)
+from .premium_retention_runtime import charge, finish_sweep, lock_owner, open_sweep
+from .premium_retention_scan import PremiumScanInput, scan_premium_restriction
+from .scenario_retention import purge_scenario_sensitivity_copies
 from .scenario_source_models import (
-    ScenarioSensitivityEvidenceLinkModel,
-    ScenarioSensitivityEvidenceModel,
-    ScenarioSensitivityEvidencePayloadModel,
-    ScenarioSensitivityObservationModel,
-    ScenarioSensitivityObservationPayloadModel,
-    ScenarioSensitivityRetentionModel,
-    ScenarioSensitivityVersionModel,
-    ScenarioSensitivityVersionPayloadModel,
+    ScenarioSensitivityEvidenceLinkModel as Link,
+)
+from .scenario_source_models import (
+    ScenarioSensitivityEvidenceModel as Evidence,
+)
+from .scenario_source_models import (
+    ScenarioSensitivityEvidencePayloadModel as EvidencePayload,
+)
+from .scenario_source_models import (
+    ScenarioSensitivityObservationModel as Observation,
+)
+from .scenario_source_models import (
+    ScenarioSensitivityObservationPayloadModel as ObservationPayload,
+)
+from .scenario_source_models import (
+    ScenarioSensitivityRetentionModel as Marker,
+)
+from .scenario_source_models import (
+    ScenarioSensitivityVersionModel as Version,
+)
+from .scenario_source_models import (
+    ScenarioSensitivityVersionPayloadModel as VersionPayload,
 )
 from .source_retention import SourcePurgeBudget
 from .source_retention_sql import purge_payload_rows
@@ -86,181 +102,165 @@ EVIDENCE_PAYLOAD_COLUMNS = (
 )
 
 
-def _complete() -> ColumnElement[bool]:
-    return (
-        select(ScenarioSensitivityRetentionModel.id)
-        .where(
-            ScenarioSensitivityRetentionModel.owner_id == ScenarioSensitivityVersionModel.owner_id,
-            ScenarioSensitivityRetentionModel.version_id == ScenarioSensitivityVersionModel.id,
-            ScenarioSensitivityRetentionModel.completed_at.is_not(None),
+def _release_links(
+    session: Session, owner: UUID, version_id: UUID, budget: SourcePurgeBudget
+) -> bool:
+    while budget.metadata_limit >= 1 + SCENARIO_LINK_ROWS:
+        count = min(512 // SCENARIO_LINK_ROWS, budget.metadata_limit // (1 + SCENARIO_LINK_ROWS))
+        identifiers = tuple(
+            session.scalars(
+                select(Link.id)
+                .where(
+                    Link.owner_id == owner,
+                    Link.version_id == version_id,
+                    Link.copy_pending.is_(True),
+                )
+                .order_by(Link.id)
+                .limit(count)
+            )
         )
-        .exists()
-    )
-
-
-def _eligible(at: datetime, *, erase: bool) -> ColumnElement[bool]:
-    return and_(
-        ScenarioSensitivityVersionModel.sealed.is_(True),
-        ~_complete(),
-        literal(True) if erase else sensitivity_version_restricted(at),
-    )
-
-
-def _copies_pending(
-    owner: SQLColumnExpression[UUID],
-    version_id: SQLColumnExpression[UUID],
-) -> ColumnElement[bool]:
-    used = ScenarioRunSensitivityVersionModel
-    return (
-        select(used.id)
-        .where(
-            used.owner_id == owner,
-            used.version_id == version_id,
-            scenario_run_has_payload(used.owner_id, used.run_id),
+        charge(budget, max(1, len(identifiers)))
+        if not identifiers:
+            return True
+        charge(budget, len(identifiers) * SCENARIO_LINK_ROWS)
+        session.execute(
+            update(Link)
+            .where(
+                Link.owner_id == owner,
+                Link.version_id == version_id,
+                Link.id.in_(identifiers),
+                Link.copy_pending.is_(True),
+            )
+            .values(copy_pending=False)
         )
-        .exists()
-    )
+        session.flush()
+    return False
 
 
-def _evidence_blocked() -> ColumnElement[bool]:
-    """Correlated with an evidence header; require every immutable linked version."""
-    linked = aliased(ScenarioSensitivityEvidenceLinkModel)
-    marker = ScenarioSensitivityRetentionModel
-    evidence = ScenarioSensitivityEvidenceModel
-    marked = (
-        select(marker.id)
-        .where(
-            marker.owner_id == linked.owner_id,
-            marker.version_id == linked.version_id,
-        )
-        .exists()
-    )
-    return (
-        select(linked.id)
-        .where(
-            linked.owner_id == evidence.owner_id,
-            linked.evidence_id == evidence.id,
-            or_(~marked, _copies_pending(linked.owner_id, linked.version_id)),
-        )
-        .exists()
-    )
-
-
-def _purge_evidence(
-    session: Session,
-    owner: UUID,
-    version_id: UUID,
-    *,
-    budget: SourcePurgeBudget,
-) -> None:
-    evidence = ScenarioSensitivityEvidenceModel
-    link = ScenarioSensitivityEvidenceLinkModel
-    payload = cast(Table, ScenarioSensitivityEvidencePayloadModel.__table__)
-    selected = (
-        select(link.id)
-        .where(
-            link.owner_id == owner,
-            link.version_id == version_id,
-            link.evidence_id == evidence.id,
-        )
-        .exists()
-    )
-    physical = (
-        select(payload.c.id)
-        .where(
-            payload.c.owner_id == owner,
-            payload.c.evidence_id == evidence.id,
-        )
-        .exists()
-    )
-    after: UUID | None = None
-    while budget.metadata_limit:
-        query = select(evidence.id).where(
-            evidence.owner_id == owner,
-            selected,
-            physical,
-            ~_evidence_blocked(),
-        )
-        if after is not None:
-            query = query.where(evidence.id > after)
-        # The trigger locks E then linked V rows. Never wait for E while holding
-        # a marker's V lock: a publisher may hold E and be waiting for that V.
+def _purge_observations(
+    session: Session, owner: UUID, version_id: UUID, budget: SourcePurgeBudget
+) -> bool:
+    payload = cast(Table, ObservationPayload.__table__)
+    while budget.metadata_limit >= 27:
+        charge(budget, 1)
         identifier = session.scalar(
-            query.order_by(evidence.id).limit(1).with_for_update(skip_locked=True)
+            select(Observation.id)
+            .where(
+                Observation.owner_id == owner,
+                Observation.version_id == version_id,
+                Observation.payload_present.is_(True),
+            )
+            .order_by(Observation.id)
+            .limit(1)
         )
         if identifier is None:
-            return
-        _charge(budget, 1)
-        after = identifier
-        # Re-evaluate linked markers and remaining copies under the E lock.
-        # Every linked version is locked again in UUID order by the DELETE guard.
-        allowed = (
-            select(evidence.id)
-            .where(
-                evidence.id == identifier,
-                evidence.owner_id == owner,
-                ~_evidence_blocked(),
-            )
-            .exists()
-        )
+            return True
         if not purge_payload_rows(
             session,
             payload,
-            (payload.c.owner_id == owner) & (payload.c.evidence_id == identifier) & allowed,
-            payload_columns=EVIDENCE_PAYLOAD_COLUMNS,
+            (payload.c.owner_id == owner) & (payload.c.observation_id == identifier),
+            payload_columns=OBSERVATION_PAYLOAD_COLUMNS,
             delete_rows=True,
             budget=budget,
         ).complete:
-            return
+            return False
+    return False
 
 
-def _physical_pending(owner: UUID, version_id: UUID) -> ColumnElement[bool]:
-    version = ScenarioSensitivityVersionPayloadModel
-    observation = ScenarioSensitivityObservationModel
-    observed = ScenarioSensitivityObservationPayloadModel
-    evidence = ScenarioSensitivityEvidencePayloadModel
-    link = ScenarioSensitivityEvidenceLinkModel
-    return or_(
-        select(version.id)
-        .where(version.owner_id == owner, version.version_id == version_id)
-        .exists(),
-        select(observed.id)
-        .join(
-            observation,
-            (observation.id == observed.observation_id)
-            & (observation.owner_id == observed.owner_id),
+def _purge_evidence(
+    session: Session, owner: UUID, version_id: UUID, marker: Marker, budget: SourcePurgeBudget
+) -> bool:
+    payload = cast(Table, EvidencePayload.__table__)
+    while budget.metadata_limit >= 5 + SCENARIO_LINK_ROWS + 24:
+        query = select(Link.id, Link.evidence_id).where(
+            Link.owner_id == owner, Link.version_id == version_id, Link.payload_pending.is_(True)
         )
-        .where(observation.owner_id == owner, observation.version_id == version_id)
-        .exists(),
-        select(evidence.id)
-        .join(
-            link,
-            (link.evidence_id == evidence.evidence_id) & (link.owner_id == evidence.owner_id),
+        if marker.evidence_after_id is not None:
+            query = query.where(Link.id > marker.evidence_after_id)
+        charge(budget, 1)
+        link = session.execute(query.order_by(Link.id).limit(1)).first()
+        if link is None:
+            # A blocked earlier sibling remains in the indexed pending set. The
+            # next invocation starts another charged pass; it never skips proof.
+            charge(budget, 3)
+            marker.evidence_after_id = None
+            session.flush()
+            charge(budget, 1)
+            return (
+                session.scalar(
+                    select(Link.id)
+                    .where(
+                        Link.owner_id == owner,
+                        Link.version_id == version_id,
+                        Link.payload_pending.is_(True),
+                    )
+                    .limit(1)
+                )
+                is None
+            )
+        charge(budget, 3)  # Cursor write + original version/marker point guards.
+        charge(budget, 1)
+        header = session.scalar(
+            select(Evidence.id)
+            .where(Evidence.owner_id == owner, Evidence.id == link.evidence_id)
+            .with_for_update(skip_locked=True)
         )
-        .where(link.owner_id == owner, link.version_id == version_id)
-        .exists(),
-        _copies_pending(literal(owner), literal(version_id)),
-    )
+        if header is None:
+            marker.evidence_after_id = link.id
+            session.flush()
+            continue
+        charge(budget, 1)
+        blocked = (
+            session.scalar(
+                select(Link.id)
+                .where(
+                    Link.owner_id == owner,
+                    Link.evidence_id == link.evidence_id,
+                    Link.copy_pending.is_(True),
+                )
+                .limit(1)
+            )
+            is not None
+        )
+        if not blocked:
+            cleared = purge_payload_rows(
+                session,
+                payload,
+                (payload.c.owner_id == owner) & (payload.c.evidence_id == link.evidence_id),
+                payload_columns=EVIDENCE_PAYLOAD_COLUMNS,
+                delete_rows=True,
+                budget=budget,
+            )
+            if not cleared.complete:
+                return False
+            if not budget.inspect(rows=SCENARIO_LINK_ROWS):
+                return False
+            # SQL independently verifies exact payload absence before this flag.
+            session.execute(
+                update(Link)
+                .where(Link.owner_id == owner, Link.id == link.id)
+                .values(payload_pending=False)
+            )
+        marker.evidence_after_id = link.id
+        session.flush()
+    return False
 
 
 def _purge_version(
-    session: Session,
-    version: ScenarioSensitivityVersionModel,
-    *,
-    at: datetime,
-    budget: SourcePurgeBudget,
-    erase: bool,
+    session: Session, version: Version, *, at: datetime, budget: SourcePurgeBudget, erase: bool
 ) -> bool:
-    if not budget.enter_capture("scenario", version.id) or budget.metadata_limit < 3:
+    if not budget.enter_capture("scenario", version.id) or budget.metadata_limit < 2:
         return False
+    charge(budget, 1)
     marker = session.scalar(
-        select(ScenarioSensitivityRetentionModel).where(
-            ScenarioSensitivityRetentionModel.owner_id == version.owner_id,
-            ScenarioSensitivityRetentionModel.version_id == version.id,
-        )
+        select(Marker).where(Marker.owner_id == version.owner_id, Marker.version_id == version.id)
     )
+    if marker is not None and marker.completed_at is not None:
+        return True
     if marker is None:
-        marker = ScenarioSensitivityRetentionModel(
+        if not budget.inspect(rows=SCENARIO_SOURCE_MARKER_ROWS):
+            return False
+        marker = Marker(
             id=uuid4(),
             owner_id=version.owner_id,
             version_id=version.id,
@@ -268,59 +268,36 @@ def _purge_version(
             completed_at=None,
             reason="owner_erasure"
             if erase
-            else ("source_expired" if version.expires_at <= at else "source_restricted"),
+            else "source_expired"
+            if version.expires_at <= at
+            else "source_restricted",
         )
         session.add(marker)
         session.flush()
-    else:
-        _charge(budget, 1)
     if not purge_scenario_sensitivity_copies(
-        session,
-        version.owner_id,
-        version.id,
-        at=at,
-        budget=budget,
+        session, version.owner_id, version.id, at=at, budget=budget
     ):
         return False
-    _purge_evidence(session, version.owner_id, version.id, budget=budget)
-    observation = ScenarioSensitivityObservationModel
-    observed = cast(Table, ScenarioSensitivityObservationPayloadModel.__table__)
-    selected = (
-        select(observation.id)
-        .where(
-            observation.owner_id == version.owner_id,
-            observation.version_id == version.id,
-            observation.id == observed.c.observation_id,
-        )
-        .exists()
-    )
-    if not purge_payload_rows(
-        session,
-        observed,
-        (observed.c.owner_id == version.owner_id) & selected,
-        payload_columns=OBSERVATION_PAYLOAD_COLUMNS,
-        delete_rows=True,
-        budget=budget,
-    ).complete:
+    if not _release_links(session, version.owner_id, version.id, budget):
         return False
-    payload = cast(Table, ScenarioSensitivityVersionPayloadModel.__table__)
+    if not _purge_observations(session, version.owner_id, version.id, budget):
+        return False
+    table = cast(Table, VersionPayload.__table__)
     if not purge_payload_rows(
         session,
-        payload,
-        (payload.c.owner_id == version.owner_id) & (payload.c.version_id == version.id),
+        table,
+        (table.c.owner_id == version.owner_id) & (table.c.version_id == version.id),
         payload_columns=VERSION_PAYLOAD_COLUMNS,
         delete_rows=True,
         budget=budget,
     ).complete:
         return False
-    if not budget.metadata_limit:
+    if not _purge_evidence(session, version.owner_id, version.id, marker, budget):
         return False
-    # A live sibling or busy E header can leave shared proof pending even though
-    # this version's exclusive licensed payload has already been removed.
-    pending = session.scalar(select(_physical_pending(version.owner_id, version.id)))
-    _charge(budget, 1)
-    if pending:
+    if not budget.inspect(rows=SCENARIO_SOURCE_COMPLETE_ROWS):
         return False
+    # SQL tests indexed physical flags, original body, exact retained-run parents,
+    # then sets the trigger-owned closed bit. No all-observation/link scan.
     marker.completed_at = at
     session.flush()
     return True
@@ -334,50 +311,72 @@ def expire_scenario_sensitivity_payloads(
     owner: UUID | None = None,
     erase: bool = False,
 ) -> bool:
-    """Remove eligible source payloads without starving an expired shared sibling.
-
-    Explicit erasure must name one already-authorized owner. This internal
-    participant grants no authorization and does not erase permanent audit IDs.
-    """
     if erase and owner is None:
         raise ValueError("Scenario source erasure requires one explicit owner.")
-    busy: set[UUID] = set()
-    pending = False
-    after: UUID | None = None
-    while budget.metadata_limit >= 2:
-        query = select(ScenarioSensitivityVersionModel.id, ScenarioSensitivityVersionModel.owner_id)
-        query = query.where(_eligible(at, erase=erase))
-        if owner is not None:
-            query = query.where(ScenarioSensitivityVersionModel.owner_id == owner)
-        if after is not None:
-            query = query.where(ScenarioSensitivityVersionModel.id > after)
-        if busy:
-            query = query.where(ScenarioSensitivityVersionModel.owner_id.not_in(busy))
-        candidate = session.execute(
-            query.order_by(ScenarioSensitivityVersionModel.id).limit(1)
-        ).first()
-        if candidate is None:
-            return not (pending or busy)
-        _charge(budget, 1)
-        after = candidate.id
-        if not _lock_owner(session, candidate.owner_id):
-            busy.add(candidate.owner_id)
-            continue
-        version = session.scalar(
-            select(ScenarioSensitivityVersionModel)
-            .where(
-                ScenarioSensitivityVersionModel.id == candidate.id,
-                ScenarioSensitivityVersionModel.owner_id == candidate.owner_id,
-                _eligible(at, erase=erase),
-            )
-            .with_for_update(skip_locked=True)
+    sweep = open_sweep(session, "sensitivity", owner, at, budget)
+    if sweep is None:
+        return False
+    while budget.metadata_limit >= 8:
+        query = select(Version.id, Version.owner_id).where(
+            Version.sealed.is_(True), Version.retention_closed.is_(False)
         )
-        if version is None:
-            busy.add(candidate.owner_id)
-            continue
-        _charge(budget, 1)
-        if not _purge_version(session, version, at=at, budget=budget, erase=erase):
-            pending = True
-            # Continue past shared-evidence blockage; an eligible sibling later
-            # in the same bounded keyset must still get its retention marker.
+        if owner is not None:
+            query = query.where(Version.owner_id == owner)
+        if sweep.after_id is not None:
+            query = query.where(Version.id > sweep.after_id)
+        charge(budget, 1)
+        candidate = session.execute(query.order_by(Version.id).limit(1)).first()
+        if candidate is None:
+            return finish_sweep(session, sweep, budget)
+        charge(budget, 1)  # Progress checkpoint, reserved before source traversal.
+        deferred = True
+        if lock_owner(session, candidate.owner_id):
+            charge(budget, 1)
+            version = session.scalar(
+                select(Version)
+                .where(Version.id == candidate.id, Version.owner_id == candidate.owner_id)
+                .with_for_update(skip_locked=True)
+            )
+            if version is not None:
+                charge(budget, 1)  # Reserve deadline metadata before proof.
+                outcome = (
+                    "restricted"
+                    if erase
+                    else scan_premium_restriction(
+                        session,
+                        PremiumScanInput(
+                            version.owner_id,
+                            version.id,
+                            "sensitivity",
+                            version.created_at,
+                            version.expires_at,
+                        ),
+                        at=at,
+                        budget=budget,
+                    )
+                )
+                if outcome == "restricted":
+                    deferred = not _purge_version(
+                        session, version, at=at, budget=budget, erase=erase
+                    )
+                elif outcome == "pending":
+                    session.flush()
+                    return False
+                elif outcome == "clean":
+                    from .premium_retention_models import PremiumRetentionScanModel
+
+                    slot = session.get(PremiumRetentionScanModel, (version.owner_id, "sensitivity"))
+                    deadline = (
+                        version.expires_at
+                        if slot is None or slot.earliest_deadline is None
+                        else min(version.expires_at, slot.earliest_deadline)
+                    )
+                    sweep.earliest_deadline = (
+                        deadline
+                        if sweep.earliest_deadline is None
+                        else min(deadline, sweep.earliest_deadline)
+                    )
+                    deferred = False
+        sweep.after_id, sweep.deferred = candidate.id, sweep.deferred or deferred
+        session.flush()
     return False

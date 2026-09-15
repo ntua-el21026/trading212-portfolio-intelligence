@@ -14,8 +14,11 @@ const querySchema = z
     report: uuid.optional(),
     cursor: cursor.optional(),
     runs_cursor: cursor.optional(),
-    profile: z.enum(["report_sections_v2", "report_sections_v3"]).optional(),
-    family: z.enum(["risk", "scenario"]).optional(),
+    snapshots_cursor: cursor.optional(),
+    profile: z
+      .enum(["report_sections_v2", "report_sections_v3", "report_sections_v4"])
+      .optional(),
+    family: z.enum(["risk", "scenario", "projection"]).optional(),
     snapshot: uuid.optional(),
     currency: z
       .string()
@@ -33,20 +36,35 @@ const querySchema = z
   })
   .superRefine((value, context) => {
     const hints = [
-      value.snapshot,
+      ...(value.profile === "report_sections_v4" ? [] : [value.snapshot]),
       value.currency,
       value.cutoff,
       value.result_digest,
     ];
     const supplied = hints.filter((item) => item !== undefined).length;
     if (
-      (value.profile !== "report_sections_v3" &&
+      ((value.profile === undefined ||
+        value.profile === "report_sections_v2") &&
         (value.family !== undefined || supplied > 0)) ||
       (value.profile === "report_sections_v3" &&
+        value.family === "projection") ||
+      (value.profile === "report_sections_v4" &&
+        value.family !== undefined &&
+        value.family !== "projection") ||
+      (value.snapshots_cursor !== undefined &&
+        value.profile !== "report_sections_v4") ||
+      ((value.profile === "report_sections_v3" ||
+        value.profile === "report_sections_v4") &&
         value.run !== undefined &&
         value.family === undefined) ||
+      (value.profile === "report_sections_v4" &&
+        value.snapshot !== undefined &&
+        (!value.run || !value.account)) ||
       (supplied > 0 &&
-        (supplied !== hints.length || !value.run || !value.account))
+        (supplied !== hints.length ||
+          !value.run ||
+          !value.account ||
+          !value.snapshot))
     )
       context.addIssue({
         code: "custom",

@@ -93,6 +93,8 @@ class PremiumRunModel(PremiumOwned):
             "ix_premium_runs_owner_account_created", "owner_id", "account_id", "created_at", "id"
         ),
         Index("ix_premium_runs_expiry", "expires_at", "id"),
+        Index("ix_projection_retention_root_cursor", "kind", "id"),
+        Index("ix_projection_retention_owner_cursor", "owner_id", "kind", "id"),
     )
     kind: Mapped[str] = mapped_column(String(20))
     command_id: Mapped[UUID] = mapped_column()
@@ -113,6 +115,7 @@ class PremiumRunLicenseModel(PremiumOwned):
 
     __tablename__ = "premium_run_licenses"
     __table_args__ = (
+        Index("ix_premium_license_scan", "owner_id", "run_id", "id"),
         scoped(),
         parent("run_id", "premium_runs"),
         ForeignKeyConstraint(

@@ -19,7 +19,7 @@ Run/item reads require account_id and exact retained ID; Page is signed and boun
 | 31 | get_scenario_result | GetScenarioRun | none | READ | account_id, run_id, component_limit/cursor; ScenarioRunView with result page |
 | 32 | compare_scenarios | CompareScenarios | none | READ | account_id, two distinct ordered run IDs, component_limit/cursor; comparison page |
 | 33 | create_projection_run | CreateProjectionRun | projections:write | COMMAND | ProjectionRequest + idempotency_key; ProjectionRunView |
-| 34 | get_projection | GetProjectionRun | none | READ | account_id, run_id; ProjectionRunView |
+| 34 | get_projection | GetProjectionRun | none | READ | account_id, run_id, optional point_limit/point_cursor; ProjectionRunView |
 | 35 | list_goals | ListGoals | none | READ | account_id, Page; goal summaries |
 | 36 | get_goal_analysis | GetGoalAnalysis | none | READ | account_id, run_id; GoalAnalysis |
 | 37 | get_research_summary | GetResearchSummary | research:read | READ | account_id, pinned xray reference, cutoff, filters/Page; ResearchSummary |
@@ -79,3 +79,8 @@ window.openai.callTool compatibility fallback when available. Refresh is limited
 summary/matrix for the displayed owned account/run, one pending read and15 seconds.
 Partial inputs, cancellation, errors and teardown clear financial content; late
 responses cannot replace a new account/run selection. No broker command is available.
+
+Projection point pagination follows [ADR-0029](../adr/ADR-0029-PROJECTION-PUBLIC-POINT-PAGES.md):
+default 25/maximum 100 complete point rows, 2048-character cursor, all saved
+variant summaries and exact preview omissions. Bound the final tool envelope
+before returning it; current grants and source rights precede cursor reads.

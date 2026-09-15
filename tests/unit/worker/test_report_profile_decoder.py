@@ -14,6 +14,7 @@ from trading212_worker import report_render_process as process
 from tests.unit.domain.report_factories import document
 from tests.unit.domain.report_v3_factories import capture_v3
 from tests.unit.domain.test_premium_report_versions import _capture
+from tests.unit.persistence.projection_report_factories import capture_v4
 
 pytestmark = pytest.mark.unit
 
@@ -23,10 +24,11 @@ def manifests() -> tuple[ReportManifestContract, ...]:
         document().manifest,
         build_report_manifest(_capture()),
         build_report_manifest(capture_v3()),
+        build_report_manifest(capture_v4()),
     )
 
 
-@pytest.mark.parametrize("profile", ["1", "2", "3"])
+@pytest.mark.parametrize("profile", ["1", "2", "3", "4"])
 def test_explicit_profile_decodes_exact_canonical_manifest_without_rewriting(profile: str) -> None:
     manifest = manifests()[int(profile) - 1]
     payload = encode_report_manifest(manifest)
@@ -35,24 +37,31 @@ def test_explicit_profile_decodes_exact_canonical_manifest_without_rewriting(pro
     assert encode_report_manifest(parsed) == payload
 
 
-@pytest.mark.parametrize("profile", ["", "0", "4", "03", "report_sections_v3", "private-canary"])
+@pytest.mark.parametrize(
+    "profile",
+    ["", "0", "5", "03", "04", "report_sections_v3", "report_sections_v4", "private-canary"],
+)
 def test_unknown_profile_fails_before_either_private_decoder(
     monkeypatch: pytest.MonkeyPatch,
     profile: str,
 ) -> None:
-    old, new = Mock(), Mock()
+    from trading212_domain import report_manifest_v4
+
+    old, new, projection = Mock(), Mock(), Mock()
     monkeypatch.setattr(process, "decode_report_manifest", old)
     monkeypatch.setattr(process, "decode_report_manifest_v3", new)
+    monkeypatch.setattr(report_manifest_v4, "decode_report_manifest_v4", projection)
     with pytest.raises(ReportRenderError) as caught:
         process._decode_manifest(b"private-payload-canary", profile)
     assert caught.value.code is ReportFailureCode.INPUT_CHANGED
     assert "untrusted-payload-canary-v3" not in str(caught.value)
     old.assert_not_called()
     new.assert_not_called()
+    projection.assert_not_called()
 
 
 @pytest.mark.parametrize(
-    "selected,actual", [(a, b) for a in (1, 2, 3) for b in (1, 2, 3) if a != b]
+    "selected,actual", [(a, b) for a in (1, 2, 3, 4) for b in (1, 2, 3, 4) if a != b]
 )
 def test_valid_but_mismatched_profile_cannot_decode_another_document_family(
     selected: int,
@@ -78,7 +87,7 @@ def test_entrypoint_rejects_unknown_parent_profile_before_pipe_access(
 ) -> None:
     connection = Mock()
     monkeypatch.setattr(process, "Connection", connection)
-    monkeypatch.setattr(sys, "argv", ["report", "19", "json", "/unused", "1", "4"])
+    monkeypatch.setattr(sys, "argv", ["report", "19", "json", "/unused", "1", "5"])
     with pytest.raises(SystemExit) as caught:
         process._main()
     assert caught.value.code == 2

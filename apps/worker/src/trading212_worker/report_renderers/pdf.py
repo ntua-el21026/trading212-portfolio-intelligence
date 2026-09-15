@@ -16,6 +16,7 @@ from trading212_application.reports import (
     ReportRenderError,
     ReportRenderGuard,
 )
+from trading212_domain.report_projection_schema import GOAL_REPORT_TABLES, PROJECTION_REPORT_TABLES
 from trading212_domain.report_schema import COMPANY_REPORT_TABLES, section_tables, table_schema
 from trading212_domain.report_v3 import is_report_selection
 from trading212_domain.reports import (
@@ -41,7 +42,15 @@ _TEXT_WIDTH = _WIDTH - 2 * _MARGIN
 
 def _analytical_order(descriptor: ReportTableDescriptor) -> tuple[int, int]:
     if descriptor.section is not None:
-        tables = section_tables(descriptor.section)
+        # Profile four has an explicit analytical registry; older selections
+        # continue to use their unchanged section membership.
+        tables = (
+            PROJECTION_REPORT_TABLES
+            if descriptor.section is ReportSection.PROJECTION
+            else GOAL_REPORT_TABLES
+            if descriptor.section is ReportSection.GOAL
+            else section_tables(descriptor.section)
+        )
         if descriptor.section is ReportSection.DRIFT:
             # Explicit company pins add analytical tables to drift without changing
             # legacy section selections or any canonical report bytes.

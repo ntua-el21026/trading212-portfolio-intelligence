@@ -21,7 +21,14 @@ from .planning_schemas import (
     CreateContributionPlanToolResult,
     DriftAnalysisToolResult,
 )
+from .projection_schemas import (
+    ProjectionCreateToolResult,
+    ProjectionGoalToolResult,
+    ProjectionListToolResult,
+    ProjectionRunToolResult,
+)
 from .report_schemas import GenerateReportToolResult, ReportListToolResult, ReportStatusToolResult
+from .research_schemas import ResearchItemToolResult, ResearchSummaryToolResult
 from .risk_schemas import RiskMatrixToolResult, RiskRunToolResult
 from .scenario_schemas import (
     ScenarioComparisonToolResult,
@@ -440,4 +447,10 @@ RESULT_MODELS: dict[str, type[BaseModel]] = {
     "create_scenario_run": ScenarioCreateToolResult,
     "get_scenario_result": ScenarioRunToolResult,
     "compare_scenarios": ScenarioComparisonToolResult,
+    "create_projection_run": ProjectionCreateToolResult,
+    "get_projection": ProjectionRunToolResult,
+    "list_goals": ProjectionListToolResult,
+    "get_goal_analysis": ProjectionGoalToolResult,
+    "get_research_summary": ResearchSummaryToolResult,
+    "get_research_item": ResearchItemToolResult,
 }

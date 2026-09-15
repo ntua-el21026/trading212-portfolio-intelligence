@@ -60,12 +60,12 @@ def test_profile3_is_report_only_and_normalized_pins_are_complete_or_legacy_null
     def checks(table: Table) -> str:
         return " ".join(str(x.sqltext) for x in table.constraints if isinstance(x, CheckConstraint))
 
-    assert "contract_version IN (1,2,3) AND (kind='report' OR contract_version=1)" in checks(
+    assert "contract_version IN (1,2,3,4) AND (kind='report' OR contract_version=1)" in checks(
         cast(Table, ReportInputSnapshotModel.__table__)
     )
-    assert "contract_version IN (1,2,3)" in checks(cast(Table, ReportJobModel.__table__))
+    assert "contract_version IN (1,2,3,4)" in checks(cast(Table, ReportJobModel.__table__))
     dependency = cast(Table, ReportInputPremiumDependencyModel.__table__)
-    assert "kind IN ('risk','scenario')" in checks(dependency)
+    assert "kind IN ('risk','scenario','projection')" in checks(dependency)
     assert "IN (0,8)" in checks(dependency)
     assert {
         "result_id",

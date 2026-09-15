@@ -17,6 +17,7 @@ from trading212_domain.report_v3 import (
     ReportScenarioRunSelection,
     ReportSelectionV3,
 )
+from trading212_domain.report_v4 import ReportCaptureSummaryV4, ReportSelectionV4
 from trading212_security.principals import AuthorizationError, Scope
 
 from .historical_models import HistoricalInputModel
@@ -27,6 +28,7 @@ from .premium_models import (
     PremiumRunLicenseModel,
     PremiumRunModel,
 )
+from .projection_models import ProjectionResultModel
 from .report_authorization import ReportAuthorization
 from .report_base import report_error
 from .report_models import (
@@ -129,11 +131,21 @@ def bind_report_premium_dependency(
     session: Session,
     authorization: ReportAuthorization,
     capture: ReportInputSnapshotModel,
-    selection: r.ReportSelection | r.ExportSelection | ReportSelectionV3,
-    summary: r.ReportCaptureSummary | ReportCaptureSummaryV3,
+    selection: r.ReportSelection | r.ExportSelection | ReportSelectionV3 | ReportSelectionV4,
+    summary: r.ReportCaptureSummary | ReportCaptureSummaryV3 | ReportCaptureSummaryV4,
     *,
     now: datetime,
 ) -> datetime | None:
+    if isinstance(selection, ReportSelectionV4):
+        from .report_projection_dependency import bind_projection_report_dependency
+
+        if not isinstance(summary, ReportCaptureSummaryV4):
+            raise report_error(app.ReportServiceErrorCode.VALIDATION_FAILED)
+        return bind_projection_report_dependency(
+            session, authorization, capture, selection, summary, now=now
+        )
+    if isinstance(summary, ReportCaptureSummaryV4):
+        raise report_error(app.ReportServiceErrorCode.VALIDATION_FAILED)
     if isinstance(selection, ReportSelectionV3):
         return _bind_v3(session, authorization, capture, selection, summary, now=now)
     if isinstance(summary, ReportCaptureSummaryV3):
@@ -212,7 +224,7 @@ def authorize_report_premium_sources(
     ).all()
     if version == 1 and not dependencies:
         return
-    if version not in (2, 3) or len(dependencies) != 1:
+    if version not in (2, 3, 4) or len(dependencies) != 1:
         raise AuthorizationError("access denied")
     dependency = dependencies[0]
     # SQL shares this predicate with bounded expiry and its database authorization
@@ -224,12 +236,18 @@ def authorize_report_premium_sources(
         is not False
     ):
         raise AuthorizationError("access denied")
-    result: RiskResultModel | ScenarioResultModel
-    if version == 3 and dependency.kind == "scenario":
+    result: RiskResultModel | ScenarioResultModel | ProjectionResultModel
+    if version == 4 and dependency.kind == "projection":
+        from .report_capture_projection_store import authorize_projection_report_metadata
+
+        root, _projection, _job, result = authorize_projection_report_metadata(
+            session, authorization, dependency.run_id, now=now
+        )
+    elif version == 3 and dependency.kind == "scenario":
         root, _scenario, _job, result = _scenario_metadata(
             session, authorization, dependency.run_id, now=now
         )
-    elif dependency.kind == "risk":
+    elif version in (2, 3) and dependency.kind == "risk":
         root, _risk, _job, result = authorize_risk_report_metadata(
             session, authorization, dependency.run_id, now=now
         )

@@ -30,17 +30,36 @@ worker, artifact pipeline and retention controls. Their local component gates pa
 PostgreSQL cases across the broad run and corrected-fixture rerun. Package-wide verification remains pending.
 P3-02 now includes immutable scenario versions, retained source-bound runs, a fenced
 worker, authenticated REST/web/MCP results, saved comparisons and four-format reports.
-Migration 0021 extends report lineage while retaining 254 normalized tables. The API
-has 109 paths/123 operations/441 schemas and MCP has 32 tools/seven resources;
+At that delivered component, migration 0021 retained 254 normalized tables; the API
+had 109 paths/123 operations/441 schemas and MCP had 32 tools/seven resources;
 the original contracts and ten broker GETs remain preserved. Explicit report profile3
 copies complete saved scenario/risk evidence while default profile2 and V1 remain
 compatible. The current report component passed 4,329 Python tests, 707 web tests,
 15 final schema/retention PostgreSQL cases and three actual production browser
 journeys. Ten distinct additional artifact/source cases have passing executions
-across retained gates. P3-03 currently has the reproducible Decimal numerical
-kernel and calendar/goal capture; its persistence, worker and interfaces remain pending.
-These are component observations, with exact source boundaries in the implementation
-report. P3-05 includes the risk and scenario MCP slices.
+across retained gates. P3-03 now includes saved assumptions/goals, normalized capture
+and results, an isolated worker, authenticated REST/MCP and a paged web workspace.
+The current ORM inventory has 321 normalized tables through migration 0026; the
+authoritative generated API has 127 paths/148 operations/533 schemas, and MCP
+has 38 tools/eleven resources. Projection report profile4 passed actual
+PDF/CSV/JSON/XLSX browser journeys at three widths, preserving complete saved
+values, source proof and legacy profiles. Research now has bounded authorized
+PostgreSQL pages, REST/client/web and MCP views; 16 runtime/page/retention cases,
+three real web journeys and 17 packaged widget browser cases passed at their
+recorded working sources. The complete research summary uses twelve SQL statements;
+this is not a claim for all single-item/write operations or latency acceptance.
+P3-06 public-only offline support and the account-safe command palette passed three
+production browser journeys. Only five public static assets enter its cache;
+private HTML/API/reports remain network-only. Owned saved layouts and licensed
+provider acquisition are in progress. Migration 0026 adds guarded risk/scenario
+physical counters and bounded cleanup; 19 actual PostgreSQL cases passed for migration, counter/cleanup and source-copy
+regressions, including the concurrent-capture report correction. All 48 additional
+compatibility selectors have passing executions across the broad and targeted
+receipts, with each failed predecessor preserved. The final isolated checkpoint
+passed 5,129 Python tests, 831 web tests and all included static, generated-contract
+and repository checks in 506.768 seconds with unchanged source.
+These are component observations with exact source boundaries in the implementation
+report. All package, acceptance, SLO and independent-review predicates remain pending.
 Final local validation remains pending; independent review will remain pending for the new
 candidate. GitHub Actions is `deferred_by_owner`, unverified. Production
 release/deployment, paid-provider purchases and Live are not authorized.

@@ -18,6 +18,7 @@ from trading212_domain.report_v3 import (
     ReportManifestContract,
     ReportSelectionV3,
 )
+from trading212_domain.report_v4 import ReportSelectionV4
 from trading212_domain.reports import (
     MAX_REPORT_ARTIFACT_BYTES,
     MAX_REPORT_JOB_BYTES,
@@ -131,7 +132,7 @@ def _command(key: str, ttl: int) -> None:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class GenerateReportCommand(ReportRecord):
-    selection: ReportSelection | ReportSelectionV3
+    selection: ReportSelection | ReportSelectionV3 | ReportSelectionV4
     idempotency_key: str
     ttl_days: int = 7
 
@@ -209,6 +210,20 @@ class ReportPinnedContextV3(ReportPinnedContext):
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
+class ReportPinnedContextV4(ReportPinnedContext):
+    """Explicit V4 status context; its ordinary snapshot clocks remain required."""
+
+    profile_version: str = "report_sections_v4"
+    schema_version: str = "4.0.0"
+
+    def __post_init__(self) -> None:
+        ReportRecord.__post_init__(self)
+        report_limit(len(self.pins) <= 256, "pins")
+        if (self.profile_version, self.schema_version) != ("report_sections_v4", "4.0.0"):
+            fail_validation("Report context profile is unsupported.", field="profile_version")
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
 class ReportArtifactMetadata(ReportRecord):
     artifact_id: UUID
     format: ReportFormat
@@ -226,7 +241,7 @@ class ReportArtifactMetadata(ReportRecord):
 
 def _status(
     state: ReportJobState,
-    context: ReportPinnedContext | ReportPinnedContextV3 | None,
+    context: ReportPinnedContext | ReportPinnedContextV3 | ReportPinnedContextV4 | None,
     digest: str | None,
     artifacts: tuple[ReportArtifactMetadata, ...],
     completed: datetime | None,
@@ -257,7 +272,7 @@ def _status(
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ReportJobStatus(ReportRecord):
     account_id: UUID
-    context: ReportPinnedContext | ReportPinnedContextV3 | None
+    context: ReportPinnedContext | ReportPinnedContextV3 | ReportPinnedContextV4 | None
     job_id: UUID
     state: ReportJobState
     requested_at: datetime
@@ -430,7 +445,10 @@ class ReportCaptureSink(ReportChunkSink, Protocol):
 
 class ReportCapturePort(Protocol):
     def capture_report(
-        self, selection: ReportSelection | ReportSelectionV3, *, sink: ReportCaptureSink
+        self,
+        selection: ReportSelection | ReportSelectionV3 | ReportSelectionV4,
+        *,
+        sink: ReportCaptureSink,
     ) -> ReportCaptureContract: ...
     def capture_export(
         self, selection: ExportSelection, *, sink: ReportCaptureSink
@@ -522,13 +540,15 @@ class ReportService(Protocol):
 ReportsService = ReportService
 
 
-def encode_report_pinned_context(value: ReportPinnedContext | ReportPinnedContextV3) -> bytes:
+def encode_report_pinned_context(
+    value: ReportPinnedContext | ReportPinnedContextV3 | ReportPinnedContextV4,
+) -> bytes:
     """Encode only the safe status projection; grants and artifact bytes are excluded."""
     from dataclasses import fields
 
     from trading212_domain import report_manifest as codec
 
-    if type(value) not in (ReportPinnedContext, ReportPinnedContextV3):
+    if type(value) not in (ReportPinnedContext, ReportPinnedContextV3, ReportPinnedContextV4):
         fail_validation("A typed report context is required.", field="context")
     raw = {
         item.name: (
@@ -550,6 +570,10 @@ def decode_report_pinned_context(payload: bytes) -> ReportPinnedContext:
 
 def decode_report_pinned_context_v3(payload: bytes) -> ReportPinnedContextV3:
     return _decode_report_pinned_context(payload, ReportPinnedContextV3)
+
+
+def decode_report_pinned_context_v4(payload: bytes) -> ReportPinnedContextV4:
+    return _decode_report_pinned_context(payload, ReportPinnedContextV4)
 
 
 def _decode_report_pinned_context[T: ReportPinnedContext](payload: bytes, kind: type[T]) -> T:
@@ -596,7 +620,9 @@ def report_request_digest(command: GenerateReportCommand | CreateExportCommand) 
         fail_validation("A typed report command is required.", field="command")
     selection = encode_report_selection(command.selection)
     version = (
-        b"report_request_v3\0"
+        b"report_request_v4\0"
+        if report_schema_version(command.selection) == "4.0.0"
+        else b"report_request_v3\0"
         if report_schema_version(command.selection) == "3.0.0"
         else b"report_request_v2\0"
         if report_schema_version(command.selection) == "2.0.0"
