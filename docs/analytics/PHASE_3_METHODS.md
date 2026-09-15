@@ -102,6 +102,16 @@ retrospective permits explicitly disclosed later retrieval without a then-known 
 Comparison reads two retained runs and computes differences only for compatible
 currency/dimensions/basis; otherwise preserve separate values and mismatch reasons.
 
+[ADR-0025](../adr/ADR-0025-SCENARIO-EVIDENCE-AND-COVERAGE.md) fixes sensitivity
+membership/units/economic-driver equivalence, tri-state selector priority and a
+conservative money-coverage predicate. Any positive potentially shocked unsupported
+amount blocks complete totals, except a separately proved unchanged treatment whose
+every admissible channel is zero; unknown mapping diagnostics remain. The rate/factor
+effect bound applies to their summed ratio, and each selected formula checks its
+actual multiplier. Replay uses canonical market channels with mode/exclusions but
+no simultaneous hypothetical shocks. Historical holdings and their own knowledge
+cutoff remain separate from market knowledge. All complete source proof is bounded.
+
 ## Projections and goals
 
 Use ADR-0019 correlated monthly lognormal model/stateless sampler. Sort assets by

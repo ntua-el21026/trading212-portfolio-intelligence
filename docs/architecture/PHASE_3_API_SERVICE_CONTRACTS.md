@@ -123,6 +123,15 @@ run IDs and never recomputes their values or hides method/currency differences.
 | GET /accounts/{account_id}/scenario-comparison | CompareScenarios; P+A |
 | POST /scenario-runs/{run_id}/cancel | CancelScenarioRun; P+A+scenarios:write |
 
+[ADR-0025](../adr/ADR-0025-SCENARIO-EVIDENCE-AND-COVERAGE.md) concretizes the
+X-ray pin as an owned succeeded saved run; the service resolves its complete original
+input/result and verifies the exact snapshot/currency/cutoff. Rate/factor definitions
+retain source/version/driver pins, never caller coefficient arrays. Historical replay
+pins an owned retained historical input and separate holdings/market knowledge bases;
+it rejects simultaneous hypothetical shock entries. Source membership and current
+rights precede coefficient decoding, and the complete sensitivity expansion shares
+one 100,000-row/32 MiB admission bound.
+
 ScenarioResult contains original root/terminal exposure, winning/excluded mappings,
 covered/uncovered mass, pre/post/impact components, interaction residual, source
 dates and assumptions. A fund wrapper is replaced by its terminal partition;
@@ -249,4 +258,17 @@ Seventeen fixed risk tables include six proof tables. The distinct
 issuer, cash/unresolved state and exact exposure metrics. Its empty descriptor
 records an absent risk X-ray pin; it coexists with ordinary X-ray analytical tables.
 Existing report scopes, CSRF/idempotency, download grants and byte bounds apply.
-Implementation, mixed-version migration and local verification remain pending.
+The risk-only profile is implemented with local component evidence; full Phase3
+acceptance remains pending.
+
+[ADR-0026](../adr/ADR-0026-PREMIUM-REPORT-PROFILES.md) accepts one additive
+`report_sections_v3` / `3.0.0` outer format on the same six premium routes. An explicit
+closed profile selector negotiates it; omission preserves the current profile2
+risk-only request, collection, cursor, canonical bytes and semantic command framing.
+Profile3 has closed family literals, actual typed canonical input bindings and an
+explicit versioned table-key registry extended only with implemented schemas. New
+registry members truthfully extend generated premium unions, preserving previously
+emitted documents and existing table meanings; original V1/MCP descriptors stay exact.
+Unsupported sections fail before work, never create placeholder success. SQL lists,
+counts, cursors, direct IDs, grants and retention all remain profile-scoped. This
+profile3 evolution is an accepted design decision, not implemented runtime support.

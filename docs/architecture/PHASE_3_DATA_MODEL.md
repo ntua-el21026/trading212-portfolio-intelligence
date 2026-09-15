@@ -75,6 +75,7 @@ A failed or timed-out prefix cannot become a successful complete run.
 | Risk asset series / combined interval cells | 32 / 100,000 |
 | Risk window | 3,661 daily boundary points, within existing 3,660-day span |
 | Scenario rules / exclusions / terminal components | 128 / 128 / existing 10,000 X-ray terminal paths |
+| Scenario sensitivity observations + memberships + evidence + applied uses | 100,000 aggregate rows per run, also within the 32 MiB complete private bound |
 | Projection assets / monthly horizon / paths | 12 / 600 / 4,096 |
 | Projection asset-month-path product | 1,000,000 |
 | Retained projection time points / cash-flow schedule entries | 121 / 128 |
