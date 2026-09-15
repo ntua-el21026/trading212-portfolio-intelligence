@@ -32,7 +32,7 @@ def capture_xray_semantics(
         for ordinal, identifier in enumerate(identifiers):
             put(
                 r.ReportTableKey.XRAY_MEMBERS,
-                f"xray.member.{parent_kind}.{parent_key}.{role}.{ordinal}",
+                f"{context.key}.member.{parent_kind}.{parent_key}.{role}.{ordinal}",
                 {
                     "parent_kind": parent_kind,
                     "parent_key": parent_key,
@@ -46,7 +46,7 @@ def capture_xray_semantics(
         root = position.root
         put(
             r.ReportTableKey.XRAY_DIRECT_POSITIONS,
-            f"xray.direct.{root.key}",
+            f"{context.key}.direct.{root.key}",
             {
                 "root_key": root.key,
                 "position_id": root.position_id,
@@ -75,7 +75,7 @@ def capture_xray_semantics(
             key = f"{fund_key}.{entity.entity_id}"
             put(
                 r.ReportTableKey.XRAY_FUND_ENTITIES,
-                f"xray.entity.{key}",
+                f"{context.key}.entity.{key}",
                 {
                     "fund_instrument_id": composition.fund_instrument_id,
                     "entity_id": entity.entity_id,
@@ -91,7 +91,7 @@ def capture_xray_semantics(
         for measure in path.dimension_weights:
             put(
                 r.ReportTableKey.XRAY_PATH_WEIGHTS,
-                f"xray.path_weight.{path.key}.{measure.dimension.value}",
+                f"{context.key}.path_weight.{path.key}.{measure.dimension.value}",
                 {
                     "path_key": path.key,
                     "dimension": measure.dimension,
@@ -101,7 +101,7 @@ def capture_xray_semantics(
     policy = value.policy
     put(
         r.ReportTableKey.XRAY_POLICY,
-        "xray.policy",
+        f"{context.key}.policy",
         {
             "id": policy.id,
             "version": policy.version,
@@ -146,7 +146,7 @@ def capture_xray_semantics(
             rule = component.rule
         put(
             r.ReportTableKey.XRAY_POLICY_COMPONENTS,
-            f"xray.policy.{kind}",
+            f"{context.key}.policy.{kind}",
             {
                 "kind": kind,
                 "id": component.id,
@@ -176,7 +176,7 @@ def capture_xray_semantics(
     ):
         put(
             r.ReportTableKey.XRAY_POLICY_LIMITS,
-            f"xray.policy.limit.{name}",
+            f"{context.key}.policy.limit.{name}",
             {
                 "key": name,
                 "value": getattr(policy.limits, name),
@@ -190,7 +190,7 @@ def capture_xray_semantics(
     ):
         put(
             r.ReportTableKey.XRAY_POLICY_LIMITS,
-            f"xray.policy.traversal.{name}",
+            f"{context.key}.policy.traversal.{name}",
             {
                 "key": name,
                 "value": getattr(policy.traversal_policy, name),
@@ -199,7 +199,7 @@ def capture_xray_semantics(
     for taxonomy in policy.taxonomy_versions:
         put(
             r.ReportTableKey.XRAY_TAXONOMIES,
-            f"xray.taxonomy.{taxonomy.dimension.value}",
+            f"{context.key}.taxonomy.{taxonomy.dimension.value}",
             {
                 "dimension": taxonomy.dimension,
                 "taxonomy_id": taxonomy.taxonomy_id,
@@ -216,7 +216,7 @@ def capture_xray_semantics(
         ):
             put(
                 r.ReportTableKey.XRAY_THRESHOLD_POLICY,
-                f"xray.threshold.{metric}",
+                f"{context.key}.threshold.{metric}",
                 {
                     "metric": metric,
                     "limit": limit,

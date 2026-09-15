@@ -6,7 +6,7 @@
 
 **Implementation authority:** `main`
 
-**Updated:** 2026-09-14
+**Updated:** 2026-09-15
 
 ## Current state
 
@@ -24,7 +24,10 @@ complete calculation object, normalized storage, bounded durable worker, typed R
 operations, a generated client, shared physical retention and the authenticated risk
 workspace. Web component tests and the actual API/isolated-worker browser flow pass;
 The three risk MCP tools and sixth resource are implemented with signed transport
-and widget component checks. Risk reports and package-wide verification remain pending.
+and widget component checks. Versioned premium risk reports now share the existing
+worker, artifact pipeline and retention controls. Their local component gates pass:
+3,371 Python tests, 614 web tests, three real browser viewports and 145
+PostgreSQL cases across the broad run and corrected-fixture rerun. Package-wide verification remains pending.
 Final local validation remains pending; independent review will remain pending for the new
 candidate. GitHub Actions is `deferred_by_owner`, unverified. Production
 release/deployment, paid-provider purchases and Live are not authorized.

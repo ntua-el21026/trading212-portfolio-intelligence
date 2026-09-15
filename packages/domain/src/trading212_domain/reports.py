@@ -19,6 +19,8 @@ from .sources import LicensePermission, SourceAvailability
 from .values import CurrencyCode, require_utc
 
 REPORT_SCHEMA_VERSION = "1.0.0"
+PREMIUM_REPORT_SCHEMA_VERSION = "2.0.0"
+PREMIUM_REPORT_PROFILE_VERSION = "report_sections_v2"
 REPORT_METHOD = "report_manifest_v1"
 REPORT_METHOD_VERSION = "1.0.0"
 REPORT_PROFILE_VERSION = "report_sections_v1"
@@ -77,6 +79,7 @@ class ReportSection(StrEnum):
     XRAY = "xray"
     QUALITY = "quality"
     ACTIVITY = "activity"
+    RISK = "risk"
 
 
 class ExportDataset(StrEnum):
@@ -136,6 +139,7 @@ class ReportFamily(StrEnum):
     XRAY = "xray"
     RECONCILIATION = "reconciliation"
     ALERTS = "alerts"
+    RISK = "risk"
 
 
 class ReportInputRole(StrEnum):
@@ -377,12 +381,13 @@ class ReportSelection(ReportRecord):
     benchmark_version_id: UUID | None = None
     constituent_snapshot_id: UUID | None = None
     xray_run_id: UUID | None = None
+    risk_run_id: UUID | None = None
     template_version: str = REPORT_TEMPLATE_VERSION
 
     def __post_init__(self) -> None:
         ReportRecord.__post_init__(self)
         _selection_window(self.start_date, self.end_date)
-        for name, items, maximum in (("sections", self.sections, 13), ("formats", self.formats, 4)):
+        for name, items, maximum in (("sections", self.sections, 14), ("formats", self.formats, 4)):
             if not 1 <= len(items) <= maximum or len(set(items)) != len(items):
                 fail_validation("Report selections must be unique and bounded.", field=name)
         if not set(_REQUIRED_SECTIONS[self.report_type]).issubset(self.sections):
@@ -390,6 +395,10 @@ class ReportSelection(ReportRecord):
         if self.template_version != REPORT_TEMPLATE_VERSION:
             fail_validation("Report template is unsupported.", field="template_version")
         selected = set(self.sections)
+        if (ReportSection.RISK in selected) != (self.risk_run_id is not None):
+            fail_validation(
+                "Risk sections require exactly one retained run pin.", field="risk_run_id"
+            )
         if self.xray_run_id is not None and ReportSection.DRIFT not in selected:
             fail_validation("Company actuals require a drift section.", field="xray_run_id")
         wants_target = bool(
@@ -478,6 +487,23 @@ class ExportSelection(ReportRecord):
             fail_validation("A target version is required.", field="target_version_id")
         if self.dataset is ExportDataset.PLANS and self.plan_revision_id is None:
             fail_validation("A plan revision is required.", field="plan_revision_id")
+
+
+def report_schema_version(selection: ReportSelection | ExportSelection) -> str:
+    """An explicit premium pin selects V2; every legacy selection retains V1."""
+    return (
+        PREMIUM_REPORT_SCHEMA_VERSION
+        if isinstance(selection, ReportSelection) and selection.risk_run_id is not None
+        else REPORT_SCHEMA_VERSION
+    )
+
+
+def report_profile_version(selection: ReportSelection | ExportSelection) -> str:
+    return (
+        PREMIUM_REPORT_PROFILE_VERSION
+        if report_schema_version(selection) == PREMIUM_REPORT_SCHEMA_VERSION
+        else REPORT_PROFILE_VERSION
+    )
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -762,6 +788,23 @@ class ReportTableKey(StrEnum):
     XRAY_WARNING_PATHS = "xray_warning_paths"
     PLANNING_COMPANY_ACTUALS_V1 = "planning_company_actuals_v1"
     PLANNING_COMPANY_BASIS_V1 = "planning_company_basis_v1"
+    RISK_BASIS_V1 = "risk_basis_v1"
+    RISK_DEFINITION_V1 = "risk_definition_v1"
+    RISK_OBSERVED_V1 = "risk_observed_v1"
+    RISK_ROLLING_V1 = "risk_rolling_v1"
+    RISK_MATRIX_SUMMARY_V1 = "risk_matrix_summary_v1"
+    RISK_MATRIX_AXES_V1 = "risk_matrix_axes_v1"
+    RISK_MATRIX_CELLS_V1 = "risk_matrix_cells_v1"
+    RISK_TAILS_V1 = "risk_tails_v1"
+    RISK_MODELED_V1 = "risk_modeled_v1"
+    RISK_COMPONENTS_V1 = "risk_components_v1"
+    RISK_CONCENTRATION_V1 = "risk_concentration_v1"
+    RISK_RUN_ASSETS_V1 = "risk_run_assets_v1"
+    RISK_SERIES_V1 = "risk_series_v1"
+    RISK_INTERVALS_V1 = "risk_intervals_v1"
+    RISK_HISTORY_CONTEXT_V1 = "risk_history_context_v1"
+    RISK_HISTORY_MEMBERS_V1 = "risk_history_members_v1"
+    RISK_XRAY_PATHS_V1 = "risk_xray_paths_v1"
 
 
 class ReportRowOrder(StrEnum):
@@ -843,10 +886,25 @@ class ReportDocumentHeader(ReportRecord):
 
     def __post_init__(self) -> None:
         ReportRecord.__post_init__(self)
-        if self.document_schema_version != REPORT_SCHEMA_VERSION or len(
-            {x.table for x in self.tables}
-        ) != len(self.tables):
-            fail_validation("Report document schema/tables are invalid.", field="tables")
+        if self.document_schema_version != report_schema_version(self.selection):
+            fail_validation(
+                "Report document version differs from its selection.",
+                field="document_schema_version",
+            )
+        if len({x.table for x in self.tables}) != len(self.tables):
+            fail_validation("Report document tables are duplicated.", field="tables")
+        from .report_risk_schema import RISK_PROOF_TABLES, RISK_REPORT_TABLES
+
+        premium_tables = frozenset((*RISK_REPORT_TABLES, *RISK_PROOF_TABLES))
+        supplied = {item.table for item in self.tables}
+        if self.document_schema_version == PREMIUM_REPORT_SCHEMA_VERSION:
+            report_limit(len(self.tables) <= 128, "tables")
+            if not premium_tables <= supplied:
+                fail_validation("A premium report requires complete risk tables.", field="tables")
+        elif supplied & premium_tables or any(
+            item.section is ReportSection.RISK for item in self.tables
+        ):
+            fail_validation("Legacy documents cannot contain premium tables.", field="tables")
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -864,6 +922,14 @@ class ReportContext(ReportRecord):
     source_at: datetime | None = None
     reconciliation_key: str | None = None
     schema_version: str = REPORT_SCHEMA_VERSION
+
+    def __post_init__(self) -> None:
+        ReportRecord.__post_init__(self)
+        if self.schema_version not in {REPORT_SCHEMA_VERSION, PREMIUM_REPORT_SCHEMA_VERSION} or (
+            self.family is ReportFamily.RISK
+            and self.schema_version != PREMIUM_REPORT_SCHEMA_VERSION
+        ):
+            fail_validation("Report context schema is unsupported.", field="schema_version")
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -1028,6 +1094,7 @@ class ReportCaptureSummary(ReportRecord):
             0 <= self.canonical_byte_length <= MAX_REPORT_DOCUMENT_BYTES, "canonical_byte_length"
         )
         report_limit(0 <= self.chunk_count <= MAX_REPORT_DATASET_ROWS, "chunk_count")
+        validate_report_profile(self.header, self.proof, self.immutable_bindings)
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -1058,6 +1125,7 @@ class ReportManifest(ReportRecord):
         ):
             fail_validation("Report manifest version is unsupported.", field="method_version")
         proof = ReportProof(**{item.name: getattr(self, item.name) for item in fields(ReportProof)})
+        validate_report_profile(self.document, proof, self.bindings)
         for item in fields(ReportProof):
             object.__setattr__(self, item.name, getattr(proof, item.name))
         object.__setattr__(
@@ -1075,6 +1143,32 @@ class ReportManifest(ReportRecord):
                 )
             ),
         )
+
+
+def validate_report_profile(
+    header: ReportDocumentHeader, proof: ReportProof, bindings: tuple[ReportBinding, ...]
+) -> None:
+    """Prevent new-family proof from being relabeled as a legacy document."""
+    expected = report_schema_version(header.selection)
+    if any(item.schema_version != expected for item in proof.contexts):
+        fail_validation("Report context and document versions differ.", field="schema_version")
+    if expected == PREMIUM_REPORT_SCHEMA_VERSION:
+        if not any(item.family is ReportFamily.RISK for item in proof.contexts):
+            fail_validation("A premium report requires its risk context.", field="contexts")
+    elif (
+        any(item.family is ReportFamily.RISK for item in proof.contexts)
+        or any(item.family is ReportFamily.RISK for item in proof.coverage)
+        or any(item.family is ReportFamily.RISK for item in proof.bounds)
+        or any(item.family is ReportFamily.RISK for item in proof.notes)
+        or any(item.family is ReportFamily.RISK for item in bindings)
+    ):
+        fail_validation("Legacy report proof cannot contain a premium family.", field="family")
+    if expected == REPORT_SCHEMA_VERSION:
+        from .report_risk_schema import RISK_PROOF_TABLES, RISK_REPORT_TABLES
+
+        premium_tables = frozenset((*RISK_REPORT_TABLES, *RISK_PROOF_TABLES))
+        if any(item.table in premium_tables for item in proof.proof_relations):
+            fail_validation("Legacy proof cannot contain premium tables.", field="proof_relations")
 
 
 # Top-level public pins share the exact typed immutable binding representation.

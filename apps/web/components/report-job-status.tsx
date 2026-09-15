@@ -7,13 +7,16 @@ import { Button, Notice, Surface } from "@trading212/ui";
 import type {
   ExportJobStatus,
   ReportJobStatus,
+  PremiumReportJobStatus,
 } from "@trading212/api-contracts";
 
 import { formatDateTime, titleCase } from "../lib/format";
 
 export function ReportJobStatusCard({
   job,
-}: Readonly<{ job: ReportJobStatus | ExportJobStatus }>) {
+}: Readonly<{
+  job: ReportJobStatus | ExportJobStatus | PremiumReportJobStatus;
+}>) {
   const router = useRouter();
   const [polls, setPolls] = useState(0);
   const [pending, startTransition] = useTransition();

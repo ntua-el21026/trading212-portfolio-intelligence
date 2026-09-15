@@ -82,13 +82,14 @@ def report_response[T: BaseModel](
     conditional: bool = False,
 ) -> Response:
     try:
-        checked = schema.model_validate(to_primitive(value))
         if schema is wire.ReportManifest:
             if not isinstance(value, domain.ReportManifest):
                 raise TypeError
             # Preserve the bytes bound by the published semantic manifest digest.
             payload = encode_report_manifest(value)
+            schema.model_validate_json(payload)
         else:
+            checked = schema.model_validate(to_primitive(value))
             payload = checked.model_dump_json().encode("utf-8")
     except (KeyError, TypeError, ValueError):
         return _error(request, 500, "INTERNAL_ERROR", "The private report operation failed.")

@@ -76,6 +76,7 @@ def _field_names(value: r.ReportRecord) -> tuple[str, ...]:
                     type(value) in (r.ReportSelection, r.ExportSelection)
                     and field.name == "xray_run_id"
                 )
+                or (type(value) is r.ReportSelection and field.name == "risk_run_id")
             )
         )
     )
@@ -231,8 +232,10 @@ def _decode(value: JsonValue, annotation: object) -> object:
         optional = (
             _OPTIONAL_CELL_FIELDS
             if annotation is r.ReportCell
+            else frozenset({"xray_run_id", "risk_run_id"})
+            if annotation is r.ReportSelection
             else frozenset({"xray_run_id"})
-            if annotation in (r.ReportSelection, r.ExportSelection)
+            if annotation is r.ExportSelection
             else frozenset()
         )
         if type(value) is not dict or not names - optional <= set(value) <= names:
@@ -245,6 +248,12 @@ def _decode(value: JsonValue, annotation: object) -> object:
             and value["xray_run_id"] is None
         ):
             fail_validation("A present company run pin must be a UUID.", field="xray_run_id")
+        if (
+            annotation is r.ReportSelection
+            and "risk_run_id" in value
+            and value["risk_run_id"] is None
+        ):
+            fail_validation("A present risk run pin must be a UUID.", field="risk_run_id")
         hints = r._record_hints(annotation)
         result = {
             name: _decode(item, hints[name])

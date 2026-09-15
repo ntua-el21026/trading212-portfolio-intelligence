@@ -304,6 +304,21 @@ async function renderReportPage(
           title="Reports"
           description="Generate private reports and dataset exports from immutable portfolio sources."
         />
+        <nav className="historical-tabs" aria-label="Report collections">
+          <Link
+            prefetch={false}
+            aria-current="page"
+            href={reportHref({ account: account.id })}
+          >
+            Portfolio reports and exports
+          </Link>
+          <Link
+            prefetch={false}
+            href={`/reports/premium?account=${encodeURIComponent(account.id)}`}
+          >
+            Risk reports
+          </Link>
+        </nav>
         <Surface>
           <h2>Account and valuation snapshot</h2>
           <form method="get" action="/reports" className="target-form">

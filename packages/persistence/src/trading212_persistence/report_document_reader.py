@@ -58,6 +58,7 @@ class PostgresReportDocumentReader:
                 if payload is None or hashlib.sha256(payload).hexdigest() != job.input_digest:
                     raise jobs.ReportJobInputError(ReportFailureCode.INPUT_CHANGED)
                 value = decode_report_manifest(payload)
+                self._store._manifest_contract(job, value)
                 self._store._sources(session, authorization, job)
                 if self._store._live(session, self._claim) is None:
                     raise jobs.ReportJobInputError(ReportFailureCode.LEASE_EXPIRED)

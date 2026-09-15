@@ -23,6 +23,7 @@ from .premium_models import (
     PremiumRunLicenseModel,
     PremiumRunModel,
 )
+from .report_retention import purge_report_premium_copies
 from .risk_models import (
     RiskComponentModel,
     RiskIntervalModel,
@@ -173,6 +174,12 @@ def _purge_run(
         )
         session.add(marker)
         session.flush()
+    if not purge_report_premium_copies(session, root.owner_id, root.id, at=at, budget=budget):
+        return False
+    # Report copies share this allowance. Keep source payload and capacity until
+    # a later invocation can inspect and clear the remaining run participants.
+    if budget.metadata_limit < 6:
+        return False
     job = session.scalar(
         select(PremiumJobModel)
         .where(

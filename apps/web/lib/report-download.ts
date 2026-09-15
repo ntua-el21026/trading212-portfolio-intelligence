@@ -63,21 +63,25 @@ async function accountFromForm(request: Request): Promise<string> {
 
 export async function serveReportArtifact(
   request: Request,
-  family: "reports" | "exports",
+  family: "reports" | "exports" | "premium-reports",
   parentId: string,
   artifactId: string,
 ): Promise<Response> {
   // Authenticate and verify same-origin command access before parsing caller input.
-  const { reports } = await reportClients(true);
+  const { reports, premiumReports } = await reportClients(true);
   try {
     const parent = uuid.parse(parentId),
       artifact = uuid.parse(artifactId);
     const account = await accountFromForm(request);
     const query = { account_id: account };
     const job =
-      family === "reports"
-        ? reportData(await reports.get_report_status(parent, query))
-        : reportData(await reports.get_export_status(parent, query));
+      family === "premium-reports"
+        ? reportData(
+            await premiumReports.get_premium_report_status(parent, query),
+          )
+        : family === "reports"
+          ? reportData(await reports.get_report_status(parent, query))
+          : reportData(await reports.get_export_status(parent, query));
     if (job.state === "expired")
       throw new ReportApiError(
         "ARTIFACT_EXPIRED",
@@ -94,19 +98,26 @@ export async function serveReportArtifact(
         "This artifact is unavailable.",
       );
     const grant = reportData(
-      family === "reports"
-        ? await reports.create_report_download_grant(
+      family === "premium-reports"
+        ? await premiumReports.create_premium_report_download_grant(
             parent,
             artifact,
             query,
             {},
           )
-        : await reports.create_export_download_grant(
-            parent,
-            artifact,
-            query,
-            {},
-          ),
+        : family === "reports"
+          ? await reports.create_report_download_grant(
+              parent,
+              artifact,
+              query,
+              {},
+            )
+          : await reports.create_export_download_grant(
+              parent,
+              artifact,
+              query,
+              {},
+            ),
     );
     if (grant.artifact_id !== artifact)
       throw new ReportApiError(
@@ -115,15 +126,22 @@ export async function serveReportArtifact(
         "The private artifact could not be verified.",
       );
     const result =
-      family === "reports"
-        ? await reports.download_report_artifact(parent, artifact, query, {
-            grantToken: grant.token,
-            metadata,
-          })
-        : await reports.download_export_artifact(parent, artifact, query, {
-            grantToken: grant.token,
-            metadata,
-          });
+      family === "premium-reports"
+        ? await premiumReports.download_premium_report_artifact(
+            parent,
+            artifact,
+            query,
+            { grantToken: grant.token, metadata },
+          )
+        : family === "reports"
+          ? await reports.download_report_artifact(parent, artifact, query, {
+              grantToken: grant.token,
+              metadata,
+            })
+          : await reports.download_export_artifact(parent, artifact, query, {
+              grantToken: grant.token,
+              metadata,
+            });
     return new Response(result.content, {
       status: 200,
       headers: {

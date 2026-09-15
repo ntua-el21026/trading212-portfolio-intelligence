@@ -5,6 +5,7 @@ from __future__ import annotations
 from functools import lru_cache
 
 from .errors import fail_validation
+from .report_risk_schema import RISK_PROOF_TABLES, RISK_REPORT_TABLES, RISK_TABLE_COLUMNS
 from .reports import (
     CellKind,
     CellState,
@@ -1362,6 +1363,9 @@ _COLUMNS: dict[ReportTableKey, tuple[tuple[str, str], ...]] = {
     ),
 }
 
+# Premium schemas are registered without adding them to legacy section selections.
+_COLUMNS.update(RISK_TABLE_COLUMNS)
+
 _SECTION_TABLES: dict[ReportSection, tuple[ReportTableKey, ...]] = {
     ReportSection.OVERVIEW: (ReportTableKey.SNAPSHOT_TOTALS,),
     ReportSection.ALLOCATION: (
@@ -1433,6 +1437,7 @@ _SECTION_TABLES: dict[ReportSection, tuple[ReportTableKey, ...]] = {
         ReportTableKey.NOTES,
     ),
     ReportSection.ACTIVITY: (ReportTableKey.ACTIVITY,),
+    ReportSection.RISK: RISK_REPORT_TABLES,
 }
 
 
@@ -1563,6 +1568,8 @@ def report_tables(selection: ReportSelection | ExportSelection) -> tuple[ReportT
         if isinstance(selection, ExportSelection)
         else {table for section in selection.sections for table in section_tables(section)}
     )
+    if isinstance(selection, ReportSelection) and selection.risk_run_id is not None:
+        selected.update(RISK_PROOF_TABLES)
     if selection.xray_run_id is not None:
         # Additive, explicitly pinned actuals. Existing table schemas/order and
         # absent-pin selections are unchanged, including plan postweights.

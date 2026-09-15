@@ -797,3 +797,5 @@ export type {
   RiskReadOptions,
   RiskCommandOptions,
 } from "./risk-transport";
+
+export * from "./premium-reports.generated";

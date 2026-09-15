@@ -19,6 +19,7 @@ from .report_capture_company import prepare_company_copy
 from .report_capture_planning import capture_planning
 from .report_capture_portfolio import capture_portfolio, selected_snapshot
 from .report_capture_quality import capture_quality, capture_quality_tables
+from .risk_inputs import RiskPreflight
 
 
 class PostgresReportCapture:
@@ -28,12 +29,14 @@ class PostgresReportCapture:
         authorization: ReportAuthorization,
         *,
         source_use: r.ReportSourceUse,
+        risk_preflight: RiskPreflight | None = None,
         sessions: sessionmaker[Session],
         clock: Callable[[], datetime],
         cursor_signing_key: bytes,
     ) -> None:
         self._session, self._authorization, self._source_use = session, authorization, source_use
         self._sessions, self._clock, self._cursor_key = sessions, clock, cursor_signing_key
+        self._risk_preflight = risk_preflight
 
     def capture_report(
         self,
@@ -115,6 +118,18 @@ class PostgresReportCapture:
                 clock=self._clock,
                 cursor_signing_key=self._cursor_key,
                 source_use=SourceUse(self._source_use.value),
+            )
+        if isinstance(selection, r.ReportSelection) and selection.risk_run_id is not None:
+            from .report_capture_risk_store import capture_risk
+
+            capture_risk(
+                builder,
+                self._session,
+                self._authorization,
+                sessions=self._sessions,
+                clock=self._clock,
+                cursor_signing_key=self._cursor_key,
+                preflight=self._risk_preflight,
             )
         capture_alerts(builder, self._session, self._authorization, clock=self._clock)
         capture_quality_tables(builder)

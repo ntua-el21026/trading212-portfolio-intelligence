@@ -53,6 +53,7 @@ class CollectionSnapshotResource(StrEnum):
     ALERT_EVENTS = "alert_events"
     ALERT_EVALUATIONS = "alert_evaluations"
     NOTIFICATION_DESTINATIONS = "notification_destinations"
+    PREMIUM_REPORTS = "premium_reports"
     REPORTS = "reports"
     EXPORTS = "exports"
     PLAN_REVISIONS = "plan_revisions"
@@ -118,6 +119,7 @@ _SORT_SPECIFICATIONS = {
     CollectionSnapshotResource.ALERT_EVENTS: "created_at_desc_id_desc",
     CollectionSnapshotResource.ALERT_EVALUATIONS: "created_at_desc_id_desc",
     CollectionSnapshotResource.NOTIFICATION_DESTINATIONS: "created_at_desc_id_desc",
+    CollectionSnapshotResource.PREMIUM_REPORTS: "created_at_desc_id_desc",
     CollectionSnapshotResource.REPORTS: "created_at_desc_id_desc",
     CollectionSnapshotResource.EXPORTS: "created_at_desc_id_desc",
     CollectionSnapshotResource.PLAN_REVISIONS: "revision_number_desc_id_desc",
@@ -178,6 +180,7 @@ _ACCOUNT_RESOURCES = frozenset(
         CollectionSnapshotResource.ALERT_EVENTS,
         CollectionSnapshotResource.ALERT_EVALUATIONS,
         CollectionSnapshotResource.NOTIFICATION_DESTINATIONS,
+        CollectionSnapshotResource.PREMIUM_REPORTS,
         CollectionSnapshotResource.REPORTS,
         CollectionSnapshotResource.EXPORTS,
         CollectionSnapshotResource.PLAN_REVISIONS,

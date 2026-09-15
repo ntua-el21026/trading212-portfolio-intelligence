@@ -4,6 +4,8 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+- Add versioned premium risk reports with complete canonical proof, six fixed V2 routes, authenticated web downloads and source-bound physical retention; preserve V1 API/MCP contracts.
+
 - Add three scoped risk MCP tools and an isolated interactive resource over canonical persisted results.
 
 - Add the authenticated risk workspace with immutable definitions, retained-input runs, canonical result tables/charts and bounded job controls.

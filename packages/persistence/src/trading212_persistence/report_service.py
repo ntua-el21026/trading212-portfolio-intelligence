@@ -22,6 +22,7 @@ from trading212_domain.reports import (
     ReportManifest,
     ReportSelection,
     ReportSourceUse,
+    report_schema_version,
 )
 from trading212_security.principals import Principal
 
@@ -52,6 +53,7 @@ from .report_models import (
     ReportInputSnapshotModel,
     ReportJobModel,
 )
+from .risk_inputs import RiskPreflight
 
 type CaptureFactory = Callable[
     [Session, ReportAuthorization, ReportSourceUse], app.ReportCapturePort
@@ -70,16 +72,22 @@ class PostgresReportService(ReportStore):
         cursor_signing_key: bytes,
         clock: Callable[[], datetime] | None = None,
         capture_factory: CaptureFactory | None = None,
+        contract_version: int = 1,
+        risk_preflight: RiskPreflight | None = None,
         cursor_ttl_seconds: int = 3600,
         max_active_collection_snapshots_per_owner: int = 64,
         max_active_collection_members_per_owner: int = 250_000,
     ) -> None:
         super().__init__(sessions, clock=clock)
+        if type(contract_version) is not int or contract_version not in (1, 2):
+            raise ValueError("Report contract version is unsupported.")
+        self._contract_version = contract_version
         self._cursor_key = cursor_signing_key
         self._cursors = CursorCodec(
             cursor_signing_key, ttl_seconds=cursor_ttl_seconds, clock=self._clock
         )
         self._capture_factory = capture_factory
+        self._risk_preflight = risk_preflight
         self._cursor_ttl = cursor_ttl_seconds
         self._max_collections = max_active_collection_snapshots_per_owner
         self._max_members = max_active_collection_members_per_owner
@@ -95,6 +103,7 @@ class PostgresReportService(ReportStore):
             session,
             authorization,
             source_use=use,
+            risk_preflight=self._risk_preflight,
             sessions=self._sessions,
             clock=self._clock,
             cursor_signing_key=self._cursor_key,
@@ -120,6 +129,11 @@ class PostgresReportService(ReportStore):
             else ReportSourceUse.EXPORT
         )
         task = "reports.generate.v1" if use is ReportSourceUse.REPORT else "exports.generate.v1"
+        command_name = (
+            "reports.generate.v2"
+            if use is ReportSourceUse.REPORT and self._contract_version == 2
+            else task
+        )
         digest = _command_digest(command)
 
         def execute() -> app.ReportJobStatus | app.ExportJobStatus:
@@ -131,11 +145,14 @@ class PostgresReportService(ReportStore):
                     required_scopes=selection_scopes(selection),
                     now=self._now(),
                 )
+                selected_version = 2 if report_schema_version(selection) == "2.0.0" else 1
+                if selected_version != self._contract_version:
+                    raise report_error(app.ReportServiceErrorCode.VALIDATION_FAILED)
                 report_owner_lock(session, authorization.owner_id)
                 prior = session.scalar(
                     select(ApplicationCommandIdentityModel).where(
                         ApplicationCommandIdentityModel.owner_id == authorization.owner_id,
-                        ApplicationCommandIdentityModel.command == task,
+                        ApplicationCommandIdentityModel.command == command_name,
                         ApplicationCommandIdentityModel.idempotency_key == command.idempotency_key,
                     )
                 )
@@ -229,6 +246,7 @@ class PostgresReportService(ReportStore):
                         session.flush()
                     job = ReportJobModel(
                         **common,
+                        contract_version=self._contract_version,
                         definition_id=definition.id,
                         report_type=selection.report_type.value,
                         formats=[x.value for x in selection.formats],
@@ -250,7 +268,7 @@ class PostgresReportService(ReportStore):
                         owner_id=authorization.owner_id,
                         account_id=authorization.account_id,
                         created_at=at,
-                        command=task,
+                        command=command_name,
                         idempotency_key=command.idempotency_key,
                         command_digest=digest,
                         report_job_id=job.id if isinstance(job, ReportJobModel) else None,
@@ -301,7 +319,11 @@ class PostgresReportService(ReportStore):
             )
             .execution_options(populate_existing=True)
         )
-        if row is None:
+        if (
+            row is None
+            or (isinstance(row, ReportJobModel) and row.contract_version != self._contract_version)
+            or (kind == "export" and self._contract_version != 1)
+        ):
             raise report_error(app.ReportServiceErrorCode.NOT_FOUND)
         return cast(StoredJob, row)
 
@@ -374,6 +396,7 @@ class PostgresReportService(ReportStore):
             if payload is None or hashlib.sha256(payload).hexdigest() != job.manifest_digest:
                 raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
             result = decode_report_manifest(payload)
+            self._manifest_contract(job, result)
             self._sources(session, authorization, job)
             return result
 
@@ -424,8 +447,16 @@ class PostgresReportService(ReportStore):
                     if isinstance(query, app.ExportListQuery) and query.dataset
                     else None,
                 )
+                if is_report and self._contract_version == 2:
+                    fingerprint = collection_filter_fingerprint("premium_reports_v2", fingerprint)
+                if not is_report and self._contract_version != 1:
+                    raise report_error(app.ReportServiceErrorCode.NOT_FOUND)
                 definition = CollectionSnapshotDefinition(
-                    resource=CollectionSnapshotResource.REPORTS
+                    resource=(
+                        CollectionSnapshotResource.PREMIUM_REPORTS
+                        if self._contract_version == 2
+                        else CollectionSnapshotResource.REPORTS
+                    )
                     if is_report
                     else CollectionSnapshotResource.EXPORTS,
                     owner_id=authorization.owner_id,
@@ -445,6 +476,10 @@ class PostgresReportService(ReportStore):
                     statement = select(model.id).where(
                         model.owner_id == authorization.owner_id, model.account_id == account_id
                     )
+                    if is_report:
+                        statement = statement.where(
+                            ReportJobModel.contract_version == self._contract_version
+                        )
                     if query.state is not None:
                         if query.state.value == "expired":
                             statement = statement.where(
@@ -475,15 +510,16 @@ class PostgresReportService(ReportStore):
                     page = collections.materialize(
                         definition, lambda: session.scalars(statement), limit=query.limit
                     )
-                rows = tuple(
-                    session.scalars(
-                        select(model).where(
-                            model.owner_id == authorization.owner_id,
-                            model.account_id == account_id,
-                            model.id.in_(page.record_ids),
-                        )
-                    )
+                row_statement = select(model).where(
+                    model.owner_id == authorization.owner_id,
+                    model.account_id == account_id,
+                    model.id.in_(page.record_ids),
                 )
+                if is_report:
+                    row_statement = row_statement.where(
+                        ReportJobModel.contract_version == self._contract_version
+                    )
+                rows = tuple(session.scalars(row_statement))
                 by_id = {row.id: cast(StoredJob, row) for row in rows}
                 if len(by_id) != len(page.record_ids):
                     raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)

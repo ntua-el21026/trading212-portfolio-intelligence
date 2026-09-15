@@ -148,6 +148,16 @@ async function loadRiskView(
             State: {run.state} · Result: {run.result_availability}
           </p>
           <RiskJobControls key={run.id} run={run} canWrite={canWrite} />
+          {run.state === "succeeded" &&
+          run.result_availability === "available" &&
+          run.result ? (
+            <Link
+              prefetch={false}
+              href={`/reports/premium?account=${encodeURIComponent(accountId)}&run=${encodeURIComponent(run.id)}`}
+            >
+              Create a report from this risk analysis
+            </Link>
+          ) : null}
         </Surface>
         <RiskResults run={run} />
       </>

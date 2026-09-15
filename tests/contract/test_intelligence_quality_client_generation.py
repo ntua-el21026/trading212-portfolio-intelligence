@@ -97,5 +97,8 @@ def test_planning_reuses_existing_xray_models_without_duplicate_public_exports()
 
 @pytest.mark.parametrize("module", ["./unknown", "https://untrusted.invalid/schema", "../outside"])
 def test_generated_shared_imports_remain_a_closed_local_module_set(module: str) -> None:
-    with pytest.raises(ValueError, match="existing shared source and X-ray"):
+    with pytest.raises(
+        ValueError,
+        match=r"^Only existing shared source, X-ray and report schema modules are supported$",
+    ):
         TargetClientGenerator(contract(), imported_module=module)

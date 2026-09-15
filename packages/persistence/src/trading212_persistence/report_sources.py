@@ -214,6 +214,9 @@ def authorize_report_sources(
     """Check current permission/expiry using normalized metadata before BYTEA/JSON."""
     now = require_utc(now)
     _lock(session, authorization, now)
+    from .report_premium_sources import authorize_report_premium_sources
+
+    authorize_report_premium_sources(session, authorization, input_id=input_id, now=now)
     licenses = session.scalars(
         select(ReportInputLicenseModel)
         .where(

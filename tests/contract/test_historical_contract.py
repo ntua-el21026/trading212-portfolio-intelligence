@@ -38,8 +38,30 @@ def test_exact_six_historical_get_routes_leave_existing_performance_summary() ->
     }
     assert "/api/v1/accounts/{account_id}/performance/summary" in contract["paths"]
     assert "/api/v1/accounts/{account_id}/intelligence-data-quality" in contract["paths"]
-    # The 95 preserved operations plus eleven frozen risk operations.
-    assert sum(len(methods) for methods in contract["paths"].values()) == 106
+    premium_methods = {
+        (path, method, operation["operationId"])
+        for path, operations in contract["paths"].items()
+        for method, operation in operations.items()
+        if "premium-reports" in operation.get("tags", [])
+    }
+    assert premium_methods == {
+        ("/api/v2/report-jobs", "post", "generate_premium_portfolio_report"),
+        ("/api/v2/report-jobs/{job_id}", "get", "get_premium_report_status"),
+        ("/api/v2/reports", "get", "list_premium_reports"),
+        ("/api/v2/reports/{report_id}", "get", "get_premium_report_manifest"),
+        (
+            "/api/v2/reports/{report_id}/artifacts/{artifact_id}/grants",
+            "post",
+            "create_premium_report_download_grant",
+        ),
+        (
+            "/api/v2/reports/{report_id}/artifacts/{artifact_id}/content",
+            "get",
+            "download_premium_report_artifact",
+        ),
+    }
+    # The 95 preserved operations, eleven frozen risk operations and six V2 reports.
+    assert sum(len(methods) for methods in contract["paths"].values()) == 112
     assert contract == json.loads(
         (ROOT / "packages/api-contracts/openapi/phase1-v1.json").read_text()
     )

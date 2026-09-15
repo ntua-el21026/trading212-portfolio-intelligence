@@ -450,7 +450,7 @@
       "shared_physical_retention": "implemented",
       "web_workspace": "implemented",
       "mcp_tools_and_widget": "implemented",
-      "reports": "pending",
+      "reports": "implemented",
       "package_acceptance": "pending"
     }
   },

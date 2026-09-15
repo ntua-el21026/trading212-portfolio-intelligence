@@ -20,10 +20,12 @@ from trading212_domain.reports import (
     ReportFailureCode,
     ReportFormat,
     ReportJobState,
+    ReportManifest,
     ReportMimeType,
     ReportSelection,
     ReportSourceUse,
     ReportType,
+    report_schema_version,
 )
 from trading212_domain.values import require_utc
 from trading212_security.principals import AuthorizationError, Scope
@@ -82,7 +84,7 @@ def report_scopes(
         result.add(Scope.ANALYTICS_READ)
         if dataset == "alerts":
             result.add(Scope.ALERTS_READ)
-        if set(sections) & {"income", "cash_flows", "activity"} or dataset in {
+        if set(sections) & {"income", "cash_flows", "activity", "risk"} or dataset in {
             "activity",
             "dividends",
         }:
@@ -175,7 +177,14 @@ class ReportStore:
             )
             .execution_options(populate_existing=True)
         )
-        if row is None or row.sealed_at is None or row.input_digest != job.input_digest:
+        version = job.contract_version if isinstance(job, ReportJobModel) else 1
+        if (
+            row is None
+            or row.sealed_at is None
+            or row.input_digest != job.input_digest
+            or row.contract_version != version
+            or version not in (1, 2)
+        ):
             raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
         if not allow_expired and (
             row.purged_at is not None
@@ -193,6 +202,14 @@ class ReportStore:
         ):
             raise report_error(app.ReportServiceErrorCode.ARTIFACT_EXPIRED)
         return row
+
+    def _manifest_contract(self, job: StoredJob, manifest: ReportManifest) -> None:
+        version = job.contract_version if isinstance(job, ReportJobModel) else 1
+        if (
+            manifest.document.document_schema_version != f"{version}.0.0"
+            or report_schema_version(manifest.document.selection) != f"{version}.0.0"
+        ):
+            raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
 
     def _sources(
         self, session: Session, authorization: ReportAuthorization, job: StoredJob
@@ -262,6 +279,8 @@ class ReportStore:
             if (
                 context.input_digest != job.input_digest
                 or context.document_digest != row.document_digest
+                or context.schema_version != f"{row.contract_version}.0.0"
+                or context.profile_version != f"report_sections_v{row.contract_version}"
             ):
                 raise report_error(app.ReportServiceErrorCode.REPORT_UNAVAILABLE)
         artifacts: tuple[app.ReportArtifactMetadata, ...] = ()

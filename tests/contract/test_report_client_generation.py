@@ -72,7 +72,33 @@ def test_report_surface_is_exact_and_generated_deterministically() -> None:
     ],
 )
 def test_public_finite_vocabularies_match_canonical_contract(name: str) -> None:
-    assert set(get_args(getattr(wire, name))) == {item.value for item in getattr(domain, name)}
+    premium_tables = {
+        "risk_basis_v1",
+        "risk_definition_v1",
+        "risk_observed_v1",
+        "risk_rolling_v1",
+        "risk_matrix_summary_v1",
+        "risk_matrix_axes_v1",
+        "risk_matrix_cells_v1",
+        "risk_tails_v1",
+        "risk_modeled_v1",
+        "risk_components_v1",
+        "risk_concentration_v1",
+        "risk_run_assets_v1",
+        "risk_series_v1",
+        "risk_intervals_v1",
+        "risk_history_context_v1",
+        "risk_history_members_v1",
+        "risk_xray_paths_v1",
+    }
+    premium_only = {
+        "ReportSection": {"risk"},
+        "ReportFamily": {"risk"},
+        "ReportTableKey": premium_tables,
+    }.get(name, set())
+    legacy = set(get_args(getattr(wire, name)))
+    assert not legacy & premium_only
+    assert legacy | premium_only == {item.value for item in getattr(domain, name)}
 
 
 @pytest.mark.parametrize("field", ["path", "method"])

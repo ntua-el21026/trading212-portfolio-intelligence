@@ -27,6 +27,28 @@ The v1.0 additive freeze has 30 local acceptance rows and 48 mandatory scenarios
 all pending. Design/governance checks do not stand in for premium runtime tests.
 Final candidate and independent review remain pending.
 
+## Phase 3 premium report component checks
+
+Versioned risk reports passed the local component gate:3,371 Python cases,614 web
+cases, strict mypy695 files, static/generated-contract checks and production builds.
+The serial PostgreSQL report/risk gate completed in1557.32 seconds with144 passed
+and one invalid fixture request. Its canonical-serializer correction then passed
+the focused authorization rerun:145 distinct cases have a passing execution across
+these attempts. The original overall failure is retained. One database container
+was used. Three actual API/isolated-worker browser cases passed
+at1440/768/360 pixels, including all four report formats, exact hash/value checks and
+account-safe navigation. Full source/permission/retention and selected-X-ray proof
+remain bound to saved results; original V1 schemas and all25 MCP descriptors retain
+their contracts. See the [implementation report](docs/implementation/PHASE_3_IMPLEMENTATION_REPORT.md)
+for original failed attempts, receipt names, bounds and contributor review scope.
+
+The passing local04 and original PostgreSQL01 receipts bind one unchanged working
+source based on4d747f6. A pre-fix file manifest proves the only executable change
+was the integration fixture serializer; its focused02 rerun passed. The subsequent
+documentation update preserves every other path's bytes, type and mode. These are development component results, not an immutable final
+candidate run, package acceptance, independent approval or SLO/load/restore evidence.
+Final Phase3 validation remains pending and CI remains owner-deferred/unverified.
+
 ## Phase 3 canonical risk component checks
 
 The working source passed 85 focused risk tests (numerical primitives, statistics,

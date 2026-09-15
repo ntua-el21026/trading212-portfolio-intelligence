@@ -93,7 +93,7 @@ def _metric(
 ) -> r.ReportCell:
     reason = None
     if value.reason is not None:
-        reason = f"xray.reason.{value.reason.value}"
+        reason = f"{context.key}.reason.{value.reason.value}"
         capture_note(builder, context, key=reason, text=value.reason.value, code=value.reason.value)
     positive = isinstance(value, d.XrayRatioMetric) and value.positive_below_quantum
     kind = (
@@ -205,7 +205,7 @@ def _input_proof(builder: ReportBuilder, context: r.ReportContext, value: d.Xray
     capture_note(
         builder,
         context,
-        key="xray.numeric_policy",
+        key=f"{context.key}.numeric_policy",
         text=value.policy.numeric_policy,
         kind=r.ReportNoteKind.ASSUMPTION,
         code="canonical_numeric_policy",
@@ -219,7 +219,7 @@ def _input_proof(builder: ReportBuilder, context: r.ReportContext, value: d.Xray
             builder,
             context,
             r.ReportTableKey.XRAY_VALUATION_ROOTS,
-            f"xray.root.{root.key}",
+            f"{context.key}.root.{root.key}",
             extra={
                 "root_key": root.key,
                 "root_kind": "position" if position else "cash",
@@ -230,7 +230,7 @@ def _input_proof(builder: ReportBuilder, context: r.ReportContext, value: d.Xray
                 "original_value": _metric(
                     builder,
                     context,
-                    f"xray.root.{root.key}.original_value",
+                    f"{context.key}.root.{root.key}.original_value",
                     item.original_value,
                     missing_currency=None if cash is None else cash.original_currency,
                 ),
@@ -238,13 +238,19 @@ def _input_proof(builder: ReportBuilder, context: r.ReportContext, value: d.Xray
             },
         )
     for index, broker in enumerate(value.broker_fx):
-        _proof(builder, context, r.ReportTableKey.XRAY_BROKER_FX, f"xray.broker_fx.{index}", broker)
+        _proof(
+            builder,
+            context,
+            r.ReportTableKey.XRAY_BROKER_FX,
+            f"{context.key}.broker_fx.{index}",
+            broker,
+        )
     for index, attempt in enumerate(value.licensed_fx):
         _proof(
             builder,
             context,
             r.ReportTableKey.XRAY_LICENSED_FX,
-            f"xray.licensed_fx.{index}",
+            f"{context.key}.licensed_fx.{index}",
             extra={
                 "consumer_key": attempt.consumer_key,
                 "input_value": attempt.input_value,
@@ -257,7 +263,7 @@ def _input_proof(builder: ReportBuilder, context: r.ReportContext, value: d.Xray
                 builder,
                 context,
                 r.ReportTableKey.XRAY_FX_LEGS,
-                f"xray.licensed_fx.{index}.leg.{ordinal}",
+                f"{context.key}.licensed_fx.{index}.leg.{ordinal}",
                 leg,
                 extra={"consumer_key": attempt.consumer_key, "ordinal": ordinal},
             )
@@ -266,7 +272,7 @@ def _input_proof(builder: ReportBuilder, context: r.ReportContext, value: d.Xray
             builder,
             context,
             r.ReportTableKey.XRAY_DEPENDENCY_IDENTITIES,
-            f"xray.dependency.{dependency.id}",
+            f"{context.key}.dependency.{dependency.id}",
             extra={
                 "source_key": _source_key(dependency.id),
                 "dependency_id": dependency.id,
@@ -282,7 +288,7 @@ def _input_proof(builder: ReportBuilder, context: r.ReportContext, value: d.Xray
         builder,
         context,
         r.ReportTableKey.XRAY_RECONCILIATION,
-        "xray.reconciliation",
+        f"{context.key}.reconciliation",
         extra={
             "declared_total": value.reconciliation.declared_total,
             "root_total": value.reconciliation.root_total,
@@ -295,7 +301,7 @@ def _result_proof(
     builder: ReportBuilder, context: r.ReportContext, result: x.XrayCalculation
 ) -> None:
     for selection in result.selections:
-        key = f"xray.selection.{selection.key}"
+        key = f"{context.key}.selection.{selection.key}"
         _proof(builder, context, r.ReportTableKey.XRAY_SELECTIONS, key, selection)
         for role, ids in (
             ("candidate", selection.candidate_evidence_ids),
@@ -315,9 +321,11 @@ def _result_proof(
                     },
                 )
     for ordinal, use in enumerate(result.typed_source_uses):
-        _proof(builder, context, r.ReportTableKey.XRAY_SOURCE_USES, f"xray.use.{ordinal}", use)
+        _proof(
+            builder, context, r.ReportTableKey.XRAY_SOURCE_USES, f"{context.key}.use.{ordinal}", use
+        )
     for decision in result.classification_decisions:
-        key = f"xray.classification.{decision.key}"
+        key = f"{context.key}.classification.{decision.key}"
         _proof(builder, context, r.ReportTableKey.XRAY_CLASSIFICATION_DECISIONS, key, decision)
         for role, identifiers in (
             ("assignment", decision.assignment_ids),
@@ -343,7 +351,7 @@ def _result_proof(
                 builder,
                 context,
                 r.ReportTableKey.XRAY_FUND_EDGES,
-                f"xray.path.{path.key}.edge.{ordinal}",
+                f"{context.key}.path.{path.key}.edge.{ordinal}",
                 edge,
                 extra={"path_key": path.key, "ordinal": ordinal},
             )
@@ -352,14 +360,16 @@ def _result_proof(
                 builder,
                 context,
                 r.ReportTableKey.XRAY_PATH_CLASSIFICATIONS,
-                f"xray.path.{path.key}.{classification.dimension.value}",
+                f"{context.key}.path.{path.key}.{classification.dimension.value}",
                 classification,
                 extra={"path_key": path.key},
             )
         relations: tuple[tuple[str, tuple[str | UUID, ...]], ...] = (
             (
                 "fund_edge",
-                tuple(f"xray.path.{path.key}.edge.{i}" for i in range(len(path.fund_edges))),
+                tuple(
+                    f"{context.key}.path.{path.key}.edge.{i}" for i in range(len(path.fund_edges))
+                ),
             ),
             ("identity_decision", path.identity_decision_ids),
             ("source", path.source_reference_ids),
@@ -378,7 +388,7 @@ def _result_proof(
                     builder,
                     context,
                     r.ReportTableKey.XRAY_PATH_RELATIONS,
-                    f"xray.path.{path.key}.{kind}.{ordinal}",
+                    f"{context.key}.path.{path.key}.{kind}.{ordinal}",
                     extra={
                         "path_key": path.key,
                         "relation_kind": kind,
@@ -390,7 +400,7 @@ def _result_proof(
                     r.ReportProofRelation(table=r.ReportTableKey.XRAY_PATH_RELATIONS, row=row)
                 )
     for ordinal, warning in enumerate(result.warnings):
-        key = f"xray.warning.{ordinal}"
+        key = f"{context.key}.warning.{ordinal}"
         source_set = f"{key}.sources"
         builder.add_note(
             r.ReportNote(

@@ -94,7 +94,7 @@ class ReportDefinitionModel(ReportOwned):
         CheckConstraint("revision >= 1", name="revision_positive"),
         CheckConstraint("content_digest ~ '^[0-9a-f]{64}$'", name="digest_format"),
         CheckConstraint("reporting_currency ~ '^[A-Z]{3}$'", name="currency_format"),
-        CheckConstraint("cardinality(sections) BETWEEN 1 AND 13", name="section_bound"),
+        CheckConstraint("cardinality(sections) BETWEEN 1 AND 14", name="section_bound"),
     )
     account_id: Mapped[UUID] = mapped_column(ForeignKey("broker_accounts.id", ondelete="RESTRICT"))
     report_type: Mapped[str] = mapped_column(String(40))
@@ -112,6 +112,13 @@ class ReportInputSnapshotModel(ReportOwned):
         _owned("report_input_snapshots"),
         UniqueConstraint("owner_id", "account_id", "id", name="uq_report_inputs_account_id"),
         CheckConstraint("kind IN ('report','export')", name="kind_allowed"),
+        CheckConstraint(
+            "contract_version IN (1,2) AND (kind='report' OR contract_version=1)",
+            name="contract_version_allowed",
+        ),
+        UniqueConstraint(
+            "owner_id", "account_id", "id", "contract_version", name="uq_report_inputs_contract"
+        ),
         CheckConstraint("input_digest ~ '^[0-9a-f]{64}$'", name="input_digest_format"),
         CheckConstraint("document_digest ~ '^[0-9a-f]{64}$'", name="document_digest_format"),
         CheckConstraint("canonical_byte_length BETWEEN 0 AND 33554432", name="byte_bound"),
@@ -135,6 +142,7 @@ class ReportInputSnapshotModel(ReportOwned):
     )
     account_id: Mapped[UUID] = mapped_column(ForeignKey("broker_accounts.id", ondelete="RESTRICT"))
     kind: Mapped[str] = mapped_column(String(10))
+    contract_version: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
     snapshot_id: Mapped[UUID] = mapped_column(
         ForeignKey("portfolio_snapshots.id", ondelete="RESTRICT")
     )
@@ -277,6 +285,45 @@ class ReportInputDependencyModel(ReportOwned):
     fund_mapping_id: Mapped[UUID | None] = mapped_column()
 
 
+class ReportInputPremiumDependencyModel(ReportOwned):
+    """Immutable normalized lineage from a premium report to its retained run."""
+
+    __tablename__ = "report_input_premium_dependencies"
+    __table_args__ = (
+        _owned("report_input_premium_dependencies"),
+        UniqueConstraint("input_id", name="uq_report_premium_input"),
+        ForeignKeyConstraint(
+            ["owner_id", "account_id", "input_id"],
+            [
+                "report_input_snapshots.owner_id",
+                "report_input_snapshots.account_id",
+                "report_input_snapshots.id",
+            ],
+            ondelete="RESTRICT",
+            name="fk_report_premium_input",
+        ),
+        ForeignKeyConstraint(
+            ["owner_id", "account_id", "run_id"],
+            ["premium_runs.owner_id", "premium_runs.account_id", "premium_runs.id"],
+            ondelete="RESTRICT",
+            name="fk_report_premium_run",
+        ),
+        CheckConstraint("kind='risk'", name="kind_allowed"),
+        CheckConstraint(
+            "input_digest ~ '^[0-9a-f]{64}$' AND result_digest ~ '^[0-9a-f]{64}$'",
+            name="digest_format",
+        ),
+        Index("ix_report_premium_run", "owner_id", "run_id", "input_id"),
+    )
+    account_id: Mapped[UUID] = mapped_column(ForeignKey("broker_accounts.id", ondelete="RESTRICT"))
+    input_id: Mapped[UUID] = mapped_column()
+    run_id: Mapped[UUID] = mapped_column()
+    kind: Mapped[str] = mapped_column(String(20))
+    input_digest: Mapped[str] = mapped_column(String(64))
+    result_digest: Mapped[str] = mapped_column(String(64))
+    expires_at: Mapped[datetime] = mapped_column(UTCDateTime())
+
+
 class ReportInputLicenseModel(ReportOwned):
     __tablename__ = "report_input_licenses"
     __table_args__ = (
@@ -381,6 +428,26 @@ class ReportJobModel(ReportJobBase):
     __tablename__ = "report_jobs"
     __table_args__ = (
         *_job_constraints("report_jobs"),
+        CheckConstraint("contract_version IN (1,2)", name="contract_version_allowed"),
+        ForeignKeyConstraint(
+            ["owner_id", "account_id", "input_id", "contract_version"],
+            [
+                "report_input_snapshots.owner_id",
+                "report_input_snapshots.account_id",
+                "report_input_snapshots.id",
+                "report_input_snapshots.contract_version",
+            ],
+            name="fk_report_jobs_input_contract",
+            ondelete="RESTRICT",
+        ),
+        Index(
+            "ix_report_jobs_contract_created",
+            "owner_id",
+            "account_id",
+            "contract_version",
+            "requested_at",
+            "id",
+        ),
         _parent("report_jobs", "definition_id", "report_definitions"),
         CheckConstraint(f"report_type IN ({REPORT_TYPES})", name="type_allowed"),
         CheckConstraint(
@@ -391,6 +458,7 @@ class ReportJobModel(ReportJobBase):
             name="format_bound",
         ),
     )
+    contract_version: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
     definition_id: Mapped[UUID] = mapped_column()
     report_type: Mapped[str] = mapped_column(String(40))
     formats: Mapped[list[str]] = mapped_column(ARRAY(String(10)))
@@ -434,14 +502,16 @@ class ApplicationCommandIdentityModel(ReportOwned):
         _parent("application_command_identities", "report_job_id", "report_jobs"),
         _parent("application_command_identities", "export_job_id", "export_jobs"),
         CheckConstraint(
-            "command IN ('reports.generate.v1','exports.generate.v1','risk.definition.create.v1',"
+            "command IN ('reports.generate.v1','reports.generate.v2','exports.generate.v1',"
+            "'risk.definition.create.v1',"
             "'risk.version.create.v1','risk.run.create.v1','risk.run.cancel.v1')",
             name="command_allowed",
         ),
         CheckConstraint("idempotency_key ~ '^[A-Za-z0-9._:-]{1,180}$'", name="key_format"),
         CheckConstraint("command_digest ~ '^[0-9a-f]{64}$'", name="digest_format"),
         CheckConstraint(
-            "(command='reports.generate.v1' AND report_job_id IS NOT NULL AND "
+            "(command IN ('reports.generate.v1','reports.generate.v2') AND "
+            "report_job_id IS NOT NULL AND "
             "export_job_id IS NULL AND premium_resource_id IS NULL AND premium"
             "_actor_id IS NULL AND premium_correlation_id IS NULL) OR "
             "(command='exports.generate.v1' AND export_job_id IS NOT NULL AND "

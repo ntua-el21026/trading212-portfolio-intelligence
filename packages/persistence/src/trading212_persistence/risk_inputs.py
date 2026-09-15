@@ -43,6 +43,8 @@ class RiskCopySources(PostgresSourceService):
     retention_deadline: datetime | None = None
     copy_created_at: datetime | None = None
     license_ids: set[UUID] | None = None
+    required_copy_use: SourceUse | None = None
+    max_copy_licenses: int = 8192
 
     def _permit(
         self, session: Session, owner: UUID, license_id: UUID, use: SourceUse
@@ -50,9 +52,12 @@ class RiskCopySources(PostgresSourceService):
         license = super()._permit(session, owner, license_id, use)
         if self.license_ids is not None:
             self.license_ids.add(license_id)
-            if len(self.license_ids) > 8192:
+            if len(self.license_ids) > self.max_copy_licenses:
                 raise risk_error(app.RiskErrorCode.INPUT_BOUND_EXCEEDED)
         super()._permit(session, owner, license_id, SourceUse.STORE)
+        if self.required_copy_use is not None:
+            super()._permit(session, owner, license_id, SourceUse.DISPLAY)
+            super()._permit(session, owner, license_id, self.required_copy_use)
         current = self._current_license(session, owner, UUID(license.provider_id))
         if current is None or current.retention_days is None or license.retention_days is None:
             raise risk_error(app.RiskErrorCode.SOURCE_UNAVAILABLE)
@@ -92,10 +97,17 @@ class RiskInputStore(RiskDefinitionStore):
         *,
         retained_at: datetime | None = None,
         license_ids: set[UUID] | None = None,
+        required_copy_use: SourceUse | None = None,
     ) -> RiskExecutionInput:
         try:
             return self._load_authorized_inputs(
-                session, auth, command, preflight, retained_at=retained_at, license_ids=license_ids
+                session,
+                auth,
+                command,
+                preflight,
+                retained_at=retained_at,
+                license_ids=license_ids,
+                required_copy_use=required_copy_use,
             )
         except RiskJobInputError:
             raise risk_error(app.RiskErrorCode.INPUT_BOUND_EXCEEDED) from None
@@ -115,6 +127,7 @@ class RiskInputStore(RiskDefinitionStore):
         *,
         retained_at: datetime | None = None,
         license_ids: set[UUID] | None = None,
+        required_copy_use: SourceUse | None = None,
     ) -> RiskExecutionInput:
         auth.check(session, now=self._now())
         version = self._owned(session, auth, RiskVersionModel, command.definition_version_id)
@@ -141,7 +154,9 @@ class RiskInputStore(RiskDefinitionStore):
             sessions=self._sessions, cursor_signing_key=self._cursor_key, clock=self._clock
         )
         sources.copy_created_at = retained_at or self._now()
-        sources.license_ids = license_ids
+        sources.license_ids = license_ids if license_ids is not None else set()
+        sources.required_copy_use = required_copy_use
+        sources.max_copy_licenses = 256 if required_copy_use is SourceUse.REPORT else 8192
         history_store = HistoricalCaptureStore(
             self._sessions, cursor_signing_key=self._cursor_key, clock=self._clock
         )

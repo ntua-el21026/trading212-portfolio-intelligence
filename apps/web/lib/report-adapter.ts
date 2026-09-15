@@ -3,6 +3,8 @@ import "server-only";
 import {
   PlanningApiClient,
   ReportApiClient,
+  PremiumReportApiClient,
+  RiskApiClient,
   ReportApiError,
   SourceApiClient,
   type ReportApiResponse,
@@ -14,6 +16,8 @@ export async function reportClients(mutating = false) {
   return {
     ...clients,
     reports: new ReportApiClient(clients.options),
+    premiumReports: new PremiumReportApiClient(clients.options),
+    risk: new RiskApiClient(clients.options),
     planning: new PlanningApiClient(clients.options),
     sources: new SourceApiClient(clients.options),
   };

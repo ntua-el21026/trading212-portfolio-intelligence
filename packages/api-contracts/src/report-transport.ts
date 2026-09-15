@@ -163,9 +163,12 @@ async function safeResponseError(response: Response): Promise<ReportApiError> {
   return new ReportApiError(code, response.status, messages[code]);
 }
 
-/** Internal transport; only the eleven fixed generated client methods are exported. */
+/** Internal transport shared by the fixed V1 and V2 report clients. */
 export class ReportTransport extends BoundedTransport {
-  constructor(private readonly reportOptions: ReportClientOptions) {
+  constructor(
+    private readonly reportOptions: ReportClientOptions,
+    private readonly reportVersion: 1 | 2 = 1,
+  ) {
     super(
       {
         ...reportOptions,
@@ -265,6 +268,11 @@ export class ReportTransport extends BoundedTransport {
     let artifact: string;
     let account: string;
     try {
+      if (
+        (this.reportVersion !== 1 && this.reportVersion !== 2) ||
+        (this.reportVersion === 2 && family !== "reports")
+      )
+        throw invalid();
       metadata = metadataSchema.parse(options.metadata);
       token = grant.parse(options.grantToken);
       parent = uuid.parse(parentId);
@@ -285,7 +293,7 @@ export class ReportTransport extends BoundedTransport {
         messages.VALIDATION_FAILED,
       );
     }
-    const path = `/api/v1/${family}/${encodeURIComponent(parent)}/artifacts/${encodeURIComponent(artifact)}/content`;
+    const path = `/api/v${this.reportVersion}/${family}/${encodeURIComponent(parent)}/artifacts/${encodeURIComponent(artifact)}/content`;
     const url = new URL(this.reportOptions.baseUrl.replace(/\/$/, "") + path);
     url.searchParams.set("account_id", account);
     let headers: Headers;

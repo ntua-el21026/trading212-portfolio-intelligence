@@ -199,6 +199,7 @@ class ReportBuilder:
         self.reconciliation.append(fact)
 
     def add_context(self, context: r.ReportContext) -> None:
+        context = replace(context, schema_version=r.report_schema_version(self.selection))
         if context.key not in self.contexts:
             self._reserve(r.ReportProof(contexts=(context,)))
         old = self.contexts.setdefault(context.key, context)
@@ -340,6 +341,7 @@ class ReportBuilder:
         proof_bytes = encode_report_proof(proof)
         proof_digest = sha256(proof_bytes).hexdigest()
         header = r.ReportDocumentHeader(
+            document_schema_version=r.report_schema_version(self.selection),
             selection=self.selection,
             owner_id=self.owner_id,
             valuation_at=self.valuation_at,

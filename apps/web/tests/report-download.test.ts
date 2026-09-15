@@ -10,6 +10,9 @@ const mocks = vi.hoisted(() => ({
   exportGrant: vi.fn(),
   download: vi.fn(),
   exportDownload: vi.fn(),
+  premiumStatus: vi.fn(),
+  premiumGrant: vi.fn(),
+  premiumDownload: vi.fn(),
 }));
 vi.mock("server-only", () => ({}));
 vi.mock("../lib/report-adapter", () => ({
@@ -40,6 +43,11 @@ describe("private browser download bridge", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mocks.clients.mockResolvedValue({
+      premiumReports: {
+        get_premium_report_status: mocks.premiumStatus,
+        create_premium_report_download_grant: mocks.premiumGrant,
+        download_premium_report_artifact: mocks.premiumDownload,
+      },
       reports: {
         get_report_status: mocks.status,
         get_export_status: mocks.exportStatus,
@@ -49,11 +57,15 @@ describe("private browser download bridge", () => {
         download_export_artifact: mocks.exportDownload,
       },
     });
-    for (const method of [mocks.status, mocks.exportStatus])
+    for (const method of [
+      mocks.status,
+      mocks.exportStatus,
+      mocks.premiumStatus,
+    ])
       method.mockResolvedValue({
         data: { state: "succeeded", artifacts: [metadata] },
       });
-    for (const method of [mocks.grant, mocks.exportGrant])
+    for (const method of [mocks.grant, mocks.exportGrant, mocks.premiumGrant])
       method.mockResolvedValue({
         data: {
           artifact_id: artifact,
@@ -61,7 +73,11 @@ describe("private browser download bridge", () => {
           expires_at: "2026-09-07T12:05:00Z",
         },
       });
-    for (const method of [mocks.download, mocks.exportDownload])
+    for (const method of [
+      mocks.download,
+      mocks.exportDownload,
+      mocks.premiumDownload,
+    ])
       method.mockResolvedValue({
         content: new TextEncoder().encode("{}"),
         metadata,
@@ -89,7 +105,7 @@ describe("private browser download bridge", () => {
     });
     expect(mocks.download).not.toHaveBeenCalled();
   });
-  it.each(["reports", "exports"] as const)(
+  it.each(["reports", "exports", "premium-reports"] as const)(
     "keeps %s grants on the server and streams only verified content",
     async (family) => {
       const reply = await serveReportArtifact(
@@ -104,9 +120,18 @@ describe("private browser download bridge", () => {
       expect(reply.headers.get("cache-control")).toBe("private, no-store");
       expect(reply.headers.get("x-content-type-options")).toBe("nosniff");
       expect(reply.headers.get("content-length")).toBe("2");
-      const grant = family === "reports" ? mocks.grant : mocks.exportGrant;
+      const grant =
+        family === "premium-reports"
+          ? mocks.premiumGrant
+          : family === "reports"
+            ? mocks.grant
+            : mocks.exportGrant;
       const download =
-        family === "reports" ? mocks.download : mocks.exportDownload;
+        family === "premium-reports"
+          ? mocks.premiumDownload
+          : family === "reports"
+            ? mocks.download
+            : mocks.exportDownload;
       expect(grant).toHaveBeenCalledWith(
         parent,
         artifact,
@@ -167,6 +192,26 @@ describe("private browser download bridge", () => {
       expect(mocks.download).not.toHaveBeenCalled();
     },
   );
+  it("keeps premium source revocation ahead of grant creation", async () => {
+    mocks.premiumStatus.mockRejectedValue(
+      new ReportApiError(
+        "SOURCE_USE_FORBIDDEN",
+        403,
+        "Source access is no longer permitted.",
+      ),
+    );
+    const reply = await serveReportArtifact(
+      request(),
+      "premium-reports",
+      parent,
+      artifact,
+    );
+    expect(reply.status).toBe(403);
+    expect(mocks.premiumGrant).not.toHaveBeenCalled();
+    expect(mocks.premiumDownload).not.toHaveBeenCalled();
+    expect(mocks.status).not.toHaveBeenCalled();
+    expect(mocks.download).not.toHaveBeenCalled();
+  });
   it("rejects a grant for a different artifact", async () => {
     mocks.grant.mockResolvedValueOnce({ data: { artifact_id: parent, token } });
     const response = await serveReportArtifact(

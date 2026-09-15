@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Literal, cast
 from uuid import UUID, uuid4
 
-from sqlalchemy import Table, delete, or_, select, update
+from sqlalchemy import Table, delete, func, or_, select, update
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.elements import ColumnElement
 
@@ -22,6 +22,7 @@ from .report_models import (
     ReportDispatchOutboxModel,
     ReportInputChunkModel,
     ReportInputDependencyModel,
+    ReportInputPremiumDependencyModel,
     ReportInputSnapshotModel,
     ReportJobModel,
     ReportManifestModel,
@@ -367,6 +368,46 @@ def purge_report_source_copies(
     return False
 
 
+def purge_report_premium_copies(
+    session: Session,
+    owner: UUID,
+    run_id: UUID,
+    *,
+    at: datetime,
+    budget: SourcePurgeBudget,
+) -> bool:
+    """Drain retained run copies before the caller clears any premium payload.
+
+    The caller holds the existing source/family owner locks and has inserted the
+    premium retention marker. That marker denies reads immediately, even when
+    this shared invocation budget cannot yet finish the report artifacts.
+    """
+    capture = ReportInputSnapshotModel
+    dependency = ReportInputPremiumDependencyModel
+    while budget.metadata_limit >= 2:
+        identifier = session.scalar(
+            select(capture.id)
+            .join(
+                dependency,
+                (dependency.input_id == capture.id) & (dependency.owner_id == capture.owner_id),
+            )
+            .where(
+                capture.owner_id == owner,
+                dependency.run_id == run_id,
+                capture.purged_at.is_(None),
+            )
+            .order_by(capture.id)
+            .limit(1)
+        )
+        if identifier is None:
+            return True
+        if not budget.inspect(rows=2) or not purge_report_input(
+            session, owner=owner, input_id=identifier, reason="source", at=at, budget=budget
+        ):
+            return False
+    return False
+
+
 def expire_report_payloads(
     session: Session, *, at: datetime, limit: int = 100, budget: SourcePurgeBudget | None = None
 ) -> int:
@@ -376,9 +417,28 @@ def expire_report_payloads(
     completed = 0
     while budget.metadata_limit >= 2 and completed < 100:
         row = session.execute(
-            select(ReportInputSnapshotModel.id, ReportInputSnapshotModel.owner_id)
+            select(
+                ReportInputSnapshotModel.id,
+                ReportInputSnapshotModel.owner_id,
+                ReportInputSnapshotModel.expires_at,
+            )
             .where(
-                ReportInputSnapshotModel.expires_at <= at,
+                or_(
+                    ReportInputSnapshotModel.expires_at <= at,
+                    (ReportInputSnapshotModel.contract_version == 2)
+                    & or_(
+                        func.report_premium_restricted(
+                            ReportInputSnapshotModel.owner_id, ReportInputSnapshotModel.id, at
+                        ),
+                        select(ReportRetentionWorkModel.id)
+                        .where(
+                            ReportRetentionWorkModel.owner_id == ReportInputSnapshotModel.owner_id,
+                            ReportRetentionWorkModel.input_id == ReportInputSnapshotModel.id,
+                            ReportRetentionWorkModel.completed_at.is_(None),
+                        )
+                        .exists(),
+                    ),
+                ),
                 ReportInputSnapshotModel.purged_at.is_(None),
             )
             .order_by(ReportInputSnapshotModel.expires_at, ReportInputSnapshotModel.id)
@@ -389,7 +449,12 @@ def expire_report_payloads(
         if not budget.inspect(rows=1) or not report_owner_lock(session, row.owner_id, wait=False):
             break
         if not purge_report_input(
-            session, owner=row.owner_id, input_id=row.id, reason="ttl", at=at, budget=budget
+            session,
+            owner=row.owner_id,
+            input_id=row.id,
+            reason="ttl" if row.expires_at <= at else "source",
+            at=at,
+            budget=budget,
         ):
             break
         completed += 1

@@ -1,6 +1,6 @@
 # Phase 3 Implementation Report
 
-**Current:** P3-01 calculation, storage, worker, REST and generated client implemented; web/MCP/report delivery and retention verification in progress
+**Current:** P3-01 calculation, storage, worker, REST, web and MCP delivered; versioned risk reports pass local component verification
 **Target:** 1.0.0; independent review pending; production not authorized
 
 Start main d2ebdaf96d1b61aacea5c6492824946540f88803. Governance delivery
@@ -312,7 +312,7 @@ line; that line was removed without changing executable bytes. The original
 failed receipt is preserved, not relabelled. The final360-pixel capture was visually
 inspected; three widths have actual captures and no-overflow/keyboard checks.
 
-risk-mcp-final-postgres-05 then passed51 real PostgreSQL cases in114.54 seconds:
+The MCP final PostgreSQL gate05 then passed51 real PostgreSQL cases in114.54 seconds:
 three risk SDK/worker cases,46 preserved signed-JWT transport cases and two API/MCP
 parity cases. The risk command case also checks the actual persisted bounded audit
 reference and unchanged semantic replay under a different accepted correlation ID.
@@ -327,3 +327,96 @@ outside the checkout. Only this report and the widget documentation whitespace
 changed after the broad local gate; the PostgreSQL gate uses the final executable
 bytes. These are component pre-commit checks, not an immutable final-candidate run.
 Risk report delivery and all Phase3 package acceptance remain pending.
+
+## P3-01 versioned premium risk reports
+
+The MCP milestone was delivered at4d747f6c1281a2914c84f18a02554c18f612e249,
+tree68a3714f1f464555ede984225f0178d7fa3762a4. Its unchanged working-source
+receipts and reviewed patch remain in risk-mcp-delivery.json. ADR-0024 introduces
+report_sections_v2 and document/context schema2.0.0 for premium reports while
+retaining report_template_v1, its renderer versions and all25 original MCP tool
+descriptors. Six fixed APIv2 routes use a separate generated client; V1/V2 SQL
+collections, direct IDs and idempotency namespaces are isolated before decoding.
+
+Migration0019 adds normalized report contract versions and one immutable owned
+premium-run dependency. Admission binds the selected succeeded risk run to its
+exact portfolio snapshot, historical window, reporting currency, cutoff and input/
+result digests. Seventeen fixed analytical/proof tables retain canonical values,
+unavailable reasons, assumptions, source memberships, complete return intervals,
+FX conversions and selected X-ray terminal paths. No calculation is repeated.
+Current and pinned STORE/DISPLAY/REPORT rights and transitive activity/target
+scopes are checked before private reads, including replay, workers and downloads.
+Dependent report artifacts and grants are cleared before physical premium-source
+completion, using the existing bounded purge budget and owner lock ordering.
+
+Initial component checks passed292 focused Python cases and strict mypy over692
+files. Three PostgreSQL retention tests passed in77.00 seconds; three later privacy
+tests passed in128.85 seconds, using payload SELECT tripwires for revoked rights,
+foreign/mismatched pins and V1 access to real V2 identifiers. The real isolated
+report worker produced all four formats for complete31-day history in54.68 seconds;
+downloads checked artifact/table hashes and exact risk-value parity. These are
+development checks, not final source-bound candidate acceptance.
+
+The first complete annual fixture had31,664 proof rows; its PDF correctly failed
+when it required page1,001. The existing1,000-page,10MiB-per-artifact and25MiB-total
+renderer ceilings remain unchanged. Document/manifest/license/row admission bounds
+also remain unchanged. The complete monthly case fits; proof is never truncated to
+make a report succeed. Original failed attempts and the direct-renderer diagnostic
+are retained separately; that diagnostic does not claim process isolation evidence.
+An internal review also identified a source deadline crossed between authorization
+and the final source traversal. The source denial now preserves the safe report
+error contract; its regression passed in the focused and full Python gates.
+
+The premium web route selects an owned retained risk run and derives its immutable
+pins server-side, then uses the shared bounded status, manifest and private download
+components. Final component verification passed as detailed below. No package,
+acceptance row or mandatory scenario is marked complete;
+P3-02 through P3-10 and final immutable validation remain required. CI stays
+deferred_by_owner and unverified.
+
+
+Final report component gates used the unchanged working source based on
+4d747f6c1281a2914c84f18a02554c18f612e249. The local gate04 passed in239.829 seconds:
+3,371 Python unit/property/contract/security tests in194.21 seconds,614 web tests,
+strict mypy695 files, formatting/lint/types, repository/workspace/architecture/
+GET-boundary/secret/webhook/generated-contract checks, production Next build and
+all12 Python distributions. PostgreSQL gate01 completed in1557.32 seconds with
+144 passed and one fixture failure. The old report-creation authorization fixture
+used generic dataclass serialization, leaking a new internal optional risk field
+into its strictly unchanged V1 request schema. Switching that fixture to the canonical
+selection encoder restored its original valid request; the focused rerun passed.
+All145 distinct PostgreSQL cases therefore have observed passing executions across
+these two attempts, covering clean/upgrade migrations, all four premium report formats with and without
+selected X-ray, authorization before payload reads, retention and legacy reports,
+API/MCP signed-JWT transport and canonical parity. These receipts remain component
+checks, not final immutable Phase3 acceptance or measured performance/SLO evidence.
+
+The final real API/isolated-worker browser cases passed at1440,768 and360 pixels.
+They exercise report creation, all four authenticated downloads with hash checks,
+account navigation, collection isolation, native keyboard visibility, overflow and
+browser errors. Six selection/completed screenshots were inspected. Their local02
+receipt retains its overall failure from five stale Python contract expectations;
+those exact inventory/error expectations were corrected before the passing local04
+run. Earlier failed attempts are preserved. No numerical or browser implementation
+changed after those final captures. The reviewed OpenAPI comparison has101 paths/
+112 operations and367 schemas: all95 old paths and352 old schemas remain unchanged.
+All25 original MCP descriptor fingerprints pass; total MCP remains28 tools/6 resources.
+Migration head is20260915_0019. Contributor reviews found no remaining actionable
+findings in their scope; they are not independent acceptance.
+
+Receipts, logs, JUnit, screenshots and reviewed source bindings reside in the external
+phase3-20260914 evidence directory. premium-report-final-local-04.json and
+premium-report-final-postgres-01.json bind the same working source. The latter
+remains a failed overall attempt. premium-report-authorization-fixture-02.json
+records the corrected single-case rerun. The pre-fix file manifest and
+premium-report-executable-equivalence.json prove the only executable change was
+that integration-test serializer; application code, all other tests and subsequent
+non-documentation content/type/mode remain identical through documentation delivery. No post-commit immutable
+rerun or full make validate is claimed at this component boundary.
+
+Scoped housekeeping removed25 obsolete project Python build-cache records (about
+5.774GB), eight web build-cache records (about1.533GB), and12 inactive generated
+cache directories (309,301,248 allocated bytes). Exact IDs, fresh ownership/reclaimable
+checks and removals are recorded externally. One PostgreSQL container is reused;
+both the task and unrelated database volumes remain intact. Runtime cleanup is still
+required after all dependent Phase3 verification. CI remains owner-deferred/unverified.

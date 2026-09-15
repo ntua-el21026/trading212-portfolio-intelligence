@@ -234,3 +234,19 @@ schema/bounds are422; body excess413; absent/current denied scopes403; foreign I
 idempotency conflicts409; revision mismatch412/missing428; capacity429; transient
 unavailability503. Analytical missingness is a typed result, not a fake successful
 numeric zero. Errors never echo tokens, provider bodies, SQL, user notes or URLs.
+
+## Versioned premium reports
+
+[ADR-0024](../adr/ADR-0024-VERSIONED-PREMIUM-REPORTS.md) preserves the existing
+V1 report API and original MCP descriptors. Premium reports use a distinct V2
+collection and `report_sections_v2` / `2.0.0` document/context contract over the
+shared report engine. V1 never serializes V2 pins through its closed legacy types.
+V2 mirrors the six report-only `/api/v1` route shapes under `/api/v2`, with separate
+operation IDs/cursor identity. Risk creation pins a succeeded immutable run and
+retains complete canonical proof; no arbitrary columns, calculations or URLs.
+Seventeen fixed risk tables include six proof tables. The distinct
+`risk_xray_paths_v1` proof table retains every selected terminal path's root,
+issuer, cash/unresolved state and exact exposure metrics. Its empty descriptor
+records an absent risk X-ray pin; it coexists with ordinary X-ray analytical tables.
+Existing report scopes, CSRF/idempotency, download grants and byte bounds apply.
+Implementation, mixed-version migration and local verification remain pending.

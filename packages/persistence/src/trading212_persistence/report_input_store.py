@@ -30,6 +30,8 @@ from trading212_domain.reports import (
     ReportSelection,
     ReportSourceUse,
     ReportTableKey,
+    report_profile_version,
+    report_schema_version,
 )
 from trading212_domain.sources import SourceAvailability
 
@@ -107,6 +109,7 @@ class ReportInputSink:
             account_id=authorization.account_id,
             created_at=at,
             kind="report" if isinstance(selection, ReportSelection) else "export",
+            contract_version=2 if report_schema_version(selection) == "2.0.0" else 1,
             snapshot_id=selection.snapshot_id,
             start_date=selection.start_date,
             end_date=selection.end_date,
@@ -252,6 +255,8 @@ class ReportInputSink:
         )
         warnings = summary.proof.notes
         context = app.ReportPinnedContext(
+            profile_version=report_profile_version(self._selection),
+            schema_version=report_schema_version(self._selection),
             snapshot_id=self.row.snapshot_id,
             valuation_at=self.row.valuation_at,
             source_cutoff_at=self.row.source_cutoff_at,
@@ -313,7 +318,19 @@ class ReportInputSink:
                     content_digest=license.license_digest,
                 )
             )
+        from .report_premium_sources import bind_report_premium_dependency
+
+        premium_expiry = bind_report_premium_dependency(
+            self._session,
+            self._authorization,
+            self.row,
+            self._selection,
+            summary,
+            now=self._clock(),
+        )
         deadlines = [self.row.expires_at]
+        if premium_expiry is not None:
+            deadlines.append(premium_expiry)
         if summary.copy_expires_at is not None:
             deadlines.append(summary.copy_expires_at)
         deadlines.extend(dep.expires_at for dep in dependencies if dep.expires_at is not None)

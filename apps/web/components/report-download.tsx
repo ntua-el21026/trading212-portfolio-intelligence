@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReportArtifactMetadata } from "@trading212/api-contracts";
 import { Button } from "@trading212/ui";
+import { useNavigationVersionRef } from "./navigation-intent";
 
 export function ReportDownloadButton({
   accountId,
@@ -12,12 +13,28 @@ export function ReportDownloadButton({
 }: Readonly<{
   accountId: string;
   parentId: string;
-  family: "reports" | "exports";
+  family: "reports" | "exports" | "premium-reports";
   artifact: ReportArtifactMetadata;
 }>) {
   const [busy, setBusy] = useState(false);
+  const alive = useRef(true);
+  const controller = useRef<AbortController | null>(null);
+  const navigation = useNavigationVersionRef();
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+      controller.current?.abort();
+    };
+  }, []);
   const [error, setError] = useState<string | null>(null);
   async function download() {
+    if (busy) return;
+    const stamp = navigation.current;
+    const request = new AbortController();
+    controller.current = request;
+    const timeout = window.setTimeout(() => request.abort(), 30_000);
+    const current = () => alive.current && navigation.current === stamp;
     setBusy(true);
     setError(null);
     try {
@@ -27,11 +44,15 @@ export function ReportDownloadButton({
           method: "POST",
           redirect: "error",
           cache: "no-store",
-          signal: AbortSignal.timeout(30_000),
+          signal: request.signal,
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams({ account_id: accountId }),
         },
       );
+      if (!current()) {
+        await response.body?.cancel();
+        return;
+      }
       if (!response.ok)
         throw new Error(
           response.status === 410
@@ -60,6 +81,10 @@ export function ReportDownloadButton({
       try {
         while (true) {
           const item = await reader.read();
+          if (!current()) {
+            await reader.cancel();
+            return;
+          }
           if (item.done) break;
           length += item.value.byteLength;
           if (length > 10 * 1024 * 1024 || length > artifact.byte_length) {
@@ -83,6 +108,7 @@ export function ReportDownloadButton({
       ).join("");
       if (length !== artifact.byte_length || digest !== artifact.content_digest)
         throw new Error("The artifact could not be verified.");
+      if (!current()) return;
       const url = URL.createObjectURL(
         new Blob([bytes], { type: artifact.mime_type }),
       );
@@ -97,6 +123,7 @@ export function ReportDownloadButton({
         window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
     } catch (failure) {
+      if (!current()) return;
       setError(
         failure instanceof Error &&
           [
@@ -110,7 +137,11 @@ export function ReportDownloadButton({
           : "The download could not complete. Your report selection is preserved.",
       );
     } finally {
-      setBusy(false);
+      window.clearTimeout(timeout);
+      if (controller.current === request) {
+        controller.current = null;
+        if (alive.current) setBusy(false);
+      }
     }
   }
   return (

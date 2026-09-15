@@ -13,6 +13,7 @@ from trading212_api_contracts.typescript import (
     render_alert_client,
     render_historical_client,
     render_planning_client,
+    render_premium_report_client,
     render_report_client,
     render_risk_client,
     render_source_client,
@@ -30,6 +31,7 @@ HISTORICAL_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/historical.gen
 XRAY_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/xray.generated.ts"
 SOURCE_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/sources.generated.ts"
 REPORT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/reports.generated.ts"
+PREMIUM_REPORT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/premium-reports.generated.ts"
 ALERT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/alerts.generated.ts"
 RISK_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/risk.generated.ts"
 
@@ -68,6 +70,7 @@ def main() -> int:
         (HISTORICAL_OUTPUT, render_historical_client),
         (XRAY_OUTPUT, render_xray_client),
         (REPORT_OUTPUT, render_report_client),
+        (PREMIUM_REPORT_OUTPUT, render_premium_report_client),
         (ALERT_OUTPUT, render_alert_client),
         (RISK_OUTPUT, render_risk_client),
     ):

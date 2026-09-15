@@ -65,9 +65,18 @@ function run(arguments_, fixture, reportPath) {
         ].includes(fixture)
           ? "1"
           : "0",
-        T212PI_E2E_RISK: fixture === "risk.spec.ts" ? "1" : "0",
+        T212PI_E2E_RISK: ["risk.spec.ts", "premium-reports.spec.ts"].includes(
+          fixture,
+        )
+          ? "1"
+          : "0",
         T212PI_E2E_XRAY: fixture === "xray.spec.ts" ? "1" : "0",
-        T212PI_E2E_REPORTS: fixture === "reports.spec.ts" ? "1" : "0",
+        T212PI_E2E_REPORTS: [
+          "reports.spec.ts",
+          "premium-reports.spec.ts",
+        ].includes(fixture)
+          ? "1"
+          : "0",
         T212PI_E2E_ALERTS: fixture === "alerts.spec.ts" ? "1" : "0",
       },
       stdio: "inherit",

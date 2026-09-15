@@ -236,6 +236,13 @@ class ReportMcpGateway:
 
 def _payload[T: wire.ReportSchema](value: object, schema: type[T]) -> T:
     try:
+        if schema is wire.ReportManifest:
+            from trading212_domain.report_manifest import encode_report_manifest
+            from trading212_domain.reports import ReportManifest
+
+            if not isinstance(value, ReportManifest):
+                raise TypeError
+            return schema.model_validate_json(encode_report_manifest(value))
         return schema.model_validate(to_primitive(value))
     except (KeyError, TypeError, ValueError):
         raise _InvalidResult() from None

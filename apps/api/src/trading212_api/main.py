@@ -100,6 +100,7 @@ from .alert_routes import register_alert_routes
 from .historical_routes import register_historical_routes
 from .intelligence_quality_routes import register_intelligence_quality_routes
 from .planning_routes import register_planning_routes
+from .premium_report_routes import register_premium_report_routes
 from .refresh_queue import PostgresRefreshQueue
 from .report_routes import register_report_routes
 from .risk_routes import register_risk_routes
@@ -162,6 +163,7 @@ class ApiContext:
     intelligence_quality_service: IntelligenceDataQualityService | None
     xray_service: XrayService | None
     report_service: ReportService | None
+    premium_report_service: ReportService | None
     alert_service: AlertService | None
     sessions: SessionManager
     local_authenticator: LocalSyntheticAuthenticator | None
@@ -184,6 +186,7 @@ def create_app(
     intelligence_quality_service: IntelligenceDataQualityService | None = None,
     xray_service: XrayService | None = None,
     report_service: ReportService | None = None,
+    premium_report_service: ReportService | None = None,
     alert_service: AlertService | None = None,
     session_manager: SessionManager | None = None,
     bearer_authenticator: BearerAuthenticator | None = None,
@@ -220,6 +223,7 @@ def create_app(
             default_intelligence_quality,
             default_xray,
             default_reports,
+            default_premium_reports,
             default_alerts,
             default_readiness,
         ) = _local_runtime_defaults(
@@ -236,6 +240,7 @@ def create_app(
         intelligence_quality_service = intelligence_quality_service or default_intelligence_quality
         xray_service = xray_service or default_xray
         report_service = report_service or default_reports
+        premium_report_service = premium_report_service or default_premium_reports
         alert_service = alert_service or default_alerts
     else:
         portfolio_service = service
@@ -261,6 +266,7 @@ def create_app(
         intelligence_quality_service=intelligence_quality_service,
         xray_service=xray_service,
         report_service=report_service,
+        premium_report_service=premium_report_service,
         alert_service=alert_service,
         sessions=sessions,
         local_authenticator=local_authenticator,
@@ -313,6 +319,7 @@ def create_app(
     register_intelligence_quality_routes(application, _principal, _context)
     register_xray_routes(application, _principal, _context)
     register_report_routes(application, _principal, _context)
+    register_premium_report_routes(application, _principal, _context)
     register_alert_routes(application, _principal, _context)
     _install_openapi_contract(application)
     return application
@@ -333,6 +340,7 @@ def _local_runtime_defaults(
     RiskService,
     IntelligenceDataQualityService,
     XrayService,
+    ReportService,
     ReportService,
     AlertService,
     Callable[[], Awaitable[bool]],
@@ -430,6 +438,14 @@ def _local_runtime_defaults(
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
             cursor_ttl_seconds=settings.cursor_ttl_seconds,
         ),
+        PostgresReportService(
+            sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+            cursor_ttl_seconds=settings.cursor_ttl_seconds,
+            contract_version=2,
+            risk_preflight=validate_risk_capacity,
+        ),
         PostgresAlertService(
             sessions,
             clock=clock,
@@ -473,7 +489,7 @@ def _install_openapi_contract(application: FastAPI) -> None:
         for path, path_item in schema.get("paths", {}).items():
             if path == "/api/v1/auth/local-session":
                 continue
-            if not path.startswith("/api/v1/"):
+            if not path.startswith(("/api/v1/", "/api/v2/")):
                 continue
             security: list[dict[str, list[str]]] = (
                 [{"sessionCookie": []}]

@@ -36,6 +36,7 @@ from trading212_domain.reports import (
     ReportType,
     report_limit,
     report_mime_type,
+    report_schema_version,
 )
 from trading212_domain.sources import SourceAvailability
 from trading212_domain.values import CurrencyCode
@@ -177,7 +178,10 @@ class ReportPinnedContext(ReportRecord):
     def __post_init__(self) -> None:
         ReportRecord.__post_init__(self)
         report_limit(len(self.pins) <= 256, "pins")
-        if self.profile_version != "report_sections_v1" or self.schema_version != "1.0.0":
+        if (self.profile_version, self.schema_version) not in {
+            ("report_sections_v1", "1.0.0"),
+            ("report_sections_v2", "2.0.0"),
+        }:
             fail_validation("Report context profile is unsupported.", field="profile_version")
 
 
@@ -558,7 +562,12 @@ def report_request_digest(command: GenerateReportCommand | CreateExportCommand) 
     if type(command) not in (GenerateReportCommand, CreateExportCommand):
         fail_validation("A typed report command is required.", field="command")
     selection = encode_report_selection(command.selection)
-    framing = b"report_request_v1\0" + type(command).__name__.encode("ascii") + b"\0"
+    version = (
+        b"report_request_v2\0"
+        if report_schema_version(command.selection) == "2.0.0"
+        else b"report_request_v1\0"
+    )
+    framing = version + type(command).__name__.encode("ascii") + b"\0"
     return hashlib.sha256(
         framing
         + len(selection).to_bytes(8, "big")

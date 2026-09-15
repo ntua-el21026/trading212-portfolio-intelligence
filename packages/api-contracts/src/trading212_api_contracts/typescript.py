@@ -36,6 +36,7 @@ class TargetClientGenerator:
             "historical",
             "xray",
             "reports",
+            "premium-reports",
             "alerts",
             "risk",
         }:
@@ -47,8 +48,14 @@ class TargetClientGenerator:
         self.definitions: dict[str, Any] = contract["components"]["schemas"]
         self.rendered: dict[str, str] = {}
         self.visiting: set[str] = set()
-        if imported_module not in {"./sources.generated", "./xray.generated"}:
-            raise ValueError("Only existing shared source and X-ray schema modules are supported")
+        if imported_module not in {
+            "./sources.generated",
+            "./xray.generated",
+            "./reports.generated",
+        }:
+            raise ValueError(
+                "Only existing shared source, X-ray and report schema modules are supported"
+            )
         self.imported_schemas = imported_schemas
         self.imported_module = imported_module
         self.used_imports: set[str] = set()
@@ -97,7 +104,7 @@ class TargetClientGenerator:
             "pattern",
             "format",
         }
-        if self.tag in {"sources", "xray", "reports", "alerts"}:
+        if self.tag in {"sources", "xray", "reports", "premium-reports", "alerts"}:
             supported.update({"oneOf", "discriminator"})
         if set(schema) - supported:
             raise ValueError(f"Unsupported target schema fields: {sorted(set(schema) - supported)}")
@@ -123,7 +130,7 @@ class TargetClientGenerator:
                 selector = definition.get("properties", {}).get(key, {})
                 literals = (
                     selector.get("enum", [])
-                    if self.tag == "reports" and "enum" in selector
+                    if self.tag in {"reports", "premium-reports"} and "enum" in selector
                     else [selector.get("const")]
                 )
                 if (
@@ -287,7 +294,7 @@ class TargetClientGenerator:
                 '"VALIDATION_FAILED", 422, "The X-ray request is invalid."); '
                 "throw error; }\n"
             )
-        if self.tag == "reports":
+        if self.tag in {"reports", "premium-reports"}:
             body_text = (
                 f"try {{ return await {invocation}; }} catch (error) {{ "
                 "if (error instanceof z.ZodError) throw new ReportApiError("
@@ -488,15 +495,34 @@ def render_xray_client(contract: dict[str, Any]) -> str:
 class ReportClientGenerator(TargetClientGenerator):
     """Fixed report methods with separate ephemeral grants and bounded binary downloads."""
 
-    def __init__(self, contract: dict[str, Any]) -> None:
-        super().__init__(contract, tag="reports")
+    def __init__(
+        self,
+        contract: dict[str, Any],
+        *,
+        premium: bool = False,
+        imported_schemas: frozenset[str] = frozenset(),
+    ) -> None:
+        super().__init__(
+            contract,
+            tag="premium-reports" if premium else "reports",
+            imported_schemas=imported_schemas,
+            imported_module="./reports.generated" if premium else "./sources.generated",
+        )
+        self.premium = premium
 
     def operation(self, path: str, method: str, operation: dict[str, Any]) -> str:
         name = _name(operation["operationId"])
-        if name in {"download_report_artifact", "download_export_artifact"}:
-            family = "reports" if name == "download_report_artifact" else "exports"
+        if name in {
+            "download_report_artifact",
+            "download_export_artifact",
+            "download_premium_report_artifact",
+        }:
+            family = "exports" if name == "download_export_artifact" else "reports"
             parent = "report_id" if family == "reports" else "export_id"
-            expected = f"/api/v1/{family}/{{{parent}}}/artifacts/{{artifact_id}}/content"
+            version = 2 if self.premium else 1
+            if self.premium != (name == "download_premium_report_artifact"):
+                raise ValueError("A report binary operation changed its fixed version")
+            expected = f"/api/v{version}/{family}/{{{parent}}}/artifacts/{{artifact_id}}/content"
             if path != expected or method != "get":
                 raise ValueError("A report binary operation changed its fixed path or method")
             self.reference("#/components/schemas/ReportArtifactMetadata")
@@ -508,7 +534,11 @@ class ReportClientGenerator(TargetClientGenerator):
                 "query, options, ReportArtifactMetadataSchema); }"
             )
         generated = super().operation(path, method, operation)
-        if name in {"create_report_download_grant", "create_export_download_grant"}:
+        if name in {
+            "create_report_download_grant",
+            "create_export_download_grant",
+            "create_premium_report_download_grant",
+        }:
             generated = generated.replace(
                 "options: TargetCommandOptions", "options: ReportGrantOptions = {}"
             )
@@ -534,6 +564,11 @@ class ReportClientGenerator(TargetClientGenerator):
             "type ReportCommandOptions, type ReportClientOptions, type ReportGrantOptions, "
             'type ReportDownloadOptions, type ReportArtifactResponse } from "./report-transport";',
         )
+        if self.premium:
+            rendered = rendered.replace("class ReportApiClient", "class PremiumReportApiClient")
+            rendered = rendered.replace(
+                "new ReportTransport(options)", "new ReportTransport(options, 2)"
+            )
         # Grant POSTs use the read-options shape only as an empty transport options bag;
         # no stable raw token replay or invented idempotency header is introduced.
         return rendered
@@ -541,6 +576,39 @@ class ReportClientGenerator(TargetClientGenerator):
 
 def render_report_client(contract: dict[str, Any]) -> str:
     return ReportClientGenerator(contract).render()
+
+
+def render_premium_report_client(contract: dict[str, Any]) -> str:
+    """Generate only the six V2 report routes and reuse frozen V1 cell/artifact schemas."""
+    expected = {
+        ("post", "/api/v2/report-jobs", "generate_premium_portfolio_report"),
+        ("get", "/api/v2/report-jobs/{job_id}", "get_premium_report_status"),
+        ("get", "/api/v2/reports", "list_premium_reports"),
+        ("get", "/api/v2/reports/{report_id}", "get_premium_report_manifest"),
+        (
+            "post",
+            "/api/v2/reports/{report_id}/artifacts/{artifact_id}/grants",
+            "create_premium_report_download_grant",
+        ),
+        (
+            "get",
+            "/api/v2/reports/{report_id}/artifacts/{artifact_id}/content",
+            "download_premium_report_artifact",
+        ),
+    }
+    actual = {
+        (method, path, operation["operationId"])
+        for path, methods in contract["paths"].items()
+        for method, operation in methods.items()
+        if "premium-reports" in operation.get("tags", [])
+    }
+    if actual != expected:
+        raise ValueError("The fixed premium report operation inventory differs.")
+    legacy = ReportClientGenerator(contract)
+    legacy.render()
+    return ReportClientGenerator(
+        contract, premium=True, imported_schemas=frozenset(legacy.rendered)
+    ).render()
 
 
 class RiskClientGenerator(TargetClientGenerator):

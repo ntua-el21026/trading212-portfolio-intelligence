@@ -12,6 +12,7 @@ import httpx
 import pytest
 from sqlalchemy import select
 from trading212_api_contracts import reports as wire
+from trading212_domain.report_manifest import encode_report_selection
 from trading212_domain.serialization import to_primitive
 from trading212_persistence.report_models import ArtifactDownloadGrantModel
 from trading212_security.principals import Scope
@@ -99,8 +100,8 @@ def request_for(
     key = {"X-Idempotency-Key": uuid4().hex}
     match operation:
         case ReportOperation.GENERATE:
-            body = wire.GenerateReportRequest.model_validate(
-                to_primitive(grid.report_selection(resource.pin))
+            body = wire.GenerateReportRequest.model_validate_json(
+                encode_report_selection(grid.report_selection(resource.pin))
             ).model_copy(update={"account_id": str(account_id)})
             return HttpCase(
                 operation,

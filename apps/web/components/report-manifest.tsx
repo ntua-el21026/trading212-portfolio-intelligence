@@ -3,6 +3,8 @@ import type {
   ExportJobStatus,
   ReportJobStatus,
   ReportManifest,
+  PremiumReportManifest,
+  PremiumReportJobStatus,
 } from "@trading212/api-contracts";
 import { Surface } from "@trading212/ui";
 import { formatDateTime, titleCase } from "../lib/format";
@@ -10,9 +12,17 @@ import { ReportDownloadButton } from "./report-download";
 
 export function ReportArtifacts({
   job,
-}: Readonly<{ job: ReportJobStatus | ExportJobStatus }>) {
+  premium = false,
+}: Readonly<{
+  job: ReportJobStatus | ExportJobStatus | PremiumReportJobStatus;
+  premium?: boolean;
+}>) {
   if (job.state !== "succeeded") return null;
-  const family = "job_id" in job ? "reports" : "exports";
+  const family = premium
+    ? "premium-reports"
+    : "job_id" in job
+      ? "reports"
+      : "exports";
   const parentId = "job_id" in job ? job.job_id : job.export_id;
   return (
     <Surface className={styles.surface} aria-label="Report artifacts">
@@ -41,7 +51,7 @@ export function ReportArtifacts({
 
 export function ReportManifestCard({
   manifest,
-}: Readonly<{ manifest: ReportManifest }>) {
+}: Readonly<{ manifest: ReportManifest | PremiumReportManifest }>) {
   return (
     <Surface className={styles.surface} aria-label="Report manifest">
       <h2>Manifest and provenance</h2>
