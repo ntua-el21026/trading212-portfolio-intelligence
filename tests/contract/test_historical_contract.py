@@ -60,8 +60,9 @@ def test_exact_six_historical_get_routes_leave_existing_performance_summary() ->
             "download_premium_report_artifact",
         ),
     }
-    # The 95 preserved, 11 risk, 6 premium report, 11 scenario, 17 projection and 8 research.
-    assert sum(len(methods) for methods in contract["paths"].values()) == 148
+    # The 95 preserved, 11 risk, 6 report, 11 scenario, 17 projection, 8 research,
+    # 5 owner layout and 1 provider status operations.
+    assert sum(len(methods) for methods in contract["paths"].values()) == 154
     assert contract == json.loads(
         (ROOT / "packages/api-contracts/openapi/phase1-v1.json").read_text()
     )

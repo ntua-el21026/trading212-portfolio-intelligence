@@ -4496,6 +4496,12 @@
         "title": "AllocationResponse",
         "type": "object"
       },
+      "ArchiveOwnerLayoutRequest": {
+        "additionalProperties": false,
+        "properties": {},
+        "title": "ArchiveOwnerLayoutRequest",
+        "type": "object"
+      },
       "ArtifactGrant": {
         "additionalProperties": false,
         "properties": {
@@ -7213,6 +7219,19 @@
           "content"
         ],
         "title": "CreateGoalVersionRequest",
+        "type": "object"
+      },
+      "CreateOwnerLayoutRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/OwnerLayoutContent"
+          }
+        },
+        "required": [
+          "content"
+        ],
+        "title": "CreateOwnerLayoutRequest",
         "type": "object"
       },
       "CreateProjectionRunRequest": {
@@ -10418,6 +10437,181 @@
         "title": "HistoricalIssue",
         "type": "object"
       },
+      "HistoricalLayoutSelection": {
+        "additionalProperties": false,
+        "properties": {
+          "calendar": {
+            "default": "none",
+            "enum": [
+              "none",
+              "month",
+              "quarter",
+              "year"
+            ],
+            "title": "Calendar",
+            "type": "string"
+          },
+          "capture_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capture Id"
+          },
+          "coverage": {
+            "default": "require_complete",
+            "enum": [
+              "require_complete",
+              "allow_degraded"
+            ],
+            "title": "Coverage",
+            "type": "string"
+          },
+          "end_date": {
+            "format": "date",
+            "title": "End Date",
+            "type": "string"
+          },
+          "flow_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "deposit",
+                  "withdrawal",
+                  "transfer_in",
+                  "transfer_out",
+                  "buy",
+                  "sell",
+                  "dividend",
+                  "interest",
+                  "fee",
+                  "tax",
+                  "internal_transfer",
+                  "fx_conversion",
+                  "corporate_action",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              {
+                "const": "all",
+                "type": "string"
+              }
+            ],
+            "default": "all",
+            "title": "Flow Kind"
+          },
+          "frequency": {
+            "default": "monthly",
+            "enum": [
+              "daily",
+              "monthly"
+            ],
+            "title": "Frequency",
+            "type": "string"
+          },
+          "grouping": {
+            "default": "holding",
+            "enum": [
+              "holding",
+              "group",
+              "sector",
+              "asset_class",
+              "currency"
+            ],
+            "title": "Grouping",
+            "type": "string"
+          },
+          "kind": {
+            "const": "historical",
+            "title": "Kind",
+            "type": "string"
+          },
+          "knowledge": {
+            "default": "as_of_cutoff",
+            "enum": [
+              "as_of_cutoff",
+              "point_in_time"
+            ],
+            "title": "Knowledge",
+            "type": "string"
+          },
+          "method": {
+            "default": "twr",
+            "enum": [
+              "twr",
+              "mwr",
+              "modified_dietz"
+            ],
+            "title": "Method",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "rolling": {
+            "default": "none",
+            "enum": [
+              "none",
+              "calendar_days_30",
+              "calendar_days_90",
+              "calendar_days_365"
+            ],
+            "title": "Rolling",
+            "type": "string"
+          },
+          "route": {
+            "enum": [
+              "performance",
+              "income"
+            ],
+            "title": "Route",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "start_date": {
+            "format": "date",
+            "title": "Start Date",
+            "type": "string"
+          },
+          "view": {
+            "default": "summary",
+            "enum": [
+              "summary",
+              "series",
+              "rolling",
+              "calendar",
+              "attribution",
+              "income",
+              "cash_flows"
+            ],
+            "title": "View",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "route",
+          "start_date",
+          "end_date",
+          "source_cutoff_at",
+          "reporting_currency"
+        ],
+        "title": "HistoricalLayoutSelection",
+        "type": "object"
+      },
       "HistoricalMethodMetadata": {
         "additionalProperties": false,
         "properties": {
@@ -12892,6 +13086,393 @@
         "title": "OrderResponse",
         "type": "object"
       },
+      "OwnerLayoutArchiveReceipt": {
+        "additionalProperties": false,
+        "properties": {
+          "archived_at": {
+            "format": "date-time",
+            "title": "Archived At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "revision": {
+            "maximum": 129.0,
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "state": {
+            "const": "archived",
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "state",
+          "archived_at"
+        ],
+        "title": "OwnerLayoutArchiveReceipt",
+        "type": "object"
+      },
+      "OwnerLayoutContent": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Id"
+          },
+          "columns": {
+            "default": 2,
+            "maximum": 3.0,
+            "minimum": 1.0,
+            "title": "Columns",
+            "type": "integer"
+          },
+          "density": {
+            "default": "comfortable",
+            "enum": [
+              "comfortable",
+              "compact"
+            ],
+            "title": "Density",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "maxLength": 400,
+            "pattern": "^[^\\x00-\\x1f\\x7f]*$",
+            "title": "Description",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "widgets": {
+            "items": {
+              "$ref": "#/components/schemas/OwnerLayoutWidget"
+            },
+            "maxItems": 24,
+            "minItems": 1,
+            "title": "Widgets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "widgets"
+        ],
+        "title": "OwnerLayoutContent",
+        "type": "object"
+      },
+      "OwnerLayoutPage": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OwnerLayoutSummary"
+            },
+            "maxItems": 32,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "read_cutoff_at": {
+            "format": "date-time",
+            "title": "Read Cutoff At",
+            "type": "string"
+          },
+          "total": {
+            "maximum": 32.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "next_cursor",
+          "read_cutoff_at"
+        ],
+        "title": "OwnerLayoutPage",
+        "type": "object"
+      },
+      "OwnerLayoutSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "availability": {
+            "enum": [
+              "available",
+              "restricted"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "account_unavailable",
+                  "selection_unavailable"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "revision": {
+            "maximum": 129.0,
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "state": {
+            "enum": [
+              "active",
+              "archived"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "revision",
+          "state",
+          "created_at",
+          "updated_at",
+          "availability",
+          "reason"
+        ],
+        "title": "OwnerLayoutSummary",
+        "type": "object"
+      },
+      "OwnerLayoutVersionHeader": {
+        "additionalProperties": false,
+        "properties": {
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "number": {
+            "maximum": 128.0,
+            "minimum": 1.0,
+            "title": "Number",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "created_at",
+          "content_digest"
+        ],
+        "title": "OwnerLayoutVersionHeader",
+        "type": "object"
+      },
+      "OwnerLayoutView": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/OwnerLayoutContent"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "revision": {
+            "maximum": 129.0,
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "state": {
+            "enum": [
+              "active",
+              "archived"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "version": {
+            "$ref": "#/components/schemas/OwnerLayoutVersionHeader"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/OwnerLayoutVersionHeader"
+            },
+            "maxItems": 128,
+            "minItems": 1,
+            "title": "Versions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "state",
+          "version",
+          "content",
+          "versions"
+        ],
+        "title": "OwnerLayoutView",
+        "type": "object"
+      },
+      "OwnerLayoutWidget": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "portfolio_summary",
+              "direct_allocation",
+              "holdings_preview",
+              "data_quality",
+              "saved_view"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "default": "",
+            "maxLength": 80,
+            "pattern": "^[^\\x00-\\x1f\\x7f]*$",
+            "title": "Label",
+            "type": "string"
+          },
+          "selection": {
+            "anyOf": [
+              {
+                "discriminator": {
+                  "mapping": {
+                    "historical": "#/components/schemas/HistoricalLayoutSelection",
+                    "research": "#/components/schemas/ResearchLayoutSelection",
+                    "saved_run": "#/components/schemas/RunLayoutSelection",
+                    "workspace": "#/components/schemas/WorkspaceLayoutSelection"
+                  },
+                  "propertyName": "kind"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/WorkspaceLayoutSelection"
+                  },
+                  {
+                    "$ref": "#/components/schemas/HistoricalLayoutSelection"
+                  },
+                  {
+                    "$ref": "#/components/schemas/RunLayoutSelection"
+                  },
+                  {
+                    "$ref": "#/components/schemas/ResearchLayoutSelection"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selection"
+          }
+        },
+        "required": [
+          "id",
+          "kind"
+        ],
+        "title": "OwnerLayoutWidget",
+        "type": "object"
+      },
       "PageResponse_ActivityResponse_": {
         "additionalProperties": false,
         "properties": {
@@ -15217,6 +15798,171 @@
         ],
         "title": "PositionSort",
         "type": "string"
+      },
+      "PremiumCapabilityStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "attempts_charged": {
+            "anyOf": [
+              {
+                "maximum": 25.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attempts Charged"
+          },
+          "canonical_publication_supported": {
+            "title": "Canonical Publication Supported",
+            "type": "boolean"
+          },
+          "capability": {
+            "enum": [
+              "daily_adjusted",
+              "etf_profile",
+              "company_overview",
+              "news_sentiment",
+              "reference_fx"
+            ],
+            "title": "Capability",
+            "type": "string"
+          },
+          "daily_allowance": {
+            "anyOf": [
+              {
+                "maximum": 25.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily Allowance"
+          },
+          "reason": {
+            "enum": [
+              "outbound_disabled",
+              "provider_configuration_required",
+              "credential_configuration_required",
+              "capability_rights_required",
+              "research_scope_required",
+              "acquisition_policy_required",
+              "canonical_metadata_unavailable",
+              "metadata_eligible_unverified",
+              "daily_allowance_exhausted",
+              "provider_attempt_in_flight"
+            ],
+            "title": "Reason",
+            "type": "string"
+          },
+          "retry_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retry At"
+          },
+          "state": {
+            "enum": [
+              "not_configured",
+              "blocked_external",
+              "ready_unverified",
+              "degraded",
+              "unavailable"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "capability",
+          "state",
+          "reason",
+          "canonical_publication_supported"
+        ],
+        "title": "PremiumCapabilityStatus",
+        "type": "object"
+      },
+      "PremiumProviderStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "capabilities": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumCapabilityStatus"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Capabilities",
+            "type": "array"
+          },
+          "provider": {
+            "enum": [
+              "alpha_vantage",
+              "ecb"
+            ],
+            "title": "Provider",
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "capabilities"
+        ],
+        "title": "PremiumProviderStatus",
+        "type": "object"
+      },
+      "PremiumProviderStatusResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "credential_verification": {
+            "const": "unavailable",
+            "default": "unavailable",
+            "title": "Credential Verification",
+            "type": "string"
+          },
+          "live_verification": {
+            "const": "unavailable",
+            "default": "unavailable",
+            "title": "Live Verification",
+            "type": "string"
+          },
+          "observed_at": {
+            "format": "date-time",
+            "title": "Observed At",
+            "type": "string"
+          },
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumProviderStatus"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "title": "Providers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "account_id",
+          "observed_at",
+          "providers"
+        ],
+        "title": "PremiumProviderStatusResponse",
+        "type": "object"
       },
       "PremiumReportBoundFact": {
         "additionalProperties": false,
@@ -27710,6 +28456,72 @@
         "title": "ResearchItemView",
         "type": "object"
       },
+      "ResearchLayoutSelection": {
+        "additionalProperties": false,
+        "properties": {
+          "entity_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "event_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "news",
+                  "company_overview"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Kind"
+          },
+          "kind": {
+            "const": "research",
+            "title": "Kind",
+            "type": "string"
+          },
+          "review_state": {
+            "default": "all",
+            "enum": [
+              "all",
+              "reviewed",
+              "unreviewed"
+            ],
+            "title": "Review State",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "xray_run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Xray Run Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "xray_run_id",
+          "source_cutoff_at"
+        ],
+        "title": "ResearchLayoutSelection",
+        "type": "object"
+      },
       "ResearchMoney": {
         "additionalProperties": false,
         "properties": {
@@ -30509,6 +31321,85 @@
           "reporting_currency"
         ],
         "title": "RiskWindow",
+        "type": "object"
+      },
+      "RunLayoutSelection": {
+        "additionalProperties": false,
+        "properties": {
+          "family": {
+            "enum": [
+              "risk",
+              "scenario",
+              "projection",
+              "xray"
+            ],
+            "title": "Family",
+            "type": "string"
+          },
+          "kind": {
+            "const": "saved_run",
+            "title": "Kind",
+            "type": "string"
+          },
+          "pane": {
+            "default": "result",
+            "enum": [
+              "result",
+              "goal"
+            ],
+            "title": "Pane",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reporting Currency"
+          },
+          "run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Snapshot Id"
+          },
+          "source_cutoff_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Cutoff At"
+          }
+        },
+        "required": [
+          "kind",
+          "family",
+          "run_id"
+        ],
+        "title": "RunLayoutSelection",
         "type": "object"
       },
       "ScenarioBasisMismatch": {
@@ -36313,6 +37204,19 @@
         "title": "TargetVersionResponse",
         "type": "object"
       },
+      "UpdateOwnerLayoutRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/OwnerLayoutContent"
+          }
+        },
+        "required": [
+          "content"
+        ],
+        "title": "UpdateOwnerLayoutRequest",
+        "type": "object"
+      },
       "UpdateVirtualPortfolioRequest": {
         "additionalProperties": false,
         "properties": {
@@ -36485,6 +37389,67 @@
           "updated_at"
         ],
         "title": "VirtualPortfolioResponse",
+        "type": "object"
+      },
+      "WorkspaceLayoutSelection": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "workspace",
+            "title": "Kind",
+            "type": "string"
+          },
+          "pane": {
+            "anyOf": [
+              {
+                "enum": [
+                  "runs",
+                  "definitions",
+                  "assumptions",
+                  "goals"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pane"
+          },
+          "route": {
+            "enum": [
+              "overview",
+              "holdings",
+              "allocation",
+              "activity",
+              "dividends",
+              "snapshots",
+              "synchronization",
+              "quality",
+              "pies",
+              "drift",
+              "planner",
+              "sources",
+              "performance",
+              "risk",
+              "scenarios",
+              "projections",
+              "research",
+              "income",
+              "xray",
+              "reports",
+              "alerts",
+              "settings"
+            ],
+            "title": "Route",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "route"
+        ],
+        "title": "WorkspaceLayoutSelection",
         "type": "object"
       },
       "XrayAccess": {
@@ -43035,6 +44000,58 @@
         ]
       }
     },
+    "/api/v1/accounts/{account_id}/premium-providers": {
+      "get": {
+        "operationId": "get_premium_provider_status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PremiumProviderStatusResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Status",
+        "tags": [
+          "premium-providers"
+        ]
+      }
+    },
     "/api/v1/accounts/{account_id}/projection-runs": {
       "get": {
         "operationId": "list_projection_runs",
@@ -48938,6 +49955,386 @@
         "summary": "List Notification Destinations",
         "tags": [
           "alerts"
+        ]
+      }
+    },
+    "/api/v1/preferences/layouts": {
+      "get": {
+        "operationId": "list_owner_layouts",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_archived",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Archived",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerLayoutPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Owner Layouts",
+        "tags": [
+          "owner-layouts"
+        ]
+      },
+      "post": {
+        "operationId": "create_owner_layout",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOwnerLayoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerLayoutView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Owner Layout",
+        "tags": [
+          "owner-layouts"
+        ]
+      }
+    },
+    "/api/v1/preferences/layouts/{layout_id}": {
+      "get": {
+        "operationId": "get_owner_layout",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Layout Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "version_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Version Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerLayoutView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Owner Layout",
+        "tags": [
+          "owner-layouts"
+        ]
+      },
+      "patch": {
+        "operationId": "update_owner_layout",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Layout Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-Match",
+            "required": true,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOwnerLayoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerLayoutView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Update Owner Layout",
+        "tags": [
+          "owner-layouts"
+        ]
+      }
+    },
+    "/api/v1/preferences/layouts/{layout_id}/archive": {
+      "post": {
+        "operationId": "archive_owner_layout",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layout_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Layout Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-Match",
+            "required": true,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArchiveOwnerLayoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerLayoutArchiveReceipt"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Archive Owner Layout",
+        "tags": [
+          "owner-layouts"
         ]
       }
     },

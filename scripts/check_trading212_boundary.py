@@ -13,6 +13,14 @@ TRANSPORT_OWNER = PROVIDER_ROOT / "client.py"
 ALERT_WEBHOOK_OWNER = (
     ROOT / "packages/reference-data/src/trading212_reference_data/alert_webhook.py"
 )
+PREMIUM_ACQUISITION_OWNER = (
+    ROOT / "packages/reference-data/src/trading212_reference_data/premium_transport.py"
+)
+_PREMIUM_METHODS = frozenset(
+    {"daily_adjusted", "etf_profile", "company_overview", "news_sentiment", "ecb_reference_fx"}
+)
+_PREMIUM_PATHS = frozenset({"/query", "/stats/eurofxref/eurofxref-hist-90d.xml"})
+_PREMIUM_HOSTS = frozenset({"www.alphavantage.co", "www.ecb.europa.eu"})
 ORIGIN_OWNER = PROVIDER_ROOT / "configuration.py"
 ORIGIN_CONTRACT = PROVIDER_ROOT / "contracts/trading212-read-allowlist.yaml"
 ORIGIN_OWNERS = frozenset({ORIGIN_OWNER, ORIGIN_CONTRACT})
@@ -111,10 +119,15 @@ def _transport_import_findings(path: Path, tree: ast.AST) -> list[str]:
                         for allowed in {"http.client", "socket"}
                     )
                 )
+                and not (
+                    path == PREMIUM_ACQUISITION_OWNER
+                    and (imported == "socket" or imported.startswith("socket."))
+                )
             ):
                 findings.append(
                     f"{path.relative_to(ROOT)} imports outbound transport {imported}; "
-                    "transport belongs only to its narrowly named broker or alert adapter"
+                    "transport belongs only to its narrowly named broker or alert adapter, "
+                    "or the fixed premium acquisition transport"
                 )
         if (
             isinstance(node, ast.ImportFrom)
@@ -122,6 +135,11 @@ def _transport_import_findings(path: Path, tree: ast.AST) -> list[str]:
             and (node.module == "asyncio" or node.module.startswith("asyncio."))
             and any(alias.name in _STREAM_FACTORIES or alias.name == "*" for alias in node.names)
             and path != ALERT_WEBHOOK_OWNER
+            and not (
+                path == PREMIUM_ACQUISITION_OWNER
+                and node.module == "asyncio"
+                and all(alias.name == "open_connection" for alias in node.names)
+            )
         ):
             findings.append(
                 f"{path.relative_to(ROOT)}:{node.lineno} imports an unapproved "
@@ -133,11 +151,74 @@ def _transport_import_findings(path: Path, tree: ast.AST) -> list[str]:
             and isinstance(node.func, ast.Attribute)
             and node.func.attr in _STREAM_FACTORIES
             and path != ALERT_WEBHOOK_OWNER
+            and not (
+                path == PREMIUM_ACQUISITION_OWNER
+                and isinstance(node.func.value, ast.Name)
+                and node.func.value.id == "asyncio"
+                and node.func.attr == "open_connection"
+            )
         ):
             findings.append(
                 f"{path.relative_to(ROOT)}:{node.lineno} contains an unapproved "
                 "outbound stream connection"
             )
+    return findings
+
+
+def _premium_surface_findings(path: Path, tree: ast.AST) -> list[str]:
+    """The one new socket owner has five named operations and two reviewed routes."""
+    if path != PREMIUM_ACQUISITION_OWNER:
+        return []
+    findings: list[str] = []
+    if isinstance(tree, ast.Module) and any(
+        isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and not node.name.startswith("_")
+        for node in tree.body
+    ):
+        findings.append("Fixed premium transport cannot expose module-level generic functions")
+    classes = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.ClassDef) and node.name == "FixedPremiumTransport"
+    ]
+    if len(classes) != 1:
+        return ["FixedPremiumTransport must exist exactly once in its named transport owner"]
+    methods = [
+        node
+        for node in classes[0].body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and not node.name.startswith("_")
+    ]
+    if {node.name for node in methods} != _PREMIUM_METHODS or len(methods) != 5:
+        findings.append("FixedPremiumTransport must expose exactly its five fixed operations")
+    for node in methods:
+        parameters = {
+            arg.arg for arg in (*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs)
+        }
+        expected = {"self", "command", "permit", "now"}
+        if node.name != "ecb_reference_fx":
+            expected.add("credential")
+        if parameters != expected or node.args.vararg is not None or node.args.kwarg is not None:
+            findings.append(f"FixedPremiumTransport.{node.name} exposes an unapproved parameter")
+    paths: set[str] = set()
+    hosts: set[str] = set()
+    for walk_node in ast.walk(tree):
+        if (
+            isinstance(walk_node, ast.Call)
+            and isinstance(walk_node.func, ast.Attribute)
+            and walk_node.func.attr.casefold() in _MUTATING_METHODS | {"request"}
+        ):
+            findings.append("FixedPremiumTransport contains generic or mutating HTTP dispatch")
+        if not isinstance(walk_node, ast.Constant) or not isinstance(walk_node.value, str):
+            continue
+        value = walk_node.value
+        if value.startswith("/"):
+            paths.add(value)
+        if re.fullmatch(r"(?:[a-z0-9-]+\.)+[a-z]{2,}", value):
+            hosts.add(value)
+        if value.startswith(("http://", "https://")) or value in _MUTATING_LITERALS:
+            findings.append("FixedPremiumTransport contains an unapproved URL or HTTP method")
+    if paths != _PREMIUM_PATHS or hosts != _PREMIUM_HOSTS:
+        findings.append("FixedPremiumTransport contains an unknown or missing fixed route")
     return findings
 
 
@@ -235,6 +316,7 @@ def validate_trading212_boundary() -> list[str]:
             continue
         findings.extend(_transport_import_findings(path, tree))
         findings.extend(_provider_call_findings(path, tree))
+        findings.extend(_premium_surface_findings(path, tree))
         findings.extend(_text_findings(path, text))
     for path in _production_text_files():
         if path.suffix == ".py":

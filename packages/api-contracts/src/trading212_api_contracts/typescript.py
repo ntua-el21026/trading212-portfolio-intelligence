@@ -42,6 +42,8 @@ class TargetClientGenerator:
             "scenario",
             "projection",
             "research",
+            "owner-layouts",
+            "premium-providers",
         }:
             raise ValueError(
                 "Only fixed target, planning, source, historical and X-ray operations are supported"
@@ -115,6 +117,7 @@ class TargetClientGenerator:
             "alerts",
             "scenario",
             "research",
+            "owner-layouts",
         }:
             supported.update({"oneOf", "discriminator"})
         if set(schema) - supported:
@@ -338,6 +341,20 @@ class TargetClientGenerator:
                 f"try {{ return await {invocation}; }} catch (error) {{ "
                 "if (error instanceof z.ZodError) throw new ResearchApiError("
                 '"VALIDATION_FAILED", 422, "The bounded research request is invalid."); '
+                "throw error; }\n"
+            )
+        if self.tag == "owner-layouts":
+            body_text = (
+                f"try {{ return await {invocation}; }} catch (error) {{ "
+                "if (error instanceof z.ZodError) throw new OwnerLayoutApiError("
+                '"VALIDATION_FAILED", 422, "The bounded saved layout request is invalid."); '
+                "throw error; }\n"
+            )
+        if self.tag == "premium-providers":
+            body_text = (
+                f"try {{ return await {invocation}; }} catch (error) {{ "
+                "if (error instanceof z.ZodError) throw new PremiumProviderApiError("
+                '"VALIDATION_FAILED", 422, "The provider status request is invalid."); '
                 "throw error; }\n"
             )
         return (
@@ -767,5 +784,17 @@ def render_scenario_client(contract: dict[str, Any]) -> str:
 
 def render_research_client(contract: dict[str, Any]) -> str:
     from .research_typescript import render_research_client as render
+
+    return render(contract)
+
+
+def render_owner_layout_client(contract: dict[str, Any]) -> str:
+    from .owner_layout_typescript import render_owner_layout_client as render
+
+    return render(contract)
+
+
+def render_premium_provider_client(contract: dict[str, Any]) -> str:
+    from .premium_provider_typescript import render_premium_provider_client as render
 
     return render(contract)

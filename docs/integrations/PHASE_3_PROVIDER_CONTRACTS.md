@@ -78,3 +78,27 @@ physical cleanup removes forbidden copies.
 States: not_configured, blocked_external, ready_unverified, verified_live, degraded,
 unavailable. Synthetic fixtures approximate documented payload shape and never set
 verified_live. Production configuration/smoke is distinct from local adapter completion.
+
+
+### Status and compatible fallback clarification (accepted 2026-09-15)
+
+GetPremiumProviderStatus exposes the fixed two providers/five capabilities after
+current account and portfolio/analytics authorization. It performs no credential
+lookup or provider request. A configured Alpha Vantage credential port proves
+configuration presence only; it never establishes that a secret exists or works.
+Absent port configuration is not_configured. Metadata-eligible configured
+capabilities remain ready_unverified, with credential/live verification unavailable.
+Synthetic fixtures never establish verified_live. Subject, mapping, licence evidence
+and credential identifiers are not part of the public status representation.
+
+Disabled-by-default fallback accepts at most four explicitly ordered retained
+canonical price or FX candidates plus at most one matching fixed-provider
+acquisition. Exact currency, calendar and version, basis, period and then-known
+cutoff must agree. Differing periods reject unless independently supported bounded
+coverage is actually read. Compare actual full-request coverage, original source
+identity/quality/lifetime and fixed examined/rejected/unexamined outcomes. Do not
+blend partial rows or present unexamined coverage as measured. A requested live
+source never receives a synthetic replacement. Alpha Vantage and ECB serve distinct
+families and are not interchangeable alternatives. Acquisition preserves its
+original request group, digest, quota and deadline across retry; fallback never
+creates a new group to evade them. No provider or public acquisition route is added.

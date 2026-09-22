@@ -6,7 +6,7 @@ from hashlib import sha256
 from typing import Any, Literal, cast
 from uuid import UUID
 
-from sqlalchemy import func, select, tuple_
+from sqlalchemy import func, select, text, tuple_
 from sqlalchemy.orm import Session
 from trading212_application import xray as app
 from trading212_domain import xray as d
@@ -246,6 +246,24 @@ class XrayRunStore(XrayIngestion):
                 if parent.expires_at <= self._now():
                     raise xray_error(app.XrayServiceErrorCode.ACCESS_DENIED)
                 if key not in checked_sources:
+                    if (
+                        key[0] == "fx_snapshot_id"
+                        and parent.adapter_version == "premium_fixed_get_v1"
+                        and session.scalar(
+                            text(
+                                "SELECT acquisition_source_restricted(:owner, 'fx', :sou"
+                                "rce, :at, :use)"
+                            ),
+                            {
+                                "owner": owner,
+                                "source": key[1],
+                                "at": self._now(),
+                                "use": (self._required_copy_use or SourceUse.DISPLAY).value,
+                            },
+                        )
+                        is not False
+                    ):
+                        raise xray_error(app.XrayServiceErrorCode.ACCESS_DENIED)
                     from .source_models import SourceExpiryEventModel, SourceRetentionWorkModel
                     from .xray_lifecycle_models import (
                         EnrichmentExpiryEventModel,

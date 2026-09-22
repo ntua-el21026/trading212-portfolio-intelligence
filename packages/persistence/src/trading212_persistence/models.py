@@ -23,12 +23,16 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
+from .acquisition_models import ACQUISITION_MODELS
 from .activity_revision_models import ActivityRevisionEvidenceModel
 from .alert_models import ALERT_MODELS
 from .base import Base, CreatedAtMixin, UpdatedAtMixin, UUIDPrimaryKeyMixin
 from .historical_models import HISTORICAL_MODELS
 from .intelligence_quality_models import INTELLIGENCE_QUALITY_MODELS
 from .legacy_report_retention_models import LEGACY_REPORT_RETENTION_MODELS
+from .owner_layout_models import OWNER_LAYOUT_MODELS, register_owner_layout_indexes
+from .phase2_retention_indexes import register_phase2_indexes
+from .phase2_retention_models import PHASE2_RETENTION_MODELS
 from .planning_models import PLANNING_MODELS
 from .premium_models import PREMIUM_MODELS
 from .premium_retention_models import PREMIUM_RETENTION_MODELS
@@ -1104,6 +1108,9 @@ class CalculationRegistryModel(Base):
     )
 
 
+register_phase2_indexes()
+
+
 ALL_MODELS = (
     OwnerModel,
     PrincipalModel,
@@ -1146,11 +1153,17 @@ ALL_MODELS = (
     *ALERT_MODELS,
     ActivityRevisionEvidenceModel,
     *PROVIDER_OBSERVATION_MODELS,
+    *ACQUISITION_MODELS,
     *PREMIUM_MODELS,
     *PREMIUM_RETENTION_MODELS,
     *PROJECTION_MODELS,
     *PROJECTION_RETENTION_MODELS,
     *RISK_MODELS,
+    *OWNER_LAYOUT_MODELS,
     *SCENARIO_MODELS,
     *SCENARIO_SOURCE_MODELS,
+    *PHASE2_RETENTION_MODELS,
 )
+
+
+register_owner_layout_indexes(Base.metadata)

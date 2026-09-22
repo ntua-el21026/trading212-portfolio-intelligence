@@ -304,13 +304,18 @@ def create_runtime(
             )
 
         if research_service is None:
+            from trading212_persistence.acquisition_research_authority import (
+                PostgresResearchCapabilityAuthority,
+            )
             from trading212_persistence.research_service import PostgresResearchService
 
             research_service = PostgresResearchService(
                 create_session_factory(engine),
                 clock=runtime_clock,
                 cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
-                capability_authority=research_capability_authority,
+                capability_authority=research_capability_authority
+                if research_capability_authority is not None
+                else PostgresResearchCapabilityAuthority(),
             )
 
         async def database_readiness() -> bool:

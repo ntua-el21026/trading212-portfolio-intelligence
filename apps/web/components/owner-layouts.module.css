@@ -1,0 +1,101 @@
+.root a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  margin-inline-end: 0.5rem;
+}
+.root summary {
+  min-height: 44px;
+  padding-block: 0.65rem;
+  box-sizing: border-box;
+}
+.stack {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 0.85rem;
+}
+.fields label,
+.field {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.fields input,
+.fields select,
+.fields textarea,
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  min-height: 44px;
+}
+.widgets {
+  display: grid;
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+}
+.widget {
+  border: 1px solid var(--color-border, #344355);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  min-width: 0;
+}
+.widget fieldset {
+  border: 0;
+  margin: 1rem 0 0;
+  padding: 0;
+  min-width: 0;
+}
+.widget legend {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--layout-columns, 2), minmax(0, 1fr));
+  gap: 1rem;
+  min-width: 0;
+}
+.grid > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.grid[data-density="compact"] {
+  gap: 0.5rem;
+}
+.grid[data-density="compact"] > * {
+  padding: 0.75rem;
+}
+.identity {
+  font-family: var(--font-mono, monospace);
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1000px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 650px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .toolbar > button {
+    min-height: 44px;
+  }
+}

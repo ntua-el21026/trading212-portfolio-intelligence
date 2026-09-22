@@ -6,12 +6,18 @@ from datetime import datetime
 from typing import cast
 from uuid import UUID
 
-from sqlalchemy import SQLColumnExpression, Table, or_, select
+from sqlalchemy import Table, or_, select
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.selectable import Exists
 
 from . import historical_models as hm
 from . import source_models as sm
+from .phase2_retention_costs import PHASE2_MARKER_ROWS
+from .phase2_retention_models import (
+    HistoricalCompositeErasureModel,
+    HistoricalPhysicalRunModel,
+    HistoricalRetainedSourceModel,
+)
+from .phase2_retention_runtime import charge, drain_retained_sources, source_erasure_authorized
 from .planning_models import AnalyticsRunModel
 from .source_retention import SourcePurgeBudget
 from .source_retention_sql import purge_payload_rows
@@ -42,20 +48,6 @@ def _source_column(snapshot: sm.SourceSnapshotFields) -> str:
     raise ValueError("A registered historical source family is required.")
 
 
-def _pending_run(input_id: SQLColumnExpression[UUID]) -> Exists:
-    return (
-        select(hm.HistoricalRunModel.id)
-        .join(AnalyticsRunModel, AnalyticsRunModel.id == hm.HistoricalRunModel.analytics_run_id)
-        .where(
-            hm.HistoricalRunModel.input_id == input_id,
-            or_(
-                AnalyticsRunModel.canonical_input != b"", AnalyticsRunModel.canonical_result != b""
-            ),
-        )
-        .exists()
-    )
-
-
 def purge_source_copies(
     session: Session,
     snapshot: sm.SourceSnapshotFields,
@@ -70,32 +62,27 @@ def purge_source_copies(
     Partial progress commits with the existing immutable retention tombstone;
     current source authorization already denies access at expiry.
     """
-    dependency = getattr(hm.HistoricalDependencyModel, _source_column(snapshot))
+    kind = _source_column(snapshot).removesuffix("_snapshot_id")
+    if kind == "action":
+        kind = "corporate_action"
+    if not source_erasure_authorized(session, snapshot.owner_id, kind, snapshot.id, at, budget):
+        return False
+    membership = HistoricalRetainedSourceModel
     while budget.metadata_limit >= 2:
+        if not charge(budget, 2):
+            return False
         candidate = session.execute(
-            select(
-                hm.HistoricalInputModel.id, hm.HistoricalDependencyModel.id.label("dependency_id")
-            )
-            .join(
-                hm.HistoricalDependencyModel,
-                hm.HistoricalDependencyModel.input_id == hm.HistoricalInputModel.id,
-            )
+            select(membership.input_id.label("id"), membership.dependency_id, membership.leaf_id)
             .where(
-                dependency == snapshot.id,
-                hm.HistoricalDependencyModel.owner_id == snapshot.owner_id,
-                hm.HistoricalInputModel.owner_id == snapshot.owner_id,
-                or_(
-                    hm.HistoricalInputModel.canonical_input != b"",
-                    _pending_run(hm.HistoricalInputModel.id),
-                ),
+                membership.owner_id == snapshot.owner_id,
+                membership.source_kind == kind,
+                membership.source_id == snapshot.id,
             )
-            .order_by(hm.HistoricalInputModel.id, hm.HistoricalDependencyModel.id)
+            .order_by(membership.input_id, membership.dependency_id, membership.leaf_id)
             .limit(1)
         ).first()
         if candidate is None:
             return True
-        if not budget.inspect(rows=2):
-            raise RuntimeError("Historical expiry selection exceeded its row allowance.")
         if not budget.enter_capture("historical", candidate.id):
             return False
         if not budget.metadata_limit:
@@ -112,7 +99,7 @@ def purge_source_copies(
             session, snapshot.owner_id, candidate.id, at=at, budget=budget
         ):
             return False
-        if not budget.metadata_limit:
+        if not charge(budget):
             return False
         tombstone = session.scalar(
             select(hm.HistoricalRetentionEventModel.id)
@@ -122,19 +109,17 @@ def purge_source_copies(
             )
             .limit(1)
         )
-        if tombstone is not None:
-            if not budget.inspect(rows=1):
-                raise RuntimeError("Historical expiry tombstone exceeded its row allowance.")
-        else:
-            # Marker insertion and its indexed projection-parent blocker are
-            # physical work even though the marker contains no financial bytes.
-            if not budget.inspect(rows=2):
+        if tombstone is None:
+            if not charge(budget, PHASE2_MARKER_ROWS):
                 return False
             session.add(
                 hm.HistoricalRetentionEventModel(
                     owner_id=snapshot.owner_id,
                     input_id=candidate.id,
                     dependency_id=candidate.dependency_id,
+                    source_dependency_id=candidate.leaf_id
+                    if candidate.leaf_id != candidate.dependency_id
+                    else None,
                     removed_at=at,
                     reason="retention_removed",
                     created_at=at,
@@ -153,31 +138,35 @@ def purge_source_copies(
             return False
         if not _purge_capture_runs(session, snapshot.owner_id, candidate.id, budget=budget):
             return False
+        if not drain_retained_sources(
+            session, snapshot.owner_id, "historical", candidate.id, budget
+        ):
+            return False
     return False
 
 
 def _purge_capture_runs(
     session: Session, owner_id: UUID, input_id: UUID, *, budget: SourcePurgeBudget
 ) -> bool:
-    while budget.metadata_limit >= 2:
-        run = session.scalars(
-            select(hm.HistoricalRunModel)
-            .join(AnalyticsRunModel, AnalyticsRunModel.id == hm.HistoricalRunModel.analytics_run_id)
+    state = HistoricalPhysicalRunModel
+    while budget.metadata_limit >= 3:
+        if not charge(budget, 3):
+            return False
+        identifier = session.scalar(
+            select(state.run_id)
             .where(
-                hm.HistoricalRunModel.owner_id == owner_id,
-                hm.HistoricalRunModel.input_id == input_id,
-                or_(
-                    AnalyticsRunModel.canonical_input != b"",
-                    AnalyticsRunModel.canonical_result != b"",
-                ),
+                state.owner_id == owner_id,
+                state.input_id == input_id,
+                or_(state.child_rows > 0, state.analytics_pending),
             )
-            .order_by(hm.HistoricalRunModel.id)
+            .order_by(state.run_id)
             .limit(1)
-        ).first()
-        if run is None:
+        )
+        if identifier is None:
             return True
-        if not budget.inspect(rows=2):
-            raise RuntimeError("Historical run selection exceeded its row allowance.")
+        run = session.get(hm.HistoricalRunModel, identifier)
+        if run is None or run.owner_id != owner_id or run.input_id != input_id:
+            raise RuntimeError("Historical physical state differs from its immutable run.")
         if not budget.enter_run("historical", run.id):
             return False
         if not _purge_run(session, run, budget=budget):
@@ -207,7 +196,7 @@ def _purge_run(session: Session, run: hm.HistoricalRunModel, *, budget: SourcePu
         budget=budget,
     ).complete:
         return False
-    if not budget.metadata_limit:
+    if not charge(budget):
         return False
     composite = session.execute(
         select(hm.HistoricalCompositeModel.id, hm.HistoricalCompositeModel.snapshot_id)
@@ -218,8 +207,29 @@ def _purge_run(session: Session, run: hm.HistoricalRunModel, *, budget: SourcePu
         .limit(1)
     ).first()
     if composite is not None:
-        if not budget.inspect(rows=1):
-            raise RuntimeError("Historical composite selection exceeded its row allowance.")
+        if not charge(budget):
+            return False
+        witness = session.get(HistoricalCompositeErasureModel, composite.snapshot_id)
+        if witness is None:
+            if not charge(budget, 12):
+                return False
+            event_id = session.scalar(
+                select(hm.HistoricalRetentionEventModel.id).where(
+                    hm.HistoricalRetentionEventModel.owner_id == run.owner_id,
+                    hm.HistoricalRetentionEventModel.input_id == run.input_id,
+                )
+            )
+            if event_id is None:
+                raise RuntimeError("Historical composite marker is unavailable.")
+            session.add(
+                HistoricalCompositeErasureModel(
+                    snapshot_id=composite.snapshot_id,
+                    owner_id=run.owner_id,
+                    run_id=run.id,
+                    event_id=event_id,
+                )
+            )
+            session.flush()
         table = cast(Table, hm.BenchmarkCompositePointModel.__table__)
         if not purge_payload_rows(
             session,

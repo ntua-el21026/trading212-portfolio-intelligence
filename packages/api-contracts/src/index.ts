@@ -831,3 +831,19 @@ export type {
   ResearchReadOptions,
   ResearchCommandOptions,
 } from "./research-transport";
+
+export * from "./owner-layouts.generated";
+export {
+  OwnerLayoutApiError,
+  type OwnerLayoutApiResponse,
+  type OwnerLayoutReadOptions,
+  type OwnerLayoutCommandOptions,
+  type OwnerLayoutClientOptions,
+} from "./owner-layout-transport";
+export * from "./premium-providers.generated";
+export { PremiumProviderApiError } from "./premium-provider-transport";
+export type {
+  PremiumProviderClientOptions,
+  PremiumProviderReadOptions,
+  PremiumProviderApiResponse,
+} from "./premium-provider-transport";

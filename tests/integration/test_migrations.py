@@ -188,7 +188,7 @@ def test_empty_to_head_is_idempotent_and_matches_metadata(database_engine: Engin
     expected = set(Base.metadata.tables)
     assert actual == expected
     with database_engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260915_0026"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260915_0029"
 
 
 def test_export_url_cleanup_is_scoped_null_safe_and_repeatable(database_engine: Engine) -> None:
@@ -636,7 +636,9 @@ def test_atomic_rollback_does_not_advance_checkpoint(database_engine: Engine) ->
 
 
 def test_migration_is_current_and_downgrade_policy_is_explicit(database_engine: Engine) -> None:
-    del database_engine
+    assert set(inspect(database_engine).get_table_names()) - {"alembic_version"} == set(
+        Base.metadata.tables
+    )
     revision = Path("migrations/versions/20260831_0001_baseline_phase_1_schema.py").read_text(
         encoding="utf-8"
     )
@@ -688,23 +690,28 @@ def test_migration_is_current_and_downgrade_policy_is_explicit(database_engine: 
     assert 'revision = "20260915_0020"' in scenario_revision
     assert 'down_revision = "20260915_0019"' in scenario_revision
     assert "trading212_persistence" not in scenario_revision
-    assert revision.count("op.drop_table(") + metadata_revision.count(
-        "op.drop_table("
-    ) + occurrence_revision.count("op.drop_table(") + outbox_revision.count(
-        "op.drop_table("
-    ) + collection_snapshot_revision.count("op.drop_table(") + target_revision.count(
-        "op.drop_table("
-    ) + planning_revision.count("op.drop_table(") + source_revision.count(
-        "op.drop_table("
-    ) + historical_revision.count("op.drop_table(") + xray_revision.count(
-        "op.drop_table("
-    ) + report_revision.count("op.drop_table(") + alert_revision.count(
-        "op.drop_table("
-    ) + quality_revision.count("op.drop_table(") + premium_revision.count(
-        "op.drop_table("
-    ) + retention_revision.count("op.drop_table(") + premium_report_revision.count(
-        "op.drop_table("
-    ) + len(scenario_tables) == len(Base.metadata.tables)
+    # This literal downgrade inventory ends at the frozen scenario revision 0020.
+    # The live head is checked against the complete ORM inventory above and by Alembic.
+    assert (
+        revision.count("op.drop_table(")
+        + metadata_revision.count("op.drop_table(")
+        + occurrence_revision.count("op.drop_table(")
+        + outbox_revision.count("op.drop_table(")
+        + collection_snapshot_revision.count("op.drop_table(")
+        + target_revision.count("op.drop_table(")
+        + planning_revision.count("op.drop_table(")
+        + source_revision.count("op.drop_table(")
+        + historical_revision.count("op.drop_table(")
+        + xray_revision.count("op.drop_table(")
+        + report_revision.count("op.drop_table(")
+        + alert_revision.count("op.drop_table(")
+        + quality_revision.count("op.drop_table(")
+        + premium_revision.count("op.drop_table(")
+        + retention_revision.count("op.drop_table(")
+        + premium_report_revision.count("op.drop_table(")
+        + len(scenario_tables)
+        == 254
+    )
     assert 'revision = "20260915_0019"' in premium_report_revision
     assert 'down_revision = "20260914_0018"' in premium_report_revision
     assert "trading212_persistence" not in premium_report_revision

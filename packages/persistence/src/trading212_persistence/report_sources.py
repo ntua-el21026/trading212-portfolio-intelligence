@@ -179,8 +179,26 @@ def _physical_permit(
     row: PhysicalSource,
     family: str,
     *,
+    source_use: ReportSourceUse,
     now: datetime,
 ) -> None:
+    if (
+        family in {"price", "fx"}
+        and isinstance(row, (sm.PriceSnapshotModel, sm.FxSnapshotModel))
+        and row.adapter_version == "premium_fixed_get_v1"
+        and session.scalar(
+            text("SELECT acquisition_source_restricted(:owner, :kind, :source, :at, :use)"),
+            {
+                "owner": row.owner_id,
+                "kind": family,
+                "source": row.id,
+                "at": now,
+                "use": source_use.value,
+            },
+        )
+        is not False
+    ):
+        raise _deny()
     if row.expires_at <= now:
         raise _deny()
     reference = _PHYSICAL[family][1]
@@ -282,7 +300,7 @@ def authorize_report_sources(
             dependency.expires_at,
         ):
             raise _deny()
-        _physical_permit(session, row, dependency.kind, now=now)
+        _physical_permit(session, row, dependency.kind, source_use=source_use, now=now)
 
 
 def project_report_dependencies(
@@ -375,7 +393,7 @@ def project_report_dependencies(
             reference.content_digest,
         ):
             raise _deny()
-        _physical_permit(session, row, family, now=now)
+        _physical_permit(session, row, family, source_use=source_use, now=now)
         if row.id in parents:
             continue
         parents[row.id] = (family, row.provider_id, row.license_version_id)

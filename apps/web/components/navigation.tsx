@@ -49,9 +49,11 @@ const secondaryItems = [
   { href: "/settings", icon: Settings, label: "Settings" },
 ] as const;
 
-export const commandRoutes = [...primaryItems, ...secondaryItems].map(
-  ({ href, label }) => ({ href, label }),
-);
+export const commandRoutes = [
+  ...primaryItems,
+  ...secondaryItems,
+  { href: "/settings/layouts", label: "Saved layouts" },
+].map(({ href, label }) => ({ href, label }));
 
 const mobileItems = [
   primaryItems[0],

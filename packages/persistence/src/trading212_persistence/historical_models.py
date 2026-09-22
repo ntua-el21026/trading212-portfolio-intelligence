@@ -668,11 +668,18 @@ class HistoricalRetentionEventModel(HistoricalOwned):
         owned(),
         owner_fk("input_id", "historical_input_snapshots"),
         owner_fk("dependency_id", "historical_dependencies"),
+        ForeignKeyConstraint(
+            ["owner_id", "source_dependency_id"],
+            ["historical_dependencies.owner_id", "historical_dependencies.id"],
+            name="fk_historical_retention_source_leaf",
+            ondelete="RESTRICT",
+        ),
         UniqueConstraint("input_id"),
         CheckConstraint("reason='retention_removed'", name="reason_fixed"),
     )
     input_id: Mapped[UUID] = mapped_column()
     dependency_id: Mapped[UUID] = mapped_column()
+    source_dependency_id: Mapped[UUID | None] = mapped_column()
     removed_at: Mapped[datetime] = mapped_column(UTCDateTime())
     reason: Mapped[str] = mapped_column(String(40), default="retention_removed")
 

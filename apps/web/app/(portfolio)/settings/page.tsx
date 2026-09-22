@@ -13,7 +13,10 @@ import {
 
 import { Notice, StatusPill, Surface } from "@trading212/ui";
 
+import Link from "../../../components/navigation-intent";
 import { PwaSettings } from "../../../components/pwa-settings";
+import { PremiumProviderStatusCard } from "../../../components/premium-provider-status";
+import { loadPremiumProviderStatus } from "../../../lib/premium-provider-adapter";
 import { PageHeader } from "../../../components/page-header";
 import { loadSettings } from "../../../lib/api-adapter";
 import { requireWebAccess } from "../../../lib/auth";
@@ -23,13 +26,43 @@ export default async function SettingsPage({
   searchParams,
 }: Readonly<{ searchParams: Promise<{ account?: string | string[] }> }>) {
   const params = await searchParams;
+  const access = await requireWebAccess();
+  const layoutsCard = access.principal.scopes.includes("preferences:read") ? (
+    <Surface className="settings-card" compact>
+      <h2>Saved layouts</h2>
+      <p>
+        Save owner templates, current portfolio previews and exact owned views.
+      </p>
+      <Link prefetch={false} href="/settings/layouts">
+        Manage saved layouts
+      </Link>
+    </Surface>
+  ) : null;
+  if (!access.principal.scopes.includes("portfolio:read"))
+    return (
+      <div className="page-stack">
+        <PageHeader
+          title="Settings"
+          description="Manage your owner preferences."
+        />
+        {layoutsCard}
+        <Notice title="Portfolio access required">
+          Connection settings require current portfolio access.
+        </Notice>
+      </div>
+    );
   const accountSelection = await loadSelectedAccount(params.account);
   if (!accountSelection.account)
-    return <AccountRequired selection={accountSelection} />;
+    return (
+      <div className="page-stack">
+        {layoutsCard}
+        <AccountRequired selection={accountSelection} />
+      </div>
+    );
   const selectedAccountId = accountSelection.account.id;
-  const [access, bundle] = await Promise.all([
-    requireWebAccess(),
+  const [bundle, providers] = await Promise.all([
     loadSettings(selectedAccountId),
+    loadPremiumProviderStatus(selectedAccountId),
   ]);
   const account = bundle.summary.account;
   return (
@@ -41,6 +74,11 @@ export default async function SettingsPage({
         />
         <div className="settings-grid">
           <PwaSettings />
+          {layoutsCard}
+          <PremiumProviderStatusCard
+            accountId={selectedAccountId}
+            result={providers}
+          />
           <Surface className="settings-card" compact>
             <h2>
               <UserRound aria-hidden="true" size={19} /> Access

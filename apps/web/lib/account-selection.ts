@@ -65,6 +65,7 @@ export function accountSwitchHref(
     ? `/${section}`
     : pathname;
   const next = new URLSearchParams({ account: accountId });
+  if (destination === "/settings/layouts") return `${destination}?${next}`;
   if (
     destination === "/reports/premium" &&
     query.getAll("profile").length === 1 &&

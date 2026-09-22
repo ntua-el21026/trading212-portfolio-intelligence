@@ -196,3 +196,54 @@ but those transitive SQL paths require a separate exact pending-copy relation an
 bounded physical flags. Historical/X-ray/alert/source cleanup participants retain
 any separately documented Phase 2 audit obligations. No old immutable guard is
 removed or treated as a free inspection to claim closure.
+
+
+## Phase 2 physical-copy closure (migration0028)
+
+The additive migration after0027 preserves old financial bytes and original
+source/read/seal authority. Exact trigger-maintained X-ray input, historical run
+and shared composite counters establish physical absence. Immutable normalized
+source memberships retain direct and the admitted one-level historical evidence
+lineage until every copy is gone. Their indexed existence, rather than a scan of
+completed inputs, blocks physical source erasure. A nullable historical marker
+leaf binds only the exact owned input -> registered evidence -> original source;
+foreign, unrelated and deeper chains remain rejected.
+
+Shared composite points use an exact original run/input-marker erasure witness.
+Point mutations update one snapshot counter and never every referencing run.
+Analytics parent cleanup requires zero normalized children and zero shared points.
+A physical collection binding remains until its rows and root are deleted; a
+terminal deferred constraint rejects orphaned roots. Reverse foreign-key indexes
+bound holding and classification-assignment deletion checks across other copies.
+
+Source and enrichment expiry use independent physical-header and pending-work
+keysets. Healthy/completed/busy candidates and empty probes consume the same
+allowance. Checkpoints advance only after the caller has inspected a candidate;
+a later invocation resumes an unprocessed candidate. Pending work does not pin
+all other physical source headers. A three-row operational scheduler rotates the
+seven existing participants and their closed source/enrichment families without
+creating new allowances or granting source access.
+
+New acquired-price/FX markers reserve the provider0027 fixed12-row original/current
+permission witness. A validated permanent pending marker permits subsequent
+physical removal even if the original grant is restored; source reads continue
+to deny that marker. No cleanup rescans a graph to prove permission. Clock rollback
+before the marker time defers progress. Empty original source metadata probes,
+owner-lock skips and fixed policy-epoch upserts are charged explicitly.
+
+Payload mutations conservatively reserve64 physical inspections, collections48
+and membership deletions16, with separately charged metadata queries. Two logical
+payload inspections cover the retained guard and new counter; DELETE counters
+reuse their already-materialized OLD row. Source marker/progress/completion costs
+are32/16/48, enrichment16/12/40 and historical/X-ray markers32, including the fixed
+protected epoch producer work. Scope and target batches remain bounded by512;
+the shared4096-row and64MiB limits are unchanged. Independent aggregate oracles
+exist solely for upgrade/publication parity and tests, never dispatcher cleanup.
+
+Source-authored regression coverage includes populated0027 downgrade/re-upgrade,
+exact counter parity, forged counters/membership/leaf markers, direct and legal
+transitive cleanup, partial progress and aggregate-failure canaries. Runtime
+acceptance requires the integrating task's serial PostgreSQL and compatibility
+results. Alert retention still has nested evaluation/event/job and completed
+source-dependency traversal with unreserved work; whole-system physical-budget
+acceptance remains unclaimed until that separate participant is closed.

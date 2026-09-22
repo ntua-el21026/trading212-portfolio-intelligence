@@ -72,6 +72,7 @@ from .source_models import (
     SourceCoverageGapModel,
     SourceExpiryEventModel,
     SourceOwned,
+    SourceRetentionWorkModel,
     SourceRetrievalOccurrenceModel,
     SourceSnapshotFields,
 )
@@ -262,6 +263,35 @@ class SourceStore:
         self, session: Session, row: SourceSnapshotFields, use: SourceUse = SourceUse.DISPLAY
     ) -> SourceLicense:
         license = self._permit(session, row.owner_id, row.license_version_id, use)
+        if row.adapter_version == "premium_fixed_get_v1":
+            if (
+                session.scalar(
+                    select(SourceRetentionWorkModel.id)
+                    .where(
+                        SourceRetentionWorkModel.owner_id == row.owner_id,
+                        getattr(SourceRetentionWorkModel, self._snapshot_reference(row)) == row.id,
+                    )
+                    .limit(1)
+                )
+                is not None
+            ):
+                raise error(app.SourceServiceErrorCode.ACCESS_DENIED)
+            kind = {"price_snapshots": "price", "fx_snapshots": "fx"}.get(str(row.__tablename__))
+            if (
+                kind is None
+                or session.scalar(
+                    text("SELECT acquisition_source_restricted(:owner,:kind,:source,:at,:use)"),
+                    {
+                        "owner": row.owner_id,
+                        "kind": kind,
+                        "source": row.id,
+                        "at": self._now(),
+                        "use": (self._required_copy_use or use).value,
+                    },
+                )
+                is not False
+            ):
+                raise error(app.SourceServiceErrorCode.ACCESS_DENIED)
         if row.expires_at <= self._now() or session.scalar(
             select(SourceExpiryEventModel.id)
             .where(getattr(SourceExpiryEventModel, self._snapshot_reference(row)) == row.id)

@@ -4,6 +4,12 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+- Add durable owner layouts with immutable versions, exact saved-view selection and current canonical previews; verify real desktop/tablet/mobile journeys, keyboard focus, accessibility and account/cache isolation.
+
+- Add bounded provider acquisition, metadata-only provider status and explicit original-source fallback, preserving current rights, UTC quotas and the disabled live-provider boundary.
+
+- Close indexed Phase2 physical-copy cleanup and preserve inception opening source ancestry; add actual PostgreSQL regressions without relaxing shared retention budgets.
+
 - Add public-only PWA installation/offline support and an account-safe keyboard command palette, with actual three-width production browser/cache checks. Private account responses and reports are never cached for offline use.
 
 - Add guarded premium physical-copy counters and indexed resumable cleanup; defer concurrent newer report captures without relaxing source-witness authority. Actual migration and focused compatibility checks pass; shared source-family closure remains in progress.

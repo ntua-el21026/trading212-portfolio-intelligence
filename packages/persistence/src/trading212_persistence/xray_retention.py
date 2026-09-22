@@ -7,11 +7,15 @@ from typing import cast
 from uuid import UUID
 
 from sqlalchemy import Table, delete, select
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import CursorResult
 from sqlalchemy.orm import Session
 
 from . import xray_run_models as xm
 from .models import CollectionQuerySnapshotMemberModel, CollectionQuerySnapshotModel
+from .phase2_retention_costs import PHASE2_COLLECTION_MUTATION_ROWS, PHASE2_MARKER_ROWS
+from .phase2_retention_models import Phase2RetentionSweepModel, XrayRetainedSourceModel
+from .phase2_retention_runtime import charge, drain_retained_sources, source_erasure_authorized
 from .planning_models import AnalyticsRunModel
 from .source_models import FxSnapshotModel, SourceSnapshotFields
 from .source_retention import PayloadCopyCost, SourcePurgeBudget
@@ -49,14 +53,21 @@ def purge_collection_copies(
         ).complete:
             return False
     members = CollectionQuerySnapshotMemberModel
-    while budget.metadata_limit:
+    while budget.rows_inspected >= PHASE2_COLLECTION_MUTATION_ROWS + 2:
+        if not charge(budget):
+            return False
         rows = session.execute(
             select(members.ordinal, members.record_id)
             .where(
                 members.snapshot_id == collection_id,
             )
             .order_by(members.ordinal)
-            .limit(budget.metadata_limit)
+            .limit(
+                min(
+                    512 // PHASE2_COLLECTION_MUTATION_ROWS,
+                    budget.rows_inspected // (PHASE2_COLLECTION_MUTATION_ROWS + 1),
+                )
+            )
             .with_for_update()
         ).all()
         if not rows:
@@ -65,7 +76,15 @@ def purge_collection_copies(
             raise RuntimeError("Collection member sizing exceeded the shared row budget.")
         # One copied UUID and one bigint ordinal, without loading a member's target.
         identifiers = budget.reserve_clear_batch(
-            tuple(PayloadCopyCost(row_id=row.record_id, payload_bytes=24) for row in rows)
+            tuple(
+                PayloadCopyCost(
+                    row_id=row.record_id,
+                    payload_bytes=24,
+                    inspection_rows=PHASE2_COLLECTION_MUTATION_ROWS,
+                    payload_inspections=2,
+                )
+                for row in rows
+            )
         )
         if not identifiers:
             return False
@@ -82,7 +101,7 @@ def purge_collection_copies(
             raise RuntimeError("A locked collection member changed during cleanup.")
         if len(identifiers) != len(rows):
             return False
-    if not budget.metadata_limit:
+    if budget.rows_inspected < 2 * PHASE2_COLLECTION_MUTATION_ROWS + 3:
         return False
     # Reserve both remaining rows before either deletion. Removing the binding
     # alone would lose discovery of an unfinished collection after a budget stop.
@@ -95,7 +114,7 @@ def purge_collection_copies(
             ("resource", "sort_specification", "filter_fingerprint", "exact_total"),
         ),
     ):
-        if not budget.metadata_limit:
+        if not charge(budget):
             return False
         table = cast(Table, metadata_model.__table__)
         row = session.execute(
@@ -108,17 +127,25 @@ def purge_collection_copies(
             .with_for_update()
         ).first()
         if row is not None:
-            if not budget.inspect(rows=1):
-                return False
             pending.append((table, row.id, row.size))
     total = sum(size for _, _, size in pending)
-    if len(pending) > min(budget.rows_inspected, budget.rows_removed) or total > min(
-        budget.bytes_inspected, budget.bytes_removed
+    if (
+        len(pending) * PHASE2_COLLECTION_MUTATION_ROWS > budget.rows_inspected
+        or len(pending) > budget.rows_removed
+        or total > budget.bytes_removed
+        or total * 2 > budget.bytes_inspected
     ):
         return False
     for _table, identifier, size in pending:
         if budget.reserve_clear_batch(
-            (PayloadCopyCost(row_id=identifier, payload_bytes=size),)
+            (
+                PayloadCopyCost(
+                    row_id=identifier,
+                    payload_bytes=size,
+                    inspection_rows=PHASE2_COLLECTION_MUTATION_ROWS,
+                    payload_inspections=2,
+                ),
+            )
         ) != (identifier,):
             raise RuntimeError("A reserved collection cleanup group changed.")
     for table, identifier, _ in pending:
@@ -139,7 +166,7 @@ def purge_collection_copies(
 def _run_collections(
     session: Session, owner: UUID, run_id: UUID, budget: SourcePurgeBudget
 ) -> bool:
-    while budget.metadata_limit:
+    while charge(budget):
         collection = session.scalar(
             select(xm.XrayCollectionBindingModel.collection_id)
             .where(
@@ -151,8 +178,6 @@ def _run_collections(
         )
         if collection is None:
             return True
-        if not budget.inspect(rows=1):
-            raise RuntimeError("Collection lookup exceeded the shared row budget.")
         if not purge_collection_copies(session, owner, collection, budget=budget):
             return False
     return False
@@ -180,7 +205,7 @@ def _run_payloads(
     ):
         parent_table = cast(Table, parent.__table__)
         child_table = cast(Table, child.__table__)
-        while budget.metadata_limit:
+        while charge(budget):
             query = select(parent_table.c.id).where(
                 parent_table.c.owner_id == owner,
                 parent_table.c.run_id == run_id,
@@ -280,10 +305,18 @@ def purge_xray_source_copies(
     if reference is None:
         # Existing price/action/benchmark families are not X-ray inputs.
         return True
-    if source.expires_at > at:
-        raise ValueError("An unexpired source cannot authorize copy removal.")
+    kind = {
+        "fx_snapshot_id": "fx",
+        "entity_evidence_version_id": "entity_evidence",
+        "classification_snapshot_id": "classification",
+        "fund_definition_id": "fund_definition",
+        "fund_mapping_id": "fund_mapping",
+        "constituent_snapshot_id": "constituent",
+    }[reference]
+    if not source_erasure_authorized(session, source.owner_id, kind, source.id, at, budget):
+        return False
     if isinstance(source, ConstituentSnapshotModel):
-        while budget.metadata_limit:
+        while charge(budget):
             collection = session.scalar(
                 select(xm.XrayCollectionBindingModel.collection_id)
                 .where(
@@ -295,7 +328,7 @@ def purge_xray_source_copies(
             )
             if collection is None:
                 break
-            if not budget.inspect(rows=1) or not purge_collection_copies(
+            if not purge_collection_copies(
                 session,
                 source.owner_id,
                 collection,
@@ -304,27 +337,24 @@ def purge_xray_source_copies(
                 return False
         if not budget.metadata_limit:
             return False
-    dependency = xm.XrayInputDependencyModel
+    membership = XrayRetainedSourceModel
     capture = xm.XrayInputSnapshotModel
     while budget.metadata_limit >= 2:
+        if not charge(budget, 2):
+            return False
         candidate = session.execute(
-            select(capture.id, dependency.id.label("dependency_id"))
-            .join(
-                dependency,
-                dependency.input_id == capture.id,
-            )
+            select(membership.input_id.label("id"), membership.dependency_id)
             .where(
-                capture.owner_id == source.owner_id,
-                dependency.owner_id == source.owner_id,
-                getattr(dependency, reference) == source.id,
-                capture.canonical_input != b"",
+                membership.owner_id == source.owner_id,
+                membership.source_kind == kind,
+                membership.source_id == source.id,
             )
-            .order_by(capture.id, dependency.id)
+            .order_by(membership.input_id, membership.dependency_id)
             .limit(1)
         ).first()
         if candidate is None:
             return True
-        if not budget.inspect(rows=2) or not budget.enter_capture("xray", candidate.id):
+        if not budget.enter_capture("xray", candidate.id):
             return False
         if not budget.metadata_limit:
             return False
@@ -334,7 +364,7 @@ def purge_xray_source_copies(
             session, source.owner_id, candidate.id, at=at, budget=budget
         ):
             return False
-        if not budget.metadata_limit:
+        if not charge(budget):
             return False
         event = session.scalar(
             select(xm.XrayRetentionEventModel.id)
@@ -345,6 +375,8 @@ def purge_xray_source_copies(
             .limit(1)
         )
         if event is None:
+            if not charge(budget, PHASE2_MARKER_ROWS):
+                return False
             session.add(
                 xm.XrayRetentionEventModel(
                     owner_id=source.owner_id,
@@ -355,9 +387,7 @@ def purge_xray_source_copies(
                 )
             )
             session.flush()
-        elif not budget.inspect(rows=1):
-            return False
-        if not budget.metadata_limit:
+        if not charge(budget):
             return False
         # Fetch only run identity, never its canonical payload during discovery.
         run = session.execute(
@@ -369,7 +399,7 @@ def purge_xray_source_copies(
             .limit(1)
         ).first()
         if run is not None:
-            if not budget.inspect(rows=1) or not budget.enter_run("xray", run.id):
+            if not budget.enter_run("xray", run.id):
                 return False
             if not _run_payloads(session, source.owner_id, run.id, run.analytics_run_id, budget):
                 return False
@@ -389,8 +419,8 @@ def purge_xray_source_copies(
                 budget=budget,
             ).complete:
                 return False
-        # Keep the capture's pending marker until ALL dependent physical copies
-        # above have been removed, including collection-owned pair/common rows.
+        # Keep every source membership until the input and all copied descendants
+        # are absent; each membership removal checks the exact protected counter.
         table = cast(Table, capture.__table__)
         if not purge_payload_rows(
             session,
@@ -400,6 +430,8 @@ def purge_xray_source_copies(
             delete_rows=False,
             budget=budget,
         ).complete:
+            return False
+        if not drain_retained_sources(session, source.owner_id, "xray", candidate.id, budget):
             return False
     return False
 
@@ -420,28 +452,46 @@ def cleanup_expired_xray_collections(
     cutoff = datetime.now(UTC) if at is None else at
     if cutoff.tzinfo is None or cutoff.utcoffset() is None:
         raise ValueError("Collection cleanup requires an aware timestamp.")
-    collection = CollectionQuerySnapshotModel
+    if not charge(budget, 3):
+        return False
+    session.execute(
+        insert(Phase2RetentionSweepModel)
+        .values(family="xray_collection", scope_id=owner)
+        .on_conflict_do_nothing()
+    )
+    sweep = session.get(Phase2RetentionSweepModel, ("xray_collection", owner), with_for_update=True)
+    if sweep is None:
+        raise RuntimeError("X-ray collection scheduling state is unavailable.")
     binding = xm.XrayCollectionBindingModel
-    while budget.metadata_limit >= 2:
-        identifier = session.scalar(
-            select(collection.id)
-            .join(
-                binding,
-                binding.collection_id == collection.id,
-            )
-            .where(
-                collection.owner_id == owner,
-                binding.owner_id == owner,
-                collection.expires_at <= cutoff,
-            )
-            .order_by(collection.expires_at, collection.id)
-            .limit(1)
-            .with_for_update(of=collection)
-        )
-        if identifier is None:
-            return True
-        if not budget.inspect(rows=2):
-            raise RuntimeError("Collection expiry discovery exceeded its row budget.")
-        if not purge_collection_copies(session, owner, identifier, budget=budget):
+    while budget.rows_inspected >= 4:
+        if not charge(budget, 2):
             return False
+        query = select(binding.id, binding.collection_id).where(binding.owner_id == owner)
+        if sweep.after_id is not None:
+            query = query.where(binding.id > sweep.after_id)
+        candidate = session.execute(query.order_by(binding.id).limit(1)).first()
+        if candidate is None:
+            if not charge(budget):
+                return False
+            sweep.after_id = None
+            session.flush()
+            return True
+        if not charge(budget):
+            return False
+        expires = session.scalar(
+            select(CollectionQuerySnapshotModel.expires_at).where(
+                CollectionQuerySnapshotModel.owner_id == owner,
+                CollectionQuerySnapshotModel.id == candidate.collection_id,
+            )
+        )
+        if expires is None:
+            raise RuntimeError("X-ray collection binding has no owned root.")
+        if expires <= cutoff and not purge_collection_copies(
+            session, owner, candidate.collection_id, budget=budget
+        ):
+            return False
+        if not charge(budget):
+            return False
+        sweep.after_id = candidate.id
+        session.flush()
     return False

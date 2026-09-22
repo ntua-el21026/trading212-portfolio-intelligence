@@ -18,7 +18,16 @@ MAX_PURGE_BYTES = 64 * 1024 * 1024
 MAX_PURGE_BATCH_ROWS = 512
 
 PurgeFamily = Literal[
-    "historical", "xray", "report", "export", "alert", "risk", "scenario", "projection", "research"
+    "historical",
+    "xray",
+    "report",
+    "export",
+    "alert",
+    "risk",
+    "scenario",
+    "projection",
+    "research",
+    "layout",
 ]
 
 
@@ -101,6 +110,7 @@ class SourcePurgeBudget:
             "scenario",
             "projection",
             "research",
+            "layout",
         ) or not isinstance(identifier, UUID):
             raise ValueError("A typed purge participant is required.")
         seen = self._captures_seen if capture else self._runs_seen

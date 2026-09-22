@@ -10,7 +10,9 @@ export default async function PortfolioLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   const access = await requireWebAccess();
-  const accounts = await loadAvailableAccounts();
+  const accounts = access.principal.scopes.includes("portfolio:read")
+    ? await loadAvailableAccounts()
+    : [];
   const preferred = accounts.find(
     (account) => account.id === process.env.T212PI_ACCOUNT_ID?.trim(),
   )?.id;

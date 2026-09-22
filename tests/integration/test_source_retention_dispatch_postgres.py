@@ -30,6 +30,7 @@ from trading212_domain.sources import (
     source_snapshot_digest,
 )
 from trading212_persistence.query_telemetry import DatabaseQueryTiming, QueryObserver
+from trading212_persistence.research_permissions import ResearchCapabilityAuthority
 from trading212_persistence.source_models import (
     FxObservationModel,
     FxSnapshotModel,
@@ -71,10 +72,16 @@ def run_dispatcher_once(monkeypatch: pytest.MonkeyPatch, engine: Engine, *, at: 
         return selected
 
     def source_service(
-        *, sessions: sessionmaker[Session], cursor_signing_key: bytes
+        *,
+        sessions: sessionmaker[Session],
+        cursor_signing_key: bytes,
+        research_capability_authority: ResearchCapabilityAuthority | None = None,
     ) -> PostgresSourceService:
         return PostgresSourceService(
-            sessions=sessions, cursor_signing_key=cursor_signing_key, clock=lambda: at
+            sessions=sessions,
+            cursor_signing_key=cursor_signing_key,
+            clock=lambda: at,
+            research_capability_authority=research_capability_authority,
         )
 
     monkeypatch.setattr(dispatcher, "create_database_engine", database)

@@ -36,6 +36,7 @@ def test_source_expiry_only_on_second_copy_traversal_is_a_safe_report_denial(
         owner_id=builder.owner_id,
         license_version_id=metadata.definition_version_id,
         expires_at=deadline,
+        adapter_version="synthetic-market-v1",
     )
     version = SimpleNamespace(
         id=metadata.definition_version_id,

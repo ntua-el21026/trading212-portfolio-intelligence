@@ -1402,8 +1402,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         projection_publisher = CeleryProjectionPublisher(celery)
 
+        from trading212_persistence.acquisition_research_authority import (
+            PostgresResearchCapabilityAuthority,
+        )
+
         source_service = PostgresSourceService(
             sessions=create_session_factory(engine),
+            research_capability_authority=PostgresResearchCapabilityAuthority(),
             # Maintenance issues no cursor and cannot authorize a source read.
             cursor_signing_key=secrets.token_bytes(32),
         )

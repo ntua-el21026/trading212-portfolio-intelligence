@@ -31,6 +31,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text as sql_text
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import Response as StarletteResponse
+from trading212_application import premium_provider_status as provider_status_app
 from trading212_application.alerts import AlertService
 from trading212_application.historical import HistoricalServiceError, PerformanceIntelligenceService
 from trading212_application.ingestion import (
@@ -39,6 +40,7 @@ from trading212_application.ingestion import (
     capabilities_for_scope,
 )
 from trading212_application.intelligence_quality import IntelligenceDataQualityService
+from trading212_application.owner_layouts import OwnerLayoutService
 from trading212_application.planning import PlanningService, PlanningServiceError
 from trading212_application.projection import ProjectionService
 from trading212_application.queries import (
@@ -102,7 +104,9 @@ from trading212_security.tokens import BearerAuthenticator, LocalSyntheticAuthen
 from .alert_routes import register_alert_routes
 from .historical_routes import register_historical_routes
 from .intelligence_quality_routes import register_intelligence_quality_routes
+from .owner_layout_routes import register_owner_layout_routes
 from .planning_routes import register_planning_routes
+from .premium_provider_routes import register_premium_provider_routes
 from .premium_report_routes import register_premium_report_routes
 from .projection_routes import register_projection_routes
 from .refresh_queue import PostgresRefreshQueue
@@ -173,6 +177,8 @@ class ApiContext:
     scenario_service: ScenarioService | None
     projection_service: ProjectionService | None
     research_service: ResearchService | None
+    owner_layout_service: OwnerLayoutService | None
+    premium_provider_service: provider_status_app.PremiumProviderStatusService | None
     intelligence_quality_service: IntelligenceDataQualityService | None
     xray_service: XrayService | None
     report_service: ReportService | None
@@ -201,6 +207,9 @@ def create_app(
     scenario_service: ScenarioService | None = None,
     projection_service: ProjectionService | None = None,
     research_service: ResearchService | None = None,
+    owner_layout_service: OwnerLayoutService | None = None,
+    premium_provider_service: provider_status_app.PremiumProviderStatusService | None = None,
+    premium_provider_configuration: provider_status_app.PremiumProviderConfiguration | None = None,
     research_capability_authority: ResearchCapabilityAuthority | None = None,
     intelligence_quality_service: IntelligenceDataQualityService | None = None,
     xray_service: XrayService | None = None,
@@ -244,6 +253,8 @@ def create_app(
             default_scenarios,
             default_projections,
             default_research,
+            default_owner_layouts,
+            default_premium_provider_status,
             default_intelligence_quality,
             default_xray,
             default_reports,
@@ -258,6 +269,7 @@ def create_app(
             cursor_signing_key=cursor_signing_key,
             query_observer=metrics.observe_database_query,
             research_capability_authority=research_capability_authority,
+            premium_provider_configuration=premium_provider_configuration,
         )
         target_service = target_service or default_targets
         planning_service = planning_service or default_planning
@@ -267,6 +279,8 @@ def create_app(
         scenario_service = scenario_service or default_scenarios
         projection_service = projection_service or default_projections
         research_service = research_service or default_research
+        owner_layout_service = owner_layout_service or default_owner_layouts
+        premium_provider_service = premium_provider_service or default_premium_provider_status
         intelligence_quality_service = intelligence_quality_service or default_intelligence_quality
         xray_service = xray_service or default_xray
         report_service = report_service or default_reports
@@ -298,6 +312,8 @@ def create_app(
         scenario_service=scenario_service,
         projection_service=projection_service,
         research_service=research_service,
+        owner_layout_service=owner_layout_service,
+        premium_provider_service=premium_provider_service,
         intelligence_quality_service=intelligence_quality_service,
         xray_service=xray_service,
         report_service=report_service,
@@ -356,6 +372,8 @@ def create_app(
     register_scenario_routes(application, _principal, _context)
     register_projection_routes(application, _principal, _context)
     register_research_routes(application, _principal, _context)
+    register_owner_layout_routes(application, _principal, _context)
+    register_premium_provider_routes(application, _principal, _context)
     register_intelligence_quality_routes(application, _principal, _context)
     register_xray_routes(application, _principal, _context)
     register_report_routes(application, _principal, _context)
@@ -372,6 +390,7 @@ def _local_runtime_defaults(
     cursor_signing_key: bytes | None,
     query_observer: Callable[[float, bool], None] | None = None,
     research_capability_authority: ResearchCapabilityAuthority | None = None,
+    premium_provider_configuration: provider_status_app.PremiumProviderConfiguration | None = None,
 ) -> tuple[
     PortfolioService,
     TargetService,
@@ -382,6 +401,8 @@ def _local_runtime_defaults(
     ScenarioService,
     ProjectionService,
     ResearchService,
+    OwnerLayoutService,
+    provider_status_app.PremiumProviderStatusService,
     IntelligenceDataQualityService,
     XrayService,
     ReportService,
@@ -393,12 +414,17 @@ def _local_runtime_defaults(
 ]:
     from trading212_analytics.risk_history import validate_risk_capacity
     from trading212_analytics.scenario_replay import resolve_scenario_replay
+    from trading212_persistence.acquisition_research_authority import (
+        PostgresResearchCapabilityAuthority,
+    )
     from trading212_persistence.alert_service import PostgresAlertService
     from trading212_persistence.historical_service import PostgresHistoricalService
     from trading212_persistence.intelligence_quality_service import (
         PostgresIntelligenceDataQualityService,
     )
+    from trading212_persistence.owner_layout_service import PostgresOwnerLayoutService
     from trading212_persistence.planning_service import PostgresPlanningService
+    from trading212_persistence.premium_provider_status import PostgresPremiumProviderStatusService
     from trading212_persistence.projection_service import PostgresProjectionService
     from trading212_persistence.report_service import PostgresReportService
     from trading212_persistence.research_service import PostgresResearchService
@@ -416,6 +442,11 @@ def _local_runtime_defaults(
         raise ValueError("implicit PostgreSQL runtime is restricted to local/test")
     engine = create_database_engine(database_url, query_observer=query_observer)
     sessions = create_session_factory(engine)
+    resolved_research_authority = (
+        research_capability_authority
+        if research_capability_authority is not None
+        else PostgresResearchCapabilityAuthority()
+    )
     queue = PostgresRefreshQueue(sessions=sessions, clock=clock)
 
     async def database_readiness() -> bool:
@@ -454,7 +485,7 @@ def _local_runtime_defaults(
         ),
         PostgresSourceService(
             sessions=sessions,
-            research_capability_authority=research_capability_authority,
+            research_capability_authority=resolved_research_authority,
             clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
             cursor_ttl_seconds=settings.cursor_ttl_seconds,
@@ -486,7 +517,15 @@ def _local_runtime_defaults(
             sessions,
             clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
-            capability_authority=research_capability_authority,
+            capability_authority=resolved_research_authority,
+        ),
+        PostgresOwnerLayoutService(
+            sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+        ),
+        PostgresPremiumProviderStatusService(
+            sessions, configuration=premium_provider_configuration, clock=clock
         ),
         PostgresIntelligenceDataQualityService(
             sessions,

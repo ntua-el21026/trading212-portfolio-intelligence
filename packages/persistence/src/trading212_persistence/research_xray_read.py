@@ -164,6 +164,12 @@ class ResearchXrayRead:
 def _parents_sql() -> str:
     parts = []
     for field, table, lifecycle in _LICENSED:
+        acquired = (
+            "AND (p.adapter_version <> 'premium_fixed_get_v1' OR "
+            "NOT acquisition_source_restricted(:owner, 'fx', p.id, :now, 'display'))"
+            if field == "fx_snapshot_id"
+            else ""
+        )
         parts.append(f"""
           SELECT d.id dependency_id, '{field}' target, p.id parent_id,
                  p.provider_id, p.license_version_id, p.content_digest,
@@ -171,7 +177,7 @@ def _parents_sql() -> str:
                  NOT EXISTS (SELECT 1 FROM {lifecycle}_expiry_events e
                      WHERE e.owner_id = :owner AND e.{field} = p.id)
                  AND NOT EXISTS (SELECT 1 FROM {lifecycle}_retention_work w
-                     WHERE w.owner_id = :owner AND w.{field} = p.id) marker_clear
+                     WHERE w.owner_id = :owner AND w.{field} = p.id) {acquired} marker_clear
           FROM deps d JOIN {table} p ON p.id = d.{field} AND p.owner_id = :owner
         """)  # noqa: S608 - fixed registry identifiers; all external values are bound.
     for field, table, account, owned in _INTERNAL:

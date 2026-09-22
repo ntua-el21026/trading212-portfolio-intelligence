@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-15",
+  "updated_at": "2026-09-22",
   "current_candidate": {
     "phase": "phase_3",
     "release": "1.0.0",
@@ -4195,7 +4195,7 @@
         "P3-05": "in_progress",
         "P3-06": "in_progress",
         "P3-07": "in_progress",
-        "P3-08": "not_started",
+        "P3-08": "in_progress",
         "P3-09": "in_progress",
         "P3-10": "not_started"
       },
@@ -4227,12 +4227,15 @@
           "research_bounded_pages": "implemented",
           "legacy_report_physical_retention": "in_progress",
           "research_web_and_mcp": "implemented",
-          "research_report_profile": "pending",
+          "research_report_profile": "in_progress",
           "mcp_registry_38_tools_11_resources": "implemented",
           "pwa_public_shell_and_command_palette": "implemented",
-          "owner_saved_layouts": "in_progress",
-          "provider_acquisition": "in_progress",
-          "shared_physical_retention_closure": "in_progress"
+          "owner_saved_layouts": "implemented",
+          "provider_acquisition": "implemented",
+          "shared_physical_retention_closure": "in_progress",
+          "provider_status_and_source_fallback": "implemented",
+          "phase2_indexed_physical_retention": "implemented",
+          "aggregation_vertical": "in_progress"
         }
       },
       "candidate_validation": {

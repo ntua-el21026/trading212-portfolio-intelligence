@@ -63,6 +63,9 @@ describe("immutable projection editors and asynchronous job controls", () => {
     );
     fireEvent.submit(screen.getByRole("form"));
     await screen.findByRole("alert");
+    await waitFor(() =>
+      expect(screen.getByLabelText("Annual mean log return")).toBeEnabled(),
+    );
     const first = mocks.submit.mock.calls[0][0];
     expect(first).toMatchObject({
       kind: "create_assumption_version",
@@ -73,6 +76,9 @@ describe("immutable projection editors and asynchronous job controls", () => {
     fireEvent.submit(screen.getByRole("form"));
     await waitFor(() => expect(mocks.submit).toHaveBeenCalledTimes(2));
     await screen.findByRole("alert");
+    await waitFor(() =>
+      expect(screen.getByLabelText("Annual mean log return")).toBeEnabled(),
+    );
     expect(mocks.submit.mock.calls[1][0].idempotency_key).toBe(
       first.idempotency_key,
     );

@@ -10,7 +10,7 @@ from alembic.config import Config
 from psycopg import sql
 from sqlalchemy import MetaData, inspect, text
 from sqlalchemy.engine import make_url
-from trading212_persistence import create_database_engine
+from trading212_persistence import Base, create_database_engine
 from trading212_worker.seed import seed_materialized_synthetic
 
 from tests.integration.test_migrations import _database_url
@@ -43,7 +43,6 @@ def test_populated_0019_upgrade_preserves_all_legacy_columns_and_empty_downgrade
         before = fingerprints(engine, legacy)
         assert len(before) == 231
         command.upgrade(config, "20260915_0020")
-        command.check(config)
         assert fingerprints(engine, legacy) == before
         assert len(inspect(engine).get_table_names()) - 1 == 254
         with engine.connect() as connection:
@@ -55,7 +54,15 @@ def test_populated_0019_upgrade_preserves_all_legacy_columns_and_empty_downgrade
         assert fingerprints(engine, legacy) == before
         assert len(inspect(engine).get_table_names()) - 1 == 231
         command.upgrade(config, "20260915_0020")
+        assert fingerprints(engine, legacy) == before
+        # Alembic compares to current ORM metadata only after reaching the current head.
+        command.upgrade(config, "head")
+        command.upgrade(config, "head")
         command.check(config)
+        assert fingerprints(engine, legacy) == before
+        assert set(inspect(engine).get_table_names()) - {"alembic_version"} == set(
+            Base.metadata.tables
+        )
     finally:
         if engine is not None:
             engine.dispose()

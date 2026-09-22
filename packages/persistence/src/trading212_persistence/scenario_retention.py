@@ -168,10 +168,13 @@ def purge_scenario_sensitivity_copies(
 def purge_owner_scenario_payloads(
     session: Session, owner: UUID, *, at: datetime, budget: SourcePurgeBudget
 ) -> bool:
+    from .owner_layout_retention import purge_owner_layouts
     from .projection_retention import purge_owner_projection_payloads
     from .research_retention import purge_owner_research_payloads
     from .scenario_source_retention import expire_scenario_sensitivity_payloads
 
+    if not purge_owner_layouts(session, owner, at=at, budget=budget):
+        return False
     if not purge_owner_research_payloads(
         session, owner, at=at, budget=budget
     ) or not purge_owner_projection_payloads(session, owner, at=at, budget=budget):

@@ -224,6 +224,10 @@ class HistoricalCaptureStore(HistoricalEvidenceRegistrationStore):
             for identifier in (*anchor.source_refs, *anchor.reconciliation.anchor_refs):
                 found = self._find_reference(session, owner, account, identifier)
                 references[(found.kind, found.id)] = found
+        if isinstance(opening, d.InceptionHistoricalOpening):
+            for identifier in opening.source_refs:
+                found = self._find_reference(session, owner, account, identifier)
+                references[(found.kind, found.id)] = found
         price_ids = set(() if policy is None else policy.price_series_ids)
         action_ids = set(() if policy is None else policy.action_series_ids)
         benchmark_version = None

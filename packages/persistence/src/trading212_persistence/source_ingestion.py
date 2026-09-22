@@ -53,6 +53,7 @@ from trading212_domain.sources import (
 )
 from trading212_security.principals import Principal
 
+from .acquisition_records import AcquisitionPublicationClock
 from .models import InstrumentModel, ListingModel
 from .source_models import (
     BenchmarkObservationModel,
@@ -473,7 +474,13 @@ class SourceIngestion(SourceStore):
         return await self._run(principal, operation, write=True)
 
     def _assemble(
-        self, session: Session, owner: UUID, request: Request, pages: tuple[SourcePage, ...]
+        self,
+        session: Session,
+        owner: UUID,
+        request: Request,
+        pages: tuple[SourcePage, ...],
+        *,
+        original_clock: AcquisitionPublicationClock | None = None,
     ) -> Snapshot:
         page_type = {
             PriceHistoryRequest: PriceHistoryPage,
@@ -490,6 +497,20 @@ class SourceIngestion(SourceStore):
             raise error(app.SourceServiceErrorCode.VALIDATION_FAILED)
         first = pages[0]
         provenance = replace(first.provenance, first_observed_at=self._now())
+        if original_clock is not None:
+            if (
+                type(original_clock) is not AcquisitionPublicationClock
+                or type(request) not in (PriceHistoryRequest, FxRatesRequest)
+                or original_clock.acquired_at > self._now()
+                or original_clock.expires_at <= self._now()
+                or any(
+                    page.provenance.first_observed_at != original_clock.first_known_at
+                    or page.provenance.source_revision != original_clock.content_digest
+                    for page in pages
+                )
+            ):
+                raise error(app.SourceServiceErrorCode.VALIDATION_FAILED)
+            provenance = replace(first.provenance, first_observed_at=original_clock.first_known_at)
         provider = self._owned(session, owner, MarketDataProviderModel, provenance.provider_id)
         if (
             provider.configuration_state != "configured"
@@ -723,7 +744,13 @@ class SourceIngestion(SourceStore):
             ),
         )
 
-    def _persist_snapshot(self, session: Session, snapshot: Snapshot) -> SourceSnapshotFields:
+    def _persist_snapshot(
+        self,
+        session: Session,
+        snapshot: Snapshot,
+        *,
+        original_clock: AcquisitionPublicationClock | None = None,
+    ) -> SourceSnapshotFields:
         model = {
             PriceSnapshot: PriceSnapshotModel,
             FxSnapshot: FxSnapshotModel,
@@ -733,6 +760,18 @@ class SourceIngestion(SourceStore):
         p = snapshot.provenance
         license = self._license(session, UUID(snapshot.owner_id), UUID(p.license_version_id))
         assert license.retention_days is not None
+        expiry = p.first_observed_at + timedelta(days=license.retention_days)
+        if original_clock is not None:
+            if (
+                type(original_clock) is not AcquisitionPublicationClock
+                or type(snapshot) not in (PriceSnapshot, FxSnapshot)
+                or p.first_observed_at != original_clock.first_known_at
+                or p.source_revision != original_clock.content_digest
+                or original_clock.expires_at > expiry
+                or original_clock.expires_at <= self._now()
+            ):
+                raise error(app.SourceServiceErrorCode.VALIDATION_FAILED)
+            expiry = original_clock.expires_at
         kwargs = dict(
             id=UUID(snapshot.id),
             owner_id=UUID(snapshot.owner_id),
@@ -744,7 +783,7 @@ class SourceIngestion(SourceStore):
             revision_order=p.revision_order,
             effective_at=p.effective_at,
             first_observed_at=p.first_observed_at,
-            expires_at=p.first_observed_at + timedelta(days=license.retention_days),
+            expires_at=expiry,
             synthetic=p.synthetic,
             period_start=snapshot.period.start,
             period_end=snapshot.period.end,
@@ -993,24 +1032,38 @@ class SourceIngestion(SourceStore):
 
                 at = self._now()
                 budget = SourcePurgeBudget()
+                from .phase2_retention_runtime import rotation
                 from .projection_retention import expire_projection_payloads
                 from .research_retention import expire_research_payloads
                 from .risk_retention import expire_risk_payloads
                 from .scenario_retention import expire_scenario_payloads
                 from .scenario_source_retention import expire_scenario_sensitivity_payloads
 
-                expire_risk_payloads(session, at=at, budget=budget)
-                expire_scenario_payloads(session, at=at, budget=budget)
-                expire_projection_payloads(session, at=at, budget=budget)
-                expire_scenario_sensitivity_payloads(session, at=at, budget=budget)
-                expire_research_payloads(
-                    session, at=at, budget=budget, capability_authority=self._research_capabilities
-                )
-                completed = expire_source_payloads(session, at=at, limit=limit, budget=budget)
-                if completed < limit:
-                    completed += expire_enrichment_payloads(
-                        session, at=at, limit=limit - completed, budget=budget
-                    )
+                completed = 0
+                for family in rotation(session, "dispatch", 7, budget):
+                    if family == 0:
+                        expire_risk_payloads(session, at=at, budget=budget)
+                    elif family == 1:
+                        expire_scenario_payloads(session, at=at, budget=budget)
+                    elif family == 2:
+                        expire_projection_payloads(session, at=at, budget=budget)
+                    elif family == 3:
+                        expire_scenario_sensitivity_payloads(session, at=at, budget=budget)
+                    elif family == 4:
+                        expire_research_payloads(
+                            session,
+                            at=at,
+                            budget=budget,
+                            capability_authority=self._research_capabilities,
+                        )
+                    elif completed < limit and family == 5:
+                        completed += expire_source_payloads(
+                            session, at=at, limit=limit - completed, budget=budget
+                        )
+                    elif completed < limit:
+                        completed += expire_enrichment_payloads(
+                            session, at=at, limit=limit - completed, budget=budget
+                        )
                 return completed
 
         return await asyncio.to_thread(expire)

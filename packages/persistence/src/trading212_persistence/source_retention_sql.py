@@ -31,6 +31,7 @@ from sqlalchemy.engine import CursorResult
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.elements import ColumnElement
 
+from .phase2_retention_costs import phase2_mutation_cost
 from .premium_retention_costs import premium_mutation_cost
 from .projection_retention_costs import projection_mutation_cost
 from .research_retention_costs import research_mutation_cost
@@ -115,7 +116,8 @@ def purge_payload_rows(
     )
     size = logical_payload_size(table, payload_columns)
     cost = (
-        premium_mutation_cost(table.name, delete_rows=delete_rows)
+        phase2_mutation_cost(table.name, delete_rows=delete_rows)
+        or premium_mutation_cost(table.name, delete_rows=delete_rows)
         or research_mutation_cost(table.name, delete_rows=delete_rows)
         or projection_mutation_cost(table.name, delete_rows=delete_rows)
     )

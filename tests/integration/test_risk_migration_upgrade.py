@@ -1,4 +1,4 @@
-"""Populated 0016 to 0017 upgrade preserves every legacy column and canonical replay."""
+"""Populated 0016 through current premium head preserves legacy bytes and canonical replay."""
 
 import asyncio
 from hashlib import sha256
@@ -93,7 +93,7 @@ def test_populated_phase2_upgrade_keeps_rows_values_and_replay(
         command.upgrade(config, "head")
         command.check(config)
         assert fingerprints(engine, legacy) == before
-        assert len(inspect(engine).get_table_names()) - 1 == 231
+        assert len(inspect(engine).get_table_names()) - 1 == 344
         replay = asyncio.run(
             service.get_performance_summary(
                 history_principal(NOW),

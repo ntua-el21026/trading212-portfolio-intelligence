@@ -209,6 +209,14 @@ def test_source_expiry_resumes_bounded_copies_and_denies_pending_replay(
         completed = expire_source_payloads(session, at=case.now[0], limit=1, budget=budget)
         assert completed == 0
         assert 0 <= budget.rows_inspected < 8 and 0 <= budget.rows_removed <= 8
+        # A full marker/guard/epoch reservation cannot fit eight inspections.
+        assert session.scalar(select(SourceRetentionWorkModel.id).limit(1)) is None
+    with case.sessions() as session, session.begin():
+        budget = SourcePurgeBudget(
+            rows_inspected=128, rows_removed=8, bytes_inspected=8192, bytes_removed=8192
+        )
+        assert expire_source_payloads(session, at=case.now[0], limit=1, budget=budget) == 0
+        assert 0 <= budget.rows_inspected < 128
         assert (
             session.scalar(
                 select(SourceRetentionWorkModel.id)

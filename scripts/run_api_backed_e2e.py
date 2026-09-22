@@ -381,6 +381,9 @@ def _exit_fixture(signum: int, frame: FrameType | None) -> NoReturn:
 def _serve_fixture(database_url: str) -> None:
     from scripts.api_e2e_timings import fixture_timings, timings_enabled
 
+    layouts = os.environ.get("T212PI_E2E_LAYOUTS", "0")
+    if layouts not in {"0", "1"}:
+        raise RuntimeError("The saved layouts browser fixture selector must be 0 or 1.")
     research = os.environ.get("T212PI_E2E_RESEARCH", "0")
     if research not in {"0", "1"}:
         raise RuntimeError("The research browser fixture selector must be 0 or 1.")
@@ -432,6 +435,16 @@ def _serve_fixture(database_url: str) -> None:
         datetime.now(UTC).replace(microsecond=0),
     )
     try:
+        if layouts == "1":
+            from trading212_security.principals import Scope
+            from trading212_worker.synthetic_grants import seed_synthetic_grants
+
+            seed_synthetic_grants(
+                create_session_factory(engine),
+                app_environment="test",
+                at=scenario_time,
+                scopes=frozenset({Scope.PREFERENCES_READ, Scope.PREFERENCES_WRITE}),
+            )
         if reports == "1" or alerts == "1":
             seed_synthetic_report_grants(
                 create_session_factory(engine), app_environment="test", at=scenario_time

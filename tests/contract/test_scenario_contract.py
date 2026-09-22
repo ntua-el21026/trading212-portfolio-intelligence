@@ -58,8 +58,8 @@ def test_frozen_eight_paths_eleven_operations_and_only_additive_legacy_descripto
     }
     assert actual == OPERATIONS and len({path for _, path in actual.values()}) == 8
     assert legacy["path_count"] == 101 and legacy["operation_count"] == 112
-    assert len(document["paths"]) == 127
-    assert sum(len(methods) for methods in document["paths"].values()) == 148
+    assert len(document["paths"]) == 131
+    assert sum(len(methods) for methods in document["paths"].values()) == 154
     for path, expected in legacy["paths"].items():
         if path in PROFILE_TWO["paths"]:
             # ADR-0026 permits exactly the explicit profile selector and closed unions.

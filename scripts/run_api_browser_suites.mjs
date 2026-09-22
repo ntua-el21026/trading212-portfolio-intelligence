@@ -76,9 +76,14 @@ function run(arguments_, fixture, reportPath) {
         ].includes(fixture)
           ? "1"
           : "0",
-        T212PI_E2E_XRAY: ["xray.spec.ts", "research.spec.ts"].includes(fixture)
+        T212PI_E2E_XRAY: [
+          "xray.spec.ts",
+          "research.spec.ts",
+          "owner-layouts.spec.ts",
+        ].includes(fixture)
           ? "1"
           : "0",
+        T212PI_E2E_LAYOUTS: fixture === "owner-layouts.spec.ts" ? "1" : "0",
         T212PI_E2E_RESEARCH: fixture === "research.spec.ts" ? "1" : "0",
         T212PI_E2E_SCENARIOS: [
           "scenarios.spec.ts",

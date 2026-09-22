@@ -6,12 +6,20 @@ from datetime import datetime
 from typing import cast
 from uuid import UUID
 
-from sqlalchemy import Table, select, text, tuple_
-from sqlalchemy.orm import Session
+from sqlalchemy import Table, select, text
+from sqlalchemy.orm import Session, load_only
 
 from . import source_models as sm
 from .alert_retention import purge_alert_source_copies
 from .historical_retention import purge_source_copies
+from .phase2_retention_costs import (
+    ACQUISITION_SOURCE_PERMISSION_MAX_ROWS,
+    SOURCE_COMPLETION_ROWS,
+    SOURCE_MARKER_ROWS,
+    SOURCE_PROGRESS_ROWS,
+)
+from .phase2_retention_models import HistoricalCompositePhysicalModel
+from .phase2_retention_runtime import charge, physical_source_candidates, rotation
 from .report_retention import purge_report_source_copies
 from .source_retention import SourcePurgeBudget
 from .source_retention_sql import purge_payload_rows
@@ -81,9 +89,7 @@ def _expire_snapshot(
     budget: SourcePurgeBudget,
 ) -> bool:
     reference = str(row.__tablename__).removesuffix("s") + "_id"
-    # Reserve all four possible marker phase writes' new indexed projection
-    # parent checks before admitting any mutation in this exact-source pass.
-    if budget.rows_inspected < 5 or not budget.inspect(rows=4):
+    if not charge(budget):
         return False
     work = session.scalar(
         select(sm.SourceRetentionWorkModel)
@@ -94,6 +100,8 @@ def _expire_snapshot(
         .limit(1)
     )
     if work is None:
+        if not charge(budget, SOURCE_MARKER_ROWS):
+            return False
         work = sm.SourceRetentionWorkModel(
             owner_id=row.owner_id,
             **{reference: row.id},
@@ -106,19 +114,13 @@ def _expire_snapshot(
         session.add(work)
         session.flush()
     else:
-        if not budget.inspect(rows=1):
-            raise RuntimeError("Source expiry work selection exceeded its row allowance.")
         if work.phase == "complete":
             return False
+    if work.started_at > at:
+        return False
     if work.phase == "copies":
         from .projection_retention import ProjectionParentKind, purge_projection_source_copies
-        from .risk_retention import expire_risk_payloads
-        from .scenario_retention import expire_scenario_payloads
 
-        if not expire_risk_payloads(session, at=at, owner=row.owner_id, budget=budget):
-            return False
-        if not expire_scenario_payloads(session, at=at, owner=row.owner_id, budget=budget):
-            return False
         kind = str(row.__tablename__).removesuffix("_snapshots")
         if isinstance(row, sm.SourceSnapshotFields) and not purge_projection_source_copies(
             session, row.owner_id, cast(ProjectionParentKind, kind), row.id, at=at, budget=budget
@@ -138,9 +140,26 @@ def _expire_snapshot(
             return False
         if not purge_xray_source_copies(session, row, at=at, budget=budget):
             return False
+        if isinstance(row, sm.BenchmarkSnapshotModel) and row.snapshot_kind == "composite":
+            if not charge(budget):
+                return False
+            points = session.scalar(
+                select(HistoricalCompositePhysicalModel.point_rows).where(
+                    HistoricalCompositePhysicalModel.owner_id == row.owner_id,
+                    HistoricalCompositePhysicalModel.snapshot_id == row.id,
+                )
+            )
+            if points is None or points:
+                # Its expiry is the minimum original input-source expiry. Let the
+                # independent work keyset reach that original parent and its run.
+                return False
+        if not charge(budget, SOURCE_PROGRESS_ROWS):
+            return False
         work.phase = "observations"
         session.flush()
     if work.phase == "observations":
+        if not charge(budget, SOURCE_PROGRESS_ROWS):
+            return False
         removed = purge_payload_rows(
             session,
             child,
@@ -149,8 +168,9 @@ def _expire_snapshot(
             delete_rows=True,
             budget=budget,
         )
-        work.removed_observation_count += removed.removed_rows
+        next_removed_count = work.removed_observation_count + removed.removed_rows
         if not removed.complete:
+            work.removed_observation_count = next_removed_count
             session.flush()
             return False
         if isinstance(row, ConstituentSnapshotModel):
@@ -163,8 +183,12 @@ def _expire_snapshot(
                 delete_rows=False,
                 budget=budget,
             ).complete:
+                work.removed_observation_count = next_removed_count
                 session.flush()
                 return False
+        # Keep one progress write: the header clear must not autoflush a separate
+        # intermediate counter update before the reserved phase transition.
+        work.removed_observation_count = next_removed_count
         work.phase = "coverage"
         session.flush()
     gaps = cast(Table, sm.SourceCoverageGapModel.__table__)
@@ -176,6 +200,8 @@ def _expire_snapshot(
         delete_rows=True,
         budget=budget,
     ).complete:
+        return False
+    if not charge(budget, SOURCE_COMPLETION_ROWS):
         return False
     session.add(
         sm.SourceExpiryEventModel(
@@ -198,59 +224,85 @@ def _expire_snapshot(
 def expire_source_payloads(
     session: Session, *, at: datetime, limit: int, budget: SourcePurgeBudget
 ) -> int:
-    """Resume exact-source work; count only newly completed expiry records.
-
-    A local keyset visits a pending source at most once in this invocation. Its
-    durable work row retains phase/count across calls; no completion marker is
-    written until dependent copies and source payloads are physically gone.
-    """
+    """Fair physical keysets and original acquisition witnesses, sharing one budget."""
     completed = 0
     busy_owners: set[UUID] = set()
-    for model, child_model, columns in SOURCE_PAYLOADS:
+    for index in rotation(session, "source", len(SOURCE_PAYLOADS), budget):
+        model, child_model, columns = SOURCE_PAYLOADS[index]
         reference = str(model.__tablename__).removesuffix("s") + "_id"
-        after: tuple[datetime, UUID] | None = None
-        while completed < limit and budget.metadata_limit >= 2:
-            query = select(model.id, model.owner_id, model.expires_at).where(
-                model.expires_at <= at,
-                ~select(sm.SourceExpiryEventModel.id)
-                .where(
-                    getattr(sm.SourceExpiryEventModel, reference) == model.id,
-                    sm.SourceExpiryEventModel.owner_id == model.owner_id,
-                )
-                .exists(),
-            )
-            if busy_owners:
-                query = query.where(model.owner_id.not_in(busy_owners))
-            if after is not None:
-                query = query.where(tuple_(model.expires_at, model.id) > after)
-            selected = session.execute(query.order_by(model.expires_at, model.id).limit(1)).first()
-            if selected is None:
-                break
-            if not budget.inspect(rows=1):
-                raise RuntimeError("Source expiry discovery exceeded its row allowance.")
-            after = (selected.expires_at, selected.id)
-            # Keep the sources -> xray order, but leave busy owners for the next
-            # bounded invocation instead of blocking the shared dispatcher.
+        kind = str(model.__tablename__).removesuffix("_snapshots")
+        for candidate in physical_source_candidates(
+            session,
+            cast(Table, model.__table__),
+            cast(Table, sm.SourceRetentionWorkModel.__table__),
+            reference,
+            kind,
+            at,
+            budget,
+        ):
+            if completed >= limit or budget.rows_removed == 0:
+                return completed
+            if candidate.owner_id in busy_owners:
+                continue
             if not all(
                 session.scalar(
                     text("SELECT pg_try_advisory_xact_lock(hashtextextended(:key,0))"),
-                    {"key": f"{lock}:{selected.owner_id}"},
+                    {"key": f"{lock}:{candidate.owner_id}"},
                 )
                 is True
-                for lock in ("sources", "xray")
+                for lock in ("sources", "xray", "historical")
             ):
-                # Defer this owner across families without spending the pass on its backlog.
-                busy_owners.add(selected.owner_id)
+                busy_owners.add(candidate.owner_id)
                 continue
+            if not candidate.pending:
+                if not charge(budget):
+                    return completed
+                if (
+                    session.scalar(
+                        select(sm.SourceExpiryEventModel.id)
+                        .where(
+                            sm.SourceExpiryEventModel.owner_id == candidate.owner_id,
+                            getattr(sm.SourceExpiryEventModel, reference) == candidate.id,
+                        )
+                        .limit(1)
+                    )
+                    is not None
+                ):
+                    continue
+                restricted = candidate.expires_at is not None and candidate.expires_at <= at
+                if not restricted and kind in ("price", "fx"):
+                    if not charge(budget, ACQUISITION_SOURCE_PERMISSION_MAX_ROWS):
+                        return completed
+                    restricted = (
+                        session.scalar(
+                            text(
+                                "SELECT acquisition_source_restricted(:owner,:kind,:sour"
+                                "ce,:at,'store')"
+                            ),
+                            {
+                                "owner": candidate.owner_id,
+                                "kind": kind,
+                                "source": candidate.id,
+                                "at": at,
+                            },
+                        )
+                        is True
+                    )
+                if not restricted:
+                    continue
+            if not charge(budget):
+                return completed
+            fields = [model.id, model.owner_id, model.expires_at, model.content_digest]
+            if model is sm.BenchmarkSnapshotModel:
+                fields.append(sm.BenchmarkSnapshotModel.snapshot_kind)
             row = session.scalar(
                 select(model)
-                .where(model.id == selected.id, model.owner_id == selected.owner_id)
+                .options(load_only(*fields, raiseload=True))
+                .where(model.id == candidate.id, model.owner_id == candidate.owner_id)
                 .with_for_update(skip_locked=True)
             )
             if row is None:
                 continue
-            if not budget.inspect(rows=1):
-                raise RuntimeError("Source expiry header exceeded its row allowance.")
             if _expire_snapshot(
                 session,
                 cast(sm.SourceSnapshotFields | ConstituentSnapshotModel, row),

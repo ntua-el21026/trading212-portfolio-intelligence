@@ -7,11 +7,15 @@ from typing import cast
 from uuid import UUID
 
 from sqlalchemy import Table, select, text
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only
 
 from . import xray_catalog_models as cm
-from .premium_retention_costs import ENRICHMENT_MARKER_EPOCH_ROWS
-from .premium_retention_runtime import charge, finish_sweep, open_sweep
+from .phase2_retention_costs import (
+    ENRICHMENT_COMPLETION_ROWS,
+    ENRICHMENT_MARKER_ROWS,
+    ENRICHMENT_PROGRESS_ROWS,
+)
+from .phase2_retention_runtime import charge, physical_source_candidates, rotation
 from .source_retention import SourcePurgeBudget
 from .source_retention_sql import purge_payload_rows
 from .xray_lifecycle_models import EnrichmentExpiryEventModel, EnrichmentRetentionWorkModel
@@ -109,163 +113,164 @@ def _payloads(
     return True, removed
 
 
-def expire_enrichment_payloads(
-    session: Session, *, at: datetime, limit: int, budget: SourcePurgeBudget
-) -> int:
-    completed = 0
-    busy_owners: set[UUID] = set()
-    for model, reference in _FAMILIES:
+def _expire_enrichment_source(
+    session: Session,
+    source: cm.XrayEvidenceFields,
+    reference: str,
+    at: datetime,
+    budget: SourcePurgeBudget,
+) -> bool:
+    if not charge(budget):
+        return False
+    work = session.scalar(
+        select(EnrichmentRetentionWorkModel)
+        .where(
+            EnrichmentRetentionWorkModel.owner_id == source.owner_id,
+            getattr(EnrichmentRetentionWorkModel, reference) == source.id,
+        )
+        .limit(1)
+    )
+    if work is None:
+        if not charge(budget, ENRICHMENT_MARKER_ROWS):
+            return False
+        work = EnrichmentRetentionWorkModel(
+            owner_id=source.owner_id,
+            **{reference: source.id},
+            started_at=at,
+            content_digest=source.content_digest,
+            phase="copies",
+            removed_row_count=0,
+            completed_at=None,
+            created_at=at,
+        )
+        session.add(work)
+        session.flush()
+    elif work.phase == "complete":
+        return False
+    if work.started_at > at:
+        return False
+    if work.phase == "copies":
+        from .alert_retention import purge_alert_source_copies
+        from .report_retention import purge_report_source_copies
+
         kind = {
             "entity_evidence_version_id": "entity_evidence",
             "classification_snapshot_id": "classification",
             "fund_definition_id": "fund_definition",
             "fund_mapping_id": "fund_mapping",
         }[reference]
-        sweep = open_sweep(session, kind, None, at, budget)
-        if sweep is None:
-            return completed
-        while completed < limit and budget.metadata_limit >= 12:
-            # Keyset actual source rows before expiry/completion predicates. Every
-            # healthy or completed candidate consumes one physical inspection.
-            query = select(model.id, model.owner_id, model.expires_at)
-            if sweep.after_id is not None:
-                query = query.where(model.id > sweep.after_id)
-            charge(budget, 1)
-            candidate = session.execute(query.order_by(model.id).limit(1)).first()
-            if candidate is None:
-                finish_sweep(session, sweep, budget)
-                break
-            charge(budget, 1)
-            sweep.after_id = candidate.id
-            session.flush()
-            if candidate.expires_at > at or candidate.owner_id in busy_owners:
-                continue
-            charge(budget, 1)
-            if (
-                session.scalar(
-                    select(EnrichmentExpiryEventModel.id)
-                    .where(
-                        EnrichmentExpiryEventModel.owner_id == candidate.owner_id,
-                        getattr(EnrichmentExpiryEventModel, reference) == candidate.id,
-                    )
-                    .limit(1)
-                )
-                is not None
+        if not purge_alert_source_copies(
+            session, owner=source.owner_id, kind=kind, source_id=source.id, at=at, budget=budget
+        ):
+            return False
+        if not purge_report_source_copies(
+            session, owner=source.owner_id, kind=kind, source_id=source.id, at=at, budget=budget
+        ):
+            return False
+        # Exact X-ray inputs drain their own risk/scenario dependants. An all-owner
+        # premium sweep here could repeatedly consume this source's work budget.
+        if not purge_xray_source_copies(session, source, at=at, budget=budget):
+            return False
+        if not charge(budget, ENRICHMENT_PROGRESS_ROWS):
+            return False
+        work.phase = "payloads"
+        session.flush()
+    if not charge(budget, ENRICHMENT_PROGRESS_ROWS):
+        return False
+    complete, removed = _payloads(session, source, budget)
+    work.removed_row_count += removed
+    session.flush()
+    if not complete or not charge(budget, ENRICHMENT_COMPLETION_ROWS):
+        return False
+    session.add(
+        EnrichmentExpiryEventModel(
+            owner_id=source.owner_id,
+            **{reference: source.id},
+            expired_at=at,
+            content_digest=source.content_digest,
+            removed_row_count=work.removed_row_count,
+            created_at=at,
+        )
+    )
+    session.flush()
+    work.phase = "complete"
+    work.completed_at = at
+    session.flush()
+    return True
+
+
+def expire_enrichment_payloads(
+    session: Session, *, at: datetime, limit: int, budget: SourcePurgeBudget
+) -> int:
+    completed = 0
+    busy_owners: set[UUID] = set()
+    kinds = {
+        "entity_evidence_version_id": "entity_evidence",
+        "classification_snapshot_id": "classification",
+        "fund_definition_id": "fund_definition",
+        "fund_mapping_id": "fund_mapping",
+    }
+    for index in rotation(session, "enrichment", len(_FAMILIES), budget):
+        model, reference = _FAMILIES[index]
+        for candidate in physical_source_candidates(
+            session,
+            cast(Table, model.__table__),
+            cast(Table, EnrichmentRetentionWorkModel.__table__),
+            reference,
+            kinds[reference],
+            at,
+            budget,
+        ):
+            if completed >= limit or budget.rows_removed == 0:
+                return completed
+            if candidate.owner_id in busy_owners or (
+                not candidate.pending
+                and (candidate.expires_at is None or candidate.expires_at > at)
             ):
                 continue
-            # Share the maintenance lock order without stalling other families.
             if not all(
                 session.scalar(
                     text("SELECT pg_try_advisory_xact_lock(hashtextextended(:key,0))"),
                     {"key": f"{lock}:{candidate.owner_id}"},
                 )
                 is True
-                for lock in ("sources", "xray")
+                for lock in ("sources", "xray", "historical")
             ):
-                # Defer this owner across families without spending the pass on its backlog.
                 busy_owners.add(candidate.owner_id)
                 continue
-            charge(budget, 1)
+            if not candidate.pending:
+                if not charge(budget):
+                    return completed
+                if (
+                    session.scalar(
+                        select(EnrichmentExpiryEventModel.id)
+                        .where(
+                            EnrichmentExpiryEventModel.owner_id == candidate.owner_id,
+                            getattr(EnrichmentExpiryEventModel, reference) == candidate.id,
+                        )
+                        .limit(1)
+                    )
+                    is not None
+                ):
+                    continue
+            if not charge(budget):
+                return completed
             source = session.scalar(
                 select(model)
+                .options(
+                    load_only(
+                        model.id,
+                        model.owner_id,
+                        model.expires_at,
+                        model.content_digest,
+                        raiseload=True,
+                    )
+                )
                 .where(model.id == candidate.id, model.owner_id == candidate.owner_id)
                 .with_for_update(skip_locked=True)
             )
-            if source is None:
-                continue
-            if not budget.inspect(rows=1):
-                return completed
-            work = session.scalar(
-                select(EnrichmentRetentionWorkModel)
-                .where(
-                    EnrichmentRetentionWorkModel.owner_id == source.owner_id,
-                    getattr(EnrichmentRetentionWorkModel, reference) == source.id,
-                )
-                .limit(1)
-            )
-            if work is None:
-                if not budget.inspect(rows=8 + ENRICHMENT_MARKER_EPOCH_ROWS):
-                    return completed
-                work = EnrichmentRetentionWorkModel(
-                    owner_id=source.owner_id,
-                    **{reference: source.id},
-                    started_at=at,
-                    content_digest=source.content_digest,
-                    phase="copies",
-                    removed_row_count=0,
-                    completed_at=None,
-                    created_at=at,
-                )
-                session.add(work)
-                session.flush()
-            if work.phase == "copies":
-                from .risk_retention import expire_risk_payloads
-                from .scenario_retention import expire_scenario_payloads
-
-                if not expire_risk_payloads(session, at=at, owner=source.owner_id, budget=budget):
-                    continue
-                if not expire_scenario_payloads(
-                    session, at=at, owner=source.owner_id, budget=budget
-                ):
-                    continue
-                from .alert_retention import purge_alert_source_copies
-                from .report_retention import purge_report_source_copies
-
-                kind = {
-                    "entity_evidence_version_id": "entity_evidence",
-                    "classification_snapshot_id": "classification",
-                    "fund_definition_id": "fund_definition",
-                    "fund_mapping_id": "fund_mapping",
-                }[reference]
-                if not purge_alert_source_copies(
-                    session,
-                    owner=source.owner_id,
-                    kind=kind,
-                    source_id=source.id,
-                    at=at,
-                    budget=budget,
-                ):
-                    continue
-                if not purge_report_source_copies(
-                    session,
-                    owner=source.owner_id,
-                    kind=kind,
-                    source_id=source.id,
-                    at=at,
-                    budget=budget,
-                ):
-                    continue
-                if not purge_xray_source_copies(session, source, at=at, budget=budget):
-                    continue
-                # The old SQL transition additionally traverses X-ray copies;
-                # its transitive physical closure is tracked separately in ADR0032.
-                if not budget.inspect(rows=3):
-                    return completed
-                work.phase = "payloads"
-                session.flush()
-            if work.phase == "payloads":
-                if not budget.inspect(rows=3):
-                    return completed
-                complete, removed = _payloads(session, source, budget)
-                work.removed_row_count += removed
-                session.flush()
-                if not complete:
-                    continue
-                if not budget.inspect(rows=12 + ENRICHMENT_MARKER_EPOCH_ROWS):
-                    return completed
-                session.add(
-                    EnrichmentExpiryEventModel(
-                        owner_id=source.owner_id,
-                        **{reference: source.id},
-                        expired_at=at,
-                        content_digest=source.content_digest,
-                        removed_row_count=work.removed_row_count,
-                        created_at=at,
-                    )
-                )
-                session.flush()
-                work.phase = "complete"
-                work.completed_at = at
-                session.flush()
+            if source is not None and _expire_enrichment_source(
+                session, source, reference, at, budget
+            ):
                 completed += 1
     return completed

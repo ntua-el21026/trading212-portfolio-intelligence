@@ -933,3 +933,115 @@ Git blob bytes, and inspected the synthetic report-row/idempotency syntax. All 5
 are noncredentials; the raw redacted result and exact classification remain separate
 originals. No scanner exception, inherited rule or historical artifact was modified.
 The changed-file secret scan and Python package build are recorded separately.
+
+## Saved layouts, provider acquisition and physical source closure (2026-09-22)
+
+Working source extends d29c82f; this is component progress, not Phase 3 acceptance.
+Migrations0027–0029 add durable bounded provider reservations/attempts, indexed
+Phase2 source-copy closure, and owner layout/version/command/cursor storage. The
+observed inventory is344 normalized tables and131 REST paths/154 operations/550
+schemas; MCP remains38 tools/11 resources and Trading212 remains ten fixed GETs.
+Provider status is metadata-only and does not verify credentials or live access.
+Explicit source fallback preserves the selected original successful acquisition,
+source/quality/cutoff and current rights instead of silently requesting replacements.
+
+Historical inception capture now retains selected opening provenance references,
+including their transitive source dependencies. Physical source, X-ray, historical
+and scenario cleanup uses indexed pending work and the shared original budget.
+Alert/research-report/aggregation closure remains under implementation.
+
+Evidence lives under the task state directory
+`/home/peppasmich/.local/state/t212pi/20260908-resume/phase3-20260914`. Every named gate
+retains the exact command, timestamps, source manifest, logs, exit and original test
+results. These receipts bind unaccepted working sources, not an immutable candidate.
+
+- `providers-retention-focused-02`:118 Python cases and included static/boundary checks
+  passed in4.541s. `historical-composite-postgres-01`:3 actual PostgreSQL cases passed
+  in32.105s for direct/transitive historical provenance and composite copy closure.
+- `layouts-status-focused-05`:88 Python cases and static/type/lint checks passed;
+  its web group had28 passes and one microsecond-clock fixture failure. The corrected
+  `layouts-status-web-01` passed all29 web cases. Failed predecessor receipts remain.
+- `layouts-status-postgres-03` passed the migration case before an explicit flush
+  ordering defect failed layout creation. Root now flushes parent/version/widgets
+  and audit receipt in the required atomic FK order. `-05` passed the first two
+  layout cases before a negative fixture URL exceeded its scalar bound. Correcting
+  that fixture lets `-06` pass the remaining three layout cases and all three status
+  cases before the old rollover fixture failed. These broad gates remain failed;
+  only their actual passing individual cases are reported here.
+- `provider-rollover-fallback-postgres-01`:4 cases passed in37.786s. The rollover
+  fixture uses an explicitly simulated consistent Python/SQL clock in its disposable
+  DB, restores the exact original SQL function, and proves a Python-only future
+  reservation still rejects. Production clock guards and quota/deadline bounds stay
+  unchanged. Both actual source-fallback replay cases pass without new acquisition.
+- `owner-layout-browser-05`:three production journeys passed in67.161s. The extended
+  `owner-layout-browser-07` also passed three journeys in66.687s, adding actual
+  provider-status API/settings parity. Desktop1440, tablet768 and mobile360 checks
+  cover exact canonical previews, immutable history, original X-ray pins, account
+  switches/denial, archive/logout, no private browser cache, keyboard visibility,
+  no page overflow and zero serious/critical axe WCAG AA findings. Root inspected
+  the retained mobile canonical-preview capture. Earlier failures and screenshots
+  preserve locator corrections and the real link/select target-size fixes.
+
+Docker recovery reused the existing healthy PostgreSQL container with1CPU/1GiB.
+No additional stack or provider request was created. At the completed browser
+boundary, `layouts-unused-cache-cleanup-20260922.json` records162268447 logical bytes
+removed from inactive task Next cache/standalone and pytest cache only; source,
+dependencies, retained evidence and unrelated Docker data were preserved.
+GitHub Actions remains owner-deferred/unverified; all final acceptance/SLO/independent
+review and production prerequisites retain their separate pending/external states.
+
+The subsequent `provider-layout-checkpoint-isolated-06` gate passed against an
+unchanged working-tree fingerprint in 542.469 seconds: 5,335 Python unit,
+property, contract and security tests; 860 web unit tests; Ruff; strict mypy;
+workspace TypeScript/ESLint; formatting; generated-contract drift; documentation,
+workspace, secret, architecture and sealed Trading212 checks. Three existing
+pytest JUnit `record_property` warnings remain. Attempt05 is preserved as failed
+(5,332 passes, three failures): two aggregate API inventory assertions needed the
+additive layout/status totals, and one mocked source needed its adapter version.
+The focused follow-up exposed the second stale operation count before attempt06.
+No application behavior or assertion strength was changed for these corrections.
+These are component checkpoint results, not Phase3 final acceptance.
+
+
+The bounded independent checkpoint source review identified a semantic replay defect:
+two separately charged acquisitions with identical normalized facts reused one source,
+but the second request lacked a replay association. Migration0027 now records an
+immutable, content-free attempt-to-original-publication association. Reuse preserves
+the original grant, first-known clock and expiry, with current STORE/DISPLAY checks
+before decoding and returning retained data. `acquisition-replay-postgres-01` passed
+17 actual PostgreSQL cases plus Ruff/format/strict typing in152.907s, including four
+new independent-request, original-expiry and SQL denial regressions. The additional
+association raises this component inventory to344 tables; public API counts are unchanged.
+
+`provider-layout-migrations-02` passed all23 migration checks in90.597s, including
+empty/repeated head, ORM parity, populated accepted0016-to-head preservation and
+historical0019/0020 upgrade/downgrade followed by repeated current head. Attempt01
+remains failed with21 passes and two stale test assumptions: the static0020 inventory
+was compared to current metadata, and an intermediate revision was incorrectly passed
+to Alembic's current-head comparison. Historical table counts/fingerprints remain
+explicit; actual head tables must equal the full ORM table-name set.
+
+The earlier security/build attempt01 passed configured Semgrep, secret-policy and
+dependency checks before its additional changed-file scanner reported two synthetic
+fixture-label false positives. Those labels were shortened without adding exceptions;
+`historical-composite-postgres-02` then passed all3 cases in32.841s. Attempt02 scanned
+142 changed files with zero findings and built all24 wheel/source artifacts, but its
+artifact verifier counted uv's `.gitignore` as a package and failed. The separate
+`provider-layout-artifact-proof-03` verified those original24 archive hashes/integrity
+and build-log successes against the original source manifest in0.173s. Both original
+failed gates remain failed; these observations predate the replay correction.
+
+
+The updated `provider-layout-checkpoint-final-01` passed in195.903s with an unchanged
+working-source manifest: Ruff/format, strict mypy over1090 sources,61 focused Python
+cases, repository/workspace/secret/architecture/ten-GET checks, generated contract
+and formatting checks; configured security checks and both dependency audits; the
+complete staged contents of147 changed files with zero Gitleaks findings; and all24
+wheel/source builds across12 packages, with verified archive integrity and hashes.
+Semgrep ran7 rules on925 files with zero findings; its existing ignore patterns
+excluded703 files and its1MiB limit excluded3 files. These limits are retained,
+not an exhaustive security assurance. The temporary scanner ran serially while
+PostgreSQL was stopped; its automatic removal completed and PostgreSQL restarted.
+Only this appended documentation follows that source manifest; executable bytes
+are checked for equality before the checkpoint commit. Final immutable Phase3
+validation and independent acceptance remain pending.

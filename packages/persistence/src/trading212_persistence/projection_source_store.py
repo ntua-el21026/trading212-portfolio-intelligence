@@ -9,7 +9,7 @@ from hashlib import sha256
 from typing import Any, Literal, cast
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session, sessionmaker
 from trading212_application import projection as app
 from trading212_application import sources as source_app
@@ -243,6 +243,22 @@ class ProjectionSourceStore:
         self, session: Session, auth: ReportAuthorization, model: Any, identifier: UUID
     ) -> tuple[dict[str, Any], datetime, UUID]:
         row = self._metadata(session, auth, model, identifier)
+        if (
+            model in (sm.PriceSnapshotModel, sm.FxSnapshotModel)
+            and session.scalar(
+                text(
+                    "SELECT acquisition_source_restricted(:owner, :kind, :source, :at, 'display')"
+                ),
+                {
+                    "owner": auth.owner_id,
+                    "kind": "price" if model is sm.PriceSnapshotModel else "fx",
+                    "source": identifier,
+                    "at": self._now(),
+                },
+            )
+            is not False
+        ):
+            raise unavailable()
         if row.get("snapshot_kind", "provider_series") != "provider_series":
             raise unavailable()
         at, expiry, license_id = (
