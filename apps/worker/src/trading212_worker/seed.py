@@ -84,6 +84,8 @@ async def seed_complete_synthetic(database_url: str, *, app_environment: str) ->
                     Scope.GOALS_WRITE,
                     Scope.PREFERENCES_READ,
                     Scope.PREFERENCES_WRITE,
+                    Scope.AGGREGATE_READ,
+                    Scope.AGGREGATE_WRITE,
                 }
             ),
         )

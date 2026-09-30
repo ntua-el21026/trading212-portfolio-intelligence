@@ -195,6 +195,73 @@ class SourceObservationQuery(SourcePageQuery):
     account_id: UUIDString | None = None
 
 
+class FxObservationReferenceQuery(SourcePageQuery):
+    account_id: UUIDString
+    base: CurrencyString
+    quote: CurrencyString
+    source_cutoff_at: AwareInstant
+    effective_at_lte: AwareInstant | None = None
+    limit: Annotated[int, Field(ge=1, le=25)] = 25
+
+    @model_validator(mode="after")
+    def reference_bounds(self) -> Self:
+        if self.base == self.quote or (
+            self.effective_at_lte is not None and self.effective_at_lte > self.source_cutoff_at
+        ):
+            raise ValueError(
+                "Choose distinct currencies and an effective bound at or before the cutoff."
+            )
+        return self
+
+
+class FxObservationReference(SourceSchema):
+    observation_id: UUIDString
+    session_date: CalendarDate
+    effective_at: AwareInstant
+    rate: SourcePositiveDecimal | None
+    state: SourceObservationState
+
+    @model_validator(mode="after")
+    def value_state(self) -> Self:
+        _observation(self.state, self.rate)
+        return self
+
+
+class FxObservationReferencePage(SourceSchema):
+    account_id: UUIDString
+    snapshot_id: UUIDString
+    content_digest: Digest
+    base: CurrencyString
+    quote: CurrencyString
+    source_cutoff_at: AwareInstant
+    effective_at_lte: AwareInstant
+    first_observed_at: AwareInstant
+    expires_at: AwareInstant
+    items: Annotated[list[FxObservationReference], Field(max_length=25)]
+    next_cursor: Cursor | None
+    limit: Annotated[StrictInt, Field(ge=1, le=25)]
+
+    @model_validator(mode="after")
+    def page_bounds(self) -> Self:
+        if (
+            self.base == self.quote
+            or self.effective_at_lte > self.source_cutoff_at
+            or self.first_observed_at > self.source_cutoff_at
+            or self.expires_at <= self.first_observed_at
+            or len(self.items) > self.limit
+        ):
+            raise ValueError("The saved FX reference page is inconsistent.")
+        keys = [(x.effective_at, x.observation_id) for x in self.items]
+        if (
+            len({x.observation_id for x in self.items}) != len(self.items)
+            or keys != sorted(keys, reverse=True)
+            or any(x.effective_at > self.effective_at_lte for x in self.items)
+            or (self.next_cursor is not None and len(self.items) != self.limit)
+        ):
+            raise ValueError("The saved FX reference order or continuation is inconsistent.")
+        return self
+
+
 class BenchmarkDefinitionQuery(SourcePageQuery):
     state: Literal["active", "archived", "all"] = "active"
     search: SourceSearch = ""

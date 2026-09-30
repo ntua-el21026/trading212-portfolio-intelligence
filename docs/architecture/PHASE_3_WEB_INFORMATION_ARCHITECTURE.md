@@ -69,3 +69,28 @@ results on navigation. All internal writes recheck session origin/CSRF and servi
 scopes/grants. No browser private-data cache or new Docker service is introduced.
 Component evidence is described in PHASE_3_IMPLEMENTATION_REPORT; final PWA and
 premium widget validation remain pending.
+
+## Explicit multi-account workspace
+
+`/aggregation` lists owner-authorized saved selections and calculations, creates
+1–8-member selections from explicit saved snapshot choices, and presents holdings,
+original components, whole-account totals and optional transfer evidence. Each
+result preserves native currency, per-account valuation/source clocks, canonical
+instrument identity, source references, exact decimal values and missing-FX
+coverage. A matched transfer does not certify complete activity or performance.
+
+The run form resolves saved FX references through explicit account/currency,
+direct or inverse pair, retained provider snapshot and observation choices. Each
+request reads at most one25-row page; there is no automatic source selection,
+provider call or arbitrary observation-ID input. Server actions reload selection
+membership and use the earlier of its cutoff and the member snapshot valuation,
+retaining timestamp precision. Current all-member authority is checked again
+before returning choices. Navigation, unmount and revision changes discard late
+responses; account switches clear selections, runs and cursors. Optional activity
+windows require explicit start/end instants within every member's saved cutoff.
+
+The workspace has command-palette/navigation access, strict URL state, semantic
+retry identity, exact saved revision preconditions, keyboard controls and table
+alternatives. Browser scenarios use two distinct native adapters through the
+actual canonical materializer and saved FX ingestion; no aggregate results are
+seeded. This records implementation scope, not unexecuted performance acceptance.

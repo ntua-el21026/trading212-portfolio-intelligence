@@ -119,9 +119,14 @@ def _expire_snapshot(
     if work.started_at > at:
         return False
     if work.phase == "copies":
+        from .aggregation_retention import purge_aggregate_source_copies
         from .projection_retention import ProjectionParentKind, purge_projection_source_copies
 
         kind = str(row.__tablename__).removesuffix("_snapshots")
+        if not purge_aggregate_source_copies(
+            session, row.owner_id, kind, row.id, at=at, budget=budget
+        ):
+            return False
         if isinstance(row, sm.SourceSnapshotFields) and not purge_projection_source_copies(
             session, row.owner_id, cast(ProjectionParentKind, kind), row.id, at=at, budget=budget
         ):

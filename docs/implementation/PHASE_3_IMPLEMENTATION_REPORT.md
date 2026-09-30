@@ -1073,3 +1073,14 @@ PostgreSQL was stopped; its automatic removal completed and PostgreSQL restarted
 Only this appended documentation follows that source manifest; executable bytes
 are checked for equality before the checkpoint commit. Final immutable Phase3
 validation and independent acceptance remain pending.
+
+## Owner-requested aggregation checkpoint — 2026-09-30
+
+The owner requested committing the current implementation so it can resume later.
+The integrated aggregation/FX picker source remains in progress: 364 ORM tables,
+136 REST paths/161 operations/578 schemas, with the original ten broker GETs and
+38 MCP tools/eleven resources unchanged. The most recent PostgreSQL diagnostic
+fails during aggregate run publication with `aggregate native component proof differs`.
+No aggregation browser, full candidate or package acceptance is claimed. The
+[checkpoint handoff](PHASE_3_RESUME_20260930.md) preserves the exact failing selector,
+prior component receipts, remaining integration order and local artifact locations.

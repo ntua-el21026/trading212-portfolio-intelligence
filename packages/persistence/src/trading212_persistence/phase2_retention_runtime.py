@@ -109,7 +109,7 @@ def rotation(
     count: int,
     budget: SourcePurgeBudget,
 ) -> tuple[int, ...]:
-    expected = {"dispatch": 7, "source": 5, "enrichment": 4}[family]
+    expected = {"dispatch": 8, "source": 5, "enrichment": 4}[family]
     if type(count) is not int or count != expected:
         raise ValueError("A fixed retention family inventory is required.")
     if not charge(budget, 4):

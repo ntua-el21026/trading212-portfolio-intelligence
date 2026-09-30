@@ -38,7 +38,7 @@ def test_sources_emit_one_fixed_discriminated_quality_read_without_open_values()
     generated = render_source_client(value)
     assert generated == render_source_client(copy.deepcopy(value))
     assert generated.count("async get_intelligence_data_quality(") == 1
-    assert generated.count("async ") == 15
+    assert generated.count("async ") == 16
     assert 'z.discriminatedUnion("state"' in generated
     assert "export const IntelligenceDataQualitySchema" in generated
     assert "export const IntelligenceQualityPermissionRequiredSchema" in generated

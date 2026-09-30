@@ -100,6 +100,7 @@ function run(arguments_, fixture, reportPath) {
           ? "1"
           : "0",
         T212PI_E2E_ALERTS: fixture === "alerts.spec.ts" ? "1" : "0",
+        T212PI_E2E_AGGREGATION: fixture === "aggregation.spec.ts" ? "1" : "0",
       },
       stdio: "inherit",
       shell: false,

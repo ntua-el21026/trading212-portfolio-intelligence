@@ -500,6 +500,15 @@ class FxObservationModel(SourceObservationFields):
         UniqueConstraint("snapshot_id", "session_date", "base", "quote"),
         CheckConstraint("base <> quote", name="distinct_currencies"),
         Index("ix_fx_observation_pairs", "owner_id", "base", "quote", "snapshot_id"),
+        Index(
+            "ix_fx_observation_reference_page",
+            "owner_id",
+            "snapshot_id",
+            "base",
+            "quote",
+            "effective_at",
+            "id",
+        ),
     )
     base: Mapped[str] = mapped_column(String(3))
     quote: Mapped[str] = mapped_column(String(3))

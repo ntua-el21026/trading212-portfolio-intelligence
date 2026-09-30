@@ -42,6 +42,7 @@ class TargetClientGenerator:
             "scenario",
             "projection",
             "research",
+            "aggregate",
             "owner-layouts",
             "premium-providers",
         }:
@@ -117,6 +118,7 @@ class TargetClientGenerator:
             "alerts",
             "scenario",
             "research",
+            "aggregate",
             "owner-layouts",
         }:
             supported.update({"oneOf", "discriminator"})
@@ -336,6 +338,13 @@ class TargetClientGenerator:
                 '"VALIDATION_FAILED", 422, "The bounded projection request is invalid."); '
                 "throw error; }\n"
             )
+        if self.tag == "aggregate":
+            body_text = (
+                f"try {{ return await {invocation}; }} catch (error) {{ "
+                "if (error instanceof z.ZodError) throw new AggregateApiError("
+                '"VALIDATION_FAILED", 422, "The bounded aggregate request is invalid."); '
+                "throw error; }\n"
+            )
         if self.tag == "research":
             body_text = (
                 f"try {{ return await {invocation}; }} catch (error) {{ "
@@ -486,7 +495,7 @@ def render_planning_client(contract: dict[str, Any]) -> str:
 
 
 def render_source_client(contract: dict[str, Any]) -> str:
-    """Generate the fourteen reference operations and the fixed intelligence-quality read."""
+    """Generate fixed source reads/commands, quality and bounded FX reference selection."""
     rendered = TargetClientGenerator(contract, tag="sources").render()
     for name in (
         "Transport",
@@ -780,6 +789,12 @@ def render_scenario_client(contract: dict[str, Any]) -> str:
     if len(actual) != len(expected) or set(actual) != expected:
         raise ValueError("The frozen scenario operation registry differs.")
     return ScenarioClientGenerator(contract).render()
+
+
+def render_aggregate_client(contract: dict[str, Any]) -> str:
+    from .aggregation_typescript import render_aggregate_client as render
+
+    return render(contract)
 
 
 def render_research_client(contract: dict[str, Any]) -> str:

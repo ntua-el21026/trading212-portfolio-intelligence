@@ -25,6 +25,7 @@ export interface BoundedTransportPolicy {
   fallbackCode: string;
   error: (code: string, status: number, message: string) => Error;
   readTimeoutMs?: number;
+  commandTimeoutMs?: number;
   repeatedQueryKeys?: readonly string[];
 }
 
@@ -162,7 +163,9 @@ export class BoundedTransport {
       cache: "no-store",
       redirect: "error",
       signal: AbortSignal.timeout(
-        method === "GET" ? (policy.readTimeoutMs ?? 8_000) : 8_000,
+        method === "GET"
+          ? (policy.readTimeoutMs ?? 8_000)
+          : (policy.commandTimeoutMs ?? 8_000),
       ),
     });
     const etag = response.headers.get("etag");

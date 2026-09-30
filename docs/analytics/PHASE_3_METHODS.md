@@ -173,3 +173,11 @@ counterparty/reference and opposite principal in the same currency between inclu
 accounts; cross-currency transfers additionally need evidenced FX/fees. Equal date/value
 alone is insufficient. Ambiguous/unmatched legs degrade aggregate flow/performance
 coverage; valid current holdings totals remain independently available.
+
+Aggregation arithmetic uses the existing premium_decimal96_q18_v1 context. Convert
+each native component once to Q18; group/account/portfolio totals sum the published
+components exactly. Disclose sum(published components)-Q18(sum(unrounded complete
+conversions)) as the signed conversion rounding residual, with no allocation that
+alters an original component. Full and known totals/coverage are separate. No
+return curve is inferred from holdings, a partial transfer set or aggregate deposits.
+ADR-0034 fixes explicit direct/inverse retained FX and counterparty evidence.

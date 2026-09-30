@@ -150,3 +150,16 @@ counts after restart. Upgrade an actual0016 database and a clean empty database,
 repeat the head upgrade, and restore a synthetic backup into a genuinely empty
 independent database. Verify constraints and recovered job behavior, not only that
 pg_restore exits successfully. Production restore remains an external gate.
+
+## Synchronous bounded aggregation
+
+ADR-0034 retains separate normalized aggregate selections, member pins, runs,
+account/holding/component/FX/transfer proof and indexed retained-source memberships.
+Selections including tombstones count within the shared512 definition ceiling;
+run copies reserve32MiB and charge actual canonical+normalized bytes within the
+shared256MiB owner ceiling. Aggregate input and all result/proof copies have a
+combined32MiB ceiling. This family uses the existing global premium admission slot
+in one synchronous transaction, without a new premium job task. The20s cancellation
+ceiling covers decoding/serialization and does not replace accepted p95 SLOs.
+Source-copy cleanup and owner erasure participate in the same physically bounded
+retention composition; immutable metadata survives financial payload deletion.

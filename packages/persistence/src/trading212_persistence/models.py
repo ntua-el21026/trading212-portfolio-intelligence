@@ -25,6 +25,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from .acquisition_models import ACQUISITION_MODELS
 from .activity_revision_models import ActivityRevisionEvidenceModel
+from .aggregation_models import AGGREGATION_MODELS
 from .alert_models import ALERT_MODELS
 from .base import Base, CreatedAtMixin, UpdatedAtMixin, UUIDPrimaryKeyMixin
 from .historical_models import HISTORICAL_MODELS
@@ -1112,6 +1113,7 @@ register_phase2_indexes()
 
 
 ALL_MODELS = (
+    *AGGREGATION_MODELS,
     OwnerModel,
     PrincipalModel,
     BrokerConnectionModel,

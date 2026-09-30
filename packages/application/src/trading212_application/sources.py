@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
+from decimal import Decimal
 from enum import StrEnum
 from typing import Literal, Protocol
 from uuid import UUID
@@ -16,6 +17,7 @@ from trading212_domain.sources import (
     BenchmarkNormalizationAdjustment,
     BenchmarkObservation,
     FxObservation,
+    ObservationState,
     PriceBasis,
     PriceObservation,
     RetrievalOccurrence,
@@ -177,6 +179,57 @@ class SourceObservationQuery(TargetPageQuery):
         TargetPageQuery.__post_init__(self)
         if self.account_id is not None:
             _identifier(self.account_id)
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class FxObservationReferenceQuery(TargetPageQuery):
+    account_id: str
+    base: CurrencyCode
+    quote: CurrencyCode
+    source_cutoff_at: datetime
+    effective_at_lte: datetime | None = None
+
+    def __post_init__(self) -> None:
+        TargetPageQuery.__post_init__(self)
+        _identifier(self.account_id)
+        if (
+            self.limit > 25
+            or not isinstance(self.base, CurrencyCode)
+            or not isinstance(self.quote, CurrencyCode)
+            or self.base == self.quote
+        ):
+            raise ValueError("Choose one distinct FX pair and at most 25 references.")
+        cutoff = _cutoff(self.source_cutoff_at)
+        effective = _cutoff(self.effective_at_lte) if self.effective_at_lte is not None else cutoff
+        if cutoff is None or effective is None or effective > cutoff:
+            raise ValueError("The observation effective bound cannot follow the source cutoff.")
+        object.__setattr__(self, "source_cutoff_at", cutoff)
+        object.__setattr__(self, "effective_at_lte", effective)
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class FxObservationReference:
+    observation_id: str
+    session_date: date
+    effective_at: datetime
+    rate: Decimal | None
+    state: ObservationState
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class FxObservationReferencePage:
+    account_id: str
+    snapshot_id: str
+    content_digest: str
+    base: CurrencyCode
+    quote: CurrencyCode
+    source_cutoff_at: datetime
+    effective_at_lte: datetime
+    first_observed_at: datetime
+    expires_at: datetime
+    items: tuple[FxObservationReference, ...]
+    next_cursor: str | None
+    limit: int
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -467,6 +520,9 @@ class SourceService(Protocol):
     async def list_fx_observations(
         self, principal: Principal, snapshot_id: str, *, query: SourceObservationQuery
     ) -> Page[FxObservation]: ...
+    async def list_fx_observation_references(
+        self, principal: Principal, snapshot_id: str, *, query: FxObservationReferenceQuery
+    ) -> FxObservationReferencePage: ...
     async def list_benchmark_observations(
         self, principal: Principal, snapshot_id: str, *, query: SourceObservationQuery
     ) -> Page[BenchmarkObservation] | CompositeBenchmarkObservationPageView: ...

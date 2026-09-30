@@ -39,6 +39,11 @@ const primaryItems = [
   { href: "/scenarios", icon: SlidersHorizontal, label: "Scenarios" },
   { href: "/projections", icon: TrendingUp, label: "Projections" },
   { href: "/research", icon: FileText, label: "Research" },
+  {
+    href: "/aggregation",
+    icon: BriefcaseBusiness,
+    label: "Account aggregation",
+  },
   { href: "/income", icon: CircleDollarSign, label: "Income" },
   { href: "/xray", icon: ChartPie, label: "X-ray" },
   { href: "/reports", icon: FileText, label: "Reports" },

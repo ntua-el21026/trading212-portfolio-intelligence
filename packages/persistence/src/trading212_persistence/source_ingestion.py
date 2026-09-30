@@ -1032,6 +1032,7 @@ class SourceIngestion(SourceStore):
 
                 at = self._now()
                 budget = SourcePurgeBudget()
+                from .aggregation_retention import expire_aggregate_payloads
                 from .phase2_retention_runtime import rotation
                 from .projection_retention import expire_projection_payloads
                 from .research_retention import expire_research_payloads
@@ -1040,7 +1041,7 @@ class SourceIngestion(SourceStore):
                 from .scenario_source_retention import expire_scenario_sensitivity_payloads
 
                 completed = 0
-                for family in rotation(session, "dispatch", 7, budget):
+                for family in rotation(session, "dispatch", 8, budget):
                     if family == 0:
                         expire_risk_payloads(session, at=at, budget=budget)
                     elif family == 1:
@@ -1060,10 +1061,12 @@ class SourceIngestion(SourceStore):
                         completed += expire_source_payloads(
                             session, at=at, limit=limit - completed, budget=budget
                         )
-                    elif completed < limit:
+                    elif completed < limit and family == 6:
                         completed += expire_enrichment_payloads(
                             session, at=at, limit=limit - completed, budget=budget
                         )
+                    elif family == 7:
+                        expire_aggregate_payloads(session, at=at, budget=budget)
                 return completed
 
         return await asyncio.to_thread(expire)

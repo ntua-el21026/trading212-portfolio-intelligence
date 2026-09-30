@@ -1,4 +1,4 @@
-"""Fourteen authorized reference reads and private benchmark definition commands."""
+"""Authorized reference reads, bounded FX identities and private benchmark commands."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from trading212_api_contracts import historical as historical_wire
 from trading212_api_contracts import sources as wire
 from trading212_api_contracts.targets import IdempotencyKey, UUIDString
 from trading212_application import sources as app
+from trading212_domain.values import CurrencyCode
 from trading212_observability import AuthenticationMethod
 from trading212_security.principals import AuthenticationError, Authorizer, Principal, Scope
 from trading212_security.sessions import SessionManager
@@ -69,7 +70,11 @@ def register_source_routes(
                 required = [Scope.ANALYTICS_READ]
                 if request.method == "POST":
                     required.append(Scope.TARGETS_WRITE)
-                if "/accounts/" in self.path or "account_id" in request.query_params:
+                if (
+                    "/accounts/" in self.path
+                    or self.path.endswith("/observation-references")
+                    or "account_id" in request.query_params
+                ):
                     required.append(Scope.PORTFOLIO_READ)
                 for scope in required:
                     Authorizer().require_scope(principal, scope, now=context.clock())
@@ -236,6 +241,28 @@ def register_source_routes(
             principal, snapshot_id, query=app.SourceObservationQuery(**query.model_dump())
         )
         return source_response(request, value, wire.SourcePage[wire.FxObservation])
+
+    @router.get(
+        "/fx-snapshots/{snapshot_id}/observation-references",
+        response_model=wire.FxObservationReferencePage,
+        operation_id="list_fx_observation_references",
+    )
+    async def list_fx_observation_references(
+        request: Request,
+        snapshot_id: UUIDString,
+        query: Annotated[wire.FxObservationReferenceQuery, Query()],
+        principal: Principal = principal_dep,
+    ) -> Response:
+        value = await service(request).list_fx_observation_references(
+            principal,
+            snapshot_id,
+            query=app.FxObservationReferenceQuery(
+                **query.model_dump(exclude={"base", "quote"}),
+                base=CurrencyCode(query.base),
+                quote=CurrencyCode(query.quote),
+            ),
+        )
+        return source_response(request, value, wire.FxObservationReferencePage)
 
     @router.get(
         "/benchmark-snapshots/{snapshot_id}/observations",

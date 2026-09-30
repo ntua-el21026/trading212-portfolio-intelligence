@@ -32,6 +32,7 @@ from sqlalchemy import text as sql_text
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import Response as StarletteResponse
 from trading212_application import premium_provider_status as provider_status_app
+from trading212_application.aggregation import AggregateService
 from trading212_application.alerts import AlertService
 from trading212_application.historical import HistoricalServiceError, PerformanceIntelligenceService
 from trading212_application.ingestion import (
@@ -101,6 +102,7 @@ from trading212_security.sessions import InMemorySessionStore, SessionManager
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 from trading212_security.tokens import BearerAuthenticator, LocalSyntheticAuthenticator
 
+from .aggregation_routes import register_aggregation_routes
 from .alert_routes import register_alert_routes
 from .historical_routes import register_historical_routes
 from .intelligence_quality_routes import register_intelligence_quality_routes
@@ -176,6 +178,7 @@ class ApiContext:
     risk_service: RiskService | None
     scenario_service: ScenarioService | None
     projection_service: ProjectionService | None
+    aggregate_service: AggregateService | None
     research_service: ResearchService | None
     owner_layout_service: OwnerLayoutService | None
     premium_provider_service: provider_status_app.PremiumProviderStatusService | None
@@ -206,6 +209,7 @@ def create_app(
     risk_service: RiskService | None = None,
     scenario_service: ScenarioService | None = None,
     projection_service: ProjectionService | None = None,
+    aggregate_service: AggregateService | None = None,
     research_service: ResearchService | None = None,
     owner_layout_service: OwnerLayoutService | None = None,
     premium_provider_service: provider_status_app.PremiumProviderStatusService | None = None,
@@ -252,6 +256,7 @@ def create_app(
             default_risk,
             default_scenarios,
             default_projections,
+            default_aggregate,
             default_research,
             default_owner_layouts,
             default_premium_provider_status,
@@ -278,6 +283,7 @@ def create_app(
         risk_service = risk_service or default_risk
         scenario_service = scenario_service or default_scenarios
         projection_service = projection_service or default_projections
+        aggregate_service = aggregate_service or default_aggregate
         research_service = research_service or default_research
         owner_layout_service = owner_layout_service or default_owner_layouts
         premium_provider_service = premium_provider_service or default_premium_provider_status
@@ -311,6 +317,7 @@ def create_app(
         risk_service=risk_service,
         scenario_service=scenario_service,
         projection_service=projection_service,
+        aggregate_service=aggregate_service,
         research_service=research_service,
         owner_layout_service=owner_layout_service,
         premium_provider_service=premium_provider_service,
@@ -371,6 +378,7 @@ def create_app(
     register_risk_routes(application, _principal, _context)
     register_scenario_routes(application, _principal, _context)
     register_projection_routes(application, _principal, _context)
+    register_aggregation_routes(application, _principal, _context)
     register_research_routes(application, _principal, _context)
     register_owner_layout_routes(application, _principal, _context)
     register_premium_provider_routes(application, _principal, _context)
@@ -400,6 +408,7 @@ def _local_runtime_defaults(
     RiskService,
     ScenarioService,
     ProjectionService,
+    AggregateService,
     ResearchService,
     OwnerLayoutService,
     provider_status_app.PremiumProviderStatusService,
@@ -417,6 +426,7 @@ def _local_runtime_defaults(
     from trading212_persistence.acquisition_research_authority import (
         PostgresResearchCapabilityAuthority,
     )
+    from trading212_persistence.aggregation_service import PostgresAggregateService
     from trading212_persistence.alert_service import PostgresAlertService
     from trading212_persistence.historical_service import PostgresHistoricalService
     from trading212_persistence.intelligence_quality_service import (
@@ -509,6 +519,11 @@ def _local_runtime_defaults(
             replay_resolver=resolve_scenario_replay,
         ),
         PostgresProjectionService(
+            sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,
+        ),
+        PostgresAggregateService(
             sessions,
             clock=clock,
             cursor_signing_key=cursor_signing_key or _LOCAL_CURSOR_SIGNING_KEY,

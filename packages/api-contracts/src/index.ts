@@ -824,6 +824,14 @@ export type {
 } from "./premium-report-transport";
 
 export * from "./research.generated";
+export * from "./aggregate.generated";
+export { AggregateApiError } from "./aggregate-transport";
+export type {
+  AggregateApiResponse,
+  AggregateReadOptions,
+  AggregateCommandOptions,
+  AggregateClientOptions,
+} from "./aggregate-transport";
 export { ResearchApiError } from "./research-transport";
 export type {
   ResearchApiResponse,

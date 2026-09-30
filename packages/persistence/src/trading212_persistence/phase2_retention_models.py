@@ -218,7 +218,7 @@ class SourceRetentionDispatchModel(Base):
     __table_args__ = (
         CheckConstraint(
             (
-                "(family='dispatch' AND next_family BETWEEN 0 AND 6) OR "
+                "(family='dispatch' AND next_family BETWEEN 0 AND 7) OR "
                 "(family='source' AND next_family BETWEEN 0 AND 4) OR (f"
                 "amily='enrichment' AND next_family BETWEEN 0 AND 3)"
             ),

@@ -6,9 +6,19 @@
 
 **Implementation authority:** `main`
 
-**Updated:** 2026-09-22
+**Updated:** 2026-09-30
 
 ## Current state
+
+The owner requested a resumable checkpoint on 2026-09-30. The aggregation
+vertical and saved FX observation picker are preserved as work in progress,
+with 364 ORM tables through migration 0030 and 136 API paths/161 operations/578
+schemas. Aggregation run publication still fails the PostgreSQL native-component
+proof guard; its runtime/browser acceptance is pending. The previous 344-table
+provider/layout observations below remain scoped to their earlier source. See the
+[checkpoint and exact resume steps](docs/implementation/PHASE_3_RESUME_20260930.md).
+Phase 3 acceptance, production authorization and deferred GitHub Actions status
+are unchanged.
 
 Phase 2 is **accepted by the owner for progression** to Phase 3. The accepted
 corrected source is `f88b0199b2d8691ff89101b7991e9bb0fea1d1ca`, tree

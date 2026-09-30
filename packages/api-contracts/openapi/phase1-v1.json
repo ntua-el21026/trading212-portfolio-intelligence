@@ -296,6 +296,1506 @@
         "title": "ActualVsTargetResult",
         "type": "object"
       },
+      "AggregateAccountPage": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/AggregateHoldingsContext"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateAccountTotal"
+            },
+            "maxItems": 8,
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 8.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          },
+          "view": {
+            "const": "accounts",
+            "title": "View",
+            "type": "string"
+          }
+        },
+        "required": [
+          "view",
+          "context",
+          "items",
+          "total",
+          "next_cursor"
+        ],
+        "title": "AggregateAccountPage",
+        "type": "object"
+      },
+      "AggregateAccountTotal": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "money": {
+            "$ref": "#/components/schemas/AggregateMoney"
+          }
+        },
+        "required": [
+          "account_id",
+          "money"
+        ],
+        "title": "AggregateAccountTotal",
+        "type": "object"
+      },
+      "AggregateActivityWindow": {
+        "additionalProperties": false,
+        "properties": {
+          "end_at": {
+            "format": "date-time",
+            "title": "End At",
+            "type": "string"
+          },
+          "start_at": {
+            "format": "date-time",
+            "title": "Start At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_at",
+          "end_at"
+        ],
+        "title": "AggregateActivityWindow",
+        "type": "object"
+      },
+      "AggregateComponent": {
+        "additionalProperties": false,
+        "properties": {
+          "converted_value": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Converted Value"
+          },
+          "fx_observation_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fx Observation Id"
+          },
+          "inverted": {
+            "title": "Inverted",
+            "type": "boolean"
+          },
+          "native": {
+            "$ref": "#/components/schemas/AggregateNativeComponent"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "value_unavailable",
+                  "fx_missing",
+                  "not_requested",
+                  "coverage_incomplete",
+                  "unmatched_transfer",
+                  "ambiguous_transfer",
+                  "transfer_proof_incomplete",
+                  "ambiguous_revision",
+                  "unknown_activity",
+                  "zero_total"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "native",
+          "reporting_currency",
+          "converted_value",
+          "fx_observation_id",
+          "inverted",
+          "quality",
+          "reason"
+        ],
+        "title": "AggregateComponent",
+        "type": "object"
+      },
+      "AggregateComponentPage": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/AggregateHoldingsContext"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateComponent"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          },
+          "view": {
+            "const": "components",
+            "title": "View",
+            "type": "string"
+          }
+        },
+        "required": [
+          "view",
+          "context",
+          "items",
+          "total",
+          "next_cursor"
+        ],
+        "title": "AggregateComponentPage",
+        "type": "object"
+      },
+      "AggregateFlowCurrencyTotal": {
+        "additionalProperties": false,
+        "properties": {
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "external_net": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "External Net",
+            "type": "string"
+          },
+          "fees": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Fees",
+            "type": "string"
+          }
+        },
+        "required": [
+          "currency",
+          "external_net",
+          "fees"
+        ],
+        "title": "AggregateFlowCurrencyTotal",
+        "type": "object"
+      },
+      "AggregateFlowLeg": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "classification": {
+            "enum": [
+              "external",
+              "internal",
+              "fee",
+              "matched_transfer",
+              "unmatched_transfer",
+              "ambiguous_transfer",
+              "unknown"
+            ],
+            "title": "Classification",
+            "type": "string"
+          },
+          "counterpart_record_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Counterpart Record Id"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "occurred_at": {
+            "format": "date-time",
+            "title": "Occurred At",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "value_unavailable",
+                  "fx_missing",
+                  "not_requested",
+                  "coverage_incomplete",
+                  "unmatched_transfer",
+                  "ambiguous_transfer",
+                  "transfer_proof_incomplete",
+                  "ambiguous_revision",
+                  "unknown_activity",
+                  "zero_total"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "source_record_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Source Record Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_record_id",
+          "account_id",
+          "occurred_at",
+          "amount",
+          "currency",
+          "classification",
+          "counterpart_record_id",
+          "reason"
+        ],
+        "title": "AggregateFlowLeg",
+        "type": "object"
+      },
+      "AggregateFxBinding": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "fx_observation_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Fx Observation Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "currency",
+          "fx_observation_id"
+        ],
+        "title": "AggregateFxBinding",
+        "type": "object"
+      },
+      "AggregateHolding": {
+        "additionalProperties": false,
+        "properties": {
+          "account_totals": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateAccountTotal"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "title": "Account Totals",
+            "type": "array"
+          },
+          "instrument_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Instrument Id",
+            "type": "string"
+          },
+          "money": {
+            "$ref": "#/components/schemas/AggregateMoney"
+          },
+          "quantity": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Quantity",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instrument_id",
+          "quantity",
+          "money",
+          "account_totals"
+        ],
+        "title": "AggregateHolding",
+        "type": "object"
+      },
+      "AggregateHoldingPage": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/AggregateHoldingsContext"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateHolding"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          },
+          "view": {
+            "const": "holdings",
+            "title": "View",
+            "type": "string"
+          }
+        },
+        "required": [
+          "view",
+          "context",
+          "items",
+          "total",
+          "next_cursor"
+        ],
+        "title": "AggregateHoldingPage",
+        "type": "object"
+      },
+      "AggregateHoldingsContext": {
+        "additionalProperties": false,
+        "properties": {
+          "cash": {
+            "$ref": "#/components/schemas/AggregateMoney"
+          },
+          "input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Input Digest",
+            "type": "string"
+          },
+          "method": {
+            "const": "account_aggregation_v1",
+            "default": "account_aggregation_v1",
+            "title": "Method",
+            "type": "string"
+          },
+          "method_version": {
+            "const": "1.0.0",
+            "default": "1.0.0",
+            "title": "Method Version",
+            "type": "string"
+          },
+          "numeric_profile": {
+            "const": "premium_decimal96_q18_v1",
+            "default": "premium_decimal96_q18_v1",
+            "title": "Numeric Profile",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "result_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Result Digest",
+            "type": "string"
+          },
+          "rounding_residual": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rounding Residual"
+          },
+          "schema_version": {
+            "const": "1.0.0",
+            "default": "1.0.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "securities": {
+            "$ref": "#/components/schemas/AggregateMoney"
+          },
+          "snapshots": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateSnapshotPin"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "title": "Snapshots",
+            "type": "array"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "total": {
+            "$ref": "#/components/schemas/AggregateMoney"
+          }
+        },
+        "required": [
+          "input_digest",
+          "result_digest",
+          "reporting_currency",
+          "source_cutoff_at",
+          "snapshots",
+          "securities",
+          "cash",
+          "total",
+          "rounding_residual"
+        ],
+        "title": "AggregateHoldingsContext",
+        "type": "object"
+      },
+      "AggregateMember": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "portfolio_snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Portfolio Snapshot Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "portfolio_snapshot_id"
+        ],
+        "title": "AggregateMember",
+        "type": "object"
+      },
+      "AggregateMoney": {
+        "additionalProperties": false,
+        "properties": {
+          "currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency",
+            "type": "string"
+          },
+          "known_count": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Known Count",
+            "type": "integer"
+          },
+          "known_value": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Known Value",
+            "type": "string"
+          },
+          "origin": {
+            "const": "derived_deterministic",
+            "default": "derived_deterministic",
+            "title": "Origin",
+            "type": "string"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "value_unavailable",
+                  "fx_missing",
+                  "not_requested",
+                  "coverage_incomplete",
+                  "unmatched_transfer",
+                  "ambiguous_transfer",
+                  "transfer_proof_incomplete",
+                  "ambiguous_revision",
+                  "unknown_activity",
+                  "zero_total"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "total_count": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Total Count",
+            "type": "integer"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "currency",
+          "value",
+          "known_value",
+          "known_count",
+          "total_count",
+          "quality",
+          "reason"
+        ],
+        "title": "AggregateMoney",
+        "type": "object"
+      },
+      "AggregateNativeComponent": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "component_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Component Id",
+            "type": "string"
+          },
+          "instrument_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Id"
+          },
+          "kind": {
+            "enum": [
+              "position",
+              "cash"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "listing_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Listing Id"
+          },
+          "native_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Native Currency",
+            "type": "string"
+          },
+          "native_value": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Native Value"
+          },
+          "origin": {
+            "enum": [
+              "observed_provider",
+              "normalized_provider",
+              "derived_deterministic",
+              "estimated",
+              "unavailable"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "portfolio_snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Portfolio Snapshot Id",
+            "type": "string"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "quantity": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantity"
+          },
+          "source_record_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 10000,
+            "title": "Source Record Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "component_id",
+          "account_id",
+          "portfolio_snapshot_id",
+          "kind",
+          "listing_id",
+          "instrument_id",
+          "quantity",
+          "native_currency",
+          "native_value",
+          "quality",
+          "origin",
+          "source_record_ids"
+        ],
+        "title": "AggregateNativeComponent",
+        "type": "object"
+      },
+      "AggregatePageResponse_AggregateRunReceipt_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateRunReceipt"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "AggregatePageResponse[AggregateRunReceipt]",
+        "type": "object"
+      },
+      "AggregatePageResponse_AggregateSelectionResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateSelectionResponse"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "total"
+        ],
+        "title": "AggregatePageResponse[AggregateSelectionResponse]",
+        "type": "object"
+      },
+      "AggregateRunReceipt": {
+        "additionalProperties": false,
+        "properties": {
+          "activity_input_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Input Digest"
+          },
+          "activity_requested": {
+            "title": "Activity Requested",
+            "type": "boolean"
+          },
+          "activity_result_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Result Digest"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "holdings_input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Holdings Input Digest",
+            "type": "string"
+          },
+          "holdings_result_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Holdings Result Digest",
+            "type": "string"
+          },
+          "run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "selection_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Selection Id",
+            "type": "string"
+          },
+          "selection_revision": {
+            "maximum": 2147483647.0,
+            "minimum": 2.0,
+            "title": "Selection Revision",
+            "type": "integer"
+          },
+          "state": {
+            "enum": [
+              "succeeded",
+              "expired"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "selection_id",
+          "selection_revision",
+          "holdings_input_digest",
+          "holdings_result_digest",
+          "activity_input_digest",
+          "activity_result_digest",
+          "activity_requested",
+          "state",
+          "created_at",
+          "expires_at"
+        ],
+        "title": "AggregateRunReceipt",
+        "type": "object"
+      },
+      "AggregateRunResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "anyOf": [
+              {
+                "discriminator": {
+                  "mapping": {
+                    "accounts": "#/components/schemas/AggregateAccountPage",
+                    "components": "#/components/schemas/AggregateComponentPage",
+                    "holdings": "#/components/schemas/AggregateHoldingPage",
+                    "transfers": "#/components/schemas/AggregateTransferPage"
+                  },
+                  "propertyName": "view"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/AggregateHoldingPage"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AggregateComponentPage"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AggregateAccountPage"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AggregateTransferPage"
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page"
+          },
+          "run": {
+            "$ref": "#/components/schemas/AggregateRunReceipt"
+          },
+          "view_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "View Digest",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run",
+          "page",
+          "view_digest"
+        ],
+        "title": "AggregateRunResponse",
+        "type": "object"
+      },
+      "AggregateSelectionContent": {
+        "additionalProperties": false,
+        "properties": {
+          "economic_identity_policy": {
+            "const": "canonical_instrument_v1",
+            "default": "canonical_instrument_v1",
+            "title": "Economic Identity Policy",
+            "type": "string"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateMember"
+            },
+            "maxItems": 8,
+            "minItems": 1,
+            "title": "Members",
+            "type": "array"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "members",
+          "reporting_currency",
+          "source_cutoff_at"
+        ],
+        "title": "AggregateSelectionContent",
+        "type": "object"
+      },
+      "AggregateSelectionResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/AggregateSelectionContent"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "revision": {
+            "maximum": 2147483647.0,
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "selection_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Selection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "selection_id",
+          "content",
+          "content_digest",
+          "revision",
+          "created_at"
+        ],
+        "title": "AggregateSelectionResponse",
+        "type": "object"
+      },
+      "AggregateSnapshotPin": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "calculation_run_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Calculation Run Id",
+            "type": "string"
+          },
+          "calculation_version": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Calculation Version",
+            "type": "string"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "portfolio_snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Portfolio Snapshot Id",
+            "type": "string"
+          },
+          "quality": {
+            "enum": [
+              "fresh",
+              "stale",
+              "partial",
+              "estimated",
+              "unreconciled",
+              "failed"
+            ],
+            "title": "Quality",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "portfolio_snapshot_id",
+          "calculation_run_id",
+          "calculation_version",
+          "valuation_at",
+          "source_cutoff_at",
+          "reporting_currency",
+          "quality",
+          "content_digest"
+        ],
+        "title": "AggregateSnapshotPin",
+        "type": "object"
+      },
+      "AggregateTransferMatch": {
+        "additionalProperties": false,
+        "properties": {
+          "fee_record_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 2,
+            "title": "Fee Record Ids",
+            "type": "array"
+          },
+          "fx_base_currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fx Base Currency"
+          },
+          "fx_quote_currency": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Z]{3}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fx Quote Currency"
+          },
+          "fx_rate": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fx Rate"
+          },
+          "incoming_account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Incoming Account Id",
+            "type": "string"
+          },
+          "incoming_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Incoming Currency",
+            "type": "string"
+          },
+          "incoming_principal": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Incoming Principal",
+            "type": "string"
+          },
+          "incoming_record_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Incoming Record Id",
+            "type": "string"
+          },
+          "outgoing_account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Outgoing Account Id",
+            "type": "string"
+          },
+          "outgoing_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Outgoing Currency",
+            "type": "string"
+          },
+          "outgoing_principal": {
+            "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+            "title": "Outgoing Principal",
+            "type": "string"
+          },
+          "outgoing_record_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Outgoing Record Id",
+            "type": "string"
+          },
+          "transfer_reference": {
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[^\\x00]*$",
+            "title": "Transfer Reference",
+            "type": "string"
+          }
+        },
+        "required": [
+          "outgoing_record_id",
+          "incoming_record_id",
+          "outgoing_account_id",
+          "incoming_account_id",
+          "transfer_reference",
+          "outgoing_principal",
+          "outgoing_currency",
+          "incoming_principal",
+          "incoming_currency",
+          "fx_rate",
+          "fx_base_currency",
+          "fx_quote_currency",
+          "fee_record_ids"
+        ],
+        "title": "AggregateTransferMatch",
+        "type": "object"
+      },
+      "AggregateTransferPage": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Candidate Count",
+            "type": "integer"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "currency_totals": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateFlowCurrencyTotal"
+            },
+            "maxItems": 32,
+            "title": "Currency Totals",
+            "type": "array"
+          },
+          "holdings_input_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Holdings Input Digest",
+            "type": "string"
+          },
+          "input_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Digest"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateTransferRow"
+            },
+            "maxItems": 100,
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "reasons": {
+            "items": {
+              "enum": [
+                "value_unavailable",
+                "fx_missing",
+                "not_requested",
+                "coverage_incomplete",
+                "unmatched_transfer",
+                "ambiguous_transfer",
+                "transfer_proof_incomplete",
+                "ambiguous_revision",
+                "unknown_activity",
+                "zero_total"
+              ],
+              "type": "string"
+            },
+            "maxItems": 11,
+            "title": "Reasons",
+            "type": "array"
+          },
+          "result_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Digest"
+          },
+          "selected_count": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Selected Count",
+            "type": "integer"
+          },
+          "total": {
+            "maximum": 10000.0,
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          },
+          "view": {
+            "const": "transfers",
+            "title": "View",
+            "type": "string"
+          },
+          "window": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AggregateActivityWindow"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "view",
+          "holdings_input_digest",
+          "input_digest",
+          "result_digest",
+          "window",
+          "items",
+          "currency_totals",
+          "complete",
+          "reasons",
+          "candidate_count",
+          "selected_count",
+          "total",
+          "next_cursor"
+        ],
+        "title": "AggregateTransferPage",
+        "type": "object"
+      },
+      "AggregateTransferRow": {
+        "additionalProperties": false,
+        "properties": {
+          "leg": {
+            "$ref": "#/components/schemas/AggregateFlowLeg"
+          },
+          "match": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AggregateTransferMatch"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "leg",
+          "match"
+        ],
+        "title": "AggregateTransferRow",
+        "type": "object"
+      },
       "AlertAcknowledgment": {
         "additionalProperties": false,
         "properties": {
@@ -6791,6 +8291,44 @@
         "title": "ContributionPlanSummary",
         "type": "object"
       },
+      "CreateAggregateRunRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "activity_window": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AggregateActivityWindow"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fx_bindings": {
+            "items": {
+              "$ref": "#/components/schemas/AggregateFxBinding"
+            },
+            "maxItems": 256,
+            "title": "Fx Bindings",
+            "type": "array"
+          }
+        },
+        "title": "CreateAggregateRunRequest",
+        "type": "object"
+      },
+      "CreateAggregateSelectionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/AggregateSelectionContent"
+          }
+        },
+        "required": [
+          "content"
+        ],
+        "title": "CreateAggregateSelectionRequest",
+        "type": "object"
+      },
       "CreateAlertRuleRequest": {
         "additionalProperties": false,
         "properties": {
@@ -8625,6 +10163,154 @@
           "batch_key"
         ],
         "title": "FxObservation",
+        "type": "object"
+      },
+      "FxObservationReference": {
+        "additionalProperties": false,
+        "properties": {
+          "effective_at": {
+            "format": "date-time",
+            "title": "Effective At",
+            "type": "string"
+          },
+          "observation_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Observation Id",
+            "type": "string"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "pattern": "^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate"
+          },
+          "session_date": {
+            "format": "date",
+            "title": "Session Date",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "available",
+              "missing",
+              "unsupported",
+              "disputed"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "observation_id",
+          "session_date",
+          "effective_at",
+          "rate",
+          "state"
+        ],
+        "title": "FxObservationReference",
+        "type": "object"
+      },
+      "FxObservationReferencePage": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "base": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Base",
+            "type": "string"
+          },
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "effective_at_lte": {
+            "format": "date-time",
+            "title": "Effective At Lte",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "first_observed_at": {
+            "format": "date-time",
+            "title": "First Observed At",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FxObservationReference"
+            },
+            "maxItems": 25,
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "maximum": 25.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "minLength": 1,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "quote": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Quote",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "snapshot_id",
+          "content_digest",
+          "base",
+          "quote",
+          "source_cutoff_at",
+          "effective_at_lte",
+          "first_observed_at",
+          "expires_at",
+          "items",
+          "next_cursor",
+          "limit"
+        ],
+        "title": "FxObservationReferencePage",
         "type": "object"
       },
       "FxPairStatus": {
@@ -45905,6 +47591,458 @@
         ]
       }
     },
+    "/api/v1/aggregate-runs/{run_id}": {
+      "get": {
+        "operationId": "get_aggregate_run",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "view",
+            "required": false,
+            "schema": {
+              "default": "holdings",
+              "enum": [
+                "holdings",
+                "components",
+                "accounts",
+                "transfers"
+              ],
+              "title": "View",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AggregateRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Aggregate Run",
+        "tags": [
+          "aggregate"
+        ]
+      }
+    },
+    "/api/v1/aggregate-selections": {
+      "get": {
+        "operationId": "list_aggregate_selections",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AggregatePageResponse_AggregateSelectionResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Aggregate Selections",
+        "tags": [
+          "aggregate"
+        ]
+      },
+      "post": {
+        "operationId": "create_aggregate_selection",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAggregateSelectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AggregateSelectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Aggregate Selection",
+        "tags": [
+          "aggregate"
+        ]
+      }
+    },
+    "/api/v1/aggregate-selections/{selection_id}": {
+      "get": {
+        "operationId": "get_aggregate_selection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "selection_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Selection Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AggregateSelectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "304": {
+            "description": "Authorized representation unchanged"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get Aggregate Selection",
+        "tags": [
+          "aggregate"
+        ]
+      }
+    },
+    "/api/v1/aggregate-selections/{selection_id}/runs": {
+      "get": {
+        "operationId": "list_aggregate_runs",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "selection_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Selection Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AggregatePageResponse_AggregateRunReceipt_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Aggregate Runs",
+        "tags": [
+          "aggregate"
+        ]
+      },
+      "post": {
+        "operationId": "create_aggregate_run",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "selection_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Selection Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Idempotency-Key",
+            "required": true,
+            "schema": {
+              "maxLength": 180,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._:-]+$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-Match",
+            "required": true,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAggregateRunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AggregateRunReceipt"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create Aggregate Run",
+        "tags": [
+          "aggregate"
+        ]
+      }
+    },
     "/api/v1/alert-events": {
       "get": {
         "operationId": "list_alert_events",
@@ -49319,6 +51457,156 @@
           }
         ],
         "summary": "Get Fx Snapshot",
+        "tags": [
+          "sources"
+        ]
+      }
+    },
+    "/api/v1/fx-snapshots/{snapshot_id}/observation-references": {
+      "get": {
+        "operationId": "list_fx_observation_references",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 2048,
+                  "minLength": 1,
+                  "pattern": "^[A-Za-z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 25,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "title": "Account Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "base",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "title": "Base",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "quote",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Z]{3}$",
+              "title": "Quote",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source_cutoff_at",
+            "required": true,
+            "schema": {
+              "format": "date-time",
+              "title": "Source Cutoff At",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "effective_at_lte",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Effective At Lte"
+            }
+          },
+          {
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "schema": {
+              "maxLength": 2048,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FxObservationReferencePage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List Fx Observation References",
         "tags": [
           "sources"
         ]

@@ -203,3 +203,13 @@ item identities, provenance, review semantics and bounded retention. Its design 
 accepted; domain integration does not imply runtime or Phase 3 acceptance.
 
 [ADR-0032](adr/ADR-0032-INDEXED-PREMIUM-RETENTION-MEMBERSHIP.md) specifies indexed premium source membership, guarded report-copy progress, and physical SQL inspection accounting within the existing retention ceilings.
+
+[ADR-0034](adr/ADR-0034-BOUNDED-ACCOUNT-AGGREGATION.md) defines immutable bounded
+account selections, native synthetic custody evidence, explicit FX and transfer
+coverage, and physical source-copy closure. The authorized saved FX observation
+read is specified in [the query contract](verification/FX-OBSERVATION-REFERENCE-READ.md).
+Design acceptance is separate from runtime and Phase3 acceptance.
+
+The [2026-09-30 checkpoint](implementation/PHASE_3_RESUME_20260930.md) records
+partial aggregation integration, its known PostgreSQL failure and preserved local
+report/retention/performance handoffs. It does not establish runtime acceptance.

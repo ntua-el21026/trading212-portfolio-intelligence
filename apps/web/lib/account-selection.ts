@@ -82,7 +82,7 @@ export function accountSwitchHref(
       next.set("family", families[0]);
   }
   // Projection calendars belong to saved inputs; an account switch clears them.
-  if (destination === "/projections" || destination === "/research")
+  if (["/projections", "/research", "/aggregation"].includes(destination))
     return `${destination}?${next}`;
   const dateKeys = ["/performance", "/income", "/risk"].includes(destination)
     ? ["start", "end"]

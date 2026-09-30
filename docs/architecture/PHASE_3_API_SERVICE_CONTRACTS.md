@@ -299,3 +299,15 @@ complete saved checkpoint rows, default 25/maximum 100 per page, signed cursor u
 to 2048 characters, all sensitivity summaries on every page, 1 MiB financial-page
 and 2 MiB complete-envelope bounds. Previews show at most 16 references with exact
 omissions. Grant/source authorization precedes private reads and cursors.
+
+## Bounded aggregation profile
+
+ADR-0034 fixes synchronous atomic run creation under the existing single premium
+slot, with no new task name. CreateAggregateRun requires If-Match on the selection
+operational revision. FX bindings are <=256 exact account/currency/observation-ID
+references; no rates. Optional activity_window is <=3,660days and <=10,000 retained
+source candidates across members, with activity:read for every member. Omission
+reads no activity. GetAggregateRun has view=holdings|components|accounts|transfers
+(default holdings), default25/max100 and cursor2048. Activity canonical bytes and
+rights stay separate; all views reauthorize every member before decode, conditional
+responses, cursors and replay. Missing FX/transfer evidence remains explicit.

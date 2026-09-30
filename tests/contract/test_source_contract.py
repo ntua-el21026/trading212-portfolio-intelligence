@@ -24,6 +24,7 @@ SOURCE_OPERATIONS = {
     "get_benchmark_snapshot": "get",
     "list_price_observations": "get",
     "list_fx_observations": "get",
+    "list_fx_observation_references": "get",
     "list_benchmark_observations": "get",
     "list_benchmark_definitions": "get",
     "get_benchmark_definition": "get",
@@ -63,7 +64,9 @@ def test_exact_fourteen_source_operations_are_bounded_private_and_separate_from_
             else:
                 assert "If-None-Match" in parameters
             if "limit" in parameters:
-                assert parameters["limit"]["schema"]["maximum"] == 100
+                assert parameters["limit"]["schema"]["maximum"] == (
+                    25 if name == "list_fx_observation_references" else 100
+                )
                 assert parameters["limit"]["schema"]["default"] == 25
         else:
             assert parameters["X-Idempotency-Key"]["required"] is True
@@ -78,7 +81,7 @@ def test_source_client_generation_is_deterministic_and_keeps_old_clients_separat
     rendered = render_source_client(contract)
     assert rendered == render_source_client(copy.deepcopy(contract))
     assert all(f"async {name}(" in rendered for name in SOURCE_OPERATIONS)
-    assert rendered.count("async ") == 15
+    assert rendered.count("async ") == 16
     assert "z.any(" not in rendered and "z.unknown(" not in rendered
     assert "SourceApiError" in rendered and "instanceof z.ZodError" in rendered
     for render in (render_target_client, render_planning_client):

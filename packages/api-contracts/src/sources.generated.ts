@@ -1818,6 +1818,88 @@ export const FxSnapshotHeaderSchema = z.strictObject({
   provenance: SourceProvenanceSchema,
 });
 export type FxSnapshotHeader = z.infer<typeof FxSnapshotHeaderSchema>;
+export const list_fx_observation_referencesQuerySchema = z.strictObject({
+  account_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  base: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  cursor: z
+    .union([
+      z.string().min(1).max(2048).regex(new RegExp("^[A-Za-z0-9_-]+$")),
+      z.null(),
+    ])
+    .optional(),
+  effective_at_lte: z
+    .union([z.string().datetime({ offset: true }), z.null()])
+    .optional(),
+  limit: z.number().int().min(1).max(25).optional(),
+  quote: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  source_cutoff_at: z.string().datetime({ offset: true }),
+});
+export type list_fx_observation_referencesQuery = z.infer<
+  typeof list_fx_observation_referencesQuerySchema
+>;
+export const FxObservationReferenceSchema = z.strictObject({
+  effective_at: z.string().datetime({ offset: true }),
+  observation_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  rate: z.union([
+    z
+      .string()
+      .regex(new RegExp("^-?(?:0|[1-9][0-9]{0,19})(?:\\.[0-9]{1,18})?$")),
+    z.null(),
+  ]),
+  session_date: z.string().date(),
+  state: z.enum(["available", "missing", "unsupported", "disputed"]),
+});
+export type FxObservationReference = z.infer<
+  typeof FxObservationReferenceSchema
+>;
+export const FxObservationReferencePageSchema = z.strictObject({
+  account_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  base: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  content_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  effective_at_lte: z.string().datetime({ offset: true }),
+  expires_at: z.string().datetime({ offset: true }),
+  first_observed_at: z.string().datetime({ offset: true }),
+  items: z.array(FxObservationReferenceSchema).max(25),
+  limit: z.number().int().min(1.0).max(25.0),
+  next_cursor: z.union([
+    z.string().min(1).max(2048).regex(new RegExp("^[A-Za-z0-9_-]+$")),
+    z.null(),
+  ]),
+  quote: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  snapshot_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  source_cutoff_at: z.string().datetime({ offset: true }),
+});
+export type FxObservationReferencePage = z.infer<
+  typeof FxObservationReferencePageSchema
+>;
 export const list_fx_observationsQuerySchema = z.strictObject({
   account_id: z
     .union([
@@ -2274,6 +2356,32 @@ export class SourceApiClient {
         `/api/v1/fx-snapshots/${encodeURIComponent(z.string().regex(new RegExp("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")).uuid().parse(snapshot_id))}`,
         FxSnapshotHeaderSchema,
         get_fx_snapshotQuerySchema.parse(query),
+        undefined,
+        options,
+      );
+    } catch (error) {
+      if (error instanceof z.ZodError)
+        throw new SourceApiError(
+          "VALIDATION_FAILED",
+          422,
+          "The reference source request is invalid.",
+        );
+      throw error;
+    }
+  }
+  async list_fx_observation_references(
+    snapshot_id: string,
+    query: z.input<typeof list_fx_observation_referencesQuerySchema>,
+    options: SourceReadOptions = {},
+  ): Promise<
+    SourceApiResponse<z.output<typeof FxObservationReferencePageSchema>>
+  > {
+    try {
+      return await this.#request(
+        "GET",
+        `/api/v1/fx-snapshots/${encodeURIComponent(z.string().regex(new RegExp("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")).uuid().parse(snapshot_id))}/observation-references`,
+        FxObservationReferencePageSchema,
+        list_fx_observation_referencesQuerySchema.parse(query),
         undefined,
         options,
       );

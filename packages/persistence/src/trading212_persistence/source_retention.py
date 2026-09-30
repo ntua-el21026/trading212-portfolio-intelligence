@@ -28,6 +28,7 @@ PurgeFamily = Literal[
     "projection",
     "research",
     "layout",
+    "aggregate",
 ]
 
 
@@ -111,6 +112,7 @@ class SourcePurgeBudget:
             "projection",
             "research",
             "layout",
+            "aggregate",
         ) or not isinstance(identifier, UUID):
             raise ValueError("A typed purge participant is required.")
         seen = self._captures_seen if capture else self._runs_seen

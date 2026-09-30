@@ -201,6 +201,18 @@ class SourceReads(SourceStore):
 
         return await self._run(principal, operation)
 
+    async def list_fx_observation_references(
+        self, principal: Principal, snapshot_id: str, *, query: app.FxObservationReferenceQuery
+    ) -> app.FxObservationReferencePage:
+        from .fx_observation_references import reference_page
+
+        return await self._run(
+            principal,
+            lambda session, owner: reference_page(
+                self, session, principal, owner, snapshot_id, query
+            ),
+        )
+
     async def list_benchmark_observations(
         self, principal: Principal, snapshot_id: str, *, query: app.SourceObservationQuery
     ) -> Page[BenchmarkObservation] | app.CompositeBenchmarkObservationPageView:

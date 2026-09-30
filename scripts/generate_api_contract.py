@@ -10,6 +10,7 @@ from pathlib import Path
 
 from trading212_api.main import create_app
 from trading212_api_contracts.typescript import (
+    render_aggregate_client,
     render_alert_client,
     render_historical_client,
     render_owner_layout_client,
@@ -42,6 +43,7 @@ RISK_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/risk.generated.ts"
 SCENARIO_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/scenarios.generated.ts"
 PROJECTION_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/projections.generated.ts"
 OWNER_LAYOUT_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/owner-layouts.generated.ts"
+AGGREGATE_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/aggregate.generated.ts"
 RESEARCH_OUTPUT = REPOSITORY_ROOT / "packages/api-contracts/src/research.generated.ts"
 PREMIUM_PROVIDER_OUTPUT = (
     REPOSITORY_ROOT / "packages/api-contracts/src/premium-providers.generated.ts"
@@ -88,6 +90,7 @@ def main() -> int:
         (SCENARIO_OUTPUT, render_scenario_client),
         (PROJECTION_OUTPUT, render_projection_client),
         (RESEARCH_OUTPUT, render_research_client),
+        (AGGREGATE_OUTPUT, render_aggregate_client),
         (OWNER_LAYOUT_OUTPUT, render_owner_layout_client),
         (PREMIUM_PROVIDER_OUTPUT, render_premium_provider_client),
     ):

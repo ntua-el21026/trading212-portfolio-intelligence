@@ -148,6 +148,8 @@ class LocalSyntheticAuthenticator:
                     Scope.RESEARCH_WRITE,
                     Scope.PREFERENCES_READ,
                     Scope.PREFERENCES_WRITE,
+                    Scope.AGGREGATE_READ,
+                    Scope.AGGREGATE_WRITE,
                 }
             ),
             authenticated_at=now,

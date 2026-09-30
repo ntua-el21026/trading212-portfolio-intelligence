@@ -409,6 +409,9 @@ def _serve_fixture(database_url: str) -> None:
     alerts = os.environ.get("T212PI_E2E_ALERTS", "0")
     if alerts not in {"0", "1"}:
         raise RuntimeError("The alerts browser fixture selector must be 0 or 1.")
+    aggregation = os.environ.get("T212PI_E2E_AGGREGATION", "0")
+    if aggregation not in {"0", "1"}:
+        raise RuntimeError("The aggregation browser fixture selector must be 0 or 1.")
     migration_config = Config(str(_REPOSITORY_ROOT / "alembic.ini"))
     migration_config.set_main_option("script_location", str(_REPOSITORY_ROOT / "migrations"))
     migration_config.set_main_option("sqlalchemy.url", database_url)
@@ -472,6 +475,16 @@ def _serve_fixture(database_url: str) -> None:
             from scripts.api_e2e_alerts import seed_alert_browser_scenario
 
             asyncio.run(seed_alert_browser_scenario(create_session_factory(engine)))
+        if aggregation == "1":
+            from scripts.api_e2e_aggregation import seed_aggregation_browser_scenario
+
+            asyncio.run(
+                seed_aggregation_browser_scenario(
+                    create_session_factory(engine),
+                    app_environment="test",
+                    at=scenario_time,
+                )
+            )
     finally:
         engine.dispose()
 

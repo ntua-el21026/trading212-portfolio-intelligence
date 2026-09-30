@@ -592,7 +592,7 @@ class ApplicationCommandIdentityModel(ReportOwned):
                 "'projection.goal.create.v1','projection.goal.version.create."
                 "v1','projection.run.create.v1','projection.run.cancel.v1','r"
                 "esearch.note.create.v1','research.note.version.create.v1','r"
-                "esearch.event.review.v1')"
+                "esearch.event.review.v1','aggregate.selection.create.v1','aggregate.run.create.v1')"
             ),
             name="command_allowed",
         ),
@@ -614,7 +614,7 @@ class ApplicationCommandIdentityModel(ReportOwned):
                 "ction.assumption.version.create.v1','projection.goal.create."
                 "v1','projection.goal.version.create.v1','projection.run.crea"
                 "te.v1','projection.run.cancel.v1','research.note.create.v1',"
-                "'research.note.version.create.v1','research.event.review.v1'"
+                "'research.note.version.create.v1','research.event.review.v1','aggregate.selection.create.v1','aggregate.run.create.v1'"
                 ") AND report_job_id IS NULL AND export_job_id IS NULL AND pr"
                 "emium_resource_id IS NOT NULL AND premium_actor_id IS NOT NU"
                 "LL AND premium_correlation_id IS NOT NULL)"
