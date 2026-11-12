@@ -47,12 +47,14 @@ def test_dispatch_rotation_uses_one_shared_budget_and_reaches_every_family() -> 
     session.scalar.side_effect = lambda query, *args: (
         True if "pg_try_advisory" in str(query) else row
     )
-    budget = SourcePurgeBudget(rows_inspected=28)
-    first = [rotation(session, "dispatch", 7, budget)[0] for _ in range(7)]
-    assert first == list(range(7)) and row.next_family == 0
+    # The dispatcher currently has eight frozen participants, including the
+    # Phase 3 family; retain four inspected rows per turn and one shared budget.
+    budget = SourcePurgeBudget(rows_inspected=32)
+    first = [rotation(session, "dispatch", 8, budget)[0] for _ in range(8)]
+    assert first == list(range(8)) and row.next_family == 0
     assert budget.rows_inspected == 0
     before = session.execute.call_count
-    assert rotation(session, "dispatch", 7, budget) == ()
+    assert rotation(session, "dispatch", 8, budget) == ()
     assert session.execute.call_count == before
 
 
