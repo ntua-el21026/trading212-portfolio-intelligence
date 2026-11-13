@@ -14,6 +14,11 @@ from trading212_mcp.historical_tools import HISTORICAL_TOOL_NAMES
 from trading212_mcp.historical_widget import HISTORICAL_WIDGET_HTML, HISTORICAL_WIDGET_URI
 from trading212_mcp.server import create_runtime
 
+from tests.contract.aggregation_contract_oracle import (
+    AGGREGATION_ADDITIONS,
+    assert_aggregation_additions,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -61,8 +66,12 @@ def test_exact_six_historical_get_routes_leave_existing_performance_summary() ->
         ),
     }
     # The 95 preserved, 11 risk, 6 report, 11 scenario, 17 projection, 8 research,
-    # 5 owner layout and 1 provider status operations.
-    assert sum(len(methods) for methods in contract["paths"].values()) == 154
+    # 5 owner layout and 1 provider status operations. ADR-0034 and the accepted
+    # saved FX reference read add exactly the separately checked seven operations.
+    assert_aggregation_additions(contract)
+    assert sum(len(methods) for methods in contract["paths"].values()) == 154 + len(
+        AGGREGATION_ADDITIONS
+    )
     assert contract == json.loads(
         (ROOT / "packages/api-contracts/openapi/phase1-v1.json").read_text()
     )

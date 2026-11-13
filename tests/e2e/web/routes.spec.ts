@@ -37,7 +37,12 @@ test("authenticated Phase 1 routes expose canonical views", async ({
 
   await page.goto("/settings");
   await expect(page.getByText("Connected Read Only")).toBeVisible();
-  await expect(page.getByText("Not Configured")).toBeVisible();
+  await expect(
+    page
+      .getByText("Credential state", { exact: true })
+      .locator("..")
+      .getByText("Not Configured", { exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByText("Last successful refresh", { exact: true }).locator(".."),
   ).toContainText("31 Aug 2026, 09:30 UTC");

@@ -202,8 +202,12 @@ test("collection filters submit bounded URL state and reset pagination", async (
   ).toBeVisible();
 
   await page.goto("/activity");
-  await page.getByLabel("From").fill("2026-06-01");
-  await page.getByLabel("To").fill("2026-06-30");
+  await page
+    .getByRole("textbox", { name: "From", exact: true })
+    .fill("2026-06-01");
+  await page
+    .getByRole("textbox", { name: "To", exact: true })
+    .fill("2026-06-30");
   await page.getByLabel("Activity type").selectOption("buy");
   await page.getByRole("button", { name: "Apply" }).click();
   await expect(page).toHaveURL(

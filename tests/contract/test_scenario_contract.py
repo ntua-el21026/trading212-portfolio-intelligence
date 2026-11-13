@@ -10,6 +10,11 @@ from trading212_api.main import create_app
 from trading212_application.services import SyntheticPortfolioService
 from trading212_security.settings import RuntimeEnvironment, SecuritySettings
 
+from tests.contract.aggregation_contract_oracle import (
+    AGGREGATION_ADDITIONS,
+    assert_aggregation_additions,
+    assert_pre_aggregation_source_client,
+)
 from tests.contract.premium_report_profile_oracle import (
     PROFILE_TWO,
     assert_profile_two_client_declarations,
@@ -58,8 +63,11 @@ def test_frozen_eight_paths_eleven_operations_and_only_additive_legacy_descripto
     }
     assert actual == OPERATIONS and len({path for _, path in actual.values()}) == 8
     assert legacy["path_count"] == 101 and legacy["operation_count"] == 112
-    assert len(document["paths"]) == 131
-    assert sum(len(methods) for methods in document["paths"].values()) == 154
+    assert_aggregation_additions(document)
+    assert len(document["paths"]) == 131 + len({path for _, path in AGGREGATION_ADDITIONS.values()})
+    assert sum(len(methods) for methods in document["paths"].values()) == 154 + len(
+        AGGREGATION_ADDITIONS
+    )
     for path, expected in legacy["paths"].items():
         if path in PROFILE_TWO["paths"]:
             # ADR-0026 permits exactly the explicit profile selector and closed unions.
@@ -169,5 +177,7 @@ def test_delivered_generated_clients_preserve_bytes_or_explicit_profile_two_cont
     for relative, expected in legacy["generated_clients"].items():
         if relative == "packages/api-contracts/src/premium-reports.generated.ts":
             assert_profile_two_client_declarations(expected)
+        elif relative == "packages/api-contracts/src/sources.generated.ts":
+            assert_pre_aggregation_source_client(expected)
         else:
             assert sha256(Path(relative).read_bytes()).hexdigest() == expected, relative

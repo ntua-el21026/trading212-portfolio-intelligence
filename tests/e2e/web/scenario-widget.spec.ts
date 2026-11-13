@@ -41,7 +41,7 @@ type Host = Window & {
 
 async function mount(page: Page, serverTools = true) {
   await page.setContent(
-    '<!doctype html><html lang="en"><head><title>Scenario host fixture</title></head><body style="margin:0"><iframe title="Portfolio scenarios" style="border:0;width:100%;height:1900px"></iframe></body></html>',
+    '<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Scenario host fixture</title></head><body style="margin:0"><iframe title="Portfolio scenarios" style="border:0;width:100%;height:1900px"></iframe></body></html>',
   );
   await page.evaluate(
     ({ html, serverTools }) => {
@@ -124,6 +124,8 @@ for (const width of [1440, 768, 360])
     await mount(page);
     await publish(page);
     const app = page.frameLocator("iframe");
+    expect(await page.evaluate(() => innerWidth)).toBe(width);
+    expect(await app.locator("body").evaluate(() => innerWidth)).toBe(width);
     await expect(app.locator("#status")).toHaveText(
       "Completed saved scenario analysis.",
     );
@@ -171,6 +173,11 @@ for (const width of [1440, 768, 360])
       await summaries.locator("table").evaluate((table) => table.clientWidth),
     ).toBeGreaterThanOrEqual(720);
     if (width === 360) {
+      expect(
+        await summaries.evaluate(
+          (region) => region.scrollWidth - region.clientWidth,
+        ),
+      ).toBeGreaterThan(0);
       await summaries.focus();
       await expect(summaries).toBeFocused();
       await page.keyboard.press("ArrowRight");
