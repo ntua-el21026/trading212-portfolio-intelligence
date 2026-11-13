@@ -1,3 +1,4 @@
+FROM python:3.13.15-slim-bookworm@sha256:c45a22ea000adfd9cda29364bbe7edd23001ce5cc2ad15857cfbf7766943b9ca AS truststore
 FROM node:24.20.0-bookworm-slim@sha256:ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e AS dependencies
 ENV COREPACK_HOME=/corepack
 WORKDIR /app
@@ -16,11 +17,21 @@ RUN corepack pnpm --filter @trading212/web build
 FROM node:24.20.0-bookworm-slim@sha256:ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e AS runtime
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 WORKDIR /app
+# Node slim omits CA roots; bootstrap only the pinned public trust bundle.
+COPY --from=truststore /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 RUN groupadd --gid 10001 app && useradd --uid 10001 --gid app --no-create-home app
-# Apply the Bookworm PCRE2 security update before removing package managers.
-RUN apt-get update \
-    && apt-get install --yes --no-install-recommends --only-upgrade \
-        libpcre2-8-0=10.42-1+deb12u1 \
+# Resolve exact security packages from an immutable, signature-verified snapshot.
+COPY infrastructure/docker/debian-bookworm.sources /etc/apt/sources.list.d/debian.sources
+RUN apt-get -o Acquire::https::CAInfo=/etc/ssl/certs/ca-certificates.crt update \
+    && apt-get -o Acquire::https::CAInfo=/etc/ssl/certs/ca-certificates.crt install --yes --no-install-recommends \
+        ca-certificates=20250419~deb12u2 \
+        openssl=3.0.22-1~deb12u2 \
+    && apt-get -o Acquire::https::CAInfo=/etc/ssl/certs/ca-certificates.crt install --yes --no-install-recommends --only-upgrade \
+        apt=2.6.2 \
+        libapt-pkg6.0=2.6.2 \
+        libpcre2-8-0=10.42-1+deb12u2 \
+        libssl3=3.0.22-1~deb12u2 \
+        perl-base=5.36.0-7+deb12u4 \
     && rm -rf /var/lib/apt/lists/*
 RUN rm -rf \
     /usr/local/bin/corepack \

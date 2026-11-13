@@ -352,6 +352,9 @@ def create_runtime(
         auth_settings = AuthSettings(
             issuer_url=issuer,
             resource_server_url=resource_url,
+            # The shared authenticator verifies the configured JWT audience;
+            # OAuth resource metadata must not replace that identity contract.
+            validate_token_resource=False,
             # Authentication is global; exact scopes are enforced per application use case.
             required_scopes=[],
         )

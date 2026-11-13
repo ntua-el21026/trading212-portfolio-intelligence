@@ -65,3 +65,15 @@ constitute independent acceptance or deployed credential validation.
 
 References: [RFC 7519 sections 2 and 4.1](https://www.rfc-editor.org/rfc/rfc7519.html),
 [RFC 3986 URI grammar](https://www.rfc-editor.org/rfc/rfc3986.html#appendix-A).
+
+## MCP 2.2 compatibility clarification, 2026-11-13
+
+The SDK receives explicit `validate_token_resource=False`, retaining its previous
+effective behavior. `JwtAuthenticator` verifies the configured issuer, audience
+and signature before `SharedTokenVerifier` produces an access token. The OAuth
+resource URL describes the transport; it does not replace the configured JWT
+audience, which may be a different StringOrURI value. No warning is suppressed.
+Signed transport regressions cover RS256, ES256 and EdDSA: the configured
+audience succeeds, while a substituted resource URL or other audience receives
+401. Existing PostgreSQL transport regressions additionally require no command
+execution or persistence for invalid bearer credentials.

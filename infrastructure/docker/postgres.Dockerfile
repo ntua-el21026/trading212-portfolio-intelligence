@@ -1,17 +1,28 @@
+FROM python:3.13.15-slim-bookworm@sha256:c45a22ea000adfd9cda29364bbe7edd23001ce5cc2ad15857cfbf7766943b9ca AS truststore
 FROM postgres:18.6@sha256:4ef4dbc939d61acea57712655ddb4b4ab27419c913f94cca0cd57cb3ea3c2280
 
 USER root
-RUN apt-get update \
+# The pinned Trixie base omits CA roots; bootstrap public trust from a pinned image.
+COPY --from=truststore /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+# Resolve exact security packages from an immutable, signature-verified snapshot.
+COPY infrastructure/docker/debian-trixie.sources /etc/apt/sources.list.d/debian.sources
+RUN rm -f /etc/apt/sources.list.d/pgdg.list \
+    && apt-get update \
+    && apt-get install --yes --no-install-recommends \
+        ca-certificates=20250419+deb13u1 \
+        openssl=3.5.7-1~deb13u3 \
     && apt-get install --yes --no-install-recommends --only-upgrade \
+        apt=3.0.4 \
+        libapt-pkg7.0=3.0.4 \
         gzip=1.13-1+deb13u1 \
-        libpcre2-8-0=10.46-1~deb13u2 \
+        libpcre2-8-0=10.46-1~deb13u3 \
         libperl5.40=5.40.1-6+deb13u1 \
         libsqlite3-0=3.46.1-7+deb13u2 \
-        libssl3t64=3.5.7-1~deb13u2 \
-        openssl=3.5.7-1~deb13u2 \
-        openssl-provider-legacy=3.5.7-1~deb13u2 \
+        libssl3t64=3.5.7-1~deb13u3 \
+        openssl-provider-legacy=3.5.7-1~deb13u3 \
         perl=5.40.1-6+deb13u1 \
         perl-base=5.40.1-6+deb13u1 \
+        zlib1g=1:1.3.dfsg+really1.3.1-1+deb13u1 \
         perl-modules-5.40=5.40.1-6+deb13u1 \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f \

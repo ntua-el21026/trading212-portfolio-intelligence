@@ -40,6 +40,12 @@ primary documentation before adopting them. Any necessary dependency is a
 separate narrow, pinned and tested change with license/security justification.
 Keep uv-managed .venv, existing pnpm lock and Docker Desktop WSL integration.
 
+The [13 November security remediation](../security/DEPENDENCY_REMEDIATION_20261113.md)
+records subsequent exact security pins and immutable Debian package snapshots.
+The table above retains the original September baseline; the current manifests
+and locks contain those documented corrections. Actual compatibility, scanner
+and build outcomes belong to the [stabilization record](PHASE_3_STABILIZATION_20261113.md).
+
 ## Shared implementation placement
 
 Domain holds immutable validated premium values, definitions, inputs and result

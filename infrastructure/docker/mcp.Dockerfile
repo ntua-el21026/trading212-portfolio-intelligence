@@ -16,10 +16,17 @@ RUN uv sync --frozen --no-dev --package trading212-mcp --no-editable \
 FROM python:3.13.15-slim-bookworm@sha256:c45a22ea000adfd9cda29364bbe7edd23001ce5cc2ad15857cfbf7766943b9ca AS runtime
 ENV PATH=/opt/venv/bin:$PATH PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
-# Apply the Bookworm PCRE2 security update before removing package managers.
+# Resolve exact security packages from an immutable, signature-verified snapshot.
+COPY infrastructure/docker/debian-bookworm.sources /etc/apt/sources.list.d/debian.sources
 RUN apt-get update \
     && apt-get install --yes --no-install-recommends --only-upgrade \
-        libpcre2-8-0=10.42-1+deb12u1 \
+        ca-certificates=20250419~deb12u2 \
+        apt=2.6.2 \
+        libapt-pkg6.0=2.6.2 \
+        libpcre2-8-0=10.42-1+deb12u2 \
+        libssl3=3.0.22-1~deb12u2 \
+        openssl=3.0.22-1~deb12u2 \
+        perl-base=5.36.0-7+deb12u4 \
     && rm -rf /var/lib/apt/lists/*
 RUN groupadd --gid 10001 app \
     && useradd --uid 10001 --gid app --no-create-home app \

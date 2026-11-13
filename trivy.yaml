@@ -1,9 +1,11 @@
 # Owner: repository owner and designated security reviewer.
-# Reason/scope: Phase 1 redistributes only the unmodified sharp/libvips runtime
-# binaries covered by LGPL-3.0-or-later through the standalone Next.js image.
-# Review trigger: remove or re-authorize this suppression before public
-# distribution, when sharp/libvips changes, or by 2026-12-01, whichever is first.
-# Source/license notices and relinking obligations remain documented.
+# Scope: retain the existing LGPL-3.0-or-later classification acceptance only for
+# local validation of unmodified sharp/libvips binaries. Source visibility and
+# public binary redistribution are separate decisions; no redistribution is
+# authorized. The proprietary project license and third-party obligations remain.
+# Review: docs/security/DEPENDENCY_REMEDIATION_20261113.md (sharp 0.35.5).
+# Review trigger: before any binary distribution, on dependency changes, or by
+# 2026-12-01. Vulnerability/secret rules and severity gates are unchanged.
 license:
   full: true
   ignored:

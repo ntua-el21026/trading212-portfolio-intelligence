@@ -8,7 +8,7 @@ version = "0.2.0"
 description = "Bounded MCP composition root for Trading 212 Portfolio Intelligence"
 requires-python = "==3.13.*"
 dependencies = [
-    "mcp==2.1.1",
+    "mcp==2.2.0",
     "trading212-analytics==0.2.0",
     "trading212-api-contracts==0.2.0",
     "trading212-application==0.2.0",

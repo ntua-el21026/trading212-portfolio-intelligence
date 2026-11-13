@@ -22,11 +22,17 @@ application images remove `pip` and `setuptools` from their copied runtime envir
 remove global runtime `pip` and `ensurepip`, while the web runtime removes npm, npx,
 Corepack, and global package-manager modules.
 
-The four Bookworm application runtimes install the exact
-`libpcre2-8-0=10.42-1+deb12u1` security update before stripping package managers.
-Debian's [PCRE2 security update](https://security-tracker.debian.org/tracker/DLA-4772-1)
-fixes the older package in the pinned base images. Runtime dpkg metadata remains
-available for scanning; package indexes are removed after installation.
+The runtime stages resolve exact security-package versions from Debian's immutable
+`20261113T000000Z` archive snapshots, retaining the original upstream image digests.
+The Bookworm and Trixie Deb822 source files replace the inherited moving package
+sources. Debian archive signatures remain mandatory; only the archived metadata's
+expiry check is disabled. Package versions and the review are recorded in
+[the dependency remediation record](../../docs/security/DEPENDENCY_REMEDIATION_20261113.md).
+The previous Bookworm PCRE2 pin `10.42-1+deb12u1` was absent from the moving
+repository during the observed CI run; the snapshot supplies the security-fixed
+`10.42-1+deb12u2`. Exact APT, OpenSSL, Perl and Trixie zlib updates address the
+additional observed findings before package managers are removed. Runtime dpkg
+metadata remains available for scanning; package indexes are removed after installation.
 
 `make container-build` builds the complete six-image set used by Compose. Trivy `0.74.0`
 scans every image in the required security workflow. A successful build is not a clean

@@ -8,8 +8,8 @@ version = "0.2.0"
 description = "Structured logging, metrics, and tracing adapters"
 requires-python = "==3.13.*"
 dependencies = [
-    "opentelemetry-api==1.44.0",
-    "opentelemetry-sdk==1.44.0",
+    "opentelemetry-api==1.45.1",
+    "opentelemetry-sdk==1.45.1",
     "prometheus-client==0.26.0",
     "structlog==26.1.0",
     "trading212-security==0.2.0",
