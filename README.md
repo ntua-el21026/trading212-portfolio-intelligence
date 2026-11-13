@@ -50,6 +50,13 @@ or generic HTTP, SQL or filesystem access.
 
 ## Local development
 
+The workspace contains [API](apps/api/), [worker](apps/worker/),
+[MCP](apps/mcp/) and [web](apps/web/) applications. Shared packages cover
+[domain contracts](packages/domain/), [analytics](packages/analytics/),
+[persistence](packages/persistence/), [security](packages/security/) and the
+[sealed broker adapter](packages/trading212/). The tracked synthetic fixtures
+and contract specifications support inspection without a brokerage account.
+
 Use Python 3.13.15, Node.js 24.20.0, pnpm 10.34.5, uv and GNU Make. Docker Compose
 is required for database-backed and full-stack gates. Review the
 [dependency baseline](docs/implementation/P1_01_DEPENDENCY_BASELINE.md) and
@@ -72,6 +79,30 @@ make run-dependencies starts local dependencies; make run-local performs the
 documented migration/seed/start sequence. Review account-selection configuration
 and the current checkpoint instead of copying a historical scratch override.
 No provider connection is needed for synthetic unit tests.
+
+### Configuration without a broker connection
+
+Use [.env.example](.env.example) as the configuration reference. Copy it to an
+ignored `.env` for Compose and set a local database password; host processes
+require explicitly exported settings. Keep these synthetic defaults for an
+initial local review:
+
+```dotenv
+T212PI_ENVIRONMENT=local
+T212PI_WORKER_PROVIDER=synthetic
+T212PI_TRADING212_ENVIRONMENT=demo
+T212PI_TRADING212_LIVE_ENABLED=false
+T212PI_RUN_TRADING212_DEMO_SMOKE=0
+T212PI_TRADING212_CREDENTIAL_BUNDLE=
+```
+
+Local synthetic authentication is restricted to loopback. Review the
+[credential and Demo procedure](docs/operations/CREDENTIALS_AND_DEMO_VALIDATION.md)
+before any separately authorized provider validation. Private credential files,
+the original operator's environment and external checkpoint diagnostics are
+absent from a clean clone; their absence does not prevent reviewing source or
+synthetic test cases. The September resume document records those historical
+local paths, rather than portable prerequisites.
 
 ## Verification and interpretation
 
@@ -100,10 +131,7 @@ technical validation.
 The existing [proprietary license](LICENSE.md) remains in force. Review provider,
 reference-data and third-party rights and use synthetic data for a public
 demonstration. Accessibility, licensing and deployment are separate decisions.
-The current portfolio task uses an explicitly authorized isolated branch;
-[AGENTS.md](AGENTS.md) describes the standing delivery policy outside this task.
-No push or release is implied.
-
-Outside a task-specific owner exception, the standing delivery rules are to
-commit directly to `main`, with no branches or pull requests. This preparation
-follows the owner's explicit isolated-branch exception and authorizes no delivery.
+The standing [delivery policy](AGENTS.md) is to commit directly to `main`, with
+no branches or pull requests, using small, fast-forward commits. Historical
+task-specific branch records describe earlier work. Git delivery, release
+acceptance and production deployment are separate decisions.
