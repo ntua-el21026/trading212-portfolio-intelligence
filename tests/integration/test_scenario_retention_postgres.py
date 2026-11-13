@@ -6,15 +6,18 @@ from unittest.mock import patch
 from uuid import UUID, uuid4
 
 import pytest
-from sqlalchemy import func, select, text
+from sqlalchemy import func, select, text, update
+from sqlalchemy.exc import IntegrityError
 from trading212_analytics.scenario import calculate_scenario
 from trading212_analytics.scenario_replay import resolve_scenario_replay
 from trading212_application import scenario as app
 from trading212_application import scenario_jobs as jobs
 from trading212_domain import historical as history
 from trading212_domain.scenario_execution import ScenarioReplaySelection
+from trading212_persistence.aggregation_models import AggregateOwnerErasureModel
 from trading212_persistence.historical_capture import HistoricalCaptureStore
 from trading212_persistence.historical_models import HistoricalInputModel
+from trading212_persistence.models import BrokerConnectionModel, PrincipalModel
 from trading212_persistence.premium_models import (
     PremiumCapacityModel,
     PremiumJobModel,
@@ -423,10 +426,79 @@ async def test_owner_erasure_clears_unexpired_queued_input_without_losing_audit(
     scenario_case: ScenarioCase,
 ) -> None:
     case = scenario_case
+    owner = UUID(case.principal.owner_id)
+    with case.sessions() as session:
+        root = session.get_one(PremiumRunModel, case.run.id)
+        capacity = session.get_one(PremiumCapacityModel, owner)
+        job = session.get_one(PremiumJobModel, case.run.job_id)
+        state = session.get_one(PremiumRetentionStateModel, root.id)
+        before = (
+            root.reserved_bytes,
+            root.retained_bytes,
+            capacity.reserved_bytes,
+            capacity.retained_bytes,
+            capacity.active_jobs,
+            job.state,
+            state.financial_rows,
+            state.closed,
+        )
+        assert root.expires_at > case.now and job.state == "queued"
+        assert (
+            session.scalar(
+                select(PrincipalModel.id)
+                .where(PrincipalModel.owner_id == owner, PrincipalModel.status == "active")
+                .limit(1)
+            )
+            is not None
+        )
+        assert (
+            session.scalar(
+                select(BrokerConnectionModel.id)
+                .where(
+                    BrokerConnectionModel.owner_id == owner,
+                    BrokerConnectionModel.status == "active",
+                )
+                .limit(1)
+            )
+            is not None
+        )
+    with (
+        pytest.raises(IntegrityError, match="aggregate owner remains active"),
+        case.sessions() as session,
+        session.begin(),
+    ):
+        purge_owner_scenario_payloads(session, owner, at=case.now, budget=SourcePurgeBudget())
+    with case.sessions() as session:
+        root = session.get_one(PremiumRunModel, case.run.id)
+        capacity = session.get_one(PremiumCapacityModel, owner)
+        job = session.get_one(PremiumJobModel, case.run.job_id)
+        state = session.get_one(PremiumRetentionStateModel, root.id)
+        assert (
+            root.reserved_bytes,
+            root.retained_bytes,
+            capacity.reserved_bytes,
+            capacity.retained_bytes,
+            capacity.active_jobs,
+            job.state,
+            state.financial_rows,
+            state.closed,
+        ) == before
+        assert session.get(AggregateOwnerErasureModel, owner) is None
+    # This is fixture lifecycle state in a disposable synthetic database, not a
+    # broker operation or a public owner-erasure command.
+    with case.sessions() as session, session.begin():
+        session.execute(
+            update(PrincipalModel).where(PrincipalModel.owner_id == owner).values(status="disabled")
+        )
+        session.execute(
+            update(BrokerConnectionModel)
+            .where(BrokerConnectionModel.owner_id == owner)
+            .values(status="disabled")
+        )
     with case.sessions() as session, session.begin():
         assert purge_owner_scenario_payloads(
             session,
-            UUID(case.principal.owner_id),
+            owner,
             at=case.now,
             budget=SourcePurgeBudget(),
         )

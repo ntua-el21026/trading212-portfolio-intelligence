@@ -521,6 +521,133 @@ target uses `--maxfail=0` to collect every failure within a stage, preserving th
 existing test selection, nonzero failure status, synthetic scope and single-stack
 resource limits. No complete validation pass is inferred from this correction.
 
+## Ninth complete attempt and source-bound retention-fixture recovery
+
+The ninth complete target ran at clean `cd97b577ac063f1dbfa6b7ec64893130d1e37cce`,
+tree `dfd1191911dfbb16aa6d6e51569a90d414797cf1`. It began at
+`2026-11-13T21:01:44.043503+00:00` and exited 2 after 6,924.124 seconds with unchanged
+source manifest `11ccd1a087ddb285c6189bf27aadb0f4459f891ce08916ff165eedf5574bd6ac`.
+Static checks, 4,749 Python unit cases, 918 web cases across 103 files,
+36 property cases and 357 contract cases passed. All 735 selected integration
+cases ran: 723 passed and 12 failed, with 5,525 deselections, in 6,368.70 seconds.
+The target failed; migration, security, coverage, browser and build stages were
+not reached. The prior X-ray physical and signed projection MCP blockers passed
+within this failed attempt. The collect-all setting changes neither test scope
+nor failure status.
+
+All twelve failure sites remain recorded, with separate causes and corrections:
+
+| Failed case | Observed cause and correction |
+| --- | --- |
+| Projection published-result owner erasure | The unchanged aggregate guard rejected the active owner. Prove rejection and full rollback first, then terminate only target synthetic identities and retain original default-budget complete erasure. |
+| Projection original source: price | A closed unchanged-source observer reports `RUN_EXPIRED` at assumption admission. Normal fresh publication uses actual PG time and explicit availability while preserving all three original financial observations and the 30-day source-copy ceiling. |
+| Projection original source: historical | The same typed `RUN_EXPIRED` precedes the intended policy assertion. Capture the historical copy later than its fresh physical parent with a legal knowledge cutoff, preserving financial dates and the original-source two-day tightening control. |
+| Projection original source: nested historical | The direct-original-price dependency assertion failed before admission. Keep the original reachable only through registered evidence and supply a distinct younger direct witness. Existing evidence-to-evidence rejection remains. |
+| Projection original source: future price | Admission reported `RUN_EXPIRED` before the intended future-policy assertion. Fresh normal source publication preserves policy activation 30 seconds after maintenance and the exact original-source deadline. |
+| Source-driven core report cleanup | Header erasure preceded completion-footer work. Retain the small-budget prefix, independently verify unchanged copies/grants when no marker fits, then use separately bounded adequate source and normal report-maintenance phases. |
+| Enrichment-driven core report cleanup | Header erasure also preceded its completion footer. Normal report resumption shares the source invocation's remaining budget; a separately declared report-only phase completes outstanding footer work when needed. |
+| Historical price/FX report cleanup | After 256 calls with 64 inspections, no report marker existed. Preserve that report-copy/grant-negative phase; a separate 256-inspection positive retains 64 removals and the 8 KiB byte limits. Require final header and work completion. |
+| TTL query-plan capture | The first SQL was a pending-maintenance `TextClause`, before the intended TTL SELECT. A supported two-inspection remainder legitimately excludes the three-inspection prelude, preserving first-SQL/read-only/abort canaries and the explicitly scoped measurements. |
+| Queued scenario owner erasure | The unchanged active-owner guard rejected the original lifecycle fixture. Rejection and rollback precede target-only synthetic identity termination, with queued-input, default-budget erasure and audit assertions retained. |
+| X-ray source expiry | Its initial 128-inspection call reached source work with two rows and could not reserve the 32-inspection marker. Preserve the negative physical state and use bounded relevant-source rotation; distinguish source work, derivative-event eligibility and later copy completion. |
+| Enrichment payload drain | The original 128 calls made continuing progress from 484 to 104 payload rows while completing none of ten work items. Retain this partial prefix, then a separately bounded 128-call continuation with identical allowances and all final event/payload assertions. |
+
+The unchanged-source typed admission diagnostic failed its three selected cases
+in 4.81 pytest seconds (7.148 runner seconds), recording only `RUN_EXPIRED`.
+A separate unchanged-source metadata diagnostic retained three failures in
+63.68 pytest seconds (66.417 runner seconds). Source-family routing and physical
+counters distinguish insufficient allowance from continued progress. No canonical
+payload, decoder, complete oracle or exception text was captured. These diagnostic
+observations do not measure performance.
+
+The correction is confined to six existing integration test files. Production
+code, SQL guards, migrations, shared fixtures, global caps, the 30-day copy limit
+and historical financial facts are unchanged in this follow-up. Fresh projection
+sources use normal typed publication and explicit actual availability. Their
+maintenance instant still tests the original physical source's two-day deadline
+before the younger historical/direct witness can expire. Neither application
+availability nor the database clock is backdated.
+
+The core report fixture preserves its original maximum 128 calls with 64
+inspections, 64 removals and 8 KiB inspection/removal limits. If that prefix leaves
+no target marker, the test requires exact independent header/chunk/artifact
+hash-state and grant-metadata parity and absence of target report work. A separate
+positive phase permits at most 128 invocations with 256 inspections while keeping
+the same removal and byte limits. The original marker and download-denial
+assertions follow either route. Source cleanup then retains its bounded 256-row
+phase. Once the header is purged, normal report maintenance first shares that
+invocation's remaining allowance. Any remaining footer uses separate transactions
+and fresh declared 256-row budgets, capped at 128 report-only invocations. No
+allowance is reset within an existing source invocation. The successful run
+qualifies its actual route; it does not claim every possible scheduling branch.
+
+The X-ray request already explicitly pins its saved run. A safe reproduction
+failed once in 10.20 pytest seconds (12.446 runner seconds), observing SQLSTATE
+`23514` in `xray_collection_guard`, line 32. It produced `VALIDATION_FAILED` during
+cleanup before the pinned read. The corrected fixture proves that actual
+collection TTLs remain after database `CURRENT_TIMESTAMP` while no target
+`XrayRetentionEvent` exists. It retains strict early rejection and rollback parity
+for input bytes/digest, physical counters, collection members and bindings.
+At most five normal 256-row source-maintenance invocations establish the derivative
+event; the original pinned `ACCESS_DENIED` assertion remains required afterwards.
+
+The original X-ray 128-invocation copy-drain prefix now independently proves
+partial physical progress, unchanged protected input bytes/digest, pending input,
+zero completed source events and a positive remaining payload count. A separate
+continuation permits at most 128 more calls with the same 256-inspection and
+256-removal limits and unchanged byte caps. Its exact final completion and all
+canonical-erasure, retained-digest, event and exposure-bucket assertions remain.
+This fixture bounds copy draining to 256 invocations, plus at most five separate
+event invocations: at most 261 full-budget calls in these two phases. It provides
+no general convergence or performance guarantee. The enrichment test separately
+retains its 128-call partial prefix and 128-call continuation, with exact final
+counts for all ten licensed source headers.
+
+Failed and passing invocations remain separate source-bound observations:
+
+| Evidence ID | Actual result | Pytest / runner seconds |
+| --- | --- | --- |
+| `retention-fixture-focused-green-01` | 18 passed, two failed; core source-report footer and X-ray guarded cleanup | 234.02 / 237.090 |
+| `retention-fixture-remaining-01` | One passed, one failed; X-ray's original 128-call drain remained incomplete | 33.01 / 34.554 |
+| `retention-fixture-xray-final-01` | One X-ray case passed after explicit bounded continuation | 18.36 / 19.707 |
+| `retention-fixture-focused-green-02` | 19 passed, one failed; core source report had no marker after the small prefix | 238.90 / 241.973 |
+| `retention-fixture-focused-green-03` | All 20 cases passed in one invocation | 237.39 / 240.344 |
+
+The final 20-case invocation began at
+`2026-11-13T23:44:44.869657+00:00`, exited 0 and retained unchanged source manifest
+`2fbaab355989e8e5eb3f8a9b8aa70f27657d8fc7f3180e0ac8e81072de9a9c81`.
+Its log SHA-256 is
+`58ef29176b564083724102566d13bdb4b5786c2987d7b193d4ea4a112baaece0`.
+At execution, Git HEAD still named `cd97b57` with six modified test files;
+the passing receipt qualifies that complete working-source composition. It is
+not clean-`cd97b57` validation and is not inferred by combining the preceding
+19-case and one-case passes.
+
+The final query-plan invocation retained twelve EXPLAIN files for report and
+alert TTL candidate SELECTs, with two remaining inspections and `limit=1`.
+Each table has 32,768 synthetic metadata rows, with 0, 32 or 8,192 eligible rows;
+setup is explicitly warm. This observation does not qualify default-budget
+maintenance, batch behavior, latency, a production SLO or index-shape guarantees.
+
+Static peer review of the six exact file hashes found no blocking issue,
+retaining 273 original assertions with 371 current assertions. Equivalent owner
+UUID calls, strengthened report completion and target-scoped X-ray work selection
+have explicit semantic dispositions. The report-core file retains all 94 original
+assertion ASTs. This internal static review remains separate from executable
+results and independent owner acceptance. An earlier typing check retained two
+new-local-variable conflicts; only those locals were renamed. The final strict
+mypy invocation passed all six files in 0.739 seconds on the same final working
+composition. Current repository-wide static qualification remains pending.
+
+A new clean implementation commit/archive remains pending. The previously
+unreached migration, security, browser and build gates will be preflighted at that
+clean source before complete attempt 10; none is claimed executed here. Complete
+attempt 10 has not started. Final actual-image security scans, synthetic startup
+and browser qualification, delivery/CI observations, cleanup and portable export
+remain pending. Prepared helpers establish no executed result. All 30 Phase 3
+rows and all 48 scenarios remain pending with zero accepted; independent owner
+audit and production authorization remain separate.
+
 ## Reproducible synthetic validation
 
 Use the pinned Python, uv, Node and pnpm versions in the repository version files

@@ -16,7 +16,12 @@ from trading212_application import xray as app
 from trading212_domain import xray as d
 from trading212_domain.values import CurrencyCode
 from trading212_domain.xray_codec import decode_xray_input
-from trading212_persistence.models import SnapshotPositionModel
+from trading212_persistence.models import (
+    CollectionQuerySnapshotMemberModel,
+    CollectionQuerySnapshotModel,
+    SnapshotPositionModel,
+)
+from trading212_persistence.phase2_retention_models import XrayPhysicalStateModel
 from trading212_persistence.planning_models import AnalyticsRunModel
 from trading212_persistence.source_models import SourceExpiryEventModel, SourceRetentionWorkModel
 from trading212_persistence.source_retention import SourcePurgeBudget
@@ -38,6 +43,7 @@ from trading212_persistence.xray_lifecycle_models import (
 )
 from trading212_persistence.xray_publication import publish_xray
 from trading212_persistence.xray_run_models import (
+    XrayCollectionBindingModel,
     XrayExposureModel,
     XrayInputDependencyModel,
     XrayInputSnapshotModel,
@@ -199,8 +205,27 @@ def test_source_expiry_resumes_bounded_copies_and_denies_pending_replay(
     result = asyncio.run(company(case))
     input_id = UUID(result.context.input_snapshot_id)
     with case.sessions() as session:
-        expiry = session.scalar(select(func.min(ConstituentSnapshotModel.expires_at)))
+        constituent_ids = tuple(
+            session.scalars(
+                select(XrayInputDependencyModel.constituent_snapshot_id)
+                .where(
+                    XrayInputDependencyModel.input_id == input_id,
+                    XrayInputDependencyModel.constituent_snapshot_id.is_not(None),
+                )
+                .distinct()
+            )
+        )
+        assert constituent_ids
+        expiry = session.scalar(
+            select(func.min(ConstituentSnapshotModel.expires_at)).where(
+                ConstituentSnapshotModel.id.in_(constituent_ids)
+            )
+        )
         assert expiry is not None
+        retained_capture = session.get_one(XrayInputSnapshotModel, input_id)
+        input_bytes, input_digest = retained_capture.canonical_input, retained_capture.input_digest
+        state = session.get_one(XrayPhysicalStateModel, input_id)
+        physical_before = (state.input_pending, state.payload_rows)
     case.now[0] = expiry + timedelta(seconds=1)
     with case.sessions() as session, session.begin():
         budget = SourcePurgeBudget(
@@ -211,42 +236,198 @@ def test_source_expiry_resumes_bounded_copies_and_denies_pending_replay(
         assert 0 <= budget.rows_inspected < 8 and 0 <= budget.rows_removed <= 8
         # A full marker/guard/epoch reservation cannot fit eight inspections.
         assert session.scalar(select(SourceRetentionWorkModel.id).limit(1)) is None
+        state = session.get_one(XrayPhysicalStateModel, input_id)
+        retained_capture = session.get_one(XrayInputSnapshotModel, input_id)
+        assert (state.input_pending, state.payload_rows) == physical_before
+        assert (retained_capture.canonical_input, retained_capture.input_digest) == (
+            input_bytes,
+            input_digest,
+        )
     with case.sessions() as session, session.begin():
         budget = SourcePurgeBudget(
             rows_inspected=128, rows_removed=8, bytes_inspected=8192, bytes_removed=8192
         )
         assert expire_source_payloads(session, at=case.now[0], limit=1, budget=budget) == 0
         assert 0 <= budget.rows_inspected < 128
-        assert (
-            session.scalar(
-                select(SourceRetentionWorkModel.id)
-                .where(SourceRetentionWorkModel.phase != "complete")
-                .limit(1)
-            )
-            is not None
+        # This turn starts behind the other source families after the eight-row
+        # probe. Its remaining allowance cannot reserve the constituent marker.
+        assert session.scalar(select(SourceRetentionWorkModel.id).limit(1)) is None
+        state = session.get_one(XrayPhysicalStateModel, input_id)
+        retained_capture = session.get_one(XrayInputSnapshotModel, input_id)
+        assert (state.input_pending, state.payload_rows) == physical_before
+        assert (retained_capture.canonical_input, retained_capture.input_digest) == (
+            input_bytes,
+            input_digest,
         )
         assert session.scalar(select(SourceExpiryEventModel.id).limit(1)) is None
+    # The next declared invocations keep the same small allowance. One complete
+    # five-family rotation gives the relevant constituent an earlier turn.
+    for _ in range(5):
+        with case.sessions() as session, session.begin():
+            budget = SourcePurgeBudget(
+                rows_inspected=128, rows_removed=8, bytes_inspected=8192, bytes_removed=8192
+            )
+            assert expire_source_payloads(session, at=case.now[0], limit=1, budget=budget) == 0
+            assert 0 <= budget.rows_inspected <= 128 and 0 <= budget.rows_removed <= 8
+            assert 0 <= budget.bytes_inspected <= 8192 and 0 <= budget.bytes_removed <= 8192
+            pending = session.scalar(
+                select(SourceRetentionWorkModel.id)
+                .where(
+                    SourceRetentionWorkModel.owner_id == UUID(case.principal.owner_id),
+                    SourceRetentionWorkModel.constituent_snapshot_id.in_(constituent_ids),
+                    SourceRetentionWorkModel.phase != "complete",
+                )
+                .limit(1)
+            )
+            assert session.scalar(select(SourceExpiryEventModel.id).limit(1)) is None
+        if pending is not None:
+            break
+    else:
+        pytest.fail("a bounded source-family rotation did not create relevant pending work")
+    owner = UUID(case.principal.owner_id)
+    run_id = UUID(result.context.run_id)
+    with case.sessions() as session:
+        assert (
+            session.scalar(
+                select(XrayRetentionEventModel.id).where(
+                    XrayRetentionEventModel.owner_id == owner,
+                    XrayRetentionEventModel.input_id == input_id,
+                )
+            )
+            is None
+        )
+        collections = session.execute(
+            select(CollectionQuerySnapshotModel.id, CollectionQuerySnapshotModel.expires_at)
+            .join(
+                XrayCollectionBindingModel,
+                XrayCollectionBindingModel.collection_id == CollectionQuerySnapshotModel.id,
+            )
+            .where(
+                XrayCollectionBindingModel.owner_id == owner,
+                XrayCollectionBindingModel.run_id == run_id,
+            )
+        ).all()
+        database_now = session.scalar(select(func.current_timestamp()))
+        assert database_now is not None and collections
+        assert all(row.expires_at > database_now for row in collections)
+        collection_ids = tuple(row.id for row in collections)
+        member_count = session.scalar(
+            select(func.count(CollectionQuerySnapshotMemberModel.record_id)).where(
+                CollectionQuerySnapshotMemberModel.snapshot_id.in_(collection_ids)
+            )
+        )
+        state = session.get_one(XrayPhysicalStateModel, input_id)
+        before_rejected_cleanup = (state.input_pending, state.payload_rows)
+    # Source work alone does not authorize collection deletion. The controlled
+    # maintenance clock is ahead of these real-clock TTLs, so the SQL guard rejects
+    # cleanup until normal source expiry publishes the capture's own event.
+    with pytest.raises(app.XrayServiceError) as premature:
+        asyncio.run(
+            case.service.get_effective_exposure(
+                case.principal,
+                XRAY_ACCOUNT_ID,
+                query=app.EffectiveExposureQuery(
+                    request=case.request(run_id=result.context.run_id)
+                ),
+            )
+        )
+    assert premature.value.code is app.XrayServiceErrorCode.VALIDATION_FAILED
+    with case.sessions() as session:
+        state = session.get_one(XrayPhysicalStateModel, input_id)
+        retained_capture = session.get_one(XrayInputSnapshotModel, input_id)
+        assert (state.input_pending, state.payload_rows) == before_rejected_cleanup
+        assert (retained_capture.canonical_input, retained_capture.input_digest) == (
+            input_bytes,
+            input_digest,
+        )
+        assert (
+            session.scalar(
+                select(func.count(CollectionQuerySnapshotMemberModel.record_id)).where(
+                    CollectionQuerySnapshotMemberModel.snapshot_id.in_(collection_ids)
+                )
+            )
+            == member_count
+        )
+        assert session.scalar(
+            select(func.count(XrayCollectionBindingModel.id)).where(
+                XrayCollectionBindingModel.owner_id == owner,
+                XrayCollectionBindingModel.collection_id.in_(collection_ids),
+            )
+        ) == len(collection_ids)
+    # At most five additional full-budget invocations establish the derivative
+    # marker; the original 128-invocation copy-drain prefix follows unchanged.
+    for _ in range(5):
+        with case.sessions() as session, session.begin():
+            budget = SourcePurgeBudget(rows_inspected=256, rows_removed=256)
+            assert expire_source_payloads(session, at=case.now[0], limit=1, budget=budget) == 0
+            assert 0 <= budget.rows_inspected <= 256 and 0 <= budget.rows_removed <= 256
+            assert 0 <= budget.bytes_inspected <= 64 * 1024 * 1024
+            assert 0 <= budget.bytes_removed <= 64 * 1024 * 1024
+            parent_event = session.scalar(
+                select(XrayRetentionEventModel.id).where(
+                    XrayRetentionEventModel.owner_id == owner,
+                    XrayRetentionEventModel.input_id == input_id,
+                )
+            )
+            state = session.get_one(XrayPhysicalStateModel, input_id)
+            assert state.input_pending and state.payload_rows > 0
+        if parent_event is not None:
+            break
+    else:
+        pytest.fail("bounded source expiry did not publish the retained capture event")
     with pytest.raises(app.XrayServiceError) as denied:
         asyncio.run(
             case.service.get_effective_exposure(
                 case.principal,
                 XRAY_ACCOUNT_ID,
-                query=app.EffectiveExposureQuery(request=case.request(result.context.run_id)),
+                query=app.EffectiveExposureQuery(
+                    request=case.request(run_id=result.context.run_id)
+                ),
             )
         )
     assert denied.value.code is app.XrayServiceErrorCode.ACCESS_DENIED
+    with case.sessions() as session:
+        state = session.get_one(XrayPhysicalStateModel, input_id)
+        before_copy_rows = state.payload_rows
+        assert state.input_pending and before_copy_rows > 0
     completed = 0
     for _ in range(128):
         with case.sessions() as session, session.begin():
             budget = SourcePurgeBudget(rows_inspected=256, rows_removed=256)
             completed += expire_source_payloads(session, at=case.now[0], limit=1, budget=budget)
             assert 0 <= budget.rows_inspected <= 256 and 0 <= budget.rows_removed <= 256
+            assert 0 <= budget.bytes_inspected <= 64 * 1024 * 1024
+            assert 0 <= budget.bytes_removed <= 64 * 1024 * 1024
             if completed:
                 break
+    # Preserve the original prefix as a physical partial-progress boundary.
+    # Event establishment above is separate from these copy-drain invocations.
+    with case.sessions() as session:
+        state = session.get_one(XrayPhysicalStateModel, input_id)
+        retained_capture = session.get_one(XrayInputSnapshotModel, input_id)
+        assert state.input_pending and 0 < state.payload_rows < before_copy_rows
+        assert (retained_capture.canonical_input, retained_capture.input_digest) == (
+            input_bytes,
+            input_digest,
+        )
+        assert completed == 0
+        assert session.scalar(select(SourceExpiryEventModel.id).limit(1)) is None
+    for _ in range(128):
+        with case.sessions() as session, session.begin():
+            budget = SourcePurgeBudget(rows_inspected=256, rows_removed=256)
+            completed += expire_source_payloads(session, at=case.now[0], limit=1, budget=budget)
+            assert 0 <= budget.rows_inspected <= 256 and 0 <= budget.rows_removed <= 256
+            assert 0 <= budget.bytes_inspected <= 64 * 1024 * 1024
+            assert 0 <= budget.bytes_removed <= 64 * 1024 * 1024
+        if completed:
+            break
+    else:
+        pytest.fail("source copies did not drain within 256 bounded copy-drain invocations")
     assert completed == 1
     with case.sessions() as session:
         capture = session.get(XrayInputSnapshotModel, input_id)
         assert capture is not None and capture.canonical_input == b""
+        assert capture.input_digest == input_digest
         run = session.scalar(select(XrayRunModel).where(XrayRunModel.input_id == input_id))
         assert run is not None and run.canonical_summary == b""
         stored = session.get(AnalyticsRunModel, run.analytics_run_id)
@@ -403,6 +584,7 @@ def test_all_enrichment_families_resume_and_remove_licensed_payloads(
 ) -> None:
     case = xray_read_case
     result = asyncio.run(company(case))
+    input_id = UUID(result.context.input_snapshot_id)
     families: tuple[type[XrayEvidenceFields], ...] = (
         EntityEvidenceVersionModel,
         ClassificationSnapshotModel,
@@ -410,24 +592,55 @@ def test_all_enrichment_families_resume_and_remove_licensed_payloads(
         FundSourceMappingModel,
     )
     with case.sessions() as session:
+        state = session.get_one(XrayPhysicalStateModel, input_id)
+        initial_payload_rows = state.payload_rows
+        assert state.input_pending and initial_payload_rows > 0
+        retained_capture = session.get_one(XrayInputSnapshotModel, input_id)
+        input_bytes, input_digest = retained_capture.canonical_input, retained_capture.input_digest
         count = sum(session.scalar(select(func.count(model.id))) or 0 for model in families)
         expiries = tuple(session.scalar(select(func.max(model.expires_at))) for model in families)
         assert all(value is not None for value in expiries)
         expiry = max(value for value in expiries if value is not None)
     assert expiry is not None and count > 0
     at = expiry + timedelta(seconds=1)
-    completed = 0
-    for _ in range(128):
+
+    def advance() -> int:
         with case.sessions() as session, session.begin():
             budget = SourcePurgeBudget(rows_inspected=256, rows_removed=256)
-            completed += expire_enrichment_payloads(session, at=at, limit=1, budget=budget)
+            removed = expire_enrichment_payloads(session, at=at, limit=1, budget=budget)
+            assert 0 <= budget.rows_inspected <= 256 and 0 <= budget.rows_removed <= 256
+            assert 0 <= budget.bytes_inspected <= 64 * 1024 * 1024
+            assert 0 <= budget.bytes_removed <= 64 * 1024 * 1024
+            assert 0 <= budget.captures <= 100 and 0 <= budget.runs <= 100
+            return removed
+
+    completed = 0
+    for _ in range(128):
+        completed += advance()
+    # The original prefix is a real partial cleanup: copied rows decrease while
+    # the capture remains pending. Its permanent input identity stays unchanged.
+    with case.sessions() as session:
+        state = session.get_one(XrayPhysicalStateModel, input_id)
+        assert state.input_pending and 0 < state.payload_rows < initial_payload_rows
+        retained_capture = session.get_one(XrayInputSnapshotModel, input_id)
+        assert (retained_capture.canonical_input, retained_capture.input_digest) == (
+            input_bytes,
+            input_digest,
+        )
+        assert completed < count
+        assert session.scalar(select(func.count(EnrichmentExpiryEventModel.id))) == completed
+    for _ in range(128):
+        completed += advance()
         if completed == count:
             break
+    else:
+        pytest.fail("enrichment cleanup did not complete within 256 bounded invocations")
     assert completed == count
     with case.sessions() as session:
         assert session.scalar(select(func.count(EnrichmentExpiryEventModel.id))) == count
-        capture = session.get(XrayInputSnapshotModel, UUID(result.context.input_snapshot_id))
+        capture = session.get(XrayInputSnapshotModel, input_id)
         assert capture is not None and capture.canonical_input == b""
+        assert capture.input_digest == input_digest
         for model, columns in (
             (EntityEvidenceVersionModel, ("confidence",)),
             (ClassificationSnapshotModel, ("confidence",)),

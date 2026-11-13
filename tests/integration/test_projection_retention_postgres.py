@@ -8,7 +8,7 @@ from unittest.mock import patch
 from uuid import UUID, uuid4
 
 import pytest
-from sqlalchemy import Engine, Table, delete, func, select, text
+from sqlalchemy import Engine, Table, delete, func, select, text, update
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
 from trading212_analytics.projection import calculate_projection, calculate_projection_chunk
@@ -33,11 +33,13 @@ from trading212_domain.projection import (
 from trading212_domain.sources import LicensePermission, PriceBasis, source_snapshot_digest
 from trading212_domain.values import CurrencyCode, Money
 from trading212_persistence import projection_retention as retention
+from trading212_persistence.aggregation_models import AggregateOwnerErasureModel
 from trading212_persistence.historical_models import (
     HistoricalDependencyModel,
     HistoricalInputModel,
     HistoricalRetentionEventModel,
 )
+from trading212_persistence.models import BrokerConnectionModel, PrincipalModel
 from trading212_persistence.premium_models import (
     PremiumCapacityModel,
     PremiumJobModel,
@@ -58,7 +60,7 @@ from trading212_persistence.projection_retention_policy import projection_run_re
 from trading212_persistence.projection_retention_scan import scan_projection_sources
 from trading212_persistence.projection_service import PostgresProjectionService
 from trading212_persistence.scenario_retention import purge_owner_scenario_payloads
-from trading212_persistence.source_models import PriceObservationModel
+from trading212_persistence.source_models import PriceObservationModel, PriceSnapshotModel
 from trading212_persistence.source_retention import SourcePurgeBudget
 
 from tests.integration.projection_job_fixture import ProjectionJobCase
@@ -188,10 +190,74 @@ async def test_published_result_and_input_proof_require_marker_and_keep_tombston
             )
         )
         session.flush()
-    # The existing explicit owner-erasure entrypoint now includes projection copies.
+    # The operator-owned composition requires terminated synthetic identities.
+    owner = UUID(case.principal.owner_id)
+    with case.sessions() as session:
+        root = session.get_one(PremiumRunModel, case.run.id)
+        capacity = session.get_one(PremiumCapacityModel, owner)
+        job = session.get_one(PremiumJobModel, case.run.job_id)
+        before = (
+            root.reserved_bytes,
+            root.retained_bytes,
+            capacity.reserved_bytes,
+            capacity.retained_bytes,
+            capacity.active_jobs,
+            job.state,
+            measured(case),
+        )
+        assert (
+            session.scalar(
+                select(PrincipalModel.id)
+                .where(PrincipalModel.owner_id == owner, PrincipalModel.status == "active")
+                .limit(1)
+            )
+            is not None
+        )
+        assert (
+            session.scalar(
+                select(BrokerConnectionModel.id)
+                .where(
+                    BrokerConnectionModel.owner_id == owner,
+                    BrokerConnectionModel.status == "active",
+                )
+                .limit(1)
+            )
+            is not None
+        )
+    with (
+        pytest.raises(IntegrityError, match="aggregate owner remains active"),
+        case.sessions() as session,
+        session.begin(),
+    ):
+        purge_owner_scenario_payloads(session, owner, at=case.now, budget=SourcePurgeBudget())
+    with case.sessions() as session:
+        root = session.get_one(PremiumRunModel, case.run.id)
+        capacity = session.get_one(PremiumCapacityModel, owner)
+        job = session.get_one(PremiumJobModel, case.run.job_id)
+        assert (
+            root.reserved_bytes,
+            root.retained_bytes,
+            capacity.reserved_bytes,
+            capacity.retained_bytes,
+            capacity.active_jobs,
+            job.state,
+            measured(case),
+        ) == before
+        assert session.get(AggregateOwnerErasureModel, owner) is None
+        assert session.get_one(ProjectionResultModel, identity).content_digest == digest
+    with case.sessions() as session, session.begin():
+        session.execute(
+            update(PrincipalModel).where(PrincipalModel.owner_id == owner).values(status="disabled")
+        )
+        session.execute(
+            update(BrokerConnectionModel)
+            .where(BrokerConnectionModel.owner_id == owner)
+            .values(status="disabled")
+        )
+    # Keep the existing complete-erasure requirement and the shared default budget.
     with case.sessions() as session, session.begin():
         assert purge_owner_scenario_payloads(
-            session, UUID(case.principal.owner_id), at=case.now, budget=SourcePurgeBudget()
+            session, owner, at=case.now, budget=SourcePurgeBudget()
         )
     empty(case)
     with case.sessions() as session:
@@ -231,6 +297,11 @@ async def test_original_source_restriction_and_parent_blocker_drain_actual_deriv
 ) -> None:
     _, sessions = historical_database
     source, account, history = await historical_case(sessions)
+    old_cutoff = source.request.source_cutoff_at
+    with sessions() as session:
+        publication_at = session.scalar(select(func.clock_timestamp()))
+        assert isinstance(publication_at, datetime) and publication_at > old_cutoff
+    source.now[0] = publication_at
     await source.service.configure_source_provider(
         source.principal,
         SourceProviderRegistration(
@@ -256,10 +327,30 @@ async def test_original_source_restriction_and_parent_blocker_drain_actual_deriv
     source = replace(
         source,
         series=series,
-        request=replace(source.request, series=series),
-        pages=tuple(replace(page, series=series) for page in source.pages),
+        request=replace(source.request, series=series, source_cutoff_at=publication_at),
+        pages=tuple(
+            replace(
+                page,
+                series=series,
+                provenance=replace(page.provenance, first_observed_at=publication_at),
+            )
+            for page in source.pages
+        ),
     )
+    financial_observations = tuple(item for page in source.pages for item in page.observations)
     original = await ingest(source, key="retention-original-price")
+    assert original.observations == financial_observations and len(original.observations) == 3
+    assert original.provenance.first_observed_at == publication_at > old_cutoff
+    with sessions() as session:
+        original_header = session.get_one(PriceSnapshotModel, UUID(original.id))
+        original_created_at = original_header.created_at
+        assert original_created_at == publication_at
+        assert source.license.retention_days is not None
+        assert original_header.expires_at == publication_at + timedelta(
+            days=source.license.retention_days
+        )
+    younger_price_id: UUID | None = None
+    younger_created_at: datetime | None = None
     pin = ProjectionSourcePin(
         subject_id=original.id, content_digest=source_snapshot_digest(original)
     )
@@ -305,6 +396,55 @@ async def test_original_source_restriction_and_parent_blocker_drain_actual_deriv
                         correlation_id="projection-retention",
                     )
                     previous = evidence.id
+            # The latest opening has its own later physical witness. The older
+            # registered evidence still retains the original price transitively.
+            with sessions() as session:
+                younger_at = session.scalar(select(func.clock_timestamp()))
+                assert isinstance(younger_at, datetime) and younger_at > original_created_at
+            source.now[0] = younger_at
+            younger_source = replace(
+                source,
+                request=replace(source.request, source_cutoff_at=younger_at),
+                pages=tuple(
+                    replace(
+                        page,
+                        provenance=replace(
+                            page.provenance,
+                            source_revision="retention-younger-opening-v2",
+                            revision_order=2,
+                            first_observed_at=younger_at,
+                        ),
+                    )
+                    for page in source.pages
+                ),
+            )
+            younger = await ingest(younger_source, key="retention-younger-opening-price")
+            assert younger.id != original.id and younger.observations == original.observations
+            younger_price_id = UUID(younger.id)
+            with sessions() as session:
+                younger_created_at = session.get_one(
+                    PriceSnapshotModel, younger_price_id
+                ).created_at
+                assert (
+                    younger_created_at
+                    == younger_at
+                    > original_created_at + timedelta(microseconds=1)
+                )
+            await history.register_historical_evidence(
+                source.principal,
+                account,
+                HistoricalEvidenceRegistration(
+                    id=str(uuid4()),
+                    key="retention-nested-outer-opening",
+                    opening=historical_domain.InceptionHistoricalOpening(
+                        inception_at=selection(None).window.start_at,
+                        source_refs=(younger.id,),
+                        bridge_coverage=historical_domain.HistoricalCoverage(measures=()),
+                    ),
+                ),
+                idempotency_key="projection-nested-outer-opening",
+                correlation_id="projection-retention",
+            )
         await history.register_historical_policy(
             source.principal,
             account,
@@ -317,7 +457,8 @@ async def test_original_source_restriction_and_parent_blocker_drain_actual_deriv
         with sessions() as session:
             captured_at = session.scalar(select(func.clock_timestamp()))
             assert isinstance(captured_at, datetime)
-        source.now[0] = captured_at - timedelta(hours=1)
+        assert captured_at > original_created_at + timedelta(microseconds=1)
+        source.now[0] = captured_at
         request = selection(registration)
         captured = await history.capture(
             source.principal,
@@ -328,6 +469,8 @@ async def test_original_source_restriction_and_parent_blocker_drain_actual_deriv
         )
         historical_id = UUID(captured.id)
         with sessions() as session:
+            historical_created_at = session.get_one(HistoricalInputModel, historical_id).created_at
+            assert historical_created_at == captured_at
             direct = session.scalar(
                 select(HistoricalDependencyModel.id).where(
                     HistoricalDependencyModel.input_id == historical_id,
@@ -336,6 +479,16 @@ async def test_original_source_restriction_and_parent_blocker_drain_actual_deriv
             )
             assert (direct is None) == (kind == "historical_nested")
             if kind == "historical_nested":
+                assert younger_price_id is not None
+                assert (
+                    session.scalar(
+                        select(HistoricalDependencyModel.id).where(
+                            HistoricalDependencyModel.input_id == historical_id,
+                            HistoricalDependencyModel.price_snapshot_id == younger_price_id,
+                        )
+                    )
+                    is not None
+                )
                 links = session.execute(
                     text(
                         "SELECT id,evidence_id,price_snapshot_id,registered_evidence_id "
@@ -493,11 +646,22 @@ async def test_original_source_restriction_and_parent_blocker_drain_actual_deriv
             )
         )
         assert isinstance(cached_epoch, int)
+    maintenance_at = original_created_at + timedelta(days=2, microseconds=1)
+    assert maintenance_at > now
+    with sessions() as session:
+        root = session.get_one(PremiumRunModel, run.id)
+        assert maintenance_at < root.expires_at
+        if historical_id is not None:
+            assert maintenance_at < session.get_one(
+                HistoricalInputModel, historical_id
+            ).created_at + timedelta(days=2)
+        if younger_created_at is not None:
+            assert maintenance_at < younger_created_at + timedelta(days=2)
     shortened = replace(
         source.license,
         id=str(uuid4()),
         version="original-short-clock",
-        effective_at=now + timedelta(seconds=30) if kind == "future_price" else now,
+        effective_at=maintenance_at + timedelta(seconds=30) if kind == "future_price" else now,
         retention_days=2,
         store=LicensePermission.ALLOWED,
         display=LicensePermission.ALLOWED,
@@ -508,6 +672,10 @@ async def test_original_source_restriction_and_parent_blocker_drain_actual_deriv
         idempotency_key="projection-original-clock-policy",
         correlation_id="projection-retention",
     )
+    # Publication and admission used real PostgreSQL time. Only the trusted
+    # maintenance evaluation advances to the original source's two-day boundary.
+    now = maintenance_at
+    source.now[0] = now
     if kind == "future_price":
         with sessions() as session, session.begin():
             root = session.get_one(PremiumRunModel, run.id)

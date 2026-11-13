@@ -16,6 +16,7 @@ from sqlalchemy import Connection, Engine, event
 from sqlalchemy.orm import Session, sessionmaker
 from trading212_persistence.alert_retention import expire_alert_payloads
 from trading212_persistence.report_retention import expire_report_payloads
+from trading212_persistence.source_retention import SourcePurgeBudget
 
 from tests.integration.test_alert_postgres import alert_database as alert_database
 
@@ -24,6 +25,7 @@ AT = datetime(2026, 9, 11, 12, tzinfo=UTC)
 OWNERS, PER_OWNER = 32, 1024
 ROWS = OWNERS * PER_OWNER
 TABLES = ("report_input_snapshots", "alert_input_snapshots")
+TTL_INSPECTIONS = 2
 
 
 class CapturedSelect(Exception):
@@ -57,7 +59,14 @@ def _capture(connection: Connection, function: Any, at: datetime, table: str) ->
         event.listen(connection, "before_cursor_execute", intercept)
         try:
             with pytest.raises(CapturedSelect):
-                function(session, at=at, limit=1)
+                # The supported two-row remainder reaches the TTL selector;
+                # pending-report maintenance requires three before any SQL.
+                function(
+                    session,
+                    at=at,
+                    limit=1,
+                    budget=SourcePurgeBudget(rows_inspected=TTL_INSPECTIONS),
+                )
         finally:
             event.remove(connection, "before_cursor_execute", intercept)
     assert len(captured) == 1
@@ -182,6 +191,8 @@ def test_record_actual_global_ttl_select_plans(
             "population": "synthetic metadata, not canonical financial input",
             "payload_bytes_unpurged": 512,
             "warning": "LIKE omits FK/trigger behavior; no retention mutation is measured",
+            "selection_scope": "TTL candidate SELECT with two remaining inspections",
+            "invocation": {"rows_inspected": TTL_INSPECTIONS, "limit": 1},
         },
     )
     with engine.begin() as connection:
@@ -282,6 +293,8 @@ def test_record_actual_global_ttl_select_plans(
                     output / f"{prefix}-selection.json",
                     {
                         "production_function": f"{function.__module__}.{function.__name__}",
+                        "selection_scope": "TTL candidate SELECT with two remaining inspections",
+                        "invocation": {"rows_inspected": TTL_INSPECTIONS, "limit": 1},
                         "statement": statement,
                         "parameters": parameters,
                         "cutoff": at,
@@ -307,6 +320,8 @@ def test_record_actual_global_ttl_select_plans(
                 "status": "measured",
                 "selections": observed,
                 "explain_files": 12,
+                "selection_scope": "TTL candidate SELECT with two remaining inspections",
+                "invocation": {"rows_inspected": TTL_INSPECTIONS, "limit": 1},
                 "cache_note": (
                     "Seed, ANALYZE, inventory and selected-row read warm caches; not cold-start."
                 ),

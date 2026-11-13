@@ -79,6 +79,22 @@ The reason earlier runs avoided this exact remainder is unverified. The next
 complete attempt collects all failures within a test stage without changing its
 scope, failure exit status or resource limits. Full validation remains pending.
 
+The ninth complete target at `cd97b57` failed after 723 integration passes and
+12 failures; it also passed 4,749 Python unit, 918 web, 36 property and 357 contract
+cases. Its later stages did not run. Six test-fixture corrections preserve
+production guards, source-copy limits, financial facts and global budgets. Their
+retained focused attempts include 18 passes/two failures and 19 passes/one failure;
+a separate two-case attempt retained one pass/one failure. The final complete
+20-case invocation then passed in 237.39 seconds on unchanged working-source
+manifest `2fbaab355989e8e5eb3f8a9b8aa70f27657d8fc7f3180e0ac8e81072de9a9c81`.
+This source contains six test corrections above `cd97b57`; the receipt is not a
+clean-base validation or a combination of earlier passes. Strict typing passed
+all six files on the same composition. New clean-source qualification, the
+previously unreached gates and complete attempt 10 remain pending/not started.
+Final security scans, actual startup/browser evidence and delivery remain pending.
+All 30 rows and 48 scenarios remain pending, with independent owner audit and
+production authorization unchanged.
+
 ### Historical September save point
 
 The owner requested a resumable checkpoint on 2026-09-30. The aggregation

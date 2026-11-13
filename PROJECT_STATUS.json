@@ -601,6 +601,56 @@
         "source_manifest_sha256": "66ee7ed524fe654b48034224f42bbac646ad174904d170f3aede69762fc9daa3",
         "log_sha256": "3041d4b97dfbdbb4bc1ee3c6d7a7ac0f0274a7a9def8c08d6a7b65bbbe8ddfbe",
         "full_gate_pass": false
+      },
+      {
+        "attempt": "complete-validate-09",
+        "source_sha": "cd97b577ac063f1dbfa6b7ec64893130d1e37cce",
+        "tree_sha": "dfd1191911dfbb16aa6d6e51569a90d414797cf1",
+        "result": "failed_integration",
+        "started_at_utc": "2026-11-13T21:01:44.043503+00:00",
+        "duration_seconds": 6924.124,
+        "python_unit_passed": 4749,
+        "python_unit_seconds": 351.36,
+        "web_unit_passed": 918,
+        "web_unit_files_passed": 103,
+        "property_passed": 36,
+        "property_seconds": 8.09,
+        "contract_passed": 357,
+        "contract_seconds": 119.6,
+        "integration_selected": 735,
+        "integration_passed": 723,
+        "integration_failed": 12,
+        "integration_deselected": 5525,
+        "integration_seconds": 6368.7,
+        "failed_nodeids": [
+          "tests/integration/test_projection_retention_postgres.py::test_published_result_and_input_proof_require_marker_and_keep_tombstones",
+          "tests/integration/test_projection_retention_postgres.py::test_original_source_restriction_and_parent_blocker_drain_actual_derived_copies[price]",
+          "tests/integration/test_projection_retention_postgres.py::test_original_source_restriction_and_parent_blocker_drain_actual_derived_copies[historical]",
+          "tests/integration/test_projection_retention_postgres.py::test_original_source_restriction_and_parent_blocker_drain_actual_derived_copies[historical_nested]",
+          "tests/integration/test_projection_retention_postgres.py::test_original_source_restriction_and_parent_blocker_drain_actual_derived_copies[future_price]",
+          "tests/integration/test_report_postgres.py::test_source_retention_removes_report_copies_before_source_completion[source]",
+          "tests/integration/test_report_postgres.py::test_source_retention_removes_report_copies_before_source_completion[enrichment]",
+          "tests/integration/test_report_source_retention_postgres.py::test_historical_price_fx_expiry_removes_report_bytes_with_shared_budget",
+          "tests/integration/test_retention_query_plan_postgres.py::test_record_actual_global_ttl_select_plans",
+          "tests/integration/test_scenario_retention_postgres.py::test_owner_erasure_clears_unexpired_queued_input_without_losing_audit",
+          "tests/integration/test_xray_postgres.py::test_source_expiry_resumes_bounded_copies_and_denies_pending_replay",
+          "tests/integration/test_xray_postgres.py::test_all_enrichment_families_resume_and_remove_licensed_payloads"
+        ],
+        "confirmed_failure_sites": {
+          "inactive_owner_guards": 2,
+          "generic_projection_admission_errors_need_typed_code": 3,
+          "historical_nested_direct_source_fixture_assertion": 1,
+          "report_header_purged_but_work_completion_pending": 2,
+          "report_source_initial_marker_absent_at64": 1,
+          "ttl_capture_first_text_clause_not_select": 1,
+          "xray_initial_marker_absent_at128": 1,
+          "enrichment_completed_zero_after_128_calls_at256": 1
+        },
+        "later_gates_executed": false,
+        "source_unchanged": true,
+        "source_manifest_sha256": "11ccd1a087ddb285c6189bf27aadb0f4459f891ce08916ff165eedf5574bd6ac",
+        "log_sha256": "15fb95dddbcbe3e77e105addb31eaa96cdc8b05d8ba930ec4a5da650bdff8a4d",
+        "full_gate_pass": false
       }
     ],
     "retention_fixture_recovery": "focused_and_shared_module_validation_passed_complete_gate_pending",
@@ -1043,6 +1093,390 @@
         "status": "pending",
         "pytest_maxfail": 0,
         "test_scope_failure_exit_and_resource_limits_unchanged": true
+      }
+    },
+    "retention_fixture_followup_09": {
+      "status": "focused20_validation_passed_complete_target_pending",
+      "prepared_at_utc": "2026-11-13T23:33:01.267600+00:00",
+      "task_start_date": "2026-11-13",
+      "base_implementation_sha": "cd97b577ac063f1dbfa6b7ec64893130d1e37cce",
+      "changed_scope": "six_existing_integration_test_files_only; four_current_documentation_files now record actual outcomes",
+      "production_sql_guard_migration_shared_fixture_or_global_budget_changes": false,
+      "cases": [
+        {
+          "nodeid": "tests/integration/test_projection_retention_postgres.py::test_published_result_and_input_proof_require_marker_and_keep_tombstones",
+          "cause": "active_owner_guard",
+          "observed_failure": "Original owner-erasure fixture kept the synthetic owner active; unchanged aggregate SQL guard rejected it.",
+          "test_fixture_correction_or_pending_proposal": "Active-owner rejection/rollback parity, then target synthetic principal and broker-connection statuses disabled; original default-budget full erasure retained.",
+          "current_validation": "passed_in_actual_final20_source_2fbaab355989",
+          "retained_first_focus_state": "passed_in_retained_18_of20"
+        },
+        {
+          "nodeid": "tests/integration/test_projection_retention_postgres.py::test_original_source_restriction_and_parent_blocker_drain_actual_derived_copies[price]",
+          "cause": "price_original_copy_expired",
+          "observed_failure": "Typed unchanged-source admission observation: RUN_EXPIRED at create_assumption_set.",
+          "test_fixture_correction_or_pending_proposal": "Normally publish source at actual PG time with explicit availability and exact three original financial observations; preserve 30-day source-copy ceiling and two-day tightening control.",
+          "current_validation": "passed_in_actual_final20_source_2fbaab355989",
+          "retained_first_focus_state": "passed_in_retained_18_of20"
+        },
+        {
+          "nodeid": "tests/integration/test_projection_retention_postgres.py::test_original_source_restriction_and_parent_blocker_drain_actual_derived_copies[historical]",
+          "cause": "historical_original_copy_expired",
+          "observed_failure": "Typed unchanged-source admission observation: RUN_EXPIRED at create_assumption_set.",
+          "test_fixture_correction_or_pending_proposal": "Capture the historical copy later than its freshly published physical parent and use the new legal knowledge cutoff; original financial window and source facts retained.",
+          "current_validation": "passed_in_actual_final20_source_2fbaab355989",
+          "retained_first_focus_state": "passed_in_retained_18_of20"
+        },
+        {
+          "nodeid": "tests/integration/test_projection_retention_postgres.py::test_original_source_restriction_and_parent_blocker_drain_actual_derived_copies[historical_nested]",
+          "cause": "nested_direct_source_fixture",
+          "observed_failure": "The fixture failed its direct-original-price dependency assertion before admission.",
+          "test_fixture_correction_or_pending_proposal": "Original price remains reachable only through registered historical evidence, while a distinct younger physical witness supplies the direct price path; evidence-to-evidence rejection remains.",
+          "current_validation": "passed_in_actual_final20_source_2fbaab355989",
+          "retained_first_focus_state": "passed_in_retained_18_of20"
+        },
+        {
+          "nodeid": "tests/integration/test_projection_retention_postgres.py::test_original_source_restriction_and_parent_blocker_drain_actual_derived_copies[future_price]",
+          "cause": "future_price_original_copy_expired",
+          "observed_failure": "Typed unchanged-source admission observation: RUN_EXPIRED before the intended future-policy assertion.",
+          "test_fixture_correction_or_pending_proposal": "Use fresh normal source publication and keep future policy effective time 30 seconds after maintenance; do not backdate source availability or relax the copy limit.",
+          "current_validation": "passed_in_actual_final20_source_2fbaab355989",
+          "retained_first_focus_state": "passed_in_retained_18_of20"
+        },
+        {
+          "nodeid": "tests/integration/test_report_postgres.py::test_source_retention_removes_report_copies_before_source_completion[source]",
+          "cause": "source_report_footer_pending",
+          "observed_failure": "Report header purged_at was set while ReportRetentionWork.completed_at remained unset.",
+          "test_fixture_correction_or_pending_proposal": "Preserve128small64inspection/64removal/8KiB calls. If target marker remains absent, require exact target header/chunk/artifact/grant hash-state parity, then separate bounded128-turn256inspection positive with the same64removal/8KiB caps. After marker/denial, normal report resumption shares the source remainder and may use separate bounded report-only transactions; original final assertions retained.",
+          "current_validation": "passed_in_actual_final20_source_2fbaab355989",
+          "retained_first_focus_state": "pending_corrected_runtime_and20_case_rerun"
+        },
+        {
+          "nodeid": "tests/integration/test_report_postgres.py::test_source_retention_removes_report_copies_before_source_completion[enrichment]",
+          "cause": "enrichment_report_footer_pending",
+          "observed_failure": "Report header purged_at was set while ReportRetentionWork.completed_at remained unset.",
+          "test_fixture_correction_or_pending_proposal": "Resume normal report maintenance using the same remaining256-row invocation budget; retain original grant/body/chunk/source-order/completion assertions.",
+          "current_validation": "passed_in_actual_final20_source_2fbaab355989",
+          "retained_first_focus_state": "passed_in_retained_18_of20"
+        },
+        {
+          "nodeid": "tests/integration/test_report_source_retention_postgres.py::test_historical_price_fx_expiry_removes_report_bytes_with_shared_budget",
+          "cause": "price_fx_report_marker_absent64",
+          "observed_failure": "After256calls with64inspections no report marker existed; participant metadata showed insufficient allowance after earlier source participants.",
+          "test_fixture_correction_or_pending_proposal": "Keep64-inspection/64-removal/8KiB report-copy/grant-negative phase; separate256-inspection positive keeps64removal/8KiB limits; require actual footer completion.",
+          "current_validation": "passed_in_actual_final20_source_2fbaab355989",
+          "retained_first_focus_state": "passed_in_retained_18_of20"
+        },
+        {
+          "nodeid": "tests/integration/test_retention_query_plan_postgres.py::test_record_actual_global_ttl_select_plans",
+          "cause": "ttl_first_statement_prelude",
+          "observed_failure": "The first intercepted SQL was the pending-maintenance TextClause, before the intended TTL SELECT.",
+          "test_fixture_correction_or_pending_proposal": "Use a supported two-inspection remainder and limit1 so the three-inspection prelude legitimately emits no SQL; preserve first-statement/read-only/abort canaries and scope all12EXPLAINs to that TTL workload.",
+          "current_validation": "passed_in_actual_final20_source_2fbaab355989",
+          "retained_first_focus_state": "passed_in_retained_18_of20"
+        },
+        {
+          "nodeid": "tests/integration/test_scenario_retention_postgres.py::test_owner_erasure_clears_unexpired_queued_input_without_losing_audit",
+          "cause": "active_owner_guard",
+          "observed_failure": "Original scenario owner-erasure fixture kept the synthetic owner active; unchanged aggregate SQL guard rejected it.",
+          "test_fixture_correction_or_pending_proposal": "Prove rejection/rollback first, disable only target synthetic lifecycle identities, then retain original queued-input/default-budget complete erasure and audit assertions.",
+          "current_validation": "passed_in_actual_final20_source_2fbaab355989",
+          "retained_first_focus_state": "passed_in_retained_18_of20"
+        },
+        {
+          "nodeid": "tests/integration/test_xray_postgres.py::test_source_expiry_resumes_bounded_copies_and_denies_pending_replay",
+          "cause": "xray_marker_routed_allowance",
+          "observed_failure": "The initial128-inspection call reached its source participant with only two rows, leaving one after lookup and no32-row marker allowance.",
+          "test_fixture_correction_or_pending_proposal": "Preserve8/128negative input/digest/counter parity and target-scoped source rotation; prove early already-pinned cleanup VALIDATION_FAILED with rollback parity until the derivative event. At most5normal256-row source invocations establish the target event; retain strict pinned ACCESS_DENIED, original128-call partial drain and separately bounded128-call continuation with identical caps.",
+          "current_validation": "passed_in_actual_final20_source_2fbaab355989",
+          "retained_first_focus_state": "pending_corrected_runtime_and20_case_rerun"
+        },
+        {
+          "nodeid": "tests/integration/test_xray_postgres.py::test_all_enrichment_families_resume_and_remove_licensed_payloads",
+          "cause": "enrichment_partial_prefix",
+          "observed_failure": "All128calls made continued physical progress but completed0of10source work items; observed payload rows484to104.",
+          "test_fixture_correction_or_pending_proposal": "Keep the original128calls as explicit partial progress, followed by at most128additional calls with identical256-row budgets and unchanged final ten-event/payload-erasure assertions.",
+          "current_validation": "passed_in_actual_final20_source_2fbaab355989",
+          "retained_first_focus_state": "passed_in_retained_18_of20"
+        }
+      ],
+      "unchanged_source_diagnostics": {
+        "projection_admission": {
+          "receipt": {
+            "path": "projection-source-admission-red-01/receipt.json",
+            "bytes": 1048,
+            "sha256": "b6c438899a9ed507b8a957f45f3419e08bc73e06601c682ac71779e5e1715e26"
+          },
+          "failed": 3,
+          "pytest_seconds": 4.81,
+          "runner_seconds": 7.148,
+          "typed_codes": ["RUN_EXPIRED"],
+          "payloads_or_exception_text_captured": false
+        },
+        "metadata_budget": {
+          "receipt": {
+            "path": "xray-retention-metadata-red-01/receipt.json",
+            "bytes": 938,
+            "sha256": "111a144b6e8c35aac8d796da5b0b54d26d536c2a847be85405251aff816d811e"
+          },
+          "failed": 3,
+          "pytest_seconds": 63.68,
+          "runner_seconds": 66.417,
+          "scope": "closed metadata observations, outside timing/performance claims"
+        }
+      },
+      "retained_focused20_attempt": {
+        "state": "FAILED",
+        "receipt": {
+          "path": "retention-fixture-focused-green-01/receipt.json",
+          "bytes": 1480,
+          "sha256": "3af5189d8fc34ff967cdf3997cb2118cc0b3d4bec67175b495d13d857c225c70"
+        },
+        "started_at_utc": "2026-11-13T23:13:04.594460+00:00",
+        "passed": 18,
+        "failed": 2,
+        "pytest_seconds": 234.02,
+        "runner_seconds": 237.09,
+        "source_unchanged": true,
+        "source_manifest_sha256": "63779f9829496b4ba8d1296cb6b9ec926f497325335149d8bf53154fd071fd73",
+        "log_sha256": "400d0ddda11b9309f8349b9f7e4f244eed8c71d6eb3cfebb06e26be64786135d",
+        "failed_nodeids": [
+          "tests/integration/test_report_postgres.py::test_source_retention_removes_report_copies_before_source_completion[source]",
+          "tests/integration/test_xray_postgres.py::test_source_expiry_resumes_bounded_copies_and_denies_pending_replay"
+        ],
+        "qualification": "Retained failure at its exact composition; later two-file edits do not turn it into a20-case pass."
+      },
+      "enrichment_followup": {
+        "retained_prefix_invocations": 128,
+        "additional_maximum_invocations": 128,
+        "per_call_inspections": 256,
+        "per_call_removals": 256,
+        "focus20_result": "passed_in_actual_final20",
+        "final_source_event_count": 10
+      },
+      "query_plan_observation": {
+        "state": "measured_pass_in_actual_final20",
+        "metadata": {
+          "path": "retention-fixture-focused-green-03-query-plans/complete.json",
+          "bytes": 1019,
+          "sha256": "846dd6cee2f3fa26dc19c2e7c8272c472cca05544333628b236ffbfe9241dfdd"
+        },
+        "explain_files": 12,
+        "rows_per_table": 32768,
+        "eligibility_counts": [0, 32, 8192],
+        "remaining_inspections": 2,
+        "limit": 1,
+        "scope": "TTL candidate SELECT only",
+        "default_budget_full_maintenance_latency_or_index_guarantee": false
+      },
+      "static_peer_review": {
+        "reference": {
+          "path": "retention-fixture-six-file-independent-review-03.json",
+          "bytes": 9066,
+          "sha256": "9c70aa7b21c4a1f21ef25efe753182a9bfccfd84212dd8cc3157a4b208def360"
+        },
+        "reviewed_at_utc": "2026-11-13T23:47:21.673450+00:00",
+        "blocking_findings": [],
+        "original_assertions": 273,
+        "current_assertions": 371,
+        "scope": "Hash-bound static review; actual final20 receipt is separate executable evidence and owner audit remains pending."
+      },
+      "typing_authoring_negative": {
+        "first_receipt": {
+          "path": "retention-fixture-types-01/receipt.json",
+          "bytes": 1180,
+          "sha256": "a905c3561dd0509fb37b69c5873caa6bcb82d3fa795af626c33c479c4486a29b"
+        },
+        "errors": 2,
+        "cause": "New local variable names conflicted with existing Optional capture variables.",
+        "correction": "Rename only the new get_one locals to retained_capture; retain all assertions.",
+        "corrected_runner_seconds": 0.324,
+        "corrected_files": 6,
+        "qualification": "Initial two variable conflicts and intermediate correction retained separately from final current typing05.",
+        "intermediate_corrected_receipt": {
+          "path": "retention-fixture-types-02/receipt.json",
+          "bytes": 1179,
+          "sha256": "2398783b5e8bb4169296c56bcf5bf5944eec289b01755e2bb6716ce872ea6907"
+        }
+      },
+      "final_focused20_validation": {
+        "state": "PASSED",
+        "receipt": {
+          "path": "retention-fixture-focused-green-03/receipt.json",
+          "bytes": 1480,
+          "sha256": "5bd94efb9c109bd9a2a56844e084bf8dc81ca056924ce4e09572cc309e7ca14f"
+        },
+        "started_at_utc": "2026-11-13T23:44:44.869657+00:00",
+        "passed": 20,
+        "failed": 0,
+        "pytest_seconds": 237.39,
+        "runner_seconds": 240.344,
+        "source_unchanged": true,
+        "source_manifest_sha256": "2fbaab355989e8e5eb3f8a9b8aa70f27657d8fc7f3180e0ac8e81072de9a9c81",
+        "log_sha256": "58ef29176b564083724102566d13bdb4b5786c2987d7b193d4ea4a112baaece0",
+        "git_head_at_invocation": "cd97b577ac063f1dbfa6b7ec64893130d1e37cce",
+        "working_source_included_six_test_corrections": true,
+        "is_clean_base_cd97_runtime_validation": false,
+        "overlapping_earlier_focus_results_not_combined": true
+      },
+      "new_clean_commit_and_source_archive": "PENDING_ROOT_STATIC_FETCH_AND_COMMIT",
+      "next_complete_attempt": {
+        "name": "complete-validate-10",
+        "state": "NOT_STARTED",
+        "receipt": null
+      },
+      "final_security_startup_browser_push_ci_cleanup_portable_export": "PENDING",
+      "all30_rows_and48_scenarios_remain_pending": true,
+      "accepted_phase3_rows": 0,
+      "accepted_phase3_scenarios": 0,
+      "independent_owner_audit": "pending",
+      "github_actions": "deferred_by_owner_unverified",
+      "production_authorized": false,
+      "live_enabled": false,
+      "last_observation_at_utc": "2026-11-13T23:53:12.692060+00:00",
+      "retained_subsequent_attempts": [
+        {
+          "state": "FAILED",
+          "receipt": {
+            "path": "retention-fixture-remaining-01/receipt.json",
+            "bytes": 1122,
+            "sha256": "a1cc27a0d6e0a6731501f4d10ec0e8b38cf284cc02d2c8b02eea4337b2da1df0"
+          },
+          "started_at_utc": "2026-11-13T23:29:42.958323+00:00",
+          "passed": 1,
+          "failed": 1,
+          "pytest_seconds": 33.01,
+          "runner_seconds": 34.554,
+          "source_unchanged": true,
+          "source_manifest_sha256": "9a41cecc2f55bf74da8bb738878445d94288d80fba0197c4580f32e8a40ee661",
+          "log_sha256": "f12b94d734f8b9f7ec67815cefdadfbe86e285e6058eb50813768d9efc4ba7e9",
+          "failure_scope": "Original128-call X-ray drain remained incomplete after normal derivative-event setup."
+        },
+        {
+          "state": "PASSED",
+          "receipt": {
+            "path": "retention-fixture-xray-final-01/receipt.json",
+            "bytes": 974,
+            "sha256": "66a411edad894e31a69d9b75efea0c4a8304fe1635dc730fd6b79c28a734f791"
+          },
+          "started_at_utc": "2026-11-13T23:34:14.921634+00:00",
+          "passed": 1,
+          "failed": 0,
+          "pytest_seconds": 18.36,
+          "runner_seconds": 19.707,
+          "source_unchanged": true,
+          "source_manifest_sha256": "8da1b87ccddb8dc66fbd481874d128707d793a84e3b75723d8eda4fbd590d1de",
+          "log_sha256": "e4cb2abedb4c23003f3ed753833b1920a7d53326eee3e6a31cdce2602def56c5"
+        },
+        {
+          "state": "FAILED",
+          "receipt": {
+            "path": "retention-fixture-focused-green-02/receipt.json",
+            "bytes": 1481,
+            "sha256": "e335c8dab6c83e4f67398a2e5889206608cb8affe775e4143ec286e5ef13c62d"
+          },
+          "started_at_utc": "2026-11-13T23:35:37.534139+00:00",
+          "passed": 19,
+          "failed": 1,
+          "pytest_seconds": 238.9,
+          "runner_seconds": 241.973,
+          "source_unchanged": true,
+          "source_manifest_sha256": "8da1b87ccddb8dc66fbd481874d128707d793a84e3b75723d8eda4fbd590d1de",
+          "log_sha256": "c57b27c31778c55bbcfa5e4b31c9351cb5c3165f42c57ca4eb4c85ff877f3e2d",
+          "failure_scope": "Core source report fixture had no target marker after its128-call64-inspection prefix."
+        }
+      ],
+      "core_source_report_followup": {
+        "state": "passed_in_actual_final20",
+        "small_prefix": {
+          "maximum_invocations": 128,
+          "rows_inspected": 64,
+          "rows_removed": 64,
+          "bytes_inspected": 8192,
+          "bytes_removed": 8192,
+          "preserved": true
+        },
+        "conditional_no_marker_control": "Exact independent header/chunk/artifact byte/hash/purge-state and grant-metadata parity plus target work absence.",
+        "adequate_positive_if_no_marker": {
+          "maximum_invocations": 128,
+          "rows_inspected": 256,
+          "rows_removed": 64,
+          "bytes_inspected": 8192,
+          "bytes_removed": 8192,
+          "new_transaction_each_invocation": true
+        },
+        "original_marker_and_download_denial_assertions_retained_after_either_branch": true,
+        "source_drain_prefix": {
+          "maximum_invocations": 128,
+          "rows_inspected": 256,
+          "rows_removed": 256
+        },
+        "header_purged_footer_pending": "Normal report maintenance uses the same remaining source invocation budget.",
+        "separate_report_only_footer_phase": {
+          "maximum_invocations": 128,
+          "rows_inspected": 256,
+          "rows_removed": 256,
+          "new_transaction_each_invocation": true
+        },
+        "all_original_report_assertions_retained": true,
+        "branch_coverage_qualification": "The successful actual invocation qualifies its observed path; no claim that every possible scheduling branch executed."
+      },
+      "xray_followup": {
+        "state": "passed_in_actual_final20",
+        "original_request_already_explicitly_pinned": true,
+        "safe_red": {
+          "receipt": {
+            "path": "xray-pinned-read-red-01/receipt.json",
+            "bytes": 1025,
+            "sha256": "2778f3b9fdd873b8d0bd3768db84c5c3eb5dd6c4fa4a6b6e89456293e35711f9"
+          },
+          "failed": 1,
+          "pytest_seconds": 10.2,
+          "runner_seconds": 12.446,
+          "source_manifest_sha256": "11cb2ebf0eda96af27e61872b1ae14daf26eef0fe2f36d31926e533e902e0f36",
+          "observed_operation": "cleanup_before_pinned_read",
+          "sqlstate": "23514",
+          "guard_function": "xray_collection_guard",
+          "guard_line": 32,
+          "typed_code": "VALIDATION_FAILED"
+        },
+        "test_phase": "Real collection TTL remains after database CURRENT_TIMESTAMP and no target XrayRetentionEvent exists: strict early pinned VALIDATION_FAILED with transaction rollback parity. Normal bounded source expiry creates the event, then original pinned ACCESS_DENIED remains required.",
+        "separate_event_prefix_maximum_invocations": 5,
+        "rows_inspected_per_invocation": 256,
+        "sufficiency": "Executed for this exact fixture in the separate one-case pass and final combined20-case pass; no general convergence or performance claim.",
+        "original_copy_prefix_invocations": 128,
+        "additional_copy_maximum_invocations": 128,
+        "copy_invocations_total_maximum": 256,
+        "rows_removed_per_invocation": 256,
+        "bytes_inspected_per_invocation": 67108864,
+        "bytes_removed_per_invocation": 67108864,
+        "full_256_row_event_and_copy_invocations_maximum": 261,
+        "original_copy_prefix_is_protected_partial_progress": true
+      },
+      "final_current_typing": {
+        "state": "PASSED",
+        "receipt": {
+          "path": "retention-fixture-types-05/receipt.json",
+          "bytes": 1179,
+          "sha256": "c23eefb2126b9aa8bb9a1a3892d11b6958f97b91d148804af11f75e3f1e13f29"
+        },
+        "runner_seconds": 0.739,
+        "files": 6,
+        "source_unchanged": true,
+        "source_manifest_sha256": "2fbaab355989e8e5eb3f8a9b8aa70f27657d8fc7f3180e0ac8e81072de9a9c81"
+      },
+      "unreached_gates_preflight": {
+        "state": "PENDING_AFTER_NEW_CLEAN_COMMIT",
+        "command": [
+          "make",
+          "test-migrations",
+          "test-security",
+          "security-check",
+          "test-e2e",
+          "build",
+          "container-build"
+        ],
+        "replaces_complete_make_validate": false
       }
     }
   }

@@ -53,7 +53,7 @@ from trading212_persistence.report_models import (
     ReportManifestModel,
     ReportRetentionWorkModel,
 )
-from trading212_persistence.report_retention import purge_report_input
+from trading212_persistence.report_retention import expire_report_payloads, purge_report_input
 from trading212_persistence.report_service import PostgresReportService
 from trading212_persistence.report_sources import project_report_dependencies
 from trading212_persistence.source_retention import SourcePurgeBudget
@@ -1041,6 +1041,74 @@ def test_source_retention_removes_report_copies_before_source_completion(
             assert expiry is not None
         at = expiry + timedelta(seconds=1)
         expire = expire_source_payloads if family == "source" else expire_enrichment_payloads
+
+        def report_copy_state() -> tuple[tuple[object, ...], ...]:
+            # Independent byte fingerprints preserve missing versus empty copies
+            # and avoid decoding or reflecting retained financial documents.
+            values: list[tuple[object, ...]] = []
+            with case.base.sessions() as session:
+                header = session.get_one(ReportInputSnapshotModel, input_id)
+                for name in ("canonical_manifest", "canonical_context"):
+                    payload = getattr(header, name)
+                    values.append(
+                        (
+                            "header",
+                            name,
+                            None if payload is None else len(payload),
+                            None if payload is None else hashlib.sha256(payload).hexdigest(),
+                            header.purged_at,
+                        )
+                    )
+                for model, column, predicate in (
+                    (
+                        ReportInputChunkModel,
+                        ReportInputChunkModel.payload,
+                        ReportInputChunkModel.input_id == input_id,
+                    ),
+                    (
+                        ReportArtifactModel,
+                        ReportArtifactModel.contents,
+                        ReportArtifactModel.job_id == status.job_id,
+                    ),
+                ):
+                    for identifier, payload, purged_at in session.execute(
+                        select(model.id, column, model.purged_at)
+                        .where(predicate)
+                        .order_by(model.id)
+                    ):
+                        values.append(
+                            (
+                                model.__tablename__,
+                                str(identifier),
+                                None if payload is None else len(payload),
+                                None if payload is None else hashlib.sha256(payload).hexdigest(),
+                                purged_at,
+                            )
+                        )
+                for identifier, revoked_at, last_used_at in session.execute(
+                    select(
+                        ArtifactDownloadGrantModel.id,
+                        ArtifactDownloadGrantModel.revoked_at,
+                        ArtifactDownloadGrantModel.last_used_at,
+                    )
+                    .where(
+                        ArtifactDownloadGrantModel.report_artifact_id
+                        == status.artifacts[0].artifact_id
+                    )
+                    .order_by(ArtifactDownloadGrantModel.id)
+                ):
+                    values.append(("grant", str(identifier), revoked_at, last_used_at))
+            return tuple(values)
+
+        initial_copies = report_copy_state()
+        retained_bytes = sum(
+            value[2]
+            for value in initial_copies
+            if value[0] != "grant" and isinstance(value[2], int)
+        )
+        assert retained_bytes > 8192
+        # Keep the original small-budget prefix: routing may either reach the
+        # target marker or leave it pending before the report participant.
         for _ in range(128):
             with case.base.sessions() as session, session.begin():
                 budget = SourcePurgeBudget(
@@ -1053,8 +1121,48 @@ def test_source_retention_removes_report_copies_before_source_completion(
                         ReportRetentionWorkModel.completed_at.is_(None),
                     )
                 )
+                assert 0 <= budget.rows_inspected <= 64 and 0 <= budget.rows_removed <= 64
+                assert 0 <= budget.bytes_inspected <= 8192 and 0 <= budget.bytes_removed <= 8192
+                assert 0 <= budget.captures <= 100 and 0 <= budget.runs <= 100
+                assert 0 <= budget.artifacts <= 100
             if pending is not None:
                 break
+        if pending is None:
+            # An undersized route may advance operational source/sweep metadata,
+            # but it must preserve every target report copy and grant.
+            assert report_copy_state() == initial_copies
+            with case.base.sessions() as session:
+                assert (
+                    session.scalar(
+                        select(ReportRetentionWorkModel.id).where(
+                            ReportRetentionWorkModel.input_id == input_id
+                        )
+                    )
+                    is None
+                )
+            # This is a separate bounded positive, not a reset within a source
+            # invocation. Only inspections increase; removal and byte caps stay.
+            for _ in range(128):
+                with case.base.sessions() as session, session.begin():
+                    budget = SourcePurgeBudget(
+                        rows_inspected=256,
+                        rows_removed=64,
+                        bytes_inspected=8192,
+                        bytes_removed=8192,
+                    )
+                    expire(session, at=at, limit=1, budget=budget)
+                    pending = session.scalar(
+                        select(ReportRetentionWorkModel.id).where(
+                            ReportRetentionWorkModel.input_id == input_id,
+                            ReportRetentionWorkModel.completed_at.is_(None),
+                        )
+                    )
+                    assert 0 <= budget.rows_inspected <= 256 and 0 <= budget.rows_removed <= 64
+                    assert 0 <= budget.bytes_inspected <= 8192 and 0 <= budget.bytes_removed <= 8192
+                    assert 0 <= budget.captures <= 100 and 0 <= budget.runs <= 100
+                    assert 0 <= budget.artifacts <= 100
+                if pending is not None:
+                    break
         assert pending is not None
         with pytest.raises(app.ReportServiceError):
             await case.service.download_report_artifact(
@@ -1068,16 +1176,52 @@ def test_source_retention_removes_report_copies_before_source_completion(
             with case.base.sessions() as session, session.begin():
                 budget = SourcePurgeBudget(rows_inspected=256, rows_removed=256)
                 expire(session, at=at, limit=1, budget=budget)
-                assert 0 <= budget.rows_inspected <= 256 and 0 <= budget.rows_removed <= 256
-                assert 0 <= budget.artifacts <= 100
                 purged = session.scalar(
                     select(ReportInputSnapshotModel.purged_at).where(
                         ReportInputSnapshotModel.id == input_id
                     )
                 )
+                completed = session.scalar(
+                    select(ReportRetentionWorkModel.completed_at).where(
+                        ReportRetentionWorkModel.input_id == input_id
+                    )
+                )
+                if purged is not None and completed is None:
+                    # Header erasure precedes the independently resumable source
+                    # flags and completion footer. Share this turn's remainder.
+                    expire_report_payloads(session, at=at, limit=1, budget=budget)
+                    completed = session.scalar(
+                        select(ReportRetentionWorkModel.completed_at).where(
+                            ReportRetentionWorkModel.input_id == input_id
+                        )
+                    )
+                assert 0 <= budget.rows_inspected <= 256 and 0 <= budget.rows_removed <= 256
+                assert 0 <= budget.artifacts <= 100
+                assert 0 <= budget.bytes_inspected <= 64 * 1024 * 1024
+                assert 0 <= budget.bytes_removed <= 64 * 1024 * 1024
             if purged is not None:
                 break
         assert purged is not None
+        # The source invocation may spend its remainder on other source work.
+        # Pending report maintenance therefore has separate bounded invocations,
+        # each with its own transaction and declared budget, as in the worker.
+        for _ in range(128):
+            if completed is not None:
+                break
+            with case.base.sessions() as session, session.begin():
+                report_budget = SourcePurgeBudget(rows_inspected=256, rows_removed=256)
+                expire_report_payloads(session, at=at, limit=1, budget=report_budget)
+                assert 0 <= report_budget.rows_inspected <= 256
+                assert 0 <= report_budget.rows_removed <= 256
+                assert 0 <= report_budget.artifacts <= 100
+                assert 0 <= report_budget.bytes_inspected <= 64 * 1024 * 1024
+                assert 0 <= report_budget.bytes_removed <= 64 * 1024 * 1024
+                completed = session.scalar(
+                    select(ReportRetentionWorkModel.completed_at).where(
+                        ReportRetentionWorkModel.input_id == input_id
+                    )
+                )
+        assert purged is not None and completed is not None
         with case.base.sessions() as session:
             assert session.scalar(select(func.count()).select_from(ArtifactDownloadGrantModel)) == 0
             assert (
