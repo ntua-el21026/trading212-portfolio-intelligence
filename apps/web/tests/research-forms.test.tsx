@@ -79,6 +79,14 @@ describe("owner prose and exact revision commands", () => {
     ]);
   });
   it("retains retry identity and original revision until a deliberate edit", async () => {
+    const readyRevisionButton = () =>
+      waitFor(() => {
+        const button = screen.getByRole("button", {
+          name: "Save new revision",
+        });
+        expect(button).toBeEnabled();
+        return button;
+      });
     render(
       <ResearchNoteForm
         accountId={account}
@@ -90,12 +98,13 @@ describe("owner prose and exact revision commands", () => {
     const save = screen.getByRole("button", { name: "Save new revision" });
     fireEvent.click(save);
     await screen.findByRole("alert");
-    fireEvent.click(save);
+    fireEvent.click(await readyRevisionButton());
     await waitFor(() => expect(mocks.submit).toHaveBeenCalledTimes(2));
     expect(mocks.submit.mock.calls[1][0]).toEqual(
       mocks.submit.mock.calls[0][0],
     );
     expect(mocks.submit.mock.calls[0][0].if_match).toBe(`"${id}:1"`);
+    await readyRevisionButton();
     fireEvent.change(screen.getByLabelText("Risks", { exact: true }), {
       target: { value: "Revised premise" },
     });
@@ -104,6 +113,7 @@ describe("owner prose and exact revision commands", () => {
     expect(mocks.submit.mock.calls[2][0].idempotency_key).not.toBe(
       mocks.submit.mock.calls[0][0].idempotency_key,
     );
+    await readyRevisionButton();
   });
   it("discards delayed success after account/navigation changes", async () => {
     let finish!: (value: unknown) => void;

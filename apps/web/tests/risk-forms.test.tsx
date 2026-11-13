@@ -120,6 +120,14 @@ beforeEach(() => {
 });
 describe("risk forms and canonical values", () => {
   it("preserves decimal rates, canonical confidence and predecessor revision on retry", async () => {
+    const readyVersionButton = () =>
+      waitFor(() => {
+        const button = screen.getByRole("button", {
+          name: "Save new risk version",
+        });
+        expect(button).toBeEnabled();
+        return button;
+      });
     render(
       <RiskDefinitionForm
         accountId={account}
@@ -133,6 +141,7 @@ describe("risk forms and canonical values", () => {
     expect(screen.getByLabelText("Tail confidence")).toHaveValue("0.9");
     fireEvent.submit(screen.getByRole("form"));
     await screen.findByRole("alert");
+    await readyVersionButton();
     const first = mocks.submit.mock.calls[0][0];
     expect(first).toMatchObject({
       kind: "create_version",
@@ -151,6 +160,7 @@ describe("risk forms and canonical values", () => {
       first.idempotency_key,
     );
     await screen.findByRole("alert");
+    await readyVersionButton();
     fireEvent.change(screen.getByLabelText("Annual risk-free rate"), {
       target: { value: "0.02" },
     });
@@ -159,6 +169,7 @@ describe("risk forms and canonical values", () => {
     expect(mocks.submit.mock.calls[2][0].idempotency_key).not.toBe(
       first.idempotency_key,
     );
+    await readyVersionButton();
   });
   it("discards a late completed command after navigation intent", async () => {
     let finish!: (value: unknown) => void;

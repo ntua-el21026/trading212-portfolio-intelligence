@@ -137,6 +137,14 @@ describe("aggregate editor safety", () => {
     },
   );
   it("preserves edited fields when reloading the current revision after a conflict", async () => {
+    const readyCalculateButton = () =>
+      waitFor(() => {
+        const button = screen.getByRole("button", {
+          name: "Calculate aggregate",
+        });
+        expect(button).toBeEnabled();
+        return button;
+      });
     mocks.submit.mockResolvedValue({
       ok: false,
       code: "REVISION_MISMATCH",
@@ -173,14 +181,13 @@ describe("aggregate editor safety", () => {
     expect(screen.getByLabelText("Activity start (ISO timestamp)")).toHaveValue(
       "2026-08-01T00:00:00Z",
     );
-    fireEvent.click(
-      screen.getByRole("button", { name: "Calculate aggregate" }),
-    );
+    fireEvent.click(await readyCalculateButton());
     await waitFor(() => expect(mocks.submit).toHaveBeenCalledTimes(2));
     expect(mocks.submit.mock.calls[1][0].revision).toBe(8);
     expect(mocks.submit.mock.calls[1][0].idempotency_key).not.toBe(
       mocks.submit.mock.calls[0][0].idempotency_key,
     );
+    await readyCalculateButton();
   });
   it("loads only the explicitly chosen account and saves the exact selected snapshot", async () => {
     render(

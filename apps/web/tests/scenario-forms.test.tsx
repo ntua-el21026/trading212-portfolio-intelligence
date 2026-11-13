@@ -103,6 +103,14 @@ beforeEach(() => {
 });
 describe("scenario immutable editor and jobs", () => {
   it("preserves tiny exact shocks and predecessor revision across retries, with a new identity after edits", async () => {
+    const readyVersionButton = () =>
+      waitFor(() => {
+        const button = screen.getByRole("button", {
+          name: "Save new scenario version",
+        });
+        expect(button).toBeEnabled();
+        return button;
+      });
     render(
       <ScenarioDefinitionForm
         accountId={account}
@@ -116,7 +124,8 @@ describe("scenario immutable editor and jobs", () => {
       "-0.000000000000000001",
     );
     fireEvent.submit(screen.getByRole("form"));
-    await screen.findByRole("alert");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Retry later");
+    await readyVersionButton();
     const first = mocks.submit.mock.calls[0][0];
     expect(first).toMatchObject({
       kind: "create_version",
@@ -127,6 +136,7 @@ describe("scenario immutable editor and jobs", () => {
     fireEvent.submit(screen.getByRole("form"));
     await waitFor(() => expect(mocks.submit).toHaveBeenCalledTimes(2));
     await screen.findByRole("alert");
+    await readyVersionButton();
     expect(mocks.submit.mock.calls[1][0].idempotency_key).toBe(
       first.idempotency_key,
     );
@@ -142,6 +152,7 @@ describe("scenario immutable editor and jobs", () => {
       "0.123456789012345678",
     );
     expect(version.content.shocks?.[0].size).toBe("-0.000000000000000001");
+    await readyVersionButton();
   });
   it("edits rate and factor source pins without accepting a coefficient field", async () => {
     render(
@@ -171,6 +182,13 @@ describe("scenario immutable editor and jobs", () => {
     ).not.toBeInTheDocument();
     fireEvent.submit(screen.getByRole("form"));
     await screen.findByRole("alert");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", {
+          name: "Create scenario",
+        }),
+      ).toBeEnabled(),
+    );
     expect(mocks.submit.mock.calls[0][0].body.content.shocks).toEqual([
       {
         kind: "rate",

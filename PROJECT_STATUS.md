@@ -41,6 +41,18 @@ Production guards, historical economic dates and retention budgets remain
 unchanged; internal peer review does not replace the pending owner audit.
 The current schema retains 364 ORM tables through forward migration `0034`.
 
+The sixth complete target at `6502a5a` passed formatting, linting, typing and 4,744
+Python unit cases, then failed the web suite with 917 passes and one owner-layout
+retry-test failure. Later stages were not reached. The corrected owner-layout
+file passed its four focused cases, but the next full web suite retained a
+different scenario retry-test failure with 917 passes and one failure. Test-only
+readiness corrections across five form files then passed 32 focused cases and the
+complete 918-case/103-file web suite on unchanged source. All 104 original
+assertions remain; the three adjacent risk/research/aggregation gaps were static
+findings rather than observed runtime failures. A new immutable full target
+remains pending. The failed target's Python result and corrected web pass remain
+separate evidence.
+
 ### Historical September save point
 
 The owner requested a resumable checkpoint on 2026-09-30. The aggregation

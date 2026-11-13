@@ -4359,6 +4359,26 @@
         "later_gates_executed": false,
         "source_unchanged": true,
         "full_gate_pass": false
+      },
+      {
+        "attempt": "complete-validate-06",
+        "source_sha": "6502a5afe49408c6d0672583da9e18956ccff8a2",
+        "tree_sha": "31d533ef7e9cf893b5f431ffd7eab7913de62f7e",
+        "result": "failed_web_unit",
+        "duration_seconds": 393.808,
+        "python_unit_passed": 4744,
+        "python_unit_seconds": 359.98,
+        "web_unit_passed": 917,
+        "web_unit_failed": 1,
+        "web_files_passed": 102,
+        "web_files_failed": 1,
+        "failure_file": "apps/web/tests/owner-layout-forms.test.tsx",
+        "failure_scope": "retry_idempotency_control_readiness",
+        "later_gates_executed": false,
+        "source_unchanged": true,
+        "source_manifest_sha256": "5467fc28bd3e6b6d4f8f526b8c0886a5b4a91352f1182df41475e25d9c9f001d",
+        "log_sha256": "0a63e7b1ad862ba7009bbb44a302db6dd82880674cbc8b039957e27ff7d032e4",
+        "full_gate_pass": false
       }
     ],
     "retention_fixture_recovery": "focused_and_shared_module_validation_passed_complete_gate_pending",
@@ -4631,6 +4651,107 @@
         "formatted_source_files": 1143,
         "source_manifest_sha256": "ac468377184d30610a8f3f969fbf9dbf36fa1ddfe97e9c8c19ee675d49e0c460"
       }
+    },
+    "web_retry_fixture_recovery": {
+      "status": "focused_and_complete_web_validation_passed_full_gate_pending",
+      "original_failure": "owner_layout_error_alert_visible_before_transition_pending_settled",
+      "product_frontend_and_locks_equal_prior_full05": true,
+      "prior_web918_pass_is_current_validation": false,
+      "original_owner_layout_isolated": {
+        "passed": 4,
+        "failed": 0,
+        "vitest_seconds": 1.07,
+        "runner_seconds": 1.513,
+        "reproduced_full_failure": false
+      },
+      "owner_layout_test_correction": "await_exact_enabled_create_control_after_each_response_before_retry_edit_and_final_settle",
+      "assertions_timeouts_and_product_behavior_unchanged": true,
+      "corrected_owner_layout_focus": {
+        "passed": 4,
+        "failed": 0,
+        "vitest_seconds": 1.11,
+        "runner_seconds": 1.557,
+        "source_unchanged_during_invocation": true,
+        "source_manifest_sha256": "40e5ac611fb85d8e7bbb110007bf5cf2c7a489b4970d1e193106d414471d3163"
+      },
+      "first_followup_full_web_suite": {
+        "result": "failed",
+        "passed": 917,
+        "failed": 1,
+        "files_passed": 102,
+        "files_failed": 1,
+        "vitest_seconds": 8.64,
+        "runner_seconds": 9.226,
+        "source_unchanged_during_invocation": true,
+        "source_manifest_sha256": "40e5ac611fb85d8e7bbb110007bf5cf2c7a489b4970d1e193106d414471d3163",
+        "log_sha256": "f05dc41c77dc6398c7b01f049d9d53a6859f16f8526babb150e6717c9e18e5f9",
+        "failed_file": "apps/web/tests/scenario-forms.test.tsx",
+        "failed_scope": "retry_identity_expected_two_submit_calls_observed_one",
+        "diagnosis": "scenario_retry_actions_did_not_wait_for_enabled_submit_after_transition_response"
+      },
+      "corrected_complete_web_suite": {
+        "passed": 918,
+        "failed": 0,
+        "files_passed": 103,
+        "files_failed": 0,
+        "vitest_seconds": 7.89,
+        "runner_seconds": 8.369,
+        "exit_code": 0,
+        "source_unchanged_during_invocation": true,
+        "source_manifest_sha256": "d2bbd8574a8bb0a00eb700d2ae30a20699d708feafd05aa0d07e385d4994390e",
+        "log_sha256": "d285717ecd215c054f72c3a846f582db998a8bb036e1aa661d048b86ac94105b"
+      },
+      "new_immutable_complete_gate": "pending",
+      "original_scenario_isolated": {
+        "passed": 7,
+        "failed": 0,
+        "vitest_seconds": 0.761,
+        "runner_seconds": 1.203,
+        "reproduced_full_failure": false
+      },
+      "audited_static_readiness_gaps": [
+        "risk_form",
+        "research_form",
+        "aggregation_form"
+      ],
+      "static_gaps_are_reproduced_runtime_failures": false,
+      "changed_test_files": [
+        "apps/web/tests/owner-layout-forms.test.tsx",
+        "apps/web/tests/scenario-forms.test.tsx",
+        "apps/web/tests/risk-forms.test.tsx",
+        "apps/web/tests/research-forms.test.tsx",
+        "apps/web/tests/aggregation-forms.test.tsx"
+      ],
+      "enabled_control_waits": "actual_semantic_submit_control_before_retry_edit_and_final_settle",
+      "aggregation_early_reload_and_immediate_rerender_preserved": true,
+      "original_expect_assertions": 104,
+      "final_expect_assertions": 112,
+      "all_original_expect_assertions_retained": true,
+      "non_test_product_configuration_and_dependencies_unchanged": true,
+      "authoring_negatives": [
+        {
+          "scope": "wrong_new_scenario_control_literal",
+          "passed": 10,
+          "failed": 1,
+          "disposition": "corrected_to_actual_semantic_control"
+        },
+        {
+          "scope": "unsupported_exact_true_role_query_options",
+          "result": "typescript_failure",
+          "disposition": "removed_unsupported_options_preserved_string_name_semantics"
+        }
+      ],
+      "final_five_file_focus": {
+        "passed": 32,
+        "failed": 0,
+        "vitest_seconds": 1.28,
+        "runner_seconds": 1.714,
+        "exit_code": 0,
+        "source_unchanged_during_invocation": true,
+        "source_manifest_sha256": "d2bbd8574a8bb0a00eb700d2ae30a20699d708feafd05aa0d07e385d4994390e"
+      },
+      "final_format_lint_types": "passed",
+      "old_python_and_current_web_are_complete_gate": false
     }
   }
 }

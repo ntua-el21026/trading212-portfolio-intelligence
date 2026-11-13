@@ -62,14 +62,25 @@ beforeEach(() => {
 });
 describe("saved layout editor behavior", () => {
   it("preserves the same idempotency key across retries and creates a new key for edited content", async () => {
+    const readyCreateButton = () =>
+      waitFor(() => {
+        const button = screen.getByRole("button", {
+          name: "Create layout",
+        });
+        expect(button).toBeEnabled();
+        return button;
+      });
     render(<OwnerLayoutForm initial={initial} accounts={[]} />);
     fireEvent.click(screen.getByRole("button", { name: "Create layout" }));
-    await screen.findByRole("alert");
-    fireEvent.click(screen.getByRole("button", { name: "Create layout" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Retry this request",
+    );
+    fireEvent.click(await readyCreateButton());
     await waitFor(() => expect(mocks.submit).toHaveBeenCalledTimes(2));
     expect(mocks.submit.mock.calls[0][0].idempotency_key).toBe(
       mocks.submit.mock.calls[1][0].idempotency_key,
     );
+    await readyCreateButton();
     fireEvent.change(screen.getByLabelText("Layout name"), {
       target: { value: "Edited owner title" },
     });
@@ -78,6 +89,7 @@ describe("saved layout editor behavior", () => {
     expect(mocks.submit.mock.calls[2][0].idempotency_key).not.toBe(
       mocks.submit.mock.calls[0][0].idempotency_key,
     );
+    await readyCreateButton();
     expect(screen.getByLabelText("Layout name")).toHaveValue(
       "Edited owner title",
     );

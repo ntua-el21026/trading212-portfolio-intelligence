@@ -374,6 +374,71 @@ A new complete target against a clean immutable checkpoint remains required.
 No full validation, browser, package or release acceptance is claimed from these
 observations.
 
+## Sixth complete target and web retry readiness
+
+The sixth complete target ran at clean
+`6502a5afe49408c6d0672583da9e18956ccff8a2`, tree
+`31d533ef7e9cf893b5f431ffd7eab7913de62f7e`. It failed with exit 2 after
+393.808 seconds, with unchanged source under manifest
+`5467fc28bd3e6b6d4f8f526b8c0886a5b4a91352f1182df41475e25d9c9f001d`.
+Formatting, linting and typing passed, followed by 4,744 Python unit cases in
+359.98 seconds. The web unit suite finished with 917 passed and one failed out of
+918 cases, across 102 passing files and one failing file. Property, contract,
+database, migration, security, coverage, browser and build stages were not reached.
+
+The failure was the retry/idempotency case in
+`apps/web/tests/owner-layout-forms.test.tsx`. Its error alert was already visible
+while the form still displayed disabled `Saving` controls. The asynchronous
+transition's notice update did not establish that its pending state had settled;
+the test requested `Create layout` before that readiness condition. Application
+frontend source and locks were byte-identical to the earlier fifth target's
+918-case web pass. That earlier receipt does not qualify this failed invocation.
+The original file passed all four cases in an isolated 1.07-second invocation,
+which did not reproduce the full-suite failure.
+
+The test-only correction awaits the exact enabled `Create layout` control after
+each response before retrying, editing or finishing. Original command counts,
+idempotency identities, edited content, revision/order and navigation assertions
+remain, without timeout changes, artificial sleeps or automatic retries. The
+corrected file passed all four cases in 1.11 seconds, with a 1.557-second runner
+duration and unchanged source during that invocation.
+
+The subsequent full web-suite invocation retained a different failure: the
+scenario editor's retry-identity case expected two submit calls but observed one.
+It finished with 917 passed and one failed in 8.64 seconds, with a 9.226-second
+runner duration and unchanged source under manifest
+`40e5ac611fb85d8e7bbb110007bf5cf2c7a489b4970d1e193106d414471d3163`.
+This failed follow-up is retained separately from both owner-layout focused passes.
+The original scenario file also passed its seven isolated cases, without
+reproducing that full-suite failure. A source audit found similar readiness gaps
+in the risk, research and aggregation form tests; these three were static findings,
+not reproduced runtime failures.
+
+Corrections are confined to the five form-test files. Each affected sequence now
+awaits its actual enabled semantic submit control before retrying, editing or
+settling the final response. The aggregation test retains its early `Reload` and
+immediate rerender before awaiting the next `Calculate` control. An assertion
+comparison retained all 104 original `expect` assertions; the final tests contain
+112. Product code, configuration, dependency locks, timeouts and retry policy are
+unchanged.
+
+Two authoring negatives remain retained. A new scenario-control literal initially
+selected the wrong button and produced ten passes and one failure in a focused
+invocation. Separately, TypeScript rejected unsupported `exact: true` role-query
+options. The final tests use supported string-name matching and actual enabled
+controls; no type suppression or assertion removal was introduced.
+
+The final five-file focused invocation passed all 32 cases in 1.28 seconds, with
+a 1.714-second runner duration. The complete web suite then passed all 918 cases
+across 103 files in 7.89 seconds, with an 8.369-second runner duration. Both exited
+0 with unchanged source under manifest
+`d2bbd8574a8bb0a00eb700d2ae30a20699d708feafd05aa0d07e385d4994390e`.
+Formatting, lint and TypeScript checks also passed on that composition. These
+focused cases overlap the full web suite. The Python pass from the failed sixth
+target and this corrected web pass do not constitute a complete validation pass.
+A new clean immutable checkpoint and complete target rerun remain required; no
+later stage or release acceptance is inferred.
+
 ## Reproducible synthetic validation
 
 Use the pinned Python, uv, Node and pnpm versions in the repository version files
