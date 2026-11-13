@@ -479,6 +479,48 @@ manifest `7f7230f1fc699aa71ce589a9aa18ac6d4d17117ef06312d780e7421d935de8ba`.
 Its receipt and failed reproduction remain distinct from the failed complete
 target. A clean immutable checkpoint and complete target rerun are still required.
 
+## Eighth complete attempt and X-ray inspection boundary
+
+The eighth complete target ran at clean `32777c78af6fb61a4e99bc96241b1602dfe391e8`,
+tree `2d729f5bde0e3065b2987587132618bb55451b99`. It exited 2 after
+1871.098 seconds with unchanged source manifest
+`66ee7ed524fe654b48034224f42bbac646ad174904d170f3aede69762fc9daa3`. Static checks, 4,744
+Python unit cases, 918 web unit cases, 36 property cases and 357 contract cases
+passed. PostgreSQL integration ended with 284 passes, one failure and 5,520
+deselections in 1,340.04 seconds. Report API authorization passed before the failure
+in `test_actual_partial_erasure_keeps_membership_and_never_calls_full_oracle`.
+Later complete-target stages were not reached.
+
+The existing X-ray parent loop reserved one lookup inspection, performed SQL and
+then charged a second inspection if it found a parent identity. An invocation
+with exactly one inspection remaining could issue that query and raise instead
+of retaining pending cleanup. This is a production budget-precondition defect.
+The loop now requires two available inspections before SQL and returns `False`
+when they do not fit. Existing charging remains exact: an empty lookup consumes
+one row, and a returned parent consumes two. SQL predicates, stable ordering,
+`LIMIT 1`, post-fetch invariants, physical mutation costs, limits, financial bytes,
+source authorization and anti-forgery guards are unchanged.
+
+Five new deterministic unit cases cover path and composition lookups with one
+inspection missing and with the exact allowance, plus empty probes' one-row cost.
+Before the production change, both one-short cases failed with the observed
+RuntimeError and three controls passed in 1.21 seconds. After the change, all 31
+focused shared-budget/physical-retention unit cases passed in 1.23 seconds.
+All nine existing PostgreSQL X-ray physical/read cases then passed in
+92.28 seconds, with a 94.277-second runner duration.
+Both green invocations retained unchanged source manifest
+`824d58cb6062d4ffcd67e34872d2d210e0867b8386c5f7bf346a49c8818479a5`. The original 256-row
+resume allowance, 256-turn bound, real counter/forgery checks, full-oracle canary,
+partial capacity denial and complete drain assertions remain intact. Internal
+static review found no blocking issue; owner acceptance remains pending.
+
+Earlier successful invocations did not encounter this exact budget remainder;
+the cause of that difference is unverified. Failed complete and focused receipts
+remain distinct from these corrected-source passes. The next immutable complete
+target uses `--maxfail=0` to collect every failure within a stage, preserving the
+existing test selection, nonzero failure status, synthetic scope and single-stack
+resource limits. No complete validation pass is inferred from this correction.
+
 ## Reproducible synthetic validation
 
 Use the pinned Python, uv, Node and pnpm versions in the repository version files

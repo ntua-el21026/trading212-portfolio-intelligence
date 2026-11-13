@@ -205,7 +205,11 @@ def _run_payloads(
     ):
         parent_table = cast(Table, parent.__table__)
         child_table = cast(Table, child.__table__)
-        while charge(budget):
+        while True:
+            # Reserve room for the lookup and a returned identity before SQL;
+            # an empty lookup still consumes only its ordinary single row.
+            if budget.rows_inspected < 2 or not charge(budget):
+                return False
             query = select(parent_table.c.id).where(
                 parent_table.c.owner_id == owner,
                 parent_table.c.run_id == run_id,

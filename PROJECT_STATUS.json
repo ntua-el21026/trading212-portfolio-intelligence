@@ -576,6 +576,31 @@
         "source_manifest_sha256": "b68c689a8e3f94dfd194f762821a3f094fefe18e179fa7b6b4ecb8f44d545531",
         "log_sha256": "03465584c9bc7c80c41cad8f340b6eb7c647ad03604a59e8157ad20c5c07b692",
         "full_gate_pass": false
+      },
+      {
+        "attempt": "complete-validate-08",
+        "source_sha": "32777c78af6fb61a4e99bc96241b1602dfe391e8",
+        "tree_sha": "2d729f5bde0e3065b2987587132618bb55451b99",
+        "result": "failed_integration",
+        "duration_seconds": 1871.098,
+        "python_unit_passed": 4744,
+        "python_unit_seconds": 348.26,
+        "web_unit_passed": 918,
+        "property_passed": 36,
+        "property_seconds": 8.12,
+        "contract_passed": 357,
+        "contract_seconds": 114.32,
+        "integration_passed": 284,
+        "integration_failed": 1,
+        "integration_deselected": 5520,
+        "integration_seconds": 1340.04,
+        "failure_file": "tests/integration/test_phase2_xray_physical_postgres.py",
+        "failure_scope": "xray_parent_lookup_failed_second_inspection_after_query_with_one_row_remaining",
+        "later_gates_executed": false,
+        "source_unchanged": true,
+        "source_manifest_sha256": "66ee7ed524fe654b48034224f42bbac646ad174904d170f3aede69762fc9daa3",
+        "log_sha256": "3041d4b97dfbdbb4bc1ee3c6d7a7ac0f0274a7a9def8c08d6a7b65bbbe8ddfbe",
+        "full_gate_pass": false
       }
     ],
     "retention_fixture_recovery": "focused_and_shared_module_validation_passed_complete_gate_pending",
@@ -980,6 +1005,45 @@
       },
       "new_immutable_complete_gate": "pending",
       "internal_static_review": "no_blocking_findings_not_independent_owner_acceptance"
+    },
+    "xray_parent_budget_recovery": {
+      "status": "focused_unit_and_postgres_passed_full_gate_pending",
+      "root_cause": "parent_lookup_reserved_one_scope_inspection_before_sql_but_required_another_for_a_returned_identity",
+      "fix": "require_two_available_inspections_before_lookup_otherwise_return_false_and_preserve_pending_work",
+      "found_parent_inspections": 2,
+      "empty_lookup_inspections": 1,
+      "budgets_sql_guards_and_owner_predicates_unchanged": true,
+      "deterministic_red": {
+        "passed": 3,
+        "failed": 2,
+        "pytest_seconds": 1.21,
+        "failed_cases": ["path_one_short", "composition_one_short"]
+      },
+      "unit_green": {
+        "passed": 31,
+        "failed": 0,
+        "pytest_seconds": 1.23,
+        "runner_seconds": 2.06,
+        "source_manifest_sha256": "824d58cb6062d4ffcd67e34872d2d210e0867b8386c5f7bf346a49c8818479a5",
+        "log_sha256": "cb44000f3a46acb895b04d88a911efc738a6579ce2b06c552e112c4d3701c5ca"
+      },
+      "postgres_green": {
+        "passed": 9,
+        "failed": 0,
+        "pytest_seconds": 92.28,
+        "runner_seconds": 94.277,
+        "source_manifest_sha256": "824d58cb6062d4ffcd67e34872d2d210e0867b8386c5f7bf346a49c8818479a5",
+        "log_sha256": "434e5c076edc6fbfe0b71bedc887ea7253b71bd02244b78c16738672e7921566"
+      },
+      "original_256_row_resume_budget_and_256_turn_cap_preserved": true,
+      "actual_counter_anti_forgery_oracle_canary_and_capacity_checks_preserved": true,
+      "independent_static_review": "no_blocking_findings_not_owner_acceptance",
+      "reason_prior_runs_did_not_hit_exact_remainder": "unverified",
+      "next_complete_target": {
+        "status": "pending",
+        "pytest_maxfail": 0,
+        "test_scope_failure_exit_and_resource_limits_unchanged": true
+      }
     }
   }
 }

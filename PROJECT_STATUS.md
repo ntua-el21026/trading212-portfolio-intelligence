@@ -66,6 +66,19 @@ duplicate rejection. All 50 focused projection/risk/real-JWT cases passed in
 authentication, financial-parity, replay, paging and secret assertions remain
 unchanged. A new immutable complete target remains pending.
 
+The eighth complete target at `32777c7` passed 4,744 Python unit cases, 918 web
+unit cases, 36 property cases and 357 contract cases, then stopped with 284
+integration passes and one X-ray partial-cleanup failure. A parent lookup spent
+its final inspection allowance before discovering that a returned identity
+required another inspection. The corrected production loop checks for both
+allowances before SQL and otherwise retains pending work. Two deterministic
+one-short regressions failed before the fix; all 31 focused unit cases and nine
+PostgreSQL X-ray cases then passed. Original budgets, ownership predicates,
+anti-forgery guards, the full-oracle canary and bounded resumption checks remain.
+The reason earlier runs avoided this exact remainder is unverified. The next
+complete attempt collects all failures within a test stage without changing its
+scope, failure exit status or resource limits. Full validation remains pending.
+
 ### Historical September save point
 
 The owner requested a resumable checkpoint on 2026-09-30. The aggregation
