@@ -25,6 +25,7 @@ from trading212_persistence.premium_models import (
 from trading212_persistence.risk_models import RiskResultModel
 from trading212_persistence.risk_retention import RISK_PAYLOADS, expire_risk_payloads
 from trading212_persistence.source_models import (
+    PriceObservationModel,
     PriceSnapshotModel,
     ProviderLicenseVersionModel,
     SourceExpiryEventModel,
@@ -268,27 +269,104 @@ async def test_source_cleanup_stays_pending_until_risk_payloads_are_gone(run_cas
     case = run_case
     run = await published(case)
     with case.sessions() as session:
-        expiry = session.scalar(
-            select(PriceSnapshotModel.expires_at)
+        source = session.execute(
+            select(PriceSnapshotModel.id, PriceSnapshotModel.expires_at)
             .join(
                 HistoricalDependencyModel,
                 HistoricalDependencyModel.price_snapshot_id == PriceSnapshotModel.id,
             )
             .where(HistoricalDependencyModel.input_id == case.command.historical_input_snapshot_id)
-            .order_by(PriceSnapshotModel.expires_at)
+            .order_by(PriceSnapshotModel.expires_at, PriceSnapshotModel.id)
             .limit(1)
+        ).first()
+        assert source is not None and source.expires_at is not None
+        source_id, expiry = source.id, source.expires_at
+        source_rows = session.scalar(
+            select(func.count())
+            .select_from(PriceObservationModel)
+            .where(PriceObservationModel.snapshot_id == source_id)
         )
-        assert expiry is not None
+        assert source_rows is not None and source_rows > 0
+        result = session.scalar(select(RiskResultModel).where(RiskResultModel.run_id == run.id))
+        assert result is not None and result.canonical_result
+        result_id, canonical = result.id, result.canonical_result
+        payload_counts = tuple(
+            session.scalar(
+                select(func.count()).select_from(model).where(model.result_id == result_id)
+            )
+            for model, _ in RISK_PAYLOADS
+        )
     later = expiry + timedelta(seconds=1)
     with case.sessions() as session, session.begin():
         before = session.scalar(select(func.count()).select_from(SourceExpiryEventModel))
         budget = SourcePurgeBudget(rows_removed=0)
         assert expire_source_payloads(session, at=later, limit=100, budget=budget) == 0
         assert session.scalar(select(func.count()).select_from(SourceExpiryEventModel)) == before
-        marker = session.scalar(
-            select(PremiumRetentionModel).where(PremiumRetentionModel.run_id == run.id)
+        marker = session.execute(
+            select(PremiumRetentionModel.id, PremiumRetentionModel.completed_at).where(
+                PremiumRetentionModel.run_id == run.id
+            )
+        ).first()
+        # An exhausted removal allowance stops before source-copy participants.
+        assert marker is None
+        assert budget.rows_removed == 0 and budget.bytes_removed == 64 * 1024 * 1024
+        assert (
+            session.scalar(
+                select(RiskResultModel.canonical_result).where(RiskResultModel.id == result_id)
+            )
+            == canonical
         )
-        assert marker is not None and marker.completed_at is None
+        assert (
+            tuple(
+                session.scalar(
+                    select(func.count()).select_from(model).where(model.result_id == result_id)
+                )
+                for model, _ in RISK_PAYLOADS
+            )
+            == payload_counts
+        )
+    # Original-source and historical copy checks each remove a projection sweep.
+    # Allow those two metadata removals while the annual risk payload stays pending.
+    for _ in range(64):
+        with case.sessions.begin() as session:
+            budget = SourcePurgeBudget(rows_removed=2)
+            expire_source_payloads(session, at=later, limit=100, budget=budget)
+            assert 0 <= budget.rows_inspected <= 4096
+            assert 0 <= budget.rows_removed <= 2
+            assert 0 <= budget.bytes_inspected <= 64 * 1024 * 1024
+            assert 0 <= budget.bytes_removed <= 64 * 1024 * 1024
+            assert (
+                session.scalar(
+                    select(SourceExpiryEventModel.id).where(
+                        SourceExpiryEventModel.price_snapshot_id == source_id
+                    )
+                )
+                is None
+            )
+            assert (
+                session.scalar(
+                    select(func.count())
+                    .select_from(PriceObservationModel)
+                    .where(PriceObservationModel.snapshot_id == source_id)
+                )
+                == source_rows
+            )
+            assert (
+                session.scalar(
+                    select(RiskResultModel.canonical_result).where(RiskResultModel.id == result_id)
+                )
+                == canonical
+            )
+            marker = session.execute(
+                select(PremiumRetentionModel.id, PremiumRetentionModel.completed_at).where(
+                    PremiumRetentionModel.run_id == run.id
+                )
+            ).first()
+            if marker is not None:
+                assert marker.completed_at is None
+                break
+    else:
+        pytest.fail("Bounded source cleanup did not reach the retained risk copy")
     drain_cleanup(case, at=later)
     assert_empty(case, run)
 

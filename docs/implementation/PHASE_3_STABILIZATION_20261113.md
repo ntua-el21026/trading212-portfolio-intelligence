@@ -97,8 +97,68 @@ classifications in ignored installed third-party files (psycopg notices and a
 ReportLab font notice). That distinct result is retained. No license file or
 scanner gate was removed; public binary redistribution remains unauthorized.
 
-The complete immutable-source `make validate` gate and API-backed production
-browser qualification remain pending at this preparation boundary.
+The first immutable-source `make validate` attempt failed as recorded below. A
+new complete target and API-backed production browser qualification remain pending.
+
+## First immutable gate and retention fixture recovery
+
+The first complete target ran at committed `cac650324ef9f74557400fa31199b8d8f59feac8`,
+tree `68856b88e7743aa16ffe9464a5f4f7b16bf87ede`. Formatting, lint, strict typing,
+4,744 Python unit tests, 918 web unit tests, 36 property tests and 357 contract
+tests passed. The integration invocation selected 730 cases; it was interrupted
+after two failures and 108 passes to collect the failure tracebacks. The target
+failed, its source manifest was unchanged, and later stages were not reached.
+Its failed receipt and log remain retained rather than being combined with
+subsequent component checks into a complete pass.
+
+The two enrichment failures expected two completed purges from 32 inspections.
+Accepted ADR-0032 physical accounting reserves 64 inspections for one payload
+mutation, before scheduling and marker/progress/completion costs. Related source
+fairness fixtures had the same obsolete expectation. Their expiry ordering also
+did not establish the UUID order used by the physical scan. The corrected tests
+retain a separate 32-inspection no-removal probe, verify actual payload equality,
+and use 257 explicitly ordered busy sources per family against a 256-inspection
+allowance. Committed resumes must preserve bounded row/byte work and durable
+progress, complete the free owner's exact events while the busy owner remains
+locked, and then drain all blocked sources with unchanged identities and hashes.
+Production retention code, guards, costs and ceilings are unchanged.
+
+The source partial-purge fixture assumed its one permitted removal must remove
+an observation. SQL tracing instead showed one charged deletion of projection
+sweep metadata. The corrected fixture retains the one-removal allowance and
+requires bounded committed progress until exactly one target observation is
+removed, followed by the original parent, completion and replay assertions.
+
+A risk-copy fixture required a downstream marker after a zero-removal source call,
+which correctly returns before copy participants. Its zero-removal probe now
+checks unchanged canonical bytes, normalized rows and expiry events. A separate
+two-removal probe reaches the pending risk marker after the original-source and
+historical-copy projection sweep deletions. Direct database queries verify that
+the original source observations and canonical risk bytes remain intact; the
+original financial-drain and capacity assertions still run. An initial new
+one-removal probe could not cross those two metadata removals; that failed attempt
+and both diagnostic parser versions remain retained.
+
+The empty-head migration test still expected revision `0029`, despite the
+aggregation and decoding migrations. An actual red execution confirmed head
+`0034` after repeated upgrade and metadata parity. Only the explicit current-head
+expectation changes; historical revision checks and SQL migrations are preserved.
+
+The task stack now uses the documented free loopback ports 5432/6379 because some
+legacy fixtures use them directly. Its images and disposable task volume are
+identical across the port remap; the earlier high-port configuration remains in
+its original evidence. These corrections are test-only follow-ups. The complete
+target must be rerun against a new clean committed checkpoint before claiming
+complete local validation.
+
+The following actual focused follow-ups passed after their retained red attempts:
+
+| Scope | Observed result |
+| --- | --- |
+| Strengthened enrichment fairness and full blocked-source drain | Two cases passed in 141.13 seconds; the owned test and production bytes were stable during the run. |
+| Complete source dispatch/retention file | Seven cases passed in 346.15 seconds with an unchanged complete source manifest. |
+| Empty/repeated current head and ORM parity | One case passed in 3.92 seconds. |
+| Zero-removal and source/risk copy boundary | One case passed twice with observational SQL tracing; latest 28.60 seconds, unchanged source manifest. |
 
 ## Reproducible synthetic validation
 
@@ -119,10 +179,11 @@ volumes and never use global pruning. The repository's current gates are exposed
 through `make validate`; successful invocation must be recorded before claiming
 that gate passed.
 
-The current investigation uses a fresh task volume and disposable per-test
-databases on the exact pinned PostgreSQL 18.6 upstream image. This qualifies SQL
-correctness tests only; hardened-image build and vulnerability scans are separate
-obligations. Both pre-existing local database volumes are preserved.
+Initial focused SQL checks used the exact pinned PostgreSQL 18.6 upstream image.
+Subsequent integration and fixture follow-ups use the built hardened task image
+with the same disposable task volume and per-test databases. Image builds and
+vulnerability scans retain their separate receipts. Both pre-existing local
+database volumes are preserved.
 
 ## Evidence and acceptance boundary
 

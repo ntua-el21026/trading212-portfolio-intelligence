@@ -15,6 +15,7 @@ from trading212_application.xray_ingestion import (
     FundDefinitionRegistration,
 )
 from trading212_domain import build_synthetic_identity
+from trading212_persistence.phase2_retention_models import Phase2RetentionSweepModel
 from trading212_persistence.source_retention import SourcePurgeBudget
 from trading212_persistence.xray_catalog_models import (
     EntityEvidenceReferenceModel,
@@ -112,7 +113,7 @@ def test_busy_enrichment_retains_payload_then_resumes_on_next_dispatch_cycle(
         pytest.fail("Enrichment maintenance did not complete its bounded pending work.")
 
 
-async def _register_enrichment_prefix(case: Case, *, count: int) -> None:
+async def _register_enrichment_prefix(case: Case, *, count: int, identifier_start: int) -> None:
     """Register payload-bearing evidence and funds with ordinary owner/license guards."""
     service = PostgresXrayService(
         sessions=case.sessions, cursor_signing_key=KEY, clock=lambda: case.now[0]
@@ -125,7 +126,7 @@ async def _register_enrichment_prefix(case: Case, *, count: int) -> None:
         await service.register_entity_evidence(
             case.principal,
             EntityEvidenceRegistration(
-                id=str(uuid4()),
+                id=str(UUID(int=identifier_start + 2 * revision)),
                 key="retention-prefix-evidence",
                 provider_id=case.series.provider_id,
                 license_version_id=case.license.id,
@@ -140,7 +141,7 @@ async def _register_enrichment_prefix(case: Case, *, count: int) -> None:
         await service.register_fund_definition(
             case.principal,
             FundDefinitionRegistration(
-                id=str(uuid4()),
+                id=str(UUID(int=identifier_start + 2 * revision + 1)),
                 key="retention-prefix-fund",
                 instrument_id=instrument_id,
                 fund_type="etf",
@@ -162,14 +163,16 @@ def test_busy_owner_prefix_preserves_budget_for_other_owners_across_enrichment_f
     xray_read_case: XrayReadCase, held_lock: str
 ) -> None:
     sessions = xray_read_case.sessions
-    allowance, prefix_size = 32, 33
+    # One payload mutation reserves 64 inspections, before marker/phase/probe
+    # costs. Keep the insufficient-budget probe separate from fairness work.
+    allowance, prefix_size = 256, 257
 
     async def arrange() -> tuple[Case, Case, datetime]:
         busy = await source_case(sessions, retention_days=1)
         free = await source_case(sessions, retention_days=1)
-        await _register_enrichment_prefix(busy, count=prefix_size)
+        await _register_enrichment_prefix(busy, count=prefix_size, identifier_start=0)
         free.now[0] += timedelta(seconds=1)
-        await _register_enrichment_prefix(free, count=1)
+        await _register_enrichment_prefix(free, count=1, identifier_start=1 << 127)
         return busy, free, free.now[0] + timedelta(days=2)
 
     busy, free, at = asyncio.run(arrange())
@@ -188,6 +191,10 @@ def test_busy_owner_prefix_preserves_budget_for_other_owners_across_enrichment_f
             free_expiries = [row.expires_at for row in rows if row.owner_id == free_owner]
             assert len(busy_expiries) == prefix_size and len(free_expiries) == 1
             assert max(busy_expiries) < free_expiries[0] <= at
+            # The current physical scan orders UUIDs, independently of expiry.
+            assert max(row.id for row in rows if row.owner_id == busy_owner) < min(
+                row.id for row in rows if row.owner_id == free_owner
+            )
             before.update(
                 (row.id, (row.content_digest, row.first_observed_at, row.expires_at))
                 for row in rows
@@ -210,16 +217,114 @@ def test_busy_owner_prefix_preserves_budget_for_other_owners_across_enrichment_f
             )
         )
 
+    def payloads() -> tuple[object, ...]:
+        with sessions() as session:
+            return (
+                tuple(
+                    session.execute(
+                        select(
+                            EntityEvidenceReferenceModel.id,
+                            EntityEvidenceReferenceModel.display_name,
+                            EntityEvidenceReferenceModel.lei,
+                            EntityEvidenceReferenceModel.confidence,
+                        )
+                        .where(EntityEvidenceReferenceModel.owner_id.in_(owners))
+                        .order_by(EntityEvidenceReferenceModel.id)
+                    )
+                ),
+                tuple(
+                    session.execute(
+                        select(
+                            FundDefinitionModel.id,
+                            FundDefinitionModel.fund_type,
+                            FundDefinitionModel.evidence_key,
+                            FundDefinitionModel.confidence,
+                        )
+                        .where(FundDefinitionModel.owner_id.in_(owners))
+                        .order_by(FundDefinitionModel.id)
+                    )
+                ),
+            )
+
+    def progress() -> tuple[object, ...]:
+        with sessions() as session:
+            return (
+                tuple(
+                    session.execute(
+                        select(
+                            Phase2RetentionSweepModel.family,
+                            Phase2RetentionSweepModel.after_id,
+                            Phase2RetentionSweepModel.pending_id,
+                        ).order_by(Phase2RetentionSweepModel.family)
+                    )
+                ),
+                tuple(
+                    session.execute(
+                        select(
+                            EnrichmentRetentionWorkModel.id,
+                            EnrichmentRetentionWorkModel.phase,
+                            EnrichmentRetentionWorkModel.removed_row_count,
+                            EnrichmentRetentionWorkModel.completed_at,
+                        )
+                        .where(EnrichmentRetentionWorkModel.owner_id.in_(owners))
+                        .order_by(EnrichmentRetentionWorkModel.id)
+                    )
+                ),
+            )
+
+    def maintain(*, inspections: int = allowance) -> tuple[int, SourcePurgeBudget]:
+        before_progress = progress()
+        with sessions.begin() as session:
+            session.execute(text("SET LOCAL lock_timeout = '200ms'"))
+            budget = SourcePurgeBudget(rows_inspected=inspections)
+            completed = expire_enrichment_payloads(session, at=at, limit=100, budget=budget)
+            assert 0 <= budget.rows_inspected < inspections
+            assert 0 <= budget.rows_removed <= 4096
+            assert 0 <= budget.bytes_inspected <= 64 * 1024 * 1024
+            assert 0 <= budget.bytes_removed <= 64 * 1024 * 1024
+        # Completing an expiry is not required on every physically bounded turn;
+        # a zero-completion turn must still persist source/pending-work progress.
+        if completed == 0:
+            assert progress() != before_progress
+        return completed, budget
+
     with sessions.begin() as blocker:
         blocker.execute(
             text("SELECT pg_advisory_xact_lock(hashtextextended(:key,0))"),
             {"key": f"{held_lock}:{busy_owner}"},
         )
-        with sessions.begin() as session:
-            session.execute(text("SET LOCAL lock_timeout = '200ms'"))
-            budget = SourcePurgeBudget(rows_inspected=allowance)
-            assert expire_enrichment_payloads(session, at=at, limit=100, budget=budget) == 2
-            assert 0 < budget.rows_inspected < allowance
+        before_payloads = payloads()
+        completed, budget = maintain(inspections=32)
+        assert completed == 0
+        assert budget.rows_removed == 4096
+        assert budget.bytes_removed == budget.bytes_inspected == 64 * 1024 * 1024
+        assert payloads() == before_payloads
+        with sessions() as session:
+            assert (
+                session.scalar(
+                    select(EnrichmentExpiryEventModel.id).where(
+                        EnrichmentExpiryEventModel.owner_id.in_(owners)
+                    )
+                )
+                is None
+            )
+        free_completed = 0
+        for _ in range(64):
+            completed, _ = maintain()
+            assert 0 <= completed <= len(families) - free_completed
+            free_completed += completed
+            with sessions() as session:
+                assert (
+                    session.scalar(
+                        select(EnrichmentRetentionWorkModel.id).where(
+                            EnrichmentRetentionWorkModel.owner_id == busy_owner
+                        )
+                    )
+                    is None
+                )
+            if free_completed == len(families):
+                break
+        assert free_completed == len(families)
         with sessions() as session:
             assert (
                 session.scalar(
@@ -261,19 +366,15 @@ def test_busy_owner_prefix_preserves_budget_for_other_owners_across_enrichment_f
                     else (None, None, None)
                 )
                 assert (fund.fund_type, fund.evidence_key, fund.confidence) == expected_fund
-        with sessions.begin() as session:
-            budget = SourcePurgeBudget(rows_inspected=allowance)
-            assert expire_enrichment_payloads(session, at=at, limit=100, budget=budget) == 0
-            # Only one busy owner remains across both families: charge it once per pass.
-            assert budget.rows_inspected == allowance - 1
+        completed, budget = maintain()
+        assert completed == 0
+        assert budget.rows_removed == 4096
+        assert budget.bytes_removed == 64 * 1024 * 1024
 
     remaining = prefix_size * len(families)
-    for _ in range(remaining):
-        with sessions.begin() as session:
-            budget = SourcePurgeBudget(rows_inspected=allowance)
-            completed = expire_enrichment_payloads(session, at=at, limit=100, budget=budget)
-            assert 0 <= budget.rows_inspected < allowance
-            assert 0 < completed <= remaining
+    for _ in range(4 * remaining):
+        completed, _ = maintain()
+        assert 0 <= completed <= remaining
         remaining -= completed
         if remaining == 0:
             break

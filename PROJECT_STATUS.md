@@ -17,6 +17,11 @@ the historical observations below. The assignment begins at clean synchronized
 `64e2057cb9b1ddee11649f605e968b18bd559fcb`; final validation and independent review
 remain pending. All 30 Phase 3 acceptance rows and all 48 scenarios remain pending.
 
+The first complete stabilization target failed on stale physical-retention test
+expectations. Strengthened focused source/enrichment/risk checks and the current
+migration-head check now pass; a new immutable complete target remains pending.
+Production code and retention budgets are unchanged by these fixture corrections.
+
 ### Historical September save point
 
 The owner requested a resumable checkpoint on 2026-09-30. The aggregation

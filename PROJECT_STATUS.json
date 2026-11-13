@@ -508,6 +508,16 @@
     "independent_review": "pending",
     "acceptance": "pending",
     "production_authorized": false,
-    "github_actions": "deferred_by_owner"
+    "github_actions": "deferred_by_owner",
+    "failed_complete_validation_attempts": [
+      {
+        "source_sha": "cac650324ef9f74557400fa31199b8d8f59feac8",
+        "result": "failed_interrupted",
+        "integration_passed": 108,
+        "integration_failed": 2,
+        "full_gate_pass": false
+      }
+    ],
+    "retention_fixture_recovery": "focused_validation_passed_complete_immutable_gate_pending"
   }
 }

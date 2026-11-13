@@ -6,6 +6,7 @@ import asyncio
 from dataclasses import replace
 from datetime import datetime, timedelta
 from decimal import Decimal
+from unittest.mock import patch
 from uuid import UUID, uuid4
 
 import pytest
@@ -29,6 +30,7 @@ from trading212_domain.sources import (
     PriceBasis,
     source_snapshot_digest,
 )
+from trading212_persistence.phase2_retention_models import Phase2RetentionSweepModel
 from trading212_persistence.query_telemetry import DatabaseQueryTiming, QueryObserver
 from trading212_persistence.research_permissions import ResearchCapabilityAuthority
 from trading212_persistence.source_models import (
@@ -230,13 +232,69 @@ def test_dispatcher_resumes_partial_physical_purge_without_replacing_parent(
     case, snapshot_id, digest = asyncio.run(arrange())
     before = count(sessions, PriceObservationModel, case.principal.owner_id)
     assert before > 1
-    with sessions.begin() as session:
-        assert (
-            expire_source_payloads(
-                session, at=case.now[0], limit=1, budget=SourcePurgeBudget(rows_removed=1)
+
+    def progress() -> tuple[object, ...]:
+        with sessions() as session:
+            return (
+                tuple(
+                    session.execute(
+                        select(
+                            Phase2RetentionSweepModel.family,
+                            Phase2RetentionSweepModel.after_id,
+                            Phase2RetentionSweepModel.pending_id,
+                            Phase2RetentionSweepModel.evaluated_at,
+                        ).order_by(Phase2RetentionSweepModel.family)
+                    )
+                ),
+                tuple(
+                    session.execute(
+                        select(
+                            SourceRetentionWorkModel.id,
+                            SourceRetentionWorkModel.phase,
+                            SourceRetentionWorkModel.removed_observation_count,
+                            SourceRetentionWorkModel.completed_at,
+                        ).order_by(SourceRetentionWorkModel.id)
+                    )
+                ),
             )
-            == 0
-        )
+
+    # The shared one-row removal allowance also covers transient copy-sweep
+    # metadata. Committed calls may finish that work before an observation.
+    previous = progress()
+    for _ in range(64):
+        with sessions.begin() as session:
+            budget = SourcePurgeBudget(rows_removed=1)
+            assert expire_source_payloads(session, at=case.now[0], limit=1, budget=budget) == 0
+            assert 0 <= budget.rows_removed <= 1 and 0 <= budget.rows_inspected <= 4096
+            assert 0 <= budget.bytes_inspected <= 64 * 1024 * 1024
+            assert 0 <= budget.bytes_removed <= 64 * 1024 * 1024
+        retained = count(sessions, PriceObservationModel, case.principal.owner_id)
+        assert before - 1 <= retained <= before
+        with sessions() as session:
+            parent = session.get(PriceSnapshotModel, UUID(snapshot_id))
+            assert parent is not None and parent.content_digest == digest
+            assert (
+                session.scalar(
+                    select(SourceExpiryEventModel.id).where(
+                        SourceExpiryEventModel.price_snapshot_id == UUID(snapshot_id)
+                    )
+                )
+                is None
+            )
+            work = session.scalar(
+                select(SourceRetentionWorkModel).where(
+                    SourceRetentionWorkModel.price_snapshot_id == UUID(snapshot_id)
+                )
+            )
+            if retained == before - 1:
+                assert work is not None and work.phase == "observations"
+                assert work.removed_observation_count == 1 and work.completed_at is None
+                break
+        current = progress()
+        assert current != previous
+        previous = current
+    else:
+        pytest.fail("One-removal source cleanup did not reach its first partial observation")
     assert count(sessions, PriceObservationModel, case.principal.owner_id) == before - 1
     run_dispatcher_once(monkeypatch, engine, at=case.now[0])
     with sessions() as session:
@@ -268,7 +326,9 @@ def test_dispatcher_resumes_partial_physical_purge_without_replacing_parent(
         )
 
 
-async def _register_market_prefix(case: Case, *, count: int) -> None:
+async def _register_market_prefix(
+    case: Case, *, snapshot_ids: tuple[tuple[UUID, UUID], ...]
+) -> None:
     """Create distinct canonical revisions in two families through actual ingestion."""
     await case.service.configure_source_provider(
         case.principal,
@@ -307,7 +367,7 @@ async def _register_market_prefix(case: Case, *, count: int) -> None:
         for market_session in case.calendar.sessions
     )
     coverage = assess_fx_coverage(case.calendar, request.period, observations, pairs=(pair,))
-    for revision in range(1, count + 1):
+    for revision, (price_id, fx_id) in enumerate(snapshot_ids, 1):
         pages = tuple(
             replace(
                 page,
@@ -317,27 +377,37 @@ async def _register_market_prefix(case: Case, *, count: int) -> None:
             )
             for page in case.pages
         )
-        await case.service.ingest_price_history(
-            case.principal,
-            case.request,
-            pages,
-            idempotency_key=f"prefix-price-{revision}",
-            correlation_id="source-prefix-test",
-        )
-        await case.service.ingest_fx_rates(
-            case.principal,
-            request,
-            (
-                FxRatePage(
-                    provenance=pages[0].provenance,
-                    period=request.period,
-                    coverage=coverage,
-                    observations=observations,
+        # Choose only the native snapshot factory before ordinary ingestion. A
+        # future additional UUID use on this path must fail this fixture visibly.
+        with patch(
+            "trading212_persistence.source_ingestion.uuid4", return_value=price_id
+        ) as factory:
+            price = await case.service.ingest_price_history(
+                case.principal,
+                case.request,
+                pages,
+                idempotency_key=f"prefix-price-{revision}",
+                correlation_id="source-prefix-test",
+            )
+            factory.assert_called_once_with()
+            assert price.id == str(price_id)
+        with patch("trading212_persistence.source_ingestion.uuid4", return_value=fx_id) as factory:
+            fx = await case.service.ingest_fx_rates(
+                case.principal,
+                request,
+                (
+                    FxRatePage(
+                        provenance=pages[0].provenance,
+                        period=request.period,
+                        coverage=coverage,
+                        observations=observations,
+                    ),
                 ),
-            ),
-            idempotency_key=f"prefix-fx-{revision}",
-            correlation_id="source-prefix-test",
-        )
+                idempotency_key=f"prefix-fx-{revision}",
+                correlation_id="source-prefix-test",
+            )
+            factory.assert_called_once_with()
+            assert fx.id == str(fx_id)
 
 
 @pytest.mark.parametrize("held_lock", ["sources", "xray"])
@@ -347,14 +417,19 @@ def test_busy_owner_prefix_preserves_budget_for_other_owners_across_source_famil
     # Reuse a function-scoped, migrated database so earlier retention cases cannot
     # supply another expired prefix. Its existing X-ray sources expire much later.
     sessions = xray_read_case.sessions
-    allowance, prefix_size = 32, 33
+    allowance, prefix_size = 256, 257
+    busy_ids = tuple(
+        (UUID(int=1_000_000 + 2 * index), UUID(int=1_000_001 + 2 * index))
+        for index in range(prefix_size)
+    )
+    free_ids = ((UUID(int=2_000_000), UUID(int=2_000_001)),)
 
     async def arrange() -> tuple[Case, Case, datetime]:
         busy = await source_case(sessions, retention_days=1)
         free = await source_case(sessions, retention_days=1)
-        await _register_market_prefix(busy, count=prefix_size)
+        await _register_market_prefix(busy, snapshot_ids=busy_ids)
         free.now[0] += timedelta(seconds=1)
-        await _register_market_prefix(free, count=1)
+        await _register_market_prefix(free, snapshot_ids=free_ids)
         return busy, free, free.now[0] + timedelta(days=2)
 
     busy, free, at = asyncio.run(arrange())
@@ -365,29 +440,155 @@ def test_busy_owner_prefix_preserves_budget_for_other_owners_across_source_famil
         (FxSnapshotModel, FxObservationModel, "fx_snapshot_id"),
     )
     before: dict[UUID, tuple[str, datetime, datetime]] = {}
+    busy_payloads: dict[str, tuple[tuple[object, ...], ...]] = {}
+    all_payloads: dict[str, tuple[tuple[object, ...], ...]] = {}
     with sessions() as session:
-        for model, _, _ in families:
+        for index, (model, child, _) in enumerate(families):
             rows = list(session.scalars(select(model).where(model.owner_id.in_(owners))))
             assert len(rows) == prefix_size + 1
             busy_expiries = [row.expires_at for row in rows if row.owner_id == busy_owner]
             free_expiries = [row.expires_at for row in rows if row.owner_id == free_owner]
             assert len(busy_expiries) == prefix_size and len(free_expiries) == 1
             assert max(busy_expiries) < free_expiries[0] <= at
+            assert tuple(
+                session.scalars(select(model.id).order_by(model.id).limit(prefix_size + 1))
+            ) == (*(pair[index] for pair in busy_ids), free_ids[0][index])
             before.update(
                 (row.id, (row.content_digest, row.first_observed_at, row.expires_at))
                 for row in rows
             )
+            busy_payloads[str(child.__tablename__)] = tuple(
+                tuple(row)
+                for row in session.execute(
+                    select(*child.__table__.c)
+                    .where(child.owner_id == busy_owner)
+                    .order_by(child.id)
+                )
+            )
+            all_payloads[str(child.__tablename__)] = tuple(
+                tuple(row)
+                for row in session.execute(
+                    select(*child.__table__.c).where(child.owner_id.in_(owners)).order_by(child.id)
+                )
+            )
+
+    def progress() -> tuple[object, ...]:
+        with sessions() as session:
+            return (
+                tuple(
+                    session.execute(
+                        select(
+                            Phase2RetentionSweepModel.family,
+                            Phase2RetentionSweepModel.after_id,
+                            Phase2RetentionSweepModel.pending_id,
+                            Phase2RetentionSweepModel.evaluated_at,
+                        )
+                        .where(Phase2RetentionSweepModel.family.in_(("price", "fx")))
+                        .order_by(Phase2RetentionSweepModel.family)
+                    )
+                ),
+                tuple(
+                    session.execute(
+                        select(
+                            SourceRetentionWorkModel.id,
+                            SourceRetentionWorkModel.phase,
+                            SourceRetentionWorkModel.removed_observation_count,
+                            SourceRetentionWorkModel.completed_at,
+                        )
+                        .where(SourceRetentionWorkModel.owner_id.in_(owners))
+                        .order_by(SourceRetentionWorkModel.id)
+                    )
+                ),
+            )
+
+    # Even one payload mutation reserves64 physical inspections, in addition to
+    # its original-source marker, scope, candidate and completion work.
+    with sessions.begin() as session:
+        budget = SourcePurgeBudget(rows_inspected=32)
+        assert expire_source_payloads(session, at=at, limit=100, budget=budget) == 0
+        assert 0 <= budget.rows_inspected <= 32 and budget.rows_removed == 4096
+        assert budget.bytes_inspected == budget.bytes_removed == 64 * 1024 * 1024
+    with sessions() as session:
+        assert session.scalar(select(SourceRetentionWorkModel.id).limit(1)) is None
+        assert session.scalar(select(SourceExpiryEventModel.id).limit(1)) is None
+        for _model, child, _reference in families:
+            assert (
+                tuple(
+                    tuple(row)
+                    for row in session.execute(
+                        select(*child.__table__.c)
+                        .where(child.owner_id.in_(owners))
+                        .order_by(child.id)
+                    )
+                )
+                == all_payloads[str(child.__tablename__)]
+            )
+            assert count(sessions, child, busy.principal.owner_id) == prefix_size * 3
+            assert count(sessions, child, free.principal.owner_id) == 3
 
     with sessions.begin() as blocker:
         blocker.execute(
             text("SELECT pg_advisory_xact_lock(hashtextextended(:key,0))"),
             {"key": f"{held_lock}:{busy_owner}"},
         )
+        previous = progress()
+        for _ in range(64):
+            with sessions.begin() as session:
+                session.execute(text("SET LOCAL lock_timeout = '200ms'"))
+                budget = SourcePurgeBudget(rows_inspected=allowance)
+                completed = expire_source_payloads(session, at=at, limit=100, budget=budget)
+                assert 0 <= completed <= 2
+                assert 0 <= budget.rows_inspected <= allowance
+                assert 0 <= budget.rows_removed <= 4096
+                assert 0 <= budget.bytes_inspected <= 64 * 1024 * 1024
+                assert 0 <= budget.bytes_removed <= 64 * 1024 * 1024
+            current = progress()
+            with sessions() as session:
+                assert (
+                    session.scalar(
+                        select(SourceRetentionWorkModel.id).where(
+                            SourceRetentionWorkModel.owner_id == busy_owner
+                        )
+                    )
+                    is None
+                )
+                for model, child, _reference in families:
+                    assert (
+                        tuple(
+                            tuple(row)
+                            for row in session.execute(
+                                select(*child.__table__.c)
+                                .where(child.owner_id == busy_owner)
+                                .order_by(child.id)
+                            )
+                        )
+                        == busy_payloads[str(child.__tablename__)]
+                    )
+                    assert all(
+                        (row.content_digest, row.first_observed_at, row.expires_at)
+                        == before[row.id]
+                        for row in session.scalars(select(model).where(model.owner_id.in_(owners)))
+                    )
+                free_events = tuple(
+                    session.scalars(
+                        select(SourceExpiryEventModel).where(
+                            SourceExpiryEventModel.owner_id == free_owner
+                        )
+                    )
+                )
+            if len(free_events) == 2:
+                break
+            assert completed > 0 or current != previous
+            previous = current
+        else:
+            pytest.fail("Free source owner did not complete across bounded physical keyset resumes")
+        # The free owner has completed, while the same busy lock remains held.
+        # Another committed maintenance pass cannot remove any remaining payload.
         with sessions.begin() as session:
-            session.execute(text("SET LOCAL lock_timeout = '200ms'"))
             budget = SourcePurgeBudget(rows_inspected=allowance)
-            assert expire_source_payloads(session, at=at, limit=100, budget=budget) == 2
-            assert 0 < budget.rows_inspected < allowance
+            assert expire_source_payloads(session, at=at, limit=100, budget=budget) == 0
+            assert 0 <= budget.rows_inspected <= allowance and budget.rows_removed == 4096
+            assert budget.bytes_inspected == budget.bytes_removed == 64 * 1024 * 1024
         with sessions() as session:
             assert (
                 session.scalar(
@@ -398,6 +599,17 @@ def test_busy_owner_prefix_preserves_budget_for_other_owners_across_source_famil
                 is None
             )
             for _model, child, reference in families:
+                assert (
+                    tuple(
+                        tuple(row)
+                        for row in session.execute(
+                            select(*child.__table__.c)
+                            .where(child.owner_id == busy_owner)
+                            .order_by(child.id)
+                        )
+                    )
+                    == busy_payloads[str(child.__tablename__)]
+                )
                 assert count(sessions, child, busy.principal.owner_id) == prefix_size * 3
                 assert count(sessions, child, free.principal.owner_id) == 0
                 events = list(
@@ -413,20 +625,20 @@ def test_busy_owner_prefix_preserves_budget_for_other_owners_across_source_famil
                 assert events[0].content_digest == before[identifier][0]
                 assert events[0].removed_at == at
                 assert events[0].removed_observation_count == 3
-        # A second locked pass retains eligibility without exhausting another prefix.
-        with sessions.begin() as session:
-            budget = SourcePurgeBudget(rows_inspected=allowance)
-            assert expire_source_payloads(session, at=at, limit=100, budget=budget) == 0
-            # Only one busy owner remains across both families: charge it once per pass.
-            assert budget.rows_inspected == allowance - 1
-
     remaining = prefix_size * len(families)
-    for _ in range(remaining):
+    previous = progress()
+    for _ in range(8 * remaining):
         with sessions.begin() as session:
             budget = SourcePurgeBudget(rows_inspected=allowance)
             completed = expire_source_payloads(session, at=at, limit=100, budget=budget)
-            assert 0 <= budget.rows_inspected < allowance
-            assert 0 < completed <= remaining
+            assert 0 <= budget.rows_inspected <= allowance
+            assert 0 <= budget.rows_removed <= 4096
+            assert 0 <= budget.bytes_inspected <= 64 * 1024 * 1024
+            assert 0 <= budget.bytes_removed <= 64 * 1024 * 1024
+            assert 0 <= completed <= remaining
+        current = progress()
+        assert completed > 0 or current != previous
+        previous = current
         remaining -= completed
         if remaining == 0:
             break
