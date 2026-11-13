@@ -59,3 +59,53 @@ b9b75ec54fe94fdcec627d8e31ca94700ccb08ad:apps/worker/src/trading212_worker/xray_
 2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:7037
 2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:8834
 2cdb4095eabcf0db92370becfa9952004583e776:docs/implementation/evidence/phase-2-p2-06-9e39767.json:generic-api-key:11481
+
+# Owner: repository owner and designated security reviewer.
+# Reviewed 2026-11-13 against pinned Gitleaks 8.30.1 history scan.
+# Reason/scope: 37 independently recomputed canonical contract/client SHA-256
+# digests and one synthetic report row identifier. Each finding has its own
+# evidence entry in docs/security/SECRET_SCAN_REVIEW_20261113.json.
+# Matched values are deliberately omitted from the review. No credential was
+# found among these 38 results; this does not certify the entire repository.
+# Exact historical commit/path/rule/line fingerprints only. New commits, changed
+# lines, neighbouring lines and inherited rules remain subject to scanning.
+# Review trigger: every Gitleaks upgrade, new finding or fixture/producer change,
+# and by 2026-12-01.
+a795b3a4a27e6d17bb010859af57b48f4dd6b5e6:tests/unit/api/test_premium_report_schemas.py:generic-api-key:133
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:generic-api-key:250
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:11
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:447
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:448
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:450
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:451
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:454
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:455
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:457
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:458
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:459
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:460
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:461
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:462
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:463
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:464
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:465
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:466
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:467
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:468
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:469
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:470
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:471
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:472
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:473
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:474
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:475
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:476
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:477
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:478
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:479
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:480
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:481
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:482
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:483
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:484
+a85d188e9333b253c973ca9e0d158db5a2539b43:tests/contract/fixtures/pre_scenario_api_fingerprints.json:jfrog-identity-token:485
