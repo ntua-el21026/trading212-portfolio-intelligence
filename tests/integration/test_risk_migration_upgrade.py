@@ -14,7 +14,7 @@ from sqlalchemy.engine import make_url
 from trading212_application import historical as app
 from trading212_domain import historical as d
 from trading212_domain import historical_results as results
-from trading212_persistence import create_database_engine, create_session_factory
+from trading212_persistence import Base, create_database_engine, create_session_factory
 from trading212_persistence.historical_service import PostgresHistoricalService
 from trading212_worker.historical_seed import (
     CURSOR_KEY,
@@ -93,7 +93,9 @@ def test_populated_phase2_upgrade_keeps_rows_values_and_replay(
         command.upgrade(config, "head")
         command.check(config)
         assert fingerprints(engine, legacy) == before
-        assert len(inspect(engine).get_table_names()) - 1 == 344
+        assert set(inspect(engine).get_table_names()) - {"alembic_version"} == set(
+            Base.metadata.tables
+        )
         replay = asyncio.run(
             service.get_performance_summary(
                 history_principal(NOW),

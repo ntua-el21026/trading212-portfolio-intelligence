@@ -97,6 +97,6 @@ def test_nonempty_projection_definitions_prevent_destructive_downgrade(
     with pytest.raises(DBAPIError, match="Projection metadata prevents downgrade"):
         command.downgrade(config, "20260915_0021")
     with database_engine.connect() as connection:
-        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20260915_0029"
+        assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "20261113_0034"
     command.upgrade(config, "head")
     command.check(config)
