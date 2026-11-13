@@ -54,8 +54,12 @@ procedure then disables interactive history, reads the secret without echo, crea
 strict JSON bundle without placing either value in an argument, runs the probe, and
 removes all shell variables afterward:
 
+Run from inside your own reviewed `trading212-portfolio-intelligence` checkout.
+The first command resolves that checkout's root without assuming a workstation
+username or clone location.
+
 ```bash
-cd /home/peppaspan/trading212-portfolio-intelligence
+cd "$(git rev-parse --show-toplevel)"
 : "${T212PI_EXPECTED_CORRECTED_MAIN_SHA:?set this to the exact final main SHA from the correction handoff}"
 case "${T212PI_EXPECTED_CORRECTED_MAIN_SHA}" in
   [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]) ;;
