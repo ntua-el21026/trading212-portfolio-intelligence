@@ -32,6 +32,7 @@ from trading212_worker.report_tasks import ReportExecutionState, execute_report_
 from trading212_worker.xray_fixture import synthetic_xray_policy
 
 from tests.integration.premium_report_v3_artifacts import download_v3
+from tests.integration.risk_report_runtime import fresh_report_history
 from tests.integration.test_historical_postgres import historical_database as _historical_database
 from tests.integration.test_historical_seed import NOW
 from tests.integration.test_historical_seed import seeded_history as _seeded_history
@@ -47,7 +48,9 @@ seeded_history = pytest.fixture(scope="function")(unwrap(_seeded_history))
 
 async def selected_xray(case: RunCase) -> xray_app.PathsView:
     service = PostgresXrayService(
-        sessions=case.sessions, cursor_signing_key=CURSOR_KEY, clock=lambda: NOW
+        sessions=case.sessions,
+        cursor_signing_key=CURSOR_KEY,
+        clock=lambda: case.command.window.source_cutoff_at,
     )
     policy = replace(synthetic_xray_policy(), id=uuid4())
     await service.register_xray_policy(
@@ -55,7 +58,7 @@ async def selected_xray(case: RunCase) -> xray_app.PathsView:
         str(case.command.account_id),
         XrayPolicyRegistration(
             key="premium-report-xray",
-            effective_at=case.command.window.source_cutoff_at.replace(year=2024),
+            effective_at=NOW.replace(year=2024),
             policy=policy,
             taxonomies=tuple(
                 XrayTaxonomyRegistration(
@@ -141,8 +144,9 @@ async def test_selected_risk_all_formats_and_sql_version_collections(
         window=window,
         historical_input_snapshot_id=UUID(history.context.input_snapshot_id),
     )
+    await fresh_report_history(case, history)
     paths = await selected_xray(case) if with_xray else None
-    run = await published(case)
+    run = await published(case, clock=lambda: datetime.now(UTC))
     assert run.result is not None
     auth_now = datetime.now(UTC)
     case.principal = replace(

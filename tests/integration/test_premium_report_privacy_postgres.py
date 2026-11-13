@@ -91,7 +91,7 @@ async def prepare(
                     HistoricalInputModel.id == UUID(pinned.id)
                 )
             ) == UUID(target_version_id)
-    run = await published(case)
+    run = await published(case, clock=lambda: datetime.now(UTC))
     assert run.result is not None
     now = datetime.now(UTC)
     case.principal = replace(
@@ -181,7 +181,7 @@ def no_private_reads(case: RunCase) -> Iterator[None]:
                 for name in (
                     "trading212_persistence.historical_capture.historical_input_from_json",
                     "trading212_persistence.risk_storage.risk_result_from_json",
-                    "trading212_persistence.report_service.decode_report_manifest",
+                    "trading212_domain.report_manifest.decode_report_manifest",
                     "trading212_application.reports.decode_report_pinned_context",
                 )
             ]
@@ -214,7 +214,7 @@ async def test_current_report_and_transitive_scope_revocation_precede_private_re
     expected = report_counts(case)
     for restriction in ("report", Scope.ACTIVITY_READ, Scope.TARGETS_READ):
         if restriction == "report":
-            report_policy(case, run, "denied")
+            report_policy(case, run, "denied", at=datetime.now(UTC))
         else:
             assert isinstance(restriction, Scope)
             scope_grant(case, restriction, revoked=True)
@@ -236,7 +236,7 @@ async def test_current_report_and_transitive_scope_revocation_precede_private_re
                 assert failure.value.code is app.ReportServiceErrorCode.ACCESS_DENIED, restriction
                 assert report_counts(case) == expected
         if restriction == "report":
-            report_policy(case, run, "allowed")
+            report_policy(case, run, "allowed", at=datetime.now(UTC))
         else:
             assert isinstance(restriction, Scope)
             scope_grant(case, restriction, revoked=False)

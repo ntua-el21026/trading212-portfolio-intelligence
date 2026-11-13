@@ -195,6 +195,185 @@ error; the corrected explicit synthetic command and original error receipt remai
 separate. Common source/X-ray fixture functions and production code are unchanged.
 A new complete immutable target remains required.
 
+## Subsequent immutable attempts and report fixture recovery
+
+Attempts 03–05 used implementation
+`d61918fa638eb9b1a0bab94642dd12094dc5f3bb`, tree
+`26146d194e813748be61e8435816a1501e3cb39c`. None completed the full target.
+
+The third attempt stopped during Python unit tests. Its partial log and source
+comparison at resumption are retained, but no runner receipt, final test count or
+exit code is available. The exact termination cause remains unverified. The
+fourth attempt was interrupted to replace attached execution with durable
+execution: 1,198 unit tests passed, with no observed runtime failures. Its receipt
+records exit 2 after 84.4 seconds and unchanged source. Neither attempt
+establishes a complete gate pass.
+
+The fifth attempt ran the existing `make validate` target with pinned tools,
+isolated inherited database configuration, the synthetic task database and
+provider, Demo defaults, Live disabled, an empty credential bundle and
+`PYTEST_ADDOPTS=--maxfail=1`. That option stops on the first failure without
+changing successful-target scope or assertions. Its source remained unchanged.
+The receipt records exit 2 after 1,586.938 seconds. Before integration, 4,744 Python
+unit tests, 918 web unit tests, 36 property tests and 357 contract tests passed.
+Integration then stopped with 151 passed, one failed and 5,520 deselected in
+1,017.17 seconds. Later target stages were not reached.
+
+The failure was
+`test_legacy_report_retention_postgres.py::test_v2_report_only_policy_resumes_and_preserves_saved_risk`.
+PostgreSQL rejected the fixture's report-input chunk with `Report capture is
+closed`. An unchanged-source diagnostic reproduced the failure: the unsealed,
+unpurged header had an October 7 deadline under the actual November 13 database
+clock. The expiry guard operated correctly. The narrow fixture correction uses
+actual UTC for operational admission, capture and maintenance, with report expiry
+clamped below the source root's deadline. This V2 correction preserves financial
+windows, valuation times, source knowledge cutoffs, identities, production guards
+and retention budgets. Historical helper defaults retain their original clocks.
+
+The original V2 selector then passed once in 28.38 seconds. A broader six-case
+follow-up retained two passes and one failure before stopping: the V3 sensitivity
+source was also expired under the database clock. Its runtime fixture now advances
+operational publication and fresh-run admission through the normal services.
+Further source-availability constraints are recorded below. Adjacent report
+privacy fixtures exposed the same operational-clock problem and a canary aimed at
+a decoder no longer imported by the report service. The canary now targets the
+actual domain manifest decoder and retains its authorization, SQL-read, grant,
+content and fail-before-decode assertions. The corrected privacy module passed
+all three cases in 136.25 seconds with unchanged source during that invocation.
+Its original run failed all three cases in 85.15 seconds; a clock-only follow-up
+also failed all three in 135.48 seconds at the stale decoder target. Both failed
+predecessors remain retained.
+
+The next six-case report-retention invocation finished with four passed and two
+failed in 162.22 seconds, with unchanged source during that invocation. V3 source
+setup passed its earlier expiry point, but report generation returned
+`ACCESS_DENIED`; the premium risk-purge case did not finish in its single final
+4,096-inspection maintenance call. A combined boundary/preflight diagnostic then
+reproduced five failures in 92.41 seconds with unchanged source.
+
+The V3 capture had a valid basis and restricted sources. All twelve physical
+original-source headers were created on August 31 with stored 365-day lifetimes.
+The separate 30-day limit for copying original sources into reports still denied
+the November capture correctly. A fresh runtime fixture therefore requires newly
+published typed source versions and an explicit current availability cutoff.
+Selecting newly observed versions under the old cutoff would violate
+`first_observed` semantics. The authorized correction preserves historical
+economic dates and existing rows; negative old-cutoff coverage and exact financial
+parity remain required before claiming success.
+
+The annual risk cleanup diagnostic showed valid partial progress under the
+unchanged 4,096-inspection allowance: financial rows decreased from 752 to 632,
+with 16 inspections left. The report-pending flag cleared while canonical content
+remained and the retention marker was incomplete. A single call need not finish
+this work. The fixture must resume within the existing per-call budget and retain
+its original completion and physical-erasure assertions.
+
+The same diagnostic reproduced expired positive report fixtures in three
+previously untouched scopes:
+
+- `test_report_v3_retention_postgres.py::test_current_report_rights_revoke_read_and_sweep_only_the_report`;
+- `test_premium_reports_postgres.py::test_selected_risk_all_formats_and_sql_version_collections[False-2]`;
+- `test_premium_reports_v3_postgres.py::test_saved_scenario_four_formats_original_proof_and_ttl_clamping[EUR]`.
+
+Fresh runtime helpers now publish normal typed source versions with actual
+`first_observed` times and an explicit current knowledge cutoff. They preserve
+historical economic facts and old rows, reject new versions under the old cutoff
+and compare selected financial results. An initial risk helper narrowed reference
+coverage to the report's month. An actual diagnostic failed once in 30.67 seconds:
+all 31 daily valuations were unavailable, with 36 summary and 837 series
+differences. The original rows and original calculation had zero differences.
+The correction restores the complete original 732-day reference period within the
+existing 1,000-day batch ceiling; the 31-day report window is unchanged. It retains
+all price, FX and action observations and coverage, full financial summary/series
+parity and context checks. No original trace is truncated or parity assertion
+dropped. The first fresh-source four-selector invocation failed all four cases
+in 58.59 seconds; three failures were a helper inventory-field error and the fourth
+was the risk parity mismatch. That failed predecessor remains retained.
+
+A subsequent four-selector invocation finished with three passed and one failed
+in 216.78 seconds, with unchanged source during that invocation. Its complete
+source manifest is
+`b23085472e1f88d590dfa8b1d367f9874c378d1929004cf1e7ab175ccfa7fadc`.
+The passing selectors cover V3 incremental cleanup with the 192 budget and
+canaries, the selected risk profile2 case with all four report formats and the
+complete original 732-day trace, and the EUR scenario case with four formats,
+TTL clamping, isolation and revocation. The separate risk-budget resumption
+selector passed once in 28.51 seconds. These are focused observations rather than
+whole-module passes. An internal fixture review corrected a second report's
+selection rebuild to preserve its original financial valuation date; a tentative
+one-second-slack concern was withdrawn after verifying the equal frozen fixture
+clocks. Internal peer review does not constitute the separate owner audit.
+
+### Confirmed original-source report deadline defect
+
+The remaining historical-replay selector failed at report generation with
+`ACCESS_DENIED`. Its first unexpected authorization trace had a valid basis and
+restricted sources. The root and capture expired 30 days after root creation,
+but the original price and FX versions had been created 9.981752 seconds earlier.
+Their stored 365-day lifetimes remained valid. The original-source report-copy
+limit ended 9.981752 seconds before the capture's proposed expiry, so the existing
+authorization and SQL checks correctly denied it. Later EUR observer denials came
+from expected revocation assertions in its passing test.
+
+This exposed a production metadata-clamping defect: the report sink considered
+root/copy and stored dependency expiry, but missed the original physical source's
+creation time plus the applicable minimum of 30 days and pinned/current licensed
+copy limits. The correction follows the existing ADR-0024 and SQL contract in two
+production files. The source helper uses scalar headers from nine closed physical
+families, validates owner/source/provider/license/digest/expiry proof, and reuses
+the already authorized pinned/current license pair. It rejects future origins and
+exhausted copy windows, bounds dependency traversal at 100,000 and caches at most
+256 license pairs. The sink folds the resulting original-source deadline into its
+existing minimum for contract versions 3 and 4 before assigning final expiry and
+performing SQL authorization. Physical dependency expiry and its exact proof,
+V1/V2 behavior, financial payloads and SQL guards remain unchanged. Fixture
+licenses retain their original 365/3,650-day durations.
+
+Five new PostgreSQL regression cases verify the current seven-day and original
+30-day limits, forged physical-expiry rejection, a valid new open capture at the
+exact boundary, rejection one microsecond beyond it with SQLSTATE `23514`, and
+atomic rollback for expired original sources and revoked REPORT permission. The
+expired-original API case establishes rollback; it does not establish a new
+predecode-denial guarantee. Existing revocation canaries remain in place. The
+previously failing replay also passed all four report formats with input and job
+expiry exactly at original price creation plus 30 days, before root expiry, while
+physical source/dependency proof retained its original 365-day expiry.
+
+The combined five-case regression module and replay selector passed all six cases
+in 206.13 seconds, with a 208.172-second runner duration and unchanged source. Its
+complete source manifest is
+`0ac7cabc7dab06a303088966927c1170d7ef585fd4f524e41759aa357d48c6a3`.
+Full Ruff checks passed and strict mypy passed over 1,138 source files in a
+4.497-second invocation. Internal patch and regression reviews found no actionable
+issue within their inspected scope; they do not replace the owner audit.
+
+The broader 43-case invocation across nine relevant files finished with 40 passed
+and three failed in 1,554.46 seconds, with a 1,561.719-second runner duration, exit
+1 and unchanged source under the same complete manifest. All three failures were
+in `test_premium_reports_v3_postgres.py`: the GBP all-format case and the queued
+and cancelled variants of the unsucceeded-scenario case. The GBP helper labeled
+an FX page with adapter `fx-v1` while its actual provider declared `replay-v1`.
+The two negative cases used expired August 31 roots and therefore correctly
+returned `ARTIFACT_EXPIRED` before their intended state check.
+
+The test-only follow-up aligns the new FX adapter literal with its actual
+provider. It cancels the original queued run at its original clock, advances
+operational time, and normally admits a fresh queued run with a new idempotency
+key. Financial fields, source cutoff and X-ray selection are retained, as are the
+expected `REPORT_UNAVAILABLE`, canaries and zero-report assertions. The four-case
+scenario file then passed all four cases in 232.26 seconds, with a 234.173-second
+runner duration, exit 0 and unchanged source under manifest
+`ac468377184d30610a8f3f969fbf9dbf36fa1ddfe97e9c8c19ee675d49e0c460`.
+Production report bytes are identical to those in the six-case and 43-case
+invocations. Ruff, strict mypy over 1,138 files and formatting
+over 1,143 files passed after these two fixture-file corrections. The remaining
+39 cases require the subsequent complete gate. The retained 40 passes and this
+four-case result do not constitute a new 43-case pass.
+
+A new complete target against a clean immutable checkpoint remains required.
+No full validation, browser, package or release acceptance is claimed from these
+observations.
+
 ## Reproducible synthetic validation
 
 Use the pinned Python, uv, Node and pnpm versions in the repository version files

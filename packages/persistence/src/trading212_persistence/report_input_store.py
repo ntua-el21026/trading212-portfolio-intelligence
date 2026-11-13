@@ -189,7 +189,7 @@ class ReportInputSink:
     def finish(self, summary: ReportCaptureContract) -> None:
         from trading212_application.reports import encode_report_pinned_context
 
-        from .report_sources import project_report_dependencies
+        from .report_sources import original_report_copy_deadline, project_report_dependencies
 
         if (
             self._finished
@@ -340,6 +340,12 @@ class ReportInputSink:
             now=self._clock(),
         )
         deadlines = [self.row.expires_at]
+        if self.row.contract_version in (3, 4):
+            original_deadline = original_report_copy_deadline(
+                self._session, self._authorization, dependencies=dependencies, now=self._clock()
+            )
+            if original_deadline is not None:
+                deadlines.append(original_deadline)
         if premium_expiry is not None:
             deadlines.append(premium_expiry)
         if summary.copy_expires_at is not None:

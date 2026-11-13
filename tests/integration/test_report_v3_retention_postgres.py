@@ -38,12 +38,30 @@ from trading212_persistence.source_retention import SourcePurgeBudget
 from trading212_persistence.source_store import digest, license_view
 from trading212_persistence.xray_run_models import XrayInputDependencyModel, XrayInputSnapshotModel
 
+from tests.integration.report_runtime_sources import fresh_report_xray
 from tests.integration.test_scenario_retention_postgres import cleanup, published, restrict
-from tests.integration.test_scenario_runs_postgres import ScenarioCase
-from tests.integration.test_scenario_runs_postgres import scenario_case as scenario_case
+from tests.integration.test_scenario_runs_postgres import ScenarioCase, cancel_scenario
+from tests.integration.test_scenario_runs_postgres import scenario_case as _historical_scenario_case
 from tests.integration.test_xray_reads_postgres import xray_read_case as xray_read_case
 
 pytestmark = pytest.mark.integration
+historical_scenario_case = _historical_scenario_case
+
+
+@pytest.fixture
+async def scenario_case(historical_scenario_case: ScenarioCase) -> ScenarioCase:
+    """New report copies use a current admitted parent and newly available sources."""
+    case = historical_scenario_case
+    await cancel_scenario(case, case.run.id)
+    fresh = await fresh_report_xray(case.xray)
+    case.command = replace(
+        case.command,
+        xray_run_id=UUID(fresh.context.run_id),
+        source_cutoff_at=fresh.context.source_cutoff_at,
+        idempotency_key=str(uuid4()),
+    )
+    case.run = await case.service.create_run(case.principal, case.command)
+    return case
 
 
 def capture(
@@ -242,6 +260,17 @@ async def test_third_profile_rejects_altered_canonical_pin_before_sealing(
     scenario_case: ScenarioCase, wrong: str
 ) -> None:
     await published(scenario_case)
+    with scenario_case.sessions() as session:
+        identifier = capture(session, scenario_case)
+        session.execute(text("SET CONSTRAINTS ALL IMMEDIATE"))
+        assert (
+            session.scalar(
+                func.report_premium_restricted(
+                    UUID(scenario_case.principal.owner_id), identifier, scenario_case.now
+                )
+            )
+            is False
+        )
     with pytest.raises(DBAPIError), scenario_case.sessions() as session, session.begin():
         capture(session, scenario_case, wrong=wrong)
 
@@ -250,6 +279,17 @@ async def test_scenario_cannot_be_attached_to_legacy_profile_two(
     scenario_case: ScenarioCase,
 ) -> None:
     await published(scenario_case)
+    with scenario_case.sessions() as session:
+        identifier = capture(session, scenario_case)
+        session.execute(text("SET CONSTRAINTS ALL IMMEDIATE"))
+        assert (
+            session.scalar(
+                func.report_premium_restricted(
+                    UUID(scenario_case.principal.owner_id), identifier, scenario_case.now
+                )
+            )
+            is False
+        )
     with pytest.raises(DBAPIError), scenario_case.sessions() as session, session.begin():
         capture(session, scenario_case, profile=2)
 

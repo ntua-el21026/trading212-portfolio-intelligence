@@ -18,20 +18,37 @@ the historical observations below. The assignment begins at clean synchronized
 remain pending. All 30 Phase 3 acceptance rows and all 48 scenarios remain pending.
 
 The first complete stabilization target failed on stale physical-retention test
-expectations. Strengthened focused source/enrichment/risk checks and the current
-migration-head checks now pass, including the full shared source module. A second
-complete attempt was interrupted for four confirmed preflight mismatches; their
-focused corrections pass. A new immutable complete target remains pending.
-Production code and retention budgets are unchanged by these fixture corrections.
+expectations. Strengthened focused source/enrichment/risk and migration checks
+pass at their recorded sources. The second attempt was interrupted for four
+confirmed preflight mismatches; their focused corrections pass. The third has an
+incomplete unit-test log with no completion receipt or verified termination cause.
+The fourth was interrupted for durable orchestration after 1,198 passing unit
+cases and no observed runtime failures. The fifth passed 4,744 Python unit tests,
+918 web unit tests, 36 property tests and 357 contract tests, then stopped in
+integration with 151 passes and one expired report-fixture failure. Its later
+stages were not reached. Fresh runtime-source fixtures preserve historical
+financial facts, the full 732-day risk reference trace, explicit availability
+cutoffs and negative controls. Three focused report selectors passed; the same
+four-selector invocation retained a replay failure exposing a production deadline
+clamp that omitted the original physical source's copy limit. The narrow metadata
+correction is implemented and six focused deadline/replay cases pass. The broader
+43-case run finished with 40 passes and three fixture failures in the scenario
+report file. Its FX-adapter and unsucceeded-root setup corrections passed the
+separate four-case rerun; those receipts do not constitute a new 43-case pass.
+Privacy and bounded cleanup have focused passes.
+A new immutable complete target remains pending.
+Production guards, historical economic dates and retention budgets remain
+unchanged; internal peer review does not replace the pending owner audit.
+The current schema retains 364 ORM tables through forward migration `0034`.
 
 ### Historical September save point
 
 The owner requested a resumable checkpoint on 2026-09-30. The aggregation
 vertical and saved FX observation picker are preserved as work in progress,
 with 364 ORM tables through migration 0030 and 136 API paths/161 operations/578
-schemas. Aggregation run publication still fails the PostgreSQL native-component
-proof guard; its runtime/browser acceptance is pending. The previous 344-table
-provider/layout observations below remain scoped to their earlier source. See the
+schemas. At that save point, aggregation run publication failed the PostgreSQL
+native-component proof guard; runtime/browser acceptance was pending. The previous
+344-table provider/layout observations below remain scoped to their earlier source. See the
 [checkpoint and exact resume steps](docs/implementation/PHASE_3_RESUME_20260930.md).
 Phase 3 acceptance, production authorization and deferred GitHub Actions status
 are unchanged.
@@ -77,8 +94,8 @@ this is not a claim for all single-item/write operations or latency acceptance.
 P3-06 public-only offline support and the account-safe command palette passed three
 production browser journeys. Only five public static assets enter its cache;
 private HTML/API/reports remain network-only. Owned saved layouts, bounded provider acquisition, provider status and explicit
-source fallback are now implemented with component validation. The current
-working-source inventory is 344 normalized tables through migration 0029 and
+source fallback were implemented with component validation. That historical
+provider/layout component had 344 normalized tables through migration 0029 and
 131 API paths/154 operations/550 schemas. Saved layouts and provider settings
 passed production browser journeys at three widths, including exact-value parity,
 keyboard/overflow and serious/critical axe checks. All five saved-layout PostgreSQL

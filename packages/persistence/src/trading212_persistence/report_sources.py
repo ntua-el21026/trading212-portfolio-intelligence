@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, cast
 from uuid import UUID, uuid4
 
@@ -128,7 +128,7 @@ def _license(
     digest: str | None,
     source_use: ReportSourceUse,
     now: datetime,
-) -> None:
+) -> tuple[sm.ProviderLicenseVersionModel, sm.ProviderLicenseVersionModel]:
     if not isinstance(source_use, ReportSourceUse):
         raise _deny()
     pinned = session.scalar(
@@ -172,6 +172,86 @@ def _license(
             )
         ):
             raise _deny()
+    return pinned, current
+
+
+def original_report_copy_deadline(
+    session: Session,
+    authorization: ReportAuthorization,
+    *,
+    dependencies: tuple[ReportInputDependencyModel, ...],
+    now: datetime,
+) -> datetime | None:
+    """Recheck original physical copy bounds without changing stored source proof."""
+    now = require_utc(now)
+    _lock(session, authorization, now)
+    if len(dependencies) > MAX_REPORT_DATASET_ROWS:
+        raise _deny()
+    licenses: dict[tuple[UUID, UUID], int] = {}
+    deadline = None
+    for dependency in dependencies:
+        entry = _PHYSICAL.get(dependency.kind)
+        if entry is None or dependency.owner_id != authorization.owner_id:
+            raise _deny()
+        model, column = entry
+        header = session.execute(
+            select(
+                model.id,
+                model.provider_id,
+                model.license_version_id,
+                model.content_digest,
+                model.created_at,
+                model.expires_at,
+            ).where(model.owner_id == authorization.owner_id, model.id == dependency.source_id)
+        ).first()
+        if (
+            header is None
+            or (
+                header.id,
+                header.provider_id,
+                header.license_version_id,
+                header.content_digest,
+                header.expires_at,
+            )
+            != (
+                getattr(dependency, column),
+                dependency.provider_id,
+                dependency.license_version_id,
+                dependency.content_digest,
+                dependency.expires_at,
+            )
+            or header.created_at > now
+        ):
+            raise _deny()
+        key = (header.provider_id, header.license_version_id)
+        if key not in licenses:
+            if len(licenses) >= 256:
+                raise _deny()
+            pinned, current = _license(
+                session,
+                owner_id=authorization.owner_id,
+                provider_id=header.provider_id,
+                license_id=header.license_version_id,
+                digest=None,
+                source_use=ReportSourceUse.REPORT,
+                now=now,
+            )
+            pinned_days, current_days = pinned.retention_days, current.retention_days
+            if (
+                pinned_days is None
+                or current_days is None
+                or not 1 <= pinned_days <= 36500
+                or not 1 <= current_days <= 36500
+            ):
+                raise _deny()
+            licenses[key] = min(30, pinned_days, current_days)
+        original_deadline = min(
+            header.expires_at, header.created_at + timedelta(days=licenses[key])
+        )
+        if original_deadline <= now:
+            raise _deny()
+        deadline = min(deadline or original_deadline, original_deadline)
+    return deadline
 
 
 def _physical_permit(

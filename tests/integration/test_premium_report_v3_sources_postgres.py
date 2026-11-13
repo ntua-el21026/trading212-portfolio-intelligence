@@ -10,6 +10,7 @@ from unittest.mock import patch
 from uuid import UUID, uuid4
 
 import pytest
+from sqlalchemy import select
 from trading212_application import reports as app
 from trading212_application import scenario as scenarios
 from trading212_application import source_providers as ports
@@ -70,6 +71,11 @@ from trading212_domain.values import CurrencyCode
 from trading212_persistence.historical_capture import HistoricalCaptureStore
 from trading212_persistence.historical_store import PostgresHistoricalStore
 from trading212_persistence.report_authorization import authorize_report_request
+from trading212_persistence.report_models import (
+    ReportInputDependencyModel,
+    ReportInputSnapshotModel,
+    ReportJobModel,
+)
 from trading212_persistence.report_service import PostgresReportService
 from trading212_persistence.scenario_source_models import (
     ScenarioSensitivityEvidenceModel,
@@ -77,7 +83,11 @@ from trading212_persistence.scenario_source_models import (
     ScenarioSensitivityVersionModel,
 )
 from trading212_persistence.scenario_source_store import ScenarioSourceStore
-from trading212_persistence.source_models import ProviderLicenseVersionModel
+from trading212_persistence.source_models import (
+    FxSnapshotModel,
+    PriceSnapshotModel,
+    ProviderLicenseVersionModel,
+)
 from trading212_persistence.source_service import PostgresSourceService
 from trading212_persistence.source_store import license_view
 from trading212_security.principals import Scope
@@ -85,6 +95,7 @@ from trading212_worker.xray_fixture import build_xray_fixture, xray_id
 from trading212_worker.xray_seed import XRAY_CURSOR_KEY
 
 from tests.integration.premium_report_v3_artifacts import DownloadedReportV3, download_v3
+from tests.integration.report_runtime_sources import fresh_report_xray
 from tests.integration.test_premium_reports_v3_postgres import (
     SavedScenario,
     complete,
@@ -151,6 +162,7 @@ async def licensed_provider(case: ScenarioCase, key: str, *, market: bool) -> So
 async def publish_sensitivity(case: ScenarioCase) -> ScenarioSensitivityCapture:
     """Use the private typed adapter publication seam, never a generic/source-array API."""
     license = await licensed_provider(case, "scenario-report-rate", market=False)
+    case.now = max(case.now, datetime.now(UTC))
     seed = sensitivity_capture()
     owner, provider, license_id = (
         UUID(case.principal.owner_id),
@@ -238,6 +250,7 @@ async def publish_replay_history(case: ScenarioCase) -> ReplaySource:
     market window at the later holdings cutoff, with no then-known claim.
     """
     license = await licensed_provider(case, "scenario-report-replay", market=True)
+    case.now = max(case.now, datetime.now(UTC))
     source = sources(case)
     end = case.command.source_cutoff_at.date() - timedelta(days=1)
     start = end - timedelta(days=1)
@@ -444,6 +457,13 @@ async def select_run(
     case.command = replace(
         case.command, scenario_version_id=version.id, replay=replay, idempotency_key=uuid4().hex
     )
+    fresh = await fresh_report_xray(case.xray)
+    case.command = replace(
+        case.command,
+        xray_run_id=UUID(fresh.context.run_id),
+        source_cutoff_at=fresh.context.source_cutoff_at,
+    )
+    case.now = max(case.now, datetime.now(UTC))
     case.run = await case.service.create_run(case.principal, case.command)
     await published(case)
     return saved(case)
@@ -840,6 +860,13 @@ async def test_saved_historical_replay_four_formats_complete_trace_and_original_
         ),
         source.selected,
     )
+    with case.sessions() as session:
+        price = session.get_one(PriceSnapshotModel, UUID(source.price_snapshot_id))
+        fx = session.get_one(FxSnapshotModel, UUID(source.fx_snapshot_id))
+        assert price.created_at == fx.created_at
+        assert price.expires_at == fx.expires_at == price.created_at + timedelta(days=365)
+        expected_copy_deadline = price.created_at + timedelta(days=30)
+        assert expected_copy_deadline < original.expires_at
     execution, replay = original.execution.replay, original.value.replay
     assert execution is not None and replay is not None
     assert (
@@ -877,6 +904,25 @@ async def test_saved_historical_replay_four_formats_complete_trace_and_original_
         if isinstance(item, hr.HistoricalObservationUse)
     } >= {source.price_snapshot_id, source.fx_snapshot_id}
     reports, command, completed, report = await report_for(case, original)
+    assert completed.expires_at == expected_copy_deadline
+    with case.sessions() as session:
+        job = session.get_one(ReportJobModel, completed.job_id)
+        assert (
+            session.get_one(ReportInputSnapshotModel, job.input_id).expires_at
+            == expected_copy_deadline
+        )
+        for model, identifier in (
+            (PriceSnapshotModel, source.price_snapshot_id),
+            (FxSnapshotModel, source.fx_snapshot_id),
+        ):
+            physical = session.get_one(model, UUID(identifier))
+            dependency_expiry = session.scalar(
+                select(ReportInputDependencyModel.expires_at).where(
+                    ReportInputDependencyModel.input_id == job.input_id,
+                    ReportInputDependencyModel.source_id == physical.id,
+                )
+            )
+            assert dependency_expiry == physical.expires_at == price.expires_at
     money_and_channels(report, original)
     binding = report.manifest.document.premium_binding
     assert isinstance(binding, ReportScenarioRunBinding) and binding.historical is not None

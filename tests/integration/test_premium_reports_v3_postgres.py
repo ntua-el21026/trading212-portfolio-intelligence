@@ -52,6 +52,7 @@ from trading212_worker.xray_fixture import XRAY_ACCOUNT_ID
 from trading212_worker.xray_seed import XRAY_CURSOR_KEY
 
 from tests.integration.premium_report_v3_artifacts import DownloadedReportV3, download_v3
+from tests.integration.report_runtime_sources import fresh_report_xray
 from tests.integration.test_scenario_retention_postgres import published
 from tests.integration.test_scenario_runs_postgres import ScenarioCase, cancel_scenario
 from tests.integration.test_scenario_runs_postgres import scenario_case as scenario_case
@@ -458,13 +459,29 @@ async def test_saved_scenario_four_formats_original_proof_and_ttl_clamping(
             idempotency_key=uuid4().hex,
         )
         case.run = await case.service.create_run(case.principal, case.command)
+    await cancel_scenario(case, case.run.id)
+    fresh = await fresh_report_xray(case.xray, reporting_currency=CurrencyCode(currency))
+    assert fresh.summary.total.value is not None
+    assert fresh.summary.total.value.amount == Decimal("800" if currency == "GBP" else "1000")
+    case.command = replace(
+        case.command,
+        xray_run_id=UUID(fresh.context.run_id),
+        reporting_currency=CurrencyCode(currency),
+        source_cutoff_at=fresh.context.source_cutoff_at,
+        idempotency_key=uuid4().hex,
+    )
+    case.run = await case.service.create_run(case.principal, case.command)
     await published(case)
     original = saved(case)
     # The request is newer than its retained source. Thirty days must clamp to
     # original source/run deadlines before V3 authorization and sealing.
     case.now = max(case.now + timedelta(days=2), datetime.now(UTC))
     reports = service(case)
-    chosen = selection(case)
+    chosen = replace(
+        selection(case),
+        start_date=original.value.valuation_at.date(),
+        end_date=original.value.valuation_at.date(),
+    )
     command = app.GenerateReportCommand(selection=chosen, idempotency_key=uuid4().hex, ttl_days=30)
     with patch(
         "trading212_analytics.scenario.calculate_scenario",
@@ -565,7 +582,8 @@ async def isolation_and_revocation(
     second = await reports.generate_report(
         case.principal,
         app.GenerateReportCommand(
-            selection=selection(case, formats=(r.ReportFormat.JSON,)), idempotency_key=uuid4().hex
+            selection=replace(command.selection, formats=(r.ReportFormat.JSON,)),
+            idempotency_key=uuid4().hex,
         ),
     )
     page = await reports.list_reports(case.principal, account, query=app.ReportListQuery(limit=1))
@@ -610,6 +628,12 @@ async def test_only_succeeded_owned_scenario_can_be_captured(
     scenario_case: ScenarioCase, cancelled: bool
 ) -> None:
     case = scenario_case
+    await cancel_scenario(case, case.run.id)
+    case.now = max(case.now, datetime.now(UTC))
+    case.command = replace(case.command, idempotency_key=uuid4().hex)
+    case.run = await case.service.create_run(case.principal, case.command)
+    assert case.run.expires_at > case.now
+    assert case.run.state.value == "queued"
     if cancelled:
         status = await cancel_scenario(case, case.run.id)
         assert status.state.value == "cancelled"

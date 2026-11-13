@@ -1,6 +1,6 @@
 """Normalized premium copy guards and bounded purge ordering without report decoding."""
 
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from hashlib import sha256
 from inspect import unwrap
 from uuid import UUID, uuid4
@@ -30,7 +30,7 @@ from trading212_persistence.source_retention import SourcePurgeBudget
 from tests.integration.test_historical_postgres import historical_database as _historical_database
 from tests.integration.test_historical_seed import NOW
 from tests.integration.test_historical_seed import seeded_history as _seeded_history
-from tests.integration.test_risk_retention_postgres import pass_cleanup, published
+from tests.integration.test_risk_retention_postgres import drain_cleanup, pass_cleanup, published
 from tests.integration.test_risk_runs_postgres import RunCase
 from tests.integration.test_risk_runs_postgres import run_case as run_case
 from tests.integration.test_risk_source_authorization import restrict
@@ -47,6 +47,7 @@ def capture(
     *,
     version: int = 2,
     dependency: bool = True,
+    at: datetime = NOW,
 ) -> UUID:
     """Build a minimal opaque copy to isolate SQL lineage from report rendering.
 
@@ -61,6 +62,7 @@ def capture(
     digest = sha256(payload).hexdigest()
     identifier = uuid4()
     deadline = root.expires_at - timedelta(seconds=1)
+    assert root.created_at <= at < deadline <= root.expires_at
     row = ReportInputSnapshotModel(
         id=identifier,
         owner_id=owner,
@@ -84,7 +86,7 @@ def capture(
         sealed_at=None,
         expires_at=deadline,
         purged_at=None,
-        created_at=NOW,
+        created_at=at,
     )
     session.add(row)
     session.flush()
@@ -98,7 +100,7 @@ def capture(
             subject_id=run.id,
             parent_id=None,
             content_digest=result.content_digest,
-            created_at=NOW,
+            created_at=at,
         )
     )
     session.add(
@@ -113,7 +115,7 @@ def capture(
             content_digest=digest,
             payload=payload,
             purged_at=None,
-            created_at=NOW,
+            created_at=at,
         )
     )
     if dependency:
@@ -128,16 +130,18 @@ def capture(
                 input_digest=root.input_digest,
                 result_digest=result.content_digest,
                 expires_at=deadline,
-                created_at=NOW,
+                created_at=at,
             )
         )
     session.flush()
-    row.sealed_at = NOW
+    row.sealed_at = at
     session.flush()
     return identifier
 
 
-def report_policy(case: RunCase, run: app.RiskRunView, permission: str) -> None:
+def report_policy(
+    case: RunCase, run: app.RiskRunView, permission: str, *, at: datetime = NOW
+) -> None:
     with case.sessions() as session, session.begin():
         lineage = session.scalar(
             select(PremiumRunLicenseModel).where(PremiumRunLicenseModel.run_id == run.id).limit(1)
@@ -157,7 +161,7 @@ def report_policy(case: RunCase, run: app.RiskRunView, permission: str) -> None:
                 provider_id=pinned.provider_id,
                 version_number=version + 1,
                 version=f"report-only-{version + 1}",
-                effective_at=NOW,
+                effective_at=at,
                 store_permission="allowed",
                 display_permission="allowed",
                 report_permission=permission,
@@ -165,31 +169,34 @@ def report_policy(case: RunCase, run: app.RiskRunView, permission: str) -> None:
                 retention_days=30,
                 attribution="Synthetic report policy",
                 evidence_key="report-policy-fixture",
-                created_at=NOW,
+                created_at=at,
             )
         )
 
 
 async def test_versioned_lineage_is_complete_and_immutable(run_case: RunCase) -> None:
     case = run_case
-    run = await published(case)
+    run = await published(case, clock=lambda: datetime.now(UTC))
     for version, dependency in ((1, True), (2, False)):
         with case.sessions() as session, pytest.raises(DBAPIError), session.begin():
-            capture(session, case, run, version=version, dependency=dependency)
+            capture(
+                session, case, run, version=version, dependency=dependency, at=datetime.now(UTC)
+            )
             session.execute(text("SET CONSTRAINTS ALL IMMEDIATE"))
     with case.sessions() as session, session.begin():
-        legacy = capture(session, case, run, version=1, dependency=False)
-        premium = capture(session, case, run)
+        legacy = capture(session, case, run, version=1, dependency=False, at=datetime.now(UTC))
+        premium = capture(session, case, run, at=datetime.now(UTC))
+    at = datetime.now(UTC)
     with case.sessions() as session, session.begin():
         assert (
             session.scalar(
-                func.report_premium_restricted(UUID(case.principal.owner_id), legacy, NOW)
+                func.report_premium_restricted(UUID(case.principal.owner_id), legacy, at)
             )
             is False
         )
         assert (
             session.scalar(
-                func.report_premium_restricted(UUID(case.principal.owner_id), premium, NOW)
+                func.report_premium_restricted(UUID(case.principal.owner_id), premium, at)
             )
             is False
         )
@@ -210,26 +217,41 @@ async def test_versioned_lineage_is_complete_and_immutable(run_case: RunCase) ->
 
 async def test_report_only_revocation_drains_copy_and_keeps_risk_result(run_case: RunCase) -> None:
     case = run_case
-    run = await published(case)
+    run = await published(case, clock=lambda: datetime.now(UTC))
     with case.sessions() as session, session.begin():
-        identifier = capture(session, case, run)
-    report_policy(case, run, "denied")
+        identifier = capture(session, case, run, at=datetime.now(UTC))
+        original = session.scalar(
+            select(RiskResultModel.canonical_result).where(RiskResultModel.run_id == run.id)
+        )
+        assert original
+        assert (
+            session.scalar(
+                func.report_premium_restricted(
+                    UUID(case.principal.owner_id), identifier, datetime.now(UTC)
+                )
+            )
+            is False
+        )
+    report_policy(case, run, "denied", at=datetime.now(UTC))
+    at = datetime.now(UTC)
+    assert at < run.expires_at - timedelta(seconds=1)
     with case.sessions() as session, session.begin():
         assert (
             session.scalar(
-                func.report_premium_restricted(UUID(case.principal.owner_id), identifier, NOW)
+                func.report_premium_restricted(UUID(case.principal.owner_id), identifier, at)
             )
             is True
         )
         assert (
-            expire_report_payloads(session, at=NOW, budget=SourcePurgeBudget(bytes_removed=0)) == 0
+            expire_report_payloads(session, at=at, budget=SourcePurgeBudget(bytes_removed=0)) == 0
         )
         work = session.scalar(
             select(ReportRetentionWorkModel).where(ReportRetentionWorkModel.input_id == identifier)
         )
         assert work is not None and work.reason == "source" and work.completed_at is None
+        assert work.legacy_source_kind == "premium_license"
         result = session.scalar(select(RiskResultModel).where(RiskResultModel.run_id == run.id))
-        assert result is not None and result.canonical_result
+        assert result is not None and result.canonical_result == original
         assert (
             session.scalar(
                 select(PremiumRetentionModel.id).where(PremiumRetentionModel.run_id == run.id)
@@ -237,27 +259,29 @@ async def test_report_only_revocation_drains_copy_and_keeps_risk_result(run_case
             is None
         )
     # A pending purge is permanent and resumes even if REPORT rights are restored.
-    report_policy(case, run, "allowed")
+    report_policy(case, run, "allowed", at=datetime.now(UTC))
+    at = datetime.now(UTC)
     with case.sessions() as session, session.begin():
-        assert expire_report_payloads(session, at=NOW) == 1
-        assert session.get_one(ReportInputSnapshotModel, identifier).purged_at == NOW
+        assert expire_report_payloads(session, at=at) == 1
+        assert session.get_one(ReportInputSnapshotModel, identifier).purged_at == at
         assert (
             session.scalar(func.report_capture_pending(UUID(case.principal.owner_id), identifier))
             is False
         )
         result = session.scalar(select(RiskResultModel).where(RiskResultModel.run_id == run.id))
-        assert result is not None and result.canonical_result
-    assert pass_cleanup(case)
+        assert result is not None and result.canonical_result == original
+    assert pass_cleanup(case, at=at)
     assert (await case.service.get_run(case.principal, run.id)).result is not None
 
 
 async def test_risk_purge_waits_for_report_budget_and_sql_rejects_bypass(run_case: RunCase) -> None:
     case = run_case
-    run = await published(case)
+    run = await published(case, clock=lambda: datetime.now(UTC))
     with case.sessions() as session, session.begin():
-        identifier = capture(session, case, run)
+        identifier = capture(session, case, run, at=datetime.now(UTC))
     restrict(case, store="denied", days=30)
-    assert not pass_cleanup(case, budget=SourcePurgeBudget(bytes_removed=0))
+    at = datetime.now(UTC)
+    assert not pass_cleanup(case, at=at, budget=SourcePurgeBudget(bytes_removed=0))
     with case.sessions() as session, session.begin():
         marker = session.scalar(
             select(PremiumRetentionModel).where(PremiumRetentionModel.run_id == run.id)
@@ -274,7 +298,7 @@ async def test_risk_purge_waits_for_report_budget_and_sql_rejects_bypass(run_cas
         for statement in (
             update(PremiumRetentionModel)
             .where(PremiumRetentionModel.id == marker.id)
-            .values(completed_at=NOW),
+            .values(completed_at=at),
             update(RiskResultModel)
             .where(RiskResultModel.id == result.id)
             .values(canonical_result=b""),
@@ -286,7 +310,7 @@ async def test_risk_purge_waits_for_report_budget_and_sql_rejects_bypass(run_cas
             session.scalar(func.report_capture_pending(UUID(case.principal.owner_id), identifier))
             is True
         )
-    assert pass_cleanup(case)
+    drain_cleanup(case, at=at)
     with case.sessions() as session:
         assert (
             session.scalar(func.report_capture_pending(UUID(case.principal.owner_id), identifier))

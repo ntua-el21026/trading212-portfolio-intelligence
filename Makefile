@@ -118,7 +118,7 @@ security-check: sast-check ## Audit dependencies and run source/secret security 
 		$(UV) tool run pip-audit==2.10.1 --requirement "$$audit_file" --disable-pip
 	$(PNPM) security:dependencies
 
-sast-check: ## Run deterministic private-repository SAST without external uploads.
+sast-check: ## Run deterministic repository SAST without external uploads.
 	docker run --rm --cpus=1 --memory=1g --memory-swap=1g \
 		--network=none --read-only --tmpfs /tmp:rw,noexec,nosuid,size=256m \
 		--tmpfs /root:rw,noexec,nosuid,size=128m \

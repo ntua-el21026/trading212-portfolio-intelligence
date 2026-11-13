@@ -516,6 +516,23 @@
         "integration_passed": 108,
         "integration_failed": 2,
         "full_gate_pass": false
+      },
+      {
+        "attempt": "complete-validate-05",
+        "source_sha": "d61918fa638eb9b1a0bab94642dd12094dc5f3bb",
+        "tree_sha": "26146d194e813748be61e8435816a1501e3cb39c",
+        "result": "failed_integration",
+        "duration_seconds": 1586.938,
+        "python_unit_passed": 4744,
+        "web_unit_passed": 918,
+        "property_passed": 36,
+        "contract_passed": 357,
+        "integration_passed": 151,
+        "integration_failed": 1,
+        "integration_deselected": 5520,
+        "later_gates_executed": false,
+        "source_unchanged": true,
+        "full_gate_pass": false
       }
     ],
     "retention_fixture_recovery": "focused_and_shared_module_validation_passed_complete_gate_pending",
@@ -527,7 +544,267 @@
         "observed_runtime_failures": 0,
         "subsequent_focused_failures_same_source": 4,
         "full_gate_pass": false
+      },
+      {
+        "attempt": "complete-validate-03",
+        "source_sha": "d61918fa638eb9b1a0bab94642dd12094dc5f3bb",
+        "result": "interrupted_without_completion_receipt",
+        "termination_cause": "unverified",
+        "runner_receipt_available": false,
+        "unit_passed_before_interruption": null,
+        "exit_code": null,
+        "source_equal_at_resume": true,
+        "full_gate_pass": false
+      },
+      {
+        "attempt": "complete-validate-04",
+        "source_sha": "d61918fa638eb9b1a0bab94642dd12094dc5f3bb",
+        "result": "interrupted_to_enable_durable_execution",
+        "duration_seconds": 84.4,
+        "unit_passed_before_interruption": 1198,
+        "observed_runtime_failures": 0,
+        "source_unchanged": true,
+        "full_gate_pass": false
       }
-    ]
+    ],
+    "report_fixture_recovery": {
+      "status": "focused_validation_passed_complete_gate_pending",
+      "root_causes": [
+        "expired_operational_report_and_sensitivity_fixtures_under_actual_database_clock",
+        "privacy_decoder_canary_targeted_removed_import"
+      ],
+      "production_guards_changed": false,
+      "retention_budgets_changed": false,
+      "focused_v2_selector": {
+        "passed": 1,
+        "failed": 0,
+        "pytest_seconds": 28.38
+      },
+      "initial_broader_report_followup": {
+        "passed": 2,
+        "failed": 1,
+        "result": "failed_on_expired_v3_sensitivity_source"
+      },
+      "privacy_module": {
+        "passed": 3,
+        "failed": 0,
+        "pytest_seconds": 136.25,
+        "source_unchanged_during_invocation": true
+      },
+      "broader_followup": "focused_followups_passed_complete_gate_pending",
+      "complete_gate": "pending",
+      "second_broader_report_followup": {
+        "passed": 4,
+        "failed": 2,
+        "pytest_seconds": 162.22,
+        "source_unchanged_during_invocation": true,
+        "result": "failed_v3_incremental_cleanup_and_premium_risk_purge",
+        "diagnosis": "confirmed_original_report_copy_expiry_and_bounded_partial_cleanup",
+        "observations": [
+          "v3_source_setup_crossed_original_expiry_failure_report_generation_access_denied",
+          "premium_risk_purge_not_complete_after_single_final_4096_inspection_call"
+        ]
+      },
+      "privacy_failed_predecessors": [
+        {
+          "scope": "original_privacy_module",
+          "passed": 0,
+          "failed": 3,
+          "pytest_seconds": 85.15,
+          "causes": [
+            "expired_operational_report_fixtures",
+            "removed_decoder_patch_target"
+          ]
+        },
+        {
+          "scope": "clock_only_privacy_followup",
+          "passed": 0,
+          "failed": 3,
+          "pytest_seconds": 135.48,
+          "cause": "removed_decoder_patch_target"
+        }
+      ],
+      "historical_economic_dates_changed": false,
+      "historical_source_rows_changed": false,
+      "boundary_and_preflight_diagnostic": {
+        "passed": 0,
+        "failed": 5,
+        "pytest_seconds": 92.41,
+        "source_unchanged_during_invocation": true,
+        "selectors": [
+          "tests/integration/test_legacy_report_retention_postgres.py::test_v3_exact_witness_and_physical_flags_survive_incremental_cleanup",
+          "tests/integration/test_premium_report_retention_postgres.py::test_risk_purge_waits_for_report_budget_and_sql_rejects_bypass",
+          "tests/integration/test_report_v3_retention_postgres.py::test_current_report_rights_revoke_read_and_sweep_only_the_report",
+          "tests/integration/test_premium_reports_postgres.py::test_selected_risk_all_formats_and_sql_version_collections[False-2]",
+          "tests/integration/test_premium_reports_v3_postgres.py::test_saved_scenario_four_formats_original_proof_and_ttl_clamping[EUR]"
+        ]
+      },
+      "v3_original_report_copy_boundary": {
+        "basis_valid": true,
+        "sources_restricted": true,
+        "physical_original_headers": 12,
+        "original_created_date": "2026-08-31",
+        "stored_source_lifetime_days": 365,
+        "report_original_copy_limit_days": 30,
+        "denial_correct": true,
+        "new_runtime_fixture_requires": "fresh_typed_source_versions_with_explicit_current_availability_cutoff",
+        "negative_old_cutoff_and_financial_parity": "focused_fixture_checks_passed_broader_scope_pending"
+      },
+      "risk_partial_cleanup_boundary": {
+        "default_row_inspection_allowance": 4096,
+        "financial_rows_before": 752,
+        "financial_rows_after": 632,
+        "row_inspections_remaining": 16,
+        "report_pending_after": false,
+        "canonical_present_after": true,
+        "marker_complete_after": false,
+        "next_step": "existing_budget_bounded_resumes_focused_selector_passed_complete_gate_pending"
+      },
+      "risk_budget_resumption_selector": {
+        "passed": 1,
+        "failed": 0,
+        "pytest_seconds": 28.51,
+        "source_unchanged_during_invocation": true
+      },
+      "risk_reference_trace_parity": {
+        "initial_month_only_attempt": {
+          "passed": 0,
+          "failed": 1,
+          "pytest_seconds": 30.67,
+          "unavailable_daily_valuations": 31,
+          "summary_differences": 36,
+          "series_differences": 837,
+          "original_data_replay_differences": 0
+        },
+        "corrected_reference_period_days": 732,
+        "batch_ceiling_days": 1000,
+        "report_window_days": 31,
+        "full_observation_coverage_and_financial_parity": "passed_in_focused_risk_selector",
+        "trace_truncated": false
+      },
+      "fresh_source_positive_attempts": [
+        {
+          "attempt": "report-current-source-positive-01",
+          "passed": 0,
+          "failed": 4,
+          "pytest_seconds": 58.59,
+          "causes": [
+            "helper_inventory_field_error",
+            "risk_reference_period_parity_mismatch"
+          ]
+        },
+        {
+          "attempt": "report-current-source-positive-02",
+          "passed": 3,
+          "failed": 1,
+          "pytest_seconds": 216.78,
+          "source_unchanged_during_invocation": true,
+          "source_manifest_sha256": "b23085472e1f88d590dfa8b1d367f9874c378d1929004cf1e7ab175ccfa7fadc",
+          "passing_scopes": [
+            "legacy_v3_incremental_cleanup_192_budget_and_canaries",
+            "selected_risk_profile2_four_formats_full_732_day_trace_and_parity",
+            "eur_scenario_four_formats_ttl_isolation_and_revocation"
+          ],
+          "failing_scope": "historical_replay_original_report_license_deadline_clamp"
+        }
+      ],
+      "production_original_source_deadline_defect": {
+        "status": "implemented_focused_validation_passed_complete_gate_pending",
+        "root_cause": "sink_final_copy_deadline_omits_original_physical_created_at_plus_minimum_30_days_and_pinned_current_license_limits",
+        "unexpected_capture_overrun_seconds": "9.981752",
+        "basis_valid": true,
+        "sources_restricted": true,
+        "original_price_fx_stored_lifetime_days": 365,
+        "sql_authorization_denial_correct": true,
+        "later_eur_observer_denials": "expected_revocation_assertions_in_passing_selector",
+        "authorization": "bounded_existing_adr0024_sql_contract_correction",
+        "fixture_license_days_preserved": [365, 3650],
+        "regressions": "five_new_cases_and_original_replay_selector_passed",
+        "required_physical_dependency_expiry": "exact_original_stored_expiry",
+        "production_files": [
+          "packages/persistence/src/trading212_persistence/report_sources.py",
+          "packages/persistence/src/trading212_persistence/report_input_store.py"
+        ],
+        "contract_versions_changed": [3, 4],
+        "physical_dependency_expiry_and_exact_proof_unchanged": true,
+        "v1_v2_sql_guards_schema_financial_payloads_unchanged": true,
+        "physical_source_families": 9,
+        "dependency_traversal_bound": 100000,
+        "license_pair_cache_bound": 256,
+        "expired_original_api_evidence_scope": "atomic_rollback_not_new_predecode_denial"
+      },
+      "internal_fixture_review": {
+        "owner_independent_audit": false,
+        "selection_valuation_rebuild": "corrected",
+        "manual_one_second_slack_concern": "withdrawn_after_equal_frozen_clock_verification"
+      },
+      "deadline_focused_validation": {
+        "passed": 6,
+        "failed": 0,
+        "pytest_seconds": 206.13,
+        "runner_seconds": 208.172,
+        "source_unchanged_during_invocation": true,
+        "source_manifest_sha256": "0ac7cabc7dab06a303088966927c1170d7ef585fd4f524e41759aa357d48c6a3",
+        "new_regression_cases": 5,
+        "original_replay_selectors": 1,
+        "scopes_overlap_broader_run": true
+      },
+      "deadline_static_validation": {
+        "ruff": "passed",
+        "strict_mypy": "passed",
+        "mypy_source_files": 1138,
+        "mypy_runner_seconds": 4.497
+      },
+      "broader_relevant_file_validation": {
+        "status": "failed",
+        "passed": 40,
+        "failed": 3,
+        "collected_cases": 43,
+        "files": 9,
+        "pytest_seconds": 1554.46,
+        "runner_seconds": 1561.719,
+        "exit_code": 1,
+        "source_unchanged_during_invocation": true,
+        "source_manifest_sha256": "0ac7cabc7dab06a303088966927c1170d7ef585fd4f524e41759aa357d48c6a3",
+        "log_sha256": "f68452f540fb08243ab5a9760de22c05d9b2a16a04f58cdbac19dadc2ad34193",
+        "failed_selectors": [
+          "tests/integration/test_premium_reports_v3_postgres.py::test_saved_scenario_four_formats_original_proof_and_ttl_clamping[GBP]",
+          "tests/integration/test_premium_reports_v3_postgres.py::test_only_succeeded_owned_scenario_can_be_captured[queued]",
+          "tests/integration/test_premium_reports_v3_postgres.py::test_only_succeeded_owned_scenario_can_be_captured[cancelled]"
+        ],
+        "failure_causes": [
+          "fresh_gbp_fx_page_adapter_differed_from_actual_provider",
+          "queued_and_cancelled_historical_roots_expired_before_intended_state_check"
+        ]
+      },
+      "scenario_fixture_followup": {
+        "status": "passed",
+        "cases": 4,
+        "result": "passed",
+        "source_manifest_sha256": "ac468377184d30610a8f3f969fbf9dbf36fa1ddfe97e9c8c19ee675d49e0c460",
+        "corrections": [
+          "fx_adapter_literal_matches_replay_v1_provider",
+          "normal_fresh_unsucceeded_root_after_original_clock_cancellation_with_same_financial_selection"
+        ],
+        "production_report_bytes_equal_six_and_43_case_sources": true,
+        "remaining_39_cases": "complete_gate_pending",
+        "must_not_combine_old_40_and_new_4_as_complete_43_pass": true,
+        "passed": 4,
+        "failed": 0,
+        "pytest_seconds": 232.26,
+        "runner_seconds": 234.173,
+        "exit_code": 0,
+        "source_unchanged_during_invocation": true,
+        "log_sha256": "bca89390e4c8476fa42086ef09b82053757684ed9bf05d411c9ef28eddfa266d"
+      },
+      "fixture_followup_static_validation": {
+        "ruff": "passed",
+        "strict_mypy": "passed",
+        "mypy_source_files": 1138,
+        "formatting": "passed",
+        "formatted_source_files": 1143,
+        "source_manifest_sha256": "ac468377184d30610a8f3f969fbf9dbf36fa1ddfe97e9c8c19ee675d49e0c460"
+      }
+    }
   }
 }

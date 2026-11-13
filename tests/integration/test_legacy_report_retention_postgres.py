@@ -109,17 +109,23 @@ def reject_recursive_cleanup(session: Session) -> Iterator[None]:
 
 async def test_v2_report_only_policy_resumes_and_preserves_saved_risk(run_case: RunCase) -> None:
     case = run_case
-    run = await published(case)
+    run = await published(case, clock=lambda: datetime.now(UTC))
     owner = UUID(case.principal.owner_id)
     with case.sessions() as session, session.begin():
-        identifier = capture(session, case, run)
+        identifier = capture(session, case, run, at=datetime.now(UTC))
         original = session.scalar(
             select(RiskResultModel.canonical_result).where(RiskResultModel.run_id == run.id)
         )
         assert original
-    report_policy(case, run, "denied")
+        assert (
+            session.scalar(func.report_premium_restricted(owner, identifier, datetime.now(UTC)))
+            is False
+        )
+    report_policy(case, run, "denied", at=datetime.now(UTC))
+    at = datetime.now(UTC)
+    assert at < run.expires_at - timedelta(seconds=1)
     with case.sessions() as session, session.begin(), reject_recursive_cleanup(session):
-        expire_report_payloads(session, at=NOW, budget=SourcePurgeBudget(bytes_removed=0))
+        expire_report_payloads(session, at=at, budget=SourcePurgeBudget(bytes_removed=0))
         initial = session.scalar(
             select(ReportRetentionWorkModel).where(ReportRetentionWorkModel.input_id == identifier)
         )
@@ -127,7 +133,7 @@ async def test_v2_report_only_policy_resumes_and_preserves_saved_risk(run_case: 
     for _ in range(30):
         budget = SourcePurgeBudget(rows_inspected=192)
         with case.sessions() as session, session.begin(), reject_recursive_cleanup(session):
-            expire_report_payloads(session, at=NOW, budget=budget)
+            expire_report_payloads(session, at=at, budget=budget)
             work = session.scalar(
                 select(ReportRetentionWorkModel).where(
                     ReportRetentionWorkModel.input_id == identifier

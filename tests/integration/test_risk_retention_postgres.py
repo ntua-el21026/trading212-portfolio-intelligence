@@ -1,5 +1,7 @@
 """Physical risk removal, source revocation, fencing and real populated upgrade."""
 
+from collections.abc import Callable
+from dataclasses import replace
 from datetime import datetime, timedelta
 from inspect import unwrap
 from unittest.mock import patch
@@ -11,6 +13,7 @@ from alembic.config import Config
 from sqlalchemy import Engine, MetaData, func, select, text, update
 from sqlalchemy.exc import IntegrityError
 from trading212_analytics.risk import calculate_risk
+from trading212_analytics.risk_history import validate_risk_capacity
 from trading212_application import risk as app
 from trading212_persistence.historical_capture import HistoricalCaptureStore
 from trading212_persistence.historical_models import HistoricalDependencyModel
@@ -24,6 +27,7 @@ from trading212_persistence.premium_models import (
 )
 from trading212_persistence.risk_models import RiskResultModel
 from trading212_persistence.risk_retention import RISK_PAYLOADS, expire_risk_payloads
+from trading212_persistence.risk_service import PostgresRiskService
 from trading212_persistence.source_models import (
     PriceObservationModel,
     PriceSnapshotModel,
@@ -32,6 +36,7 @@ from trading212_persistence.source_models import (
 )
 from trading212_persistence.source_retention import SourcePurgeBudget
 from trading212_persistence.source_retention_service import expire_source_payloads
+from trading212_worker.historical_seed import CURSOR_KEY
 
 from tests.integration.test_historical_postgres import historical_database as _historical_database
 from tests.integration.test_historical_seed import NOW
@@ -48,8 +53,25 @@ historical_database = pytest.fixture(scope="function")(unwrap(_historical_databa
 seeded_history = pytest.fixture(scope="function")(unwrap(_seeded_history))
 
 
-async def published(case: RunCase) -> app.RiskRunView:
-    worker = store(case)
+async def published(
+    case: RunCase, *, clock: Callable[[], datetime] | None = None
+) -> app.RiskRunView:
+    if clock is not None:
+        # New runtime copies retain the original historical selection/source clocks.
+        # Admission derives their deadline from current rights and physical sources.
+        now = clock()
+        case.principal = replace(
+            case.principal,
+            authenticated_at=now - timedelta(minutes=1),
+            expires_at=now + timedelta(hours=2),
+        )
+        case.service = PostgresRiskService(
+            case.sessions,
+            cursor_signing_key=CURSOR_KEY,
+            preflight=validate_risk_capacity,
+            clock=clock,
+        )
+    worker = store(case, clock)
     run, dispatch = await admitted(case, worker)
     claim = await worker.claim_risk_job(dispatch.message, consumer_id="retention-test")
     assert claim is not None
