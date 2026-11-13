@@ -19,7 +19,9 @@ remain pending. All 30 Phase 3 acceptance rows and all 48 scenarios remain pendi
 
 The first complete stabilization target failed on stale physical-retention test
 expectations. Strengthened focused source/enrichment/risk checks and the current
-migration-head check now pass; a new immutable complete target remains pending.
+migration-head checks now pass, including the full shared source module. A second
+complete attempt was interrupted for four confirmed preflight mismatches; their
+focused corrections pass. A new immutable complete target remains pending.
 Production code and retention budgets are unchanged by these fixture corrections.
 
 ### Historical September save point

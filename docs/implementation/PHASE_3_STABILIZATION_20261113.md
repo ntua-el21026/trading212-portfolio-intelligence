@@ -160,6 +160,39 @@ The following actual focused follow-ups passed after their retained red attempts
 | Empty/repeated current head and ORM parity | One case passed in 3.92 seconds. |
 | Zero-removal and source/risk copy boundary | One case passed twice with observational SQL tracing; latest 28.60 seconds, unchanged source manifest. |
 
+## Remaining preflight compatibility corrections
+
+The second complete target ran at clean `2aa6c1b2d09ea701bb89acf6935a57b859cb2a71`,
+tree `c2fed51636bbb663b3f087c4a7a6c1d1dc7d9cea`. It was interrupted after
+2,814 passing unit cases, with no observed runtime failure, when a read-only
+preflight found four further explicit inconsistencies. It is an incomplete
+attempt, not a complete validation result. A separate four-case invocation on
+that unchanged committed source reproduced all four failures in 38.01 seconds.
+
+The projection populated-downgrade test expected old head `0029`; the failed
+transaction correctly retained `0034`. The populated risk upgrade expected 344
+current tables, predating the 20 aggregation tables. It now checks exact current
+table-name parity with ORM metadata, preserving its original 212-table legacy
+fingerprints and complete financial replay assertions. Both corrected migration
+cases passed in 25.52 seconds.
+
+A second source-expiry fixture repeated the one-removal/one-observation
+assumption. It now retains that allowance while checking bounded committed
+progress, exact first-observation removal, no premature expiry, immutable parent
+identity, access denial, complete removal and replay. The X-ray capacity fixture
+required a collection mutation costing 48 inspections under an allowance of eight.
+It retains the eight-inspection no-removal boundary with full physical payload
+parity, then verifies an exactly-one-pair partial purge under 64 inspections while
+capacity rejection commits progress. Bounded 256-inspection resumes release the
+old collection and preserve the original context and financial summary.
+
+Both retention selectors passed in 15.34 seconds. The complete shared source
+module then passed all 23 cases in 10.54 seconds. These scopes overlap. One earlier
+follow-up command omitted `TEST_DATABASE_URL` and recorded one pass and one setup
+error; the corrected explicit synthetic command and original error receipt remain
+separate. Common source/X-ray fixture functions and production code are unchanged.
+A new complete immutable target remains required.
+
 ## Reproducible synthetic validation
 
 Use the pinned Python, uv, Node and pnpm versions in the repository version files

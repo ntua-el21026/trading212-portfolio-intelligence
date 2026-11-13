@@ -1107,6 +1107,7 @@ def test_series_cannot_relabel_a_different_provider_instrument_key(
 def test_source_expiry_resumes_physical_batches_without_premature_completion(
     sources_database: tuple[Engine, sessionmaker[Session]],
 ) -> None:
+    from trading212_persistence.phase2_retention_models import Phase2RetentionSweepModel
     from trading212_persistence.source_models import (
         SourceExpiryEventModel,
         SourceRetentionWorkModel,
@@ -1123,10 +1124,64 @@ def test_source_expiry_resumes_physical_batches_without_premature_completion(
         before = count(sessions, PriceObservationModel, case.principal.owner_id)
         assert before > 1
         case.now[0] += timedelta(days=2)
-        budget = SourcePurgeBudget(rows_removed=1)
-        with sessions.begin() as session:
-            assert expire_source_payloads(session, at=case.now[0], limit=1, budget=budget) == 0
-        assert budget.rows_removed == 0
+        digest = source_snapshot_digest(snapshot)
+
+        def progress() -> tuple[object, ...]:
+            with sessions() as session:
+                return (
+                    tuple(
+                        session.execute(
+                            select(
+                                Phase2RetentionSweepModel.family,
+                                Phase2RetentionSweepModel.after_id,
+                                Phase2RetentionSweepModel.pending_id,
+                                Phase2RetentionSweepModel.evaluated_at,
+                            ).order_by(Phase2RetentionSweepModel.family)
+                        )
+                    ),
+                    tuple(
+                        session.execute(
+                            select(
+                                SourceRetentionWorkModel.id,
+                                SourceRetentionWorkModel.phase,
+                                SourceRetentionWorkModel.removed_observation_count,
+                                SourceRetentionWorkModel.completed_at,
+                            ).order_by(SourceRetentionWorkModel.id)
+                        )
+                    ),
+                )
+
+        # The one-row removal allowance also covers transient copy-sweep rows.
+        # Resume committed work until this source loses its first observation.
+        previous = progress()
+        for _ in range(64):
+            budget = SourcePurgeBudget(rows_removed=1)
+            with sessions.begin() as session:
+                assert expire_source_payloads(session, at=case.now[0], limit=1, budget=budget) == 0
+            assert 0 <= budget.rows_removed <= 1 and 0 <= budget.rows_inspected <= 4096
+            assert 0 <= budget.bytes_inspected <= 64 * 1024 * 1024
+            assert 0 <= budget.bytes_removed <= 64 * 1024 * 1024
+            retained = count(sessions, PriceObservationModel, case.principal.owner_id)
+            assert before - 1 <= retained <= before
+            with sessions() as session:
+                parent = session.get(PriceSnapshotModel, UUID(snapshot.id))
+                assert parent is not None and parent.content_digest == digest
+                assert (
+                    session.scalar(
+                        select(SourceExpiryEventModel.id).where(
+                            SourceExpiryEventModel.price_snapshot_id == UUID(snapshot.id)
+                        )
+                    )
+                    is None
+                )
+            if retained == before - 1:
+                assert budget.rows_removed == 0
+                break
+            current = progress()
+            assert current != previous
+            previous = current
+        else:
+            pytest.fail("One-removal source cleanup did not reach its first observation")
         assert count(sessions, PriceObservationModel, case.principal.owner_id) == before - 1
         with sessions() as session:
             pending = session.scalar(

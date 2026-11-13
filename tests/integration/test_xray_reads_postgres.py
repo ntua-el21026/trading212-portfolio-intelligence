@@ -25,10 +25,18 @@ from trading212_domain.xray import XrayBound, XrayDimension
 from trading212_persistence import collection_snapshots as collection_store
 from trading212_persistence import create_database_engine, create_session_factory
 from trading212_persistence import xray_read_store as read_store
-from trading212_persistence.models import CollectionQuerySnapshotModel
+from trading212_persistence.models import (
+    CollectionQuerySnapshotMemberModel,
+    CollectionQuerySnapshotModel,
+)
+from trading212_persistence.phase2_retention_models import Phase2RetentionSweepModel
 from trading212_persistence.source_retention import SourcePurgeBudget
 from trading212_persistence.source_service import PostgresSourceService
-from trading212_persistence.xray_run_models import EtfOverlapEntityModel, EtfOverlapPairModel
+from trading212_persistence.xray_run_models import (
+    EtfOverlapEntityModel,
+    EtfOverlapPairModel,
+    XrayCollectionBindingModel,
+)
 from trading212_persistence.xray_service import PostgresXrayService
 from trading212_security.principals import Principal, Scope
 from trading212_worker.seed import seed_materialized_synthetic
@@ -515,23 +523,130 @@ def test_capacity_rejection_commits_partial_expired_collection_cleanup(
             clock=lambda: case.now[0],
             max_active_collection_snapshots_per_owner=active,
         )
-        # Exercise a real multi-invocation purge with a small legal allowance.
-        # The first budget clears licensed pair copies but cannot remove the
-        # collection binding, so it remains charged when the read is rejected.
-        monkeypatch.setattr(
-            read_store,
-            "SourcePurgeBudget",
-            lambda: SourcePurgeBudget(rows_inspected=8, rows_removed=8),
-        )
+
+        def collection_rows() -> tuple[object, ...]:
+            # Read all physical columns, including licensed payload bytes, in a
+            # fresh transaction after each service call has committed cleanup.
+            with case.sessions() as session:
+                return (
+                    tuple(
+                        session.execute(
+                            select(*CollectionQuerySnapshotModel.__table__.c).where(
+                                CollectionQuerySnapshotModel.id == identifier
+                            )
+                        )
+                    ),
+                    tuple(
+                        session.execute(
+                            select(*XrayCollectionBindingModel.__table__.c).where(
+                                XrayCollectionBindingModel.collection_id == identifier
+                            )
+                        )
+                    ),
+                    tuple(
+                        session.execute(
+                            select(*CollectionQuerySnapshotMemberModel.__table__.c)
+                            .where(CollectionQuerySnapshotMemberModel.snapshot_id == identifier)
+                            .order_by(CollectionQuerySnapshotMemberModel.ordinal)
+                        )
+                    ),
+                    tuple(
+                        session.execute(
+                            select(*EtfOverlapEntityModel.__table__.c)
+                            .where(EtfOverlapEntityModel.collection_id == identifier)
+                            .order_by(EtfOverlapEntityModel.id)
+                        )
+                    ),
+                    tuple(
+                        session.execute(
+                            select(*EtfOverlapPairModel.__table__.c)
+                            .where(EtfOverlapPairModel.collection_id == identifier)
+                            .order_by(EtfOverlapPairModel.id)
+                        )
+                    ),
+                )
+
+        def progress() -> tuple[object, ...]:
+            with case.sessions() as session:
+                return (
+                    collection_rows(),
+                    tuple(
+                        session.execute(
+                            select(*Phase2RetentionSweepModel.__table__.c).order_by(
+                                Phase2RetentionSweepModel.family,
+                                Phase2RetentionSweepModel.scope_id,
+                            )
+                        )
+                    ),
+                )
+
+        allowance = 8
+        budgets: list[SourcePurgeBudget] = []
+
+        def cleanup_budget() -> SourcePurgeBudget:
+            budget = SourcePurgeBudget(rows_inspected=allowance, rows_removed=8)
+            budgets.append(budget)
+            return budget
+
+        def assert_budget() -> None:
+            budget = budgets[-1]
+            assert 0 <= budget.rows_inspected <= allowance
+            assert 0 <= budget.rows_removed <= 8
+            assert 0 <= budget.bytes_inspected <= 64 * 1024 * 1024
+            assert 0 <= budget.bytes_removed <= 64 * 1024 * 1024
+
+        monkeypatch.setattr(read_store, "SourcePurgeBudget", cleanup_budget)
+        original = collection_rows()
+        assert original[0] and original[1] and original[2] and not original[3] and original[4]
+        # Eight inspections cannot reserve one 48-inspection collection mutation.
+        # Capacity rejection commits metadata progress but preserves every copy.
         with pytest.raises(app.XrayServiceError) as full:
             await company(case)
         assert full.value.code is app.XrayServiceErrorCode.RESULT_TOO_LARGE
+        assert len(budgets) == 1
+        assert_budget()
+        assert budgets[-1].rows_removed == 8
+        assert budgets[-1].bytes_inspected == budgets[-1].bytes_removed == 64 * 1024 * 1024
+        assert collection_rows() == original
+
+        # A legal small allowance clears the pair and commits that partial purge
+        # even though the retained root still occupies capacity and denies a read.
+        allowance = 64
+        with pytest.raises(app.XrayServiceError) as partial:
+            await company(case)
+        assert partial.value.code is app.XrayServiceErrorCode.RESULT_TOO_LARGE
+        assert len(budgets) == 2
+        assert_budget()
+        assert budgets[-1].rows_removed == 7
+        assert collection_rows() == (*original[:4], ())
         with case.sessions() as session:
             assert session.get(CollectionQuerySnapshotModel, identifier) is not None
             assert session.scalar(select(func.count()).select_from(EtfOverlapPairModel)) == 0
-        resumed = await company(case)
+
+        # Keep a bounded physical allowance and resume committed cleanup. A
+        # zero-completion pass must still advance durable work before retrying.
+        allowance = 256
+        previous = progress()
+        for _ in range(8):
+            calls = len(budgets)
+            try:
+                resumed = await company(case)
+            except app.XrayServiceError as pending:
+                assert pending.code is app.XrayServiceErrorCode.RESULT_TOO_LARGE
+                current = progress()
+                assert current != previous
+                previous = current
+            else:
+                assert len(budgets) == calls + 1
+                assert_budget()
+                break
+            assert len(budgets) == calls + 1
+            assert_budget()
+        else:
+            pytest.fail("Bounded cleanup did not release the expired collection capacity")
         assert resumed.context == pair.context and resumed.summary == pair.summary
         with case.sessions() as session:
             assert session.get(CollectionQuerySnapshotModel, identifier) is None
+        assert collection_rows() == ((), (), (), (), ())
 
     asyncio.run(run())

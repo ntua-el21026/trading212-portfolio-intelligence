@@ -4344,6 +4344,16 @@
         "full_gate_pass": false
       }
     ],
-    "retention_fixture_recovery": "focused_validation_passed_complete_immutable_gate_pending"
+    "retention_fixture_recovery": "focused_and_shared_module_validation_passed_complete_gate_pending",
+    "interrupted_complete_validation_attempts": [
+      {
+        "source_sha": "2aa6c1b2d09ea701bb89acf6935a57b859cb2a71",
+        "result": "interrupted_for_preflight",
+        "unit_passed_before_interruption": 2814,
+        "observed_runtime_failures": 0,
+        "subsequent_focused_failures_same_source": 4,
+        "full_gate_pass": false
+      }
+    ]
   }
 }
