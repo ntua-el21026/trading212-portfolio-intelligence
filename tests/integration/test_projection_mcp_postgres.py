@@ -36,6 +36,7 @@ from tests.integration.test_projection_jobs_postgres import store
 from tests.integration.test_real_jwt_mcp_postgres import guard as guard
 from tests.integration.test_xray_reads_postgres import xray_read_case as xray_read_case
 from tests.jwt_support import JwtTestSigner
+from tests.mcp_discovery import assert_current_tool_inventory
 
 pytestmark = pytest.mark.integration
 
@@ -134,7 +135,7 @@ async def test_signed_projection_sdk_replay_whole_pages_and_current_account_gran
         async with connection.session() as client:
             descriptors = await client.list_tools()
             guard.check(descriptors.model_dump_json())
-            assert len(descriptors.tools) == 36
+            assert_current_tool_inventory(descriptors.tools)
             created = await connection.call(client, "create_projection_run", arguments)
             assert not created.is_error and created.structured_content is not None
             queued = created.structured_content["data"]

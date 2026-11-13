@@ -53,6 +53,19 @@ findings rather than observed runtime failures. A new immutable full target
 remains pending. The failed target's Python result and corrected web pass remain
 separate evidence.
 
+The seventh complete target at `c907cac` passed static checks, 4,744 Python unit
+cases, 918 web unit cases, 36 property cases and 357 contract cases. Integration
+then stopped with 353 passes and one signed projection MCP discovery failure;
+later stages were not reached. An unchanged-source focused reproduction located
+the stale 36-tool assertion. The accepted current contract adds exactly
+`get_research_summary` and `get_research_item`, producing 38 authorized tools.
+Three current-runtime discovery tests now use an independent exact-name oracle
+for the preserved 25-case catalogue and 13 explicitly named additions, including
+duplicate rejection. All 50 focused projection/risk/real-JWT cases passed in
+138.02 seconds. Historical isolated 32/36-tool contracts, product code and all
+authentication, financial-parity, replay, paging and secret assertions remain
+unchanged. A new immutable complete target remains pending.
+
 ### Historical September save point
 
 The owner requested a resumable checkpoint on 2026-09-30. The aggregation

@@ -553,6 +553,29 @@
         "source_manifest_sha256": "5467fc28bd3e6b6d4f8f526b8c0886a5b4a91352f1182df41475e25d9c9f001d",
         "log_sha256": "0a63e7b1ad862ba7009bbb44a302db6dd82880674cbc8b039957e27ff7d032e4",
         "full_gate_pass": false
+      },
+      {
+        "attempt": "complete-validate-07",
+        "source_sha": "c907cac919535b21b4c57f5f8d5b76020a52ed56",
+        "tree_sha": "35bb8ea9f9b27e0d019c977dd4bbbb46bd36ba16",
+        "result": "failed_integration",
+        "duration_seconds": 3189.445,
+        "python_unit_passed": 4744,
+        "python_unit_seconds": 357.0,
+        "web_unit_passed": 918,
+        "property_passed": 36,
+        "contract_passed": 357,
+        "integration_passed": 353,
+        "integration_failed": 1,
+        "integration_deselected": 5520,
+        "integration_seconds": 2643.46,
+        "failure_file": "tests/integration/test_projection_mcp_postgres.py",
+        "failure_scope": "stale_current_runtime_mcp_discovery_count_36_versus_38",
+        "later_gates_executed": false,
+        "source_unchanged": true,
+        "source_manifest_sha256": "b68c689a8e3f94dfd194f762821a3f094fefe18e179fa7b6b4ecb8f44d545531",
+        "log_sha256": "03465584c9bc7c80c41cad8f340b6eb7c647ad03604a59e8157ad20c5c07b692",
+        "full_gate_pass": false
       }
     ],
     "retention_fixture_recovery": "focused_and_shared_module_validation_passed_complete_gate_pending",
@@ -926,6 +949,37 @@
       },
       "final_format_lint_types": "passed",
       "old_python_and_current_web_are_complete_gate": false
+    },
+    "mcp_discovery_fixture_recovery": {
+      "status": "focused_signed_transport_passed_full_gate_pending",
+      "original_focused_reproduction": {
+        "passed": 0,
+        "failed": 1,
+        "pytest_seconds": 9.84,
+        "source_sha": "c907cac919535b21b4c57f5f8d5b76020a52ed56",
+        "authored_failure_line": 137
+      },
+      "current_runtime_tools": 38,
+      "preserved_original_catalogue": 25,
+      "explicit_authorized_additions": 13,
+      "research_additions": ["get_research_summary", "get_research_item"],
+      "independent_inventory_oracle": "tests/mcp_discovery.py",
+      "rejects_missing_extra_duplicate_names": true,
+      "historical_isolated_32_36_contracts_unchanged": true,
+      "product_and_dependency_files_unchanged": true,
+      "auth_financial_parity_replay_paging_and_secret_assertions_preserved": true,
+      "focused": {
+        "passed": 50,
+        "failed": 0,
+        "pytest_seconds": 138.02,
+        "runner_seconds": 140.825,
+        "exit_code": 0,
+        "source_unchanged": true,
+        "source_manifest_sha256": "7f7230f1fc699aa71ce589a9aa18ac6d4d17117ef06312d780e7421d935de8ba",
+        "log_sha256": "0ee0e537632665e2b34194a868794cfa2da7ece88bdd4b08030a09b7a1806cb2"
+      },
+      "new_immutable_complete_gate": "pending",
+      "internal_static_review": "no_blocking_findings_not_independent_owner_acceptance"
     }
   }
 }

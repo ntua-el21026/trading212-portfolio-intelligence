@@ -439,6 +439,46 @@ target and this corrected web pass do not constitute a complete validation pass.
 A new clean immutable checkpoint and complete target rerun remain required; no
 later stage or release acceptance is inferred.
 
+## Seventh complete attempt and exact signed MCP discovery
+
+The seventh complete target ran at clean
+`c907cac919535b21b4c57f5f8d5b76020a52ed56`, tree
+`35bb8ea9f9b27e0d019c977dd4bbbb46bd36ba16`. It exited 2 after
+3189.445 seconds with unchanged source manifest
+`b68c689a8e3f94dfd194f762821a3f094fefe18e179fa7b6b4ecb8f44d545531`.
+Formatting, lint, strict typing, 4,744 Python unit cases, 918 web unit cases,
+36 property cases and 357 contract cases passed. PostgreSQL integration stopped
+with 353 passes, one failure and 5,520 deselections in 2,643.46 seconds. The failing
+signed projection exchange hid exception values through its existing secret
+guard. Later migration, security, coverage, browser and build stages were not
+reached; this attempt remains failed.
+
+An external bounded observer reproduced the unchanged test's failure at authored
+line 137, `len(descriptors.tools) == 36`, with one failed case in 9.84 seconds.
+The observer exposed only a safe authored location and closed tool identifiers;
+no bearer, payload, exception text or local variables were persisted. Existing
+contract tests already establish the exact research addition from 36 to 38 tools:
+`get_research_summary` and `get_research_item`. The projection-only 32-to-36
+contract deliberately disables research registration and remains unchanged.
+
+The correction affects three current-runtime signed discovery tests and one new
+test-only helper. Its independent oracle combines the preserved 25-case catalogue
+with 13 explicitly authored risk/scenario/projection/research names. It asserts
+exactly 38 unique names, exact set equality and the final two research names in
+order. The real-JWT test's stale 28-name set is corrected by this same closed
+oracle. Original descriptor/schema/security checks and all financial parity,
+worker execution, replay, paging, current grant, foreign-owner and secret-canary
+assertions remain. Product, dependency and historical contract files are unchanged.
+Internal static peer review found no blocking issue; owner acceptance remains
+pending.
+
+The focused invocation of the complete projection, risk and real-JWT integration
+files passed all 50 cases in 138.02 seconds, with a
+140.825-second runner duration, exit 0 and unchanged source
+manifest `7f7230f1fc699aa71ce589a9aa18ac6d4d17117ef06312d780e7421d935de8ba`.
+Its receipt and failed reproduction remain distinct from the failed complete
+target. A clean immutable checkpoint and complete target rerun are still required.
+
 ## Reproducible synthetic validation
 
 Use the pinned Python, uv, Node and pnpm versions in the repository version files

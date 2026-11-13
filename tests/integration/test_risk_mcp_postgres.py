@@ -55,6 +55,7 @@ from tests.integration.test_risk_runs_postgres import RunCase
 from tests.integration.test_risk_runs_postgres import run_case as run_case
 from tests.integration.test_risk_source_authorization import restrict
 from tests.jwt_support import JwtTestSigner
+from tests.mcp_discovery import assert_current_tool_inventory
 
 pytestmark = pytest.mark.integration
 # Rights revocation must not contaminate another transport or source fixture.
@@ -192,7 +193,7 @@ async def test_signed_sdk_command_concurrent_replay_worker_and_http_canonical_pa
     async with transport(case, signer, guard) as connection, connection.session() as client:
         descriptors = await client.list_tools()
         guard.check(descriptors.model_dump_json())
-        assert len(descriptors.tools) == 36
+        assert_current_tool_inventory(descriptors.tools)
         correlation = "c" * 128
         connection.client.headers["X-Correlation-ID"] = correlation
         results = await asyncio.gather(

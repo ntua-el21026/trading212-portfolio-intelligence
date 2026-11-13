@@ -46,6 +46,7 @@ from tests.integration.real_jwt_mcp_support import (
 )
 from tests.integration.test_alert_postgres import alert_database as alert_database
 from tests.jwt_support import JwtTestSigner
+from tests.mcp_discovery import assert_current_tool_inventory
 from tests.mcp_registry_cases import CASES
 
 pytestmark = pytest.mark.integration
@@ -146,12 +147,8 @@ async def test_real_jwt_discovery_resources_and_original_phase2_reads(
                     tool.name: tool.model_dump(mode="json", by_alias=True, exclude_none=True)
                     for tool in listed.tools
                 }
-                assert len(listed.tools) == len(descriptors) == 36
-                assert set(descriptors) == {expected.name for expected in CASES} | {
-                    "create_risk_run",
-                    "get_risk_summary",
-                    "get_risk_matrix",
-                }
+                assert_current_tool_inventory(listed.tools)
+                assert len(listed.tools) == len(descriptors)
                 for expected in CASES:
                     descriptor = descriptors[expected.name]
                     assert descriptor["annotations"] == {
