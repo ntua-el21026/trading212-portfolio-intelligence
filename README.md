@@ -145,7 +145,7 @@ For a first technical review, read the
 
 ## Provenance and release
 
-This independent project is maintained by Michail-Athanasios Peppas. Source,
+This independent project is maintained by Michail Athanasios Peppas. Source,
 dependency locks, synthetic fixtures and source-bound receipts provide evidence;
 repository size and test inventories are not product acceptance. Retained
 agent-assisted development/review records document assistance without replacing

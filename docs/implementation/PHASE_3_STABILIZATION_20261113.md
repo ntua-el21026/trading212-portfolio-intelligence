@@ -13,7 +13,9 @@ Starting local and fetched remote `main` were
 `64e2057cb9b1ddee11649f605e968b18bd559fcb`, tree
 `d4ca30e22e09496c27913456e528d740f4895e21`. The working tree was clean.
 GitHub repository metadata identified public visibility. The proprietary
-[license](../../LICENSE.md) remains unchanged.
+[licensing terms](../../LICENSE.md) remain unchanged. The owner requested the
+name spelling **Michail Athanasios Peppas** in current documentation; the README
+and copyright notice follow that spelling.
 
 The [September checkpoint](PHASE_3_RESUME_20260930.md) remains a historical
 record. Its external operator paths and unfinished staged feature work are not

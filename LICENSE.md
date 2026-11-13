@@ -1,6 +1,6 @@
 # Proprietary License Notice
 
-Copyright © 2026 Michail-Athanasios Peppas. All rights reserved.
+Copyright © 2026 Michail Athanasios Peppas. All rights reserved.
 
 This repository and all source code, documentation, designs, data models, tests, assets, prompts, and related materials are private and proprietary.
 
