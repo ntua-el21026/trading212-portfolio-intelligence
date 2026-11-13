@@ -1,6 +1,8 @@
 # Phase 3 Implementation Report
 
-**Current:** P3-01 interfaces and risk reports delivered; P3-02 scenarios and profile3 reports implemented; P3-03 kernel/calendar capture implemented with persistence and public integration pending
+**Current:** Bounded baseline stabilization and existing P3-08 aggregation recovery;
+see the [13 November record](PHASE_3_STABILIZATION_20261113.md). Earlier sections
+retain their original component scope and chronology.
 **Target:** 1.0.0; independent review pending; production not authorized
 
 Start main d2ebdaf96d1b61aacea5c6492824946540f88803. Governance delivery

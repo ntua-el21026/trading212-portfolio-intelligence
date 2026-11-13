@@ -20,6 +20,10 @@ When documents conflict, apply this order from highest to lowest authority:
    - `docs/integrations/TRADING212_API_CONTRACT.md`
    - `config/contracts/trading212-read-allowlist.yaml`
 6. Active phase authorities:
+   - `docs/implementation/PHASE_3_TECHNICAL_BASELINE.md`
+   - `docs/implementation/PHASE_3_EXECUTION_MANIFEST.md`
+   - `docs/implementation/PHASE_3_ACCEPTANCE_MATRIX.md`
+   - `docs/implementation/PHASE_3_SCENARIO_EVIDENCE.md`
    - `docs/implementation/PHASE_2_TECHNICAL_BASELINE.md`
    - `docs/implementation/PHASE_2_EXECUTION_MANIFEST.md`
    - `docs/implementation/PHASE_2_ACCEPTANCE_MATRIX.md`
@@ -213,3 +217,8 @@ Design acceptance is separate from runtime and Phase3 acceptance.
 The [2026-09-30 checkpoint](implementation/PHASE_3_RESUME_20260930.md) records
 partial aggregation integration, its known PostgreSQL failure and preserved local
 report/retention/performance handoffs. It does not establish runtime acceptance.
+
+The [13 November stabilization record](implementation/PHASE_3_STABILIZATION_20261113.md)
+tracks the owner-authorized baseline, security, contract, browser and aggregation
+recovery assignment. This bounded scope does not authorize the remaining feature
+packages or change the 30-row/48-scenario acceptance requirements.

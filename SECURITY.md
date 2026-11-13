@@ -2,7 +2,11 @@
 
 ## Scope
 
-This is a private proprietary portfolio-intelligence repository. Security issues include credential exposure, unauthorized portfolio access, financial calculation integrity defects, provider-contract bypass, and any path that could cause a Trading 212 write.
+This public repository contains proprietary portfolio-intelligence software. Public
+source visibility does not grant reuse rights beyond [LICENSE.md](LICENSE.md).
+Security issues include credential exposure, unauthorized portfolio access,
+financial calculation integrity defects, provider-contract bypass, and any path
+that could cause a Trading 212 write.
 
 ## Critical invariant
 

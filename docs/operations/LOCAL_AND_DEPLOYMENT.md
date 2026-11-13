@@ -95,8 +95,11 @@ make migrate
 make seed-demo
 ```
 
-`make migrate` upgrades to Alembic head `20260907_0008`. Re-running the upgrade and synthetic
-seed is safe. Migration downgrades are not an operational rollback mechanism.
+`make migrate` upgrades to the current Alembic head; the stabilization repair is
+`20261113_0034`, following `20260915_0030`. See the
+[migration ledger](../../migrations/README.md) for reserved historical handoffs
+and the forward-repair policy. Re-running the upgrade and synthetic seed is
+safe. Migration downgrades are not an operational rollback mechanism.
 For a deployment, run the migration image as a controlled one-shot job with an
 advisory deployment lock, record the previous and new Alembic revisions, and
 then roll out compatible services.

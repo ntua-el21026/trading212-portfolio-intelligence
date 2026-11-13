@@ -4,6 +4,17 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+- Recover aggregation publication ordering and add forward migration `0034` for
+  canonical tagged source proofs, preserving migration `0030` and original source
+  records. Focused PostgreSQL regressions pass; package acceptance remains pending.
+- Preserve historical API/client fingerprints around the accepted aggregation/FX
+  additions and correct semantic selectors and mobile widget test-host viewports.
+  Production widgets and synchronization deadlines remain unchanged.
+- Apply pinned dependency and Debian snapshot security corrections; document
+  individually verified secret-scanner false positives and current public-source
+  status. Full gate outcomes belong to the
+  [bounded stabilization record](docs/implementation/PHASE_3_STABILIZATION_20261113.md).
+
 - Add durable owner layouts with immutable versions, exact saved-view selection and current canonical previews; verify real desktop/tablet/mobile journeys, keyboard focus, accessibility and account/cache isolation.
 
 - Add bounded provider acquisition, metadata-only provider status and explicit original-source fallback, preserving current rights, UTC quotas and the disabled live-provider boundary.
@@ -401,10 +412,16 @@ Live is disabled and untested, not another Phase 1 gate.
 
 Virtual Pies/targets, contribution optimization, full performance/benchmarks, X-ray, reports, alerts, and premium analytical interfaces.
 
-Status: `in_progress`; P2-01 through P2-08 locally complete (8/10 packages, 80%). 21/29 local rows and 30/40 scenarios are complete; S32/S34/S38/S39 remain partial and S33 is pending. GitHub Actions is owner-deferred. P209–P210 remain required; final Phase 2 release evidence SHA remains null.
+Status: accepted by the owner for progression at corrected source `f88b019`,
+delivered at `d2ebdaf`. The earlier package counts and release receipts above
+remain historical. Owner progression is distinct from independent verification
+of every release gate; GitHub Actions retains its owner-deferred policy.
 
 ### [1.0.0] — Phase 3: Premium Intelligence and Productization
 
 Advanced risk/scenarios/goals, research cockpit, rich ChatGPT UI, PWA polish, premium providers, and production hardening.
 
-Status: `not_started`.
+Status: `in_progress`. The bounded November stabilization covers baseline,
+security, contract/browser regressions and existing aggregation recovery.
+All 30 acceptance rows and 48 scenarios remain pending; 1.0.0, production and
+Live are not authorized. See the [stabilization record](docs/implementation/PHASE_3_STABILIZATION_20261113.md).

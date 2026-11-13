@@ -1,6 +1,9 @@
 # Contributing
 
-This is a private proprietary repository. Contributions are made by the repository owner, ChatGPT, and authorized Codex sessions.
+This public repository retains its [proprietary license](LICENSE.md). Contributions
+require the repository owner's authorization; source visibility does not change
+copyright or redistribution rights. The development workflow applies to the owner
+and authorized contributors, including agent-assisted sessions.
 
 ## Workflow
 
@@ -20,8 +23,8 @@ Concurrent agents must not edit overlapping files without first reconciling the 
 Recommended GitHub ruleset (not claimed configured): permit direct pushes to
 `main`, block force pushes and branch deletion, require linear history, and do
 not require pull requests. Signed commits may be required only after signing is
-configured. On 2026-09-07, GitHub's rulesets API returned HTTP 403 for this private
-repository's plan/entitlement; hosted ruleset configuration remains a non-blocking
+configured. On 2026-09-07, GitHub's rulesets API returned HTTP 403 for the
+then-private repository's plan/entitlement; hosted ruleset configuration remains a non-blocking
 external governance action. Local and CI governance validation continue to enforce
 the main-only workflow independently.
 No task-local example, release procedure, or historical record authorizes an alternate

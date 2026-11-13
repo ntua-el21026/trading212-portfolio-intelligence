@@ -1,5 +1,14 @@
 # Validation Report
 
+## Current bounded stabilization, 2026-11-13
+
+The [stabilization record](docs/implementation/PHASE_3_STABILIZATION_20261113.md)
+tracks actual baseline reproductions and new command evidence from synchronized
+`64e2057cb9b1ddee11649f605e968b18bd559fcb`. Validation is in progress. The
+historical receipts below retain their original sources and do not combine into
+a current release pass. Phase 3 package acceptance and independent audit remain
+pending; production and Live are not authorized.
+
 ## Owner-authorized progression, 2026-09-14
 
 Phase 2 is **accepted by the owner for progression** to Phase 3. The accepted

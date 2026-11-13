@@ -9,11 +9,12 @@ valuation time, coverage and quality remain attached to results.
 
 **Phase 3 is in progress.** The current authority is
 [PROJECT_STATUS.md](PROJECT_STATUS.md) and the
-[30 September checkpoint](docs/implementation/PHASE_3_RESUME_20260930.md).
-Aggregation publication still fails a PostgreSQL native-component proof guard;
-its runtime/browser acceptance and package-wide Phase 3 acceptance remain
-pending. Historical component test receipts do not constitute a current release
-pass. Production deployment and live-provider use are not authorized by them.
+[13 November stabilization record](docs/implementation/PHASE_3_STABILIZATION_20261113.md).
+Bounded recovery covers aggregation publication, dependency security and existing
+contract/browser regressions. Aggregation runtime/browser acceptance and
+package-wide Phase 3 acceptance remain pending. Historical component test
+receipts do not constitute a current release pass. Production deployment and
+live-provider use are not authorized by them.
 
 Phase 1 has source-bound acceptance evidence. Phase 2 was accepted by the owner
 for progression after the R-01/R-02 corrections; that decision is distinct from
@@ -48,6 +49,9 @@ targets and manual allocation proposals do not execute broker actions. Browser
 and MCP clients receive authorized projections rather than broker credentials
 or generic HTTP, SQL or filesystem access.
 
+The stack uses FastAPI/Pydantic, SQLAlchemy/Alembic and Celery in Python,
+Next.js/React/TypeScript on the web, PostgreSQL and Redis.
+
 ## Local development
 
 The workspace contains [API](apps/api/), [worker](apps/worker/),
@@ -57,9 +61,10 @@ The workspace contains [API](apps/api/), [worker](apps/worker/),
 [sealed broker adapter](packages/trading212/). The tracked synthetic fixtures
 and contract specifications support inspection without a brokerage account.
 
-Use Python 3.13.15, Node.js 24.20.0, pnpm 10.34.5, uv and GNU Make. Docker Compose
+Use Python 3.13.15, uv 0.12.7, Node.js 24.20.0, Corepack, pnpm 10.34.5 and GNU Make. Docker Compose
 is required for database-backed and full-stack gates. Review the
-[dependency baseline](docs/implementation/P1_01_DEPENDENCY_BASELINE.md) and
+[current technical baseline](docs/implementation/PHASE_3_TECHNICAL_BASELINE.md),
+[security corrections](docs/security/DEPENDENCY_REMEDIATION_20261113.md) and
 [operations guide](docs/operations/LOCAL_AND_DEPLOYMENT.md) before starting
 services. Keep secrets server-side in ignored local configuration. Use synthetic
 seed data before configuring any external read-only provider.
@@ -103,6 +108,24 @@ the original operator's environment and external checkpoint diagnostics are
 absent from a clean clone; their absence does not prevent reviewing source or
 synthetic test cases. The September resume document records those historical
 local paths, rather than portable prerequisites.
+
+For a fresh synthetic application instance, the following uses a separate local
+Compose project and a public demo database password. It needs no broker account:
+
+```bash
+export COMPOSE_PROJECT_NAME=t212pi_synthetic
+export POSTGRES_PASSWORD=portfolio
+make bootstrap
+make run-local
+```
+
+Open `http://localhost:3000/sign-in`, select **Start local session**, then choose
+an authorized synthetic account if prompted. The seed is idempotent. Use
+`make stop-local` in the same shell to stop this project while retaining its
+volume. When using a different local password for host tests, set matching
+`DATABASE_URL` and `TEST_DATABASE_URL`; the example URLs in `.env.example` use
+the synthetic password above. Current startup qualification is recorded in the
+stabilization report.
 
 ## Verification and interpretation
 
