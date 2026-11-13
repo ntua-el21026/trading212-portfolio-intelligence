@@ -6,9 +6,18 @@
 
 **Implementation authority:** `main`
 
-**Updated:** 2026-09-30
+**Updated:** 2026-11-13
 
 ## Current state
+
+The owner authorized a bounded stabilization and aggregation recovery assignment
+on 13 November. The [current record](docs/implementation/PHASE_3_STABILIZATION_20261113.md)
+separates reproduced baseline failures, corrections and actual validation from
+the historical observations below. The assignment begins at clean synchronized
+`64e2057cb9b1ddee11649f605e968b18bd559fcb`; final validation and independent review
+remain pending. All 30 Phase 3 acceptance rows and all 48 scenarios remain pending.
+
+### Historical September save point
 
 The owner requested a resumable checkpoint on 2026-09-30. The aggregation
 vertical and saved FX observation picker are preserved as work in progress,
@@ -470,7 +479,7 @@ the real Trading 212 provider supplies a valid opening-history basis. That real-
 coverage condition remains `unavailable_explicit`, with the limitation reported rather
 than fabricated.
 
-## Next action
+## Historical next action before owner progression
 
 Review the corrected f88b019 candidate and its inspectable local evidence independently.
 The prior 3998426 report remains historical. Preserve these external owner/deployment

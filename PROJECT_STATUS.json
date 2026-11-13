@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-09-22",
+  "updated_at": "2026-11-13",
   "current_candidate": {
     "phase": "phase_3",
     "release": "1.0.0",
@@ -93,7 +93,8 @@
     "real_provider_opening_history_coverage": "complete"
   },
   "security_gate_architecture": {
-    "github_code_scanning_upload": "unavailable_private_user_owned_repository_entitlement",
+    "github_code_scanning_upload": "not_revalidated_after_public_visibility",
+    "github_code_scanning_upload_historical_observation": "unavailable_private_user_owned_repository_entitlement",
     "sast": "semgrep_ce_pinned_local_rules_no_upload",
     "repository_and_image_scan": "trivy_0.74.0_pinned",
     "runtime_images": "hardened_postgres_redis_and_minimized_nonroot_applications",
@@ -140,7 +141,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "phase_3_physical_retention_provider_preferences_and_full_local_validation",
+  "next_gate": "bounded_stabilization_aggregation_recovery_and_independent_audit",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -436,7 +437,6 @@
     "verification_after_limits_reset": "pending"
   },
   "current_work_package": {
-    "id": "P3-06",
     "implementation_report": "docs/implementation/PHASE_3_IMPLEMENTATION_REPORT.md",
     "status": "in_progress",
     "source_sha": null,
@@ -463,13 +463,17 @@
       "research_bounded_pages": "implemented",
       "legacy_report_physical_retention": "in_progress",
       "research_web_and_mcp": "implemented",
-      "research_report_profile": "pending",
+      "research_report_profile": "in_progress",
       "mcp_registry_38_tools_11_resources": "implemented",
       "pwa_public_shell_and_command_palette": "implemented",
-      "owner_saved_layouts": "in_progress",
-      "provider_acquisition": "in_progress",
-      "shared_physical_retention_closure": "in_progress"
-    }
+      "owner_saved_layouts": "implemented",
+      "provider_acquisition": "implemented",
+      "shared_physical_retention_closure": "in_progress",
+      "provider_status_and_source_fallback": "implemented",
+      "phase2_indexed_physical_retention": "implemented",
+      "aggregation_vertical": "in_progress"
+    },
+    "id": "P3-08"
   },
   "phase_transition": {
     "authority": "repository_owner",
@@ -493,5 +497,17 @@
     "version": "1.0",
     "runtime_acceptance": "pending",
     "mcp_target_tools": 38
+  },
+  "stabilization_checkpoint": {
+    "date": "2026-11-13",
+    "starting_main_sha": "64e2057cb9b1ddee11649f605e968b18bd559fcb",
+    "report": "docs/implementation/PHASE_3_STABILIZATION_20261113.md",
+    "scope": "bounded_phase_3_stabilization_and_existing_aggregation_recovery",
+    "status": "in_progress",
+    "implementation_validation": "pending",
+    "independent_review": "pending",
+    "acceptance": "pending",
+    "production_authorized": false,
+    "github_actions": "deferred_by_owner"
   }
 }

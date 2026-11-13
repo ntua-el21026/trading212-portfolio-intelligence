@@ -3,7 +3,7 @@
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import replace
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from time import monotonic
 from unittest.mock import patch
@@ -54,6 +54,9 @@ pytestmark = pytest.mark.integration
 async def prepared(
     case: XrayReadCase, *, transfer_mode: str | None = None
 ) -> tuple[PostgresAggregateService, app.AggregateSelectionView]:
+    # These new runs must be live under the unmodified PostgreSQL clock. The
+    # shared X-ray fixture's historical August anchor is retained for its own facts.
+    case.now[0] = datetime.now(UTC)
     grant_scenario_identity(case.sessions, case.principal, case.now[0])
     owner = UUID(case.principal.owner_id)
     accounts = (uuid4(), uuid4())

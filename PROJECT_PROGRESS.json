@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-09-30",
+  "updated_at": "2026-11-13",
   "current_candidate": {
     "phase": "phase_3",
     "release": "1.0.0",
@@ -4323,5 +4323,17 @@
       "bytes": 1193
     }
   },
-  "production_readiness": "not_authorized"
+  "production_readiness": "not_authorized",
+  "stabilization_checkpoint": {
+    "date": "2026-11-13",
+    "starting_main_sha": "64e2057cb9b1ddee11649f605e968b18bd559fcb",
+    "report": "docs/implementation/PHASE_3_STABILIZATION_20261113.md",
+    "scope": "bounded_phase_3_stabilization_and_existing_aggregation_recovery",
+    "status": "in_progress",
+    "implementation_validation": "pending",
+    "independent_review": "pending",
+    "acceptance": "pending",
+    "production_authorized": false,
+    "github_actions": "deferred_by_owner"
+  }
 }

@@ -134,6 +134,10 @@ def publish_aggregate(
                 ("holdings", "calculation", pin.calculation_run_id),
             )
         )
+    # Native and FX guards read these run-specific pins. Trigger dependencies
+    # are absent from ORM foreign keys, so they need an explicit flush boundary.
+    check_deadline()
+    session.flush()
     for index, quote in enumerate(holdings_input.fx_uses):
         fx_row = _row(m.AggregateFxModel, auth.owner_id, root.id, index, quote, now, check_deadline)
         fx_row.account_id = quote.account_id
@@ -152,6 +156,10 @@ def publish_aggregate(
                 ("holdings", "fx_observation", quote.fx_observation_id),
             )
         )
+    if holdings_input.fx_uses:
+        # Cross-currency components must see their exact admitted FX proof too.
+        check_deadline()
+        session.flush()
     for index, component in enumerate(holdings_result.components):
         component_row = _row(
             m.AggregateComponentModel, auth.owner_id, root.id, index, component, now, check_deadline
@@ -265,6 +273,10 @@ def _publish_activity(
     summary_payload, summary_digest = _bytes(summary, check)
     root.activity_input_digest = input_digest
     root.activity_result_digest = result_digest
+    # The canonical payload guard reads the persisted digests before insertion.
+    # Flush the root update before queuing its activity children.
+    check()
+    session.flush()
     session.add(
         m.AggregateActivityPayloadModel(
             id=uuid4(),
