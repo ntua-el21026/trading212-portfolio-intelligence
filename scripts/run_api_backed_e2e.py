@@ -379,6 +379,7 @@ def _exit_fixture(signum: int, frame: FrameType | None) -> NoReturn:
 
 
 def _serve_fixture(database_url: str) -> None:
+    from scripts.api_e2e_report_sources import fixture_source_creation_times
     from scripts.api_e2e_timings import fixture_timings, timings_enabled
 
     layouts = os.environ.get("T212PI_E2E_LAYOUTS", "0")
@@ -421,7 +422,8 @@ def _serve_fixture(database_url: str) -> None:
         if historical == "1" or risk == "1" or scenarios == "1" or projections == "1"
         else seed_materialized_synthetic
     )
-    asyncio.run(seed(database_url, app_environment="test"))
+    with fixture_source_creation_times(database_url, enabled=reports == "1" and scenarios == "1"):
+        asyncio.run(seed(database_url, app_environment="test"))
 
     engine = create_database_engine(database_url)
     if xray == "1":
