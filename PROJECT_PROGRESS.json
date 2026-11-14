@@ -5292,7 +5292,7 @@
         "source_manifest_sha256": "2fbaab355989e8e5eb3f8a9b8aa70f27657d8fc7f3180e0ac8e81072de9a9c81"
       },
       "unreached_gates_preflight": {
-        "state": "PENDING_AFTER_NEW_CLEAN_COMMIT",
+        "state": "FIRST_ATTEMPT_FAILED_MIGRATION_LATER_GATES_UNREACHED",
         "command": [
           "make",
           "test-migrations",
@@ -5302,8 +5302,70 @@
           "build",
           "container-build"
         ],
-        "replaces_complete_make_validate": false
+        "replaces_complete_make_validate": false,
+        "latest_attempt": "unreached-gates-01",
+        "next_attempt": "unreached-gates-02_NOT_STARTED"
       }
+    },
+    "postgres_migration_lock_capacity_recovery": {
+      "status": "focused_migration_and_runtime_setting_passed_next_preflight_pending",
+      "observed_at_utc": "2026-11-14T00:02:38.110459+00:00",
+      "task_start_date": "2026-11-13",
+      "root_cause": "Default64object-lock allocation exhausted shared lock capacity during two unchanged deep atomic downgrade cases.",
+      "configuration_change": "compose.yaml PostgreSQL command sets max_locks_per_transaction=256 at server startup.",
+      "resource_effect": "Higher shared object-lock table capacity uses additional startup shared memory; byte cost/peak memory was not measured.",
+      "ddl_transaction_sql_guard_or_migration_test_changes": false,
+      "postgresql18_official_source": "https://www.postgresql.org/docs/18/runtime-config-locks.html",
+      "failed_preflight": {
+        "receipt": {
+          "path": "unreached-gates-01/receipt.json",
+          "bytes": 634,
+          "sha256": "7c2736cf958f8b6bae0e3d0a3aa4ad3cc4b43b6d2c0f61d6d91a7d2ec21d15ea"
+        },
+        "head": "730efac5b87d3123db0739d934e9618f719c8cd0",
+        "tree": "36e078fd5020036156be04ebd167df7c278b253a",
+        "source_manifest_sha256": "297c97783f70f2bcb6adb68d2b60d177af73d91bffb8be440825d69624b7e17d",
+        "started_at_utc": "2026-11-13T23:58:46.887135+00:00",
+        "exit_code": 2,
+        "runner_seconds": 7.281,
+        "migration_passed": 10,
+        "migration_failed": 2,
+        "pytest_seconds": 5.98,
+        "later_requested_gates_executed": false
+      },
+      "corrected_migrations": {
+        "receipt": {
+          "path": "migration-locks-green-01/receipt.json",
+          "bytes": 653,
+          "sha256": "65435ee80cff25fb13f8bffb5e5c33dd6ee9153bdb5ef07b5fd7d1520ad4d6a5"
+        },
+        "passed": 12,
+        "failed": 0,
+        "pytest_seconds": 15.9,
+        "runner_seconds": 18.462,
+        "source_unchanged": true,
+        "source_manifest_sha256": "bcc277be603f54110a0615a1b093b33f2cf47d75137f2bf1702f5e7f0be505eb",
+        "started_at_utc": "2026-11-14T00:00:12.834162+00:00",
+        "git_head_at_invocation": "730efac5b87d3123db0739d934e9618f719c8cd0",
+        "working_source_includes_compose_correction": true,
+        "clean_head_runtime_claim": false
+      },
+      "observed_runtime_settings": {
+        "receipt": {
+          "path": "migration-lock-settings-green-01/receipt.json",
+          "bytes": 881,
+          "sha256": "0cce77b03266fe329eb5ee60c758e6d09f18f975434e7a2b67c4f4e24d05a7db"
+        },
+        "max_locks_per_transaction": 256,
+        "setting_source": "command_line",
+        "pending_restart": false,
+        "max_connections": 100,
+        "max_prepared_transactions": 0,
+        "shared_buffers_bytes": 134217728
+      },
+      "next_unreached_preflight": "unreached-gates-02_NOT_STARTED",
+      "complete_validate10": "NOT_STARTED",
+      "all_phase3_acceptance_and_production_states_unchanged": true
     }
   }
 }

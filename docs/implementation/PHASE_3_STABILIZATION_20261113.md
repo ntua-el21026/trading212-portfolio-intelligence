@@ -648,6 +648,31 @@ remain pending. Prepared helpers establish no executed result. All 30 Phase 3
 rows and all 48 scenarios remain pending with zero accepted; independent owner
 audit and production authorization remain separate.
 
+## Unreached-gate preflight and PostgreSQL lock capacity
+
+The first preflight at clean `730efac5b87d3123db0739d934e9618f719c8cd0` began at
+`2026-11-13T23:58:46.887135+00:00` and exited 2 after 7.281 seconds with unchanged
+source. Its migration stage had ten passes and two failures in 5.98 seconds;
+security, browser and build targets were not reached. Both failures exhausted
+PostgreSQL's default shared object-lock capacity during deep atomic downgrades.
+
+Compose now sets `max_locks_per_transaction=256` at PostgreSQL startup. This
+raises shared object-lock table capacity and its startup memory allocation; the
+additional byte cost and peak memory were not measured. PostgreSQL documents
+this as average object-lock capacity, rather than a per-transaction hard limit or
+row-lock limit, and requires startup configuration.
+See the [PostgreSQL 18 lock settings](https://www.postgresql.org/docs/18/runtime-config-locks.html).
+DDL, atomic transaction boundaries, SQL integrity guards and test bodies are unchanged.
+
+All 12 migration cases then passed in 15.90 pytest seconds (18.462 runner seconds),
+starting at `2026-11-14T00:00:12.834162+00:00`, on unchanged working-source manifest
+`bcc277be603f54110a0615a1b093b33f2cf47d75137f2bf1702f5e7f0be505eb` above `730efac`.
+An executed settings probe confirms 256 from the command line with no pending
+restart; connections remain 100, prepared transactions zero and shared buffers
+128 MiB. This focused pass does not qualify the unreached stages or the whole
+target. Preflight 02 and complete attempt 10 remain not started; all acceptance,
+independent audit and production boundaries remain unchanged.
+
 ## Reproducible synthetic validation
 
 Use the pinned Python, uv, Node and pnpm versions in the repository version files

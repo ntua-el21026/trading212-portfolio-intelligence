@@ -95,6 +95,15 @@ Final security scans, actual startup/browser evidence and delivery remain pendin
 All 30 rows and 48 scenarios remain pending, with independent owner audit and
 production authorization unchanged.
 
+The first unreached-gate preflight at `730efac` stopped in migrations with ten
+passes and two failures: PostgreSQL's default object-lock allocation was exhausted
+during deep atomic downgrades. The Compose startup setting now allocates
+`max_locks_per_transaction=256`; all 12 unchanged migration cases pass in 15.90
+seconds on the recorded working source. The setting increases shared-lock memory
+capacity; its byte cost was not measured. DDL, transaction boundaries, guards and
+tests are unchanged. Later preflight gates did not run; preflight 02 and complete
+attempt 10 remain pending/not started. Acceptance and production states are unchanged.
+
 ### Historical September save point
 
 The owner requested a resumable checkpoint on 2026-09-30. The aggregation
