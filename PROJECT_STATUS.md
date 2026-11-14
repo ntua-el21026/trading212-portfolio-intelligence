@@ -10,6 +10,22 @@
 
 ## Current state
 
+Consolidated Batch 2 is authorized and in progress from clean, synchronized live/local
+`main` at `5731a5039beb8f3c7272c9b387ac757de605a0e1`. The owner accepted Batch 1 as
+a bounded implementation checkpoint after independent review, reporting 64 Python
+and 38 web tests passed and integrity of its 94 execution records. These are owner
+reported review outcomes, separate from this session's executions.
+
+The current scope adds transitive entitlement composition, genuine research-report
+browser downloads, local operational hardening and security review. After focused
+stabilization and a clean pushed candidate, exactly one complete immutable-source
+P3-10 validation attempt is authorized. It has not started. All 30 acceptance rows
+and 48 scenarios remain pending, zero accepted. CI remains owner-deferred; production,
+Live, real credentials, paid providers and distribution rights remain unauthorized.
+The [Batch 2 record](docs/implementation/PHASE_3_BATCH2_20261114.md) tracks actual work.
+
+### Historical Batch 1 delivery state
+
 Consolidated Implementation Batch 1 is implemented from audited checkpoint
 `6f8c0117d23f0d3987135e60ef20ae653f505927` and is being prepared for independent
 review. Aggregation and analytical predicates have separate focused passes,

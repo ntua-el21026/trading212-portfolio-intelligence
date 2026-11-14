@@ -240,29 +240,53 @@ def upgrade() -> None:
     op.execute(_GUARDS)
     op.execute(_PREMIUM)
     op.execute(_WITNESS)
-    for table in (
-        "report_input_research_dependencies",
-        "report_input_research_sources",
-        "report_input_research_notes",
-    ):
-        op.execute(
-            f"CREATE TRIGGER report_research_guard BEFORE INSERT OR UPDATE OR DELETE ON {table} FOR EACH ROW EXECUTE FUNCTION report_research_guard()"
-        )
+    op.execute(
+        "CREATE TRIGGER report_research_guard BEFORE INSERT OR UPDATE OR DELETE ON "
+        "report_input_research_dependencies FOR EACH ROW EXECUTE FUNCTION report_research_guard()"
+    )
+    op.execute(
+        "CREATE TRIGGER report_research_guard BEFORE INSERT OR UPDATE OR DELETE ON "
+        "report_input_research_sources FOR EACH ROW EXECUTE FUNCTION report_research_guard()"
+    )
+    op.execute(
+        "CREATE TRIGGER report_research_guard BEFORE INSERT OR UPDATE OR DELETE ON "
+        "report_input_research_notes FOR EACH ROW EXECUTE FUNCTION report_research_guard()"
+    )
     op.execute(
         "CREATE TRIGGER research_report_complete BEFORE UPDATE ON report_input_snapshots FOR EACH ROW EXECUTE FUNCTION report_research_complete()"
     )
-    for table in ("research_source_payloads", "research_event_payloads", "research_note_payloads"):
-        op.execute(
-            f"CREATE TRIGGER research_report_copy_barrier BEFORE DELETE ON {table} FOR EACH ROW EXECUTE FUNCTION research_report_copy_barrier()"
-        )
-    for table in ("research_source_retention", "research_owner_erasure", "report_retention_work"):
-        op.execute(
-            f"CREATE TRIGGER research_report_copy_barrier BEFORE UPDATE ON {table} FOR EACH ROW EXECUTE FUNCTION research_report_copy_barrier()"
-        )
-    for table, kind in (("xray_input_snapshots", "input"), ("xray_runs", "run")):
-        op.execute(
-            f"CREATE TRIGGER research_report_xray_barrier BEFORE UPDATE OR DELETE ON {table} FOR EACH ROW EXECUTE FUNCTION research_report_xray_barrier('{kind}')"
-        )
+    op.execute(
+        "CREATE TRIGGER research_report_copy_barrier BEFORE DELETE ON research_source_payloads "
+        "FOR EACH ROW EXECUTE FUNCTION research_report_copy_barrier()"
+    )
+    op.execute(
+        "CREATE TRIGGER research_report_copy_barrier BEFORE DELETE ON research_event_payloads "
+        "FOR EACH ROW EXECUTE FUNCTION research_report_copy_barrier()"
+    )
+    op.execute(
+        "CREATE TRIGGER research_report_copy_barrier BEFORE DELETE ON research_note_payloads "
+        "FOR EACH ROW EXECUTE FUNCTION research_report_copy_barrier()"
+    )
+    op.execute(
+        "CREATE TRIGGER research_report_copy_barrier BEFORE UPDATE ON research_source_retention "
+        "FOR EACH ROW EXECUTE FUNCTION research_report_copy_barrier()"
+    )
+    op.execute(
+        "CREATE TRIGGER research_report_copy_barrier BEFORE UPDATE ON research_owner_erasure "
+        "FOR EACH ROW EXECUTE FUNCTION research_report_copy_barrier()"
+    )
+    op.execute(
+        "CREATE TRIGGER research_report_copy_barrier BEFORE UPDATE ON report_retention_work "
+        "FOR EACH ROW EXECUTE FUNCTION research_report_copy_barrier()"
+    )
+    op.execute(
+        "CREATE TRIGGER research_report_xray_barrier BEFORE UPDATE OR DELETE ON xray_input_snapshots "
+        "FOR EACH ROW EXECUTE FUNCTION research_report_xray_barrier('input')"
+    )
+    op.execute(
+        "CREATE TRIGGER research_report_xray_barrier BEFORE UPDATE OR DELETE ON xray_runs "
+        "FOR EACH ROW EXECUTE FUNCTION research_report_xray_barrier('run')"
+    )
 
 
 def downgrade() -> None:
@@ -282,35 +306,26 @@ def downgrade() -> None:
     op.create_check_constraint(
         "legacy_witness_bound", "report_retention_work", _PREVIOUS_WITNESS_CHECK
     )
-    for table in (
-        "report_input_research_dependencies",
-        "report_input_research_sources",
-        "report_input_research_notes",
-    ):
-        op.execute(f"DROP TRIGGER report_research_guard ON {table}")
+    op.execute("DROP TRIGGER report_research_guard ON report_input_research_dependencies")
+    op.execute("DROP TRIGGER report_research_guard ON report_input_research_sources")
+    op.execute("DROP TRIGGER report_research_guard ON report_input_research_notes")
     op.execute("DROP TRIGGER research_report_complete ON report_input_snapshots")
-    for table in (
-        "research_source_payloads",
-        "research_event_payloads",
-        "research_note_payloads",
-        "research_source_retention",
-        "research_owner_erasure",
-        "report_retention_work",
-    ):
-        op.execute(f"DROP TRIGGER research_report_copy_barrier ON {table}")
-    for table in ("xray_input_snapshots", "xray_runs"):
-        op.execute(f"DROP TRIGGER research_report_xray_barrier ON {table}")
-    for signature in (
-        "report_research_complete()",
-        "report_research_guard()",
-        "research_report_copy_barrier()",
-        "research_report_xray_barrier()",
-        "report_research_restricted(uuid,uuid,timestamptz)",
-        "report_research_source_restricted(uuid,uuid,timestamptz)",
-        "report_research_physical_restricted(uuid,uuid,uuid,timestamptz)",
-        "report_research_acquired_report_restricted(uuid,text,uuid,timestamptz)",
-    ):
-        op.execute(f"DROP FUNCTION {signature}")
+    op.execute("DROP TRIGGER research_report_copy_barrier ON research_source_payloads")
+    op.execute("DROP TRIGGER research_report_copy_barrier ON research_event_payloads")
+    op.execute("DROP TRIGGER research_report_copy_barrier ON research_note_payloads")
+    op.execute("DROP TRIGGER research_report_copy_barrier ON research_source_retention")
+    op.execute("DROP TRIGGER research_report_copy_barrier ON research_owner_erasure")
+    op.execute("DROP TRIGGER research_report_copy_barrier ON report_retention_work")
+    op.execute("DROP TRIGGER research_report_xray_barrier ON xray_input_snapshots")
+    op.execute("DROP TRIGGER research_report_xray_barrier ON xray_runs")
+    op.execute("DROP FUNCTION report_research_complete()")
+    op.execute("DROP FUNCTION report_research_guard()")
+    op.execute("DROP FUNCTION research_report_copy_barrier()")
+    op.execute("DROP FUNCTION research_report_xray_barrier()")
+    op.execute("DROP FUNCTION report_research_restricted(uuid,uuid,timestamptz)")
+    op.execute("DROP FUNCTION report_research_source_restricted(uuid,uuid,timestamptz)")
+    op.execute("DROP FUNCTION report_research_physical_restricted(uuid,uuid,uuid,timestamptz)")
+    op.execute("DROP FUNCTION report_research_acquired_report_restricted(uuid,text,uuid,timestamptz)")
     for name, table, _columns in reversed(_INDICES):
         op.drop_index(name, table_name=table)
     for table in (
