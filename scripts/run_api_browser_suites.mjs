@@ -80,6 +80,7 @@ function run(arguments_, fixture, reportPath) {
           "xray.spec.ts",
           "research.spec.ts",
           "owner-layouts.spec.ts",
+          "pwa.spec.ts",
         ].includes(fixture)
           ? "1"
           : "0",
