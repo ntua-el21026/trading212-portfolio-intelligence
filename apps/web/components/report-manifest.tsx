@@ -9,11 +9,61 @@ import type {
   PremiumReportJobStatusV4,
   PremiumReportManifestV3,
   PremiumReportManifestV4,
+  PremiumReportResearchBindingV3,
   PremiumReportProfile,
 } from "@trading212/api-contracts";
 import { Surface } from "@trading212/ui";
 import { formatDateTime, titleCase } from "../lib/format";
 import { ReportDownloadButton } from "./report-download";
+
+function ResearchBinding({
+  binding,
+}: Readonly<{ binding: PremiumReportResearchBindingV3 }>) {
+  return (
+    <details>
+      <summary>Selected saved research evidence</summary>
+      <dl className={styles.definition}>
+        <dt>Research item</dt>
+        <dd className="mono">{binding.item_id}</dd>
+        <dt>Original item selection digest</dt>
+        <dd className="mono">{binding.item_selection_digest}</dd>
+        <dt>Source event revision</dt>
+        <dd className="mono">{binding.event_revision_id}</dd>
+        <dt>Source revision digest</dt>
+        <dd className="mono">{binding.event_revision_digest}</dd>
+        <dt>Research source cutoff</dt>
+        <dd>{formatDateTime(binding.source_cutoff_at)}</dd>
+        <dt>X-ray source cutoff</dt>
+        <dd>{formatDateTime(binding.xray_pin.source_cutoff_at)}</dd>
+        <dt>X-ray run</dt>
+        <dd className="mono">{binding.xray.run_id}</dd>
+        <dt>X-ray input digest</dt>
+        <dd className="mono">{binding.xray.input_digest}</dd>
+        <dt>X-ray result digest</dt>
+        <dd className="mono">{binding.xray.result_digest}</dd>
+        <dt>Review acknowledgment</dt>
+        <dd className="mono">
+          {binding.review_acknowledgment?.acknowledgment_id ??
+            "Review evidence not selected"}
+        </dd>
+        <dt>Original retained evidence expiry</dt>
+        <dd>{formatDateTime(binding.expires_at)}</dd>
+      </dl>
+      {binding.note_revisions.length ? (
+        <ul>
+          {binding.note_revisions.map((note) => (
+            <li key={note.revision_id}>
+              Owner note revision <code>{note.revision_id}</code> ·{" "}
+              {note.content_digest}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Owner notes were not selected.</p>
+      )}
+    </details>
+  );
+}
 
 export function ReportArtifacts({
   job,
@@ -91,84 +141,94 @@ export function ReportManifestCard({
         compliance is not claimed.
       </p>
       {"premium_binding" in manifest.document ? (
-        <details>
-          <summary>
-            Selected saved {manifest.document.premium_binding.family} result
-          </summary>
-          <dl className={styles.definition}>
-            <dt>Run</dt>
-            <dd className="mono">{manifest.document.premium_binding.run_id}</dd>
-            <dt>Result</dt>
-            <dd className="mono">
-              {manifest.document.premium_binding.result_id}
-            </dd>
-            <dt>Saved input digest</dt>
-            <dd className="mono">
-              {manifest.document.premium_binding.family === "projection"
-                ? manifest.document.premium_binding.capture_digest
-                : manifest.document.premium_binding.input_digest}
-            </dd>
-            <dt>Saved result digest</dt>
-            <dd className="mono">
-              {manifest.document.premium_binding.result_digest}
-            </dd>
-            <dt>Saved result expiry</dt>
-            <dd>
-              {formatDateTime(manifest.document.premium_binding.expires_at)}
-            </dd>
-            {manifest.document.premium_binding.family === "projection" ? (
-              <>
-                <dt>Numerical input digest</dt>
-                <dd className="mono">
-                  {manifest.document.premium_binding.numerical_input_digest}
-                </dd>
-                <dt>Model dates</dt>
-                <dd>
-                  {manifest.document.premium_binding.anchor_date} to{" "}
-                  {manifest.document.premium_binding.terminal_date}
-                </dd>
-                <dt>Original observed valuation</dt>
-                <dd>
-                  {manifest.document.premium_binding.observed
-                    ? formatDateTime(
-                        manifest.document.premium_binding.observed.valuation_at,
-                      )
-                    : "No observed valuation; modeled starting value"}
-                </dd>
-                <dt>Original source cutoff</dt>
-                <dd>
-                  {manifest.document.premium_binding.source_cutoff_at
-                    ? formatDateTime(
-                        manifest.document.premium_binding.source_cutoff_at,
-                      )
-                    : "Not supplied by every original source"}
-                </dd>
-                <dt>Report-context snapshot</dt>
-                <dd className="mono">
-                  {manifest.document.premium_binding.report_context.snapshot_id}
-                </dd>
-                <dt>Pinned goal version</dt>
-                <dd className="mono">
-                  {manifest.document.premium_binding.goal?.version_id ??
-                    "No goal pinned"}
-                </dd>
-              </>
-            ) : (
-              <>
-                <dt>X-ray run</dt>
-                <dd className="mono">
-                  {manifest.document.premium_binding.xray?.run_id ??
-                    "Not selected"}
-                </dd>
-                <dt>Historical input</dt>
-                <dd className="mono">
-                  {manifest.document.premium_binding.historical
-                    ?.input_snapshot_id ?? "Not selected"}
-                </dd>
-              </>
-            )}
-          </dl>
-        </details>
+        manifest.document.premium_binding.family === "research" ? (
+          <ResearchBinding binding={manifest.document.premium_binding} />
+        ) : (
+          <details>
+            <summary>
+              Selected saved {manifest.document.premium_binding.family} result
+            </summary>
+            <dl className={styles.definition}>
+              <dt>Run</dt>
+              <dd className="mono">
+                {manifest.document.premium_binding.run_id}
+              </dd>
+              <dt>Result</dt>
+              <dd className="mono">
+                {manifest.document.premium_binding.result_id}
+              </dd>
+              <dt>Saved input digest</dt>
+              <dd className="mono">
+                {manifest.document.premium_binding.family === "projection"
+                  ? manifest.document.premium_binding.capture_digest
+                  : manifest.document.premium_binding.input_digest}
+              </dd>
+              <dt>Saved result digest</dt>
+              <dd className="mono">
+                {manifest.document.premium_binding.result_digest}
+              </dd>
+              <dt>Saved result expiry</dt>
+              <dd>
+                {formatDateTime(manifest.document.premium_binding.expires_at)}
+              </dd>
+              {manifest.document.premium_binding.family === "projection" ? (
+                <>
+                  <dt>Numerical input digest</dt>
+                  <dd className="mono">
+                    {manifest.document.premium_binding.numerical_input_digest}
+                  </dd>
+                  <dt>Model dates</dt>
+                  <dd>
+                    {manifest.document.premium_binding.anchor_date} to{" "}
+                    {manifest.document.premium_binding.terminal_date}
+                  </dd>
+                  <dt>Original observed valuation</dt>
+                  <dd>
+                    {manifest.document.premium_binding.observed
+                      ? formatDateTime(
+                          manifest.document.premium_binding.observed
+                            .valuation_at,
+                        )
+                      : "No observed valuation; modeled starting value"}
+                  </dd>
+                  <dt>Original source cutoff</dt>
+                  <dd>
+                    {manifest.document.premium_binding.source_cutoff_at
+                      ? formatDateTime(
+                          manifest.document.premium_binding.source_cutoff_at,
+                        )
+                      : "Not supplied by every original source"}
+                  </dd>
+                  <dt>Report-context snapshot</dt>
+                  <dd className="mono">
+                    {
+                      manifest.document.premium_binding.report_context
+                        .snapshot_id
+                    }
+                  </dd>
+                  <dt>Pinned goal version</dt>
+                  <dd className="mono">
+                    {manifest.document.premium_binding.goal?.version_id ??
+                      "No goal pinned"}
+                  </dd>
+                </>
+              ) : (
+                <>
+                  <dt>X-ray run</dt>
+                  <dd className="mono">
+                    {manifest.document.premium_binding.xray?.run_id ??
+                      "Not selected"}
+                  </dd>
+                  <dt>Historical input</dt>
+                  <dd className="mono">
+                    {manifest.document.premium_binding.historical
+                      ?.input_snapshot_id ?? "Not selected"}
+                  </dd>
+                </>
+              )}
+            </dl>
+          </details>
+        )
       ) : null}
       <details>
         <summary>Complete section and dataset coverage</summary>

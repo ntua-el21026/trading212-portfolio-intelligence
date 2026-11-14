@@ -206,6 +206,11 @@ projection/goal evidence, preserving earlier profiles.
 item identities, provenance, review semantics and bounded retention. Its design is
 accepted; domain integration does not imply runtime or Phase 3 acceptance.
 
+The owner-approved [research report selection](verification/RESEARCH-REPORT-SELECTION-PROPOSAL.md)
+clarifies exact item/note/review pins within ADR-0026 and ADR-0031. The
+[Consolidated Batch 1 record](implementation/PHASE_3_BATCH1_20261114.md) separates
+its focused implementation evidence from pending Phase 3 acceptance.
+
 [ADR-0032](adr/ADR-0032-INDEXED-PREMIUM-RETENTION-MEMBERSHIP.md) specifies indexed premium source membership, guarded report-copy progress, and physical SQL inspection accounting within the existing retention ceilings.
 
 [ADR-0034](adr/ADR-0034-BOUNDED-ACCOUNT-AGGREGATION.md) defines immutable bounded

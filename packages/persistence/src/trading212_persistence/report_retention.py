@@ -39,11 +39,13 @@ REPORT_PREMIUM_COPY_GUARD_MAX_ROWS_PER_MUTATION = 4
 # Exact report_capture_pending uses <=24 indexed rows (one job per family, four
 # formats per job). Reserve its marker read/write, flag update + marker proof,
 # audit insert and fixed foreign-key checks conservatively before completion.
-REPORT_PURGE_COMPLETION_MAX_ROWS = 48
+# 0035 additionally probes the exact research header's pending flag.
+REPORT_PURGE_COMPLETION_MAX_ROWS = 49
 # New work: marker/FKs, exact dependency/root/marker authorization, then at most
 # one sealed source membership + physical/header/pinned/current witness proof.
 REPORT_PURGE_MARKER_MAX_ROWS = 48
-REPORT_PAYLOAD_MUTATION_ROWS = 21
+# The deferred capture check additionally counts the one research root in0035.
+REPORT_PAYLOAD_MUTATION_ROWS = 22
 REPORT_GRANT_MUTATION_ROWS = 13
 REPORT_JOB_RETIREMENT_ROWS = 40
 ProjectionReportWitnessKind = Literal[
@@ -393,6 +395,10 @@ def purge_report_input(
         return False
     if not clear_report_source_flags(session, owner, input_id, budget=budget):
         return False
+    from .report_research_retention import clear_report_research_flags
+
+    if not clear_report_research_flags(session, owner, input_id, budget=budget):
+        return False
     if budget.rows_inspected < REPORT_PURGE_COMPLETION_MAX_ROWS:
         return False
     if not budget.inspect(rows=REPORT_PURGE_COMPLETION_MAX_ROWS):
@@ -539,4 +545,7 @@ def expire_report_payloads(
     from .projection_report_retention import expire_projection_report_payloads
 
     expire_projection_report_payloads(session, at=at, budget=budget)
+    from .report_research_retention import expire_research_report_payloads
+
+    expire_research_report_payloads(session, at=at, budget=budget)
     return completed

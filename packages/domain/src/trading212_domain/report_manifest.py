@@ -10,13 +10,15 @@ from dataclasses import fields
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from enum import StrEnum
-from typing import cast, get_args, get_origin, overload
+from typing import Literal, cast, get_args, get_origin, overload
 from uuid import UUID
 
 from . import report_v3 as v3
 from . import report_v4 as v4
 from . import reports as r
 from .errors import DomainError, fail_validation
+from .research_facts import ResearchXrayPin
+from .research_notes import ResearchReviewAcknowledgment
 from .values import CurrencyCode
 
 _RECORDS = (
@@ -47,6 +49,11 @@ _RECORDS = (
     r.ReportManifest,
     v3.ReportRiskRunSelection,
     v3.ReportScenarioRunSelection,
+    v3.ReportResearchSelection,
+    v3.ReportResearchNoteBinding,
+    v3.ReportResearchBinding,
+    ResearchXrayPin,
+    ResearchReviewAcknowledgment,
     v3.ReportSelectionV3,
     v3.ReportXrayRunBinding,
     v3.ReportHistoricalInputBinding,
@@ -87,10 +94,12 @@ _OPTIONAL_CELL_FIELDS = frozenset(
 )
 
 
-_OPTIONAL_V3_FIELDS: dict[type[r.ReportRecord], frozenset[str]] = {
+_OPTIONAL_V3_FIELDS: dict[type[object], frozenset[str]] = {
     v3.ReportSelectionV3: frozenset({"xray_run_id"}),
     v3.ReportRiskRunBinding: frozenset({"xray", "benchmark_version_id"}),
     v3.ReportScenarioRunBinding: frozenset({"historical"}),
+    v3.ReportResearchSelection: frozenset({"review_acknowledgment_id"}),
+    v3.ReportResearchBinding: frozenset({"review_acknowledgment"}),
 }
 
 
@@ -241,6 +250,10 @@ def _load(payload: bytes, maximum: int) -> JsonValue:
 
 def _decode(value: JsonValue, annotation: object) -> object:
     origin = get_origin(annotation)
+    if origin is Literal:
+        if any(type(value) is type(part) and value == part for part in get_args(annotation)):
+            return value
+        fail_validation("Report literal differs from its closed contract.", field="variant")
     if origin is types.UnionType:
         parts = get_args(annotation)
         if value is None and type(None) in parts:

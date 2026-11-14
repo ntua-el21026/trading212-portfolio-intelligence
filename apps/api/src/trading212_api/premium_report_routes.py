@@ -149,6 +149,8 @@ def register_premium_report_routes(
 
     def section_scopes(request: Request, principal: Principal, sections: set[str]) -> None:
         now = context_provider(request).clock()
+        if "research" in sections:
+            Authorizer().require_scope(principal, Scope.RESEARCH_READ, now=now)
         if sections & {"targets", "drift", "contribution_plan"}:
             Authorizer().require_scope(principal, Scope.TARGETS_READ, now=now)
         if sections & {"income", "cash_flows", "activity", "risk"}:

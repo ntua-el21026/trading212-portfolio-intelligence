@@ -10758,6 +10758,7 @@
           "premium_run": {
             "discriminator": {
               "mapping": {
+                "research": "#/components/schemas/PremiumReportResearchSelectionV3",
                 "risk": "#/components/schemas/PremiumReportRiskRunSelectionV3",
                 "scenario": "#/components/schemas/PremiumReportScenarioRunSelectionV3"
               },
@@ -10769,6 +10770,9 @@
               },
               {
                 "$ref": "#/components/schemas/PremiumReportScenarioRunSelectionV3"
+              },
+              {
+                "$ref": "#/components/schemas/PremiumReportResearchSelectionV3"
               }
             ],
             "title": "Premium Run"
@@ -17749,7 +17753,8 @@
               "reconciliation",
               "alerts",
               "risk",
-              "scenario"
+              "scenario",
+              "research"
             ],
             "title": "Family",
             "type": "string"
@@ -18090,7 +18095,8 @@
               "reconciliation",
               "alerts",
               "risk",
-              "scenario"
+              "scenario",
+              "research"
             ],
             "title": "Family",
             "type": "string"
@@ -18420,7 +18426,8 @@
               "reconciliation",
               "alerts",
               "risk",
-              "scenario"
+              "scenario",
+              "research"
             ],
             "title": "Family",
             "type": "string"
@@ -18582,6 +18589,7 @@
           "premium_binding": {
             "discriminator": {
               "mapping": {
+                "research": "#/components/schemas/PremiumReportResearchBindingV3",
                 "risk": "#/components/schemas/PremiumReportRiskRunBindingV3",
                 "scenario": "#/components/schemas/PremiumReportScenarioRunBindingV3"
               },
@@ -18593,6 +18601,9 @@
               },
               {
                 "$ref": "#/components/schemas/PremiumReportScenarioRunBindingV3"
+              },
+              {
+                "$ref": "#/components/schemas/PremiumReportResearchBindingV3"
               }
             ],
             "title": "Premium Binding"
@@ -18836,7 +18847,8 @@
               "reconciliation",
               "alerts",
               "risk",
-              "scenario"
+              "scenario",
+              "research"
             ],
             "title": "Family",
             "type": "string"
@@ -20045,7 +20057,8 @@
               "reconciliation",
               "alerts",
               "risk",
-              "scenario"
+              "scenario",
+              "research"
             ],
             "title": "Family",
             "type": "string"
@@ -21238,7 +21251,20 @@
               "scenario_replay_coverage_v1",
               "scenario_replay_warnings_v1",
               "scenario_xray_paths_v1",
-              "scenario_source_headers_v1"
+              "scenario_source_headers_v1",
+              "research_basis_v1",
+              "research_event_v1",
+              "research_portfolio_v1",
+              "research_notes_v1",
+              "research_review_v1",
+              "research_citations_v1",
+              "research_sources_v1",
+              "research_source_licenses_v1",
+              "research_source_grants_v1",
+              "research_portfolio_members_v1",
+              "research_warnings_v1",
+              "research_note_citations_v1",
+              "research_xray_pin_v1"
             ],
             "title": "Table",
             "type": "string"
@@ -21613,6 +21639,220 @@
           "warning_omitted_count"
         ],
         "title": "PremiumReportQualitySummaryV4",
+        "type": "object"
+      },
+      "PremiumReportResearchBindingV3": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "entity_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "event_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "event_revision_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Event Revision Digest",
+            "type": "string"
+          },
+          "event_revision_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Event Revision Id",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "family": {
+            "const": "research",
+            "title": "Family",
+            "type": "string"
+          },
+          "item_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Item Id",
+            "type": "string"
+          },
+          "item_selection_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Item Selection Digest",
+            "type": "string"
+          },
+          "note_revisions": {
+            "items": {
+              "$ref": "#/components/schemas/PremiumReportResearchNoteBindingV3"
+            },
+            "maxItems": 64,
+            "title": "Note Revisions",
+            "type": "array"
+          },
+          "owner_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "reporting_currency": {
+            "pattern": "^[A-Z]{3}$",
+            "title": "Reporting Currency",
+            "type": "string"
+          },
+          "review_acknowledgment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResearchReviewAcknowledgment"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "snapshot_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Snapshot Digest",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_cutoff_at": {
+            "format": "date-time",
+            "title": "Source Cutoff At",
+            "type": "string"
+          },
+          "valuation_at": {
+            "format": "date-time",
+            "title": "Valuation At",
+            "type": "string"
+          },
+          "xray": {
+            "$ref": "#/components/schemas/PremiumReportXrayRunBindingV3"
+          },
+          "xray_pin": {
+            "$ref": "#/components/schemas/ResearchXrayPin"
+          }
+        },
+        "required": [
+          "item_id",
+          "item_selection_digest",
+          "owner_id",
+          "account_id",
+          "entity_id",
+          "event_id",
+          "event_revision_id",
+          "event_revision_digest",
+          "snapshot_id",
+          "snapshot_digest",
+          "reporting_currency",
+          "source_cutoff_at",
+          "valuation_at",
+          "xray",
+          "xray_pin",
+          "note_revisions",
+          "created_at",
+          "expires_at",
+          "family"
+        ],
+        "title": "PremiumReportResearchBindingV3",
+        "type": "object"
+      },
+      "PremiumReportResearchNoteBindingV3": {
+        "additionalProperties": false,
+        "properties": {
+          "content_digest": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Content Digest",
+            "type": "string"
+          },
+          "note_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Note Id",
+            "type": "string"
+          },
+          "revision_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Revision Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "note_id",
+          "revision_id",
+          "content_digest"
+        ],
+        "title": "PremiumReportResearchNoteBindingV3",
+        "type": "object"
+      },
+      "PremiumReportResearchSelectionV3": {
+        "additionalProperties": false,
+        "properties": {
+          "family": {
+            "const": "research",
+            "title": "Family",
+            "type": "string"
+          },
+          "item_id": {
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+            "title": "Item Id",
+            "type": "string"
+          },
+          "note_revision_ids": {
+            "items": {
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+              "type": "string"
+            },
+            "maxItems": 64,
+            "title": "Note Revision Ids",
+            "type": "array"
+          },
+          "review_acknowledgment_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Acknowledgment Id"
+          }
+        },
+        "required": [
+          "item_id",
+          "note_revision_ids",
+          "family"
+        ],
+        "title": "PremiumReportResearchSelectionV3",
         "type": "object"
       },
       "PremiumReportRiskRunBindingV3": {
@@ -22227,6 +22467,7 @@
           "premium_run": {
             "discriminator": {
               "mapping": {
+                "research": "#/components/schemas/PremiumReportResearchSelectionV3",
                 "risk": "#/components/schemas/PremiumReportRiskRunSelectionV3",
                 "scenario": "#/components/schemas/PremiumReportScenarioRunSelectionV3"
               },
@@ -22238,6 +22479,9 @@
               },
               {
                 "$ref": "#/components/schemas/PremiumReportScenarioRunSelectionV3"
+              },
+              {
+                "$ref": "#/components/schemas/PremiumReportResearchSelectionV3"
               }
             ],
             "title": "Premium Run"
@@ -22630,7 +22874,12 @@
               "scenario_version",
               "scenario_sensitivity_version",
               "scenario_sensitivity_observation",
-              "scenario_sensitivity_evidence"
+              "scenario_sensitivity_evidence",
+              "research_item",
+              "research_event_revision",
+              "research_source_version",
+              "research_note_revision",
+              "research_review_acknowledgment"
             ],
             "title": "Kind",
             "type": "string"
@@ -23388,7 +23637,20 @@
               "scenario_replay_coverage_v1",
               "scenario_replay_warnings_v1",
               "scenario_xray_paths_v1",
-              "scenario_source_headers_v1"
+              "scenario_source_headers_v1",
+              "research_basis_v1",
+              "research_event_v1",
+              "research_portfolio_v1",
+              "research_notes_v1",
+              "research_review_v1",
+              "research_citations_v1",
+              "research_sources_v1",
+              "research_source_licenses_v1",
+              "research_source_grants_v1",
+              "research_portfolio_members_v1",
+              "research_warnings_v1",
+              "research_note_citations_v1",
+              "research_xray_pin_v1"
             ],
             "title": "Table",
             "type": "string"

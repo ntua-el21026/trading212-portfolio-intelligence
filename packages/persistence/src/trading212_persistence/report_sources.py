@@ -21,7 +21,11 @@ from trading212_security.principals import AuthorizationError
 
 from . import source_models as sm
 from . import xray_catalog_models as xm
-from .report_models import ReportInputDependencyModel, ReportInputLicenseModel
+from .report_models import (
+    ReportInputDependencyModel,
+    ReportInputLicenseModel,
+    ReportInputSnapshotModel,
+)
 from .source_store import digest as source_digest
 from .source_store import license_view
 from .xray_lifecycle_models import EnrichmentExpiryEventModel, EnrichmentRetentionWorkModel
@@ -416,7 +420,32 @@ def project_report_dependencies(
     result: list[ReportInputDependencyModel] = []
     parents: dict[UUID, tuple[str, UUID, UUID]] = {}
     children: list[tuple[UUID, str, UUID, UUID]] = []
+    research_kinds = {
+        ReportSourceKind.RESEARCH_ITEM,
+        ReportSourceKind.RESEARCH_EVENT_REVISION,
+        ReportSourceKind.RESEARCH_NOTE_REVISION,
+        ReportSourceKind.RESEARCH_REVIEW_ACKNOWLEDGMENT,
+        ReportSourceKind.RESEARCH_SOURCE_VERSION,
+    }
+    if any(reference.kind in research_kinds for reference in proof.source_references) and (
+        source_use is not ReportSourceUse.REPORT
+        or session.scalar(
+            select(ReportInputSnapshotModel.contract_version).where(
+                ReportInputSnapshotModel.owner_id == authorization.owner_id,
+                ReportInputSnapshotModel.account_id == authorization.account_id,
+                ReportInputSnapshotModel.id == input_id,
+            )
+        )
+        != 3
+    ):
+        raise _deny()
     for reference in sorted(proof.source_references, key=lambda value: value.key):
+        if reference.kind in research_kinds:
+            # The research binder checks the complete exact selected identity set
+            # and current REPORT capabilities before sealing. Its separate scoped
+            # normalized memberships also own subsequent reads/physical erasure.
+            # Research source versions are not fabricated market snapshots.
+            continue
         if reference.license_version_id is None:
             if (
                 reference.kind in _CHILDREN

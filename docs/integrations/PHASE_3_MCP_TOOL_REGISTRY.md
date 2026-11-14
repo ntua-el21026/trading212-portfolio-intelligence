@@ -68,11 +68,21 @@ dispatch. Public ChatGPT registration remains separately unverified.
 
 ## Current implementation checkpoint
 
-Risk tools26-28 and risk-v1.html are implemented. The executable registry currently
-contains28 tools and6 resources; the original25 remain in order with their exact
-inputs, scopes and outputs. The remaining ten premium tools and five new resources
-are unregistered until their service implementations exist. This is not final P3-05
-acceptance or public ChatGPT registration. Risk result envelopes wrap the same
+The audited stabilization source `6f8c0117d23f0d3987135e60ef20ae653f505927`
+registers all 38 tools and eleven resources. The original 25 tool descriptors
+remain preserved. The thirteen premium additions and six added resources have
+component implementation and source-qualified test evidence; registration does
+not establish full P3-05 acceptance or hosted ChatGPT validation. See the
+[stabilization record](../implementation/PHASE_3_STABILIZATION_20261113.md).
+
+## Historical risk-only checkpoint
+
+At the earlier risk-only milestone, tools26-28 and risk-v1.html were implemented.
+The executable registry then contained28 tools and6 resources; the original25
+remained in order with their exact inputs, scopes and outputs. The other ten
+premium tools and five new resources were not yet registered at that milestone.
+This historical observation is not final P3-05 acceptance or public ChatGPT
+registration. Risk result envelopes wrap the same
 RiskRunResponse/RiskMatrixResponse used by REST, with a closed safe error alternative.
 Risk widget reads use tools/call after host capability negotiation, with the existing
 window.openai.callTool compatibility fallback when available. Refresh is limited to

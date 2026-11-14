@@ -14,14 +14,27 @@ from uuid import UUID
 from . import report_v4 as v4
 from . import reports as r
 from .errors import fail_validation
+from .report_research import (
+    ReportResearchBinding as ReportResearchBinding,
+)
+from .report_research import (
+    ReportResearchNoteBinding as ReportResearchNoteBinding,
+)
+from .report_research import (
+    ReportResearchSelection as ReportResearchSelection,
+)
+from .report_research import (
+    validate_research_header,
+    validate_research_profile,
+)
 from .values import CurrencyCode
 
 REPORT_V3_SCHEMA_VERSION = "3.0.0"
 REPORT_V3_PROFILE_VERSION = "report_sections_v3"
-SUPPORTED_PREMIUM_FAMILIES = frozenset({r.ReportFamily.RISK, r.ReportFamily.SCENARIO})
-RESERVED_PREMIUM_FAMILIES = frozenset(
-    {r.ReportFamily.PROJECTION, r.ReportFamily.GOAL, r.ReportFamily.RESEARCH}
+SUPPORTED_PREMIUM_FAMILIES = frozenset(
+    {r.ReportFamily.RISK, r.ReportFamily.SCENARIO, r.ReportFamily.RESEARCH}
 )
+RESERVED_PREMIUM_FAMILIES = frozenset({r.ReportFamily.PROJECTION, r.ReportFamily.GOAL})
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -57,7 +70,7 @@ class ReportSelectionV3(r.ReportRecord):
     report_type: r.ReportType
     sections: tuple[r.ReportSection, ...]
     formats: tuple[r.ReportFormat, ...]
-    premium_run: ReportRiskRunSelection | ReportScenarioRunSelection
+    premium_run: ReportRiskRunSelection | ReportScenarioRunSelection | ReportResearchSelection
     target_version_id: UUID | None = None
     plan_revision_id: UUID | None = None
     benchmark_version_id: UUID | None = None
@@ -207,7 +220,7 @@ class ReportDocumentHeaderV3(r.ReportRecord):
     context_digest: str
     tables: tuple[r.ReportTableDescriptor, ...]
     document_digest: str
-    premium_binding: ReportRiskRunBinding | ReportScenarioRunBinding
+    premium_binding: ReportRiskRunBinding | ReportScenarioRunBinding | ReportResearchBinding
     document_schema_version: str = REPORT_V3_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
@@ -218,6 +231,11 @@ class ReportDocumentHeaderV3(r.ReportRecord):
         selected, binding = self.selection, self.premium_binding
         if self.document_schema_version != REPORT_V3_SCHEMA_VERSION:
             fail_validation("Report document profile differs.", field="document_schema_version")
+        if isinstance(binding, ReportResearchBinding):
+            validate_research_header(self)
+            return
+        if isinstance(selected.premium_run, ReportResearchSelection):
+            fail_validation("The selected research binding is absent.", field="premium_binding")
         if (
             (selected.premium_run.family, selected.premium_run.run_id)
             != (binding.family, binding.run_id)
@@ -249,6 +267,9 @@ class ReportDocumentHeaderV3(r.ReportRecord):
         required, forbidden = (
             (risk, scenario) if binding.family is r.ReportFamily.RISK else (scenario, risk)
         )
+        from .report_research_schema import RESEARCH_TABLE_COLUMNS
+
+        forbidden = forbidden | frozenset(RESEARCH_TABLE_COLUMNS)
         if not required <= supplied or supplied & forbidden:
             fail_validation("Report selected premium tables differ.", field="tables")
         if any(
@@ -356,8 +377,11 @@ def validate_report_profile_v3(
     r.report_limit(len(proof.contexts) <= 256, "contexts")
     r.report_limit(len(proof.license_references) <= 256, "license_references")
     pin = header.premium_binding
+    if isinstance(pin, ReportResearchBinding):
+        validate_research_profile(header, proof, bindings)
+        return
     other = r.ReportFamily.SCENARIO if pin.family is r.ReportFamily.RISK else r.ReportFamily.RISK
-    forbidden = RESERVED_PREMIUM_FAMILIES | {other}
+    forbidden = RESERVED_PREMIUM_FAMILIES | {other, r.ReportFamily.RESEARCH}
     families = tuple(
         x.family
         for group in (proof.contexts, proof.coverage, proof.bounds, proof.notes, bindings)
@@ -377,6 +401,11 @@ def validate_report_profile_v3(
             )
     else:
         disallowed_tables = frozenset((*RISK_REPORT_TABLES, *RISK_PROOF_TABLES))
+    from .report_research_schema import RESEARCH_TABLE_COLUMNS
+
+    disallowed_tables = disallowed_tables | frozenset(RESEARCH_TABLE_COLUMNS)
+    if any(x.kind in r.RESEARCH_REPORT_SOURCE_KINDS for x in proof.source_references):
+        fail_validation("Non-research proof contains research sources.", field="source_references")
     if any(x.table in disallowed_tables for x in proof.proof_relations):
         fail_validation("Report proof tables differ from selected family.", field="proof_relations")
     required = {

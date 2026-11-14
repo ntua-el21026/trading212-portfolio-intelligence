@@ -41,6 +41,7 @@ from .projection_models import PROJECTION_MODELS
 from .projection_retention_models import PROJECTION_RETENTION_MODELS
 from .provider_observation_models import PROVIDER_OBSERVATION_MODELS
 from .report_models import REPORT_MODELS
+from .report_research_models import REPORT_RESEARCH_MODELS
 from .research_models import RESEARCH_MODELS
 from .risk_models import RISK_MODELS
 from .scenario_models import SCENARIO_MODELS
@@ -1151,6 +1152,7 @@ ALL_MODELS = (
     *RESEARCH_MODELS,
     *XRAY_MODELS,
     *REPORT_MODELS,
+    *REPORT_RESEARCH_MODELS,
     *LEGACY_REPORT_RETENTION_MODELS,
     *ALERT_MODELS,
     ActivityRevisionEvidenceModel,

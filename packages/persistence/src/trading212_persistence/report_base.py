@@ -84,6 +84,8 @@ def report_scopes(
     result = {Scope.PORTFOLIO_READ, Scope.REPORTS_WRITE if create else Scope.REPORTS_READ}
     if create or detail:
         result.add(Scope.ANALYTICS_READ)
+        if "research" in sections:
+            result.add(Scope.RESEARCH_READ)
         if dataset == "alerts":
             result.add(Scope.ALERTS_READ)
         if set(sections) & {"income", "cash_flows", "activity", "risk"} or dataset in {

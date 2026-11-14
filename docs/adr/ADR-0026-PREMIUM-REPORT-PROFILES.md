@@ -121,6 +121,19 @@ section as operational or substitute an empty success. Future implementation may
 need its own normalized data-table migration; it does not need a new report contract
 version merely to add an authorized profile3 family.
 
+## Research selection clarification, 2026-11-14
+
+The owner approved [exact revision selection](../verification/RESEARCH-REPORT-SELECTION-PROPOSAL.md):
+one retained item, an explicit canonical set of zero to 64 immutable note revision
+IDs and an optional exact review acknowledgment. No current-head fallback applies.
+The implemented profile3 research binding retains its own normalized dependency;
+it does not create a premium analysis run. Thirteen fixed tables preserve selected
+facts, provenance, note content and optional review proof. Research report files
+use REPORT permission in every format; an actual ExportSelection additionally
+requires EXPORT. Earlier profiles, bytes, routes and MCP descriptors retain their
+existing meaning. Component execution is recorded separately in the
+[Batch 1 report](../implementation/PHASE_3_BATCH1_20261114.md); acceptance is pending.
+
 ## Acceptance
 
 Prove unchanged V1 descriptors and report bytes, unchanged default profile2 risk

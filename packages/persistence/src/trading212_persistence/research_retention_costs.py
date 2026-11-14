@@ -4,14 +4,15 @@ from .projection_retention_costs import ProjectionMutationCost
 
 # Metadata reads outside SQL triggers are additionally reserved by the scanner.
 RESEARCH_CURSOR_RESERVE = 16
-RESEARCH_MARKER_RESERVE = 8
-RESEARCH_OWNER_MARKER_RESERVE = 8
+RESEARCH_MARKER_RESERVE = 16
+RESEARCH_OWNER_MARKER_RESERVE = 16
 # Event delete: target1 + owner marker1 + <=64*(member/citation/marker)3
 # + <=64*(member UPDATE + guarded payload-absence probe)2 + counter UPDATE2.
-# Reserve384 >=324, including repeated exact probes and FK/constraint allowance.
+# Reserve400 >=325, including the research report pending-root barrier,
+# repeated exact probes and FK/constraint allowance.
 # No single mutation may exceed the shared512-row batch bound. Header flags are
 # immutable provenance metadata, not retained provider/financial payload bytes.
-RESEARCH_EVENT_MUTATION_ROWS = 384
+RESEARCH_EVENT_MUTATION_ROWS = 400
 
 
 def research_mutation_cost(table: str, *, delete_rows: bool) -> ProjectionMutationCost | None:
@@ -25,7 +26,8 @@ def research_mutation_cost(table: str, *, delete_rows: bool) -> ProjectionMutati
         raise ValueError("Research payloads can only be removed as complete immutable records.")
     return ProjectionMutationCost(
         scope_rows=0,
-        mutation_rows=RESEARCH_EVENT_MUTATION_ROWS if table == "research_event_payloads" else 8,
+        # The report-copy barrier adds one indexed pending-member seek.
+        mutation_rows=RESEARCH_EVENT_MUTATION_ROWS if table == "research_event_payloads" else 16,
         # Size-only metadata and the SQL charge trigger both read exact copied
         # columns; quota refunds use the same bytes only after the actual DELETE.
         payload_inspections=2,

@@ -10,9 +10,11 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from trading212_application import reports as app
 from trading212_domain import reports as r
+from trading212_domain.report_research import ReportResearchSelection
 from trading212_domain.report_v3 import (
     ReportCaptureSummaryV3,
     ReportRiskRunBinding,
+    ReportRiskRunSelection,
     ReportScenarioRunBinding,
     ReportScenarioRunSelection,
     ReportSelectionV3,
@@ -147,6 +149,14 @@ def bind_report_premium_dependency(
     if isinstance(summary, ReportCaptureSummaryV4):
         raise report_error(app.ReportServiceErrorCode.VALIDATION_FAILED)
     if isinstance(selection, ReportSelectionV3):
+        if isinstance(selection.premium_run, ReportResearchSelection):
+            from .report_research_sources import bind_report_research_dependency
+
+            if not isinstance(summary, ReportCaptureSummaryV3):
+                raise report_error(app.ReportServiceErrorCode.VALIDATION_FAILED)
+            return bind_report_research_dependency(
+                session, authorization, capture, selection, summary, now=now
+            )
         return _bind_v3(session, authorization, capture, selection, summary, now=now)
     if isinstance(summary, ReportCaptureSummaryV3):
         raise report_error(app.ReportServiceErrorCode.VALIDATION_FAILED)
@@ -206,6 +216,8 @@ def bind_report_premium_dependency(
 def authorize_report_premium_sources(
     session: Session, authorization: ReportAuthorization, *, input_id: UUID, now: datetime
 ) -> None:
+    from .report_research_sources import authorize_report_research_sources
+
     version = session.scalar(
         select(ReportInputSnapshotModel.contract_version).where(
             ReportInputSnapshotModel.owner_id == authorization.owner_id,
@@ -222,6 +234,10 @@ def authorize_report_premium_sources(
         )
         .limit(2)
     ).all()
+    if authorize_report_research_sources(session, authorization, input_id=input_id, now=now):
+        if version != 3 or dependencies:
+            raise AuthorizationError("access denied")
+        return
     if version == 1 and not dependencies:
         return
     if version not in (2, 3, 4) or len(dependencies) != 1:
@@ -321,6 +337,9 @@ def _bind_v3(
         capture.contract_version != 3
         or capture.kind != "report"
         or not isinstance(summary, ReportCaptureSummaryV3)
+        or not isinstance(
+            selection.premium_run, (ReportRiskRunSelection, ReportScenarioRunSelection)
+        )
     ):
         raise report_error(app.ReportServiceErrorCode.VALIDATION_FAILED)
     if summary.header.selection != selection:

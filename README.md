@@ -7,7 +7,18 @@ valuation time, coverage and quality remain attached to results.
 
 ## Current status
 
-**Phase 3 is in progress.** The bounded stabilization checkpoint records
+**Phase 3 is in progress.** Consolidated Batch 1 adds focused aggregation,
+analytical and admission-boundary evidence under the
+[current functional-completion record](docs/implementation/PHASE_3_BATCH1_20261114.md).
+Research reporting implements the approved exact item, zero-to-64 note revisions
+and optional exact review selection on the existing profile3 routes and four
+formats. Separate PostgreSQL artifact/retention checks and one desktop navigation
+case passed; their sources and limits are recorded in the
+[validation report](VALIDATION_REPORT.md#research-report-component-evidence-2026-11-14).
+The current schema adds migration `0035` and has 368 ORM tables; earlier
+364-table/`0034` records remain historical. Full validation and acceptance remain
+pending.
+The earlier bounded stabilization checkpoint records
 aggregation recovery, dependency/image checks and synthetic startup/browser
 observations at their exact sources. Incremental validation retains explicit
 case partitions and earlier failures; it does not establish a new whole-suite
@@ -86,6 +97,8 @@ make run-dependencies starts local dependencies; make run-local performs the
 documented migration/seed/start sequence. Review account-selection configuration
 and the current checkpoint instead of copying a historical scratch override.
 No provider connection is needed for synthetic unit tests.
+Compose defines seven long-running services and two one-shot migration/seed
+services. Focused database checks need only PostgreSQL and, where used, Redis.
 
 ### Configuration without a broker connection
 

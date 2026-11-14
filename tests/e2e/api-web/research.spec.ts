@@ -287,6 +287,81 @@ test("retained research facts, exact exposure, owner revisions and review remain
   );
   expect(currentXray.context.content_digest).toBe(xray.context.content_digest);
   expect(currentXray.exposures).toEqual(xray.exposures);
+  // Navigation and explicit selection only. Normalized report-rights and
+  // multi-format artifact parity are covered by the PostgreSQL report fixture.
+  const reportsUrl = "http://127.0.0.1:18000/api/v2/reports";
+  const reportsQuery = { account_id: account, profile: "report_sections_v3" };
+  const beforeReportsResponse = await request.get(reportsUrl, {
+    params: reportsQuery,
+  });
+  expect(beforeReportsResponse.status()).toBe(200);
+  const beforeReports = await beforeReportsResponse.json();
+  let reportPagePosts = 0;
+  page.on("request", (value) => {
+    if (
+      value.method() === "POST" &&
+      new URL(value.url()).pathname === "/reports/premium"
+    )
+      reportPagePosts += 1;
+  });
+  await page.goto(
+    href({ view: "item", item: itemId!, xray: summary.pin.run_id, cutoff }),
+  );
+  await page
+    .getByRole("link", {
+      name: "Create a report from this retained research item",
+    })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Research reports", exact: true }),
+  ).toBeVisible();
+  const reportForm = page.getByLabel("Create research report", { exact: true });
+  await expect(
+    reportForm.getByLabel("Exact owner note revision IDs (optional)"),
+  ).toHaveValue("");
+  await expect(
+    reportForm.getByLabel("Exact review acknowledgment ID (optional)"),
+  ).toHaveValue("");
+  await expect(reportForm).toContainText(itemId!);
+  await expect(reportForm).toContainText(item.source.revision_id);
+  await expect(reportForm).toContainText(item.portfolio.pin.source_cutoff_at);
+  await expect(reportForm).toContainText(item.source_cutoff_at);
+  await expect(
+    reportForm.getByText("X-ray source cutoff", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    reportForm.getByText("Research source cutoff", { exact: true }),
+  ).toBeVisible();
+  const selectedReportUrl = new URL(page.url());
+  expect(selectedReportUrl.searchParams.get("item")).toBe(itemId);
+  expect(selectedReportUrl.searchParams.has("run")).toBe(false);
+  expect(selectedReportUrl.searchParams.has("note_revisions")).toBe(false);
+  expect(selectedReportUrl.searchParams.has("review")).toBe(false);
+  selectedReportUrl.searchParams.set("note_revisions", note.revision_id);
+  selectedReportUrl.searchParams.set(
+    "review",
+    reviewed.review!.acknowledgment_id,
+  );
+  await page.goto(selectedReportUrl.href);
+  await expect(
+    page.getByLabel("Exact owner note revision IDs (optional)"),
+  ).toHaveValue(note.revision_id);
+  await expect(
+    page.getByLabel("Exact review acknowledgment ID (optional)"),
+  ).toHaveValue(reviewed.review!.acknowledgment_id);
+  expect(
+    history.items.find((entry) => entry.revision === 2)?.revision_id,
+  ).not.toBe(note.revision_id);
+  expect(reportPagePosts).toBe(0);
+  const afterReportsResponse = await request.get(reportsUrl, {
+    params: reportsQuery,
+  });
+  expect(afterReportsResponse.status()).toBe(200);
+  expect((await afterReportsResponse.json()).total).toBe(beforeReports.total);
+  await capture(page, info, "explicit-report-selection");
+  await page.goto(
+    href({ xray: summary.pin.run_id, cutoff, review_state: "reviewed" }),
+  );
   await page
     .getByRole("combobox", { name: "Portfolio account", exact: true })
     .selectOption(otherAccount);

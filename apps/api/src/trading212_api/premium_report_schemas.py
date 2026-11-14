@@ -8,6 +8,7 @@ from uuid import UUID
 from fastapi import Request, Response
 from pydantic import BaseModel
 from trading212_api_contracts import premium_reports as wire
+from trading212_api_contracts import premium_reports_v3 as wire_v3
 from trading212_api_contracts import premium_reports_v4 as profiles
 from trading212_application import reports as application
 from trading212_domain import report_v3 as v3
@@ -63,7 +64,15 @@ def report_command(
                 sections=tuple(domain.ReportSection(item) for item in value.sections),
                 formats=tuple(domain.ReportFormat(item) for item in value.formats),
                 premium_run=(
-                    v3.ReportRiskRunSelection(run_id=UUID(value.premium_run.run_id))
+                    v3.ReportResearchSelection(
+                        item_id=UUID(value.premium_run.item_id),
+                        note_revision_ids=tuple(
+                            UUID(item) for item in value.premium_run.note_revision_ids
+                        ),
+                        review_acknowledgment_id=_uuid(value.premium_run.review_acknowledgment_id),
+                    )
+                    if isinstance(value.premium_run, wire_v3.PremiumReportResearchSelectionV3)
+                    else v3.ReportRiskRunSelection(run_id=UUID(value.premium_run.run_id))
                     if isinstance(value.premium_run, profiles.PremiumReportRiskRunSelectionV3)
                     else v3.ReportScenarioRunSelection(run_id=UUID(value.premium_run.run_id))
                 ),

@@ -79,9 +79,13 @@ make validate and documented image/security/restart/restore gates at the final
 immutable implementation source. Record line, branch-only and combined coverage
 separately and deduplicate isolated/service-backed node IDs.
 
-Use task project `t212pi_stage_a_20260907`; run services and tests serially and
-reuse the same necessary PostgreSQL/Redis instances. Full-stack acceptance may
-need the existing seven services; ordinary analytical/unit/design work needs none.
+Use one explicitly selected task Compose project; run services and tests serially
+and reuse its necessary PostgreSQL/Redis instances. The historical
+`t212pi_stage_a_20260907` project identifies an earlier exercise, not a requirement
+to attach new work to its preserved volume. Current Compose defines seven
+long-running services (PostgreSQL, Redis, API, worker, dispatcher, MCP and web)
+and two one-shot services (migration and synthetic seed). Focused database checks
+usually need only PostgreSQL/Redis; ordinary analytical/unit/design work needs none.
 Scope cleanup to inspected obsolete task resources. Preserve dependencies, current
 images, source and actual evidence; never global-prune or shrink unrelated stores.
 

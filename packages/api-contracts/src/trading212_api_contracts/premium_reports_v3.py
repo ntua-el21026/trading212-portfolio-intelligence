@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from collections.abc import Sequence
 from typing import Annotated, Literal, Self, get_args
 
@@ -9,6 +11,7 @@ from pydantic import AfterValidator, Field, StrictBool, StrictInt, model_validat
 
 from . import premium_reports as v2
 from . import reports as legacy
+from .research import ResearchReviewAcknowledgment, ResearchXrayPin
 from .sources import CalendarDate, SourceAvailability, SourceQuality
 from .targets import AwareInstant, CurrencyString, Cursor, Digest, UUIDString
 
@@ -36,7 +39,7 @@ EmptyReportRequest = legacy.EmptyReportRequest
 
 PremiumReportProfile = Literal["report_sections_v2", "report_sections_v3"]
 PremiumReportFamilyV3 = Literal[v2.ReportFamily, "scenario", "projection", "goal", "research"]
-ReportFamily = Literal[v2.ReportFamily, "scenario"]
+ReportFamily = Literal[v2.ReportFamily, "scenario", "research"]
 ReportSection = Literal[v2.ReportSection, "scenario", "projection", "goal", "research"]
 ReportSourceKind = Literal[
     legacy.ReportSourceKind,
@@ -46,6 +49,11 @@ ReportSourceKind = Literal[
     "scenario_sensitivity_version",
     "scenario_sensitivity_observation",
     "scenario_sensitivity_evidence",
+    "research_item",
+    "research_event_revision",
+    "research_source_version",
+    "research_note_revision",
+    "research_review_acknowledgment",
 ]
 
 
@@ -94,8 +102,34 @@ class PremiumReportScenarioRunSelectionV3(ReportSchema):
     family: Literal["scenario"]
 
 
+def _research_note_revisions(values: list[str]) -> list[str]:
+    if len(values) != len(set(values)):
+        raise ValueError("Research note revision identities are duplicated.")
+    return sorted(values)
+
+
+class PremiumReportResearchSelectionV3(ReportSchema):
+    item_id: UUIDString
+    note_revision_ids: Annotated[
+        list[UUIDString], Field(max_length=64), AfterValidator(_research_note_revisions)
+    ]
+    review_acknowledgment_id: UUIDString | None = None
+    family: Literal["research"]
+
+    @model_validator(mode="after")
+    def omitted_review(self) -> Self:
+        if (
+            "review_acknowledgment_id" in self.model_fields_set
+            and self.review_acknowledgment_id is None
+        ):
+            raise ValueError("An absent review acknowledgment must be omitted.")
+        return self
+
+
 PremiumReportRunSelectionV3 = Annotated[
-    PremiumReportRiskRunSelectionV3 | PremiumReportScenarioRunSelectionV3,
+    PremiumReportRiskRunSelectionV3
+    | PremiumReportScenarioRunSelectionV3
+    | PremiumReportResearchSelectionV3,
     Field(discriminator="family"),
 ]
 
@@ -241,8 +275,164 @@ class PremiumReportScenarioRunBindingV3(_PremiumRunBindingV3):
         return self
 
 
+ResearchReportTableKey = Literal[
+    "research_basis_v1",
+    "research_event_v1",
+    "research_portfolio_v1",
+    "research_notes_v1",
+    "research_review_v1",
+    "research_citations_v1",
+    "research_sources_v1",
+    "research_source_licenses_v1",
+    "research_source_grants_v1",
+    "research_portfolio_members_v1",
+    "research_warnings_v1",
+    "research_note_citations_v1",
+    "research_xray_pin_v1",
+]
+
+
+class PremiumReportResearchNoteBindingV3(ReportSchema):
+    note_id: UUIDString
+    revision_id: UUIDString
+    content_digest: Digest
+
+
+class PremiumReportResearchBindingV3(ReportSchema):
+    item_id: UUIDString
+    item_selection_digest: Digest
+    owner_id: UUIDString
+    account_id: UUIDString
+    entity_id: UUIDString
+    event_id: UUIDString
+    event_revision_id: UUIDString
+    event_revision_digest: Digest
+    snapshot_id: UUIDString
+    snapshot_digest: Digest
+    reporting_currency: CurrencyString
+    source_cutoff_at: AwareInstant
+    valuation_at: AwareInstant
+    xray: PremiumReportXrayRunBindingV3
+    xray_pin: ResearchXrayPin
+    note_revisions: Annotated[list[PremiumReportResearchNoteBindingV3], Field(max_length=64)]
+    created_at: AwareInstant
+    expires_at: AwareInstant
+    review_acknowledgment: ResearchReviewAcknowledgment | None = None
+    family: Literal["research"]
+
+    @model_validator(mode="after")
+    def retained_research_identity(self) -> Self:
+        if self.created_at >= self.expires_at:
+            raise ValueError("The retained research lifetime is invalid.")
+        if self.item_selection_digest != _research_item_digest(self):
+            raise ValueError("The original research item selection digest differs.")
+        pin = self.xray_pin
+        if (
+            pin.owner_id,
+            pin.account_id,
+            pin.snapshot_id,
+            pin.reporting_currency,
+            pin.valuation_at,
+            pin.run_id,
+            pin.input_digest,
+            pin.result_digest,
+        ) != (
+            self.owner_id,
+            self.account_id,
+            self.snapshot_id,
+            self.reporting_currency,
+            self.valuation_at,
+            self.xray.run_id,
+            self.xray.input_digest,
+            self.xray.result_digest,
+        ):
+            raise ValueError("The original research X-ray binding differs.")
+        revisions = [note.revision_id for note in self.note_revisions]
+        if revisions != sorted(set(revisions)):
+            raise ValueError("Research note revision bindings are not canonical.")
+        if "review_acknowledgment" in self.model_fields_set and self.review_acknowledgment is None:
+            raise ValueError("An absent review binding must be omitted.")
+        review = self.review_acknowledgment
+        if review is not None and (
+            review.owner_id,
+            review.account_id,
+            review.event_id,
+            review.revision_id,
+            review.revision_digest,
+        ) != (
+            self.owner_id,
+            self.account_id,
+            self.event_id,
+            self.event_revision_id,
+            self.event_revision_digest,
+        ):
+            raise ValueError("The review does not bind the exact research revision.")
+        return self
+
+
+def _research_item_digest(pin: PremiumReportResearchBindingV3) -> str:
+    xray = pin.xray_pin.model_dump(mode="json")
+    for name in ("valuation_at", "source_cutoff_at", "quality_evaluated_at"):
+        xray[name] = getattr(pin.xray_pin, name).isoformat().replace("+00:00", "Z")
+    value = (
+        pin.owner_id,
+        pin.account_id,
+        pin.event_revision_id,
+        pin.event_revision_digest,
+        xray,
+        pin.source_cutoff_at.isoformat().replace("+00:00", "Z"),
+    )
+    payload = json.dumps(value, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode()
+    return hashlib.sha256(b"t212pi.research.item.v1\0" + payload).hexdigest()
+
+
+def _research_review_digest(review: ResearchReviewAcknowledgment) -> str:
+    # Independent implementation of the existing research-record framing. Review
+    # fields contain only UUID/digest strings and one normalized UTC datetime.
+    value = review.model_dump(mode="json")
+    value["reviewed_at"] = review.reviewed_at.isoformat().replace("+00:00", "Z")
+    payload = json.dumps(value, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode()
+    return hashlib.sha256(b"t212pi.research.record.v1\0" + payload).hexdigest()
+
+
+def _research_required_bindings(
+    pin: PremiumReportResearchBindingV3,
+) -> set[tuple[str, str, str, str, str | None]]:
+    required: set[tuple[str, str, str, str, str | None]] = {
+        ("research", "input", pin.item_id, pin.item_selection_digest, None),
+        (
+            "research",
+            "event_revision",
+            pin.event_revision_id,
+            pin.event_revision_digest,
+            pin.event_id,
+        ),
+        ("snapshot", "snapshot", pin.snapshot_id, pin.snapshot_digest, None),
+        ("xray", "input", pin.xray.input_id, pin.xray.input_digest, None),
+        ("xray", "result", pin.xray.run_id, pin.xray.result_digest, None),
+    }
+    required.update(
+        ("research", "source", note.revision_id, note.content_digest, note.note_id)
+        for note in pin.note_revisions
+    )
+    if pin.review_acknowledgment is not None:
+        review = pin.review_acknowledgment
+        required.add(
+            (
+                "research",
+                "source",
+                review.acknowledgment_id,
+                _research_review_digest(review),
+                pin.event_revision_id,
+            )
+        )
+    return required
+
+
 PremiumReportRunBindingV3 = Annotated[
-    PremiumReportRiskRunBindingV3 | PremiumReportScenarioRunBindingV3,
+    PremiumReportRiskRunBindingV3
+    | PremiumReportScenarioRunBindingV3
+    | PremiumReportResearchBindingV3,
     Field(discriminator="family"),
 ]
 
@@ -275,7 +465,7 @@ ScenarioReportTableKey = Literal[
     "scenario_xray_paths_v1",
     "scenario_source_headers_v1",
 ]
-ReportTableKey = Literal[v2.ReportTableKey, ScenarioReportTableKey]
+ReportTableKey = Literal[v2.ReportTableKey, ScenarioReportTableKey, ResearchReportTableKey]
 
 
 class PremiumReportNoteV3(ReportSchema):
@@ -403,7 +593,7 @@ class PremiumReportDocumentHeaderV3(ReportSchema):
     def selected_retained_basis(self) -> Self:
         selected, pin = self.selection, self.premium_binding
         if (
-            (selected.premium_run.family, selected.premium_run.run_id) != (pin.family, pin.run_id)
+            selected.premium_run.family != pin.family
             or selected.account_id != pin.account_id
             or self.owner_id != pin.owner_id
             or selected.snapshot_id != pin.snapshot_id
@@ -412,6 +602,24 @@ class PremiumReportDocumentHeaderV3(ReportSchema):
             or self.valuation_at != pin.valuation_at
         ):
             raise ValueError("The selected retained run and monetary basis differ.")
+        if isinstance(pin, PremiumReportResearchBindingV3):
+            choice = selected.premium_run
+            if not isinstance(choice, PremiumReportResearchSelectionV3) or (
+                choice.item_id != pin.item_id
+                or choice.note_revision_ids != [note.revision_id for note in pin.note_revisions]
+                or choice.review_acknowledgment_id
+                != (
+                    pin.review_acknowledgment.acknowledgment_id
+                    if pin.review_acknowledgment is not None
+                    else None
+                )
+                or (selected.xray_run_id is not None and selected.xray_run_id != pin.xray.run_id)
+            ):
+                raise ValueError("The exact research evidence selection differs.")
+        elif isinstance(selected.premium_run, PremiumReportResearchSelectionV3) or (
+            selected.premium_run.run_id != pin.run_id
+        ):
+            raise ValueError("The selected retained run identity differs.")
         if isinstance(pin, PremiumReportRiskRunBindingV3) and (
             selected.start_date,
             selected.end_date,
@@ -419,12 +627,19 @@ class PremiumReportDocumentHeaderV3(ReportSchema):
             raise ValueError("The retained risk window differs.")
         risk = frozenset(get_args(v2.RiskReportTableKey))
         scenario = frozenset(get_args(ScenarioReportTableKey))
-        required, forbidden = (risk, scenario) if pin.family == "risk" else (scenario, risk)
+        research = frozenset(get_args(ResearchReportTableKey))
+        if pin.family == "risk":
+            required, forbidden = risk, scenario | research
+        elif pin.family == "scenario":
+            required, forbidden = scenario, risk | research
+        else:
+            required, forbidden = research, risk | scenario
         supplied = {item.table for item in self.tables}
         if len(supplied) != len(self.tables) or not required <= supplied or supplied & forbidden:
             raise ValueError("The complete selected premium table inventory differs.")
         if any(
-            item.section is not None and item.section not in selected.sections
+            item.dataset is not None
+            or (item.section is not None and item.section not in selected.sections)
             for item in self.tables
         ):
             raise ValueError("The table section differs from selection.")
@@ -434,6 +649,33 @@ class PremiumReportDocumentHeaderV3(ReportSchema):
             if item.table in {"scenario_basis_v1", "scenario_definition_v1", "scenario_summary_v1"}
         ):
             raise ValueError("Scenario basis, definition and summary must be complete.")
+        if isinstance(pin, PremiumReportResearchBindingV3):
+            expected = {
+                "research_basis_v1": 1,
+                "research_event_v1": 1,
+                "research_portfolio_v1": 1,
+                "research_xray_pin_v1": 1,
+                "research_notes_v1": len(pin.note_revisions),
+                "research_review_v1": int(pin.review_acknowledgment is not None),
+            }
+            if any(
+                table.row_count != expected[table.table]
+                for table in self.tables
+                if table.table in expected
+            ):
+                raise ValueError("The complete selected research evidence inventory differs.")
+            if any(
+                table.row_count == 0
+                for table in self.tables
+                if table.table
+                in {
+                    "research_citations_v1",
+                    "research_sources_v1",
+                    "research_source_licenses_v1",
+                    "research_source_grants_v1",
+                }
+            ):
+                raise ValueError("The complete original research source proof is required.")
         return self
 
 
@@ -508,16 +750,21 @@ class PremiumReportManifestV3(ReportSchema):
     @model_validator(mode="after")
     def selected_complete_proof(self) -> Self:
         pin = self.document.premium_binding
-        other = "scenario" if pin.family == "risk" else "risk"
+        other = {"risk", "scenario", "research"} - {pin.family}
         groups = (self.contexts, self.coverage, self.bounds, self.notes, self.bindings)
-        if any(item.family == other for group in groups for item in group) or not any(
+        if any(item.family in other for group in groups for item in group) or not any(
             item.family == pin.family for item in self.contexts
         ):
             raise ValueError("The report proof family differs from its selected run.")
-        forbidden = frozenset(
-            get_args(ScenarioReportTableKey)
+        risk = frozenset(get_args(v2.RiskReportTableKey))
+        scenario = frozenset(get_args(ScenarioReportTableKey))
+        research = frozenset(get_args(ResearchReportTableKey))
+        forbidden = (
+            scenario | research
             if pin.family == "risk"
-            else get_args(v2.RiskReportTableKey)
+            else risk | research
+            if pin.family == "scenario"
+            else risk | scenario
         )
         if any(item.table in forbidden for item in self.proof_relations):
             raise ValueError("The proof table family differs from selection.")
@@ -525,11 +772,19 @@ class PremiumReportManifestV3(ReportSchema):
             item.kind.startswith("scenario_") for item in self.source_references
         ):
             raise ValueError("Risk reports cannot contain scenario source references.")
-        required = {
-            (pin.family, "input", pin.run_id, pin.input_digest, None),
-            (pin.family, "result", pin.result_id, pin.result_digest, pin.run_id),
-            ("snapshot", "snapshot", pin.snapshot_id, pin.snapshot_digest, None),
-        }
+        if pin.family != "research" and any(
+            item.kind.startswith("research_") for item in self.source_references
+        ):
+            raise ValueError("A different premium family cannot contain research sources.")
+        required: set[tuple[str, str, str, str, str | None]]
+        if isinstance(pin, PremiumReportResearchBindingV3):
+            required = _research_required_bindings(pin)
+        else:
+            required = {
+                (pin.family, "input", pin.run_id, pin.input_digest, None),
+                (pin.family, "result", pin.result_id, pin.result_digest, pin.run_id),
+                ("snapshot", "snapshot", pin.snapshot_id, pin.snapshot_digest, None),
+            }
         if isinstance(pin, PremiumReportRiskRunBindingV3):
             required.add(
                 (
@@ -540,7 +795,7 @@ class PremiumReportManifestV3(ReportSchema):
                     pin.definition_id,
                 )
             )
-        else:
+        elif isinstance(pin, PremiumReportScenarioRunBindingV3):
             required.add(
                 (
                     pin.family,
@@ -553,7 +808,7 @@ class PremiumReportManifestV3(ReportSchema):
         if pin.xray is not None:
             required.add(("xray", "input", pin.xray.input_id, pin.xray.input_digest, None))
             required.add(("xray", "result", pin.xray.run_id, pin.xray.result_digest, None))
-        if pin.historical is not None:
+        if not isinstance(pin, PremiumReportResearchBindingV3) and pin.historical is not None:
             required.add(
                 (
                     "performance",
@@ -571,6 +826,56 @@ class PremiumReportManifestV3(ReportSchema):
             raise ValueError("The selected retained run proof is incomplete or duplicated.")
         if {x for x in actual if x[0] == pin.family} != {x for x in required if x[0] == pin.family}:
             raise ValueError("The proof contains an unrelated premium run.")
+        if isinstance(pin, PremiumReportResearchBindingV3):
+            contexts = [item for item in self.contexts if item.family == "research"]
+            if any(
+                (item.valuation_at, item.source_cutoff_at, item.method_key, item.method_version)
+                != (pin.valuation_at, pin.source_cutoff_at, "research_summary_v1", "1.0.0")
+                for item in contexts
+            ) or not any(
+                item.family == "research"
+                and item.kind == "unavailable_reason"
+                and item.code == "optional_synthesis_disabled"
+                for item in self.notes
+            ):
+                raise ValueError("Research context and disabled synthesis must be explicit.")
+            selected_sources: set[tuple[str, str, str, str | None]] = {
+                ("research_item", pin.item_id, pin.item_selection_digest, None),
+                (
+                    "research_event_revision",
+                    pin.event_revision_id,
+                    pin.event_revision_digest,
+                    pin.event_id,
+                ),
+            }
+            selected_sources.update(
+                ("research_note_revision", note.revision_id, note.content_digest, note.note_id)
+                for note in pin.note_revisions
+            )
+            if pin.review_acknowledgment is not None:
+                review = pin.review_acknowledgment
+                selected_sources.add(
+                    (
+                        "research_review_acknowledgment",
+                        review.acknowledgment_id,
+                        _research_review_digest(review),
+                        pin.event_revision_id,
+                    )
+                )
+            selected_kinds = {
+                "research_item",
+                "research_event_revision",
+                "research_note_revision",
+                "research_review_acknowledgment",
+            }
+            if selected_sources != {
+                (item.kind, item.subject_id, item.content_digest, item.parent_id)
+                for item in self.source_references
+                if item.kind in selected_kinds
+            } or not any(item.kind == "research_source_version" for item in self.source_references):
+                raise ValueError("The exact original research source references differ.")
+            if any(item.kind.startswith("scenario_") for item in self.source_references):
+                raise ValueError("Research reports cannot contain scenario source proof.")
         return self
 
 

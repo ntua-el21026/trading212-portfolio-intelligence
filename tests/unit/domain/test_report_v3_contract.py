@@ -115,10 +115,24 @@ def test_reserved_family_cannot_be_selected_or_rendered_as_success(family: str) 
     section = r.ReportSection(family)
     with pytest.raises(DomainError):
         replace(selection_v3(), sections=(*selection().sections, section))
-    with pytest.raises(DomainError):
-        section_tables(section)
-    with pytest.raises(DomainError):
-        replace(capture_v3().proof.contexts[0], family=r.ReportFamily(family))
+    if family == "research":
+        from trading212_domain.report_research_schema import RESEARCH_REPORT_TABLES
+
+        assert section_tables(section) == RESEARCH_REPORT_TABLES
+        original = capture_v3()
+        with pytest.raises(DomainError):
+            replace(
+                original,
+                proof=replace(
+                    original.proof,
+                    contexts=(replace(original.proof.contexts[0], family=r.ReportFamily.RESEARCH),),
+                ),
+            )
+    else:
+        with pytest.raises(DomainError):
+            section_tables(section)
+        with pytest.raises(DomainError):
+            replace(capture_v3().proof.contexts[0], family=r.ReportFamily(family))
 
 
 @pytest.mark.parametrize("risk", [False, True])

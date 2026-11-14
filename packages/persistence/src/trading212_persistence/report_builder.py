@@ -22,6 +22,7 @@ from trading212_domain.report_manifest import (
     report_document_digest,
 )
 from trading212_domain.report_profile import renderer_profile
+from trading212_domain.report_research import ReportResearchBinding
 from trading212_domain.report_schema import dataset_tables, table_schema, validate_report_row
 from trading212_domain.report_v3 import (
     ReportCaptureContract,
@@ -86,7 +87,11 @@ class ReportBuilder:
         self.byte_length = 0
         self.chunk_count = 0
         self.premium_binding: (
-            ReportRiskRunBinding | ReportScenarioRunBinding | v4.ReportProjectionRunBinding | None
+            ReportRiskRunBinding
+            | ReportScenarioRunBinding
+            | ReportResearchBinding
+            | v4.ReportProjectionRunBinding
+            | None
         ) = None
         self.copy_expires_at: datetime | None = None
         self._empty_proof_bytes = len(encode_report_proof(r.ReportProof()))
@@ -408,7 +413,8 @@ class ReportBuilder:
             )
         elif isinstance(self.selection, ReportSelectionV3):
             if not isinstance(
-                self.premium_binding, (ReportRiskRunBinding, ReportScenarioRunBinding)
+                self.premium_binding,
+                (ReportRiskRunBinding, ReportScenarioRunBinding, ReportResearchBinding),
             ):
                 fail_validation(
                     "The selected premium run binding is missing.", field="premium_binding"

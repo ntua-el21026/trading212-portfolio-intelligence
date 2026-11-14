@@ -8,11 +8,35 @@ from pathlib import Path
 from typing import Any, cast, get_args
 
 import pytest
+from pydantic import TypeAdapter, ValidationError
 from trading212_api_contracts import reports as wire
 from trading212_api_contracts.typescript import ReportClientGenerator, render_report_client
 from trading212_domain import reports as domain
 
 pytestmark = pytest.mark.contract
+
+_RESEARCH_SOURCE_KINDS = {
+    "research_item",
+    "research_event_revision",
+    "research_source_version",
+    "research_note_revision",
+    "research_review_acknowledgment",
+}
+_RESEARCH_TABLES = {
+    "research_basis_v1",
+    "research_event_v1",
+    "research_portfolio_v1",
+    "research_notes_v1",
+    "research_review_v1",
+    "research_citations_v1",
+    "research_sources_v1",
+    "research_source_licenses_v1",
+    "research_source_grants_v1",
+    "research_portfolio_members_v1",
+    "research_warnings_v1",
+    "research_note_citations_v1",
+    "research_xray_pin_v1",
+}
 
 
 def contract() -> dict[str, Any]:
@@ -150,7 +174,7 @@ def test_public_finite_vocabularies_match_canonical_contract(name: str) -> None:
     premium_only = {
         "ReportSection": {"risk", "scenario", "projection", "goal", "research"},
         "ReportFamily": {"risk", "scenario", "projection", "goal", "research"},
-        "ReportTableKey": premium_tables | scenario_tables | projection_tables,
+        "ReportTableKey": premium_tables | scenario_tables | projection_tables | _RESEARCH_TABLES,
         "ReportSourceKind": {
             "scenario_run",
             "scenario_result",
@@ -158,11 +182,23 @@ def test_public_finite_vocabularies_match_canonical_contract(name: str) -> None:
             "scenario_sensitivity_version",
             "scenario_sensitivity_observation",
             "scenario_sensitivity_evidence",
-        },
+        }
+        | _RESEARCH_SOURCE_KINDS,
     }.get(name, set())
     legacy = set(get_args(getattr(wire, name)))
     assert not legacy & premium_only
     assert legacy | premium_only == {item.value for item in getattr(domain, name)}
+
+
+@pytest.mark.parametrize(
+    ("name", "values"),
+    (("ReportSourceKind", _RESEARCH_SOURCE_KINDS), ("ReportTableKey", _RESEARCH_TABLES)),
+)
+def test_original_v1_wire_rejects_all_research_vocabulary(name: str, values: set[str]) -> None:
+    adapter = TypeAdapter(getattr(wire, name))
+    for value in values:
+        with pytest.raises(ValidationError):
+            adapter.validate_python(value, strict=True)
 
 
 @pytest.mark.parametrize("field", ["path", "method"])

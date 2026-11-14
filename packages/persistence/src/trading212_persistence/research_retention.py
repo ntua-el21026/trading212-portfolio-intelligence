@@ -244,6 +244,12 @@ def _purge_version(
         )
         session.add(marker)
         session.flush()
+    from .report_research_retention import purge_research_report_copies
+
+    if not purge_research_report_copies(
+        session, row.owner_id, row.id, kind="source", at=at, budget=budget
+    ):
+        return False
     if not _purge_event_copies(session, row, budget=budget):
         return False
     source = cast(Table, ResearchSourcePayloadModel.__table__)
@@ -375,6 +381,10 @@ def purge_owner_research_payloads(
         session.flush()
     if marker.completed_at is not None:
         return True
+    from .report_research_retention import purge_research_report_copies
+
+    if not purge_research_report_copies(session, owner, owner, kind="owner", at=at, budget=budget):
+        return False
     notes = cast(Table, ResearchNotePayloadModel.__table__)
     if not purge_payload_rows(
         session,

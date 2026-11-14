@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from trading212_application.reports import ReportCaptureSink
 from trading212_domain import reports as r
 from trading212_domain.errors import fail_validation
+from trading212_domain.report_research import ReportResearchSelection
 from trading212_domain.report_schema import report_tables
 from trading212_domain.report_v3 import (
     ReportCaptureContract,
@@ -82,6 +83,21 @@ class PostgresReportCapture:
 
         if selection.account_id != self._authorization.account_id:
             fail_validation("Report account binding does not match.", field="account_id")
+        if isinstance(selection, ReportSelectionV3) and isinstance(
+            selection.premium_run, ReportResearchSelection
+        ):
+            from .report_research_sources import authorize_research_report_metadata
+            from .research_source_store import research_owner_lock
+
+            research_owner_lock(self._session, self._authorization.owner_id)
+            authority = authorize_research_report_metadata(
+                self._session, self._authorization, selection.premium_run, now=self._clock()
+            )
+            if (
+                authority.item.snapshot_id != selection.snapshot_id
+                or authority.item.source_cutoff_at != selection.source_cutoff_at
+            ):
+                fail_validation("Research report basis differs.", field="premium_run")
         snapshot = selected_snapshot(
             self._session, self._authorization, selection, now=self._clock()
         )
@@ -157,6 +173,19 @@ class PostgresReportCapture:
             from .report_capture_projection_store import capture_projection
 
             builder.premium_binding = capture_projection(
+                builder,
+                self._session,
+                self._authorization,
+                sessions=self._sessions,
+                clock=self._clock,
+                cursor_signing_key=self._cursor_key,
+            )
+        if isinstance(selection, ReportSelectionV3) and isinstance(
+            selection.premium_run, ReportResearchSelection
+        ):
+            from .report_capture_research_store import capture_research
+
+            builder.premium_binding = capture_research(
                 builder,
                 self._session,
                 self._authorization,

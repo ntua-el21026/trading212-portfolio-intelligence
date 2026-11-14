@@ -18,7 +18,23 @@ const querySchema = z
     profile: z
       .enum(["report_sections_v2", "report_sections_v3", "report_sections_v4"])
       .optional(),
-    family: z.enum(["risk", "scenario", "projection"]).optional(),
+    family: z.enum(["risk", "scenario", "projection", "research"]).optional(),
+    item: uuid.transform((value) => value.toLowerCase()).optional(),
+    note_revisions: z
+      .string()
+      .min(1)
+      .max(2367)
+      .refine((value) => {
+        const ids = value.split(",").map((id) => id.toLowerCase());
+        return (
+          ids.length <= 64 &&
+          new Set(ids).size === ids.length &&
+          ids.every((id) => uuid.safeParse(id).success)
+        );
+      })
+      .transform((value) => value.toLowerCase().split(",").sort().join(","))
+      .optional(),
+    review: uuid.transform((value) => value.toLowerCase()).optional(),
     snapshot: uuid.optional(),
     currency: z
       .string()
@@ -35,6 +51,34 @@ const querySchema = z
       .optional(),
   })
   .superRefine((value, context) => {
+    const researchPins =
+      value.item !== undefined ||
+      value.note_revisions !== undefined ||
+      value.review !== undefined;
+    if (value.family === "research") {
+      if (
+        value.profile !== "report_sections_v3" ||
+        value.run !== undefined ||
+        value.runs_cursor !== undefined ||
+        value.snapshots_cursor !== undefined ||
+        value.snapshot !== undefined ||
+        value.currency !== undefined ||
+        value.cutoff !== undefined ||
+        value.result_digest !== undefined ||
+        (researchPins && !value.item) ||
+        (value.item && !value.account)
+      )
+        context.addIssue({
+          code: "custom",
+          message: "The explicit research report selection is invalid.",
+        });
+      return;
+    }
+    if (researchPins)
+      context.addIssue({
+        code: "custom",
+        message: "Research pins require their explicit report family.",
+      });
     const hints = [
       ...(value.profile === "report_sections_v4" ? [] : [value.snapshot]),
       value.currency,

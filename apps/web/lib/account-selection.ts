@@ -77,7 +77,9 @@ export function accountSwitchHref(
     next.set("profile", profile);
     const families = query.getAll("family");
     const allowed =
-      profile === "report_sections_v4" ? ["projection"] : ["risk", "scenario"];
+      profile === "report_sections_v4"
+        ? ["projection"]
+        : ["risk", "scenario", "research"];
     if (families.length === 1 && allowed.includes(families[0]))
       next.set("family", families[0]);
   }

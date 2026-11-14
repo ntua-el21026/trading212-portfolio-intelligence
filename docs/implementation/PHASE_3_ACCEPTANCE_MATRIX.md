@@ -45,6 +45,19 @@ to progression. No local row is blocked merely because paid/live access is absen
 
 ## Separate external gates
 
+The [Consolidated Batch 1 record](PHASE_3_BATCH1_20261114.md) adds component
+evidence for P3-ACCOUNT-001/002/003; deterministic predicates within
+P3-RISK-001/002, P3-STRESS-001/003 and P3-PROJ-003; and the exact research-report
+selection contract for P3-RESEARCH-001/003. Research reports now have separate
+PostgreSQL observations: four-format capture 1 pass, remaining exact-selection
+checks 6 passes, and retention 8 passes. Two migration compatibility failures
+recovered with a new populated-downgrade negative (3 passes); one desktop case
+checks navigation/selection only. Their distinct source manifests, receipts and
+limitations are in the [validation report](../../VALIDATION_REPORT.md#research-report-component-evidence-2026-11-14).
+Component passes do not establish every predicate in those rows or a full
+final-source pass. All 30 matrix states and all 48 scenarios remain pending,
+zero accepted; CI and independent review remain pending.
+
 - Trading 212 demo credentials/smoke and actual opening-history coverage.
 - Account-specific licensed provider entitlement, credentialed production access
   and any paid-provider enablement; adapter/replay tests remain local obligations.

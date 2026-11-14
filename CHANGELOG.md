@@ -4,6 +4,16 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+- Add independent aggregation, analytical and capacity-admission regressions with
+  focused PostgreSQL evidence and retained failures/recoveries. Implement the approved
+  exact-item/note-revision research report vertical with four-format, exact-selection
+  and physical-retention PostgreSQL component passes. Add migration `0035` and four
+  tables (368 total), recover two migration compatibility checks with an empty-only
+  downgrade, and retain one desktop navigation/selection pass separately from
+  artifact generation. Correct current versus
+  historical MCP/service documentation; propose proprietary visibility wording
+  without changing licensing rights. Phase 3 acceptance remains pending.
+
 - Record source-bound incremental browser coverage, current image/dependency
   qualification, ordinary synthetic startup and task-only cleanup. Preserve failed
   attempts and case partitions; complete Make validation was not rerun and
@@ -34,7 +44,7 @@ All notable project changes are recorded here. The project follows semantic vers
 
 - Add saved projection/goal workflows, exact paged REST/MCP/web results and explicit profile4 reports with complete canonical evidence. Actual four-format and source-rights component checks pass; final verification remains pending.
 
-- Add bounded research source/event/note storage, eight authenticated REST operations, a generated client and source-authorized page composition. Bounded PostgreSQL pages, three-width web journeys and the completed 38-tool/eleven-resource MCP registry have component passes; research reports and final acceptance remain pending.
+- Add bounded research source/event/note storage, eight authenticated REST operations, a generated client and source-authorized page composition. Bounded PostgreSQL pages, three-width web journeys and the completed 38-tool/eleven-resource MCP registry have component passes. That earlier checkpoint left research reports pending; the Batch 1 report evidence is recorded above. Final acceptance remains pending.
 
 - Add indexed projection memberships and resumable report copy cleanup, with guarded physical progress and serial one-container verification; shared retention accounting remains under validation.
 

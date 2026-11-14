@@ -7,7 +7,7 @@ import {
   ResearchNote,
 } from "../components/research-views";
 import { readResearchQuery } from "../lib/research-query";
-import { account, at, id, item, note } from "./research-ui-fixtures";
+import { account, at, id, item, note, other } from "./research-ui-fixtures";
 vi.mock("../components/research-forms", () => ({
   ResearchNoteForm: () => null,
   ResearchReviewControl: () => null,
@@ -73,5 +73,35 @@ describe("source facts and exact copied exposure", () => {
     ).toBeInTheDocument();
     expect(container.querySelector("script")).toBeNull();
     expect(screen.getByText(note.content_digest)).toBeInTheDocument();
+  });
+  it("links the exact detailed item to reports and removes the link for a different account", () => {
+    const query = readResearchQuery(
+      { account, view: "item", item: id },
+      new Date(at),
+    );
+    const view = render(
+      <ResearchItem item={item} query={query} canWrite={false} detailed />,
+    );
+    expect(
+      screen.getByRole("link", {
+        name: "Create a report from this retained research item",
+      }),
+    ).toHaveAttribute(
+      "href",
+      `/reports/premium?profile=report_sections_v3&family=research&account=${account}&item=${id}`,
+    );
+    view.rerender(
+      <ResearchItem
+        item={item}
+        query={{ ...query, account: other }}
+        canWrite={false}
+        detailed
+      />,
+    );
+    expect(
+      screen.queryByRole("link", {
+        name: "Create a report from this retained research item",
+      }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -1,6 +1,51 @@
 # Validation Report
 
-## Current bounded stabilization, 2026-11-14
+## Current Consolidated Batch 1, 2026-11-14
+
+The [Batch 1 record](docs/implementation/PHASE_3_BATCH1_20261114.md) distinguishes
+new focused executions, retained failures, focused recoveries and source manifests.
+Aggregation, analytical predicates and research reporting have component passes.
+Documentation records current behavior, historical sources and pending gates. The batch does not execute
+complete Make validation, full coverage or the entire browser matrix. All 30
+acceptance rows and 48 scenarios remain pending, zero accepted; independent
+review and verified final-source CI remain pending. Production and Live remain
+unauthorized. The records below retain their historical sources and scope.
+
+## Research report component evidence, 2026-11-14
+
+The implemented profile3 research selector binds one saved item, an explicit set
+of zero to 64 immutable note revisions and an optional exact review. It uses the
+existing six premium routes and PDF/CSV/JSON/XLSX artifacts, thirteen fixed tables
+and five supported research source-reference kinds. Original V1/profile2 and
+earlier profile3 contracts remain separate. Current/pinned REPORT rights, original
+source lifetimes and transitive X-ray dependencies govern the copied evidence.
+
+These are separate successful observations, not a combined suite execution:
+
+| Receipt | Actual scope | Runner seconds | Receipt wall seconds |
+| --- | --- | --- | --- |
+| `c-research-four-format-fresh-copy-01` | 1 PostgreSQL case: four artifacts, exact historical revisions, independent wire validation and original-byte/deadline preservation | 48.40 | 49.991 |
+| `c-research-reports-remaining-postgres-01` | 6 PostgreSQL cases; the already passing four-format case was deselected | 148.60 | 150.562 |
+| `c-research-retention-postgres-01` | 8 PostgreSQL cases: rights/erasure, bounded physical closure and transitive source restrictions | 225.65 | 227.884 |
+| `c-migration-failed-and-new-retry-01` | 3 cases: two failed migration compatibility checks recovered and new populated-downgrade refusal | 29.89 | 31.705 |
+| `c-research-browser-desktop-01` | 1 existing desktop research navigation/selection case; no report submission or artifact download | 38.0 | 38.538 |
+
+The first three receipts have unchanged full-source bookends
+`a8544ddf5ce1e1fe1955071d750d94a74a2737f0b8e765f8b8f5388f275c7310`.
+The migration retry and desktop case instead bind
+`ec25abb953413000f979f62cf31a03112b98126483e1aa2ae72a3e0edd254143`.
+The retained forward-definition equivalence record qualifies the downgrade-only
+migration correction; it does not turn earlier executions into later-source runs.
+Failed attempts remain evidence. Receipt/JUnit/log files are retained under the
+external `batch1-20261114-nr978iu1` evidence root.
+
+Migration `20261114_0035` adds four tables, giving 368 ORM tables; the earlier
+364-table/`0034` inventory is historical. The desktop observation does not verify
+browser report generation/download; four-format proof is the separate PostgreSQL
+observation above. Final-source full validation, CI, independent review and all
+30 acceptance rows/48 scenarios remain pending, zero accepted.
+
+## Historical bounded stabilization delivery, 2026-11-14
 
 Implementation `153854f7b32a235a8aa5bdaa13c079bc07407a05` preserves incremental
 passing observations for 132 required API-browser cases across 69 groups:

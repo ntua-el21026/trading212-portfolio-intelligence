@@ -391,12 +391,14 @@ def validate_report_profile_v4(
 ) -> None:
     r.report_limit(len(proof.contexts) <= 256, "contexts")
     r.report_limit(len(proof.license_references) <= 256, "license_references")
+    from .report_research_schema import RESEARCH_TABLE_COLUMNS
     from .report_risk_schema import RISK_PROOF_TABLES, RISK_REPORT_TABLES
     from .report_scenario_schema import SCENARIO_PROOF_TABLES, SCENARIO_REPORT_TABLES
 
     foreign_tables = set(
         (*RISK_PROOF_TABLES, *RISK_REPORT_TABLES, *SCENARIO_PROOF_TABLES, *SCENARIO_REPORT_TABLES)
     )
+    foreign_tables.update(RESEARCH_TABLE_COLUMNS)
     if any(item.table in foreign_tables for item in proof.proof_relations):
         fail_validation("Foreign premium table in projection proof.", field="proof_relations")
     pin = header.premium_binding
@@ -471,7 +473,10 @@ def validate_report_profile_v4(
         item for item in actual if item[0] in {r.ReportFamily.PROJECTION, r.ReportFamily.GOAL}
     } != {item for item in required if item[0] in {r.ReportFamily.PROJECTION, r.ReportFamily.GOAL}}:
         fail_validation("Projection immutable proof is incomplete or foreign.", field="bindings")
-    if any(item.kind in r.SCENARIO_REPORT_SOURCE_KINDS for item in proof.source_references):
+    if any(
+        item.kind in r.SCENARIO_REPORT_SOURCE_KINDS | r.RESEARCH_REPORT_SOURCE_KINDS
+        for item in proof.source_references
+    ):
         fail_validation("Foreign premium source in projection report.", field="sources")
 
 

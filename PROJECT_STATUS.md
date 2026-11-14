@@ -10,16 +10,21 @@
 
 ## Current state
 
-Consolidated Implementation Batch 1 is in progress from audited checkpoint
-`6f8c0117d23f0d3987135e60ef20ae653f505927`. New aggregation and analytical
-predicates have focused passing observations, including genuine PostgreSQL
-capacity rejection and unchanged persistent state. The original analytical
-fixture failure and focused recovery remain separate. Research reports and public
-status reconciliation are in progress under the approved exact-revision policy.
-The [Batch 1 record](docs/implementation/PHASE_3_BATCH1_20261114.md) binds actual
-execution scope and source manifests. All 30 Phase 3 rows and 48 scenarios remain
-pending, zero accepted; complete current-source validation and independent review
-remain pending. CI is owner-deferred; production and Live remain unauthorized.
+Consolidated Implementation Batch 1 is implemented from audited checkpoint
+`6f8c0117d23f0d3987135e60ef20ae653f505927` and is being prepared for independent
+review. Aggregation and analytical predicates have separate focused passes,
+including genuine PostgreSQL capacity rejection and unchanged persistent state.
+Research reports implement the approved exact item/note/review policy through the
+existing profile3 routes, four formats and private report workspace. Artifact,
+retention, migration, unit and one desktop navigation/selection observations retain
+their actual sources and earlier failures. The extended SAST scan retains eight
+reviewed literal-DDL findings and its nonzero exit; no whole-SAST pass is claimed.
+The [Batch 1 record](docs/implementation/PHASE_3_BATCH1_20261114.md) and
+[command index](docs/implementation/evidence/phase-3-batch1-20261114.json) give scope,
+commands and limitations. Current schema: 368 ORM tables through migration `0035`.
+All 30 Phase 3 rows and 48 scenarios remain pending, zero accepted; complete
+current-SHA validation, independent review and verified CI remain pending.
+CI is owner-deferred; production, Live, Batch 2 and final acceptance are unauthorized.
 
 ### Historical stabilization delivery
 
@@ -77,7 +82,7 @@ Privacy and bounded cleanup have focused passes.
 A new immutable complete target remains pending.
 Production guards, historical economic dates and retention budgets remain
 unchanged; internal peer review does not replace the pending owner audit.
-The current schema retains 364 ORM tables through forward migration `0034`.
+That historical checkpoint retained 364 ORM tables through migration `0034`.
 
 The sixth complete target at `6502a5a` passed formatting, linting, typing and 4,744
 Python unit cases, then failed the web suite with 917 passes and one owner-layout

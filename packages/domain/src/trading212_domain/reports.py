@@ -224,6 +224,11 @@ class ReportSourceKind(StrEnum):
     SCENARIO_SENSITIVITY_VERSION = "scenario_sensitivity_version"
     SCENARIO_SENSITIVITY_OBSERVATION = "scenario_sensitivity_observation"
     SCENARIO_SENSITIVITY_EVIDENCE = "scenario_sensitivity_evidence"
+    RESEARCH_ITEM = "research_item"
+    RESEARCH_EVENT_REVISION = "research_event_revision"
+    RESEARCH_SOURCE_VERSION = "research_source_version"
+    RESEARCH_NOTE_REVISION = "research_note_revision"
+    RESEARCH_REVIEW_ACKNOWLEDGMENT = "research_review_acknowledgment"
 
 
 SCENARIO_REPORT_SOURCE_KINDS = frozenset(
@@ -234,6 +239,17 @@ SCENARIO_REPORT_SOURCE_KINDS = frozenset(
         ReportSourceKind.SCENARIO_SENSITIVITY_VERSION,
         ReportSourceKind.SCENARIO_SENSITIVITY_OBSERVATION,
         ReportSourceKind.SCENARIO_SENSITIVITY_EVIDENCE,
+    }
+)
+
+
+RESEARCH_REPORT_SOURCE_KINDS = frozenset(
+    {
+        ReportSourceKind.RESEARCH_ITEM,
+        ReportSourceKind.RESEARCH_EVENT_REVISION,
+        ReportSourceKind.RESEARCH_SOURCE_VERSION,
+        ReportSourceKind.RESEARCH_NOTE_REVISION,
+        ReportSourceKind.RESEARCH_REVIEW_ACKNOWLEDGMENT,
     }
 )
 
@@ -915,6 +931,19 @@ class ReportTableKey(StrEnum):
     PROJECTION_SOURCE_NODES_V1 = "projection_source_nodes_v1"
     PROJECTION_SOURCE_MEMBERS_V1 = "projection_source_members_v1"
     PROJECTION_SOURCE_SCALARS_V1 = "projection_source_scalars_v1"
+    RESEARCH_BASIS_V1 = "research_basis_v1"
+    RESEARCH_EVENT_V1 = "research_event_v1"
+    RESEARCH_PORTFOLIO_V1 = "research_portfolio_v1"
+    RESEARCH_NOTES_V1 = "research_notes_v1"
+    RESEARCH_REVIEW_V1 = "research_review_v1"
+    RESEARCH_CITATIONS_V1 = "research_citations_v1"
+    RESEARCH_SOURCES_V1 = "research_sources_v1"
+    RESEARCH_SOURCE_LICENSES_V1 = "research_source_licenses_v1"
+    RESEARCH_SOURCE_GRANTS_V1 = "research_source_grants_v1"
+    RESEARCH_PORTFOLIO_MEMBERS_V1 = "research_portfolio_members_v1"
+    RESEARCH_WARNINGS_V1 = "research_warnings_v1"
+    RESEARCH_NOTE_CITATIONS_V1 = "research_note_citations_v1"
+    RESEARCH_XRAY_PIN_V1 = "research_xray_pin_v1"
 
 
 class ReportRowOrder(StrEnum):
@@ -1011,6 +1040,10 @@ class ReportDocumentHeader(ReportRecord):
 
         if supplied & set(PROJECTION_TABLE_COLUMNS):
             fail_validation("Projection tables require explicit profile four.", field="tables")
+        from .report_research_schema import RESEARCH_TABLE_COLUMNS
+
+        if supplied & set(RESEARCH_TABLE_COLUMNS):
+            fail_validation("Research tables require explicit profile three.", field="tables")
         from .report_scenario_schema import SCENARIO_PROOF_TABLES, SCENARIO_REPORT_TABLES
 
         if supplied & frozenset((*SCENARIO_REPORT_TABLES, *SCENARIO_PROOF_TABLES)) or any(
@@ -1057,7 +1090,8 @@ class ReportContext(ReportRecord):
         if (
             self.schema_version
             not in {REPORT_SCHEMA_VERSION, PREMIUM_REPORT_SCHEMA_VERSION, "3.0.0"}
-            or self.family in {ReportFamily.PROJECTION, ReportFamily.GOAL, ReportFamily.RESEARCH}
+            or self.family in {ReportFamily.PROJECTION, ReportFamily.GOAL}
+            or (self.family is ReportFamily.RESEARCH and self.schema_version != "3.0.0")
             or (self.family is ReportFamily.RISK and self.schema_version == REPORT_SCHEMA_VERSION)
             or (self.family is ReportFamily.SCENARIO and self.schema_version != "3.0.0")
         ):
@@ -1285,6 +1319,10 @@ def validate_report_profile(
 
     if any(item.table in PROJECTION_TABLE_COLUMNS for item in proof.proof_relations):
         fail_validation("Projection proof requires profile four.", field="proof_relations")
+    from .report_research_schema import RESEARCH_TABLE_COLUMNS
+
+    if any(item.table in RESEARCH_TABLE_COLUMNS for item in proof.proof_relations):
+        fail_validation("Research proof requires profile three.", field="proof_relations")
     expected = report_schema_version(header.selection)
     from .report_scenario_schema import SCENARIO_PROOF_TABLES, SCENARIO_REPORT_TABLES
 
@@ -1301,6 +1339,7 @@ def validate_report_profile(
             for item in group
         )
         or any(item.kind in SCENARIO_REPORT_SOURCE_KINDS for item in proof.source_references)
+        or any(item.kind in RESEARCH_REPORT_SOURCE_KINDS for item in proof.source_references)
         or any(
             item.table in (*SCENARIO_REPORT_TABLES, *SCENARIO_PROOF_TABLES)
             for item in proof.proof_relations

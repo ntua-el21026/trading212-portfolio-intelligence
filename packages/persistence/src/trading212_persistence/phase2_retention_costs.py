@@ -6,6 +6,8 @@ from .projection_retention_costs import ProjectionMutationCost
 # source/report/projection/premium parent barriers and fixed FK probes. No child
 # aggregate or graph traversal is included:0028 replaces those with point facts.
 PHASE2_PAYLOAD_MUTATION_ROWS = 64
+# 0035 adds an indexed research-report pending-root barrier to these headers.
+RESEARCH_REPORT_XRAY_MUTATION_ROWS = PHASE2_PAYLOAD_MUTATION_ROWS + 2
 PHASE2_COLLECTION_MUTATION_ROWS = 48
 PHASE2_MEMBERSHIP_MUTATION_ROWS = 16
 PHASE2_MARKER_ROWS = 32
@@ -87,7 +89,12 @@ _COLLECTIONS = frozenset(
 
 def phase2_mutation_cost(table: str, *, delete_rows: bool) -> ProjectionMutationCost | None:
     if table in _XRAY | _HISTORICAL | _SOURCES:
-        return ProjectionMutationCost(1, PHASE2_PAYLOAD_MUTATION_ROWS, 2)
+        rows = (
+            RESEARCH_REPORT_XRAY_MUTATION_ROWS
+            if table in {"xray_input_snapshots", "xray_runs"}
+            else PHASE2_PAYLOAD_MUTATION_ROWS
+        )
+        return ProjectionMutationCost(1, rows, 2)
     if table in _COLLECTIONS:
         return ProjectionMutationCost(1, PHASE2_COLLECTION_MUTATION_ROWS, 2)
     return None

@@ -175,8 +175,31 @@ export class PremiumReportTransport extends ReportTransport {
         const pin = body.premium_run;
         if (typeof pin !== "object" || pin === null || !("family" in pin))
           throw invalidProfile();
-        if (pin.family !== "risk" && pin.family !== "scenario")
+        if (
+          pin.family !== "risk" &&
+          pin.family !== "scenario" &&
+          pin.family !== "research"
+        )
           throw invalidProfile();
+        if (pin.family === "research") {
+          const checked = z
+            .strictObject({
+              family: z.literal("research"),
+              item_id: z.string().uuid(),
+              note_revision_ids: z
+                .array(
+                  z
+                    .string()
+                    .uuid()
+                    .transform((value) => value.toLowerCase()),
+                )
+                .max(64)
+                .refine((values) => new Set(values).size === values.length),
+              review_acknowledgment_id: z.string().uuid().optional(),
+            })
+            .safeParse(pin);
+          if (!checked.success) throw invalidProfile();
+        }
         if (!Array.isArray(body.sections)) throw invalidProfile();
         const premiumSections = body.sections.filter(
           (item: unknown) =>

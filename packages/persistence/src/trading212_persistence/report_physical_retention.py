@@ -19,6 +19,9 @@ LegacyReportWitnessKind = Literal[
     "version",
     "observation",
     "evidence",
+    "research_source",
+    "research_owner",
+    "research_xray",
 ]
 LegacyReportWitness = tuple[LegacyReportWitnessKind, UUID]
 # The per-row immutable guard independently probes <=24 report participants,

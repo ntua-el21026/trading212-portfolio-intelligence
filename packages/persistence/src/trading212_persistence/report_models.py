@@ -295,6 +295,7 @@ class ReportInputDependencyModel(ReportOwned):
             "id",
         ),
         Index("ix_report_source_pending_input", "owner_id", "input_id", "copy_pending", "id"),
+        Index("ix_report_research_physical_sweep", "copy_pending", "id"),
     )
     copy_pending: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
     input_id: Mapped[UUID] = mapped_column()
@@ -852,7 +853,8 @@ class ReportRetentionWorkModel(ReportOwned):
             (
                 "(legacy_source_kind IS NULL AND legacy_source_id IS NULL) OR "
                 "(reason='source' AND legacy_source_kind IN ('physical','root','report_licens"
-                "e','premium_license','parents','history','version','observation','evidence')"
+                "e','premium_license','parents','history','version','observation','evidence',"
+                "'research_source','research_owner','research_xray')"
                 " AND legacy_source_id IS NOT NULL AND projection_source_kind IS NULL AND "
                 "projection_source_id IS NULL)"
             ),

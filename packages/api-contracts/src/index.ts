@@ -824,6 +824,14 @@ export type {
 } from "./premium-report-transport";
 
 export * from "./research.generated";
+// These shared research records retain their original public definitions when
+// premium report generation also emits copies for its nested binding schemas.
+export {
+  ResearchReviewAcknowledgmentSchema,
+  ResearchXrayPinSchema,
+  type ResearchReviewAcknowledgment,
+  type ResearchXrayPin,
+} from "./research.generated";
 export * from "./aggregate.generated";
 export { AggregateApiError } from "./aggregate-transport";
 export type {

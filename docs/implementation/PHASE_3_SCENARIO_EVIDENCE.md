@@ -9,6 +9,22 @@ obligations, not assertions that the tests exist or have run. A row may become c
 only when its actual selectors, successful commands and immutable source-bound evidence
 are recorded. Keep deterministic references separate from statistical tolerances.
 
+Consolidated Batch 1 records supplemental actual selectors and separate execution
+receipts in the [current functional-completion record](PHASE_3_BATCH1_20261114.md).
+New aggregation predicates contribute to P3-S30–S32; independent log/permutation,
+action/outlier, fund equivalence, comparison currency and capacity predicates
+contribute to P3-S01/S03/S08/S11/S14/S21. Research exact-selection/domain/REST/web
+component checks contribute to P3-S24/S26. Separate PostgreSQL observations now
+cover four-format capture (1 pass), remaining exact-selection checks (6 passes)
+and physical retention (8 passes). A later migration retry passed two recovered
+checks plus populated-downgrade refusal (3 cases); one desktop case covers
+navigation/selection without report submission/download. Exact receipt names,
+times and the two distinct source manifests are recorded in the
+[validation report](../../VALIDATION_REPORT.md#research-report-component-evidence-2026-11-14).
+These observations do not complete a scenario or establish a final-source full
+validation/CI pass.
+All 48 states below remain pending, zero accepted.
+
 | ID | Package | Scenario | Exact fixture/predicate | Planned test selector | State |
 | --- | --- | --- | --- | --- | --- |
 | P3-S01 | P3-01 | Daily/monthly calendar alignment and simple/log returns | Pinned complete session tuples; reordered inputs preserve canonical output, missing boundaries never fill. | tests/unit/analytics/test_phase3_risk.py::test_risk_alignment | pending |

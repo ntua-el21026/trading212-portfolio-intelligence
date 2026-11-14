@@ -391,6 +391,12 @@ def purge_xray_source_copies(
                 )
             )
             session.flush()
+        from .report_research_retention import purge_research_report_copies
+
+        if not purge_research_report_copies(
+            session, source.owner_id, candidate.id, kind="xray", at=at, budget=budget
+        ):
+            return False
         if not charge(budget):
             return False
         # Fetch only run identity, never its canonical payload during discovery.

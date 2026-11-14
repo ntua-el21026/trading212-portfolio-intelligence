@@ -76,11 +76,11 @@ def test_event_copy_mutation_reserves_whole_fanout_and_double_payload_inspection
         inspection_rows=profile.mutation_rows,
         payload_inspections=profile.payload_inspections,
     )
-    blocked = SourcePurgeBudget(rows_inspected=383)
-    assert blocked.reserve_clear_batch((cost,)) == () and blocked.rows_inspected == 383
+    blocked = SourcePurgeBudget(rows_inspected=399)
+    assert blocked.reserve_clear_batch((cost,)) == () and blocked.rows_inspected == 399
     budget = SourcePurgeBudget(rows_inspected=512, bytes_inspected=200, bytes_removed=100)
     assert budget.reserve_clear_batch((cost,)) == (uid(1),)
-    assert budget.rows_inspected == 128 and budget.rows_removed == 4095
+    assert budget.rows_inspected == 112 and budget.rows_removed == 4095
     assert budget.bytes_inspected == 0 and budget.bytes_removed == 0
     assert budget.reserve_clear_batch((cost,)) == ()
 

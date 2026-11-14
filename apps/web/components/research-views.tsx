@@ -7,6 +7,10 @@ import type {
 import { Surface } from "@trading212/ui";
 import Link from "./navigation-intent";
 import { researchHref, type ResearchQuery } from "../lib/research-query";
+import {
+  researchReportHref,
+  researchReportSource,
+} from "../lib/research-report-query";
 import { ResearchNoteForm, ResearchReviewControl } from "./research-forms";
 import styles from "./research-workspace.module.css";
 
@@ -198,6 +202,10 @@ export function ResearchItem({
 }>) {
   const facts = item.source.facts;
   const title = facts.kind === "news" ? facts.title : facts.company_name;
+  const reportSource =
+    detailed && query.account
+      ? researchReportSource(item, query.account)
+      : null;
   return (
     <Surface>
       <article data-testid="research-item">
@@ -253,6 +261,13 @@ export function ResearchItem({
         />
         {detailed ? (
           <>
+            {reportSource ? (
+              <p>
+                <Link prefetch={false} href={researchReportHref(reportSource)}>
+                  Create a report from this retained research item
+                </Link>
+              </p>
+            ) : null}
             <details>
               <summary>Original source citations and permissions</summary>
               {item.source.citations.map((citation, index) => (

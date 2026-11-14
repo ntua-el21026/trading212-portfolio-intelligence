@@ -97,6 +97,7 @@ function run(arguments_, fixture, reportPath) {
           "premium-reports.spec.ts",
           "scenario-reports.spec.ts",
           "projection-reports.spec.ts",
+          "research.spec.ts",
         ].includes(fixture)
           ? "1"
           : "0",

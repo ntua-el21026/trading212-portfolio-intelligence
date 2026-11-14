@@ -196,6 +196,45 @@ export const PremiumReportScenarioRunSelectionV3Schema = z.strictObject({
 export type PremiumReportScenarioRunSelectionV3 = z.infer<
   typeof PremiumReportScenarioRunSelectionV3Schema
 >;
+export const PremiumReportResearchSelectionV3Schema = z.strictObject({
+  family: z.literal("research"),
+  item_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  note_revision_ids: z
+    .array(
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+    )
+    .max(64),
+  review_acknowledgment_id: z
+    .union([
+      z
+        .string()
+        .regex(
+          new RegExp(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          ),
+        )
+        .uuid(),
+      z.null(),
+    ])
+    .optional(),
+});
+export type PremiumReportResearchSelectionV3 = z.infer<
+  typeof PremiumReportResearchSelectionV3Schema
+>;
 export const GeneratePremiumReportRequestV3Schema = z.strictObject({
   account_id: z
     .string()
@@ -252,6 +291,7 @@ export const GeneratePremiumReportRequestV3Schema = z.strictObject({
   premium_run: z.discriminatedUnion("family", [
     PremiumReportRiskRunSelectionV3Schema,
     PremiumReportScenarioRunSelectionV3Schema,
+    PremiumReportResearchSelectionV3Schema,
   ]),
   profile_version: z.literal("report_sections_v3"),
   report_type: z.enum([
@@ -732,6 +772,7 @@ export const PremiumReportInputPinV3Schema = z.strictObject({
     "alerts",
     "risk",
     "scenario",
+    "research",
   ]),
   method_key: z.union([
     z
@@ -809,6 +850,7 @@ export const PremiumReportNoteV3Schema = z.strictObject({
     "alerts",
     "risk",
     "scenario",
+    "research",
   ]),
   key: z
     .string()
@@ -1995,6 +2037,7 @@ export const PremiumReportBoundFactV3Schema = z.strictObject({
     "alerts",
     "risk",
     "scenario",
+    "research",
   ]),
   key: z
     .string()
@@ -2043,6 +2086,7 @@ export const PremiumReportContextV3Schema = z.strictObject({
     "alerts",
     "risk",
     "scenario",
+    "research",
   ]),
   key: z
     .string()
@@ -2109,6 +2153,7 @@ export const PremiumReportCoverageFactV3Schema = z.strictObject({
     "alerts",
     "risk",
     "scenario",
+    "research",
   ]),
   metric_key: z
     .string()
@@ -2329,6 +2374,216 @@ export const PremiumReportScenarioRunBindingV3Schema = z.strictObject({
 export type PremiumReportScenarioRunBindingV3 = z.infer<
   typeof PremiumReportScenarioRunBindingV3Schema
 >;
+export const PremiumReportResearchNoteBindingV3Schema = z.strictObject({
+  content_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  note_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  revision_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+});
+export type PremiumReportResearchNoteBindingV3 = z.infer<
+  typeof PremiumReportResearchNoteBindingV3Schema
+>;
+export const ResearchReviewAcknowledgmentSchema = z.strictObject({
+  account_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  acknowledgment_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  actor_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  event_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  owner_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  reviewed_at: z.string().datetime({ offset: true }),
+  revision_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  revision_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+});
+export type ResearchReviewAcknowledgment = z.infer<
+  typeof ResearchReviewAcknowledgmentSchema
+>;
+export const ResearchXrayPinSchema = z.strictObject({
+  account_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  input_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  method: z.literal("xray_v1"),
+  method_version: z.literal("1.1.0"),
+  numerical_profile: z.literal("xray_decimal256_exact_q18_v1"),
+  owner_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  policy_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  policy_version: z
+    .string()
+    .max(4096)
+    .regex(new RegExp("^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f-\\x9f]*$")),
+  quality_evaluated_at: z.string().datetime({ offset: true }),
+  reporting_currency: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  result_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  run_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  schema_version: z.literal("1"),
+  snapshot_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  source_cutoff_at: z.string().datetime({ offset: true }),
+  valuation_at: z.string().datetime({ offset: true }),
+});
+export type ResearchXrayPin = z.infer<typeof ResearchXrayPinSchema>;
+export const PremiumReportResearchBindingV3Schema = z.strictObject({
+  account_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  created_at: z.string().datetime({ offset: true }),
+  entity_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  event_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  event_revision_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  event_revision_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  expires_at: z.string().datetime({ offset: true }),
+  family: z.literal("research"),
+  item_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  item_selection_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  note_revisions: z.array(PremiumReportResearchNoteBindingV3Schema).max(64),
+  owner_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  reporting_currency: z.string().regex(new RegExp("^[A-Z]{3}$")),
+  review_acknowledgment: z
+    .union([ResearchReviewAcknowledgmentSchema, z.null()])
+    .optional(),
+  snapshot_digest: z.string().regex(new RegExp("^[0-9a-f]{64}$")),
+  snapshot_id: z
+    .string()
+    .regex(
+      new RegExp(
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      ),
+    )
+    .uuid(),
+  source_cutoff_at: z.string().datetime({ offset: true }),
+  valuation_at: z.string().datetime({ offset: true }),
+  xray: PremiumReportXrayRunBindingV3Schema,
+  xray_pin: ResearchXrayPinSchema,
+});
+export type PremiumReportResearchBindingV3 = z.infer<
+  typeof PremiumReportResearchBindingV3Schema
+>;
 export const PremiumReportSelectionV3Schema = z.strictObject({
   account_id: z
     .string()
@@ -2385,6 +2640,7 @@ export const PremiumReportSelectionV3Schema = z.strictObject({
   premium_run: z.discriminatedUnion("family", [
     PremiumReportRiskRunSelectionV3Schema,
     PremiumReportScenarioRunSelectionV3Schema,
+    PremiumReportResearchSelectionV3Schema,
   ]),
   profile_version: z.literal("report_sections_v3"),
   report_type: z.enum([
@@ -2682,6 +2938,19 @@ export const PremiumReportTableDescriptorV3Schema = z.strictObject({
     "scenario_replay_warnings_v1",
     "scenario_xray_paths_v1",
     "scenario_source_headers_v1",
+    "research_basis_v1",
+    "research_event_v1",
+    "research_portfolio_v1",
+    "research_notes_v1",
+    "research_review_v1",
+    "research_citations_v1",
+    "research_sources_v1",
+    "research_source_licenses_v1",
+    "research_source_grants_v1",
+    "research_portfolio_members_v1",
+    "research_warnings_v1",
+    "research_note_citations_v1",
+    "research_xray_pin_v1",
   ]),
 });
 export type PremiumReportTableDescriptorV3 = z.infer<
@@ -2702,6 +2971,7 @@ export const PremiumReportDocumentHeaderV3Schema = z.strictObject({
   premium_binding: z.discriminatedUnion("family", [
     PremiumReportRiskRunBindingV3Schema,
     PremiumReportScenarioRunBindingV3Schema,
+    PremiumReportResearchBindingV3Schema,
   ]),
   selection: PremiumReportSelectionV3Schema,
   tables: z.array(PremiumReportTableDescriptorV3Schema).max(128),
@@ -2891,6 +3161,19 @@ export const PremiumReportProofRelationV3Schema = z.strictObject({
     "scenario_replay_warnings_v1",
     "scenario_xray_paths_v1",
     "scenario_source_headers_v1",
+    "research_basis_v1",
+    "research_event_v1",
+    "research_portfolio_v1",
+    "research_notes_v1",
+    "research_review_v1",
+    "research_citations_v1",
+    "research_sources_v1",
+    "research_source_licenses_v1",
+    "research_source_grants_v1",
+    "research_portfolio_members_v1",
+    "research_warnings_v1",
+    "research_note_citations_v1",
+    "research_xray_pin_v1",
   ]),
 });
 export type PremiumReportProofRelationV3 = z.infer<
@@ -2957,6 +3240,11 @@ export const PremiumReportSourceReferenceV3Schema = z.strictObject({
     "scenario_sensitivity_version",
     "scenario_sensitivity_observation",
     "scenario_sensitivity_evidence",
+    "research_item",
+    "research_event_revision",
+    "research_source_version",
+    "research_note_revision",
+    "research_review_acknowledgment",
   ]),
   license_version_id: z.union([
     z

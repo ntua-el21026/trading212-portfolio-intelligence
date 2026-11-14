@@ -128,3 +128,21 @@ change. The maximum successful summary path is 12 SQL statements including initi
 final authority and locks, provenance reads, two real entitlement batch statements,
 source/notes payloads and item admission. This is a query-budget design; actual
 latency/RSS/SLO claims still require representative measurement.
+
+## Research report copy barriers, 2026-11-14
+
+The [approved exact-selection policy](../verification/RESEARCH-REPORT-SELECTION-PROPOSAL.md)
+adds immutable report dependencies without changing item, event, note or review
+identity. Current and pinned REPORT rights precede private decoding and are checked
+again at capture, render, read and download boundaries. Original-source and selected
+note deadlines clamp copies. Source or owner-note erasure drains dependent report
+payloads before completing physical-copy markers; retained audit progress remains
+distinct from actual payload absence.
+
+Migration `0035` adds four normalized tables and indexed pending-copy barriers.
+To reserve this additional SQL work, the implemented event-deletion charge is
+400 rows and source/note deletion charges 16 rows, superseding the earlier 384/eight
+charges above. Marker and physical-copy probes are also charged. The shared
+4,096-row, 512-row batch and 64 MiB inspection/removal ceilings remain unchanged.
+The [Batch 1 evidence](../implementation/PHASE_3_BATCH1_20261114.md) records focused
+retention and refusal checks; it establishes no measured load/SLO or acceptance claim.

@@ -7,6 +7,11 @@ from typing import TYPE_CHECKING
 
 from .errors import fail_validation
 from .report_projection_schema import PROJECTION_TABLE_COLUMNS
+from .report_research_schema import (
+    RESEARCH_PROOF_TABLES,
+    RESEARCH_REPORT_TABLES,
+    RESEARCH_TABLE_COLUMNS,
+)
 from .report_risk_schema import RISK_PROOF_TABLES, RISK_REPORT_TABLES, RISK_TABLE_COLUMNS
 from .report_scenario_schema import (
     SCENARIO_PROOF_TABLES,
@@ -1379,6 +1384,7 @@ _COLUMNS.update(RISK_TABLE_COLUMNS)
 _COLUMNS.update(SCENARIO_TABLE_COLUMNS)
 
 _COLUMNS.update(PROJECTION_TABLE_COLUMNS)
+_COLUMNS.update(RESEARCH_TABLE_COLUMNS)
 
 _SECTION_TABLES: dict[ReportSection, tuple[ReportTableKey, ...]] = {
     ReportSection.OVERVIEW: (ReportTableKey.SNAPSHOT_TOTALS,),
@@ -1453,6 +1459,7 @@ _SECTION_TABLES: dict[ReportSection, tuple[ReportTableKey, ...]] = {
     ReportSection.ACTIVITY: (ReportTableKey.ACTIVITY,),
     ReportSection.RISK: RISK_REPORT_TABLES,
     ReportSection.SCENARIO: SCENARIO_REPORT_TABLES,
+    ReportSection.RESEARCH: RESEARCH_REPORT_TABLES,
 }
 
 
@@ -1515,6 +1522,9 @@ def validate_report_row(table: ReportTableKey, row: ReportRow) -> None:
     from .report_projection_schema import validate_projection_report_row
 
     validate_projection_report_row(table, row)
+    from .report_research_schema import validate_research_report_relation
+
+    validate_research_report_relation(table, row)
 
 
 def section_tables(section: ReportSection) -> tuple[ReportTableKey, ...]:
@@ -1607,6 +1617,8 @@ def report_tables(
             RISK_PROOF_TABLES
             if selection.premium_run.family.value == "risk"
             else SCENARIO_PROOF_TABLES
+            if selection.premium_run.family.value == "scenario"
+            else RESEARCH_PROOF_TABLES
         )
     if selection.xray_run_id is not None:
         # Additive, explicitly pinned actuals. Existing table schemas/order and

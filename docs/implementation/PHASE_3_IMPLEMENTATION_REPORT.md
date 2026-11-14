@@ -1,6 +1,14 @@
 # Phase 3 Implementation Report
 
-**Current:** Bounded stabilization and existing P3-08 recovery have incremental
+**Current:** Consolidated Batch 1 is in progress from audited checkpoint
+`6f8c0117d23f0d3987135e60ef20ae653f505927`. Focused aggregation and analytical
+regressions and research reporting have actual component passes. Research reports
+implement the owner-approved exact-revision selection contract. See the
+[Batch 1 record](PHASE_3_BATCH1_20261114.md) for current implementation and
+source-qualified execution status. All 30 rows and 48 scenarios remain pending,
+zero accepted. Complete validation, independent acceptance and CI remain pending.
+
+**Prior stabilization:** Bounded stabilization and existing P3-08 recovery have incremental
 browser, artifact, synthetic startup and cleanup observations. See the
 [stabilization record](PHASE_3_STABILIZATION_20261113.md) and
 [evidence index](evidence/phase-3-stabilization-20261113.json) for exact sources,
@@ -23,6 +31,40 @@ evidence directory; add package evidence only after actual executions.
 
 GitHub Actions deferred_by_owner/unverified. No production/public release, Live,
 paid-provider access or public ChatGPT registration has been performed.
+
+## Consolidated Batch 1 research reports — 2026-11-14
+
+The [approved selection](../verification/RESEARCH-REPORT-SELECTION-PROPOSAL.md)
+binds one saved item, zero to 64 exact note revisions and an optional exact review
+on the existing six premium routes/profile3 and four formats. Thirteen fixed
+tables retain complete selected facts, portfolio membership/warnings, owner prose,
+review and original source proof; five research source-reference kinds describe
+actual retained originals. No latest-head fallback or research run is invented.
+Original profiles retain their byte contracts. Current/pinned REPORT rights and
+capability grants apply before decoding and at copy/read/download boundaries;
+source, X-ray and TTL deadlines cannot be renewed by copying. Indexed cleanup
+drains physical copies under the existing shared ceilings.
+
+Separate actual PostgreSQL observations passed: `c-research-four-format-fresh-copy-01`
+1 case in 48.40 runner seconds, `c-research-reports-remaining-postgres-01` 6 cases
+in 148.60 seconds, and `c-research-retention-postgres-01` 8 cases in 225.65 seconds.
+All three bind unchanged full-source manifest
+`a8544ddf5ce1e1fe1955071d750d94a74a2737f0b8e765f8b8f5388f275c7310`.
+The second receipt deselects the previously passing first case; these observations
+are not a new whole-suite pass. Original failure receipts remain retained.
+
+The additive `20261114_0035` migration raises the implemented ORM inventory from
+364 to 368 tables. A later empty-only downgrade correction preserves the prior
+forward definitions. `c-migration-failed-and-new-retry-01` passed only the two
+failed compatibility selectors plus populated-downgrade refusal (3 cases,
+29.89 runner seconds). `c-research-browser-desktop-01` separately passed one
+existing desktop navigation/selection case (38.0 Playwright seconds), without
+submitting a report or downloading artifacts. Both later receipts bind unchanged
+source manifest `ec25abb953413000f979f62cf31a03112b98126483e1aa2ae72a3e0edd254143`.
+The [validation report](../../VALIDATION_REPORT.md#research-report-component-evidence-2026-11-14)
+records wall times and evidence limits. Historical 364-table/`0034` statements
+below keep their original scope. Full final-source validation, CI and independent
+acceptance remain pending; no row or scenario is accepted.
 
 ## P3-01 numerical foundation
 
@@ -252,8 +294,9 @@ and reviewed patch are retained in web-delivery.json. Inactive Next development
 outputs of233,442,692 logical bytes were removed after checking consumers; the
 production build, dependencies and evidence were preserved.
 
-The MCP registry now appends create_risk_run, get_risk_summary and get_risk_matrix
-to the original25 names, with exactly6 resources. The gateway uses the canonical
+At this historical risk-only checkpoint, the MCP registry appended
+create_risk_run, get_risk_summary and get_risk_matrix to the original25 names,
+with exactly6 resources. The gateway used the canonical
 PostgreSQL risk service, existing current grants/licenses and the unchanged pinned
 SDK. Scope, strict nested input, output schema, source/owner identity,64KiB input
 and2MiB complete output bounds are enforced. Malformed server result objects fail
@@ -406,7 +449,8 @@ those exact inventory/error expectations were corrected before the passing local
 run. Earlier failed attempts are preserved. No numerical or browser implementation
 changed after those final captures. The reviewed OpenAPI comparison has101 paths/
 112 operations and367 schemas: all95 old paths and352 old schemas remain unchanged.
-All25 original MCP descriptor fingerprints pass; total MCP remains28 tools/6 resources.
+All25 original MCP descriptor fingerprints passed; this historical checkpoint had
+28 tools/6 resources. The current registry has38 tools/11 resources.
 Migration head is20260915_0019. Contributor reviews found no remaining actionable
 findings in their scope; they are not independent acceptance.
 
