@@ -10,13 +10,22 @@ from trading212_analytics.risk_history import build_risk_history
 from trading212_domain import Money
 from trading212_domain import historical as d
 from trading212_domain import historical_results as h
+from trading212_domain.enums import QualityState
 from trading212_domain.errors import DomainError
 from trading212_domain.historical_serialization import historical_input_digest
 from trading212_domain.risk import RiskDefinitionContent, RiskReason
 from trading212_domain.risk_history import RiskAssetSource
 from trading212_domain.sources import PriceBasis, source_snapshot_digest
 
-from .historical_factories import START, fixture, identity, metric, with_events, with_fx
+from .historical_factories import (
+    START,
+    fixture,
+    identity,
+    metric,
+    point_in_time,
+    with_events,
+    with_fx,
+)
 from .source_factories import EUR, USD, uid
 
 D = Decimal
@@ -46,6 +55,51 @@ def test_session_returns_reuse_canonical_accounting_and_drawdown() -> None:
     assert result.historical_input_digest == historical_input_digest(value)
     assert result.owner_id == value.owner_id and result.account_id == value.account_id
     assert result.source_uses and result.conversions
+
+
+def test_input_permutation_preserves_canonical_captured_history() -> None:
+    value = point_in_time(fixture(("100", "100", "110", "121")))
+    # Daily activity-absence receipts arrive the following midnight. Select the
+    # retained cutoff explicitly; those receipts were not known at session close.
+    value = replace(
+        value,
+        selection=replace(
+            value.selection,
+            window=replace(value.selection.window, knowledge_policy=d.KnowledgePolicy.AS_OF_CUTOFF),
+        ),
+    )
+    permuted = replace(
+        value,
+        price_snapshots=tuple(reversed(value.price_snapshots)),
+        action_snapshots=tuple(reversed(value.action_snapshots)),
+        activity_coverage=tuple(reversed(value.activity_coverage)),
+        sources=tuple(reversed(value.sources)),
+    )
+    result = build_risk_history(value, definition(value))
+    assert tuple(item.simple_return for item in result.portfolio.intervals) == (D(".1"), D(".1"))
+    assert build_risk_history(permuted, definition(permuted)) == result
+    assert result.historical_input_digest == historical_input_digest(permuted)
+
+
+def test_missing_corporate_action_proof_degrades_risk_intervals() -> None:
+    value = fixture(("100", "100", "110", "121"))
+    observed = build_risk_history(value, definition(value))
+    assert tuple(item.simple_return for item in observed.portfolio.intervals) == (
+        D(".1"),
+        D(".1"),
+    )
+    missing = build_risk_history(replace(value, action_snapshots=()), definition(value))
+    assert len(missing.portfolio.intervals) == 2
+    assert all(
+        item.simple_return is None
+        and item.reason is RiskReason.MISSING_INTERVAL
+        and item.quality is QualityState.PARTIAL
+        for item in missing.portfolio.intervals
+    )
+    assert d.HistoricalReason.ACTION_COVERAGE in missing.historical_warnings
+    assert not missing.canonical_performance_context.coverage.complete(
+        d.HistoricalCoverageKey.ACTIONS
+    )
 
 
 def test_monthly_boundaries_exclude_incomplete_last_month() -> None:

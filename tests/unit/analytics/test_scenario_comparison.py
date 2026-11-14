@@ -6,9 +6,10 @@ from decimal import Decimal
 from trading212_analytics.scenario import calculate_scenario, compare_scenario_results
 from trading212_domain.scenario import ScenarioReason
 from trading212_domain.scenario_result import ScenarioMoneyMetric
-from trading212_domain.values import Money
+from trading212_domain.values import CurrencyCode, Money
 
 from tests.unit.analytics.scenario_factories import content, input_for, portfolio, price
+from tests.unit.analytics.xray_factories import Builder, metric, uid
 
 
 def available_money(metric: ScenarioMoneyMetric) -> Money:
@@ -45,6 +46,37 @@ def test_formula_change_preserves_each_saved_value_with_unavailable_deltas() -> 
     assert result.post_value.difference.value is None
     assert result.post_value.difference.reason is ScenarioReason.INCOMPATIBLE_BASIS
     assert result.components[0].post_value.difference.value is None
+
+
+def test_currency_mismatch_preserves_native_saved_values_without_delta_or_conversion() -> None:
+    definition = content(price(10, "-0.2"))
+    left = calculate_scenario(input_for(portfolio(("100",)), definition))
+    usd = CurrencyCode("USD")
+    builder = Builder()
+    builder.reporting_currency = usd
+    position = builder.position(uid(10), "100")
+    builder.positions[0] = replace(
+        position,
+        original_value=metric("100", position.valuation_refs, usd),
+        reporting_value=metric("100", position.valuation_refs, usd),
+    )
+    builder.identity(uid(10), uid(110))
+    builder.classifications_for(uid(110))
+    right = calculate_scenario(input_for(builder.finish(), definition))
+    result = compare_scenario_results(left, right)
+    assert not result.compatible
+    assert "currency" in {item.field for item in result.mismatches}
+    assert available_money(result.post_value.before) == Money(Decimal(80), CurrencyCode("EUR"))
+    assert available_money(result.post_value.after) == Money(Decimal(80), usd)
+    assert result.post_value.difference.value is None
+    assert result.post_value.difference.reason is ScenarioReason.INCOMPATIBLE_BASIS
+    assert result.impact.difference.value is None
+    assert all(
+        row.post_value.difference.value is None and row.impact.difference.value is None
+        for row in result.components
+    )
+    assert available_money(result.components[0].post_value.before).currency == CurrencyCode("EUR")
+    assert available_money(result.components[0].post_value.after).currency == usd
 
 
 def test_changed_retained_partition_has_no_assumed_component_alignment() -> None:

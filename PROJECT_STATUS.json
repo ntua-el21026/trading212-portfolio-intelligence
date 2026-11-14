@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-11-13",
+  "updated_at": "2026-11-14",
   "current_candidate": {
     "phase": "phase_3",
     "release": "1.0.0",
@@ -384,7 +384,12 @@
       "local_history_scan": "passed",
       "local_image_scans_passed": 2,
       "local_image_scans_failed": 4,
-      "failed_images": ["api", "worker", "mcp", "web"],
+      "failed_images": [
+        "api",
+        "worker",
+        "mcp",
+        "web"
+      ],
       "artifact": "docs/implementation/evidence/phase-2-p2-08-7201b53-failed-security.json",
       "artifact_sha256": "ad3062ca32c9be6c5a602fe5d25827a9d71bce33a00d0ac947c08d26747401ab",
       "correction": "Install libpcre2-8-0=10.42-1+deb12u1 in all four application runtime images before package-manager stripping. Working-tree correction verification and corrected immutable acceptance remain pending; no exceptions added.",
@@ -836,14 +841,20 @@
         "sql_authorization_denial_correct": true,
         "later_eur_observer_denials": "expected_revocation_assertions_in_passing_selector",
         "authorization": "bounded_existing_adr0024_sql_contract_correction",
-        "fixture_license_days_preserved": [365, 3650],
+        "fixture_license_days_preserved": [
+          365,
+          3650
+        ],
         "regressions": "five_new_cases_and_original_replay_selector_passed",
         "required_physical_dependency_expiry": "exact_original_stored_expiry",
         "production_files": [
           "packages/persistence/src/trading212_persistence/report_sources.py",
           "packages/persistence/src/trading212_persistence/report_input_store.py"
         ],
-        "contract_versions_changed": [3, 4],
+        "contract_versions_changed": [
+          3,
+          4
+        ],
         "physical_dependency_expiry_and_exact_proof_unchanged": true,
         "v1_v2_sql_guards_schema_financial_payloads_unchanged": true,
         "physical_source_families": 9,
@@ -1037,7 +1048,10 @@
       "current_runtime_tools": 38,
       "preserved_original_catalogue": 25,
       "explicit_authorized_additions": 13,
-      "research_additions": ["get_research_summary", "get_research_item"],
+      "research_additions": [
+        "get_research_summary",
+        "get_research_item"
+      ],
       "independent_inventory_oracle": "tests/mcp_discovery.py",
       "rejects_missing_extra_duplicate_names": true,
       "historical_isolated_32_36_contracts_unchanged": true,
@@ -1067,7 +1081,10 @@
         "passed": 3,
         "failed": 2,
         "pytest_seconds": 1.21,
-        "failed_cases": ["path_one_short", "composition_one_short"]
+        "failed_cases": [
+          "path_one_short",
+          "composition_one_short"
+        ]
       },
       "unit_green": {
         "passed": 31,
@@ -1210,7 +1227,9 @@
           "failed": 3,
           "pytest_seconds": 4.81,
           "runner_seconds": 7.148,
-          "typed_codes": ["RUN_EXPIRED"],
+          "typed_codes": [
+            "RUN_EXPIRED"
+          ],
           "payloads_or_exception_text_captured": false
         },
         "metadata_budget": {
@@ -1263,7 +1282,11 @@
         },
         "explain_files": 12,
         "rows_per_table": 32768,
-        "eligibility_counts": [0, 32, 8192],
+        "eligibility_counts": [
+          0,
+          32,
+          8192
+        ],
         "remaining_inspections": 2,
         "limit": 1,
         "scope": "TTL candidate SELECT only",
@@ -1832,7 +1855,7 @@
         "Required cases are discovered by parsing direct top-level literal test declarations and the current literal project array. No application/test module, Playwright collection, browser, fixture or test is executed. Unsupported declaration syntax prevents complete coverage claims.",
         "Earlier reports without a prior hash anchor are hashed now and retained as observations; they cannot independently authorize retained passing coverage. Report time/argv and the source/log receipt are verified separately.",
         "Zero-case attempts and prior failures remain recorded. A later pass records an outcome transition, without independently proving the cause of the earlier failure.",
-        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01\u201307 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
+        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01–07 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
         "Procfs denied access to some unrelated same-UID process descriptors after recorded lineage and readable API driver/fixture signatures were checked. Those descriptor blind spots are listed in terminal_quiescence.descriptor_access_limits; exhaustive process-descriptor visibility is not claimed. Recorded launcher and artifact-watcher termination are checked separately.",
         "This commit24 refresh executes metadata assembly only. The exact commit23-to24 input delta is one public-asset COPY line in infrastructure/docker/web.Dockerfile; all other recorded source inputs, including application/test/dependency files, are identical. Whole-source equality with every earlier API execution is false, including the 20 cases that previously matched commit23. No case is claimed executed at commit24.",
         "Report unreached-gates-03/api-browser/aggregation.spec.ts-api-chromium-desktop.json has its report hash first recorded at assembly; retained-coverage eligibility is false.",
@@ -1846,7 +1869,7 @@
     "latest_browser_recoveries": {
       "pwa": "Canonical fixture selector now seeds both authorized synthetic accounts; focused desktop1PASS, later tablet/mobile passes. All privacy/cache/auth assertions retained.",
       "scenario_report": "First INSERT actual physical created_at for12new exact synthetic parents/fiveclasses only under reports&&scenarios. DesktopPASS sourcea98... precedes stderr-only source25d... logging delta; desktop was not rerun. No existing UPDATE, production guard or financial/first-observed/expiry/digest change.",
-      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3\u21924\u21924/noBentry qualifies the tested setup/observation without establishing production causality."
+      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3→4→4/noBentry qualifies the tested setup/observation without establishing production causality."
     },
     "sast_scope": {
       "prior_rules": 7,
@@ -1977,7 +2000,10 @@
         "sha256": "da90fce7113b07177636125d09217e8f59962436f48c2e305c1a5723be1f1cc5"
       },
       "runtime_services_healthy": 7,
-      "successful_one_shot_services": ["migrate", "seed"],
+      "successful_one_shot_services": [
+        "migrate",
+        "seed"
+      ],
       "financial_value_parity_claim": false,
       "live_or_production_claim": false
     },
@@ -2006,5 +2032,22 @@
       "inactive_next_dev_bytes_removed": 371911400,
       "global_prune": false
     }
+  },
+  "consolidated_batch_1": {
+    "date": "2026-11-14",
+    "starting_main_sha": "6f8c0117d23f0d3987135e60ef20ae653f505927",
+    "report": "docs/implementation/PHASE_3_BATCH1_20261114.md",
+    "status": "in_progress",
+    "aggregation_focused_execution": "verified",
+    "analytical_focused_execution": "verified_with_separate_fixture_recovery",
+    "research_report_implementation": "in_progress",
+    "exact_revision_selection": "approved_for_implementation",
+    "full_current_source_validation": "pending",
+    "independent_review": "pending",
+    "accepted_rows": 0,
+    "accepted_scenarios": 0,
+    "ci_verified": false,
+    "production_authorized": false,
+    "live_authorized": false
   }
 }

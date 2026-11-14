@@ -34,7 +34,7 @@ from tests.unit.analytics.scenario_factories import (
     rate,
     with_observation,
 )
-from tests.unit.analytics.xray_factories import uid
+from tests.unit.analytics.xray_factories import Builder, uid
 from tests.unit.domain.scenario_factories import sensitivity_capture
 
 
@@ -67,6 +67,48 @@ def test_original_basis_channel_effects_and_interaction(
     assert available_money(result.summary.component_sum_residual).amount == 0
     assert available_money(result.summary.rounding_residual).amount == 0
     assert result.summary.covered_count == 2
+
+
+def test_equivalent_fund_partition_preserves_the_two_position_reference() -> None:
+    definition = content(price(10, "-0.2"), price(11, "0.1"), fx("-0.1"))
+    direct = calculate_scenario(input_for(portfolio(), definition))
+    builder = Builder()
+    builder.position(uid(20), "100")
+    builder.fund(uid(20), ((uid(10), ".6"), (uid(11), ".4")))
+    for instrument, entity in ((uid(10), uid(110)), (uid(11), uid(111))):
+        builder.identity(instrument, entity)
+        builder.classifications_for(entity, key="technology")
+    builder.classifications = [
+        replace(
+            batch,
+            assignments=tuple(
+                replace(item, bucket_key="USD")
+                if item.dimension is XrayDimension.CURRENCY
+                else item
+                for item in batch.assignments
+            ),
+        )
+        for batch in builder.classifications
+    ]
+    fund = calculate_scenario(input_for(builder.finish(), definition))
+    # The wrapper's 100 is replaced by 60/40 terminal principal. Independent
+    # arithmetic is 60*.8*.9 + 40*1.1*.9 = 43.2 + 39.6 = 82.8.
+    for result in (direct, fund):
+        assert len(result.components) == result.summary.covered_count == 2
+        assert available_money(result.summary.terminal_pre_value).amount == Decimal(100)
+        assert available_money(result.summary.post_value).amount == Decimal("82.8")
+        assert available_money(result.summary.impact).amount == Decimal("-17.2")
+        assert available_money(result.summary.effects.price).amount == Decimal(-8)
+        assert available_money(result.summary.effects.fx).amount == Decimal(-10)
+        assert available_money(result.summary.effects.interaction).amount == Decimal(".8")
+        assert available_money(result.summary.component_sum_residual).amount == 0
+        assert available_money(result.summary.rounding_residual).amount == 0
+    by_instrument = {
+        component.exposure.instrument.subject_id: component for component in fund.components
+    }
+    assert set(by_instrument) == {uid(10), uid(11)}
+    assert available_money(by_instrument[uid(10)].post_value).amount == Decimal("43.2")
+    assert available_money(by_instrument[uid(11)].post_value).amount == Decimal("39.6")
 
 
 def test_hostile_decimal_context_and_rule_permutations_preserve_exact_result_bytes() -> None:

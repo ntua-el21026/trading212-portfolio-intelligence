@@ -10,7 +10,20 @@
 
 ## Current state
 
-The bounded implementation is frozen at `153854f7b32a235a8aa5bdaa13c079bc07407a05`.
+Consolidated Implementation Batch 1 is in progress from audited checkpoint
+`6f8c0117d23f0d3987135e60ef20ae653f505927`. New aggregation and analytical
+predicates have focused passing observations, including genuine PostgreSQL
+capacity rejection and unchanged persistent state. The original analytical
+fixture failure and focused recovery remain separate. Research reports and public
+status reconciliation are in progress under the approved exact-revision policy.
+The [Batch 1 record](docs/implementation/PHASE_3_BATCH1_20261114.md) binds actual
+execution scope and source manifests. All 30 Phase 3 rows and 48 scenarios remain
+pending, zero accepted; complete current-source validation and independent review
+remain pending. CI is owner-deferred; production and Live remain unauthorized.
+
+### Historical stabilization delivery
+
+The prior stabilization implementation was recorded at `153854f7b32a235a8aa5bdaa13c079bc07407a05`.
 Incremental evidence retains passes for all 132 required API-browser cases across
 69 groups: 67 actual full-group observations and two explicit case partitions,
 spanning 12 source snapshots. No API case ran at this packaging-only commit;

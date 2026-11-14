@@ -76,6 +76,41 @@ def test_risk_alignment() -> None:
         align_series((a, a), "simple")
 
 
+def test_log_returns_match_independent_series_reference_after_input_permutation() -> None:
+    a = _series((D("-.5"), D(0), D(1)) * 10, "a")
+    b = _series((D(1), D(0), D("-.5")) * 10, "b")
+    aligned = align_series((b, a), "log")
+    assert aligned == align_series((a, b), "log")
+    assert aligned.keys == ("a", "b") and len(aligned.boundaries) == 30
+    assert aligned.requested_intervals == 30 and aligned.omitted_intervals == 0
+    # ln(2) = 2 * sum(1 / ((2k+1) * 3**(2k+1))). This independent
+    # positive rational series does not use the production logarithm routine.
+    with localcontext(Context(prec=180)):
+        log_two = 2 * sum(D(1) / ((2 * k + 1) * D(3) ** (2 * k + 1)) for k in range(200))
+        expected = ((-log_two, D(0), log_two) * 10, (log_two, D(0), -log_two) * 10)
+        for actual_column, expected_column in zip(aligned.values, expected, strict=True):
+            for actual, reference in zip(actual_column, expected_column, strict=True):
+                assert abs(actual - reference) <= D("1e-90")
+        statistics = calculate_risk_statistics(a, _definition(return_kind="log"))
+        reference_sigma = (D(20) / 29).sqrt() * log_two
+        assert statistics.mean_periodic_return.value == 0
+        assert statistics.volatility_periodic.value == reference_sigma.quantize(D("1e-18"))
+
+
+def test_outlier_returns_are_disclosed_and_retained_without_winsorization() -> None:
+    series = _series((D(2),) + (D(0),) * 29)
+    aligned = align_series((series,), "simple")
+    assert aligned.values == ((D(2),) + (D(0),) * 29,)
+    result = calculate_risk_statistics(series, _definition())
+    assert result.outlier_observations == 1
+    assert result.used_observations == 30 and result.omitted_observations == 0
+    # For one return of 2 and 29 zeros, mean=1/15 and sample variance=2/15.
+    with localcontext(Context(prec=180)):
+        assert result.mean_periodic_return.value == (D(1) / 15).quantize(D("1e-18"))
+        assert result.volatility_periodic.value == (D(2) / 15).sqrt().quantize(D("1e-18"))
+        assert result.volatility_annualized.value == (D(252) * 2 / 15).sqrt().quantize(D("1e-18"))
+
+
 def test_risk_zero() -> None:
     series = _series((D(0),) * 30)
     result = calculate_risk_statistics(

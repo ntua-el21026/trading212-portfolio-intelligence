@@ -19,6 +19,7 @@ from trading212_application.projection_views import ProjectionVersionMetadata
 from trading212_domain.projection import ProjectionAsset, ProjectionAssumptions, ProjectionSourcePin
 from trading212_domain.sources import SourceUse
 from trading212_domain.values import CurrencyCode, Money
+from trading212_persistence.premium_models import PremiumCapacityModel
 from trading212_persistence.projection_definition_store import (
     ProjectionDefinitionStore,
     ProjectionStorageError,
@@ -249,3 +250,56 @@ def test_resolver_receives_exact_pins_and_current_store_display_uses(
         (ACCOUNT, (pin,), SourceUse.STORE, AT),
         (ACCOUNT, (pin,), SourceUse.DISPLAY, AT),
     ]
+
+
+@pytest.mark.parametrize(
+    ("retained_bytes", "admitted"),
+    ((234_881_023, True), (234_881_024, True), (234_881_025, False)),
+    ids=("one-byte-below", "exact-256-mib-after-reservation", "one-byte-over"),
+)
+def test_run_reservation_exact_256_mib_arithmetic_boundary(
+    monkeypatch: pytest.MonkeyPatch, retained_bytes: int, admitted: bool
+) -> None:
+    # These unit vectors isolate arithmetic at 224 MiB + a 32 MiB reservation.
+    # The PostgreSQL companion separately builds real physically charged copies.
+    monkeypatch.setattr(ReportAuthorization, "check", lambda *args, **kwargs: None)
+    store = ProjectionDefinitionStore(
+        sessionmaker(), cursor_signing_key=b"projection-unit-key-32-bytes-long!", clock=lambda: AT
+    )
+    capacity = PremiumCapacityModel(
+        owner_id=authorization().owner_id,
+        active_jobs=0,
+        reserved_bytes=0,
+        retained_bytes=retained_bytes,
+        definition_versions=1,
+        updated_at=AT - timedelta(seconds=1),
+    )
+    session = Mock(spec=Session)
+    # Counter and independently queried root sum deliberately agree; this is not
+    # evidence that synthetic bytes were persisted by the unit double.
+    session.scalar.side_effect = (capacity, 0, retained_bytes)
+    before = (
+        capacity.active_jobs,
+        capacity.reserved_bytes,
+        capacity.retained_bytes,
+        capacity.definition_versions,
+        capacity.updated_at,
+    )
+    if admitted:
+        store.reserve_run_capacity(session, authorization())
+        assert capacity.active_jobs == 1
+        assert capacity.reserved_bytes == 33_554_432
+        assert capacity.retained_bytes == retained_bytes
+        assert capacity.definition_versions == 1 and capacity.updated_at == AT
+        assert capacity.reserved_bytes + capacity.retained_bytes <= 268_435_456
+    else:
+        with pytest.raises(ProjectionStorageError) as denied:
+            store.reserve_run_capacity(session, authorization())
+        assert denied.value.code is app.ProjectionErrorCode.RATE_LIMITED
+        assert (
+            capacity.active_jobs,
+            capacity.reserved_bytes,
+            capacity.retained_bytes,
+            capacity.definition_versions,
+            capacity.updated_at,
+        ) == before
