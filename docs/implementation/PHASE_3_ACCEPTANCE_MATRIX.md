@@ -12,36 +12,67 @@ to progression. No local row is blocked merely because paid/live access is absen
 
 | ID | Package | Acceptance predicate | Required scenarios | State |
 | --- | --- | --- | --- | --- |
-| P3-RISK-001 | P3-01 | Input alignment and canonical historical capture | P3-S01,P3-S02,P3-S03 | pending |
-| P3-RISK-002 | P3-01 | Numerical references, PSD and edge behavior | P3-S04,P3-S05,P3-S06,P3-S07,P3-S08 | pending |
-| P3-RISK-003 | P3-01 | Concentration, canonical risk views and quality | P3-S09,P3-S35 | pending |
-| P3-STRESS-001 | P3-02 | Immutable scenarios, ownership and precedence | P3-S10,P3-S11 | pending |
-| P3-STRESS-002 | P3-02 | Evidence-backed sensitivities and historical replay | P3-S12,P3-S13 | pending |
-| P3-STRESS-003 | P3-02 | Editor/history/comparison and report parity | P3-S14,P3-S35 | pending |
-| P3-PROJ-001 | P3-03 | Reproducible bounded simulation and financial conservation | P3-S15,P3-S16,P3-S17,P3-S18 | pending |
-| P3-PROJ-002 | P3-03 | Goal probability, shortfall, uncertainty and sensitivity | P3-S19,P3-S20 | pending |
-| P3-PROJ-003 | P3-03 | Durable admission, cancellation and restart fencing | P3-S21,P3-S22 | pending |
-| P3-RESEARCH-001 | P3-04 | Exposure-ranked sources, revisions and owner workflow | P3-S23,P3-S24 | pending |
-| P3-RESEARCH-002 | P3-04 | Untrusted content and optional synthesis boundaries | P3-S25 | pending |
-| P3-RESEARCH-003 | P3-04 | Ownership, current licenses, export and physical retention | P3-S26 | pending |
-| P3-MCP-001 | P3-05 | Real authentication and preserved/new closed registry | P3-S33,P3-S34 | pending |
-| P3-MCP-002 | P3-05 | Accessible canonical resources and strict CSP | P3-S36 | pending |
-| P3-MCP-003 | P3-05 | Cross-interface quality/source/value parity | P3-S35 | pending |
-| P3-WEB-001 | P3-06 | Installable PWA and safe static offline behavior | P3-S37,P3-S38 | pending |
-| P3-WEB-002 | P3-06 | Navigation, palette, saved layouts and account-safe selection | P3-S39 | pending |
-| P3-WEB-003 | P3-06 | Measured accessibility, responsive layout and local performance | P3-S40 | pending |
-| P3-PROVIDER-001 | P3-07 | Documented typed adapters and realistic replay coverage | P3-S27 | pending |
-| P3-PROVIDER-002 | P3-07 | Bounded secure transport and failure policies | P3-S28 | pending |
-| P3-PROVIDER-003 | P3-07 | Explicit failover, provenance, entitlements and blocked live access | P3-S29 | pending |
-| P3-ACCOUNT-001 | P3-08 | Authorized aggregation, economic identity and FX | P3-S30 | pending |
-| P3-ACCOUNT-002 | P3-08 | Evidenced transfer classification and degraded coverage | P3-S31 | pending |
-| P3-ACCOUNT-003 | P3-08 | Canonical synthetic second broker and sealed Trading 212 | P3-S32 | pending |
-| P3-OPS-001 | P3-09 | Internal adversarial coverage and artifact minimization | P3-S41,P3-S42 | pending |
-| P3-OPS-002 | P3-09 | Durable failure/restart and clean synthetic restore | P3-S44,P3-S46 | pending |
-| P3-OPS-003 | P3-09 | Measured load/queue/query/security and build controls | P3-S47,P3-S48 | pending |
-| P3-RC-001 | P3-10 | Complete canonical journeys and preserved regressions | P3-S35,P3-S43 | pending |
-| P3-RC-002 | P3-10 | Clean install, accepted Phase 2 upgrade and repeat | P3-S45 | pending |
-| P3-RC-003 | P3-10 | Immutable release/evidence/provenance and honest external boundaries | P3-S48 | pending |
+| P3-RISK-001 | P3-01 | Input alignment and canonical historical capture | P3-S01,P3-S02,P3-S03; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-RISK-002 | P3-01 | Numerical references, PSD and edge behavior | P3-S04,P3-S05,P3-S06,P3-S07,P3-S08; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-RISK-003 | P3-01 | Concentration, canonical risk views and quality | P3-S09,P3-S35; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-STRESS-001 | P3-02 | Immutable scenarios, ownership and precedence | P3-S10,P3-S11; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-STRESS-002 | P3-02 | Evidence-backed sensitivities and historical replay | P3-S12,P3-S13; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-STRESS-003 | P3-02 | Editor/history/comparison and report parity | P3-S14,P3-S35; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-PROJ-001 | P3-03 | Reproducible bounded simulation and financial conservation | P3-S15,P3-S16,P3-S17,P3-S18; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-PROJ-002 | P3-03 | Goal probability, shortfall, uncertainty and sensitivity | P3-S19,P3-S20; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-PROJ-003 | P3-03 | Durable admission, cancellation and restart fencing | P3-S21,P3-S22; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-RESEARCH-001 | P3-04 | Exposure-ranked sources, revisions and owner workflow | P3-S23,P3-S24; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-RESEARCH-002 | P3-04 | Untrusted content and optional synthesis boundaries | P3-S25; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-RESEARCH-003 | P3-04 | Ownership, current licenses, export and physical retention | P3-S26; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-MCP-001 | P3-05 | Real authentication and preserved/new closed registry | P3-S33,P3-S34; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-MCP-002 | P3-05 | Accessible canonical resources and strict CSP | P3-S36; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-MCP-003 | P3-05 | Cross-interface quality/source/value parity | P3-S35; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-WEB-001 | P3-06 | Installable PWA and safe static offline behavior | P3-S37,P3-S38; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-WEB-002 | P3-06 | Navigation, palette, saved layouts and account-safe selection | P3-S39; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-WEB-003 | P3-06 | Measured accessibility, responsive layout and local performance | P3-S40; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-PROVIDER-001 | P3-07 | Documented typed adapters and realistic replay coverage | P3-S27; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-PROVIDER-002 | P3-07 | Bounded secure transport and failure policies | P3-S28; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-PROVIDER-003 | P3-07 | Explicit failover, provenance, entitlements and blocked live access | P3-S29; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-ACCOUNT-001 | P3-08 | Authorized aggregation, economic identity and FX | P3-S30; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-ACCOUNT-002 | P3-08 | Evidenced transfer classification and degraded coverage | P3-S31; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-ACCOUNT-003 | P3-08 | Canonical synthetic second broker and sealed Trading 212 | P3-S32; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-OPS-001 | P3-09 | Internal adversarial coverage and artifact minimization | P3-S41,P3-S42; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-OPS-002 | P3-09 | Durable failure/restart and clean synthetic restore | P3-S44,P3-S46; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-OPS-003 | P3-09 | Measured load/queue/query/security and build controls | P3-S47,P3-S48; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-RC-001 | P3-10 | Complete canonical journeys and preserved regressions | P3-S35,P3-S43; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-RC-002 | P3-10 | Clean install, accepted Phase 2 upgrade and repeat | P3-S45; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-RC-003 | P3-10 | Immutable release/evidence/provenance and honest external boundaries | P3-S48; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+
+
+The [Batch 2 traceability map](PHASE_3_BATCH2_TRACEABILITY.md) records all 30 rows
+and all 48 scenarios with implemented selectors, separate actual observations,
+source limitations and remaining local/external dispositions. All states stay
+pending, zero accepted. Latest complete-capture parity passes, but report-admission
+p95 .930957544 s exceeds the fixed .750 s budget; B is not stabilized and complete
+immutable P3-10 attempts remain0. The focused420 case codec pass, 10 case authority
+invocation, guarded4-case restore pass and earlier-height browser journeys remain
+separate evidence. No 1.0 candidate version, full Make/coverage/CI or release claim.
+
+
+Performance recovery04 was interrupted after 462.088 s (wrapper exit 1,
+Playwright exit 130), after 191.94 s of fixture preparation, without completed SLO
+samples. The nested select required an exact role selector rather than
+`getByLabel('Sort')`; two focused diagnostics support the harness correction.
+Recovery05 subsequently failed after 231.563 s. Five holdings samples completed,
+but the first research render returned SOURCE_UNAVAILABLE; no research SLO, LCP
+or bundle-budget pass is established. See the
+[traceability supplement](PHASE_3_BATCH2_TRACEABILITY.md#subsequent-focused-observations).
+
+
+Corrected-height report journeys now pass separately: mobile 360×800 in 124.976 s
+(`a2-corrected-height-mobile-02`) and tablet 768×1024 in 122.160 s
+(`a2-corrected-height-tablet-02`). Both have unchanged complete source manifest
+`4a5ce4df0782f6205e02940eebe712300f57f04fdae52a5b970a36d6dc9eb648`.
+Desktop 1440×900 evidence is retained by exact relevant-input equivalence; no
+unchanged desktop repeat is required. These focused observations do not complete
+a row or scenario, establish representative performance, or start the complete
+P3-10 attempt. The historical admission p95 failure remains unchanged; the later functional query
+recovery and incomplete performance observations are recorded below.
 
 ## Separate external gates
 
@@ -70,3 +101,45 @@ These do not authorize purchases, Live, public release/tag or deployment. Retain
 actual unavailable/blocked predicates individually. Do not report an implemented
 adapter as a verified live integration or a local signing demonstration as a
 production attestation.
+
+
+## Current bounded checkpoint observations
+
+The production NOT IN/MATERIALIZED query now passes five affected PostgreSQL
+cases (88.36 s) and real normal service with 100 EUR10 holdings and 1000 events,
+sources and witnesses (203.44 s, including 193.437 s setup). It returns 25 ranked
+rows with unknown 0 under the unchanged 5 s statement cap. Both receipts and the
+later desktop browser receipt retain unchanged source
+`f9bd99d2bb3a2d699432ca8d9d0ab0ad4b8af29c2769846ce61e2acf2b16a230`.
+The original capability authority was restored. Profile12 retained28.226935 s
+execution with about one billion membership combinations. Prototype13 failed
+before query execution in its read-only authorization harness; corrected14 passed
+with cold SQL 0.332076825 s/full function 0.34825882 s and unchanged zero statistics.
+These diagnostics and functional recovery do not establish a performance gate.
+
+Desktop performance recovery06 failed after 228.775 s: research rendered 25/1000
+EUR10 rows, then the Next-link cursor-URL poll failed within 5 s. Five complete
+holdings samples and one partial research sample remain: LCP 5596 ms,
+interaction 24 ms and CLS 0. There is no complete research p75/bundle/summary gate.
+The cause is inconclusive; missing href/request timing prevents assigning a
+product or test defect. Slow pending navigation is only an inference. Further
+costly performance iterations stopped; mobile/tablet performance remains
+pending_local. Separate A2 report journeys at all required viewports remain
+qualified; these are distinct from representative performance.
+
+Configured SAST passed seven rules over four codec files (118.697 s) and 15 other
+current code files (118.662 s), with zero findings. The latter's code inputs stayed
+unchanged while nine documentation/status files changed. The earlier whole-
+worktree high-confidence secret check passed separately (1.632 s). Verified
+independent tool/cache copying is preparation, not a scan. Exact committed-source,
+history, fresh dependency and remaining A4 artifact gates are still pending.
+
+The actual admission p95 failure remains0.930957544 s against 0.750 s, retained by
+`admission-failed-observation-component-binding-01.json`:1026 application/package
+inputs compared, only research_summary_query.py differs; four fixture/test inputs
+are equal and the authority is restored. No ten-job timing repeat or new latency
+pass is claimed. Checkpoint B remains pending; complete P3-10 attempts 0; all 30
+rows/all 48 scenarios remain pending, zero accepted. Focused A3 build/restart is
+already authorized from a clean committed 0.2.0 checkpoint before B, but its actual
+full-nine-service result remains pending. No 1.0 candidate/full Make/release claim.
+See the [qualified current observations](PHASE_3_BATCH2_TRACEABILITY.md#current-functional-recovery-and-incomplete-performance).

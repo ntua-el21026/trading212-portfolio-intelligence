@@ -904,11 +904,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S34",
-              "P2-S38",
-              "P2-S39"
-            ],
+            "scenario_ids": ["P2-S34", "P2-S38", "P2-S39"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-09": {
@@ -1293,12 +1289,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S01",
-              "P2-S04",
-              "P2-S05",
-              "P2-S32"
-            ],
+            "scenario_ids": ["P2-S01", "P2-S04", "P2-S05", "P2-S32"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-TGT-002": {
@@ -1320,11 +1311,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S02",
-              "P2-S03",
-              "P2-S04"
-            ],
+            "scenario_ids": ["P2-S02", "P2-S03", "P2-S04"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-TGT-003": {
@@ -1345,10 +1332,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S04",
-              "P2-S05"
-            ],
+            "scenario_ids": ["P2-S04", "P2-S05"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-OPT-001": {
@@ -1416,11 +1400,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S06",
-              "P2-S34",
-              "P2-S38"
-            ],
+            "scenario_ids": ["P2-S06", "P2-S34", "P2-S38"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-OPT-002": {
@@ -1443,12 +1423,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S07",
-              "P2-S08",
-              "P2-S09",
-              "P2-S11"
-            ],
+            "scenario_ids": ["P2-S07", "P2-S08", "P2-S09", "P2-S11"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-OPT-003": {
@@ -1474,12 +1449,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S10",
-              "P2-S11",
-              "P2-S12",
-              "P2-S37"
-            ],
+            "scenario_ids": ["P2-S10", "P2-S11", "P2-S12", "P2-S37"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-SRC-001": {
@@ -1510,12 +1480,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S13",
-              "P2-S14",
-              "P2-S36",
-              "P2-S37"
-            ],
+            "scenario_ids": ["P2-S13", "P2-S14", "P2-S36", "P2-S37"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-SRC-002": {
@@ -1575,12 +1540,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S13",
-              "P2-S14",
-              "P2-S18",
-              "P2-S38"
-            ],
+            "scenario_ids": ["P2-S13", "P2-S14", "P2-S18", "P2-S38"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-PERF-001": {
@@ -1601,11 +1561,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S15",
-              "P2-S16",
-              "P2-S18"
-            ],
+            "scenario_ids": ["P2-S15", "P2-S16", "P2-S18"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-PERF-002": {
@@ -1669,12 +1625,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S15",
-              "P2-S17",
-              "P2-S18",
-              "P2-S34"
-            ],
+            "scenario_ids": ["P2-S15", "P2-S17", "P2-S18", "P2-S34"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-INC-001": {
@@ -1737,11 +1688,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S16",
-              "P2-S19",
-              "P2-S34"
-            ],
+            "scenario_ids": ["P2-S16", "P2-S19", "P2-S34"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-XRAY-001": {
@@ -1762,10 +1709,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S20",
-              "P2-S21"
-            ],
+            "scenario_ids": ["P2-S20", "P2-S21"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-XRAY-002": {
@@ -1835,12 +1779,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S22",
-              "P2-S23",
-              "P2-S34",
-              "P2-S38"
-            ],
+            "scenario_ids": ["P2-S22", "P2-S23", "P2-S34", "P2-S38"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-RPT-001": {
@@ -1906,11 +1845,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S24",
-              "P2-S27",
-              "P2-S34"
-            ],
+            "scenario_ids": ["P2-S24", "P2-S27", "P2-S34"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-RPT-002": {
@@ -1996,12 +1931,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S25",
-              "P2-S31",
-              "P2-S32",
-              "P2-S40"
-            ],
+            "scenario_ids": ["P2-S25", "P2-S31", "P2-S32", "P2-S40"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-RPT-003": {
@@ -2023,10 +1953,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S26",
-              "P2-S27"
-            ],
+            "scenario_ids": ["P2-S26", "P2-S27"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-ALT-001": {
@@ -2083,10 +2010,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S28",
-              "P2-S38"
-            ],
+            "scenario_ids": ["P2-S28", "P2-S38"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-ALT-002": {
@@ -2122,12 +2046,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S28",
-              "P2-S29",
-              "P2-S31",
-              "P2-S40"
-            ],
+            "scenario_ids": ["P2-S28", "P2-S29", "P2-S31", "P2-S40"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-ALT-003": {
@@ -2155,11 +2074,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S30",
-              "P2-S31",
-              "P2-S37"
-            ],
+            "scenario_ids": ["P2-S30", "P2-S31", "P2-S37"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-WEB-001": {
@@ -2226,11 +2141,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S34",
-              "P2-S38",
-              "P2-S39"
-            ],
+            "scenario_ids": ["P2-S34", "P2-S38", "P2-S39"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-WEB-002": {
@@ -2281,9 +2192,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S39"
-            ],
+            "scenario_ids": ["P2-S39"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-MCP-001": {
@@ -2367,13 +2276,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S33",
-              "P2-S34",
-              "P2-S36",
-              "P2-S37",
-              "P2-S38"
-            ],
+            "scenario_ids": ["P2-S33", "P2-S34", "P2-S36", "P2-S37", "P2-S38"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-MCP-002": {
@@ -2408,13 +2311,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S12",
-              "P2-S26",
-              "P2-S31",
-              "P2-S33",
-              "P2-S37"
-            ],
+            "scenario_ids": ["P2-S12", "P2-S26", "P2-S31", "P2-S33", "P2-S37"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-API-001": {
@@ -2530,11 +2427,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S32",
-              "P2-S34",
-              "P2-S38"
-            ],
+            "scenario_ids": ["P2-S32", "P2-S34", "P2-S38"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-DATA-001": {
@@ -2573,13 +2466,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S02",
-              "P2-S14",
-              "P2-S25",
-              "P2-S31",
-              "P2-S40"
-            ],
+            "scenario_ids": ["P2-S02", "P2-S14", "P2-S25", "P2-S31", "P2-S40"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-SEC-001": {
@@ -2709,11 +2596,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S35",
-              "P2-S36",
-              "P2-S37"
-            ],
+            "scenario_ids": ["P2-S35", "P2-S36", "P2-S37"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-OPS-001": {
@@ -2747,10 +2630,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S31",
-              "P2-S40"
-            ],
+            "scenario_ids": ["P2-S31", "P2-S40"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-REL-001": {
@@ -2986,9 +2866,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S01"
-            ],
+            "scenario_ids": ["P2-S01"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S02": {
@@ -3008,9 +2886,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S02"
-            ],
+            "scenario_ids": ["P2-S02"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S03": {
@@ -3030,9 +2906,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S03"
-            ],
+            "scenario_ids": ["P2-S03"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S04": {
@@ -3052,9 +2926,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S04"
-            ],
+            "scenario_ids": ["P2-S04"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S05": {
@@ -3074,9 +2946,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S05"
-            ],
+            "scenario_ids": ["P2-S05"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S06": {
@@ -3096,9 +2966,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S06"
-            ],
+            "scenario_ids": ["P2-S06"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S07": {
@@ -3118,9 +2986,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S07"
-            ],
+            "scenario_ids": ["P2-S07"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S08": {
@@ -3140,9 +3006,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S08"
-            ],
+            "scenario_ids": ["P2-S08"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S09": {
@@ -3162,9 +3026,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S09"
-            ],
+            "scenario_ids": ["P2-S09"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S10": {
@@ -3184,9 +3046,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S10"
-            ],
+            "scenario_ids": ["P2-S10"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S11": {
@@ -3206,9 +3066,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S11"
-            ],
+            "scenario_ids": ["P2-S11"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S12": {
@@ -3228,9 +3086,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S12"
-            ],
+            "scenario_ids": ["P2-S12"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S13": {
@@ -3250,9 +3106,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S13"
-            ],
+            "scenario_ids": ["P2-S13"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S14": {
@@ -3273,9 +3127,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S14"
-            ],
+            "scenario_ids": ["P2-S14"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S15": {
@@ -3295,9 +3147,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S15"
-            ],
+            "scenario_ids": ["P2-S15"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S16": {
@@ -3317,9 +3167,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S16"
-            ],
+            "scenario_ids": ["P2-S16"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S17": {
@@ -3339,9 +3187,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S17"
-            ],
+            "scenario_ids": ["P2-S17"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S18": {
@@ -3361,9 +3207,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S18"
-            ],
+            "scenario_ids": ["P2-S18"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S19": {
@@ -3383,9 +3227,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S19"
-            ],
+            "scenario_ids": ["P2-S19"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S20": {
@@ -3405,9 +3247,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S20"
-            ],
+            "scenario_ids": ["P2-S20"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S21": {
@@ -3427,9 +3267,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S21"
-            ],
+            "scenario_ids": ["P2-S21"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S22": {
@@ -3449,9 +3287,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S22"
-            ],
+            "scenario_ids": ["P2-S22"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S23": {
@@ -3472,9 +3308,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S23"
-            ],
+            "scenario_ids": ["P2-S23"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S24": {
@@ -3494,9 +3328,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S24"
-            ],
+            "scenario_ids": ["P2-S24"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S25": {
@@ -3517,9 +3349,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S25"
-            ],
+            "scenario_ids": ["P2-S25"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S26": {
@@ -3539,9 +3369,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S26"
-            ],
+            "scenario_ids": ["P2-S26"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S27": {
@@ -3562,9 +3390,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S27"
-            ],
+            "scenario_ids": ["P2-S27"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S28": {
@@ -3584,9 +3410,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S28"
-            ],
+            "scenario_ids": ["P2-S28"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S29": {
@@ -3606,9 +3430,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S29"
-            ],
+            "scenario_ids": ["P2-S29"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S30": {
@@ -3629,9 +3451,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S30"
-            ],
+            "scenario_ids": ["P2-S30"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S31": {
@@ -3653,9 +3473,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S31"
-            ],
+            "scenario_ids": ["P2-S31"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S32": {
@@ -3725,9 +3543,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S32"
-            ],
+            "scenario_ids": ["P2-S32"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S33": {
@@ -3754,9 +3570,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S33"
-            ],
+            "scenario_ids": ["P2-S33"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S34": {
@@ -3819,9 +3633,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S34"
-            ],
+            "scenario_ids": ["P2-S34"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S35": {
@@ -3844,9 +3656,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S35"
-            ],
+            "scenario_ids": ["P2-S35"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S36": {
@@ -3869,9 +3679,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S36"
-            ],
+            "scenario_ids": ["P2-S36"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S37": {
@@ -3895,9 +3703,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S37"
-            ],
+            "scenario_ids": ["P2-S37"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S38": {
@@ -3953,9 +3759,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S38"
-            ],
+            "scenario_ids": ["P2-S38"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S39": {
@@ -4006,9 +3810,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S39"
-            ],
+            "scenario_ids": ["P2-S39"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S40": {
@@ -4039,9 +3841,7 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": [
-              "P2-S40"
-            ],
+            "scenario_ids": ["P2-S40"],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           }
         }
@@ -4188,12 +3988,7 @@
           "local_history_scan": "passed",
           "local_image_scans_passed": 2,
           "local_image_scans_failed": 4,
-          "failed_images": [
-            "api",
-            "worker",
-            "mcp",
-            "web"
-          ],
+          "failed_images": ["api", "worker", "mcp", "web"],
           "artifact": "docs/implementation/evidence/phase-2-p2-08-7201b53-failed-security.json",
           "artifact_sha256": "ad3062ca32c9be6c5a602fe5d25827a9d71bce33a00d0ac947c08d26747401ab",
           "correction": "Install libpcre2-8-0=10.42-1+deb12u1 in all four application runtime images before package-manager stripping. Working-tree correction verification and corrected immutable acceptance remain pending; no exceptions added.",
@@ -4867,20 +4662,14 @@
         "sql_authorization_denial_correct": true,
         "later_eur_observer_denials": "expected_revocation_assertions_in_passing_selector",
         "authorization": "bounded_existing_adr0024_sql_contract_correction",
-        "fixture_license_days_preserved": [
-          365,
-          3650
-        ],
+        "fixture_license_days_preserved": [365, 3650],
         "regressions": "five_new_cases_and_original_replay_selector_passed",
         "required_physical_dependency_expiry": "exact_original_stored_expiry",
         "production_files": [
           "packages/persistence/src/trading212_persistence/report_sources.py",
           "packages/persistence/src/trading212_persistence/report_input_store.py"
         ],
-        "contract_versions_changed": [
-          3,
-          4
-        ],
+        "contract_versions_changed": [3, 4],
         "physical_dependency_expiry_and_exact_proof_unchanged": true,
         "v1_v2_sql_guards_schema_financial_payloads_unchanged": true,
         "physical_source_families": 9,
@@ -5074,10 +4863,7 @@
       "current_runtime_tools": 38,
       "preserved_original_catalogue": 25,
       "explicit_authorized_additions": 13,
-      "research_additions": [
-        "get_research_summary",
-        "get_research_item"
-      ],
+      "research_additions": ["get_research_summary", "get_research_item"],
       "independent_inventory_oracle": "tests/mcp_discovery.py",
       "rejects_missing_extra_duplicate_names": true,
       "historical_isolated_32_36_contracts_unchanged": true,
@@ -5107,10 +4893,7 @@
         "passed": 3,
         "failed": 2,
         "pytest_seconds": 1.21,
-        "failed_cases": [
-          "path_one_short",
-          "composition_one_short"
-        ]
+        "failed_cases": ["path_one_short", "composition_one_short"]
       },
       "unit_green": {
         "passed": 31,
@@ -5253,9 +5036,7 @@
           "failed": 3,
           "pytest_seconds": 4.81,
           "runner_seconds": 7.148,
-          "typed_codes": [
-            "RUN_EXPIRED"
-          ],
+          "typed_codes": ["RUN_EXPIRED"],
           "payloads_or_exception_text_captured": false
         },
         "metadata_budget": {
@@ -5308,11 +5089,7 @@
         },
         "explain_files": 12,
         "rows_per_table": 32768,
-        "eligibility_counts": [
-          0,
-          32,
-          8192
-        ],
+        "eligibility_counts": [0, 32, 8192],
         "remaining_inspections": 2,
         "limit": 1,
         "scope": "TTL candidate SELECT only",
@@ -6026,10 +5803,7 @@
         "sha256": "da90fce7113b07177636125d09217e8f59962436f48c2e305c1a5723be1f1cc5"
       },
       "runtime_services_healthy": 7,
-      "successful_one_shot_services": [
-        "migrate",
-        "seed"
-      ],
+      "successful_one_shot_services": ["migrate", "seed"],
       "financial_value_parity_claim": false,
       "live_or_production_claim": false
     },
@@ -6064,93 +5838,1088 @@
     "starting_main_sha": "6f8c0117d23f0d3987135e60ef20ae653f505927",
     "report": "docs/implementation/PHASE_3_BATCH1_20261114.md",
     "command_index": "docs/implementation/evidence/phase-3-batch1-20261114.json",
-    "status": "implemented_pending_independent_review",
+    "status": "owner_accepted_bounded_implementation_checkpoint",
     "aggregation_focused_execution": "verified",
     "analytical_focused_execution": "verified_with_separate_fixture_recovery",
     "research_report_implementation": "implemented_with_separate_component_passes",
     "exact_revision_selection": "approved_for_implementation",
     "extended_sast": "reported_exit_1_eight_reviewed_closed_literal_ddl_matches",
     "full_current_source_validation": "pending",
-    "independent_review": "pending",
+    "independent_review": "owner_reported_passed_with_bounded_scope",
     "accepted_rows": 0,
     "accepted_scenarios": 0,
     "ci_verified": false,
     "production_authorized": false,
-    "live_authorized": false
+    "live_authorized": false,
+    "reported_independent_review": {
+      "python_passed": 64,
+      "web_passed": 38,
+      "execution_records_checked": 94,
+      "independently_reexecuted_in_batch2": false,
+      "phase3_acceptance": false
+    },
+    "later_migration_sast_resolution": "batch2_separate_source_qualified_literal_ddl_correction"
   },
   "consolidated_batch_2": {
     "date": "2026-11-14",
-    "last_reconciled_date": "2026-11-15",
     "starting_main_sha": "5731a5039beb8f3c7272c9b387ac757de605a0e1",
-    "implementation_partition_base_sha": "ecc7c75221841eb64981ec3e971a36944052d48e",
-    "status": "partial_implementation_delivery_in_progress",
-    "implementation_commit_stage": 4,
-    "implementation_commit_stages_planned": 4,
+    "report": "docs/implementation/PHASE_3_BATCH2_20261114.md",
+    "status": "in_progress",
+    "owner_acceptance_of_batch1": "bounded_implementation_checkpoint_only",
+    "reported_independent_review": {
+      "python_passed": 64,
+      "web_passed": 38,
+      "execution_records_checked": 94,
+      "phase3_acceptance": false
+    },
+    "checkpoint_a": "in_progress",
+    "checkpoint_b": "not_stable_actual_admission_gate_failed_representative_performance_incomplete_local",
+    "p3_10_complete_attempts_authorized": 1,
+    "p3_10_complete_attempts_started": 0,
+    "accepted_rows": 0,
+    "accepted_scenarios": 0,
+    "ci": "deferred_by_owner_unverified",
+    "production_authorized": false,
+    "live_authorized": false,
+    "evidence_collection": "batch2-20261114-06y_8c2n",
+    "a1": {
+      "status": "focused_qualified_observations_distributed_across_sources",
+      "original_integration_cases_with_passing_observations": 27,
+      "additional_count_rank_cursor_case_passed": 1,
+      "single_combined_28_case_suite_pass": false,
+      "domain_reference_cases_passed": 7,
+      "corrected_defects": [
+        "current_and_pinned_transitive_report_authority_before_private_payload_selection",
+        "all_unvalued_held_entity_exposure_unavailable_without_rewriting_xray_known_subtotals",
+        "summary_unknown_counts_and_ranking_share_detail_availability_predicate"
+      ],
+      "summary_cursor_resource": "research_items.bounded.v2",
+      "old_cursor_denied_before_private_decode": true,
+      "old_xray_and_report_bytes_rewritten": false,
+      "source_scope": "The original27passing observations remain distributed. The ten-case PostgreSQL receipt retained unchanged exercised authority,financial,reader,builder and sink sources despite listed unrelated harness edits. Between that receipt and the420codec cases,report_manifest.py was the only backend/domain production change. Later summary-query changes have their own five-case and normal1000-service passes; the restored authority is exact original470ac1e. These source scopes do not constitute a complete validation pass.",
+      "grant_denial_recovery": {
+        "receipt": "a1-current-report-denial-recovery-01/receipt.json",
+        "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+        "source_manifest_sha256": "291488bdd3f004e15361f78b4d611ca77f1ad2b43b7478e5691fb0c5c2371c18",
+        "source_unchanged": true,
+        "changed_source_paths": [],
+        "exit_code": 0,
+        "runner_seconds": 44.685,
+        "passed": 1,
+        "pytest_seconds": 42.97
+      },
+      "remaining_initial": {
+        "receipt": "a1-positive-and-remaining-chain-01/receipt.json",
+        "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+        "source_manifest_sha256": "0ed5a00092e733896e7e5af6864a364274ec5a6f02aba79b1126926ac55cf1ca",
+        "source_unchanged": false,
+        "changed_source_paths": [
+          "scripts/api_e2e_web_performance.py",
+          "scripts/run_api_backed_e2e.py",
+          "scripts/run_api_browser_suites.mjs",
+          "tests/e2e/api-web/operational-performance.spec.ts",
+          "tests/integration/test_phase3_operational_budgets.py",
+          "tests/integration/test_phase3_operational_recovery.py",
+          "tests/integration/test_phase3_restore_restrictions.py"
+        ],
+        "exit_code": 1,
+        "runner_seconds": 952.197,
+        "passed": 23,
+        "failed": 1,
+        "deselected": 1,
+        "not_reached": 2,
+        "pytest_seconds": 947.73
+      },
+      "shared_predicate_unit": {
+        "receipt": "a1-exposure-shared-predicate-domain-01/receipt.json",
+        "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+        "source_manifest_sha256": "12091099cff5490f3ea9de4cb10c8a5b99a07a18e32d9229a9cd61db18025bed",
+        "source_unchanged": true,
+        "changed_source_paths": [],
+        "exit_code": 0,
+        "runner_seconds": 0.721,
+        "passed": 7,
+        "pytest_seconds": 0.36
+      },
+      "degraded_and_remaining_recovery": {
+        "receipt": "a1-degraded-and-remaining-postgres-selectors-02/receipt.json",
+        "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+        "source_manifest_sha256": "12091099cff5490f3ea9de4cb10c8a5b99a07a18e32d9229a9cd61db18025bed",
+        "source_unchanged": false,
+        "changed_source_paths": [
+          "scripts/build_release_evidence.py",
+          "tests/integration/phase3_operational_fixture.py"
+        ],
+        "exit_code": 0,
+        "runner_seconds": 179.311,
+        "passed": 4,
+        "pytest_seconds": 177.32
+      },
+      "selector_typo_attempt": {
+        "receipt": "a1-degraded-and-remaining-postgres-01/receipt.json",
+        "exit_code": 4,
+        "executed_cases": 0
+      },
+      "final_eight_file_ruff_mypy": "passed_at_recorded_source",
+      "generated_contract_check": "passed_at_recorded_source",
+      "architecture_boundary_check": "passed_at_recorded_source",
+      "final_research_and_restore_rights": {
+        "receipt": "a3-final-research-affected-and-restore-rights-01/receipt.json",
+        "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+        "source_manifest_sha256": "85dd494c6219bfd180438aec035a1bee7ec1a366a4f96b3b1ba9e415e8c6f3d8",
+        "source_after_manifest_sha256": "85277aae73470f7992e50215eced5ea965537bd5ca4d185cb236fe22a373a181",
+        "source_unchanged": false,
+        "changed_source_paths": [
+          "scripts/api_e2e_web_performance.py",
+          "scripts/run_api_backed_e2e.py",
+          "tests/e2e/api-web/operational-performance.spec.ts",
+          "tests/unit/test_web_performance_preparation.py"
+        ],
+        "exit_code": 0,
+        "runner_seconds": 410.556,
+        "passed": 10,
+        "pytest_seconds": 407.6,
+        "included_scopes": [
+          "six_capture_fallback_parity_and_rights_cases",
+          "acquired_fx_four_formats",
+          "original_expiry",
+          "concurrent_revocation_and_semantic_retry",
+          "post_backup_current_restriction_before_restored_private_access_and_bounded_cleanup"
+        ],
+        "exercised_authority_financial_reader_builder_sink_sources_unchanged": true,
+        "whole_source_pass_claimed": false
+      },
+      "fast_reader_compatibility": {
+        "fallback": "Only optimized INPUT_BOUND_EXCEEDED uses the composed original REPORT reader; permission/expiry/digest/notfound/validation denials propagate.",
+        "default_display_mode_changed": false,
+        "original_input_result_reference_document_manifest_caps_preserved": true,
+        "initial_final_acquired_report_and_physical_gates_preserved": true,
+        "actual_near_32_mib_combined_boundary": "not_executed_small_real_fixture_forces_fast_cap_route"
+      },
+      "subsequent_eligibility_changes": "Experimental LATERAL authority was reverted exactly to470ac1e. Summary-only materialized NOT IN membership preserves eligibility semantics and has five affected PostgreSQL passes plus a normal1000-service pass. The later representative browser rendered research but failed the Next-page cursor poll with cause unassigned; its performance gate remains incomplete. Unchanged admission components retain their actual failed gate."
+    },
+    "a4": {
+      "status": "narrow_literal_ddl_correction_qualified",
+      "delivery_sha": "ecc7c75221841eb64981ec3e971a36944052d48e",
+      "literal_contract_cases_passed": 2,
+      "postgres_behavior_cases_passed": 2,
+      "ordered_sql_guard_effects_preserved": true,
+      "scanner_policy_changed": false,
+      "extended_scan": {
+        "receipt": "a4-extended-sast-green-01/receipt.json",
+        "head": "5731a5039beb8f3c7272c9b387ac757de605a0e1",
+        "source_manifest_sha256": "6a2103a8537e5be4053e8519d11d94fd28c6790ad031c04d664ba8f15db8b133",
+        "source_unchanged": false,
+        "changed_source_paths": [
+          "tests/integration/acquired_research_report_case.py",
+          "tests/integration/test_acquired_research_reports_postgres.py",
+          "tests/integration/test_phase3_process_recovery.py"
+        ],
+        "exit_code": 0,
+        "runner_seconds": 118.777,
+        "applicable_rules": 4,
+        "files": 1,
+        "findings": 0
+      },
+      "whole_repository_sast_pass_claimed": false,
+      "current_tool_preparation": {
+        "receipt": "a4-checkpoint-tool-cache-preparation-01/receipt.json",
+        "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+        "source_manifest_sha256": "c986a59b4b8fb425af2b898b41c5cb22ca42308e31427c4a52bacc379dc42996",
+        "source_after_manifest_sha256": "c986a59b4b8fb425af2b898b41c5cb22ca42308e31427c4a52bacc379dc42996",
+        "source_unchanged": true,
+        "changed_source_paths": [],
+        "exit_code": 0,
+        "runner_seconds": 5.608,
+        "status": "passed_preparation_only",
+        "current_scanner_or_dependency_audit_execution": "Four-file codec and fifteen-file remaining-delta configured scans have recorded zero-finding observations; fifteen explicit code inputs remained unchanged while nine documentation paths changed. Clean-export,current source/history and dependency/container audits remain pending.",
+        "prior_failure_records_preserved": true,
+        "source_export": "queued_after_clean_commit"
+      },
+      "codec_configured_scan": {
+        "receipt": "a4-codec-configured-sast-01/receipt.json",
+        "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+        "source_manifest_sha256": "d46b8be9525d131188a53ef9a8ab70250ef1a85f5bb744c9de6888f6d6583125",
+        "source_after_manifest_sha256": "d46b8be9525d131188a53ef9a8ab70250ef1a85f5bb744c9de6888f6d6583125",
+        "source_unchanged": true,
+        "changed_source_paths": [],
+        "exit_code": 0,
+        "runner_seconds": 118.697,
+        "applicable_rules": 7,
+        "files": 4,
+        "findings": 0,
+        "scope": "Recorded codec source only, not complete candidate SAST."
+      },
+      "high_confidence_secret_check": {
+        "receipt": "a4-precommit-worktree-secret-01/receipt.json",
+        "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+        "source_manifest_sha256": "d46b8be9525d131188a53ef9a8ab70250ef1a85f5bb744c9de6888f6d6583125",
+        "source_after_manifest_sha256": "d46b8be9525d131188a53ef9a8ab70250ef1a85f5bb744c9de6888f6d6583125",
+        "source_unchanged": true,
+        "changed_source_paths": [],
+        "exit_code": 0,
+        "runner_seconds": 1.632,
+        "status": "passed_at_recorded_source",
+        "complete_candidate_audit_claimed": false
+      },
+      "remaining_delta_configured_scan": {
+        "receipt": "a4-remaining-delta-configured-sast-01/receipt.json",
+        "head": "88fc1cb93af25b64494d4bfc29d648a589347faa",
+        "source_manifest_sha256": "f9bd99d2bb3a2d699432ca8d9d0ab0ad4b8af29c2769846ce61e2acf2b16a230",
+        "source_after_manifest_sha256": "3d7145f2624fa8067ee866b8de99a4477d5206d68fea82c445e09bc75df44a3a",
+        "source_unchanged": false,
+        "changed_source_paths": [
+          "CHANGELOG.md",
+          "PROJECT_PROGRESS.json",
+          "PROJECT_STATUS.json",
+          "PROJECT_STATUS.md",
+          "README.md",
+          "VALIDATION_REPORT.md",
+          "docs/implementation/PHASE_3_BATCH2_20261114.md",
+          "docs/implementation/PHASE_3_IMPLEMENTATION_REPORT.md",
+          "docs/implementation/PHASE_3_TECHNICAL_BASELINE.md"
+        ],
+        "exit_code": 0,
+        "runner_seconds": 118.662,
+        "version": "1.175.0",
+        "applicable_rules": 7,
+        "files": 15,
+        "findings": 0,
+        "errors": 0,
+        "explicit_code_inputs_unchanged": true,
+        "scanned": [
+          "apps/web/components/account-context.tsx",
+          "apps/web/lib/account-navigation.ts",
+          "apps/web/tests/account-context.test.tsx",
+          "packages/domain/src/trading212_domain/research_facts.py",
+          "packages/persistence/src/trading212_persistence/report_capture_research_store.py",
+          "packages/persistence/src/trading212_persistence/report_research_sources.py",
+          "packages/persistence/src/trading212_persistence/research_summary_page.py",
+          "packages/persistence/src/trading212_persistence/research_summary_query.py",
+          "packages/persistence/src/trading212_persistence/research_xray_read.py",
+          "packages/persistence/src/trading212_persistence/source_store.py",
+          "scripts/api_e2e_research_reports.py",
+          "scripts/api_e2e_web_performance.py",
+          "scripts/build_release_evidence.py",
+          "scripts/run_api_backed_e2e.py",
+          "scripts/run_api_browser_suites.mjs"
+        ],
+        "whole_source_unchanged_claimed": false,
+        "whole_repository_or_current_history_audit_pass_claimed": false
+      },
+      "current_source_history_audit": "not_yet_executed",
+      "current_clean_export": "not_yet_executed"
+    },
+    "a3": {
+      "process_recovery": {
+        "receipt": "a3-process-recovery-postgres-01/receipt.json",
+        "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+        "source_manifest_sha256": "3e3e5e0531cda08a6ea99dcf99b2739889f459df010447baf72b4f5dc23fc4fe",
+        "source_unchanged": true,
+        "changed_source_paths": [],
+        "exit_code": 0,
+        "runner_seconds": 83.13,
+        "passed": 1,
+        "pytest_seconds": 81.53,
+        "current_full_stack_restart_claimed": false
+      },
+      "earlier_limited_restore": {
+        "receipt": "a3-clean-restore-recovery-01/receipt.json",
+        "head": "5731a5039beb8f3c7272c9b387ac757de605a0e1",
+        "source_manifest_sha256": "c2361a62fb211e9e1cc1df40216b25e95ea2872b13c664564185e11a905150f0",
+        "source_unchanged": false,
+        "changed_source_paths": [
+          "tests/integration/test_phase3_process_recovery.py"
+        ],
+        "exit_code": 0,
+        "runner_seconds": 48.67,
+        "passed": 1,
+        "pytest_seconds": 46.93,
+        "table_count": 368,
+        "backup_restore_seconds": 5.097,
+        "validated_recovery_seconds": 19.648,
+        "scope": "Earlier schema inventory before the later index/trigger expansion; synthetic, not production RTO."
+      },
+      "expanded_restore": {
+        "receipt": "a3-complete-schema-restore-recovery-02/receipt.json",
+        "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+        "source_manifest_sha256": "a6171e2f27867da5422bce6c20de695d3464d1d13c4a8494d7ace884006eabb0",
+        "source_after_manifest_sha256": "a6171e2f27867da5422bce6c20de695d3464d1d13c4a8494d7ace884006eabb0",
+        "source_unchanged": true,
+        "changed_source_paths": [],
+        "exit_code": 0,
+        "runner_seconds": 51.491,
+        "status": "strict_expanded_schema_and_rows_passed_at_recorded_source",
+        "passed": 1,
+        "pytest_seconds": 49.75,
+        "table_count": 368,
+        "backup_restore_seconds": 5.21,
+        "validated_recovery_seconds": 23.19,
+        "raw_and_canonical_schema_hashes_retained": true,
+        "initial_retained_failure": {
+          "status": "pending_after_retained_failure",
+          "receipt": "a3-complete-schema-and-clock-recovery-01/receipt.json",
+          "passed": 1,
+          "failed": 1,
+          "pytest_seconds": 72.95,
+          "focused_literal_cast_comparator_recoveries": "passed_separately_not_an_expanded_restore_pass"
+        },
+        "production_rto_claimed": false
+      },
+      "post_backup_restriction_reconciliation": {
+        "status": "passed_in_ten_case_source_qualified_observation",
+        "receipt": "a3-final-research-affected-and-restore-rights-01/receipt.json",
+        "finite_synthetic_restriction_proof": true,
+        "target_service_before_current_restrictions_applied": false,
+        "private_read_denial_and_bounded_physical_cleanup": "passed",
+        "production_authority_restoration_policy_claimed": false
+      },
+      "service_budgets": {
+        "status": "actual_failed_admission_gate_retained_current_component_equivalence_after_authority_restore",
+        "receipt": "a3-final-codec-capture-and-admission-recovery-04/receipt.json",
+        "pytest_seconds": 132.43,
+        "failure": "admission_p95_exceeds_unchanged0_750_seconds",
+        "clock_diagnosis": "Real-UTC untimed completions now succeed; remaining failure is measured admission latency.",
+        "correction": "Original authority source restored exactly. Current NOT IN correction affects summary reads; unchanged admission components retain actual failed gate without another ten-admission run or more optimization.",
+        "read_samples_required": 30,
+        "new_admissions_required": 10,
+        "maximum_page_statements": 12,
+        "read_p95_seconds_limit": 0.5,
+        "admission_p95_seconds_limit": 0.75,
+        "latency_pass_claimed": false,
+        "original_pre_threshold_failure": {
+          "receipt": "a3-local-budgets-postgres-01/receipt.json",
+          "pytest_seconds": 72.18,
+          "failure": "storage_unavailable_during_first_untimed_completion",
+          "clock_diagnosis": "Static inference: frozen fixture lease clock versus SQL wall time; actual SQL exception not exposed.",
+          "correction": "Untimed real_UTC production job store/status reader; available samples and failure phase retained from finally."
+        },
+        "raw_samples_and_failure_preserved": true,
+        "no_warmup_discard_or_protocol_change": true,
+        "previous_attempt_03": {
+          "receipt": "a3-admission-codec-budget-recovery-03/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "963dba213392dce326990f4183bafe087e615925b01d7dde29fc132b2fd3b636",
+          "source_after_manifest_sha256": "963dba213392dce326990f4183bafe087e615925b01d7dde29fc132b2fd3b636",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 1,
+          "runner_seconds": 103.501,
+          "passed": 0,
+          "failed": 1,
+          "pytest_seconds": 101.94,
+          "admission_p95_seconds": 1.0996370610009762,
+          "status": "failed_admission_p95",
+          "raw_evidence": "operations-service-budgets-6d1c3c5cbd9341ee8c962d4b60488a78.json"
+        },
+        "latest_attempt_04": {
+          "receipt": "a3-final-codec-capture-and-admission-recovery-04/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "db213f05a51a6bce1f61777242c970d923285ab1a7e66610c4afda36d985a7bd",
+          "source_after_manifest_sha256": "db213f05a51a6bce1f61777242c970d923285ab1a7e66610c4afda36d985a7bd",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 1,
+          "runner_seconds": 134.246,
+          "passed": 1,
+          "failed": 1,
+          "pytest_seconds": 132.43,
+          "status": "capture_parity_passed_admission_budget_failed",
+          "admission_p50_seconds": 0.6442048870012513,
+          "admission_p95_seconds": 0.9309575439983746,
+          "read_p95_seconds": 0.3626885970006697,
+          "read_samples": 30,
+          "admission_samples": 10,
+          "statements_per_read": 12,
+          "successful_job_completions": 10,
+          "raw_evidence": "operations-service-budgets-5206458a85c84663a0250292a4b37029.json",
+          "scope": "Actual failed admission observation retained for the unchanged admission component after original authority restoration. Its historical read timing does not qualify the modified summary query."
+        },
+        "current_source_measurement": "no_admission_repeat_without_admission_code_correction_functional_summary_passed_browser_performance_incomplete_local",
+        "current_read_admission_source_equivalence_to_attempt_04_claimed": false,
+        "current_admission_component_equivalence_to_attempt_04_claimed": true,
+        "current_read_component_equivalence_to_attempt_04_claimed": false,
+        "component_binding": {
+          "artifact": "admission-failed-observation-component-binding-01.json",
+          "current_head": "7ed9cb9e071515a54658dfd357faeb14fc7a90e4",
+          "scope": "retain actual failed admission observation; not a fresh timing execution, full-source equivalence or complete gate pass",
+          "recorded_receipt_sha256": "dee5762d7fedbca05e197b2ea9bc90d376be71a1b88be5ef45085f27d80743d3",
+          "application_package_inputs_compared": 1026,
+          "equal_inputs": 1025,
+          "changes": [
+            {
+              "path": "packages/persistence/src/trading212_persistence/research_summary_query.py",
+              "before": "71d1eeefc13bb132ad91aa6744c60d9d656560f1b9f21ca3946f7549543b783b",
+              "after": "577b4d71f2cd0e04d1af4e563d8e43e1afdee464f6206523074f35d0a38580fa"
+            }
+          ],
+          "unchanged_fixture_and_budget_test_inputs": {
+            "tests/integration/test_phase3_operational_budgets.py": "e2e20ddc7fe84176f541e2a5d2e2c76e6e00f0d84e6c8a3c88b8bc6cd153c710",
+            "tests/integration/research_report_case.py": "5a060142b0366ad117b3976795596a64fa8b9e1290ae5b5b07e1bf309a055860",
+            "tests/integration/research_case.py": "4d128c89847c1ca448f7425d6cf329b9b8cd26d4423cd716992e21db1bf70860",
+            "tests/integration/test_xray_reads_postgres.py": "fc16d434c1a49b514fcacb1dad0090df67753970b6f248f80753982c7635f4dc"
+          },
+          "authority_restored_original_sha256": "470ac1e14f5b84b2433a3d42715f41c3c051ede2c92dcf974f84e428f94db9c8",
+          "query_change_scope": "research summary reads; timed report generate path does not call research_candidate_page/get_research_summary; fixture/warmup and read samples are separate",
+          "new_timing_execution": false,
+          "full_source_equivalence_claimed": false,
+          "environment_or_cache_state_equivalence_claimed": false,
+          "new_current_p95_claimed": false,
+          "limitations": [
+            "Not an actual execution at this commit.",
+            "No identical environmental/cache-state or new p95 claim.",
+            "Future full acceptance still needs the required immutable-source validation."
+          ]
+        }
+      },
+      "maximum_work_projection_measurement": {
+        "status": "focused_time_and_sampled_rss_passed",
+        "initial_receipt": "a3-maximum-projection-budget-01/receipt.json",
+        "initial_pytest_seconds": 100.86,
+        "initial_failure": "unavailable_rss_sample_not_financial_or_workload_failure",
+        "recovery": {
+          "receipt": "a3-maximum-projection-rss-fallback-recovery-02/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "7907f56adfb439b588d5919460103d5541523978656c0b1401c052a2e4c96408",
+          "source_after_manifest_sha256": "94e257c825697c7977b849e46722c8cbaa10209028878b8c0993bc378accdd8e",
+          "source_unchanged": false,
+          "changed_source_paths": [
+            "tests/unit/domain/test_report_encoding_cost_parity.py"
+          ],
+          "exit_code": 0,
+          "runner_seconds": 101.862,
+          "passed": 1,
+          "pytest_seconds": 100.53,
+          "exercised_projection_worker_and_measurement_sources_unchanged": true
+        },
+        "raw_evidence": "operations-maximum-work-45c668faeaf64c78aca2d5ca4ad9f5db.json",
+        "work_units": 1000000,
+        "assets": 8,
+        "months": 250,
+        "paths": 500,
+        "actual_attempt_seconds": 88.13152416800585,
+        "peak_worker_tree_rss_bytes": 348745728,
+        "peak_child_rss_bytes": 155041792,
+        "rss_samples": 1777,
+        "unavailable_samples": 0,
+        "real_resident_page_fallbacks": 1,
+        "time_limit_seconds": 240,
+        "rss_limit_bytes": 536870912,
+        "remaining_live_or_zombie_children": 0
+      },
+      "restore_failure_lifecycle": {
+        "initial_receipt": "a3-restore-lifecycle-red-01/receipt.json",
+        "initial_failed": 2,
+        "initial_pytest_seconds": 38.75,
+        "correction": "Record exact owned target and original failure before diagnostics; quarantine uncertain targets; retain per-phase/final state before disposal.",
+        "recovery": {
+          "receipt": "a3-restore-lifecycle-failed-and-affected-recovery-01/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "6e8fcfd16dba0e1f883ac0bab7b6852588b1aae341f399321a0aa65838c60743",
+          "source_after_manifest_sha256": "78f80252cbc27c81e58aab978f2ab4507af9793509f3b7556161e4a03d8fcbbf",
+          "source_unchanged": false,
+          "changed_source_paths": [
+            "tests/integration/test_acquired_research_reports_postgres.py",
+            "tests/integration/test_research_exposure_ranking_postgres.py"
+          ],
+          "exit_code": 0,
+          "runner_seconds": 54.394,
+          "passed": 3,
+          "pytest_seconds": 52.54,
+          "exercised_helper_sources_unchanged": true
+        }
+      },
+      "restore_target_boundary": {
+        "initial_receipt": "a3-restore-target-boundary-red-01/receipt.json",
+        "initial_failed": 21,
+        "initial_passed": 2,
+        "initial_pytest_seconds": 1.44,
+        "guard": "Exact task project, postgresql+psycopg, 127.0.0.1:55432 and empty URL query before operator calls; port-only inspection and endpoint recheck before drop.",
+        "unit_recovery": {
+          "receipt": "a3-restore-target-boundary-green-01/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "bd05b203e5cf54b771b7bb0bed22099ecff536b86844c9266e69844647d47e3a",
+          "source_after_manifest_sha256": "bd05b203e5cf54b771b7bb0bed22099ecff536b86844c9266e69844647d47e3a",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 1.755,
+          "passed": 23,
+          "pytest_seconds": 1.09
+        },
+        "latest_helper_postgres_requalification": {
+          "receipt": "a3-restore-target-source-affected-postgres-01/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "db213f05a51a6bce1f61777242c970d923285ab1a7e66610c4afda36d985a7bd",
+          "source_after_manifest_sha256": "9dbfedf9eab2b9c024f1ba487540411cf2fea2f81af1e1412e7b191d3109f762",
+          "source_unchanged": false,
+          "changed_source_paths": [
+            "CHANGELOG.md",
+            "README.md",
+            "VALIDATION_REPORT.md",
+            "tests/e2e/api-web/operational-performance.spec.ts"
+          ],
+          "exit_code": 0,
+          "runner_seconds": 103.518,
+          "passed": 4,
+          "pytest_seconds": 101.3,
+          "scopes": ["successful_restore", "three_failure_paths"]
+        }
+      },
+      "populated_phase2_upgrade": {
+        "receipt": "a3-populated-phase2-upgrade-01/receipt.json",
+        "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+        "source_manifest_sha256": "f977ff5b7119a100149c9dbd13668da511c60f82d4c99444564a92788a12c857",
+        "source_after_manifest_sha256": "f977ff5b7119a100149c9dbd13668da511c60f82d4c99444564a92788a12c857",
+        "source_unchanged": true,
+        "changed_source_paths": [],
+        "exit_code": 0,
+        "runner_seconds": 23.828,
+        "passed": 1,
+        "pytest_seconds": 22.43,
+        "rows_values_and_replay_preserved": true
+      },
+      "bounded_codec": {
+        "first_baseline_receipt": "a3-report-codec-cost-baseline-and-red-01/receipt.json",
+        "first_baseline_passed": 38,
+        "first_baseline_failed": 7,
+        "bounded_stream_baseline_receipt": "a3-codec-bounded-stream-baseline-and-red-01/receipt.json",
+        "bounded_stream_baseline_passed": 21,
+        "bounded_stream_baseline_failed": 8,
+        "final": {
+          "receipt": "a3-bounded-codec-stream-failed-and-affected-green-01/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "db213f05a51a6bce1f61777242c970d923285ab1a7e66610c4afda36d985a7bd",
+          "source_after_manifest_sha256": "db213f05a51a6bce1f61777242c970d923285ab1a7e66610c4afda36d985a7bd",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 3.441,
+          "passed": 420,
+          "pytest_seconds": 2.63
+        },
+        "cached_data": "Fixed public class field policies and canonical public table schema bytes only; no private values, payload bytes or current rights.",
+        "encoding": "Exact closed-graph UTF-8 preflight before graph/output allocation; C JSON only for measured output at most the existing 2 MiB manifest constant; unchanged streaming writer above it.",
+        "financial_bytes_limits_overloads_and_original_writer_preserved": true
+      },
+      "representative_browser_performance": {
+        "initial_startup_receipt": "a3-web-performance-desktop-01/receipt.json",
+        "initial_failure": "existing120second_startup_timeout_before_browser_samples",
+        "background_attempt_03": {
+          "receipt": "a3-web-performance-background-recovery-03/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "bd05b203e5cf54b771b7bb0bed22099ecff536b86844c9266e69844647d47e3a",
+          "source_after_manifest_sha256": "db213f05a51a6bce1f61777242c970d923285ab1a7e66610c4afda36d985a7bd",
+          "source_unchanged": false,
+          "changed_source_paths": [
+            "packages/domain/src/trading212_domain/report_manifest.py"
+          ],
+          "exit_code": 1,
+          "runner_seconds": 206.4,
+          "status": "full_fixture_setup_then_visible_row_expectation_failure",
+          "setup_elapsed_seconds": 191.62125172000378,
+          "holdings": 100,
+          "events": 1000,
+          "expected_visible_rows": 25,
+          "actual_visible_rows": 50,
+          "metrics_gate_passed": false
+        },
+        "status": "normal_thousand_service_passed_browser06_failed_cursor_poll_research_p75_unavailable_local_pending",
+        "workload_or_product_pagination_reduced": false,
+        "interrupted_attempt_04": {
+          "receipt": "a3-web-performance-page-contract-recovery-04/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "4faa3363f9b0691b3519d392343e392c1ea22670e14e04f3cbf901d56ba3bd1f",
+          "source_after_manifest_sha256": "a5e4724a985391d37c20281bba75fa984ae21995991ee0eb5e6f7c1291918444",
+          "source_unchanged": false,
+          "changed_source_paths": [
+            "PROJECT_PROGRESS.json",
+            "PROJECT_STATUS.json",
+            "PROJECT_STATUS.md",
+            "docs/implementation/PHASE_3_BATCH2_20261114.md"
+          ],
+          "exit_code": 1,
+          "runner_seconds": 462.088,
+          "status": "operator_sigint_at_exact_label_sort_focus_not_completed",
+          "underlying_playwright_exit_code": 130,
+          "metrics_gate_passed": false
+        },
+        "minimal_html_role_diagnostic": {
+          "receipt": "a3-native-exact-role-and-gesture-diagnostic-02/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "682a5a503b2aae26c114ab70a1e8df76beb8961cd68f07b6b84093cf72228a50",
+          "source_after_manifest_sha256": "682a5a503b2aae26c114ab70a1e8df76beb8961cd68f07b6b84093cf72228a50",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 0.394,
+          "checks_passed": 2,
+          "scope": "Minimal copied HTML exact-role and ArrowDown diagnostic; not product journey or performance proof.",
+          "correction": "Test-only exact combobox role locator and native ArrowDown interaction."
+        },
+        "latest_attempt_05": {
+          "receipt": "a3-web-performance-exact-role-recovery-05/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "b7fad53778e08458aae1b16e4036361fad0092514968d4607053e174c3b72d10",
+          "source_after_manifest_sha256": "cd383d52da23809a26699f3f6025327997f0f6cd356b7f3e4c57ce0bfaea2665",
+          "source_unchanged": false,
+          "changed_source_paths": [
+            "docs/implementation/PHASE_3_ACCEPTANCE_MATRIX.md",
+            "docs/implementation/PHASE_3_BATCH2_TRACEABILITY.md",
+            "docs/implementation/PHASE_3_SCENARIO_EVIDENCE.md"
+          ],
+          "exit_code": 1,
+          "runner_seconds": 231.563,
+          "status": "failed_first_research_request_source_unavailable",
+          "holdings_samples_retained": 5,
+          "research_or_whole_lab_slo_pass_claimed": false,
+          "cause": "Metadata candidate statement exceeded5second cap; later actual plan demonstrated repeated eligibility work."
+        },
+        "research_prefix_diagnostic": {
+          "receipt": "a3-research-real-prefix-diagnostic-01/receipt.json",
+          "status": "prefix_xray_passed_scope_distinct_from_failed_thousand_event_summary"
+        },
+        "research_scaling_record_pointer": "/consolidated_batch_2/a3/research_summary_scaling",
+        "latest_attempt_06": {
+          "receipt": "a3-web-performance-notin-desktop-recovery-06/receipt.json",
+          "head": "88fc1cb93af25b64494d4bfc29d648a589347faa",
+          "source_manifest_sha256": "f9bd99d2bb3a2d699432ca8d9d0ab0ad4b8af29c2769846ce61e2acf2b16a230",
+          "source_after_manifest_sha256": "f9bd99d2bb3a2d699432ca8d9d0ab0ad4b8af29c2769846ce61e2acf2b16a230",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 1,
+          "runner_seconds": 228.775,
+          "status": "failed_after_research_render_at_next_page_cursor_url_poll",
+          "failure_source": "tests/e2e/api-web/operational-performance.spec.ts:422",
+          "observed_failure": "After clicking Next page on research, URL cursor presence remained false until the existing 5000ms poll timeout.",
+          "cause_assigned": false,
+          "product_or_test_defect_classification": "unassigned_no_safe_href_or_url_diagnostic_captured",
+          "declared_service_render": "Research rendered the expected25of1000items with exactEUR10 financial references.",
+          "holdings_samples_completed": 5,
+          "research_samples_partial": 1,
+          "research_samples_completed": 0,
+          "raw_artifact": "a3-web-performance-notin-desktop-recovery-06/artifacts/operational-performance-pr-04693-ples-and-route-byte-budgets-api-chromium-desktop/web-performance-raw.json",
+          "partial_research_artifact": "a3-web-performance-notin-desktop-recovery-06/artifacts/operational-performance-pr-04693-ples-and-route-byte-budgets-api-chromium-desktop/web-performance-research-1.json",
+          "partial_research_lcp_ms": 5596,
+          "partial_research_interaction_ms": 24,
+          "partial_research_cls": 0,
+          "five_sample_research_p75_available": false,
+          "summary_artifact_produced": false,
+          "research_or_whole_lab_slo_pass_claimed": false,
+          "fresh_mobile_tablet_performance_executions": 0,
+          "further_costly_browser_or_optimization_attempts": "stopped_at_bounded_checkpoint_local_pending",
+          "command": [
+            "corepack",
+            "pnpm",
+            "--filter",
+            "@trading212/web",
+            "exec",
+            "playwright",
+            "test",
+            "--config=playwright.api.config.ts",
+            "operational-performance.spec.ts",
+            "--project=api-chromium-desktop",
+            "--output=/home/peppasmich/.local/state/t212pi/batch2-20261114-06y_8c2n/a3-web-performance-notin-desktop-recovery-06/artifacts",
+            "--reporter=list,json"
+          ]
+        }
+      },
+      "complete_nine_service_stack_restart": "actual_qualification_pending",
+      "full_stack_restart_harness": {
+        "path": "tests/integration/phase3_stack_restart.py",
+        "module": "tests.integration.phase3_stack_restart",
+        "invocation": ".venv/bin/python -m tests.integration.phase3_stack_restart --plan <private-plan> --evidence-dir <private-output>",
+        "classification": "Synthetic local test harness; non-pytest-collected filename; not a product network utility.",
+        "architecture_failure_preserved": "Original production scripts placement correctly failed the transport boundary.",
+        "correction": "Relocate to the existing test boundary and adjust repository parent depth; no thin product wrapper,allowlist,policy or scanner-ignore change.",
+        "existing_guard_cases": 31,
+        "guard_assertions_preserved": true,
+        "timers_and_resource_ownership_guards_changed": false,
+        "focused_runtime_requalification": "pending_after_relocation",
+        "historical_receipt_source_paths_rewritten": false
+      },
+      "research_summary_scaling": {
+        "status": "five_regressions_and_normal_thousand_service_passed_browser06_pagination_poll_failed_cause_unassigned",
+        "normal_service_failure": {
+          "events": 1000,
+          "holdings": 100,
+          "sqlstate": "57014",
+          "statement_timeout_ms": 5000,
+          "failing_function": "research_candidate_page",
+          "failing_source_path": "packages/persistence/src/trading212_persistence/research_summary_query.py",
+          "safe_failure_record": "performance-research-summary-1000-diagnostic-01.json"
+        },
+        "prefix_observations": "Retained100-holding Xray read/finish and a real one-event service summary passed; neither establishes1000-event summary success.",
+        "early_materialization_only": "Cold candidate timed out; no production materialization-only resolution claimed.",
+        "statistics_caveat": "Observed automatic analysis changed statistics between private comparisons. Warm or already-analyzed matching metadata is not a cold performance pass.",
+        "lateral_only_regressions": {
+          "receipt": "a3-lateral-authority-source-affected-postgres-01/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "f8109fcddfa41fc9c897da1aad2472f3afee949ae5c70461f8de74228a74acf0",
+          "source_after_manifest_sha256": "f8109fcddfa41fc9c897da1aad2472f3afee949ae5c70461f8de74228a74acf0",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 103.608,
+          "passed": 6,
+          "pytest_seconds": 101.57
+        },
+        "lateral_only_normal_recovery": {
+          "receipt": "a3-lateral-normal-thousand-service-recovery-01/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "f8109fcddfa41fc9c897da1aad2472f3afee949ae5c70461f8de74228a74acf0",
+          "source_after_manifest_sha256": "f8109fcddfa41fc9c897da1aad2472f3afee949ae5c70461f8de74228a74acf0",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 1,
+          "runner_seconds": 202.339,
+          "status": "failed_statement_timeout",
+          "reported_elapsed_seconds": 200.72,
+          "sqlstate": "57014"
+        },
+        "actual_execution_profile": {
+          "artifact": "performance-research-execution-profile-01-artifacts/terminal-clone-comparison.json",
+          "plan_field": "actual_plan",
+          "execution_seconds": 16.115633,
+          "diagnostic_only_statement_limit_seconds": 30,
+          "production_and_test_statement_limit_seconds": 5,
+          "revision_correlated_citation_scan_loops": 1000,
+          "citation_rows_per_loop": 1000,
+          "eligibility_evaluations": 1000000,
+          "latest_license_lookups": 2000000,
+          "actual_rows_and_loops_not_estimates": true
+        },
+        "combined_regressions": {
+          "receipt": "a3-combined-eligibility-source-affected-postgres-02/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "3b45be5841cdc2d826266416021b0c2621f16eca1371714153e60fb9089f1b9f",
+          "source_after_manifest_sha256": "3b45be5841cdc2d826266416021b0c2621f16eca1371714153e60fb9089f1b9f",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 99.773,
+          "passed": 6,
+          "pytest_seconds": 97.72,
+          "tested_production_sources_unchanged": true
+        },
+        "fresh_service_budget_measurement": "no_unchanged_admission_repeat_actual_failed_gate_retained_by_component_equivalence_read_qualification_separate",
+        "real_browser_slo_qualification": "attempt06_failed_after_research_render_at_next_page_cursor_poll_no_research_or_whole_lab_slo_pass",
+        "current_source_execution_profile": {
+          "artifact": "performance-research-execution-profile-02-artifacts/terminal-clone-comparison.json",
+          "execution_seconds": 28.226935,
+          "licensed_source_cte_evaluations": 1,
+          "eligible_id_rows": 1000,
+          "eligible_id_scan_loops": 1000000,
+          "approximate_join_comparisons": 1000000000,
+          "diagnostic_only_cap_seconds": 30,
+          "production_cap_seconds": 5,
+          "scope": "Intermediate combined source, not the current NOT IN query."
+        },
+        "further_changes": "none_without_actual_profile_and_root_approval_no_broader_entitlement_policy_rewrite",
+        "reverted_combined_experiment": {
+          "authority_source_sha256": "7d8bdc4171eb4369ace856b2487cdf947fb4e51920e6b6c78b311d1e03e3196f",
+          "query_source_sha256": "9923755d68c387e80fa5943610529322a054b23aa55bb62bc10979561eca36ba",
+          "authority_proof": "lateral_research_authority_production.proof.json",
+          "query_prefix_proof": "licensed_sources_materialized_production.proof.json",
+          "outer_authority_predicates_unchanged": 30,
+          "query_ast_unchanged_except_materialized_prefix": true,
+          "initial_final_current_authority_rebuilt_per_statement": true,
+          "role_cutoff_counts_ranks_fingerprint_dto_limits_and_financial_values_unchanged": true,
+          "private_metadata_rows": 25,
+          "private_total": 1000,
+          "private_unknown": 0,
+          "private_metadata_seconds": 0.062141782,
+          "private_method_seconds": 0.07807088,
+          "private_cold_outcome": "inconclusive_autoanalysis_before_candidate_not_cold_pass"
+        },
+        "original_authority_restored": {
+          "sha256": "470ac1e14f5b84b2433a3d42715f41c3c051ede2c92dcf974f84e428f94db9c8",
+          "proof": "lateral-authority-reverted-production-01",
+          "unproven_lateral_retained": false
+        },
+        "notin_harness_initial_failure": {
+          "receipt": "a3-research-notin-candidate-normal-cap-13/receipt.json",
+          "cause": "Read-only harness transaction refused required authorization FOR SHARE before candidate query.",
+          "candidate_select_executions": 0,
+          "original_select_executions": 0
+        },
+        "current_notin_candidate": {
+          "production_source_sha256": "577b4d71f2cd0e04d1af4e563d8e43e1afdee464f6206523074f35d0a38580fa",
+          "production_proof": "notin-membership-production-01/production-proof.json",
+          "prototype_byte_identical": true,
+          "nonnullable_source_ids_and_fk_make_membership_exclusion_equivalent": true,
+          "copy_pending_false_guard_retained": true,
+          "permission_cutoff_roles_count_rank_fingerprint_dto_and_limits_unchanged": true,
+          "initial_and_final_authority_rebuilt_per_statement": true,
+          "cold_metadata": {
+            "receipt": "a3-research-notin-candidate-auth-lock-recovery-14/receipt.json",
+            "head": "88fc1cb93af25b64494d4bfc29d648a589347faa",
+            "source_manifest_sha256": "d46b8be9525d131188a53ef9a8ab70250ef1a85f5bb744c9de6888f6d6583125",
+            "source_after_manifest_sha256": "d46b8be9525d131188a53ef9a8ab70250ef1a85f5bb744c9de6888f6d6583125",
+            "source_unchanged": true,
+            "changed_source_paths": [],
+            "exit_code": 0,
+            "runner_seconds": 10.563,
+            "passed": 1,
+            "pytest_seconds": 8.94,
+            "outcome": "cold_candidate_passed_not_fullSLO",
+            "candidate_query_seconds": 0.33207682499778457,
+            "candidate_function_seconds": 0.34825882,
+            "zero_column_statistics_unchanged": true,
+            "original_select_executions": 0,
+            "candidate_select_executions": 1,
+            "returned": 25,
+            "total": 1000,
+            "unknown": 0,
+            "complete25_metadata_sha256": "0e201bd2e14538ddd04a6050d7683ce70feffe387937bc78cc7a233f8a9f2d27",
+            "independent_rank_and_EUR10": true
+          }
+        },
+        "current_source_regressions": {
+          "receipt": "a3-notin-query-source-affected-postgres-03/receipt.json",
+          "head": "88fc1cb93af25b64494d4bfc29d648a589347faa",
+          "source_manifest_sha256": "f9bd99d2bb3a2d699432ca8d9d0ab0ad4b8af29c2769846ce61e2acf2b16a230",
+          "source_after_manifest_sha256": "f9bd99d2bb3a2d699432ca8d9d0ab0ad4b8af29c2769846ce61e2acf2b16a230",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 90.353,
+          "passed": 5,
+          "pytest_seconds": 88.36,
+          "unchanged_direct_authority_case": "prior_exact_source_pass_reused"
+        },
+        "normal_notin_thousand_service_recovery": "passed_current_source_declared_functional_workload_not_SLO",
+        "historical_combined_normal_failure": {
+          "receipt": "a3-combined-normal-thousand-service-recovery-02/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "3b45be5841cdc2d826266416021b0c2621f16eca1371714153e60fb9089f1b9f",
+          "source_after_manifest_sha256": "47093fbddffdc0925175e48c8d5980178df50dcf532939abf2d0be2a80897484",
+          "source_unchanged": false,
+          "changed_source_paths": [
+            "PROJECT_STATUS.md",
+            "docs/implementation/PHASE_3_BATCH2_20261114.md"
+          ],
+          "exit_code": 1,
+          "runner_seconds": 203.819,
+          "reported_elapsed_seconds": 202.08,
+          "normal_publication_seconds": 191.081,
+          "status": "failed_metadata_statement_timeout",
+          "statement_timeout_ms": 5000,
+          "sqlstate": "57014",
+          "statement_sha256": "8d5378e519de602b652256dc03a8b0d021fd0eeed4bca1494f71aa09d22e700a",
+          "tested_production_sources_unchanged": true,
+          "resolution_claimed": false
+        },
+        "normal_thousand_service_recovery": {
+          "receipt": "a3-notin-normal-thousand-service-recovery-03/receipt.json",
+          "head": "88fc1cb93af25b64494d4bfc29d648a589347faa",
+          "source_manifest_sha256": "f9bd99d2bb3a2d699432ca8d9d0ab0ad4b8af29c2769846ce61e2acf2b16a230",
+          "source_after_manifest_sha256": "f9bd99d2bb3a2d699432ca8d9d0ab0ad4b8af29c2769846ce61e2acf2b16a230",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 205.111,
+          "passed": 1,
+          "pytest_seconds": 203.44,
+          "normal_setup_seconds": 193.437052724,
+          "events": 1000,
+          "source_versions": 1000,
+          "witnesses": 1000,
+          "holdings": 100,
+          "exact_amount_each_decimal": "10",
+          "currency": "EUR",
+          "returned": 25,
+          "unknown": 0,
+          "query_source_sha256": "577b4d71f2cd0e04d1af4e563d8e43e1afdee464f6206523074f35d0a38580fa",
+          "authority_source_sha256": "470ac1e14f5b84b2433a3d42715f41c3c051ede2c92dcf974f84e428f94db9c8",
+          "slo_pass_claimed": false
+        },
+        "declared_normal_service_recovery_passed": true,
+        "full_scaling_or_slo_resolution_claimed": false,
+        "representative_browser_attempt_06": {
+          "record_pointer": "/consolidated_batch_2/a3/representative_browser_performance/latest_attempt_06",
+          "receipt": "a3-web-performance-notin-desktop-recovery-06/receipt.json",
+          "source_manifest_sha256": "f9bd99d2bb3a2d699432ca8d9d0ab0ad4b8af29c2769846ce61e2acf2b16a230",
+          "source_unchanged": true,
+          "functional_metadata_service_recovery_passed": true,
+          "browser_pagination_cause_assigned": false,
+          "whole_lab_slo_pass_claimed": false
+        }
+      }
+    },
+    "a2": {
+      "status": "three_report_journey_viewports_qualified_by_corrected_executions_and_desktop_source_equivalence",
+      "complete_browser_pass_claimed": false,
+      "representative_browser_performance": "normal_service_recovered_browser06_failed_cursor_poll_cause_unassigned_performance_incomplete_local",
+      "privacy_failure_receipt": "a2-browser-desktop-final-focused-01/receipt.json",
+      "privacy_failure": "Prior-account private canary retained in initial RSC bootstrap HTML after URL/visible state reset.",
+      "observed_before_failure": "Four formats and zero/64-note selections reached; not a completed browser pass.",
+      "correction": "Authorized account switch uses document navigation and masks intent until the new document replaces prior router/RSC state.",
+      "unit_regression_initial_failed": 1,
+      "focused_unit_cases_passed": 6,
+      "production_web_build": "passed_at_recorded_source",
+      "production_web_build_seconds": 6.498,
+      "unsupported_partial_note_erasure_fixture": "Guard correctly refused payload deletion; explicit nonexistent immutable revision now preserves denial/selection assertions.",
+      "recorded_complete_journeys_passed": 3,
+      "recorded_journeys": {
+        "desktop": {
+          "receipt": "a2-browser-complete-desktop-01/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "015d4d299001be9252b55f9dbb7647e1231176143458c8d6bdfce45219c5bcb1",
+          "source_after_manifest_sha256": "1d01bd1c68bc3d27bed8e81b89503d71e00e7c4aa6155add5af2bf6ef3e66606",
+          "source_unchanged": false,
+          "changed_source_paths": [
+            "scripts/verify_phase3_stack_restart.py",
+            "tests/integration/phase3_operational_fixture.py",
+            "tests/integration/test_phase3_restore_restrictions.py",
+            "tests/unit/test_phase3_stack_restart.py"
+          ],
+          "exit_code": 0,
+          "runner_seconds": 126.117,
+          "passed": 1,
+          "scope": "Recorded complete journey at height 900 pixels; corrected-height matrix qualification remains pending."
+        },
+        "mobile": {
+          "receipt": "a2-browser-complete-mobile-01/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "1d01bd1c68bc3d27bed8e81b89503d71e00e7c4aa6155add5af2bf6ef3e66606",
+          "source_after_manifest_sha256": "d33a58979b8d6c9838c4ba9c050ebbf1d483752fc7c2b81ad61e6df33b4f514d",
+          "source_unchanged": false,
+          "changed_source_paths": [
+            "tests/integration/phase3_operational_fixture.py",
+            "tests/integration/test_phase3_restore_restrictions.py",
+            "tests/unit/test_phase3_stack_restart.py"
+          ],
+          "exit_code": 0,
+          "runner_seconds": 128.43,
+          "passed": 1,
+          "scope": "Recorded complete journey at height 900 pixels; corrected-height matrix qualification remains pending."
+        },
+        "tablet": {
+          "receipt": "a2-browser-complete-tablet-01/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "d33a58979b8d6c9838c4ba9c050ebbf1d483752fc7c2b81ad61e6df33b4f514d",
+          "source_after_manifest_sha256": "d33a58979b8d6c9838c4ba9c050ebbf1d483752fc7c2b81ad61e6df33b4f514d",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 128.076,
+          "passed": 1,
+          "scope": "Recorded complete journey at height 900 pixels; corrected-height matrix qualification remains pending."
+        }
+      },
+      "corrected_height_executions_passed": 2,
+      "current_report_journey_viewports_qualified": true,
+      "full_browser_matrix_pass_claimed": false,
+      "complete_browser_pass_scope": "Whole repository browser matrix; distinct from the three A2 report journey viewports.",
+      "initial_recorded_journey_height": 900,
+      "corrected_viewport_executions": {
+        "mobile": {
+          "receipt": "a2-corrected-height-mobile-02/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "4a5ce4df0782f6205e02940eebe712300f57f04fdae52a5b970a36d6dc9eb648",
+          "source_after_manifest_sha256": "4a5ce4df0782f6205e02940eebe712300f57f04fdae52a5b970a36d6dc9eb648",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 124.976,
+          "passed": 1,
+          "width": 360,
+          "height": 800
+        },
+        "tablet": {
+          "receipt": "a2-corrected-height-tablet-02/receipt.json",
+          "head": "ecc7c75221841eb64981ec3e971a36944052d48e",
+          "source_manifest_sha256": "4a5ce4df0782f6205e02940eebe712300f57f04fdae52a5b970a36d6dc9eb648",
+          "source_after_manifest_sha256": "4a5ce4df0782f6205e02940eebe712300f57f04fdae52a5b970a36d6dc9eb648",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 122.16,
+          "passed": 1,
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "desktop_reuse": {
+        "receipt": "a2-browser-complete-desktop-01/receipt.json",
+        "width": 1440,
+        "height": 900,
+        "qualification": "Earlier complete journey reused through unchanged frontend sources and independently qualified codec byte equivalence. Its recorded whole-source flag remains false for unrelated helper changes.",
+        "unchanged_desktop_rerun": false
+      }
+    },
+    "remaining_candidate_release_steps": "All five Batch2 implementation commits exist through local7ed9cb9; the earlier literal-DDL ecc7c75 is pushed and the later four groups are not pushed. Five affected PostgreSQL cases and normal1000 service pass at their recorded sources. Browser06 rendered research then failed the cursor URL poll in228.775seconds,cause unassigned; five holdings and one partial research sample do not establish research/whole-lab SLOs. Admission p95 .930957544failure is retained by the documented component binding,not a fresh timing execution or environmental/cache equivalence. No unchanged ten-job repeat or further optimization. B materially incomplete; C/P3-10 unstarted; all30rows/48scenarios pending0accepted,CI unverified,LICENSE unchanged. Preliminary documentation commit,actual full-stack/restart,clean export,current source/history and dependency/container audits remain pending.",
+    "checkpoint_c": "not_started",
+    "pending_rows": 30,
+    "pending_scenarios": 48,
+    "production_source_changes_frozen": true,
+    "license_status": "unchanged_no_distribution_decision",
+    "delivery_scope": "bounded_checkpoint_after_authorized_focused_closures_no_p3_10_attempt",
+    "last_reconciled_date": "2026-11-15",
+    "current_main_sha": "7ed9cb9e071515a54658dfd357faeb14fc7a90e4",
+    "new_commit_claimed": true,
+    "codec_delivery": {
+      "receipt": "codec-stage-commit-01.json",
+      "sha": "88fc1cb93af25b64494d4bfc29d648a589347faa",
+      "pushed": false,
+      "paths": 9,
+      "codec_paths": 6,
+      "partial_status_paths": 3,
+      "full_worktree_status_bytes_restored_after_staging": true
+    },
     "landed_implementation_groups": [
+      "literal_ddl",
       "codec",
       "a1",
       "web",
       "ops"
     ],
-    "landed_group_summaries": [
-      "Bounded canonical report encoding and its independent byte/cap oracles",
-      "Research authority, explicit unavailable exposure and bounded query correction",
-      "Account document privacy and complete real report/performance browser harnesses",
-      "Guarded operational recovery, resource measurement and release-evidence harnesses"
-    ],
-    "implementation_groups_not_yet_landed": [],
-    "qualification": "Landed code groups only; focused receipts retain their actual source scope. No complete suite or new-commit-SHA execution is claimed.",
-    "checkpoint_a": "in_progress",
-    "checkpoint_b": "not_stable_known_local_admission_gate_failure",
-    "checkpoint_c": "not_started",
-    "p3_10_complete_attempts_authorized": 1,
-    "p3_10_complete_attempts_started": 0,
-    "pending_rows": 30,
-    "accepted_rows": 0,
-    "pending_scenarios": 48,
-    "accepted_scenarios": 0,
-    "ci": "deferred_by_owner_unverified",
-    "production_authorized": false,
-    "live_authorized": false,
-    "license_status": "unchanged_no_distribution_decision",
-    "evidence_collection": "batch2-20261114-06y_8c2n",
-    "recorded_codec_qualification": {
-      "receipt": "a3-bounded-codec-stream-failed-and-affected-green-01/receipt.json",
-      "passed": 420,
-      "pytest_seconds": 2.63,
-      "scope": "Recorded codec source, not complete validation at this new commit."
-    },
-    "recorded_capture_and_admission_observation": {
-      "receipt": "a3-final-codec-capture-and-admission-recovery-04/receipt.json",
-      "capture_byte_parity": "passed",
-      "admission_p95_seconds": 0.9309575439983746,
-      "admission_p95_limit_seconds": 0.75,
-      "admission_gate": "failed",
-      "scope": "Recorded composed-working-source outcome, not a latency execution at this partial commit. No per-partial-commit component equivalence or pass is claimed; root may reuse the actual failed gate for the eventual unchanged admission component after all relevant source groups land."
-    },
-    "functional_browser_and_read_qualification": "Tracked by source-qualified evidence; no blanket completion claim in this partial overlay.",
-    "final_status_and_traceability_reconciliation": "pending_final_documentation_commit",
-    "prior_head_checkpoint": {
-      "date": "2026-11-14",
-      "starting_main_sha": "5731a5039beb8f3c7272c9b387ac757de605a0e1",
-      "report": "docs/implementation/PHASE_3_BATCH2_20261114.md",
-      "status": "in_progress",
-      "owner_acceptance_of_batch1": "bounded_implementation_checkpoint_only",
-      "reported_independent_review": {
-        "python_passed": 64,
-        "web_passed": 38,
-        "execution_records_checked": 94,
-        "phase3_acceptance": false
+    "remote_main_last_verified_sha": "ecc7c75221841eb64981ec3e971a36944052d48e",
+    "implementation_commits": [
+      {
+        "sha": "ecc7c75221841eb64981ec3e971a36944052d48e",
+        "group": "literal_ddl",
+        "purpose": "Expand only closed migration DDL identifiers while preserving ordered guards and scanner policy.",
+        "receipt": "a4-commit-01/receipt.json",
+        "pushed": true,
+        "push_receipt": "a4-push-01/receipt.json"
       },
-      "checkpoint_a": "in_progress",
-      "checkpoint_b": "pending",
-      "p3_10_complete_attempts_authorized": 1,
-      "p3_10_complete_attempts_started": 0,
-      "accepted_rows": 0,
-      "accepted_scenarios": 0,
-      "ci": "deferred_by_owner_unverified",
-      "production_authorized": false,
-      "live_authorized": false
-    }
+      {
+        "sha": "88fc1cb93af25b64494d4bfc29d648a589347faa",
+        "group": "codec",
+        "purpose": "Bound canonical report encoding cost and preserve immutable bytes.",
+        "receipt": "codec-stage-commit-01.json",
+        "pushed": false,
+        "paths": 9
+      },
+      {
+        "sha": "d16cb4452f9acfc395498e9dc3a84d0b9903a8b3",
+        "group": "a1",
+        "purpose": "Authorize transitive REPORT evidence before private reads, preserve unavailable exposure, and bound summary membership.",
+        "receipt": "implementation-stage-2-commit-01.json",
+        "pushed": false,
+        "paths": 16
+      },
+      {
+        "sha": "f9cc5291926c8ebd31064d83501ca172b7e98495",
+        "group": "web",
+        "purpose": "Replace account documents on authorized switches and retain real report/download and performance harness evidence.",
+        "receipt": "implementation-stage-3-commit-01.json",
+        "pushed": false,
+        "paths": 14
+      },
+      {
+        "sha": "7ed9cb9e071515a54658dfd357faeb14fc7a90e4",
+        "group": "ops",
+        "purpose": "Retain bounded restore, restriction, restart, resource and release-evidence tooling and failure paths.",
+        "receipt": "implementation-stage-4-commit-01.json",
+        "pushed": false,
+        "paths": 16
+      }
+    ],
+    "batch2_implementation_commit_count": 5,
+    "local_unpushed_implementation_commit_count": 4,
+    "preliminary_documentation_reconciliation": "prepared_for_root_clean_commit_before_remaining_A3_and_A4_execution"
   }
 }

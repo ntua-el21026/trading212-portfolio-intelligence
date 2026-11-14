@@ -6,6 +6,15 @@
 
 **Release target:** 1.0.0
 
+Current execution status is recorded in the
+[Consolidated Batch 2 record](PHASE_3_BATCH2_20261114.md). Focused source-qualified
+passes do not establish acceptance of this baseline. The latest measured
+report-admission failure keeps Checkpoint B and the complete P3-10 attempt
+pending; no frozen threshold, runtime pin or licensing right is changed here.
+The bounded research-query recovery preserves current authorization per statement.
+Its normal service pass is separate from incomplete browser pagination/performance
+qualification and does not establish the frozen operational SLOs.
+
 ## Observed starting point
 
 Actual clean main and origin/main were

@@ -7,7 +7,19 @@ valuation time, coverage and quality remain attached to results.
 
 ## Current status
 
-**Phase 3 is in progress.** Consolidated Batch 1 adds focused aggregation,
+**Phase 3 is in progress.** The owner accepted Batch 1 as a bounded implementation
+checkpoint. [Batch 2](docs/implementation/PHASE_3_BATCH2_20261114.md) adds transitive
+research-report authorization, account-switch privacy protection and focused
+synthetic recovery evidence. The latest report-admission measurement remains
+above its frozen limit (p95 0.931 seconds against 0.750 seconds); final P3-10
+validation has therefore not started. Focused report journeys pass at the three
+required viewport sizes. The normal 1,000-event research request now passes after
+a bounded authorization-set query correction; its separate browser performance
+case remains incomplete at pagination. All 30 acceptance rows and 48 scenarios
+remain pending, zero accepted. Local unfinished work is distinct from external
+credentials, deployment and distribution-rights decisions.
+
+Consolidated Batch 1 adds focused aggregation,
 analytical and admission-boundary evidence under the
 [current functional-completion record](docs/implementation/PHASE_3_BATCH1_20261114.md).
 Research reporting implements the approved exact item, zero-to-64 note revisions
@@ -25,9 +37,8 @@ case partitions and earlier failures; it does not establish a new whole-suite
 pass. See [current status](PROJECT_STATUS.md), the
 [stabilization record](docs/implementation/PHASE_3_STABILIZATION_20261113.md) and
 [evidence index](docs/implementation/evidence/phase-3-stabilization-20261113.json).
-All Phase 3 acceptance and independent review remain pending. Production and
-Live are unauthorized; subsequent Git/CI and evidence-delivery outcomes belong
-to the external delivery record.
+Phase 3 acceptance and independent review remain pending. Production and
+Live are unauthorized; GitHub Actions remains owner-deferred and unverified.
 
 Phase 1 has source-bound acceptance evidence. Phase 2 was accepted by the owner
 for progression after the R-01/R-02 corrections; that decision is distinct from

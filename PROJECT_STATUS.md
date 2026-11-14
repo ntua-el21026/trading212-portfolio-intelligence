@@ -10,14 +10,6 @@
 
 ## Current state
 
-<!-- BEGIN BATCH2 PARTIAL DELIVERY -->
-Consolidated Batch 2 implementation delivery is at stage 4 of 4, recorded on 2026-11-15. Landed groups: Bounded canonical report encoding and its independent byte/cap oracles; Research authority, explicit unavailable exposure and bounded query correction; Account document privacy and complete real report/performance browser harnesses; Guarded operational recovery, resource measurement and release-evidence harnesses. Groups not yet landed: none; final documentation reconciliation is still pending. This states the committed implementation subset; it does not mark all work or checks complete.
-
-The codec has a recorded 420-case pass in 2.63 seconds and a separate real capture-byte-parity pass. Receipts retain their actual source manifests; this partial commit has no complete-suite or newly created-SHA execution claim. The admission gate remains failed at p95 0.9309575439983746 seconds against 0.750 seconds. That failure belongs to the recorded composed working source; no new latency execution or admission-component equivalence at this partial commit is claimed. The eventual unchanged admission component need not be rerun merely to seek green.
-
-B remains unstable. C and the complete P3-10 attempt have not started. All 30 rows and 48 scenarios remain pending, zero accepted. CI remains unverified, production/Live remain unauthorized, and LICENSE is unchanged. Final public status and traceability reconciliation belongs to the final documentation commit. The preexisting checkpoint text below is preserved as historical context; this partial-delivery record governs the current landed subset.
-<!-- END BATCH2 PARTIAL DELIVERY -->
-
 Consolidated Batch 2 is authorized and in progress from clean, synchronized live/local
 `main` at `5731a5039beb8f3c7272c9b387ac757de605a0e1`. The owner accepted Batch 1 as
 a bounded implementation checkpoint after independent review, reporting 64 Python
@@ -32,11 +24,119 @@ and 48 scenarios remain pending, zero accepted. CI remains owner-deferred; produ
 Live, real credentials, paid providers and distribution rights remain unauthorized.
 The [Batch 2 record](docs/implementation/PHASE_3_BATCH2_20261114.md) tracks actual work.
 
+A1 now has focused passing observations for all 27 original acquired-FX → X-ray →
+research → report cases, plus one added count/rank/cursor case. These are distributed
+executions, not a combined 28-case suite pass. Reproduced corrections authorize
+upstream current/pinned REPORT rights before private decoding and keep wholly
+unvalued held-entity exposure unavailable in research while preserving X-ray known
+subtotals and genuine zero. Seven independent unit vectors pass. The summary uses
+the same availability predicate and rejects prior rank cursors through
+`research_items.bounded.v2`; retained input/result and old report bytes are unchanged.
+Focused static, generated-contract and architecture checks pass at their recorded
+sources. A4's migration-only SAST correction passed two literal contracts, two
+PostgreSQL behavior cases and the extended four-rule/one-file scan with zero findings.
+
+Ten source-affected PostgreSQL cases passed in 407.60 seconds, including all six
+capture/fallback parity and rights cases, acquired-FX four-format proof, original
+expiry, concurrent revocation and post-backup restriction reconciliation. Between
+that receipt and the 420-case codec observation, only the pure report codec changed
+in backend/domain production. Those codec cases passed in 2.63 seconds, and the
+latest real capture-byte-parity case passed. Subsequent summary-query changes have
+separate five-case and normal 1,000-event service passes recorded below.
+The original 32-MiB input/result/document and 2-MiB manifest caps remain; fallback
+tests simulate the fast-cap route rather than an actual near-32-MiB fixture.
+
+Worker/process/outage recovery passed in 81.53 seconds. Strict restore matched all
+368 table hashes and expanded schema in 49.75 seconds after preserved earlier
+failures. The latest restore target guard has 23 unit passes and four PostgreSQL
+restore/failure-path passes in 101.30 seconds. Populated Phase 2 upgrade passed in
+22.43 seconds.
+Maximum legal projection work passed with an 88.1315-second actual attempt and
+348,745,728-byte sampled worker-tree peak RSS under unchanged 240-second/512-MiB
+limits; its first unavailable-sample measurement failure remains recorded.
+
+The latest completed admission-budget observation remains a material local failure.
+Attempt 04 retained
+one capture-parity pass and one budget failure: admission p95 0.930958 seconds
+exceeded 0.750 seconds, while read p95 0.362689 seconds passed 0.500 seconds with
+exactly 12 statements per read. All ten genuine jobs completed; raw samples and
+the earlier attempt-03 p95 1.099637-second failure are preserved. Production is
+held at the current query candidate, B is not stable, and C/P3-10 has not started.
+The authority was restored exactly to its original source. The remaining narrow
+query membership correction affects research reads, so the unchanged admission
+component retains attempt04's failed gate through the explicit component binding:
+1,025 of 1,026 application/package inputs and all four fixture/test inputs are
+byte-identical; the sole application change is the summary query. This is no new
+timing execution, full-source or environment/cache-state equivalence claim. No
+further admission optimization or unchanged ten-job repetition is planned.
+Historical read latency is not a measurement of the new query; whole-lab
+qualification remains separate.
+
+The A2 account-switch RSC privacy defect was corrected with document navigation.
+Corrected mobile at 360 by 800 and tablet at 768 by 1024 passed in 124.976 and
+122.160 seconds with unchanged source. The earlier desktop 1440-by-900 pass is
+reused through unchanged frontend sources and codec byte equivalence. These are
+source-qualified A2 journey observations, not a complete repository browser gate.
+The full 100-holding/1,000-event fixture completed setup in 191.62 seconds, then
+retained a 25-versus-50 visible-row harness failure. Attempt 04 was interrupted
+at exact-label `Sort` focus; after the test-only role correction, attempt 05 retained
+five holdings samples and failed the first research request with `SOURCE_UNAVAILABLE`.
+The metadata query exceeded its unchanged five-second cap. An actual diagnostic
+profile measured 16.115633 seconds and one million eligibility/two million
+latest-license evaluations. Materialization alone failed cold qualification;
+LATERAL alone passed six regressions but still failed the normal 1,000-event request.
+The intermediate combined candidate passed six regressions but still failed the
+normal 1,000-event recovery; its second actual profile exposed roughly one billion
+eligible-ID join comparisons in 28.226935 seconds. That experiment remains recorded.
+The authority is now restored, and the narrow nonnullable `NOT IN` membership
+candidate passed one private cold metadata case in 8.94 seconds, with a 0.332077-second
+SQL, unchanged zero statistics and exact 25-row/rank/EUR10 parity. It is not a full
+service or SLO pass. Five affected PostgreSQL cases then passed in 88.36 seconds,
+and the mandatory normal 1,000-event service recovery passed in 203.44 seconds with
+unchanged complete source, exact 100-by-EUR10 holdings and the expected 25 items.
+The representative desktop browser recovery then failed in 228.775 seconds at the
+existing five-second Next-page URL cursor poll, after research rendered 25 of 1,000
+items with exact EUR10 references. Its cause remains unassigned. Five complete
+holdings samples and one partial research sample are retained; no research p75,
+whole-lab SLO or summary was produced. Fresh mobile/tablet performance executions
+remain pending locally. Costly browser and optimization attempts stop at this bounded
+checkpoint. B is materially incomplete because the admission gate remains failed
+and representative performance remains incomplete; C/P3-10 has not started.
+Complete nine-service stack/restart qualification
+and remaining candidate release observations remain pending. `LICENSE` is unchanged.
+Receipt manifests distinguish unchanged complete-source runs from scoped passes with
+unrelated concurrent edits; these observations are not complete validation.
+The synthetic restart harness now resides in
+`tests/integration/phase3_stack_restart.py` and runs through
+`python -m tests.integration.phase3_stack_restart`; its relocation preserves the
+transport boundary and all 31 guard assertions without a production wrapper.
+Tool preparation passed in 5.608 seconds. The codec's four-file/seven-rule scan
+reported zero findings in 118.697 seconds and the high confidence secret check
+passed in 1.632 seconds at their unchanged recorded source. The remaining fifteen
+explicit source inputs passed the same configured seven-rule scan with zero
+findings in 118.662 seconds. Those code inputs were unchanged; the full receipt
+records nine documentation paths changing during that scan, so it is a scoped pass.
+
+All five Batch 2 implementation commits now exist. The earlier literal-DDL commit
+`ecc7c75221841eb64981ec3e971a36944052d48e` is pushed. The four later groups—codec,
+research authority/availability/query, account privacy/browser harness, and operational
+evidence tooling—are committed locally through
+`7ed9cb9e071515a54658dfd357faeb14fc7a90e4` and are not pushed. Their exact purposes and
+receipts are in the Batch 2 record. Preliminary documentation reconciliation,
+actual complete-stack/restart qualification, clean export and current source/history
+and dependency/container audits remain pending. These commits do not start C or a
+1.0 release, or change acceptance and licensing state.
+
+The historical sections below retain their checkpoint-time observations and pending
+plans. Current Batch 2 authorization and current acceptance state are stated above;
+an older pending review or unauthorized next batch does not override that authority.
+
 ### Historical Batch 1 delivery state
 
-Consolidated Implementation Batch 1 is implemented from audited checkpoint
-`6f8c0117d23f0d3987135e60ef20ae653f505927` and is being prepared for independent
-review. Aggregation and analytical predicates have separate focused passes,
+Consolidated Implementation Batch 1 was implemented from audited checkpoint
+`6f8c0117d23f0d3987135e60ef20ae653f505927` and accepted by the owner as a bounded
+implementation checkpoint following the owner-reported independent review above.
+Aggregation and analytical predicates have separate focused passes,
 including genuine PostgreSQL capacity rejection and unchanged persistent state.
 Research reports implement the approved exact item/note/review policy through the
 existing profile3 routes, four formats and private report workspace. Artifact,
@@ -46,9 +146,12 @@ reviewed literal-DDL findings and its nonzero exit; no whole-SAST pass is claime
 The [Batch 1 record](docs/implementation/PHASE_3_BATCH1_20261114.md) and
 [command index](docs/implementation/evidence/phase-3-batch1-20261114.json) give scope,
 commands and limitations. Current schema: 368 ORM tables through migration `0035`.
-All 30 Phase 3 rows and 48 scenarios remain pending, zero accepted; complete
-current-SHA validation, independent review and verified CI remain pending.
-CI is owner-deferred; production, Live, Batch 2 and final acceptance are unauthorized.
+All 30 Phase 3 rows and 48 scenarios remain pending, zero accepted. The bounded
+Batch 1 owner decision does not establish complete current-source Phase 3 validation,
+candidate independent review or verified CI. CI remains owner-deferred; production,
+Live and final acceptance remain unauthorized. Batch 2 is separately authorized as
+described above. Its migration literal correction does not rewrite Batch 1's retained
+nonzero SAST result into a historical pass.
 
 ### Historical stabilization delivery
 

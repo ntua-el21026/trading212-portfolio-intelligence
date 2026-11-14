@@ -4,6 +4,18 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+- Harden the acquired-FX to X-ray to research-item/report dependency chain before
+  private decoding, preserving current and pinned REPORT rights, immutable proof
+  and original-source deadlines. Correct unavailable research exposure and
+  account-switch document privacy; add genuine report-download browser journeys,
+  synthetic process/restore/upgrade exercises and measured resource checks.
+  Preserve all failed observations. Report-admission p95 remains above its frozen
+  limit; Checkpoint B and complete P3-10 validation remain pending. Expand the
+  eight fixed literal migration DDL statements without changing scanner rules or
+  licensing rights. Recover the normal 1,000-event research query with an
+  authorization-equivalent membership set; preserve the later browser pagination
+  failure and incomplete performance evidence. All Phase 3 acceptance remains pending.
+
 - Add independent aggregation, analytical and capacity-admission regressions with
   focused PostgreSQL evidence and retained failures/recoveries. Implement the approved
   exact-item/note-revision research report vertical with four-format, exact-selection

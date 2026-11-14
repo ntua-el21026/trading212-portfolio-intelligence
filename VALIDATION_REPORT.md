@@ -1,6 +1,66 @@
 # Validation Report
 
-## Current Consolidated Batch 1, 2026-11-14
+## Current Consolidated Batch 2, 2026-11-14
+
+The owner accepted Batch 1 as a bounded implementation checkpoint and authorized
+local Batch 2 hardening. This does not accept Phase 3. The
+[Batch 2 record](docs/implementation/PHASE_3_BATCH2_20261114.md) separates actual
+executions, failures, focused recoveries and source-equivalent observations.
+
+The latest unchanged-source operational run passed full research-capture byte
+parity but failed admission latency: p95 **0.930957544 seconds**, against the
+unchanged **0.750-second** limit. All ten reports completed; the 30 read samples
+passed p95 **0.362688597 seconds** and the 12-statement bound. This material local
+failure prevents Checkpoint B stabilization and the conditional P3-10 attempt.
+Complete immutable-source attempt count is **zero**. No complete Make validation,
+full coverage or entire browser matrix has run in Batch 2.
+The original scalar grant authority has been restored byte for byte. The admission
+component therefore retains the recorded failed result through input equivalence;
+it was not rerun to seek green. The new summary membership query affects research
+reads, whose later observations remain separate from that old read measurement.
+
+| Receipt | Actual focused observation |
+| --- | --- |
+| `a4-extended-sast-green-01` | Zero findings, four applicable Python rules on migration `0035`, 118.777 seconds; scanner rules unchanged. This is not whole-repository SAST. |
+| `a3-final-research-affected-and-restore-rights-01` | Ten PostgreSQL cases passed in 407.60 seconds: capture/fallback parity, four formats, expiry, concurrent revocation and quarantined post-backup authority reconciliation. |
+| `a3-bounded-codec-stream-failed-and-affected-green-01` | 420 codec cases passed in 2.63 seconds, including independent frozen-byte, Unicode and size-boundary references. Whole-source bookends are unchanged. |
+| `a3-final-codec-capture-and-admission-recovery-04` | One capture-parity pass and one latency failure in 132.43 seconds. Whole-source bookends are unchanged; the values above are from this execution. |
+| `a3-process-recovery-postgres-01` | One real worker-kill/Redis-loss/PostgreSQL-outage recovery case passed in 81.53 seconds. This does not establish full-stack restart. |
+| `a3-complete-schema-restore-recovery-02` | One clean synthetic restore passed in 49.75 seconds: all 368 table row fingerprints and normalized schema descriptors matched; recovery through verified jobs took 23.194 seconds. |
+| `a3-restore-target-boundary-green-01` | 23 endpoint/project/port guard cases passed in 1.09 seconds. Later helper-level PostgreSQL qualification is recorded separately. |
+| `a3-populated-phase2-upgrade-01` | One populated `0016` to `0035` upgrade/repeat case passed in 22.43 seconds, preserving historical rows and replay. |
+| `a3-maximum-projection-rss-fallback-recovery-02` | One maximum-work case passed: 1,000,000 work product, 88.132-second attempt and 348,745,728-byte observed worker-tree peak RSS. Its first measurement failure remains retained. |
+| `a2-browser-complete-desktop-01`, `a2-corrected-height-mobile-02`, `a2-corrected-height-tablet-02` | Separate genuine report submission/four-download/denial journeys pass at 1440×900, 360×800 and 768×1024. The corrected mobile/tablet invocations have unchanged source; desktop is retained by relevant-input equivalence. Earlier height-900 observations remain historical. |
+| `a3-web-performance-background-recovery-03` | The normal 100-holding/1,000-event fixture completed in 191.62 seconds, then the browser harness incorrectly expected 25 rather than 50 holdings. No lab-performance pass is established. |
+| `a4-codec-configured-sast-01` | Configured seven-rule scan of four changed codec production files passed with zero findings in 118.697 seconds. This is a separate scope from the migration scan. |
+| `a4-remaining-delta-configured-sast-01` | The same configured seven rules passed on the remaining 15 changed application/script files with zero findings in 118.662 seconds. Explicit scanner inputs were unchanged; whole-source bookends differ only in nine documentation files. |
+| `a3-research-notin-candidate-auth-lock-recovery-14` | One bounded cold metadata probe passes: 0.332077-second SQL, exact 25-row metadata/rank/EUR10, 1,000 total/zero unknown and unchanged zero-column-statistics state. The earlier helper failed before query execution because it disallowed legitimate authorization locks; both observations remain retained. |
+| `a3-notin-query-source-affected-postgres-03` | Five affected count/rank, cursor, current-rights and clock/rollback cases passed in 88.36 seconds with unchanged source. |
+| `a3-notin-normal-thousand-service-recovery-03` | One normal 100-holding/1,000-event publication and real service request passed in 203.44 seconds with unchanged source and the original five-second SQL cap. This is a functional recovery, not a full SLO pass. |
+| `a3-web-performance-notin-desktop-recovery-06` | Failed in 228.775 seconds with unchanged source after research rendered. Five holdings samples and one partial research sample remain; waiting five seconds for the pagination cursor failed. No completed research p75 or performance summary exists. |
+
+The ten-case PostgreSQL run's whole-source bookends differ only in four unrelated
+browser/performance fixture files. Its authorization paths are unchanged after
+that execution; later codec byte equivalence is a separate observation, not a
+new ten-case execution. Earlier latency failures, browser failures, schema
+comparison failures and focused recoveries remain in the private evidence index.
+The browser's first failed artifact inspection did not retain its downloaded
+copies; later attempts retain raw artifacts before inspection. That evidence
+loss remains explicit.
+The unsuccessful LATERAL/materialization experiments and their diagnostic
+profiles are retained separately. Only the materialized non-null source-ID set
+and equivalent NOT IN membership correction remain. The normal service failure
+has recovered; browser pagination/performance remains pending local diagnosis.
+No further expensive performance attempt or unchanged ten-admission measurement
+was started after these bounded observations. Complete stack restart, remaining
+security observations and release-artifact qualification retain their own status.
+
+All 30 acceptance rows and 48 scenarios remain pending, zero accepted. GitHub
+Actions is owner-deferred/unverified. External provider credentials, production,
+hosted registration and binary/container distribution rights are separate
+prerequisites. No licensing grant or obligation is changed.
+
+## Historical Consolidated Batch 1, 2026-11-14
 
 The [Batch 1 record](docs/implementation/PHASE_3_BATCH1_20261114.md) distinguishes
 new focused executions, retained failures, focused recoveries and source manifests.

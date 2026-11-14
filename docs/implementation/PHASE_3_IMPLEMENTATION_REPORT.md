@@ -1,10 +1,24 @@
 # Phase 3 Implementation Report
 
-**Current:** Consolidated Batch 1 is in progress from audited checkpoint
+**Current:** Consolidated Batch 2 continues from owner-reviewed bounded Batch 1
+checkpoint `5731a5039beb8f3c7272c9b387ac757de605a0e1`. The
+[Batch 2 record](PHASE_3_BATCH2_20261114.md) distinguishes implemented transitive
+authorization and privacy corrections, focused synthetic evidence and retained
+failures. Report-admission p95 remains above its frozen limit; Checkpoint B and
+the conditional complete P3-10 attempt are pending. Complete attempt count is zero.
+The normal 1,000-event service query has a focused functional recovery, with all
+authorization predicates preserved. The subsequent browser case still fails at
+pagination and has no complete research performance sample set. Earlier failed
+query experiments and the admission failure remain evidence; no SLO is weakened.
+All 30 rows and 48 scenarios remain pending, zero accepted; CI is owner-deferred
+and unverified. Runtime metadata remains `0.2.0` until an eligible synchronized
+P3-10 candidate step. Production and Live remain unauthorized.
+
+**Prior Batch 1:** Consolidated Batch 1 began from audited checkpoint
 `6f8c0117d23f0d3987135e60ef20ae653f505927`. Focused aggregation and analytical
 regressions and research reporting have actual component passes. Research reports
 implement the owner-approved exact-revision selection contract. See the
-[Batch 1 record](PHASE_3_BATCH1_20261114.md) for current implementation and
+[Batch 1 record](PHASE_3_BATCH1_20261114.md) for its implementation and
 source-qualified execution status. All 30 rows and 48 scenarios remain pending,
 zero accepted. Complete validation, independent acceptance and CI remain pending.
 
