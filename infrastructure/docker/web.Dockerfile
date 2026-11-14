@@ -41,6 +41,7 @@ RUN rm -rf \
     /usr/local/lib/node_modules/npm
 COPY --from=builder --chown=app:app /app/apps/web/.next/standalone ./
 COPY --from=builder --chown=app:app /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder --chown=app:app /app/apps/web/public ./apps/web/public
 # Keep dpkg's status database for vulnerability/license provenance, while
 # removing package-manager executables and their fixed helper installations.
 RUN for manager_dir in /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin /opt/venv/bin; do \
