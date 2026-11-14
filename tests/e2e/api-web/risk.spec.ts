@@ -139,18 +139,8 @@ test("owned risk definition, immutable revision, isolated execution and canonica
   await expect(
     page.getByText(/No covered issuer concentration estimate is available/),
   ).toBeVisible();
-  expect(
-    await page
-      .locator("table")
-      .evaluateAll(
-        (tables) =>
-          tables.filter(
-            (table) =>
-              !table.querySelector("caption") &&
-              !table.getAttribute("aria-label"),
-          ).length,
-      ),
-  ).toBe(0);
+  for (const table of await page.getByRole("table").all())
+    await expect(table).toHaveAccessibleName(/\S/);
   await keyboardClearance(page);
   expect(
     await page.evaluate(

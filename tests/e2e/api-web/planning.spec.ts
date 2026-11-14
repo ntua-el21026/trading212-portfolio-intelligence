@@ -58,28 +58,19 @@ async function assertPresentation(page: Page) {
         document.documentElement.clientWidth,
     ),
   ).toBeLessThanOrEqual(1);
+  for (const table of await page.getByRole("table").all())
+    await expect(table).toHaveAccessibleName(/\S/);
+  for (const control of await page
+    .locator('input:not([type="hidden"]),select,textarea')
+    .all()) {
+    if (await control.isVisible())
+      await expect(control).toHaveAccessibleName(/\S/);
+  }
   expect(
     await page.evaluate(() => {
       const problems: string[] = [];
       const ids = [...document.querySelectorAll("[id]")].map((node) => node.id);
       if (ids.length !== new Set(ids).size) problems.push("duplicate ids");
-      for (const element of document.querySelectorAll(
-        "input,select,textarea",
-      )) {
-        if (
-          element.getAttribute("type") !== "hidden" &&
-          !element.closest("label") &&
-          !element.getAttribute("aria-label")
-        )
-          problems.push("unlabelled control");
-      }
-      for (const table of document.querySelectorAll("table")) {
-        if (
-          !table.querySelector("caption") &&
-          !table.getAttribute("aria-label")
-        )
-          problems.push("unnamed table");
-      }
       if (
         document.querySelectorAll("main").length !== 1 ||
         document.querySelectorAll("h1").length !== 1

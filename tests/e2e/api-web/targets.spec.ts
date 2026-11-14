@@ -12,25 +12,20 @@ test.beforeEach(async ({ page }) => {
 
 async function assertAccessibleTargetPage(page: Page): Promise<void> {
   await keyboardClearance(page);
+  for (const table of await page.getByRole("table").all())
+    await expect(table).toHaveAccessibleName(/\S/);
+  for (const control of await page
+    .locator('input:not([type="hidden"]),select,textarea')
+    .all()) {
+    if (await control.isVisible())
+      await expect(control).toHaveAccessibleName(/\S/);
+  }
   const issues = await page.evaluate(() => {
     const violations: string[] = [];
     const ids = [...document.querySelectorAll<HTMLElement>("[id]")]
       .map((node) => node.id)
       .filter(Boolean);
     if (new Set(ids).size !== ids.length) violations.push("duplicate ids");
-    for (const control of document.querySelectorAll("input,select,textarea")) {
-      if (
-        control.getAttribute("type") !== "hidden" &&
-        !control.closest("label") &&
-        !control.getAttribute("aria-label")
-      ) {
-        violations.push("control without accessible label");
-      }
-    }
-    for (const table of document.querySelectorAll("table")) {
-      if (!table.querySelector("caption") && !table.getAttribute("aria-label"))
-        violations.push("table without accessible name");
-    }
     for (const image of document.querySelectorAll("img"))
       if (!image.hasAttribute("alt")) violations.push("image without alt");
     if (document.querySelectorAll("main").length !== 1)

@@ -35,16 +35,8 @@ async function presentation(page: Page) {
   ).toBeLessThanOrEqual(1);
   await expect(page.getByRole("main")).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
-  expect(
-    await page
-      .locator("table")
-      .evaluateAll((tables) =>
-        tables.every(
-          (table) =>
-            table.getAttribute("aria-label") || table.querySelector("caption"),
-        ),
-      ),
-  ).toBe(true);
+  for (const table of await page.getByRole("table").all())
+    await expect(table).toHaveAccessibleName(/\S/);
   for (const forbidden of [
     "X-Artifact-Grant",
     "download_link",

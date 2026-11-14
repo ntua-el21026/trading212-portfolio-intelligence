@@ -23,12 +23,13 @@ async function assertAccessibleDocument(page: Page): Promise<void> {
     for (const image of document.querySelectorAll("img")) {
       if (!image.hasAttribute("alt")) issues.push("image without alt");
     }
-    for (const table of document.querySelectorAll("table")) {
-      if (!table.querySelector("caption")) issues.push("table without caption");
-    }
     return issues;
   });
   expect(violations).toEqual([]);
+  for (const table of await page.getByRole("table").all()) {
+    await expect(table.locator("caption").first()).toBeAttached();
+    await expect(table).toHaveAccessibleName(/\S/);
+  }
   for (const control of await page.locator("input, select").all()) {
     if (await control.isVisible()) {
       await expect(control).toHaveAccessibleName(/\S/u);

@@ -41,16 +41,8 @@ async function checkedLayout(page: Page) {
         document.documentElement.clientWidth,
     ),
   ).toBeLessThanOrEqual(1);
-  expect(
-    await page
-      .locator("table")
-      .evaluateAll((tables) =>
-        tables.every(
-          (table) =>
-            table.querySelector("caption") || table.getAttribute("aria-label"),
-        ),
-      ),
-  ).toBe(true);
+  for (const table of await page.getByRole("table").all())
+    await expect(table).toHaveAccessibleName(/\S/);
 }
 test.beforeEach(async ({ page }) => {
   page.setDefaultTimeout(20_000);

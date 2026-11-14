@@ -78,16 +78,8 @@ async function presentation(page: Page) {
         document.documentElement.clientWidth,
     ),
   ).toBeLessThanOrEqual(1);
-  expect(
-    await page
-      .locator("table")
-      .evaluateAll((tables) =>
-        tables.every(
-          (table) =>
-            table.querySelector("caption") || table.getAttribute("aria-label"),
-        ),
-      ),
-  ).toBe(true);
+  for (const table of await page.getByRole("table").all())
+    await expect(table).toHaveAccessibleName(/\S/);
   await expect(page.getByRole("main")).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
 }

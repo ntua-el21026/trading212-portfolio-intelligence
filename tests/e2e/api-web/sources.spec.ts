@@ -24,22 +24,17 @@ async function presentation(page: Page) {
         document.documentElement.clientWidth,
     ),
   ).toBeLessThanOrEqual(1);
+  for (const table of await page.getByRole("table").all())
+    await expect(table).toHaveAccessibleName(/\S/);
+  for (const control of await page
+    .locator('input:not([type="hidden"]),select,textarea')
+    .all()) {
+    if (await control.isVisible())
+      await expect(control).toHaveAccessibleName(/\S/);
+  }
   expect(
     await page.evaluate(() => {
       const failures: string[] = [];
-      for (const table of document.querySelectorAll("table"))
-        if (
-          !table.querySelector("caption") &&
-          !table.getAttribute("aria-label")
-        )
-          failures.push("unnamed table");
-      for (const control of document.querySelectorAll("input,select,textarea"))
-        if (
-          control.getAttribute("type") !== "hidden" &&
-          !control.closest("label") &&
-          !control.getAttribute("aria-label")
-        )
-          failures.push("unlabelled control");
       if (
         document.querySelectorAll("main").length !== 1 ||
         document.querySelectorAll("h1").length !== 1
