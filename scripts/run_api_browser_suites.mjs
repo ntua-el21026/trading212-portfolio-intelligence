@@ -86,6 +86,10 @@ function run(arguments_, fixture, reportPath) {
           : "0",
         T212PI_E2E_LAYOUTS: fixture === "owner-layouts.spec.ts" ? "1" : "0",
         T212PI_E2E_RESEARCH: fixture === "research.spec.ts" ? "1" : "0",
+        T212PI_E2E_RESEARCH_REPORTS:
+          fixture === "research-reports.spec.ts" ? "1" : "0",
+        T212PI_E2E_WEB_PERFORMANCE:
+          fixture === "operational-performance.spec.ts" ? "1" : "0",
         T212PI_E2E_SCENARIOS: [
           "scenarios.spec.ts",
           "scenario-reports.spec.ts",
@@ -98,6 +102,7 @@ function run(arguments_, fixture, reportPath) {
           "scenario-reports.spec.ts",
           "projection-reports.spec.ts",
           "research.spec.ts",
+          "research-reports.spec.ts",
         ].includes(fixture)
           ? "1"
           : "0",
@@ -147,7 +152,12 @@ try {
           "--config=playwright.api.config.ts",
           `--project=${project}`,
           ...(listOnly ? ["--list"] : []),
-          ...(reportPath ? ["--reporter=list,json"] : []),
+          ...(reportPath
+            ? [
+                "--reporter=list,json",
+                `--output=${join(evidenceDirectory, "artifacts", spec + "-" + project)}`,
+              ]
+            : []),
           fileFilter,
         ],
         spec,

@@ -14,11 +14,15 @@ const navigation = vi.hoisted(() => ({
   query: "",
   pathname: "/holdings",
   push: vi.fn(),
+  documentNavigate: vi.fn(),
 }));
 vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(navigation.query),
   usePathname: () => navigation.pathname,
   useRouter: () => ({ push: navigation.push }),
+}));
+vi.mock("../lib/account-navigation", () => ({
+  navigateAccountDocument: navigation.documentNavigate,
 }));
 const first = getDemoPortfolio().summary.account;
 const second = {
@@ -56,6 +60,7 @@ describe("account presentation boundary", () => {
     navigation.query = "";
     navigation.pathname = "/holdings";
     navigation.push.mockReset();
+    navigation.documentNavigate.mockReset();
   });
 
   it("uses the URL account in the selector and preserves no prior-account resource in a switch", async () => {
@@ -67,8 +72,15 @@ describe("account presentation boundary", () => {
       screen.getByRole("combobox", { name: "Portfolio account" }),
       second.id,
     );
-    expect(navigation.push).toHaveBeenCalledWith(
+    expect(navigation.documentNavigate).toHaveBeenCalledWith(
       `/holdings?account=${second.id}`,
+    );
+    expect(navigation.push).not.toHaveBeenCalled();
+    expect(
+      screen.queryByText(`Loaded account ${first.id}`),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Loading the selected portfolio",
     );
   });
 

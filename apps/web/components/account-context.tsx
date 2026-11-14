@@ -4,13 +4,12 @@ import { useNavigationVersionRef } from "./navigation-intent";
 
 import type { Account } from "@trading212/api-contracts";
 import { Notice } from "@trading212/ui";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   createContext,
   useContext,
   useState,
   useSyncExternalStore,
-  useTransition,
   type ReactNode,
 } from "react";
 
@@ -21,6 +20,7 @@ import {
   resolveAccountSelection,
   type AccountSelection,
 } from "../lib/account-selection";
+import { navigateAccountDocument } from "../lib/account-navigation";
 import styles from "./account-context.module.css";
 
 interface AccountContextValue {
@@ -46,13 +46,11 @@ export function AccountProvider({
 }>) {
   const query = useSearchParams();
   const pathname = usePathname();
-  const router = useRouter();
   const navigationRef = useNavigationVersionRef();
-  const [pending, startTransition] = useTransition();
   const [intent, setIntent] = useState<string | null>(null);
-  const requested = pending && intent ? intent : accountParameter(query);
-  // Pending selection masks the prior view and permits a second account choice
-  // before the first server response arrives. Browser history remains authoritative.
+  const requested = intent ?? accountParameter(query);
+  // Mask prior account content until document navigation discards its private
+  // server payload and client router cache. A new document resolves its own URL.
   const templateScope = isPrivateTemplateSelection(
     pathname,
     requested,
@@ -66,9 +64,7 @@ export function AccountProvider({
     if (!accounts.some((account) => account.id === accountId)) return;
     navigationRef.current += 1;
     setIntent(accountId);
-    startTransition(() =>
-      router.push(accountSwitchHref(pathname, query, accountId)),
-    );
+    navigateAccountDocument(accountSwitchHref(pathname, query, accountId));
   }
   return (
     <AccountContext.Provider

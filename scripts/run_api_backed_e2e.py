@@ -7,21 +7,22 @@ import asyncio
 import os
 import signal
 import sys
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncIterator, Awaitable, Callable, Iterator
 from contextlib import asynccontextmanager, contextmanager, suppress
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 from queue import Empty, Queue
+from threading import Event as ThreadEvent
 from types import FrameType
-from typing import NoReturn
+from typing import Literal, NoReturn
 from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 
 import psycopg
 import uvicorn
 from alembic import command
 from alembic.config import Config
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request, Response
 from psycopg import sql
 from sqlalchemy import func, select
 from sqlalchemy.engine import make_url
@@ -76,7 +77,9 @@ def _fixture_uuid(name: str) -> UUID:
 
 
 @contextmanager
-def _disposable_database(server_url: str) -> Iterator[str]:
+def _disposable_database(
+    server_url: str, *, cleanup_ready: Callable[[], bool] | None = None
+) -> Iterator[str]:
     """Use configured server credentials without mutating its supplied database."""
     parsed = make_url(server_url.replace("postgresql://", "postgresql+psycopg://", 1))
     if parsed.drivername != "postgresql+psycopg":
@@ -101,6 +104,10 @@ def _disposable_database(server_url: str) -> Iterator[str]:
             os.environ.pop("DATABASE_URL", None)
         else:
             os.environ["DATABASE_URL"] = previous_database_url
+        if cleanup_ready is not None and not cleanup_ready():
+            raise RuntimeError(
+                f"Retained generated synthetic DB {name}: performance preparation did not join."
+            )
         # Creation must have succeeded above; never drop a caller-supplied database.
         with psycopg.connect(admin_dsn, autocommit=True) as connection:
             connection.execute(
@@ -367,9 +374,11 @@ def main() -> None:
     # Uvicorn restores and re-raises SIGTERM after its lifespan exits. Raising
     # SystemExit here lets the database context clean up before this process ends.
     previous_handler = signal.signal(signal.SIGTERM, _exit_fixture)
+    cleanup_ready = ThreadEvent()
+    cleanup_ready.set()
     try:
-        with _disposable_database(server_url) as database_url:
-            _serve_fixture(database_url)
+        with _disposable_database(server_url, cleanup_ready=cleanup_ready.is_set) as database_url:
+            _serve_fixture(database_url, cleanup_ready=cleanup_ready)
     finally:
         signal.signal(signal.SIGTERM, previous_handler)
 
@@ -378,7 +387,7 @@ def _exit_fixture(signum: int, frame: FrameType | None) -> NoReturn:
     raise SystemExit(128 + signum)
 
 
-def _serve_fixture(database_url: str) -> None:
+def _serve_fixture(database_url: str, *, cleanup_ready: ThreadEvent | None = None) -> None:
     from scripts.api_e2e_report_sources import fixture_source_creation_times
     from scripts.api_e2e_timings import fixture_timings, timings_enabled
 
@@ -388,6 +397,18 @@ def _serve_fixture(database_url: str) -> None:
     research = os.environ.get("T212PI_E2E_RESEARCH", "0")
     if research not in {"0", "1"}:
         raise RuntimeError("The research browser fixture selector must be 0 or 1.")
+    research_reports = os.environ.get("T212PI_E2E_RESEARCH_REPORTS", "0")
+    if research_reports not in {"0", "1"}:
+        raise RuntimeError("The research report browser fixture selector must be 0 or 1.")
+    if research_reports == "1" and research == "1":
+        raise RuntimeError(
+            "Research report and preview fixtures have separate entitlement authorities."
+        )
+    web_performance = os.environ.get("T212PI_E2E_WEB_PERFORMANCE", "0")
+    if web_performance not in {"0", "1"}:
+        raise RuntimeError("The measured web fixture selector must be 0 or 1.")
+    if web_performance == "1" and (research_reports == "1" or research == "1"):
+        raise RuntimeError("The measured workload has its own complete research authority.")
     research_authority: ResearchCapabilityAuthority | None = None
     risk = os.environ.get("T212PI_E2E_RISK", "0")
     if risk not in {"0", "1"}:
@@ -419,10 +440,16 @@ def _serve_fixture(database_url: str) -> None:
     command.upgrade(migration_config, "head")
     seed = (
         seed_complete_synthetic
-        if historical == "1" or risk == "1" or scenarios == "1" or projections == "1"
+        if historical == "1"
+        or risk == "1"
+        or scenarios == "1"
+        or projections == "1"
+        or research_reports == "1"
         else seed_materialized_synthetic
     )
-    with fixture_source_creation_times(database_url, enabled=reports == "1" and scenarios == "1"):
+    with fixture_source_creation_times(
+        database_url, enabled=reports == "1" and (scenarios == "1" or research_reports == "1")
+    ):
         asyncio.run(seed(database_url, app_environment="test"))
 
     engine = create_database_engine(database_url)
@@ -439,6 +466,11 @@ def _serve_fixture(database_url: str) -> None:
         SEED_TIME,
         datetime.now(UTC).replace(microsecond=0),
     )
+    research_report_fixture = None
+    web_preparation = None
+    if cleanup_ready is None:
+        cleanup_ready = ThreadEvent()
+        cleanup_ready.set()
     try:
         if layouts == "1":
             from trading212_security.principals import Scope
@@ -473,6 +505,28 @@ def _serve_fixture(database_url: str) -> None:
             research_authority = asyncio.run(
                 seed_research_browser_scenario(create_session_factory(engine))
             )
+        if research_reports == "1":
+            from trading212_persistence.acquisition_research_authority import (
+                PostgresResearchCapabilityAuthority,
+            )
+
+            from scripts.api_e2e_research_reports import seed_research_report_browser_scenario
+
+            research_report_fixture = asyncio.run(
+                seed_research_report_browser_scenario(create_session_factory(engine))
+            )
+            research_authority = PostgresResearchCapabilityAuthority()
+        if web_performance == "1":
+            from trading212_persistence.acquisition_research_authority import (
+                PostgresResearchCapabilityAuthority,
+            )
+
+            from scripts.api_e2e_web_performance import build_web_performance_preparation
+
+            web_preparation = build_web_performance_preparation(
+                database_url, cleanup_ready=cleanup_ready
+            )
+            research_authority = PostgresResearchCapabilityAuthority()
         if alerts == "1":
             from scripts.api_e2e_alerts import seed_alert_browser_scenario
 
@@ -500,7 +554,9 @@ def _serve_fixture(database_url: str) -> None:
             allowed_origins=("http://127.0.0.1:3001",),
             allowed_hosts=("127.0.0.1", "localhost"),
         ),
-        clock=lambda: datetime.now(UTC),
+        clock=research_report_fixture.now
+        if research_report_fixture is not None
+        else lambda: datetime.now(UTC),
         research_capability_authority=research_authority,
     )
 
@@ -509,7 +565,10 @@ def _serve_fixture(database_url: str) -> None:
         sessions=create_session_factory(control_engine),
         cursor_signing_key=b"browser-fixture-planning-cursor-key",
     )
-    fixture_reports = PostgresReportJobStore(create_session_factory(control_engine))
+    fixture_reports = PostgresReportJobStore(
+        create_session_factory(control_engine),
+        clock=research_report_fixture.now if research_report_fixture is not None else None,
+    )
     fixture_risks = PostgresRiskJobStore(
         create_session_factory(control_engine),
         cursor_signing_key=b"browser-fixture-risk-cursor-key-v1",
@@ -532,6 +591,8 @@ def _serve_fixture(database_url: str) -> None:
         async with original_lifespan(application):
             stopped = asyncio.Event()
             try:
+                if web_preparation is not None:
+                    web_preparation.start()
                 async with asyncio.TaskGroup() as deliveries:
                     deliveries.create_task(_deliver_fixture_plans(fixture_plans, stopped))
                     if risk == "1":
@@ -553,9 +614,59 @@ def _serve_fixture(database_url: str) -> None:
                     finally:
                         stopped.set()
             finally:
-                control_engine.dispose()
+                stopped.set()
+                try:
+                    if web_preparation is not None:
+                        joined = await asyncio.to_thread(web_preparation.stop_and_join, timeout=7)
+                        if not joined:
+                            raise RuntimeError(
+                                "Performance preparation did not join; generated DB cleanup denied."
+                            )
+                finally:
+                    control_engine.dispose()
 
     app.router.lifespan_context = fixture_lifespan
+
+    if web_preparation is not None:
+        measured_preparation = web_preparation
+
+        @app.get("/__e2e__/web-performance", include_in_schema=False)
+        def web_performance_metadata(request: Request) -> Response:
+            if request.client is None or request.client.host != "127.0.0.1":
+                raise HTTPException(status_code=403)
+            return measured_preparation.response()
+
+    if research_report_fixture is not None:
+        fixture_research_reports = research_report_fixture
+
+        def local_research_fixture(request: Request) -> None:
+            if request.client is None or request.client.host != "127.0.0.1":
+                raise HTTPException(status_code=403)
+
+        @app.get("/__e2e__/research-reports", include_in_schema=False)
+        def research_report_metadata(request: Request) -> dict[str, object]:
+            local_research_fixture(request)
+            return fixture_research_reports.metadata()
+
+        @app.post("/__e2e__/research-reports/{action}", include_in_schema=False)
+        def research_report_control(
+            request: Request,
+            action: Literal["revoke_report", "expire", "revoke_write"],
+        ) -> dict[str, str]:
+            local_research_fixture(request)
+            fixture_research_reports.control(action)
+            return {"action": action}
+
+        @app.middleware("http")
+        async def research_report_command_journal(
+            request: Request, call_next: Callable[[Request], Awaitable[Response]]
+        ) -> Response:
+            response = await call_next(request)
+            if request.method == "POST" and request.url.path == "/api/v2/report-jobs":
+                fixture_research_reports.observe(
+                    response.status_code, request.headers.get("x-idempotency-key")
+                )
+            return response
 
     if projections == "1":
 
