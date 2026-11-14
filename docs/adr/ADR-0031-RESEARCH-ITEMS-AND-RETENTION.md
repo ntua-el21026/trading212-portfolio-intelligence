@@ -146,3 +146,34 @@ charges above. Marker and physical-copy probes are also charged. The shared
 4,096-row, 512-row batch and 64 MiB inspection/removal ceilings remain unchanged.
 The [Batch 1 evidence](../implementation/PHASE_3_BATCH1_20261114.md) records focused
 retention and refusal checks; it establishes no measured load/SLO or acceptance claim.
+
+## Unvalued exposure and report authority clarification, 2026-11-14
+
+An X-ray company bucket is a known monetary subtotal. It can legitimately retain an
+available zero lower bound when every canonical path for that held entity is
+unvalued. Research must distinguish that state from actual zero exposure. The shared
+linear entity-path predicate marks an entity unavailable only when it has retained
+paths and none has a known money coefficient. Research detail, report copies,
+summary unknown counts and ranking use that same interpretation. The unavailable
+fact retains the captured quality, bound, confidence, references, paths, coverage
+flags and warnings, with `captured_value_unavailable` and upstream
+`incomplete_valuation`. It does not infer a more specific cause from a missing total.
+
+A known zero coefficient, a positive known contribution rounded to Q18 zero and
+any partial known subtotal remain available with their captured bound/quality.
+An unrelated unvalued entity does not hide a valued entity. X-ray aggregate arithmetic,
+exact coefficients, method and retained result bytes remain unchanged. Existing item
+identity continues to bind the original event/X-ray pin and cutoff; facts are derived
+on read. Previously captured report bytes are not rewritten. Response ETags already
+hash the response bytes. Summary cursor resource `research_items.bounded.v2` rejects
+the previous ranking resource before private X-ray decoding, so an old cursor cannot
+continue under changed availability semantics.
+
+Research report capture also checks transitive X-ray/acquired-source rights through
+bounded metadata projections before any private event, note or X-ray payload read.
+Current and pinned STORE/DISPLAY/REPORT permission, exact ownership, provider/license
+and acquired grant lineage, and original-source/copy deadlines are required. A
+long-lived physical source can remain valid while its derived report copy is clamped
+to the shorter copy lifetime. Later complete canonical validation and all subsequent
+render/read/download authorization remain required. REPORT artifacts do not inherit
+permission from EXPORT, and a later grant cannot expand the original source's rights.

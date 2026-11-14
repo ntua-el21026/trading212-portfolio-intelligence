@@ -169,7 +169,7 @@ def research_summary_page(
         query.review_state,
         query.limit,
     )
-    resource = "research_items.bounded.v1"
+    resource = "research_items.bounded.v2"
     after = None
     expected_fingerprint = None
     if query.cursor is not None:

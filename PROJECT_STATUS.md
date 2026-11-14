@@ -11,7 +11,7 @@
 ## Current state
 
 <!-- BEGIN BATCH2 PARTIAL DELIVERY -->
-Consolidated Batch 2 implementation delivery is at stage 1 of 4, recorded on 2026-11-15. Landed groups: Bounded canonical report encoding and its independent byte/cap oracles. Groups not yet landed: a1, web, ops. This states the committed implementation subset; it does not mark all work or checks complete.
+Consolidated Batch 2 implementation delivery is at stage 2 of 4, recorded on 2026-11-15. Landed groups: Bounded canonical report encoding and its independent byte/cap oracles; Research authority, explicit unavailable exposure and bounded query correction. Groups not yet landed: web, ops. This states the committed implementation subset; it does not mark all work or checks complete.
 
 The codec has a recorded 420-case pass in 2.63 seconds and a separate real capture-byte-parity pass. Receipts retain their actual source manifests; this partial commit has no complete-suite or newly created-SHA execution claim. The admission gate remains failed at p95 0.9309575439983746 seconds against 0.750 seconds. That failure belongs to the recorded composed working source; no new latency execution or admission-component equivalence at this partial commit is claimed. The eventual unchanged admission component need not be rerun merely to seek green.
 

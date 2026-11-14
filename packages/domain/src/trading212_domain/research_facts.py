@@ -114,6 +114,21 @@ class ResearchSynthesisUnavailable(ResearchRecord):
     content_type: Literal["optional_synthesis"] = "optional_synthesis"
 
 
+def research_unvalued_entity_ids(value: XrayCalculation) -> frozenset[UUID]:
+    """Identify held entities with no known money contribution in linear time."""
+    if type(value) is not XrayCalculation:
+        fail_validation("Canonical research exposure input is required.", field="portfolio_facts")
+    unvalued: set[UUID] = set()
+    known: set[UUID] = set()
+    for path in value.terminal_paths:
+        if path.entity_id is not None:
+            if path.money_coefficient is None:
+                unvalued.add(path.entity_id)
+            else:
+                known.add(path.entity_id)
+    return frozenset(unvalued - known)
+
+
 def copy_research_portfolio_facts(
     pin: ResearchXrayPin, value: XrayCalculation, entity_id: UUID
 ) -> ResearchPortfolioFacts:
@@ -200,17 +215,21 @@ def copy_research_portfolio_facts(
             warnings=warnings,
         )
     bucket, metric = buckets[0], buckets[0].effective
+    # X-ray publishes known subtotals, including a zero lower bound when every
+    # path is unvalued. Research must distinguish that from evidenced zero.
+    no_known_value = entity_id in research_unvalued_entity_ids(value)
+    availability = XrayAvailability.UNAVAILABLE if no_known_value else metric.availability
     return ResearchPortfolioFacts(
         pin=pin,
         entity_id=entity_id,
-        effective_exposure=metric.value,
-        availability=metric.availability,
+        effective_exposure=None if no_known_value else metric.value,
+        availability=availability,
         reason=None
-        if metric.availability is XrayAvailability.AVAILABLE
+        if availability is XrayAvailability.AVAILABLE
         else ResearchExposureReason.CAPTURED_VALUE_UNAVAILABLE,
-        upstream_reason=metric.reason,
+        upstream_reason=XrayReason.INCOMPLETE_VALUATION if no_known_value else metric.reason,
         quality=metric.quality,
-        origin=metric.origin,
+        origin=ValueOrigin.UNAVAILABLE if no_known_value else metric.origin,
         bound=metric.bound,
         confidence=metric.confidence,
         source_reference_ids=bucket.source_reference_ids,

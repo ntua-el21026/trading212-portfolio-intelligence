@@ -13,6 +13,7 @@ from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.selectable import CTE
 from trading212_application import research as app
 from trading212_domain.research import ResearchEventKind, ResearchReviewState
+from trading212_domain.research_facts import research_unvalued_entity_ids
 from trading212_domain.xray import XrayDimension
 from trading212_domain.xray_result import XrayCalculation
 
@@ -170,7 +171,9 @@ def _licensed_sources(
             .exists(),
             research_capability_eligibility(authority, scope, now=now),
         )
+        # Initial and final pages each rebuild current authorization in their own statement.
         .cte("research_page_licensed_sources")
+        .prefix_with("MATERIALIZED")
     )
 
 
@@ -192,6 +195,7 @@ def research_candidate_page(
     # parsed into finance, and known lower bounds keep their unchanged provenance.
     entities: list[UUID] = []
     amounts: list[Decimal | None] = []
+    unvalued = research_unvalued_entity_ids(xray)
     for bucket in xray.exposure_buckets:
         if bucket.dimension is not XrayDimension.COMPANY or bucket.bucket_key is None:
             continue
@@ -200,7 +204,11 @@ def research_candidate_page(
         except ValueError:
             continue
         entities.append(entity_id)
-        amounts.append(None if bucket.effective.value is None else bucket.effective.value.amount)
+        amounts.append(
+            None
+            if entity_id in unvalued or bucket.effective.value is None
+            else bucket.effective.value.amount
+        )
     exposures = (
         func.unnest(literal(entities, ARRAY(Uuid())), literal(amounts, ARRAY(Numeric())))
         .table_valued(
@@ -248,12 +256,12 @@ def research_candidate_page(
     )
     denied = (
         select(member.id)
-        .outerjoin(licensed, licensed.c.source_id == member.source_version_id)
         .where(
             member.owner_id == auth.owner_id,
             member.account_id == auth.account_id,
             member.revision_id == revision.id,
-            licensed.c.source_id.is_(None) | member.copy_pending.is_(False),
+            member.source_version_id.not_in(select(licensed.c.source_id))
+            | member.copy_pending.is_(False),
         )
         .correlate(revision)
         .exists()

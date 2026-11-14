@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from uuid import UUID, uuid4
 
 from sqlalchemy import func, select, union
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only
 from trading212_application import reports as app
 from trading212_application.research import RESEARCH_READ_SCOPES, ResearchServiceError
 from trading212_domain.report_research import (
@@ -14,7 +14,7 @@ from trading212_domain.report_research import (
     ReportResearchSelection,
 )
 from trading212_domain.report_v3 import ReportCaptureSummaryV3, ReportSelectionV3
-from trading212_domain.reports import ReportSourceKind, ReportSourceUse
+from trading212_domain.reports import MAX_REPORT_DATASET_ROWS, ReportSourceKind, ReportSourceUse
 from trading212_domain.research import ResearchEventKind
 from trading212_domain.research_serialization import research_record_digest
 from trading212_domain.sources import SourceUse
@@ -49,10 +49,15 @@ from .research_permissions import (
     ResearchCapabilityRequest,
     require_research_capabilities,
 )
-from .source_models import ProviderLicenseVersionModel
+from .source_models import FxSnapshotModel, ProviderLicenseVersionModel
 from .source_store import digest as source_digest
 from .source_store import license_view
-from .xray_run_models import XrayInputSnapshotModel, XrayRetentionEventModel, XrayRunModel
+from .xray_run_models import (
+    XrayInputDependencyModel,
+    XrayInputSnapshotModel,
+    XrayRetentionEventModel,
+    XrayRunModel,
+)
 
 
 @dataclass(frozen=True)
@@ -198,6 +203,107 @@ def _sources(
             ResearchReportSourceAuthority(header, origin, grant, pinned, current, deadline)
         )
     return tuple(result)
+
+
+def _xray_report_sources(
+    session: Session,
+    auth: ReportAuthorization,
+    input_id: UUID,
+    *,
+    now: datetime,
+    licensed: dict[
+        tuple[UUID, UUID], tuple[ProviderLicenseVersionModel, ProviderLicenseVersionModel]
+    ],
+) -> datetime | None:
+    """Authorize the complete licensed parent inventory before any private copy.
+
+    Read only exact owned dependency keys and scalar physical headers. Reuse the
+    report authority for pinned/current STORE/DISPLAY/REPORT uses and acquired FX
+    grants; the later canonical X-ray reader still verifies every original pin.
+    No financial value or canonical reference is selected by this preflight.
+    """
+    from .report_sources import _PHYSICAL, _license, _physical_permit
+
+    dependency = XrayInputDependencyModel
+    deadline = None
+    total = 0
+    for family in (
+        "fx",
+        "constituent",
+        "classification",
+        "entity_evidence",
+        "fund_definition",
+        "fund_mapping",
+    ):
+        model, column = _PHYSICAL[family]
+        target = getattr(dependency, column)
+        extra = (FxSnapshotModel.adapter_version,) if family == "fx" else ()
+        rows = session.execute(
+            select(model, dependency.provider_id, dependency.license_version_id)
+            .select_from(dependency)
+            .outerjoin(model, (model.owner_id == dependency.owner_id) & (model.id == target))
+            .where(
+                dependency.owner_id == auth.owner_id,
+                dependency.input_id == input_id,
+                target.is_not(None),
+            )
+            .options(
+                load_only(
+                    model.id,
+                    model.owner_id,
+                    model.provider_id,
+                    model.license_version_id,
+                    model.created_at,
+                    model.expires_at,
+                    *extra,
+                    raiseload=True,
+                )
+            )
+            .distinct()
+            .limit(MAX_REPORT_DATASET_ROWS - total + 1)
+            .execution_options(populate_existing=True)
+        ).all()
+        total += len(rows)
+        if total > MAX_REPORT_DATASET_ROWS:
+            raise _deny()
+        for source, provider_id, license_id in rows:
+            if source is None or (source.provider_id, source.license_version_id) != (
+                provider_id,
+                license_id,
+            ):
+                raise _deny()
+            key = (source.provider_id, source.license_version_id)
+            if key not in licensed:
+                if len(licensed) >= 256:
+                    raise _deny()
+                licensed[key] = _license(
+                    session,
+                    owner_id=auth.owner_id,
+                    provider_id=source.provider_id,
+                    license_id=source.license_version_id,
+                    digest=None,
+                    source_use=ReportSourceUse.REPORT,
+                    now=now,
+                )
+            pinned, current = licensed[key]
+            if (
+                pinned.retention_days is None
+                or current.retention_days is None
+                or source.created_at > now
+            ):
+                raise _deny()
+            original_deadline = min(
+                source.expires_at,
+                source.created_at
+                + timedelta(days=min(30, pinned.retention_days, current.retention_days)),
+            )
+            # This is the derived report-copy deadline. A licensed physical
+            # source may validly outlive it; copying never renews either clock.
+            if now >= original_deadline:
+                raise _deny()
+            _physical_permit(session, source, family, source_use=ReportSourceUse.REPORT, now=now)
+            deadline = min(deadline or original_deadline, original_deadline)
+    return deadline
 
 
 def authorize_research_report_metadata(
@@ -350,6 +456,16 @@ def authorize_research_report_metadata(
         )
     )
     sources = _sources(session, auth, source_ids, now)
+    licensed = {
+        (source.header.provider_id, source.header.license_version_id): (
+            source.pinned_license,
+            source.current_license,
+        )
+        for source in sources
+    }
+    xray_deadline = _xray_report_sources(
+        session, auth, item.xray_input_id, now=now, licensed=licensed
+    )
     _owner(session, auth, now)
     return ResearchReportAuthority(
         item,
@@ -357,7 +473,12 @@ def authorize_research_report_metadata(
         notes,
         review,
         sources,
-        min(item.expires_at, event.expires_at, *(s.deadline for s in sources)),
+        min(
+            item.expires_at,
+            event.expires_at,
+            *(s.deadline for s in sources),
+            *(() if xray_deadline is None else (xray_deadline,)),
+        ),
     )
 
 

@@ -20,9 +20,10 @@ from trading212_domain.report_research import (
 )
 from trading212_domain.report_v3 import ReportSelectionV3, ReportXrayRunBinding
 from trading212_domain.research import ResearchEventKind
-from trading212_domain.research_facts import copy_research_portfolio_facts
+from trading212_domain.research_facts import ResearchXrayPin, copy_research_portfolio_facts
 from trading212_domain.research_serialization import research_record_digest
-from trading212_domain.sources import SourceUse
+from trading212_domain.sources import SourceLicense, SourceUse
+from trading212_domain.xray import XrayReferenceKind
 from trading212_domain.xray_result import XrayCalculation
 
 from .acquisition_research_authority import PostgresResearchCapabilityAuthority
@@ -35,6 +36,7 @@ from .report_research_sources import ResearchReportAuthority, authorize_research
 from .research_item_store import ResearchItemStore
 from .research_permissions import require_research_capability
 from .research_source_store import ResearchAuthorizedSource, research_error, research_owner_lock
+from .research_xray_read import ResearchXrayRead, finish_research_xray, read_research_xray
 from .source_store import digest, license_view
 from .xray_service import PostgresXrayService
 
@@ -63,6 +65,66 @@ class ResearchReportStore(ResearchItemStore):
             clock=clock,
             cursor_signing_key=cursor_signing_key,
             required_copy_use=SourceUse.REPORT,
+        )
+        # The optimized summary reader has a combined private-read bound. Reports
+        # retain their original separate input/result/reference bounds, so keep
+        # an unoverridden reader for that size-only compatibility path. Its own
+        # metadata calls cannot recurse into this optimized subclass.
+        self._original_reader = ResearchItemStore(
+            sessions=sessions,
+            clock=clock,
+            cursor_signing_key=cursor_signing_key,
+            required_copy_use=SourceUse.REPORT,
+            research_capability_authority=PostgresResearchCapabilityAuthority(),
+        )
+        self._original_reader._research_xray = self._research_xray
+        self._original_runs: set[UUID] = set()
+        self._retained_reads: dict[UUID, ResearchXrayRead] = {}
+
+    def retained_xray(
+        self, session: Session, auth: ReportAuthorization, run_id: UUID
+    ) -> tuple[ResearchXrayPin, XrayCalculation, UUID, datetime | None]:
+        self.research_authority(session, auth)
+        try:
+            basis = read_research_xray(
+                session, auth, run_id, now=self._now(), required_copy_use=SourceUse.REPORT
+            )
+            finish_research_xray(
+                session, auth, basis, now=self._now(), required_copy_use=SourceUse.REPORT
+            )
+        except research_app.ResearchServiceError as error:
+            if error.code is not research_app.ResearchErrorCode.INPUT_BOUND_EXCEEDED:
+                raise
+            result = self._original_reader.retained_xray(session, auth, run_id)
+            self._original_runs.add(run_id)
+            self._retained_reads.pop(run_id, None)
+            return result
+        self._retained_reads[run_id] = basis
+        return basis.pin, basis.result, basis.input_id, basis.deadline
+
+    def xray_metadata(
+        self, session: Session, auth: ReportAuthorization, run_id: UUID
+    ) -> tuple[UUID, str, str, UUID, datetime | None]:
+        self.research_authority(session, auth)
+        if run_id not in self._retained_reads and run_id not in self._original_runs:
+            self.retained_xray(session, auth, run_id)
+        if run_id in self._original_runs:
+            # Capture's complete initial/final REPORT metadata preflights remain
+            # in force, including acquired-source rights and physical lifetimes.
+            # Repeat the original reader's current license/expiry gate here too.
+            return self._original_reader.xray_metadata(session, auth, run_id)
+        basis = self._retained_reads[run_id]
+        # Reuse only immutable decoded proof within this locked capture. Current
+        # rights, expiry and exact physical membership are queried again here.
+        finish_research_xray(
+            session, auth, basis, now=self._now(), required_copy_use=SourceUse.REPORT
+        )
+        return (
+            basis.input_id,
+            basis.pin.result_digest,
+            basis.pin.input_digest,
+            basis.pin.snapshot_id,
+            basis.deadline,
         )
 
     def authorize_source(
@@ -177,11 +239,18 @@ def _xray_sources(
 ) -> None:
     """Original X-ray dependency identities use established physical-copy guards."""
     builder, context, service = writer.builder, writer.context, store._research_xray
+    licenses: dict[UUID, SourceLicense] = {}
+    source_times: dict[
+        tuple[XrayReferenceKind, UUID, str | None], tuple[datetime | None, datetime | None]
+    ] = {}
     for dependency in result.source_dependencies:
         if dependency.license_version_id is not None:
-            license = service._permit(
-                session, builder.owner_id, dependency.license_version_id, SourceUse.REPORT
-            )
+            license = licenses.get(dependency.license_version_id)
+            if license is None:
+                license = service._permit(
+                    session, builder.owner_id, dependency.license_version_id, SourceUse.REPORT
+                )
+                licenses[dependency.license_version_id] = license
             builder.add_license(
                 r.ReportLicenseReference(
                     version_id=dependency.license_version_id,
@@ -195,7 +264,21 @@ def _xray_sources(
                     valid_from=license.effective_at,
                 )
             )
-        view = service._source_view(session, builder.owner_id, dependency)
+        physical = dependency.reference
+        parent_times = physical.kind in {
+            XrayReferenceKind.ENTITY_EVIDENCE_REFERENCE,
+            XrayReferenceKind.RELATIONSHIP,
+            XrayReferenceKind.FX_OBSERVATION,
+            XrayReferenceKind.FX_COVERAGE_GAP,
+        }
+        identifier = physical.parent_record_id if parent_times else physical.record_id
+        if identifier is None:
+            fail_validation("A captured source child requires its actual parent.", field="source")
+        key = (physical.kind, identifier, dependency.provider_id)
+        if key not in source_times:
+            view = service._source_view(session, builder.owner_id, dependency)
+            source_times[key] = (view.source_at, view.first_observed_at)
+        source_at, known_at = source_times[key]
         builder.add_reference(
             r.ReportSourceReference(
                 key=_source_key(dependency.id),
@@ -203,8 +286,8 @@ def _xray_sources(
                 subject_id=dependency.reference.record_id,
                 parent_id=dependency.reference.parent_record_id,
                 content_digest=dependency.content_digest,
-                source_at=view.source_at,
-                first_observed_at=view.first_observed_at,
+                source_at=source_at,
+                first_observed_at=known_at,
                 provider_id=None
                 if dependency.provider_id is None
                 else UUID(dependency.provider_id),

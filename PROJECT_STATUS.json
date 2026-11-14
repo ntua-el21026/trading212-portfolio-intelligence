@@ -2058,16 +2058,17 @@
     "starting_main_sha": "5731a5039beb8f3c7272c9b387ac757de605a0e1",
     "implementation_partition_base_sha": "ecc7c75221841eb64981ec3e971a36944052d48e",
     "status": "partial_implementation_delivery_in_progress",
-    "implementation_commit_stage": 1,
+    "implementation_commit_stage": 2,
     "implementation_commit_stages_planned": 4,
     "landed_implementation_groups": [
-      "codec"
+      "codec",
+      "a1"
     ],
     "landed_group_summaries": [
-      "Bounded canonical report encoding and its independent byte/cap oracles"
+      "Bounded canonical report encoding and its independent byte/cap oracles",
+      "Research authority, explicit unavailable exposure and bounded query correction"
     ],
     "implementation_groups_not_yet_landed": [
-      "a1",
       "web",
       "ops"
     ],

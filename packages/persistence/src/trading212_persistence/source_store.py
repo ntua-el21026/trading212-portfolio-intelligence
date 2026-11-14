@@ -220,7 +220,7 @@ class SourceStore:
             )
             .limit(1)
         )
-        return None if row is None else self._license(session, owner, row.id)
+        return None if row is None else license_view(row)
 
     def _permit(
         self, session: Session, owner: UUID, license_id: UUID, use: SourceUse

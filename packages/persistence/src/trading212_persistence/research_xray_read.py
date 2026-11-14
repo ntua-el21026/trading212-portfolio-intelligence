@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 from trading212_application import research as app
 from trading212_domain.errors import DomainError
 from trading212_domain.research_facts import ResearchXrayPin
+from trading212_domain.sources import SourceUse
 from trading212_domain.xray import XrayReferenceKind, XraySourceDependency
 from trading212_domain.xray_codec import (
     decode_xray_component,
@@ -159,14 +160,16 @@ class ResearchXrayRead:
     deadline: datetime | None
     _metadata: _Metadata
     _physical: str
+    _copy_use: SourceUse = SourceUse.DISPLAY
 
 
-def _parents_sql() -> str:
+def _parents_sql(*, report: bool = False) -> str:
     parts = []
+    acquired_use = "report" if report else "display"
     for field, table, lifecycle in _LICENSED:
         acquired = (
             "AND (p.adapter_version <> 'premium_fixed_get_v1' OR "
-            "NOT acquisition_source_restricted(:owner, 'fx', p.id, :now, 'display'))"
+            f"NOT acquisition_source_restricted(:owner, 'fx', p.id, :now, '{acquired_use}'))"
             if field == "fx_snapshot_id"
             else ""
         )
@@ -212,9 +215,12 @@ def _physical_sql() -> str:
     return "CASE e.kind " + " ".join(conditions) + " ELSE false END"
 
 
-def _metadata_sql() -> str:
+def _metadata_sql(*, report: bool = False) -> str:
     targets = [field for field, _, _ in _LICENSED] + [item[0] for item in _INTERNAL]
     columns = ", ".join(f"d.{field}" for field in targets)
+    pinned_report = ", 'pinned_report', lp.report_permission" if report else ""
+    cur_report = ", 'current_report', lc.report_permission" if report else ""
+    cur_report_col = ", l.report_permission" if report else ""
     # No canonical payload is returned or decoded by this query. The preliminary
     # count/byte gate precedes parent expansion; the complete metadata gate also
     # prevents a large result set from reaching the Python process.
@@ -260,7 +266,7 @@ def _metadata_sql() -> str:
       SELECT d.* FROM limited d CROSS JOIN root r CROSS JOIN size s
       WHERE s.count <= 100000 AND s.payload_bytes + r.input_bytes + r.result_bytes
         + r.policy_bytes + r.summary_bytes <= 33554432
-    ), parents AS MATERIALIZED ({_parents_sql()}),
+    ), parents AS MATERIALIZED ({_parents_sql(report=report)}),
     expected AS MATERIALIZED (
       SELECT * FROM jsonb_to_recordset(CAST(:physical AS jsonb))
         AS x(dependency_id uuid, reference_id uuid, kind text,
@@ -273,10 +279,10 @@ def _metadata_sql() -> str:
         'created_at', p.created_at, 'expires_at', p.expires_at,
         'payload_bytes', d.payload_bytes,
         'pinned_id', lp.id, 'pinned_effective', lp.effective_at,
-        'pinned_store', lp.store_permission, 'pinned_display', lp.display_permission,
+        'pinned_store', lp.store_permission, 'pinned_display', lp.display_permission{pinned_report},
         'pinned_days', lp.retention_days,
         'current_id', lc.id, 'current_effective', lc.effective_at,
-        'current_store', lc.store_permission, 'current_display', lc.display_permission,
+        'current_store', lc.store_permission, 'current_display', lc.display_permission{cur_report},
         'current_days', lc.retention_days,
         'valid', p.parent_id IS NOT NULL AND num_nonnulls({columns}) = 1
           AND p.marker_clear
@@ -290,7 +296,7 @@ def _metadata_sql() -> str:
       LEFT JOIN provider_license_versions lp ON lp.id = p.license_version_id
         AND lp.owner_id = :owner AND lp.provider_id = p.provider_id
       LEFT JOIN LATERAL (
-        SELECT l.id, l.effective_at, l.store_permission, l.display_permission,
+        SELECT l.id, l.effective_at, l.store_permission, l.display_permission{cur_report_col},
           l.retention_days FROM provider_license_versions l
         WHERE l.owner_id = :owner AND l.provider_id = p.provider_id
           AND l.effective_at <= :now
@@ -319,6 +325,7 @@ def _metadata_sql() -> str:
 
 
 _METADATA_SQL = _metadata_sql()
+_REPORT_METADATA_SQL = _metadata_sql(report=True)
 _PAYLOAD_SQL = """
 WITH owned AS MATERIALIZED (
   SELECT i.id input_id, r.id run_id, a.id analytics_id, p.id policy_id
@@ -404,7 +411,9 @@ def _fingerprint(value: Mapping[str, Any]) -> str:
     ).hexdigest()
 
 
-def _deadline(row: Mapping[str, Any], now: datetime) -> datetime | None:
+def _deadline(
+    row: Mapping[str, Any], now: datetime, *, required_copy_use: SourceUse = SourceUse.DISPLAY
+) -> datetime | None:
     if row["provider_id"] is None:
         if row["license_id"] is not None:
             raise research_error()
@@ -415,6 +424,7 @@ def _deadline(row: Mapping[str, Any], now: datetime) -> datetime | None:
         if (
             row[f"{prefix}_store"] != "allowed"
             or row[f"{prefix}_display"] != "allowed"
+            or (required_copy_use is SourceUse.REPORT and row[f"{prefix}_report"] != "allowed")
             or _at(row[f"{prefix}_effective"]) > now
             or row[f"{prefix}_days"] is None
         ):
@@ -440,9 +450,15 @@ def _metadata(
     now: datetime,
     physical: str = "[]",
     finishing: bool = False,
+    required_copy_use: SourceUse = SourceUse.DISPLAY,
 ) -> _Metadata:
+    if type(required_copy_use) is not SourceUse or required_copy_use not in (
+        SourceUse.DISPLAY,
+        SourceUse.REPORT,
+    ):
+        raise research_error(app.ResearchErrorCode.VALIDATION_FAILED)
     rows = session.execute(
-        text(_METADATA_SQL),
+        text(_REPORT_METADATA_SQL if required_copy_use is SourceUse.REPORT else _METADATA_SQL),
         {
             "owner": auth.owner_id,
             "account": auth.account_id,
@@ -505,7 +521,7 @@ def _metadata(
                 else _string(item["content_digest"]),
                 payload_bytes=_integer(item["payload_bytes"]),
                 fingerprint=_fingerprint(item),
-                deadline=_deadline(item, now),
+                deadline=_deadline(item, now, required_copy_use=required_copy_use),
             )
         )
     if (
@@ -640,9 +656,10 @@ def read_research_xray(
     run_id: UUID,
     *,
     now: datetime,
+    required_copy_use: SourceUse = SourceUse.DISPLAY,
 ) -> ResearchXrayRead:
     """Read one saved run after caller authorization, using exactly two statements."""
-    metadata = _metadata(session, auth, run_id, now=now)
+    metadata = _metadata(session, auth, run_id, now=now, required_copy_use=required_copy_use)
     blobs = _payloads(session, metadata)
     encoded_input = blobs[("input", metadata.input_id)]
     encoded_result = blobs[("result", metadata.run_id)]
@@ -721,7 +738,13 @@ def read_research_xray(
     if len(encoded_physical.encode()) > _MAX_BYTES:
         raise research_error(app.ResearchErrorCode.INPUT_BOUND_EXCEEDED)
     return ResearchXrayRead(
-        pin, result, metadata.input_id, metadata.deadline, metadata, encoded_physical
+        pin,
+        result,
+        metadata.input_id,
+        metadata.deadline,
+        metadata,
+        encoded_physical,
+        required_copy_use,
     )
 
 
@@ -731,6 +754,7 @@ def finish_research_xray(
     basis: ResearchXrayRead,
     *,
     now: datetime,
+    required_copy_use: SourceUse = SourceUse.DISPLAY,
 ) -> None:
     """Recheck exact source rights, lifetimes, retained pins and physical membership.
 
@@ -739,7 +763,8 @@ def finish_research_xray(
     """
     metadata = basis._metadata
     if (
-        (auth.owner_id, auth.account_id) != (basis.pin.owner_id, basis.pin.account_id)
+        basis._copy_use is not required_copy_use
+        or (auth.owner_id, auth.account_id) != (basis.pin.owner_id, basis.pin.account_id)
         or (
             basis.pin.run_id,
             basis.input_id,
@@ -771,7 +796,13 @@ def finish_research_xray(
     ):
         raise research_error()
     current = _metadata(
-        session, auth, basis.pin.run_id, now=now, physical=basis._physical, finishing=True
+        session,
+        auth,
+        basis.pin.run_id,
+        now=now,
+        physical=basis._physical,
+        finishing=True,
+        required_copy_use=required_copy_use,
     )
     if current != basis._metadata:
         raise research_error()
