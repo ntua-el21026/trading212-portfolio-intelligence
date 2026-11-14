@@ -15,8 +15,8 @@ reported five high and three critical findings, plus lower-severity findings.
 | Package | Previous | Selected | Reason and primary version metadata |
 | --- | --- | --- | --- |
 | MCP / mcp-types | 2.1.1 | 2.2.0 | First fixed release in the existing major; [MCP](https://pypi.org/pypi/mcp/2.2.0/json). |
-| OpenTelemetry API / SDK | 1.44.0 | 1.45.1 | API security fix and SDK's exact API dependency; [API](https://pypi.org/pypi/opentelemetry-api/1.45.1/json), [SDK](https://pypi.org/pypi/opentelemetry-sdk/1.45.1/json). |
-| OpenTelemetry semantic conventions | 0.65b0 | 0.66b1 | Exact SDK dependency from the same release metadata. |
+| OpenTelemetry API / SDK | 1.44.0 | 1.45.2 | Initial step 1.45.1; follow-up trace-context fix and exact SDK pairing; [API](https://pypi.org/pypi/opentelemetry-api/1.45.2/json), [SDK](https://pypi.org/pypi/opentelemetry-sdk/1.45.2/json). |
+| OpenTelemetry semantic conventions | 0.65b0 | 0.66b2 | Initial step 0.66b1; exact SDK 1.45.2 dependency from its release metadata. |
 | PyJWT | 2.13.0 | 2.15.0 | 2.14.0 leaves reported findings; [metadata](https://pypi.org/pypi/PyJWT/2.15.0/json). |
 | Pillow | 12.3.0 | 13.0.0 | Lowest reported fixed release; report rendering requires compatibility validation; [metadata](https://pypi.org/pypi/Pillow/13.0.0/json). |
 | certifi | 2026.7.22 | 2026.10.18 | Trust-store security update; [metadata](https://pypi.org/pypi/certifi/2026.10.18/json). |
@@ -30,6 +30,22 @@ The selected Python releases support Python 3.13. Next and sharp declare Node
 pnpm 10.34.5 generate the locks. A lock resolution or clean dependency audit does
 not establish application compatibility; focused and full runtime evidence is
 recorded separately in the stabilization report.
+
+## Trace-context follow-up observed on 14 November
+
+The later dependency audit found `CVE-2026-126360` in the initial API/SDK 1.45.1
+step. The [upstream advisory](https://github.com/open-telemetry/opentelemetry-python/security/advisories/GHSA-mf5v-w3w3-f6cg)
+was published on 5 November; it rejects oversized trace-context input in 1.45.2.
+Current exact pins are API/SDK 1.45.2 and semantic conventions 0.66b2. Earlier
+1.45.1/0.66b1 receipts retain their original source and scanner scope.
+
+Three benign public boundary cases produced two passes / one failure on 1.45.1.
+After the patch, 279 focused security/observability cases and eight PostgreSQL
+observability cases passed. A new initially absent HTTP cache and explicit
+Python 3.13.15 / pip-audit 2.10.1 run reported zero findings or skips across
+67 runtime dependencies. Existing caches and the project `.venv` were preserved.
+These are source-bound checks; no exploit or performance result is claimed.
+Full-target, actual rebuilt-image and startup qualification remain pending.
 
 ## Reproducible Debian security packages
 

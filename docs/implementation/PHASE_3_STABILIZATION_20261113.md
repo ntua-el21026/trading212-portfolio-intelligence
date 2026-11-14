@@ -673,6 +673,34 @@ restart; connections remain 100, prepared transactions zero and shared buffers
 target. Preflight 02 and complete attempt 10 remain not started; all acceptance,
 independent audit and production boundaries remain unchanged.
 
+## Second preflight and trace-context dependency follow-up
+
+The second preflight at clean `2756314c08de1c59b272a70cb6ba5693f3b21fc9` began at
+`2026-11-14T00:04:12.787673+00:00` and failed after 196.766 seconds. It passed
+12 migration cases in 15.11 seconds, 258 security cases in 39.15 seconds, seven
+SAST rules on 973 files with zero findings, and the existing 16 approved-line /
+21 negative secret-policy cases. A later pip-audit reported one finding:
+`CVE-2026-126360` in OpenTelemetry API 1.45.1. Node audit, browser and build targets
+were not reached. The [upstream advisory](https://github.com/open-telemetry/opentelemetry-python/security/advisories/GHSA-mf5v-w3w3-f6cg)
+was published on 5 November; the later observation is distinct from publication.
+
+The initial 1.45.1 API/SDK and 0.66b1 semantic-conventions remediation remains
+historical evidence. Current exact pins are 1.45.2 / 0.66b2. Only those three
+external versions and observability workspace metadata changed among 99 locked
+packages. Distribution hashes/sizes match PyPI metadata; offline lock checking
+passes and the existing `.venv` inode 291333 is preserved.
+
+Three benign public extractor cases preserve normal and 512-character future
+trace-context acceptance and reject a 513-character value. Old 1.45.1 produced
+two passes / one failure in 0.09 seconds. Corrected security/observability passed
+279 cases in 39.15 seconds; PostgreSQL observability passed eight in 19.77 seconds.
+A fresh-cache pip-audit 2.10.1 under Python 3.13.15 then checked 67 dependencies,
+with zero findings/skips, in 4.941 runner seconds. All three corrected invocations
+retained working-source manifest `42b292c37fad4158f690012b4adeccffb085b8abd2b0652a0e9148e2818c2a3d`.
+No exploit, timing benchmark or regex-internal mock was executed. These passes do
+not constitute clean-base or complete-target qualification. Preflight 03, full10
+and final image/startup/browser/delivery qualification remain pending/not started.
+
 ## Reproducible synthetic validation
 
 Use the pinned Python, uv, Node and pnpm versions in the repository version files

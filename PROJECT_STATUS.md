@@ -104,6 +104,16 @@ capacity; its byte cost was not measured. DDL, transaction boundaries, guards an
 tests are unchanged. Later preflight gates did not run; preflight 02 and complete
 attempt 10 remain pending/not started. Acceptance and production states are unchanged.
 
+The second unreached-gate preflight passed 12 migration and 258 security cases,
+SAST and the existing secret policy, then failed on `CVE-2026-126360` in
+OpenTelemetry API 1.45.1. That advisory was published on 5 November. API/SDK 1.45.2
+and semantic conventions 0.66b2 now pass 279 focused security/observability cases,
+eight PostgreSQL observability cases and a fresh-cache Python-qualified audit of
+67 dependencies with zero vulnerabilities or skips. The original audit failure
+and the initial 1.45.1/0.66b1 step remain recorded. These working-source results
+require a new clean checkpoint; preflight 03 and full10 have not started.
+Final image, startup/browser and delivery gates remain pending.
+
 ### Historical September save point
 
 The owner requested a resumable checkpoint on 2026-09-30. The aggregation

@@ -1466,7 +1466,7 @@
         "source_manifest_sha256": "2fbaab355989e8e5eb3f8a9b8aa70f27657d8fc7f3180e0ac8e81072de9a9c81"
       },
       "unreached_gates_preflight": {
-        "state": "FIRST_ATTEMPT_FAILED_MIGRATION_LATER_GATES_UNREACHED",
+        "state": "SECOND_ATTEMPT_FAILED_DEPENDENCY_AUDIT_LATER_GATES_UNREACHED",
         "command": [
           "make",
           "test-migrations",
@@ -1477,8 +1477,8 @@
           "container-build"
         ],
         "replaces_complete_make_validate": false,
-        "latest_attempt": "unreached-gates-01",
-        "next_attempt": "unreached-gates-02_NOT_STARTED"
+        "latest_attempt": "unreached-gates-02",
+        "next_attempt": "unreached-gates-03_NOT_STARTED"
       }
     },
     "postgres_migration_lock_capacity_recovery": {
@@ -1537,9 +1537,154 @@
         "max_prepared_transactions": 0,
         "shared_buffers_bytes": 134217728
       },
-      "next_unreached_preflight": "unreached-gates-02_NOT_STARTED",
+      "next_unreached_preflight": "unreached-gates-02_FAILED_DEPENDENCY_AUDIT",
       "complete_validate10": "NOT_STARTED",
       "all_phase3_acceptance_and_production_states_unchanged": true
+    },
+    "otel_trace_context_security_followup": {
+      "status": "focused_security_observability_and_fresh_dependency_audit_passed_complete_target_pending",
+      "observed_at_utc": "2026-11-14T00:17:44.342166+00:00",
+      "task_start_date": "2026-11-13",
+      "advisory": {
+        "id": "CVE-2026-126360",
+        "ghsa": "GHSA-mf5v-w3w3-f6cg",
+        "published_date": "2026-11-05",
+        "official_source": "https://github.com/open-telemetry/opentelemetry-python/security/advisories/GHSA-mf5v-w3w3-f6cg",
+        "qualification": "Detected by the later audit; not described as newly published on observation day."
+      },
+      "retained_preflight02": {
+        "receipt": {
+          "path": "unreached-gates-02/receipt.json",
+          "bytes": 635,
+          "sha256": "d930e307629fbb1953f21aef4f1b030b4d7a190a1b6a834b6419f2c80f919d35"
+        },
+        "result": "FAILED_DEPENDENCY_AUDIT",
+        "source_head": "2756314c08de1c59b272a70cb6ba5693f3b21fc9",
+        "migration_passed": 12,
+        "migration_pytest_seconds": 15.11,
+        "security_passed": 258,
+        "security_pytest_seconds": 39.15,
+        "semgrep_findings": 0,
+        "semgrep_rules": 7,
+        "semgrep_scanned_files": 973,
+        "approved_secret_policy_lines": 16,
+        "detected_negative_secret_policy_cases": 21,
+        "reported_vulnerabilities": 1,
+        "reported_package": "opentelemetry-api1.45.1",
+        "node_audit_browser_and_build_executed": false
+      },
+      "dependency_steps": {
+        "original_baseline": {
+          "api_sdk": "1.44.0",
+          "semantic_conventions": "0.65b0"
+        },
+        "initial_remediation": {
+          "api_sdk": "1.45.1",
+          "semantic_conventions": "0.66b1"
+        },
+        "current_correction": {
+          "api_sdk": "1.45.2",
+          "semantic_conventions": "0.66b2"
+        }
+      },
+      "lock_and_environment": {
+        "qualification": {
+          "path": "otel-patch-install-qualification-01.json",
+          "bytes": 730,
+          "sha256": "3587fad9fc750f11b9e370bffbb13629d8862b31c602106eed42c0dde00e9cf1"
+        },
+        "locked_packages": 99,
+        "external_versions_changed": 3,
+        "other_lock_record_changed": "trading212-observability workspace metadata",
+        "all_other_lock_records_identical": true,
+        "selected_PyPI_hashes_and_sizes_verified": true,
+        "uv_lock_sha256": "e7f3cc198e18030dd0000c269e703f465df88e98a563b5161d87afb278a4f59a",
+        "offline_lock_check": {
+          "path": "otel-lock-offline-check-01/receipt.json",
+          "bytes": 737,
+          "sha256": "26df37c85b8e923832e786ba28962102fbfa99d0eed6c98e3ec08e8b6e8e8651"
+        },
+        "venv_inode_preserved": 291333
+      },
+      "public_regression": {
+        "path": "tests/security/test_trace_context_bounds.py",
+        "cases": 3,
+        "largest_input_characters": 513,
+        "normal_and512_character_future_version_inputs_accepted": true,
+        "513_character_future_version_rejected": true,
+        "old_red": {
+          "receipt": {
+            "path": "otel-trace-bound-red-01/receipt.json",
+            "bytes": 627,
+            "sha256": "12c1d777f1fc4019616bd4a42d79244318b7e81df8e9ecfed2bf0a537f07e642"
+          },
+          "passed": 2,
+          "failed": 1,
+          "pytest_seconds": 0.09,
+          "runner_seconds": 0.326
+        },
+        "scope": "Benign public extraction behavior only; no exploit payload, timing benchmark, internal regex mock or performance claim."
+      },
+      "corrected_security_observability": {
+        "receipt": {
+          "path": "otel-observability-security-green-01/receipt.json",
+          "bytes": 801,
+          "sha256": "cd5e995164b81f952cdbc7e8cf0788be0ba9e294079cff00b2d1aba95a15bf36"
+        },
+        "passed": 279,
+        "failed": 0,
+        "pytest_seconds": 39.15,
+        "runner_seconds": 40.764
+      },
+      "corrected_postgres_observability": {
+        "receipt": {
+          "path": "otel-postgres-observability-green-01/receipt.json",
+          "bytes": 981,
+          "sha256": "d1ca6e61c344402287ad84f61deff41caa5605300ddfc078de83f2c7b5755661"
+        },
+        "passed": 8,
+        "failed": 0,
+        "pytest_seconds": 19.77,
+        "runner_seconds": 21.417
+      },
+      "fresh_dependency_audit": {
+        "receipt": {
+          "path": "otel-pip-audit-fresh-01/receipt.json",
+          "bytes": 1148,
+          "sha256": "0366d288d6218934fd6cbc25bc05ae0bc8e1e7312641a9715d7865734a6acbde"
+        },
+        "result": {
+          "path": "otel-pip-audit-01.json",
+          "bytes": 3888,
+          "sha256": "d64b534c62ce5309c18e16d00faa5015f9f17b8cef85b438fb3e3aac09b3c2fc"
+        },
+        "runtime": {
+          "path": "otel-pip-audit-01.json.runtime.json",
+          "bytes": 2028,
+          "sha256": "1f66c0b50d17e5ed04eaec1badec194b42d5cecdcd092ed3a63a3f28d8531497"
+        },
+        "python": "3.13.15",
+        "pip_audit": "2.10.1",
+        "dependencies": 67,
+        "vulnerabilities": 0,
+        "skipped": 0,
+        "runner_seconds": 4.941,
+        "new_HTTP_cache_initially_absent": true,
+        "previous_caches_preserved": true,
+        "requirements_sha256": "3be64bc7254d489218f7a23d9bedab0ca662c9d3700c6c3958100df08febfeb3",
+        "protocol_script_sha256": "c56da6f94374e0bdf2267c9d5a469655ac9a47855a66b131dc12f7a03fd85ed0"
+      },
+      "corrected_working_source_manifest_sha256": "42b292c37fad4158f690012b4adeccffb085b8abd2b0652a0e9148e2818c2a3d",
+      "git_head_at_corrected_invocations": "2756314c08de1c59b272a70cb6ba5693f3b21fc9",
+      "clean_base_runtime_claim": false,
+      "new_clean_source_global_checks_and_commit": "PENDING_ROOT",
+      "preflight03": "NOT_STARTED",
+      "full10": "NOT_STARTED",
+      "final_image_security_startup_browser_delivery_ci_cleanup_export": "PENDING",
+      "production_authorized": false,
+      "accepted_phase3_rows": 0,
+      "accepted_phase3_scenarios": 0,
+      "github_actions": "deferred_by_owner_unverified"
     }
   }
 }
