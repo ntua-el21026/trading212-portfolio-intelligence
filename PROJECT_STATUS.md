@@ -114,6 +114,15 @@ and the initial 1.45.1/0.66b1 step remain recorded. These working-source results
 require a new clean checkpoint; preflight 03 and full10 have not started.
 Final image, startup/browser and delivery gates remain pending.
 
+The owner subsequently directed incremental verification: retain passing scopes,
+rerun failed cases and continue previously unreached gates. Complete attempt 10
+and complete coverage are not rerun. The failed aggregation desktop case now
+passes after a fixture-only activity-source correction and Settings navigation
+before logout; both focused guard/parity regressions pass. Its final working-source
+receipt is `aggregation-desktop-recovery-green-03`. The remaining API browser
+groups and final build/security/startup delivery gates remain pending. These
+observations establish no monolithic full-suite pass or Phase 3 acceptance.
+
 ### Historical September save point
 
 The owner requested a resumable checkpoint on 2026-09-30. The aggregation

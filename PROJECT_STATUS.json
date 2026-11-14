@@ -1685,6 +1685,33 @@
       "accepted_phase3_rows": 0,
       "accepted_phase3_scenarios": 0,
       "github_actions": "deferred_by_owner_unverified"
+    },
+    "user_directed_incremental_validation": {
+      "protocol": "user_directed_incremental_validation",
+      "authority_receipt": "incremental-validation-user-direction-01.json",
+      "full_make_validate_10": "not_run_at_user_direction",
+      "complete_coverage": "pending_not_run_at_user_direction",
+      "passed_scopes_are_retained_at_their_recorded_sources": true,
+      "failed_aggregation_case": {
+        "initial_failed_receipt": "unreached-gates-03/receipt.json",
+        "closed_error_diagnostic": "aggregation-action-code-red-01/receipt.json",
+        "confirmed_code": "SOURCE_UNAVAILABLE",
+        "cause": "Opt-in EUR fixture retained an order header without fill evidence; production activity capture correctly rejected it.",
+        "fixture_fix": "Declare an empty fill collection only in the opt-in aggregation provider; delegate every other collection unchanged.",
+        "later_failure": "Sign out was requested outside the Settings page.",
+        "navigation_fix": "Visit Settings for the selected owned account and assert its heading before the original logout and denied-read checks.",
+        "focused_unit_receipt": "aggregation-fixture-two-regressions-01/receipt.json",
+        "focused_unit_passed": 2,
+        "desktop_receipt": "aggregation-desktop-recovery-green-03/receipt.json",
+        "desktop_cases_passed": 1,
+        "desktop_pytest_seconds": null,
+        "desktop_playwright_seconds": 18.1,
+        "desktop_runner_seconds": 18.603,
+        "working_source_manifest_sha256": "de96f9d7b6a64e873002ffad40a59648a9287627f41263f472134e281f31d193"
+      },
+      "remaining_api_browser_groups": "unreached; resume without repeating completed groups",
+      "acceptance": "all 30 rows and 48 scenarios pending; zero accepted",
+      "production_authorized": false
     }
   }
 }

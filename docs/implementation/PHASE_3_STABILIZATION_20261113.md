@@ -701,6 +701,33 @@ No exploit, timing benchmark or regex-internal mock was executed. These passes d
 not constitute clean-base or complete-target qualification. Preflight 03, full10
 and final image/startup/browser/delivery qualification remain pending/not started.
 
+## Owner-directed incremental browser recovery
+
+The owner directed retention of completed scopes and reruns of failed cases only,
+with previously unreached gates continued once. Complete attempt 10 is not run;
+complete coverage remains pending under this instruction. Earlier passes retain
+their actual source bindings rather than becoming a new monolithic pass.
+
+Preflight 03 passed 12 migration cases, 261 security cases, SAST, Python/Node
+production audits and 196 Demo browser cases. Its first API-backed aggregation
+desktop case failed when the activity request returned `SOURCE_UNAVAILABLE`.
+A closed-code-only focused diagnostic confirmed the rejection. The opt-in EUR
+fixture retained an order header with no fill evidence; the production guard
+correctly rejected it. The fixture now explicitly declares an empty fill collection
+and delegates all other capabilities unchanged. Two focused tests preserve exact
+collection parity and real rejection of the original unsupported record.
+
+The next focused browser attempt reached logout and exposed a stale Sign out
+location. The unchanged financial, coverage and access assertions now navigate
+to the selected owned account's Settings page before logout. The final complete
+desktop case passed in 18.1 Playwright seconds (18.603 runner seconds), retaining
+working-source manifest `de96f9d7b6a64e873002ffad40a59648a9287627f41263f472134e281f31d193`.
+The temporary diagnostic was removed. Only Next-generated development type imports
+also differ from committed source; normal build qualification remains pending.
+Tablet/mobile and the other API suites are continued without repeating Demo or
+completed security tests. All 30 rows and 48 scenarios remain pending, zero are
+accepted, and production authorization remains false.
+
 ## Reproducible synthetic validation
 
 Use the pinned Python, uv, Node and pnpm versions in the repository version files

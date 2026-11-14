@@ -317,6 +317,10 @@ test("native broker accounts consolidate exact saved sources with explicit FX an
       .getByRole("status")
       .getByText("Invalid aggregate selection", { exact: true }),
   ).toBeVisible();
+  await page.goto(`/settings?account=${usd}`);
+  await expect(
+    page.getByRole("heading", { name: "Connection & settings", exact: true }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect(page).toHaveURL(/\/sign-in/);
   await page.goto(

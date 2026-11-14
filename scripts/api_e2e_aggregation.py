@@ -13,9 +13,12 @@ from sqlalchemy.orm import Session, sessionmaker
 from trading212_analytics.source_policy import assess_fx_coverage
 from trading212_application.ingestion import (
     BrokerAccountDataProvider,
+    Checkpoint,
+    IngestionCapability,
     IngestionCoordinator,
     RunMode,
     RunStatus,
+    SourcePage,
 )
 from trading212_application.source_ingestion import SourceProviderRegistration
 from trading212_application.source_providers import (
@@ -78,6 +81,34 @@ def aggregation_enabled(value: str) -> bool:
 
 def _fixed_clock(at: datetime) -> Callable[[], datetime]:
     return lambda: at
+
+
+class AggregationBrowserIngestionProvider(SyntheticIngestionProvider):
+    """Keep the native value fixture while declaring no historical fills.
+
+    The shared fixture's order-only placeholder has no fill evidence. This
+    disposable scenario uses an empty fill collection; activity coverage remains
+    unproven, and retained unsupported records still fail the production guard.
+    """
+
+    async def read_page(
+        self,
+        *,
+        owner_id: str,
+        account_id: str,
+        capability: IngestionCapability,
+        checkpoint: Checkpoint | None,
+        correlation_id: str,
+    ) -> SourcePage:
+        if capability is IngestionCapability.HISTORICAL_ORDERS:
+            return SourcePage(records=(), next_checkpoint=None, complete=True)
+        return await super().read_page(
+            owner_id=owner_id,
+            account_id=account_id,
+            capability=capability,
+            checkpoint=checkpoint,
+            correlation_id=correlation_id,
+        )
 
 
 def _custody(at: datetime) -> CustodyAccountSnapshot:
@@ -315,7 +346,7 @@ async def seed_aggregation_browser_scenario(
             )
     eur_at, usd_at = at - timedelta(hours=2), at - timedelta(hours=1)
     providers: tuple[tuple[UUID, BrokerAccountDataProvider, datetime], ...] = (
-        (EUR_ACCOUNT_ID, SyntheticIngestionProvider(clock=_fixed_clock(eur_at)), eur_at),
+        (EUR_ACCOUNT_ID, AggregationBrowserIngestionProvider(clock=_fixed_clock(eur_at)), eur_at),
         (
             USD_ACCOUNT_ID,
             SyntheticCustodyIngestionProvider(_custody(usd_at), clock=_fixed_clock(usd_at)),
