@@ -152,18 +152,40 @@ test("a delayed account response cannot replace the account currently selected i
     await page.unrouteAll({ behavior: "wait" });
   }
   await assertAccount(page, request, primary);
-  await expect(page.locator("[data-portfolio-account]")).not.toHaveAttribute(
-    "data-portfolio-account",
-    second.id,
-  );
+  await expect(
+    page.locator(`[data-portfolio-account="${second.id}"]`),
+  ).toHaveCount(0);
 });
 
 test("Back during a pending account navigation restores the earlier account before the response arrives", async ({
   page,
   request,
-}) => {
+}, testInfo) => {
   test.setTimeout(120_000);
   const second = (await accounts(request)).find((row) => row.id !== primary)!;
+  async function recordHistory(phase: string) {
+    const session = await page.context().newCDPSession(page);
+    try {
+      const history = await session.send("Page.getNavigationHistory");
+      testInfo.annotations.push({
+        type: "account-history-diagnostic",
+        description: JSON.stringify({
+          phase,
+          current_index: history.currentIndex,
+          entries: history.entries.map((entry) => {
+            const url = new URL(entry.url);
+            return {
+              id: entry.id,
+              pathname: url.pathname,
+              account: url.searchParams.get("account"),
+            };
+          }),
+        }),
+      });
+    } finally {
+      await session.detach();
+    }
+  }
   async function navigate(label: string) {
     const primaryNav = page.getByRole("navigation", {
       name: "Primary",
@@ -183,8 +205,17 @@ test("Back during a pending account navigation restores the earlier account befo
       url.pathname === "/holdings" &&
       url.searchParams.get("account") === primary,
   );
+  await recordHistory("holdings");
   await navigate("Overview");
+  await expect(page).toHaveURL(
+    (url) =>
+      url.pathname === "/" && url.searchParams.get("account") === primary,
+  );
+  await expect(
+    page.getByRole("heading", { name: "Overview", exact: true }),
+  ).toBeVisible();
   await assertAccount(page, request, primary);
+  await recordHistory("overview");
   let release: () => void = () => {};
   let requested = false;
   const held = new Promise<void>((resolve) => {
@@ -207,6 +238,22 @@ test("Back during a pending account navigation restores the earlier account befo
       .getByRole("combobox", { name: "Portfolio account", exact: true })
       .selectOption(second.id);
     await expect.poll(() => requested, { timeout: 20_000 }).toBe(true);
+    // Record the actual browser entries while the account response remains held.
+    await expect(page).toHaveURL(
+      (url) =>
+        url.pathname === "/" && url.searchParams.get("account") === primary,
+    );
+    await recordHistory("held-account-response");
+    testInfo.annotations.push({
+      type: "before-back-history",
+      description: JSON.stringify(
+        await page.evaluate(() => ({
+          pathname: location.pathname,
+          account: new URL(location.href).searchParams.get("account"),
+          history_length: history.length,
+        })),
+      ),
+    });
     await page.goBack();
     await expect(page).toHaveURL(
       (url) =>
@@ -216,10 +263,17 @@ test("Back during a pending account navigation restores the earlier account befo
     await expect(
       page.getByRole("combobox", { name: "Portfolio account", exact: true }),
     ).toHaveValue(primary);
-    await expect(page.locator("[data-portfolio-account]")).toHaveAttribute(
-      "data-portfolio-account",
-      primary,
-    );
+    await expect
+      .poll(() =>
+        page
+          .locator("[data-portfolio-account]")
+          .evaluateAll((views) => [
+            ...new Set(
+              views.map((view) => view.getAttribute("data-portfolio-account")),
+            ),
+          ]),
+      )
+      .toEqual([primary]);
   } finally {
     release();
     await page.unrouteAll({ behavior: "wait" });
@@ -229,10 +283,17 @@ test("Back during a pending account navigation restores the earlier account befo
       url.pathname === "/holdings" &&
       url.searchParams.get("account") === primary,
   );
-  await expect(page.locator("[data-portfolio-account]")).toHaveAttribute(
-    "data-portfolio-account",
-    primary,
-  );
+  await expect
+    .poll(() =>
+      page
+        .locator("[data-portfolio-account]")
+        .evaluateAll((views) => [
+          ...new Set(
+            views.map((view) => view.getAttribute("data-portfolio-account")),
+          ),
+        ]),
+    )
+    .toEqual([primary]);
 });
 
 test("all portfolio sections remain accessible at the configured viewport", async ({
