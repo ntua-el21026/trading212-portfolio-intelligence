@@ -728,6 +728,29 @@ Tablet/mobile and the other API suites are continued without repeating Demo or
 completed security tests. All 30 rows and 48 scenarios remain pending, zero are
 accepted, and production authorization remains false.
 
+## Incremental aggregation accessibility recovery
+
+The continuation preserved the complete desktop pass and passed the tablet group.
+Mobile failed the unchanged Axe assertion because aggregation scroll containers
+were not keyboard focusable. Six existing table wrappers now have caption-based
+region names and native focus stops. An additional check presses an arrow key and
+requires actual horizontal scroll movement before framing each screenshot.
+
+The next mobile invocation passed Axe and exposed an expanded source-details
+region taller than the unobscured viewport. Aggregation now uses the same
+viewport/toolbar/navigation height bound as the shared table style, with both
+axes scrollable. No financial rendering, table content, Axe rule or focus-clearance
+assertion was removed. The failed mobile group then passed in 18.3 Playwright
+seconds (18.804 runner seconds) at unchanged working-source manifest
+`4d2bc2919aca382c23e917c5baa3c04a6a53b9c59e494792c6e3121b15cb9be0`.
+
+The normal build passed. Its only generated source change restored Next's
+production type imports exactly to committed bytes; all other source inputs
+remained unchanged. After the height correction, only the affected frontend was
+rebuilt. Desktop/tablet observations remain bound to their earlier sources;
+remaining groups continue once, without a new monolithic-pass claim. All Phase 3
+acceptance and production-authorization states remain unchanged.
+
 ## Reproducible synthetic validation
 
 Use the pinned Python, uv, Node and pnpm versions in the repository version files

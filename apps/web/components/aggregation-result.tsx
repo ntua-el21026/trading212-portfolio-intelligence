@@ -99,7 +99,12 @@ export function AggregateResult({
               Source cutoff: {formatDateTime(page.context.source_cutoff_at)}.
               Values retain each account’s original valuation date.
             </p>
-            <div className={styles.table}>
+            <div
+              className={styles.table}
+              tabIndex={0}
+              role="region"
+              aria-label="Included saved snapshots"
+            >
               <table>
                 <caption>Included saved snapshots</caption>
                 <thead>
@@ -177,7 +182,12 @@ export function AggregateResult({
             coverage or portfolio performance.
           </p>
           {page.currency_totals.length ? (
-            <div className={styles.table}>
+            <div
+              className={styles.table}
+              tabIndex={0}
+              role="region"
+              aria-label="Original currency flow totals"
+            >
               <table>
                 <caption>Original currency flow totals</caption>
                 <thead>
@@ -214,7 +224,12 @@ export function AggregateResult({
         {!page.items.length ? (
           <p>No rows on this page.</p>
         ) : page.view === "holdings" ? (
-          <div className={styles.table}>
+          <div
+            className={styles.table}
+            tabIndex={0}
+            role="region"
+            aria-label="Consolidated instruments with distinct account contributions"
+          >
             <table>
               <caption>
                 Consolidated instruments with distinct account contributions
@@ -253,7 +268,12 @@ export function AggregateResult({
             </table>
           </div>
         ) : page.view === "components" ? (
-          <div className={styles.table}>
+          <div
+            className={styles.table}
+            tabIndex={0}
+            role="region"
+            aria-label="Original holdings and cash with explicit conversion"
+          >
             <table>
               <caption>
                 Original holdings and cash with explicit conversion
@@ -320,7 +340,12 @@ export function AggregateResult({
             </table>
           </div>
         ) : page.view === "accounts" ? (
-          <div className={styles.table}>
+          <div
+            className={styles.table}
+            tabIndex={0}
+            role="region"
+            aria-label="Whole account totals"
+          >
             <table>
               <caption>Whole account totals</caption>
               <thead>
@@ -342,7 +367,12 @@ export function AggregateResult({
             </table>
           </div>
         ) : (
-          <div className={styles.table}>
+          <div
+            className={styles.table}
+            tabIndex={0}
+            role="region"
+            aria-label="Actual transfer and external-flow evidence"
+          >
             <table>
               <caption>Actual transfer and external-flow evidence</caption>
               <thead>

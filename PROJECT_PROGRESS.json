@@ -5537,7 +5537,25 @@
       },
       "remaining_api_browser_groups": "unreached; resume without repeating completed groups",
       "acceptance": "all 30 rows and 48 scenarios pending; zero accepted",
-      "production_authorized": false
+      "production_authorized": false,
+      "aggregation_accessibility": {
+        "failed_mobile_group_receipt": "api-browser-resume-01/receipt.json",
+        "observed_failure": "Axe serious scrollable-region-focusable on two aggregation table wrappers",
+        "fix": "Six caption-named focusable table regions and the existing shared-table viewport height bound; all content remains scrollable.",
+        "intermediate_failed_mobile_receipt": "aggregation-mobile-recovery-green-01/receipt.json",
+        "intermediate_failure": "Expanded source details made a focusable region taller than the unobscured viewport.",
+        "final_mobile_receipt": "aggregation-mobile-recovery-green-02/receipt.json",
+        "passed_cases": 1,
+        "playwright_seconds": 18.3,
+        "runner_seconds": 18.804,
+        "working_source_manifest_sha256": "4d2bc2919aca382c23e917c5baa3c04a6a53b9c59e494792c6e3121b15cb9be0",
+        "normal_build_receipt": "incremental-build-gate-01/receipt.json",
+        "normal_build_generated_source_disposition": "incremental-build-gate-01/generated-source-disposition.json",
+        "changed_frontend_rebuild_receipt": "aggregation-frontend-build-02/receipt.json",
+        "checks": "Existing Axe and native Tab focus checks retained; actual arrow-key horizontal scrolling added.",
+        "desktop_tablet_passes": "Retained at their actual earlier source snapshots; no current immutable three-viewport or whole-suite pass inferred.",
+        "remaining_api_browser_groups": "Resume only previously unrun groups."
+      }
     }
   }
 }

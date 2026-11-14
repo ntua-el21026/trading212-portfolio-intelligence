@@ -20,6 +20,26 @@ async function capture(page: Page, info: TestInfo, state: string) {
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   await assertAccessible(page);
   await keyboardClearance(page);
+  for (const region of await page
+    .getByRole("region")
+    .filter({ has: page.getByRole("table") })
+    .all()) {
+    const { left, remaining } = await region.evaluate((element) => ({
+      left: element.scrollLeft,
+      remaining: element.scrollWidth - element.clientWidth - element.scrollLeft,
+    }));
+    if (left + remaining <= 1) continue;
+    await region.focus();
+    await expect(region).toBeFocused();
+    await region.press(remaining > 1 ? "ArrowRight" : "ArrowLeft");
+    await expect
+      .poll(() => region.evaluate((element) => element.scrollLeft))
+      .not.toBe(left);
+    // Frame the screenshot only after the native key has moved the table.
+    await region.evaluate((element, offset) => {
+      element.scrollLeft = offset;
+    }, left);
+  }
   await page.evaluate(() => {
     if (document.activeElement instanceof HTMLElement)
       document.activeElement.blur();

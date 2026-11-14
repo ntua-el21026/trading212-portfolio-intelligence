@@ -27,8 +27,11 @@
   gap: 0.75rem;
 }
 .table {
-  overflow-x: auto;
   max-width: 100%;
+  max-height: calc(
+    100dvh - var(--topbar-height) - var(--bottom-navigation-height) - 3rem
+  );
+  overflow: auto;
 }
 .table table {
   width: 100%;

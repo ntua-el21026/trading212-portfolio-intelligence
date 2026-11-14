@@ -123,6 +123,14 @@ receipt is `aggregation-desktop-recovery-green-03`. The remaining API browser
 groups and final build/security/startup delivery gates remain pending. These
 observations establish no monolithic full-suite pass or Phase 3 acceptance.
 
+The resumed aggregation tablet group passed. Mobile then exposed inaccessible
+scroll regions and an expanded table taller than the unobscured viewport. Named,
+keyboard-focusable regions now use the existing shared-table viewport bound.
+The failed mobile case passes with Axe, native Tab clearance and actual arrow-key
+scrolling intact. The normal build passed; only the changed frontend was rebuilt
+after the height correction. Earlier desktop/tablet results retain their original
+source bindings. Remaining API groups continue without replaying completed scopes.
+
 ### Historical September save point
 
 The owner requested a resumable checkpoint on 2026-09-30. The aggregation
