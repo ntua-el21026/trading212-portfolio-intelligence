@@ -12,9 +12,8 @@ from sqlalchemy.orm import Session
 from trading212_application import reports as app
 from trading212_domain.enums import QualityState
 from trading212_domain.report_manifest import (
-    build_report_manifest,
+    build_and_encode_report_manifest,
     encode_report_chunk,
-    encode_report_manifest,
     encode_report_row,
     encode_report_schema,
     report_document_digest,
@@ -223,8 +222,7 @@ class ReportInputSink:
                 or descriptor.schema_digest != table.schema_digest
             ):
                 raise report_error(app.ReportServiceErrorCode.VALIDATION_FAILED)
-        manifest = build_report_manifest(summary)
-        payload = encode_report_manifest(manifest)
+        _, payload = build_and_encode_report_manifest(summary)
         digest = hashlib.sha256(payload).hexdigest()
         pins = summary.immutable_bindings
         if not 1 <= len(pins) <= 256:

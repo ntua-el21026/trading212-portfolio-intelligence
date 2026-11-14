@@ -10,6 +10,7 @@ from dataclasses import fields
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from enum import StrEnum
+from functools import lru_cache
 from typing import Literal, cast, get_args, get_origin, overload
 from uuid import UUID
 
@@ -103,22 +104,34 @@ _OPTIONAL_V3_FIELDS: dict[type[object], frozenset[str]] = {
 }
 
 
-def _field_names(value: r.ReportRecord) -> tuple[str, ...]:
+def _field_policy(record_type: type[object]) -> tuple[tuple[str, bool], ...]:
+    """Cache only fixed public class metadata, never record values or bytes."""
+    if record_type not in _RECORDS:
+        fail_validation("Only closed report records can be encoded.", field="record")
+    optional = _OPTIONAL_V3_FIELDS.get(record_type, frozenset())
+    if record_type is r.ReportCell:
+        optional = _OPTIONAL_CELL_FIELDS
+    elif record_type is r.ReportSelection:
+        optional = frozenset({"xray_run_id", "risk_run_id"})
+    elif record_type is r.ExportSelection:
+        optional = frozenset({"xray_run_id"})
     return tuple(
-        field.name
-        for field in fields(value)
-        if not (
-            getattr(value, field.name) is None
-            and (
-                (type(value) is r.ReportCell and field.name in _OPTIONAL_CELL_FIELDS)
-                or (
-                    type(value) in (r.ReportSelection, r.ExportSelection)
-                    and field.name == "xray_run_id"
-                )
-                or (type(value) is r.ReportSelection and field.name == "risk_run_id")
-                or field.name in _OPTIONAL_V3_FIELDS.get(type(value), frozenset())
-            )
-        )
+        (field.name, field.name in optional)
+        for field in fields(cast("type[r.ReportRecord]", record_type))
+    )
+
+
+_FIELD_POLICIES: dict[type[object], tuple[tuple[str, bool], ...]] = {
+    record_type: _field_policy(record_type) for record_type in _RECORDS
+}
+
+
+def _field_names(value: r.ReportRecord) -> tuple[str, ...]:
+    policy = _FIELD_POLICIES.get(type(value))
+    if policy is None:
+        fail_validation("Only closed report records can be encoded.", field="record")
+    return tuple(
+        name for name, omit_none in policy if not omit_none or getattr(value, name) is not None
     )
 
 
@@ -193,6 +206,13 @@ def _json(value: JsonValue, maximum: int) -> bytes:
     return bytes(output)
 
 
+def _quoted_size(value: str) -> int:
+    try:
+        return len(json.encoder.encode_basestring(value).encode("utf-8"))
+    except UnicodeEncodeError:
+        fail_validation("Report text must be valid Unicode.", field="text")
+
+
 def _measure(value: object, maximum: int) -> int:
     """Check aggregate bytes before constructing the serialized object graph."""
     if type(value) is tuple:
@@ -204,17 +224,41 @@ def _measure(value: object, maximum: int) -> int:
     if type(value) in _RECORDS:
         size = 2
         for index, name in enumerate(_field_names(cast("r.ReportRecord", value))):
-            size += (1 if index else 0) + len(json.dumps(name)) + 1
+            size += (1 if index else 0) + _quoted_size(name) + 1
             r.report_limit(size <= maximum, "encoded_bytes")
             size += _measure(getattr(value, name), maximum - size)
             r.report_limit(size <= maximum, "encoded_bytes")
         return size
-    return len(_json(_primitive(value), maximum))
+    primitive = _primitive(value)
+    if type(primitive) is str:
+        size = _quoted_size(primitive)
+    elif primitive is None:
+        size = 4
+    elif type(primitive) is bool:
+        size = 4 if primitive else 5
+    elif type(primitive) is int:
+        size = len(str(primitive))
+    else:
+        fail_validation("Only closed report records can be encoded.", field="record")
+    r.report_limit(size <= maximum, "encoded_bytes")
+    return size
 
 
 def _encode(value: r.ReportRecord, maximum: int) -> bytes:
-    _measure(value, maximum)
-    return _json(_primitive(value), maximum)
+    size = _measure(value, maximum)
+    primitive = _primitive(value)
+    if size > r.MAX_REPORT_MANIFEST_BYTES:
+        return _json(primitive, maximum)
+    # Exact UTF8 preflight precedes both graph and output allocation. Keep large
+    # legal captures on the streaming path: dumps also materializes Unicode text.
+    try:
+        payload = json.dumps(
+            primitive, ensure_ascii=False, separators=(",", ":"), allow_nan=False
+        ).encode("utf-8")
+    except UnicodeEncodeError:
+        fail_validation("Report text must be valid Unicode.", field="text")
+    r.report_limit(len(payload) <= maximum, "encoded_bytes")
+    return payload
 
 
 def _reject_number(value: str) -> None:
@@ -404,7 +448,22 @@ def decode_report_proof(payload: bytes) -> r.ReportProof:
     return _read(payload, r.ReportProof, r.MAX_REPORT_MANIFEST_BYTES)
 
 
+@lru_cache(maxsize=len(r.ReportTableKey))
+def _public_schema_bytes(table: r.ReportTableKey) -> bytes:
+    from .report_schema import table_schema
+
+    return _encode(table_schema(table), r.MAX_REPORT_MANIFEST_BYTES)
+
+
 def encode_report_schema(value: r.ReportTableSchema) -> bytes:
+    from .report_schema import table_schema
+
+    if type(value) is r.ReportTableSchema and type(value.key) is r.ReportTableKey:
+        registered = table_schema(value.key)
+        if value is registered or value == registered:
+            payload = _public_schema_bytes(value.key)
+            r.report_limit(len(payload) <= r.MAX_REPORT_MANIFEST_BYTES, "encoded_bytes")
+            return payload
     return _encode(value, r.MAX_REPORT_MANIFEST_BYTES)
 
 
@@ -700,14 +759,60 @@ def build_report_manifest(
     proof: r.ReportProof | v4.ReportProofV4 | None = None,
     profile: r.ReportRendererProfile | None = None,
 ) -> v3.ReportManifestContract:
+    return build_and_encode_report_manifest(capture, proof=proof, profile=profile)[0]
+
+
+@overload
+def build_and_encode_report_manifest(
+    capture: r.ReportCaptureSummary,
+    *,
+    proof: r.ReportProof | v4.ReportProofV4 | None = None,
+    profile: r.ReportRendererProfile | None = None,
+) -> tuple[r.ReportManifest, bytes]: ...
+
+
+@overload
+def build_and_encode_report_manifest(
+    capture: v3.ReportCaptureSummaryV3,
+    *,
+    proof: r.ReportProof | v4.ReportProofV4 | None = None,
+    profile: r.ReportRendererProfile | None = None,
+) -> tuple[v3.ReportManifestV3, bytes]: ...
+
+
+@overload
+def build_and_encode_report_manifest(
+    capture: v4.ReportCaptureSummaryV4,
+    *,
+    proof: r.ReportProof | v4.ReportProofV4 | None = None,
+    profile: r.ReportRendererProfile | None = None,
+) -> tuple[v4.ReportManifestV4, bytes]: ...
+
+
+@overload
+def build_and_encode_report_manifest(
+    capture: v3.ReportCaptureContract,
+    *,
+    proof: r.ReportProof | v4.ReportProofV4 | None = None,
+    profile: r.ReportRendererProfile | None = None,
+) -> tuple[v3.ReportManifestContract, bytes]: ...
+
+
+def build_and_encode_report_manifest(
+    capture: v3.ReportCaptureContract,
+    *,
+    proof: r.ReportProof | v4.ReportProofV4 | None = None,
+    profile: r.ReportRendererProfile | None = None,
+) -> tuple[v3.ReportManifestContract, bytes]:
+    """Build, validate and encode once; never retain private bytes across calls."""
     if isinstance(capture, v4.ReportCaptureSummaryV4):
-        from .report_manifest_v4 import build_report_manifest_v4
+        from .report_manifest_v4 import build_and_encode_report_manifest_v4
 
         if (proof is not None and proof != capture.proof) or (
             profile is not None and profile != capture.renderer_profile
         ):
             fail_validation("Pinned report proof/profile differs.", field="capture")
-        return build_report_manifest_v4(capture)
+        return build_and_encode_report_manifest_v4(capture)
     proof = capture.proof if proof is None else proof
     profile = capture.renderer_profile if profile is None else profile
     if (
@@ -731,8 +836,7 @@ def build_report_manifest(
             bindings=capture.immutable_bindings,
             **{item.name: getattr(proof, item.name) for item in fields(r.ReportProof)},
         )
-    encode_report_manifest(result)
-    return result
+    return result, encode_report_manifest(result)
 
 
 def report_table_digest(table: r.ReportTableKey, rows: Iterable[r.ReportRow]) -> str:

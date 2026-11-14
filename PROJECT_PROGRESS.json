@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-11-14",
+  "updated_at": "2026-11-15",
   "current_candidate": {
     "phase": "phase_3",
     "release": "1.0.0",
@@ -904,7 +904,11 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S34", "P2-S38", "P2-S39"],
+            "scenario_ids": [
+              "P2-S34",
+              "P2-S38",
+              "P2-S39"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-09": {
@@ -1289,7 +1293,12 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S01", "P2-S04", "P2-S05", "P2-S32"],
+            "scenario_ids": [
+              "P2-S01",
+              "P2-S04",
+              "P2-S05",
+              "P2-S32"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-TGT-002": {
@@ -1311,7 +1320,11 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S02", "P2-S03", "P2-S04"],
+            "scenario_ids": [
+              "P2-S02",
+              "P2-S03",
+              "P2-S04"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-TGT-003": {
@@ -1332,7 +1345,10 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S04", "P2-S05"],
+            "scenario_ids": [
+              "P2-S04",
+              "P2-S05"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-OPT-001": {
@@ -1400,7 +1416,11 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S06", "P2-S34", "P2-S38"],
+            "scenario_ids": [
+              "P2-S06",
+              "P2-S34",
+              "P2-S38"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-OPT-002": {
@@ -1423,7 +1443,12 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S07", "P2-S08", "P2-S09", "P2-S11"],
+            "scenario_ids": [
+              "P2-S07",
+              "P2-S08",
+              "P2-S09",
+              "P2-S11"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-OPT-003": {
@@ -1449,7 +1474,12 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S10", "P2-S11", "P2-S12", "P2-S37"],
+            "scenario_ids": [
+              "P2-S10",
+              "P2-S11",
+              "P2-S12",
+              "P2-S37"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-SRC-001": {
@@ -1480,7 +1510,12 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S13", "P2-S14", "P2-S36", "P2-S37"],
+            "scenario_ids": [
+              "P2-S13",
+              "P2-S14",
+              "P2-S36",
+              "P2-S37"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-SRC-002": {
@@ -1540,7 +1575,12 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S13", "P2-S14", "P2-S18", "P2-S38"],
+            "scenario_ids": [
+              "P2-S13",
+              "P2-S14",
+              "P2-S18",
+              "P2-S38"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-PERF-001": {
@@ -1561,7 +1601,11 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S15", "P2-S16", "P2-S18"],
+            "scenario_ids": [
+              "P2-S15",
+              "P2-S16",
+              "P2-S18"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-PERF-002": {
@@ -1625,7 +1669,12 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S15", "P2-S17", "P2-S18", "P2-S34"],
+            "scenario_ids": [
+              "P2-S15",
+              "P2-S17",
+              "P2-S18",
+              "P2-S34"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-INC-001": {
@@ -1688,7 +1737,11 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S16", "P2-S19", "P2-S34"],
+            "scenario_ids": [
+              "P2-S16",
+              "P2-S19",
+              "P2-S34"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-XRAY-001": {
@@ -1709,7 +1762,10 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S20", "P2-S21"],
+            "scenario_ids": [
+              "P2-S20",
+              "P2-S21"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-XRAY-002": {
@@ -1779,7 +1835,12 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S22", "P2-S23", "P2-S34", "P2-S38"],
+            "scenario_ids": [
+              "P2-S22",
+              "P2-S23",
+              "P2-S34",
+              "P2-S38"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-RPT-001": {
@@ -1845,7 +1906,11 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S24", "P2-S27", "P2-S34"],
+            "scenario_ids": [
+              "P2-S24",
+              "P2-S27",
+              "P2-S34"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-RPT-002": {
@@ -1931,7 +1996,12 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S25", "P2-S31", "P2-S32", "P2-S40"],
+            "scenario_ids": [
+              "P2-S25",
+              "P2-S31",
+              "P2-S32",
+              "P2-S40"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-RPT-003": {
@@ -1953,7 +2023,10 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S26", "P2-S27"],
+            "scenario_ids": [
+              "P2-S26",
+              "P2-S27"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-ALT-001": {
@@ -2010,7 +2083,10 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S28", "P2-S38"],
+            "scenario_ids": [
+              "P2-S28",
+              "P2-S38"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-ALT-002": {
@@ -2046,7 +2122,12 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S28", "P2-S29", "P2-S31", "P2-S40"],
+            "scenario_ids": [
+              "P2-S28",
+              "P2-S29",
+              "P2-S31",
+              "P2-S40"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-ALT-003": {
@@ -2074,7 +2155,11 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S30", "P2-S31", "P2-S37"],
+            "scenario_ids": [
+              "P2-S30",
+              "P2-S31",
+              "P2-S37"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-WEB-001": {
@@ -2141,7 +2226,11 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S34", "P2-S38", "P2-S39"],
+            "scenario_ids": [
+              "P2-S34",
+              "P2-S38",
+              "P2-S39"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-WEB-002": {
@@ -2192,7 +2281,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S39"],
+            "scenario_ids": [
+              "P2-S39"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-MCP-001": {
@@ -2276,7 +2367,13 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S33", "P2-S34", "P2-S36", "P2-S37", "P2-S38"],
+            "scenario_ids": [
+              "P2-S33",
+              "P2-S34",
+              "P2-S36",
+              "P2-S37",
+              "P2-S38"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-MCP-002": {
@@ -2311,7 +2408,13 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S12", "P2-S26", "P2-S31", "P2-S33", "P2-S37"],
+            "scenario_ids": [
+              "P2-S12",
+              "P2-S26",
+              "P2-S31",
+              "P2-S33",
+              "P2-S37"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-API-001": {
@@ -2427,7 +2530,11 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S32", "P2-S34", "P2-S38"],
+            "scenario_ids": [
+              "P2-S32",
+              "P2-S34",
+              "P2-S38"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-DATA-001": {
@@ -2466,7 +2573,13 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S02", "P2-S14", "P2-S25", "P2-S31", "P2-S40"],
+            "scenario_ids": [
+              "P2-S02",
+              "P2-S14",
+              "P2-S25",
+              "P2-S31",
+              "P2-S40"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-SEC-001": {
@@ -2596,7 +2709,11 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S35", "P2-S36", "P2-S37"],
+            "scenario_ids": [
+              "P2-S35",
+              "P2-S36",
+              "P2-S37"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-OPS-001": {
@@ -2630,7 +2747,10 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S31", "P2-S40"],
+            "scenario_ids": [
+              "P2-S31",
+              "P2-S40"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-REL-001": {
@@ -2866,7 +2986,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S01"],
+            "scenario_ids": [
+              "P2-S01"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S02": {
@@ -2886,7 +3008,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S02"],
+            "scenario_ids": [
+              "P2-S02"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S03": {
@@ -2906,7 +3030,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S03"],
+            "scenario_ids": [
+              "P2-S03"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S04": {
@@ -2926,7 +3052,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S04"],
+            "scenario_ids": [
+              "P2-S04"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S05": {
@@ -2946,7 +3074,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S05"],
+            "scenario_ids": [
+              "P2-S05"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S06": {
@@ -2966,7 +3096,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S06"],
+            "scenario_ids": [
+              "P2-S06"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S07": {
@@ -2986,7 +3118,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S07"],
+            "scenario_ids": [
+              "P2-S07"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S08": {
@@ -3006,7 +3140,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S08"],
+            "scenario_ids": [
+              "P2-S08"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S09": {
@@ -3026,7 +3162,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S09"],
+            "scenario_ids": [
+              "P2-S09"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S10": {
@@ -3046,7 +3184,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S10"],
+            "scenario_ids": [
+              "P2-S10"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S11": {
@@ -3066,7 +3206,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S11"],
+            "scenario_ids": [
+              "P2-S11"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S12": {
@@ -3086,7 +3228,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S12"],
+            "scenario_ids": [
+              "P2-S12"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S13": {
@@ -3106,7 +3250,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S13"],
+            "scenario_ids": [
+              "P2-S13"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S14": {
@@ -3127,7 +3273,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S14"],
+            "scenario_ids": [
+              "P2-S14"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S15": {
@@ -3147,7 +3295,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S15"],
+            "scenario_ids": [
+              "P2-S15"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S16": {
@@ -3167,7 +3317,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S16"],
+            "scenario_ids": [
+              "P2-S16"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S17": {
@@ -3187,7 +3339,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S17"],
+            "scenario_ids": [
+              "P2-S17"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S18": {
@@ -3207,7 +3361,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S18"],
+            "scenario_ids": [
+              "P2-S18"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S19": {
@@ -3227,7 +3383,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S19"],
+            "scenario_ids": [
+              "P2-S19"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S20": {
@@ -3247,7 +3405,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S20"],
+            "scenario_ids": [
+              "P2-S20"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S21": {
@@ -3267,7 +3427,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S21"],
+            "scenario_ids": [
+              "P2-S21"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S22": {
@@ -3287,7 +3449,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S22"],
+            "scenario_ids": [
+              "P2-S22"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S23": {
@@ -3308,7 +3472,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S23"],
+            "scenario_ids": [
+              "P2-S23"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S24": {
@@ -3328,7 +3494,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S24"],
+            "scenario_ids": [
+              "P2-S24"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S25": {
@@ -3349,7 +3517,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S25"],
+            "scenario_ids": [
+              "P2-S25"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S26": {
@@ -3369,7 +3539,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S26"],
+            "scenario_ids": [
+              "P2-S26"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S27": {
@@ -3390,7 +3562,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S27"],
+            "scenario_ids": [
+              "P2-S27"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S28": {
@@ -3410,7 +3584,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S28"],
+            "scenario_ids": [
+              "P2-S28"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S29": {
@@ -3430,7 +3606,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S29"],
+            "scenario_ids": [
+              "P2-S29"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S30": {
@@ -3451,7 +3629,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S30"],
+            "scenario_ids": [
+              "P2-S30"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S31": {
@@ -3473,7 +3653,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S31"],
+            "scenario_ids": [
+              "P2-S31"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S32": {
@@ -3543,7 +3725,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S32"],
+            "scenario_ids": [
+              "P2-S32"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S33": {
@@ -3570,7 +3754,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S33"],
+            "scenario_ids": [
+              "P2-S33"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S34": {
@@ -3633,7 +3819,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S34"],
+            "scenario_ids": [
+              "P2-S34"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S35": {
@@ -3656,7 +3844,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S35"],
+            "scenario_ids": [
+              "P2-S35"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S36": {
@@ -3679,7 +3869,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S36"],
+            "scenario_ids": [
+              "P2-S36"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S37": {
@@ -3703,7 +3895,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S37"],
+            "scenario_ids": [
+              "P2-S37"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S38": {
@@ -3759,7 +3953,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S38"],
+            "scenario_ids": [
+              "P2-S38"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S39": {
@@ -3810,7 +4006,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S39"],
+            "scenario_ids": [
+              "P2-S39"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           },
           "P2-S40": {
@@ -3841,7 +4039,9 @@
             "acceptance_scope": "local_exact_commit_with_owner_deferred_ci",
             "ci_state": "deferred_by_owner",
             "assertion_map_pointer": "/assertion_map",
-            "scenario_ids": ["P2-S40"],
+            "scenario_ids": [
+              "P2-S40"
+            ],
             "observation_limit": "Source selectors map to retained whole-file or actual browser observations; no per-parameter Python result is invented."
           }
         }
@@ -3988,7 +4188,12 @@
           "local_history_scan": "passed",
           "local_image_scans_passed": 2,
           "local_image_scans_failed": 4,
-          "failed_images": ["api", "worker", "mcp", "web"],
+          "failed_images": [
+            "api",
+            "worker",
+            "mcp",
+            "web"
+          ],
           "artifact": "docs/implementation/evidence/phase-2-p2-08-7201b53-failed-security.json",
           "artifact_sha256": "ad3062ca32c9be6c5a602fe5d25827a9d71bce33a00d0ac947c08d26747401ab",
           "correction": "Install libpcre2-8-0=10.42-1+deb12u1 in all four application runtime images before package-manager stripping. Working-tree correction verification and corrected immutable acceptance remain pending; no exceptions added.",
@@ -4662,14 +4867,20 @@
         "sql_authorization_denial_correct": true,
         "later_eur_observer_denials": "expected_revocation_assertions_in_passing_selector",
         "authorization": "bounded_existing_adr0024_sql_contract_correction",
-        "fixture_license_days_preserved": [365, 3650],
+        "fixture_license_days_preserved": [
+          365,
+          3650
+        ],
         "regressions": "five_new_cases_and_original_replay_selector_passed",
         "required_physical_dependency_expiry": "exact_original_stored_expiry",
         "production_files": [
           "packages/persistence/src/trading212_persistence/report_sources.py",
           "packages/persistence/src/trading212_persistence/report_input_store.py"
         ],
-        "contract_versions_changed": [3, 4],
+        "contract_versions_changed": [
+          3,
+          4
+        ],
         "physical_dependency_expiry_and_exact_proof_unchanged": true,
         "v1_v2_sql_guards_schema_financial_payloads_unchanged": true,
         "physical_source_families": 9,
@@ -4863,7 +5074,10 @@
       "current_runtime_tools": 38,
       "preserved_original_catalogue": 25,
       "explicit_authorized_additions": 13,
-      "research_additions": ["get_research_summary", "get_research_item"],
+      "research_additions": [
+        "get_research_summary",
+        "get_research_item"
+      ],
       "independent_inventory_oracle": "tests/mcp_discovery.py",
       "rejects_missing_extra_duplicate_names": true,
       "historical_isolated_32_36_contracts_unchanged": true,
@@ -4893,7 +5107,10 @@
         "passed": 3,
         "failed": 2,
         "pytest_seconds": 1.21,
-        "failed_cases": ["path_one_short", "composition_one_short"]
+        "failed_cases": [
+          "path_one_short",
+          "composition_one_short"
+        ]
       },
       "unit_green": {
         "passed": 31,
@@ -5036,7 +5253,9 @@
           "failed": 3,
           "pytest_seconds": 4.81,
           "runner_seconds": 7.148,
-          "typed_codes": ["RUN_EXPIRED"],
+          "typed_codes": [
+            "RUN_EXPIRED"
+          ],
           "payloads_or_exception_text_captured": false
         },
         "metadata_budget": {
@@ -5089,7 +5308,11 @@
         },
         "explain_files": 12,
         "rows_per_table": 32768,
-        "eligibility_counts": [0, 32, 8192],
+        "eligibility_counts": [
+          0,
+          32,
+          8192
+        ],
         "remaining_inspections": 2,
         "limit": 1,
         "scope": "TTL candidate SELECT only",
@@ -5658,7 +5881,7 @@
         "Required cases are discovered by parsing direct top-level literal test declarations and the current literal project array. No application/test module, Playwright collection, browser, fixture or test is executed. Unsupported declaration syntax prevents complete coverage claims.",
         "Earlier reports without a prior hash anchor are hashed now and retained as observations; they cannot independently authorize retained passing coverage. Report time/argv and the source/log receipt are verified separately.",
         "Zero-case attempts and prior failures remain recorded. A later pass records an outcome transition, without independently proving the cause of the earlier failure.",
-        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01\u201307 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
+        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01–07 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
         "Procfs denied access to some unrelated same-UID process descriptors after recorded lineage and readable API driver/fixture signatures were checked. Those descriptor blind spots are listed in terminal_quiescence.descriptor_access_limits; exhaustive process-descriptor visibility is not claimed. Recorded launcher and artifact-watcher termination are checked separately.",
         "This commit24 refresh executes metadata assembly only. The exact commit23-to24 input delta is one public-asset COPY line in infrastructure/docker/web.Dockerfile; all other recorded source inputs, including application/test/dependency files, are identical. Whole-source equality with every earlier API execution is false, including the 20 cases that previously matched commit23. No case is claimed executed at commit24.",
         "Report unreached-gates-03/api-browser/aggregation.spec.ts-api-chromium-desktop.json has its report hash first recorded at assembly; retained-coverage eligibility is false.",
@@ -5672,7 +5895,7 @@
     "latest_browser_recoveries": {
       "pwa": "Canonical fixture selector now seeds both authorized synthetic accounts; focused desktop1PASS, later tablet/mobile passes. All privacy/cache/auth assertions retained.",
       "scenario_report": "First INSERT actual physical created_at for12new exact synthetic parents/fiveclasses only under reports&&scenarios. DesktopPASS sourcea98... precedes stderr-only source25d... logging delta; desktop was not rerun. No existing UPDATE, production guard or financial/first-observed/expiry/digest change.",
-      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3\u21924\u21924/noBentry qualifies the tested setup/observation without establishing production causality."
+      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3→4→4/noBentry qualifies the tested setup/observation without establishing production causality."
     },
     "sast_scope": {
       "prior_rules": 7,
@@ -5803,7 +6026,10 @@
         "sha256": "da90fce7113b07177636125d09217e8f59962436f48c2e305c1a5723be1f1cc5"
       },
       "runtime_services_healthy": 7,
-      "successful_one_shot_services": ["migrate", "seed"],
+      "successful_one_shot_services": [
+        "migrate",
+        "seed"
+      ],
       "financial_value_parity_claim": false,
       "live_or_production_claim": false
     },
@@ -5854,24 +6080,75 @@
   },
   "consolidated_batch_2": {
     "date": "2026-11-14",
+    "last_reconciled_date": "2026-11-15",
     "starting_main_sha": "5731a5039beb8f3c7272c9b387ac757de605a0e1",
-    "report": "docs/implementation/PHASE_3_BATCH2_20261114.md",
-    "status": "in_progress",
-    "owner_acceptance_of_batch1": "bounded_implementation_checkpoint_only",
-    "reported_independent_review": {
-      "python_passed": 64,
-      "web_passed": 38,
-      "execution_records_checked": 94,
-      "phase3_acceptance": false
-    },
+    "implementation_partition_base_sha": "ecc7c75221841eb64981ec3e971a36944052d48e",
+    "status": "partial_implementation_delivery_in_progress",
+    "implementation_commit_stage": 1,
+    "implementation_commit_stages_planned": 4,
+    "landed_implementation_groups": [
+      "codec"
+    ],
+    "landed_group_summaries": [
+      "Bounded canonical report encoding and its independent byte/cap oracles"
+    ],
+    "implementation_groups_not_yet_landed": [
+      "a1",
+      "web",
+      "ops"
+    ],
+    "qualification": "Landed code groups only; focused receipts retain their actual source scope. No complete suite or new-commit-SHA execution is claimed.",
     "checkpoint_a": "in_progress",
-    "checkpoint_b": "pending",
+    "checkpoint_b": "not_stable_known_local_admission_gate_failure",
+    "checkpoint_c": "not_started",
     "p3_10_complete_attempts_authorized": 1,
     "p3_10_complete_attempts_started": 0,
+    "pending_rows": 30,
     "accepted_rows": 0,
+    "pending_scenarios": 48,
     "accepted_scenarios": 0,
     "ci": "deferred_by_owner_unverified",
     "production_authorized": false,
-    "live_authorized": false
+    "live_authorized": false,
+    "license_status": "unchanged_no_distribution_decision",
+    "evidence_collection": "batch2-20261114-06y_8c2n",
+    "recorded_codec_qualification": {
+      "receipt": "a3-bounded-codec-stream-failed-and-affected-green-01/receipt.json",
+      "passed": 420,
+      "pytest_seconds": 2.63,
+      "scope": "Recorded codec source, not complete validation at this new commit."
+    },
+    "recorded_capture_and_admission_observation": {
+      "receipt": "a3-final-codec-capture-and-admission-recovery-04/receipt.json",
+      "capture_byte_parity": "passed",
+      "admission_p95_seconds": 0.9309575439983746,
+      "admission_p95_limit_seconds": 0.75,
+      "admission_gate": "failed",
+      "scope": "Recorded composed-working-source outcome, not a latency execution at this partial commit. No per-partial-commit component equivalence or pass is claimed; root may reuse the actual failed gate for the eventual unchanged admission component after all relevant source groups land."
+    },
+    "functional_browser_and_read_qualification": "Tracked by source-qualified evidence; no blanket completion claim in this partial overlay.",
+    "final_status_and_traceability_reconciliation": "pending_final_documentation_commit",
+    "prior_head_checkpoint": {
+      "date": "2026-11-14",
+      "starting_main_sha": "5731a5039beb8f3c7272c9b387ac757de605a0e1",
+      "report": "docs/implementation/PHASE_3_BATCH2_20261114.md",
+      "status": "in_progress",
+      "owner_acceptance_of_batch1": "bounded_implementation_checkpoint_only",
+      "reported_independent_review": {
+        "python_passed": 64,
+        "web_passed": 38,
+        "execution_records_checked": 94,
+        "phase3_acceptance": false
+      },
+      "checkpoint_a": "in_progress",
+      "checkpoint_b": "pending",
+      "p3_10_complete_attempts_authorized": 1,
+      "p3_10_complete_attempts_started": 0,
+      "accepted_rows": 0,
+      "accepted_scenarios": 0,
+      "ci": "deferred_by_owner_unverified",
+      "production_authorized": false,
+      "live_authorized": false
+    }
   }
 }

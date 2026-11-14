@@ -100,6 +100,12 @@ def decode_report_manifest_v4(payload: bytes) -> v.ReportManifestV4:
 
 
 def build_report_manifest_v4(capture: v.ReportCaptureSummaryV4) -> v.ReportManifestV4:
+    return build_and_encode_report_manifest_v4(capture)[0]
+
+
+def build_and_encode_report_manifest_v4(
+    capture: v.ReportCaptureSummaryV4,
+) -> tuple[v.ReportManifestV4, bytes]:
     if capture.proof_digest != sha256(encode_report_proof_v4(capture.proof)).hexdigest():
         fail_validation("Projection capture proof differs.", field="proof_digest")
     result = v.ReportManifestV4(
@@ -108,5 +114,4 @@ def build_report_manifest_v4(capture: v.ReportCaptureSummaryV4) -> v.ReportManif
         bindings=capture.immutable_bindings,
         **{field.name: getattr(capture.proof, field.name) for field in fields(v.ReportProofV4)},
     )
-    encode_report_manifest_v4(result)
-    return result
+    return result, encode_report_manifest_v4(result)

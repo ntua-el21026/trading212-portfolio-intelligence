@@ -13,9 +13,8 @@ from trading212_domain import report_v4 as v4
 from trading212_domain import reports as r
 from trading212_domain.errors import fail_validation
 from trading212_domain.report_manifest import (
+    build_and_encode_report_manifest,
     build_report_chunk,
-    build_report_manifest,
-    encode_report_manifest,
     encode_report_proof,
     encode_report_row,
     encode_report_schema,
@@ -486,6 +485,7 @@ class ReportBuilder:
                 renderer_profile=profile,
                 copy_expires_at=self.copy_expires_at,
             )
-        total = self.byte_length + len(encode_report_manifest(build_report_manifest(capture)))
+        _, payload = build_and_encode_report_manifest(capture)
+        total = self.byte_length + len(payload)
         r.report_limit(total <= r.MAX_REPORT_DOCUMENT_BYTES, "document_bytes")
         return replace(capture, canonical_byte_length=total)
