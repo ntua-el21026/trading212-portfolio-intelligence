@@ -4,6 +4,13 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+- Record source-bound incremental browser coverage, current image/dependency
+  qualification, ordinary synthetic startup and task-only cleanup. Preserve failed
+  attempts and case partitions; complete Make validation was not rerun and
+  complete coverage remains pending by owner direction. Include public assets in
+  the web runtime image and retain the failed service-worker smoke before recovery.
+  Phase 3 acceptance and production authorization remain pending.
+
 - Recover aggregation publication ordering and add forward migration `0034` for
   canonical tagged source proofs, preserving migration `0030` and original source
   records. Focused PostgreSQL regressions pass; package acceptance remains pending.

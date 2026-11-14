@@ -1,6 +1,48 @@
 # Phase 3 stabilization checkpoint — 13 November 2026
 
-Status: investigation and validation in progress; no package or release accepted.
+Status: bounded local verification recorded with explicit limits; delivery record pending; no package or release accepted.
+
+## Current bounded checkpoint — 14 November 2026
+
+The implementation is frozen at `153854f7b32a235a8aa5bdaa13c079bc07407a05`,
+tree `2c1e56fcddcb37c7815e6f2d4e83a9b47bb2d45b`. Owner-directed incremental
+verification retains each completed scope at its actual source, reruns failed
+cases and continues previously unreached groups. Complete Make validation was not
+rerun; complete coverage remains pending under that instruction. Earlier complete
+attempts retain their failed or interrupted outcomes.
+
+The browser inventory verifies retained passing observations for all 132 required
+cases across 69 spec/viewport groups: 67 groups have an actual full-group pass;
+intelligence desktop and workspace desktop use explicit case partitions. These
+observations span 12 executed source snapshots. No API case was re-executed at
+this packaging-only commit. Its single Dockerfile COPY addition leaves the other
+1,926 source inputs, including application, test and dependency inputs, identical
+to the preceding implementation. This is neither a new whole-suite invocation
+nor a same-source matrix pass. Failures, dirty inputs, zero-case setup errors and
+process-descriptor visibility limits remain in the inventory.
+
+Nine current runtime image IDs have source-bound nonroot, version, CA, dpkg and
+package-manager checks and configured vulnerability/secret scans. Fresh dependency
+checks cover 67 active Linux Python requirements and 144 production Node
+dependencies with zero reported vulnerabilities/advisories. Two other declared
+Python requirements are platform-inactive, not skipped audit work. The exact
+source filesystem and history scans recorded below qualify the preceding
+`881f283` source; final documentation-source/history scans are separate work.
+
+Ordinary nine-service synthetic startup, the corrected frontdoor browser smoke
+and task-only cleanup have actual passing receipts. The failed first smoke and
+its missing-public-assets defect remain recorded. The implementation archive
+covers 1,927 paths with committed Git modes; actual local permissions are retained
+separately. All 30 Phase 3 rows and 48 scenarios remain pending, zero accepted.
+Independent owner audit, owner-deferred CI, production and Live authorization
+remain unchanged.
+
+The compact [evidence index](evidence/phase-3-stabilization-20261113.json) binds
+completed implementation, browser, security, startup and cleanup observations.
+Post-documentation scans, source equivalence, fast-forward delivery, actual CI
+observation and portable-export integrity belong to the later external delivery
+record. No future commit or bundle hash is asserted here. Logical evidence paths
+support audit and are not machine-specific clean-clone prerequisites.
 
 ## Scope and source
 
@@ -91,7 +133,7 @@ HEAD or constitute an immutable release pass. Failed predecessors remain retaine
 | Six runtime image builds and probes | Passed; application UID 10001, PostgreSQL/Redis UID 999; package-manager rejection and retained dpkg metadata verified. |
 | Six immutable-ID Trivy vulnerability/secret scans | Zero configured HIGH/CRITICAL findings with available fixes and zero secrets; existing `ignore-unfixed` policy retained. |
 | Complete 1,920-file candidate source export | Configured Trivy vulnerability, secret, configuration and license gates passed. |
-| Git history / existing secret policy | Zero Gitleaks findings after 38 individually verified fingerprint exceptions; 16 approved-line and 21 negative policy cases passed. Two adjacent-line canaries also remained detected. |
+| Git history / existing secret policy | Zero Gitleaks findings after 38 individually reviewed additions to 19 existing exceptions (57 total); 16 approved-line and 21 negative policy cases passed. Two adjacent-line canaries also remained detected. |
 | Host production build and artifact checks | Passed; runtime-only secret and export-URL canaries absent from all five declared artifact paths. |
 
 The additional unfiltered working-directory scan failed three license
@@ -750,6 +792,128 @@ remained unchanged. After the height correction, only the affected frontend was
 rebuilt. Desktop/tablet observations remain bound to their earlier sources;
 remaining groups continue once, without a new monolithic-pass claim. All Phase 3
 acceptance and production-authorization states remain unchanged.
+
+## Subsequent incremental browser corrections and terminal inventory
+
+Historical and intelligence presentation helpers now use computed accessible
+names for exposed tables and visible controls. Pagination still requires a
+caption. The intelligence company case was an observed failure; eight adjacent
+specifications received the same source-inspected correction before their first
+execution. Business, financial, authorization, landmark, overflow, keyboard,
+image-alt and secret-negative assertions remain. Intelligence desktop retains
+its original quality-case pass and separate corrected company-case pass.
+
+The PWA desktop failure showed the first authorized account unavailable. The
+lightweight fixture had seeded only the other account. One canonical selector
+addition uses the existing complete synthetic X-ray seed for PWA. Its focused
+desktop case passed; tablet and mobile passed later. Privacy, offline/cache and
+account-authorization assertions were not changed.
+
+Scenario-report desktop then failed with `ACCESS_DENIED`: its synthetic source
+parents had historical August physical creation times, exhausting the original
+30-day report-copy cap. A context used only when reports and scenarios are both
+enabled records actual physical creation before the first INSERT of 12 new
+synthetic parents across five exact model classes. It checks the disposable
+database, engine, new-object membership, owner/provider/license identities and
+original observation clock, and removes listeners in `finally`. Existing rows,
+FX/shared seed data, production guards, financial dates, first-observed times,
+original expiry and digests are unchanged. The focused desktop pass used source
+`a98ab78bf3c91d49acf7c1d7fa02f8ffe447e776e76214acb0545e6a9878bd45`.
+The subsequent `25d70785…` source changes only creation-range metadata output
+from stdout to stderr. That desktop pass did not execute the logging delta and
+was not rerun; later viewport observations retain their own sources.
+
+Workspace desktop retained three passes and two failures from its original
+five-case invocation. The first focused pair passed the delayed-account case but
+failed the Back case at an unobserved optimistic-account-URL precondition. Only
+Back then ran again, with committed Overview URL/heading settlement and exact
+account-marker checks. Safe native browser history showed Holdings at index 3,
+Overview at index 4 and the held second-account response still at index 4, with
+no second-account history entry. Back restored the original Holdings expectation
+before and after releasing that response. This qualifies the tested setup and
+observed outcome; it does not establish a production defect or the cause of the
+earlier failure. Only the test and its safe diagnostics changed.
+
+| Actual invocation | Outcome and runner duration |
+| --- | --- |
+| `api-browser-resume-04` | Failed, 999.841 s; preceding groups retained; PWA desktop account unavailable. |
+| `pwa-desktop-recovery-01` | One focused case passed, 16.886 s; dirty fixture-selector source retained. |
+| `api-browser-resume-05` | Failed, 526.247 s; 17 full groups / 29 cases passed before scenario-report desktop. |
+| `scenario-report-desktop-recovery-01` | One focused case passed, 139.240 s; two dirty fixture files and logging distinction retained. |
+| `api-browser-resume-06` | Failed, 680.203 s; workspace desktop three passes / two failures retained. |
+| `workspace-desktop-recovery-01` | One pass / one failure, 33.104 s; delayed-account pass retained at its actual source. |
+| `workspace-back-desktop-diagnostic-01` | Back-only case passed, 26.625 s; original Holdings expectation preserved. |
+| `api-browser-resume-07` | Passed, 159.636 s at frozen source; five previously unrun groups / 19 cases. |
+| `api-inventory-assembly-03` | Metadata-only assembly passed, 1.876 s; 132/132 retained cases, 67 full-group observations and two partitions, zero missing or integrity issues. |
+
+The metadata inventory retains 82 reports with 133 passing and 13 failing case
+observations. These observation totals include history and are not a new test
+count. It reports process-descriptor access blind spots explicitly; earlier
+metadata-only assembly failures remain retained. Full SAST used seven rules on
+973 targets with zero findings. The later changed-target SAST checks below retain
+their own scope. Metadata assembly does not establish CI or acceptance outcomes.
+
+## Artifact qualification, ordinary startup and cleanup
+
+The `881f283` artifact record binds nine built image IDs and nine configured
+HIGH/CRITICAL vulnerability-with-fix and secret scans, all with zero findings.
+The existing `ignore-unfixed` policy remains. Runtime probes verify nonroot users,
+versions, public CA material, retained dpkg inventory and removed package managers.
+The ordinary `make run-local` build/start then produced nine distinct new IDs;
+every new ID received its own probes, package-manager check and scan. The final
+web packaging correction replaced only the web row; the other eight current
+image rows remain qualified by their actual earlier receipts. Image license and
+misconfiguration scanners were not configured in this image matrix.
+
+Changed-target SAST ran seven rules on five supported files with zero findings;
+its six changed paths include one unsupported CSS path. The input comparison
+retains 1,026 unchanged inputs out of the declared 1,032-path SAST scope. The
+source `881f283` exact export passed its configured vulnerability, secret,
+misconfiguration and license scans; its full-history Gitleaks scan reported zero
+findings. The ignore file contains 57 exact unique fingerprints: 19 pre-existing
+and 38 additions individually classified in this assignment. No exception was
+removed and the file hash remains unchanged during this closure.
+
+Python 3.13.15 / pip-audit 2.10.1 audited all 67 active Linux runtime requirements
+from 69 declared requirements with zero missing, unexpected, skipped or vulnerable
+dependencies. The two inactive markers target Emscripten and Windows. The fresh
+output-bound cache contains 67 responses. The production Node audit covers 144
+dependencies with zero advisories. The separate ignored installed-workspace scan
+remains failed on three third-party license classifications; public binary
+redistribution remains unauthorized. A failed host-tool metadata collection and
+its corrected collection are retained without repeating the dependency audits.
+
+Ordinary nine-service `make run-local` startup passed in 44.910 runner seconds at
+`881f283`. The first frontdoor smoke failed with five service-worker/public-asset
+404 console errors. The standalone web image omitted the existing public tree.
+Commit `153854f` adds one COPY instruction; six public assets match their source
+bytes inside the image and over HTTP 200. Only the affected web image was rebuilt
+(9.405 runner seconds), probed and scanned. The failed frontdoor flow alone was
+retried and passed in 1.974 runner seconds at executed source `2649f2a2…`, with no
+page errors or console errors/warnings. Its actual HEAD was `881f283` plus the
+one dirty Dockerfile line; the complete input dictionary matches commit `153854f`.
+No current-source 132-case rerun is inferred.
+
+After that correction, seven runtime services were healthy and migration/seed
+one-shots had exited successfully. The synthetic flow covers local sign-in,
+authorized account selection, Overview/Holdings at desktop/mobile widths,
+Settings and logout. Numeric rendering checks do not establish independent
+financial-value parity. The two genuine point-in-time captures retain partial,
+stale and unavailable data warnings; desktop is 1440×900 and mobile is a
+360×1108 full-page capture from a 360×800 viewport. Source/destination SHA-256
+and size are verified in the evidence index.
+
+Task-only stack removal passed in 3.943 runner seconds. The after-cleanup
+inspection found no task containers, task network or disposable task volume.
+Both original volumes, the existing `.venv` inode 291333, dependencies, tools,
+evidence and all nine current qualified images were preserved. The inactive
+Next development output removed 549 files / 371,911,400 bytes after consumer
+checks. Shared or unproven builder cache was retained; no global prune ran.
+
+The later external delivery record is authoritative for final documentation
+source equivalence and post-commit source/history scans, push/CI observations and
+portable evidence verification. Those future observations are not represented
+as completed by this document or by earlier implementation receipts.
 
 ## Reproducible synthetic validation
 

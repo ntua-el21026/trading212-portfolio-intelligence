@@ -4329,8 +4329,8 @@
     "starting_main_sha": "64e2057cb9b1ddee11649f605e968b18bd559fcb",
     "report": "docs/implementation/PHASE_3_STABILIZATION_20261113.md",
     "scope": "bounded_phase_3_stabilization_and_existing_aggregation_recovery",
-    "status": "in_progress",
-    "implementation_validation": "pending",
+    "status": "bounded_local_verification_recorded_delivery_record_pending",
+    "implementation_validation": "source_bound_incremental_observations_and_artifact_startup_cleanup_receipts",
     "independent_review": "pending",
     "acceptance": "pending",
     "production_authorized": false,
@@ -5535,7 +5535,7 @@
         "desktop_runner_seconds": 18.603,
         "working_source_manifest_sha256": "de96f9d7b6a64e873002ffad40a59648a9287627f41263f472134e281f31d193"
       },
-      "remaining_api_browser_groups": "unreached; resume without repeating completed groups",
+      "remaining_api_browser_groups": "All132requiredcases retain passes at12executed sources;67actual full-group observations and2partitions;0strict cases at packaging commit24, with1926other inputs identical to23. No whole-suite/same-source pass.",
       "acceptance": "all 30 rows and 48 scenarios pending; zero accepted",
       "production_authorized": false,
       "aggregation_accessibility": {
@@ -5554,8 +5554,283 @@
         "changed_frontend_rebuild_receipt": "aggregation-frontend-build-02/receipt.json",
         "checks": "Existing Axe and native Tab focus checks retained; actual arrow-key horizontal scrolling added.",
         "desktop_tablet_passes": "Retained at their actual earlier source snapshots; no current immutable three-viewport or whole-suite pass inferred.",
-        "remaining_api_browser_groups": "Resume only previously unrun groups."
+        "remaining_api_browser_groups": "Covered by terminal retained-case inventory at separately recorded sources."
       }
+    },
+    "observed_at_utc": "2026-11-14T10:21:35.090444+00:00",
+    "frozen_implementation": {
+      "sha": "153854f7b32a235a8aa5bdaa13c079bc07407a05",
+      "tree": "2c1e56fcddcb37c7815e6f2d4e83a9b47bb2d45b",
+      "source_manifest": {
+        "path": "delivery-source-export-02/source-before.json",
+        "bytes": 357380,
+        "sha256": "2649f2a2cbb4e7b90e9b0fbcdb3842533300bdf653742bcc1a170dacfd1e86a7"
+      },
+      "committed_export_manifest": {
+        "path": "security-delivery-source-implementation-02-manifest.json",
+        "bytes": 751449,
+        "sha256": "91e8efc9f291894109479721d15936f850b71fddcc8b654f895e50b9d95cbd6a"
+      },
+      "source_archive": {
+        "path": "implementation-153854f.tar",
+        "bytes": 50780160,
+        "sha256": "0fa459d03c36442619ee16b9a0662fbe7a58f60f7a8eea816dc44791e077a5a6"
+      },
+      "verified_archive_paths": 1927,
+      "mode_qualification": "Archive Git modes and executed local permissions are separate; no false local-to-Git mode equality."
+    },
+    "full_make_validate": {
+      "state": "NOT_RERUN_USER_DIRECTION",
+      "pass_claim": false
+    },
+    "complete_coverage": {
+      "state": "PENDING_NOT_RERUN_USER_DIRECTION",
+      "pass_claim": false
+    },
+    "terminal_api_browser_inventory": {
+      "reference": {
+        "path": "incremental-api-inventory-04/inventory.json",
+        "bytes": 622396,
+        "sha256": "67c6dc90ac824ad0eafcd2f77037043a391570d26f778854c9d93c99dc63ce15"
+      },
+      "assembly_receipt": {
+        "path": "api-inventory-assembly-05/receipt.json",
+        "bytes": 674,
+        "sha256": "2f55d73c69acac2780ca31b968e5d9473cb3b4a9ee1e8d91bc8df3f103f11b7d"
+      },
+      "required_cases": 132,
+      "groups": 69,
+      "actual_full_group_pass_observations": 67,
+      "completed_case_partitions": [
+        "intelligence.spec.ts / api-chromium-desktop",
+        "workspace.spec.ts / api-chromium-desktop"
+      ],
+      "executed_source_snapshots": 12,
+      "strict_cases_at_implementation_commit": 0,
+      "input_equivalence": {
+        "kind": "COMMITTED_DOCKERFILE_ONLY_DELTA_WITHOUT_API_REEXECUTION",
+        "baseline_inventory_ref": {
+          "path": "incremental-api-inventory-03/inventory.json",
+          "bytes": 619335,
+          "sha256": "4788e0b27668c71a243eb79e2f309ea3c0134a106061327fe3efd5836deba38d"
+        },
+        "baseline_head": "881f283ee3fac18b3a513cea728c620c6554b5e4",
+        "baseline_tree": "566b13193a9d6a2323b8947f212506bcfb8df2d5",
+        "baseline_source_manifest_ref": {
+          "path": "incremental-api-inventory-03/current-source.json",
+          "bytes": 357380,
+          "sha256": "9bbbe56ab5f81e037eb057070005caa546298478e134cc5ca2586244ffd3d5c8"
+        },
+        "current_head": "153854f7b32a235a8aa5bdaa13c079bc07407a05",
+        "current_tree": "2c1e56fcddcb37c7815e6f2d4e83a9b47bb2d45b",
+        "changed_inputs": [
+          {
+            "path": "infrastructure/docker/web.Dockerfile",
+            "before": {
+              "sha256": "e663f82ad71bc55cd3a83b21d1871db6c0a8898fe3ea0ec9dd659c215d95110d",
+              "bytes": 3378,
+              "mode": "0o644"
+            },
+            "after": {
+              "sha256": "e68c50f1edcfd40c1c6062076b2ca6b885c1ea3ae2fbba0d30dba3593d592fca",
+              "bytes": 3453,
+              "mode": "0o644"
+            }
+          }
+        ],
+        "exact_committed_diff": "diff --git a/infrastructure/docker/web.Dockerfile b/infrastructure/docker/web.Dockerfile\nindex 9e35490..277096c 100644\n--- a/infrastructure/docker/web.Dockerfile\n+++ b/infrastructure/docker/web.Dockerfile\n@@ -43,0 +44 @@ COPY --from=builder --chown=app:app /app/apps/web/.next/static ./apps/web/.next/\n+COPY --from=builder --chown=app:app /app/apps/web/public ./apps/web/public",
+        "unchanged_other_source_input_count": 1926,
+        "application_test_dependency_inputs_identical": true,
+        "whole_source_identical": false,
+        "api_cases_reexecuted": 0,
+        "qualification": "All recorded application, test, dependency and other non-Dockerfile inputs match commit23 byte/mode/size identities. Commit24 adds only copying public assets into the web image. Retained API case execution remains at its original sources; input identity is not a new API execution or whole-source pass."
+      },
+      "single_full_suite_invocation_pass_claimed": false,
+      "same_source_full_suite_pass_claimed": false,
+      "missing_cases": 0,
+      "integrity_issues": 0,
+      "limitations": [
+        "Workspace Back-only diagnostic01 actually passed at source bb05e2a40183e5dd9effe476d0381dd6e09362280493cd0072858fc0d14859c0 with the original Holdings(A) expectation preserved before and after releasing B. Safe CDP annotations show Holdings index3, committed Overview index4, and held-B still index4 with no B history entry; trusted Back restored Holdings(A). The earlier optimistic pending-B URL hypothesis failed its strict precondition and was not observed. Only test settlement/marker assertions and safe diagnostics changed; no production fix was made. The delayed-account pass remains at source a434371ad33edf9138c3ab5dc75a919d1f71b5d02ec73d3bbce79037d1d29b09 from the earlier mixed focused attempt, whose only later local code change was in the Back case.",
+        "Workspace desktop retains three original passing cases from its mixed five-case attempt. Focused recovery01 separately passed the delayed-account case while failing Back at the pending-B URL precondition; that failure and source remain explicit. Any final Back-only pass is a separate observation, never a fabricated two-case focused-green or full-group invocation pass.",
+        "Scenario-report desktop recovery01 passed at source manifest a98ab78bf3c91d49acf7c1d7fa02f8ffe447e776e76214acb0545e6a9878bd45, with fixture creation-range metadata printed to stdout and suppressed from the Playwright log. The later source manifest 25d707852c84faf293e33d3a015824dadeb35d39391e70ef2fd290747770dfde routes that existing metadata print to stderr (import sys plus file=sys.stderr). The passed desktop case was not rerun for this logging-only delta. Its pass does not execute that delta; suffix06 observations retain their own actual sources and logs.",
+        "This is an inventory of separate actual observations at their recorded complete source snapshots. It is not a new test invocation, whole-suite pass, same-SHA pass, independent acceptance, performance measurement or production authorization.",
+        "A retained passing case from an earlier source does not execute or certify later source changes. Source equality is reported separately; source hashes, dirty state and containing failed attempts remain explicit.",
+        "Required cases are discovered by parsing direct top-level literal test declarations and the current literal project array. No application/test module, Playwright collection, browser, fixture or test is executed. Unsupported declaration syntax prevents complete coverage claims.",
+        "Earlier reports without a prior hash anchor are hashed now and retained as observations; they cannot independently authorize retained passing coverage. Report time/argv and the source/log receipt are verified separately.",
+        "Zero-case attempts and prior failures remain recorded. A later pass records an outcome transition, without independently proving the cause of the earlier failure.",
+        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01\u201307 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
+        "Procfs denied access to some unrelated same-UID process descriptors after recorded lineage and readable API driver/fixture signatures were checked. Those descriptor blind spots are listed in terminal_quiescence.descriptor_access_limits; exhaustive process-descriptor visibility is not claimed. Recorded launcher and artifact-watcher termination are checked separately.",
+        "This commit24 refresh executes metadata assembly only. The exact commit23-to24 input delta is one public-asset COPY line in infrastructure/docker/web.Dockerfile; all other recorded source inputs, including application/test/dependency files, are identical. Whole-source equality with every earlier API execution is false, including the 20 cases that previously matched commit23. No case is claimed executed at commit24.",
+        "Report unreached-gates-03/api-browser/aggregation.spec.ts-api-chromium-desktop.json has its report hash first recorded at assembly; retained-coverage eligibility is false.",
+        "Report aggregation-desktop-recovery-green-01/api-browser/aggregation.spec.ts-api-chromium-desktop.json has its report hash first recorded at assembly; retained-coverage eligibility is false.",
+        "Report aggregation-desktop-recovery-green-02/api-browser/aggregation.spec.ts-api-chromium-desktop.json has its report hash first recorded at assembly; retained-coverage eligibility is false.",
+        "Report aggregation-mobile-recovery-green-01/api-browser/aggregation.spec.ts-api-chromium-mobile.json has its report hash first recorded at assembly; retained-coverage eligibility is false.",
+        "Report historical-desktop-recovery-01/api-browser/historical.spec.ts-api-chromium-desktop.json has its report hash first recorded at assembly; retained-coverage eligibility is false.",
+        "Report intelligence-company-desktop-recovery-01/api-browser/intelligence.spec.ts-api-chromium-desktop.json has its report hash first recorded at assembly; retained-coverage eligibility is false."
+      ]
+    },
+    "latest_browser_recoveries": {
+      "pwa": "Canonical fixture selector now seeds both authorized synthetic accounts; focused desktop1PASS, later tablet/mobile passes. All privacy/cache/auth assertions retained.",
+      "scenario_report": "First INSERT actual physical created_at for12new exact synthetic parents/fiveclasses only under reports&&scenarios. DesktopPASS sourcea98... precedes stderr-only source25d... logging delta; desktop was not rerun. No existing UPDATE, production guard or financial/first-observed/expiry/digest change.",
+      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3\u21924\u21924/noBentry qualifies the tested setup/observation without establishing production causality."
+    },
+    "sast_scope": {
+      "prior_rules": 7,
+      "prior_targets": 973,
+      "prior_findings": 0,
+      "changed_paths": 6,
+      "supported_scanned_files": 5,
+      "unsupported_css_paths": 1,
+      "changed_target_rules": 7,
+      "changed_target_findings": 0,
+      "unchanged_inputs": 1026,
+      "declared_scope_inputs": 1032
+    },
+    "remaining_delivery_gates": {
+      "authority": "Later external final delivery record binds actual documentation commit/source equivalence, post-commit source/history scans, fast-forward push, CI observation and portable archive integrity without future self-hashes.",
+      "documentation_source_equivalence": "pending_external_delivery_record",
+      "post_documentation_source_history": "pending_external_delivery_record",
+      "push": "pending_external_delivery_record",
+      "actual_ci": "pending_owner_deferred_policy_unchanged",
+      "portable_export": "pending_external_delivery_record"
+    },
+    "security_artifact_qualification": {
+      "initial_source_sha": "881f283ee3fac18b3a513cea728c620c6554b5e4",
+      "initial_artifact_summary": {
+        "path": "security-final-artifact-summary-01.json",
+        "bytes": 35574,
+        "sha256": "a62997cf7ce20bf1ad4e330375c12686132b8efeab232cc753a9d3f3d953891f"
+      },
+      "startup_image_supplement": {
+        "path": "security-startup-artifact-supplement-01.json",
+        "bytes": 27835,
+        "sha256": "e9f00768f831af4d4df80de475a57569a83f7e22ea93e24d759292e5fa6a43cb"
+      },
+      "web_public_supplement": {
+        "path": "security-web-public-artifact-supplement-01.json",
+        "bytes": 14054,
+        "sha256": "4273f93b720b0143b13e55e95abcbc412c08cc047bf1833965f594416c4b88e6"
+      },
+      "current_inventory": {
+        "path": "security-web-public-qualified-image-inventory-01.json",
+        "bytes": 46788,
+        "sha256": "7f86603e6979d021ef878e0c685613b950ad2fd14a7884cdce2c03474da791b7"
+      },
+      "current_image_ids": {
+        "api": "sha256:cb236e8a7eb97b00a83b47e8aa48caf21d9d06923cdc19e8221c91d54a98aa94",
+        "worker": "sha256:7da17b5f5019a3cd0ef1951cf980494466440bbea2ad918a52b171801630edf3",
+        "mcp": "sha256:e85cb572aa118b4185196a1214a5c23b6aa09bc4c8b0ff042b462948bf8e78a1",
+        "web": "sha256:7694c998d53cb450e5a9853c453ea4d1a45d1e137879f821e20431d193cf0f85",
+        "postgres": "sha256:f4754af4cac0eeee2528d0029e2ee508e955cc2f60d489b4c4e9462b0009f529",
+        "redis": "sha256:8ae8bdb8c2ca36fc3db58ff0a92eaac88041f5b9abe6b1af62b376f9e06ae613",
+        "migrate": "sha256:62356ea47db56f2e0b569b35ad0379ee51f94146d14072d0ec64711e590d8d61",
+        "seed": "sha256:4609b9072eeabf3c711068af6832fdf921895d03ea830e1a62734f98ed144cae",
+        "dispatcher": "sha256:dd8dacd86eff4e55fc4f0bcfcfc147a518f73107ea1ff0fbdc2b1e54635d66ca"
+      },
+      "configured_current_image_vulnerability_findings": 0,
+      "configured_current_image_secret_findings": 0,
+      "image_license_and_misconfiguration_scans": "not_configured",
+      "source_filesystem_and_history_scope": "Passing prior881f283 source scans retained; post-documentation final source/history scans belong to external delivery record.",
+      "sast": {
+        "prior_rules": 7,
+        "prior_targets": 973,
+        "prior_findings": 0,
+        "changed_paths": 6,
+        "supported_scanned_files": 5,
+        "unsupported_css_paths": 1,
+        "changed_target_rules": 7,
+        "changed_target_findings": 0,
+        "unchanged_inputs": 1026,
+        "declared_scope_inputs": 1032
+      },
+      "python_runtime_audit": {
+        "declared": 69,
+        "active_linux": 67,
+        "platform_inactive": 2,
+        "skipped": 0,
+        "vulnerabilities": 0,
+        "python": "3.13.15",
+        "pip_audit": "2.10.1",
+        "qualification": {
+          "path": "security-final-pip-audit-qualification-01.json",
+          "bytes": 7776,
+          "sha256": "121735f740c74818a445f452102b93698bb40d5d03c57ce21b127a9b55e987af"
+        }
+      },
+      "node_production_audit": {
+        "dependencies": 144,
+        "advisories": 0
+      },
+      "secret_exceptions": {
+        "preexisting": 19,
+        "assignment_reviewed_additions": 38,
+        "total_unique": 57,
+        "ignore_sha256": "ae6a5bec2e0a40471c693132098f5caed28d89b8ddf3d4f08f0657b46eab3968"
+      },
+      "ignored_installed_workspace_license_scan": "FAILED_RETAINED_THREE_CLASSIFICATIONS_PUBLIC_BINARY_RIGHTS_UNAPPROVED"
+    },
+    "synthetic_startup_frontdoor": {
+      "normal_start_receipt": {
+        "path": "full-stack-startup-01/receipt.json",
+        "bytes": 735,
+        "sha256": "9dcbf0b1fa57eb958ba636b36c80c6f6df95cfe5e1d63233023dd390d9ee3b47"
+      },
+      "normal_start_actual_sha": "881f283ee3fac18b3a513cea728c620c6554b5e4",
+      "normal_start_runner_seconds": 44.91,
+      "first_frontdoor_failure": {
+        "path": "full-stack-browser-smoke-01/receipt.json",
+        "bytes": 602,
+        "sha256": "9cd05d559f81f551069bd28a05ba2201807135bd596ade854caa7c10733d93bb"
+      },
+      "packaging_fix": "One public-assets COPY instruction; six image/source and HTTP200 byte matches.",
+      "web_build_receipt": {
+        "path": "web-public-assets-build-01/receipt.json",
+        "bytes": 1026,
+        "sha256": "27c6a20331931323cbb13f217c92cb112ba94daf7138ae4e614924d1e29d5c57"
+      },
+      "web_build_runner_seconds": 9.405,
+      "successful_frontdoor_receipt": {
+        "path": "full-stack-browser-smoke-02/receipt.json",
+        "bytes": 639,
+        "sha256": "f0b8321e9180b645bce81cf58cb2bf1474391bd0ff57fce0295e3f707fd1f719"
+      },
+      "successful_frontdoor_runner_seconds": 1.974,
+      "successful_frontdoor_executed_manifest": "2649f2a2cbb4e7b90e9b0fbcdb3842533300bdf653742bcc1a170dacfd1e86a7",
+      "successful_frontdoor_actual_head": "881f283ee3fac18b3a513cea728c620c6554b5e4 plus dirty webDockerfile; input2649 matches commit24",
+      "current_runtime_inspection": {
+        "path": "startup-runtime-after-public-01.json",
+        "bytes": 19275,
+        "sha256": "da90fce7113b07177636125d09217e8f59962436f48c2e305c1a5723be1f1cc5"
+      },
+      "runtime_services_healthy": 7,
+      "successful_one_shot_services": ["migrate", "seed"],
+      "financial_value_parity_claim": false,
+      "live_or_production_claim": false
+    },
+    "task_cleanup": {
+      "receipt": {
+        "path": "task-stack-cleanup-01/receipt.json",
+        "bytes": 950,
+        "sha256": "8ff1d2ef50b0e058a058433a3e5ba4c100398d8b1f11bb443dd78206a1ac0b11"
+      },
+      "after_inventory": {
+        "path": "startup-runtime-cleanup-01.json",
+        "bytes": 9899,
+        "sha256": "97cd4024436c29f62d97b55b046d089c3eb5ad9597d97d85ab59446d61673527"
+      },
+      "preservation": {
+        "path": "task-cleanup-final-01.json",
+        "bytes": 1381,
+        "sha256": "fe70bc5b1e4f187d75fcd84402bf213cb50e3655c8193d6a0a5d6713be2c60b7"
+      },
+      "runner_seconds": 3.943,
+      "task_containers_network_volume_removed": true,
+      "original_volumes_preserved": 2,
+      "venv_inode_preserved": 291333,
+      "qualified_images_preserved": 9,
+      "inactive_next_dev_files_removed": 549,
+      "inactive_next_dev_bytes_removed": 371911400,
+      "global_prune": false
     }
   }
 }

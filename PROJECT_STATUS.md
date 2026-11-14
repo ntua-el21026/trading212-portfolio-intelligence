@@ -6,9 +6,34 @@
 
 **Implementation authority:** `main`
 
-**Updated:** 2026-11-13
+**Updated:** 2026-11-14
 
 ## Current state
+
+The bounded implementation is frozen at `153854f7b32a235a8aa5bdaa13c079bc07407a05`.
+Incremental evidence retains passes for all 132 required API-browser cases across
+69 groups: 67 actual full-group observations and two explicit case partitions,
+spanning 12 source snapshots. No API case ran at this packaging-only commit;
+its one public-assets COPY preserves the other 1,926 source inputs. This is not
+a new whole-suite or same-source pass. Complete Make validation was not rerun;
+complete coverage remains pending under the owner's instruction.
+
+Configured current image/dependency/security checks, ordinary nine-service
+synthetic startup, the corrected frontdoor flow and task-only cleanup have
+source-bound receipts in the [stabilization record](docs/implementation/PHASE_3_STABILIZATION_20261113.md)
+and [evidence index](docs/implementation/evidence/phase-3-stabilization-20261113.json).
+The original missing-public-assets smoke failure and all earlier failures remain
+recorded. Post-documentation source/history scans, source equivalence, push/CI
+and portable-export outcomes belong to the later external delivery record.
+All 30 Phase 3 rows and 48 scenarios remain pending, zero accepted. Independent
+owner audit is pending; production and Live are unauthorized. CI remains
+owner-deferred and unverified until actual observation.
+
+### Earlier stabilization observations
+
+The following paragraphs retain the sequence and then-pending plans of earlier
+checkpoints. The current incremental protocol and source-qualified outcome above
+govern this bounded delivery.
 
 The owner authorized a bounded stabilization and aggregation recovery assignment
 on 13 November. The [current record](docs/implementation/PHASE_3_STABILIZATION_20261113.md)

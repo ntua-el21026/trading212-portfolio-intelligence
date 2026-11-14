@@ -7,14 +7,16 @@ valuation time, coverage and quality remain attached to results.
 
 ## Current status
 
-**Phase 3 is in progress.** The current authority is
-[PROJECT_STATUS.md](PROJECT_STATUS.md) and the
-[13 November stabilization record](docs/implementation/PHASE_3_STABILIZATION_20261113.md).
-Bounded recovery covers aggregation publication, dependency security and existing
-contract/browser regressions. Aggregation runtime/browser acceptance and
-package-wide Phase 3 acceptance remain pending. Historical component test
-receipts do not constitute a current release pass. Production deployment and
-live-provider use are not authorized by them.
+**Phase 3 is in progress.** The bounded stabilization checkpoint records
+aggregation recovery, dependency/image checks and synthetic startup/browser
+observations at their exact sources. Incremental validation retains explicit
+case partitions and earlier failures; it does not establish a new whole-suite
+pass. See [current status](PROJECT_STATUS.md), the
+[stabilization record](docs/implementation/PHASE_3_STABILIZATION_20261113.md) and
+[evidence index](docs/implementation/evidence/phase-3-stabilization-20261113.json).
+All Phase 3 acceptance and independent review remain pending. Production and
+Live are unauthorized; subsequent Git/CI and evidence-delivery outcomes belong
+to the external delivery record.
 
 Phase 1 has source-bound acceptance evidence. Phase 2 was accepted by the owner
 for progression after the R-01/R-02 corrections; that decision is distinct from
@@ -126,6 +128,14 @@ volume. When using a different local password for host tests, set matching
 `DATABASE_URL` and `TEST_DATABASE_URL`; the example URLs in `.env.example` use
 the synthetic password above. Current startup qualification is recorded in the
 stabilization report.
+
+## Synthetic interface example
+
+![Synthetic holdings with explicit data-quality states](docs/media/synthetic-holdings-desktop.png)
+
+Genuine point-in-time synthetic holdings with partial, stale and unavailable data
+states. Desktop: 1440×900. [Mobile full-page capture](docs/media/synthetic-holdings-mobile.png):
+360×1108 from a 360×800 viewport. Capture provenance is in the evidence index.
 
 ## Verification and interpretation
 

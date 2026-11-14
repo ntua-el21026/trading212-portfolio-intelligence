@@ -1,0 +1,535 @@
+{
+  "schema_version": 1,
+  "kind": "bounded_stabilization_logical_evidence_index",
+  "status": "bounded_local_observations_recorded_external_delivery_pending",
+  "owner_name": "Michail Athanasios Peppas",
+  "starting_main_sha": "64e2057cb9b1ddee11649f605e968b18bd559fcb",
+  "implementation": {
+    "sha": "153854f7b32a235a8aa5bdaa13c079bc07407a05",
+    "tree": "2c1e56fcddcb37c7815e6f2d4e83a9b47bb2d45b",
+    "source_manifest": {
+      "path": "delivery-source-export-02/source-before.json",
+      "bytes": 357380,
+      "sha256": "2649f2a2cbb4e7b90e9b0fbcdb3842533300bdf653742bcc1a170dacfd1e86a7"
+    },
+    "committed_export_manifest": {
+      "path": "security-delivery-source-implementation-02-manifest.json",
+      "bytes": 751449,
+      "sha256": "91e8efc9f291894109479721d15936f850b71fddcc8b654f895e50b9d95cbd6a"
+    },
+    "source_archive": {
+      "path": "implementation-153854f.tar",
+      "bytes": 50780160,
+      "sha256": "0fa459d03c36442619ee16b9a0662fbe7a58f60f7a8eea816dc44791e077a5a6"
+    },
+    "verified_archive_paths": 1927,
+    "mode_qualification": "Committed archive modes and actual worktree permissions are recorded separately."
+  },
+  "commits": [
+    {
+      "sha": "e734711ae8e357b601fca275861b9e178cad7739",
+      "subject": "test(contracts): preserve aggregation additions and browser semantics"
+    },
+    {
+      "sha": "ed317b12d6efdfbfc54ec477b36f73522b03c191",
+      "subject": "fix(aggregation): recover transactional native proof publication"
+    },
+    {
+      "sha": "f9c75bd418aff5251089b577858a86bb5260c516",
+      "subject": "chore(security): document exact synthetic history exceptions"
+    },
+    {
+      "sha": "fc0132c583609a00451fd487676582f21120fc55",
+      "subject": "fix(security): patch dependencies and pinned runtime images"
+    },
+    {
+      "sha": "cac650324ef9f74557400fa31199b8d8f59feac8",
+      "subject": "docs: reconcile public stabilization and synthetic startup guidance"
+    },
+    {
+      "sha": "2aa6c1b2d09ea701bb89acf6935a57b859cb2a71",
+      "subject": "test(retention): preserve physical budgets across resumed cleanup"
+    },
+    {
+      "sha": "7a88284247546b731370278dd598390b9aee5387",
+      "subject": "test(migrations): verify the current forward schema"
+    },
+    {
+      "sha": "d61918fa638eb9b1a0bab94642dd12094dc5f3bb",
+      "subject": "test(retention): verify physical partial cleanup boundaries"
+    },
+    {
+      "sha": "3f86b637fbaef683e2bc91e6e8863ebc4a9ccd04",
+      "subject": "docs: use the owner's preferred name spelling"
+    },
+    {
+      "sha": "6502a5afe49408c6d0672583da9e18956ccff8a2",
+      "subject": "fix(reports): preserve original licensed source deadlines"
+    },
+    {
+      "sha": "c907cac919535b21b4c57f5f8d5b76020a52ed56",
+      "subject": "test(web): wait for settled form controls before retrying"
+    },
+    {
+      "sha": "32777c78af6fb61a4e99bc96241b1602dfe391e8",
+      "subject": "test(mcp): verify the exact current signed tool inventory"
+    },
+    {
+      "sha": "cd97b577ac063f1dbfa6b7ec64893130d1e37cce",
+      "subject": "fix(retention): defer X-ray lookups before budget exhaustion"
+    },
+    {
+      "sha": "730efac5b87d3123db0739d934e9618f719c8cd0",
+      "subject": "test(retention): preserve bounded lifecycle and replay guarantees"
+    },
+    {
+      "sha": "2756314c08de1c59b272a70cb6ba5693f3b21fc9",
+      "subject": "fix(compose): size PostgreSQL locks for atomic migrations"
+    },
+    {
+      "sha": "7f6c8f91de5ebac345b60f2fddaa7450d86254be",
+      "subject": "fix(security): bound OpenTelemetry trace-context parsing"
+    },
+    {
+      "sha": "04a66aa7f80a7690341e61d042009524c0ed2159",
+      "subject": "test(aggregation): preserve supported activity and logout flows"
+    },
+    {
+      "sha": "442f7d65243aabd73aab91fe413c5750c8afce4b",
+      "subject": "fix(web): make aggregate tables keyboard accessible"
+    },
+    {
+      "sha": "bab7f37a9800e97cadd66f85d93aff7e6de82a39",
+      "subject": "test(e2e): validate computed historical accessible names"
+    },
+    {
+      "sha": "c3fa1c8cc523e7dbbf50faac4e90022001439b62",
+      "subject": "test(e2e): honor semantic names in API-backed page checks"
+    },
+    {
+      "sha": "68c350a6d01b87bff2382db7e828c9b3eafcfa42",
+      "subject": "test(pwa): seed both authorized synthetic accounts"
+    },
+    {
+      "sha": "909eebda0d1c8472bf6fdef016105c53338d36bb",
+      "subject": "test(reports): record actual synthetic source creation times"
+    },
+    {
+      "sha": "881f283ee3fac18b3a513cea728c620c6554b5e4",
+      "subject": "test(web): establish browser history before account races"
+    },
+    {
+      "sha": "153854f7b32a235a8aa5bdaa13c079bc07407a05",
+      "subject": "fix(web): include public assets in the runtime image"
+    }
+  ],
+  "changed_source_overview": {
+    "paths": 113,
+    "added": 17,
+    "modified": 96,
+    "deleted": 0,
+    "groups": [
+      {
+        "id": "contract_and_browser_compatibility",
+        "rationale": "Name seven accepted aggregation/FX additions and preserve exact historical descriptors/client fingerprints; repair semantic browser targeting and host viewport setup with original assertions retained.",
+        "path_count": 7
+      },
+      {
+        "id": "transactional_aggregation_and_source_decoding",
+        "rationale": "Flush trigger-only dependencies in transaction order and decode canonical tagged Decimal/UTC sources through forward0034; retain provenance, exact source proof, authorization, bounds and rollback.",
+        "path_count": 6
+      },
+      {
+        "id": "exact_historical_secret_classification",
+        "rationale": "Retain default secret policy and only38 individually verified original fingerprint exceptions with adjacent-line negative canaries; no broad suppression.",
+        "path_count": 2
+      },
+      {
+        "id": "dependency_runtime_and_container_security",
+        "rationale": "Patch exact dependency locks and runtime package pins, use immutable signed Debian snapshots and CA bootstrap, retain package inventory and severity/license/secret gate scope; preserve MCP audience verification with signed transport cases.",
+        "path_count": 26
+      },
+      {
+        "id": "physical_retention_and_current_ledger_regressions",
+        "rationale": "Correct stale fixture assumptions about charged metadata/progress and current0034/364 inventory without changing physical budgets, production guards, legacy fingerprints or financial replay; preserve low-budget no-removal probes and complete bounded drain.",
+        "path_count": 8
+      },
+      {
+        "id": "original_physical_report_deadline",
+        "rationale": "For V3/V4 only fold original-source created time plus min30/pinned/current license limits and physical expiry into final capture expiry; preserve physical expiry proof, V1/V2, financial payloads and SQL guards. Five new boundary/forgery/permission/rollback cases and original replay provide focused evidence.",
+        "path_count": 3
+      },
+      {
+        "id": "fresh_operational_report_fixtures",
+        "rationale": "Use normal typed fresh source publication and explicit current availability, preserve old rows and full732-day reference traces/31-day report window and financial parity; maintain old-cutoff negatives, report permissions/canaries and bounded cleanup. Preserve failed broad43 plus separate corrected4 receipts.",
+        "path_count": 9
+      },
+      {
+        "id": "public_documentation_current_status_and_provenance",
+        "rationale": "Separate public source/proprietary licensing terms, actual synthetic startup instructions, current versus historical component evidence, complete attempts and acceptance boundaries; qualify historical344/0029 and keep all30rows/48scenarios pending. Makefile change is a help-comment wording correction, with commands unchanged.",
+        "path_count": 13
+      },
+      {
+        "id": "owner_name_only_license_notice",
+        "rationale": "Use Michail Athanasios Peppas in the current README and copyright name. LICENSE has exactly one hyphen-to-space name replacement; all other bytes and all terms are unchanged.",
+        "path_count": 1
+      },
+      {
+        "id": "web_form_transition_readiness",
+        "rationale": "Two actual suite failures (owner-layout then scenario) showed readiness assertions racing asynchronous transition settlement; source review found analogous risk/research/aggregation gaps without runtime reproduction. Await supported exact string-named enabled controls. Preserve104 original assertions, semantic actions, all idempotency/revision/navigation/financial checks and aggregation earlyReload/rerender. Retain wrong-new-button and unsupported-query-option authoring negatives. Final32 focused cases and918 web cases pass on the same test-only composition; no fullgate inferred.",
+        "path_count": 5
+      },
+      {
+        "id": "signed_current_mcp_inventory",
+        "rationale": "Replace three stale current-runtime discovery assertions with an independent exact38-name/uniqueness oracle over the preserved25-case catalogue and explicit13 authorized premium tools; retain historical32/36 deltas, all signed authorization/financial/replay/pagination assertions and truthful07failure records.",
+        "path_count": 4
+      },
+      {
+        "id": "xray_parent_inspection_budget",
+        "rationale": "Before each X-ray path/composition parent lookup require room for both lookup and any returned identity, returning False for pending work before SQL if insufficient. Preserve cost1empty/cost2found, all budget maxima, guards, source predicates, canaries and existing PostgreSQL partial-cleanup/drain assertions; add5deterministic boundary unit cases and truthful full08failure evidence.",
+        "path_count": 2
+      },
+      {
+        "id": "retention_lifecycle_source_clock_and_resumption_fixtures",
+        "rationale": "Recover six retention fixtures after actual full09 failures: legal inactive-owner lifecycle, actual source availability and original deadlines, exact physical negative/positive budget phases, normal pending report footer resumption, target-scoped Xray event and bounded partial-copy continuation, and explicitly scoped TTL plan capture. Preserve production/SQL guards/global budgets/financial facts and record all failed retries separately.",
+        "path_count": 6
+      },
+      {
+        "id": "postgres_atomic_migration_object_lock_capacity",
+        "rationale": "Size PostgreSQL shared object-lock capacity at server startup to256 for existing deep atomic migration tests. Preserve DDL, transactional boundaries, SQL guards, test bodies and application budgets; qualify actual startup settings and all12 unchanged migration tests. Retain failed preflight separately.",
+        "path_count": 1
+      },
+      {
+        "id": "aggregation_accessibility",
+        "rationale": "Named/focusable bounded scroll regions, real arrow-key movement, and owned Settings logout retain original financial/Axe/keyboard/auth checks.",
+        "path_count": 3
+      },
+      {
+        "id": "aggregation_synthetic_activity_fixture",
+        "rationale": "Explicit supported empty fill collection in opt-in EUR fixture; all other collections delegated, parity and original unsupported-record denial tested.",
+        "path_count": 2
+      },
+      {
+        "id": "computed_historical_accessible_names",
+        "rationale": "Use computed names of semantic tables and visible controls while preserving financial, keyboard, overflow and authorization assertions.",
+        "path_count": 1
+      },
+      {
+        "id": "trace_context_boundary_regression",
+        "rationale": "Benign public extractor normal/512/513-character regression for exact OpenTelemetry patch; no exploit or timing claim.",
+        "path_count": 1
+      },
+      {
+        "id": "semantic_api_page_presentation",
+        "rationale": "Computed names replace raw-DOM label assumptions; pagination retains captions. Intelligence company failure was reproduced; eight adjacent specs were corrected by source review before their first execution. All business/financial/auth/keyboard/overflow/landmark/duplicate-ID/image-alt/secret assertions retained; premium globalThis spelling equivalent.",
+        "path_count": 9
+      },
+      {
+        "id": "complete_authorized_pwa_fixture",
+        "rationale": "One canonical fixture-selector string enables the existing complete synthetic X-ray seed for PWA, making both test-authorized accounts available. The failed desktop page showed Account unavailable rather than a wrong heading; all privacy/offline/cache/authorization assertions remain.",
+        "path_count": 1
+      },
+      {
+        "id": "new_scenario_report_physical_creation_clock",
+        "rationale": "Only reports&&scenarios fixture seeding scopes first-INSERT actual created_at to12new exact synthetic source parents across5allowlisted classes, with disposable database/engine/new-object/owner/provider/license/old-clock checks and listener removal. No existing UPDATE, shared seed, FX, financial/first-observed/expiry/digest or production-copy-limit change. Current commit adds only stderr metadata logging beyond the actual passing desktop source.",
+        "path_count": 2
+      },
+      {
+        "id": "workspace_browser_history_preconditions",
+        "rationale": "Test-only explicit committed Overview URL/heading before the held account response, precise absence/all-marker checks and safe native CDP history annotations. Original Holdings Back expectation remains. Actual observation was index3\u21924\u21924 with no B history entry; earlier optimistic B-URL hypothesis was not observed. This qualifies settled test preconditions and the actual pass, not an established production defect/cause or production fix.",
+        "path_count": 1
+      }
+    ],
+    "scope": "Implementation24 versus audited start; final documentation/media delta belongs to external delivery record."
+  },
+  "verification": {
+    "protocol": "user_authorized_incremental_failed_and_unreached_only",
+    "full_make_validate": {
+      "state": "NOT_RERUN_USER_DIRECTION",
+      "pass_claim": false
+    },
+    "complete_coverage": {
+      "state": "PENDING_NOT_RERUN_USER_DIRECTION",
+      "pass_claim": false
+    },
+    "browser_inventory": {
+      "path": "incremental-api-inventory-04/inventory.json",
+      "bytes": 622396,
+      "sha256": "67c6dc90ac824ad0eafcd2f77037043a391570d26f778854c9d93c99dc63ce15"
+    },
+    "browser_qualification": {
+      "all_required_cases_have_retained_pass": true,
+      "retained_cases_at_current_source": 0,
+      "retained_source_snapshot_count": 12,
+      "api_cases_reexecuted_by_refresh": 0,
+      "single_full_suite_invocation_pass_claimed": false,
+      "same_source_full_suite_pass_claimed": false,
+      "actual_full_group_pass_count": 67,
+      "completed_case_partition_count": 2,
+      "incomplete_group_count": 0
+    },
+    "required_cases": 132,
+    "source_snapshots": 12,
+    "cases_at_frozen_source": 0,
+    "assembly_receipt": {
+      "path": "api-inventory-assembly-05/receipt.json",
+      "bytes": 674,
+      "sha256": "2f55d73c69acac2780ca31b968e5d9473cb3b4a9ee1e8d91bc8df3f103f11b7d"
+    },
+    "terminal_browser_receipt": {
+      "path": "api-browser-resume-07/receipt.json",
+      "bytes": 631,
+      "sha256": "8a4bd4fbce84c47a0e73ac63d8041ff4142027d3c818e75d6c9de6f1f9dd7f4a"
+    },
+    "prior_complete09": {
+      "receipt": {
+        "path": "complete-validate-09/receipt.json",
+        "bytes": 647,
+        "sha256": "d8c588de29b684d0608dd1097d484588e324e553e4427cf618fc0f013aa367c1"
+      },
+      "python_unit_passed": 4749,
+      "web_unit_passed": 918,
+      "property_passed": 36,
+      "contract_passed": 357,
+      "integration_passed": 723,
+      "integration_failed": 12,
+      "full_gate_pass": false
+    },
+    "scope_limits": [
+      "Retained observations remain at their actual sources and containing outcomes; overlapping counts do not create a new complete pass.",
+      "Intelligence/workspace desktop are explicit case partitions, not successful whole-group invocations.",
+      "Scenario desktopa98...pass predates stderr-only logging at25d...; no rerun or execution of that delta is claimed.",
+      "Native history observations qualify workspace preconditions without proving an earlier production defect/cause.",
+      "Procfs access blindspots and unanchored historical report exclusions remain explicit in browser inventory."
+    ],
+    "input_equivalence_23_to_24": {
+      "kind": "COMMITTED_DOCKERFILE_ONLY_DELTA_WITHOUT_API_REEXECUTION",
+      "baseline_inventory_ref": {
+        "path": "incremental-api-inventory-03/inventory.json",
+        "bytes": 619335,
+        "sha256": "4788e0b27668c71a243eb79e2f309ea3c0134a106061327fe3efd5836deba38d"
+      },
+      "baseline_head": "881f283ee3fac18b3a513cea728c620c6554b5e4",
+      "baseline_tree": "566b13193a9d6a2323b8947f212506bcfb8df2d5",
+      "baseline_source_manifest_ref": {
+        "path": "incremental-api-inventory-03/current-source.json",
+        "bytes": 357380,
+        "sha256": "9bbbe56ab5f81e037eb057070005caa546298478e134cc5ca2586244ffd3d5c8"
+      },
+      "current_head": "153854f7b32a235a8aa5bdaa13c079bc07407a05",
+      "current_tree": "2c1e56fcddcb37c7815e6f2d4e83a9b47bb2d45b",
+      "changed_inputs": [
+        {
+          "path": "infrastructure/docker/web.Dockerfile",
+          "before": {
+            "sha256": "e663f82ad71bc55cd3a83b21d1871db6c0a8898fe3ea0ec9dd659c215d95110d",
+            "bytes": 3378,
+            "mode": "0o644"
+          },
+          "after": {
+            "sha256": "e68c50f1edcfd40c1c6062076b2ca6b885c1ea3ae2fbba0d30dba3593d592fca",
+            "bytes": 3453,
+            "mode": "0o644"
+          }
+        }
+      ],
+      "exact_committed_diff": "diff --git a/infrastructure/docker/web.Dockerfile b/infrastructure/docker/web.Dockerfile\nindex 9e35490..277096c 100644\n--- a/infrastructure/docker/web.Dockerfile\n+++ b/infrastructure/docker/web.Dockerfile\n@@ -43,0 +44 @@ COPY --from=builder --chown=app:app /app/apps/web/.next/static ./apps/web/.next/\n+COPY --from=builder --chown=app:app /app/apps/web/public ./apps/web/public",
+      "unchanged_other_source_input_count": 1926,
+      "application_test_dependency_inputs_identical": true,
+      "whole_source_identical": false,
+      "api_cases_reexecuted": 0,
+      "qualification": "All recorded application, test, dependency and other non-Dockerfile inputs match commit23 byte/mode/size identities. Commit24 adds only copying public assets into the web image. Retained API case execution remains at its original sources; input identity is not a new API execution or whole-source pass."
+    }
+  },
+  "terminal_delivery": {
+    "authority": "Later external final delivery record binds actual documentation commit/source equivalence, post-commit source/history scans, fast-forward push, CI observation and portable archive integrity without future self-hashes.",
+    "documentation_source_equivalence": "pending_external_delivery_record",
+    "post_documentation_source_history": "pending_external_delivery_record",
+    "push": "pending_external_delivery_record",
+    "actual_ci": "pending_owner_deferred_policy_unchanged",
+    "portable_export": "pending_external_delivery_record"
+  },
+  "acceptance": {
+    "phase3_rows_accepted": 0,
+    "phase3_rows_total": 30,
+    "scenarios_accepted": 0,
+    "scenarios_total": 48,
+    "independent_owner_audit": "pending",
+    "production_authorized": false,
+    "live_enabled": false
+  },
+  "logical_reference_policy": "References resolve within separately delivered audit evidence and are not machine-specific clean-clone inputs. No future own commit SHA, portable-bundle hash or unobserved CI result is embedded.",
+  "security": {
+    "initial_source_sha": "881f283ee3fac18b3a513cea728c620c6554b5e4",
+    "initial_artifact_summary": {
+      "path": "security-final-artifact-summary-01.json",
+      "bytes": 35574,
+      "sha256": "a62997cf7ce20bf1ad4e330375c12686132b8efeab232cc753a9d3f3d953891f"
+    },
+    "startup_image_supplement": {
+      "path": "security-startup-artifact-supplement-01.json",
+      "bytes": 27835,
+      "sha256": "e9f00768f831af4d4df80de475a57569a83f7e22ea93e24d759292e5fa6a43cb"
+    },
+    "web_public_supplement": {
+      "path": "security-web-public-artifact-supplement-01.json",
+      "bytes": 14054,
+      "sha256": "4273f93b720b0143b13e55e95abcbc412c08cc047bf1833965f594416c4b88e6"
+    },
+    "current_inventory": {
+      "path": "security-web-public-qualified-image-inventory-01.json",
+      "bytes": 46788,
+      "sha256": "7f86603e6979d021ef878e0c685613b950ad2fd14a7884cdce2c03474da791b7"
+    },
+    "current_image_ids": {
+      "api": "sha256:cb236e8a7eb97b00a83b47e8aa48caf21d9d06923cdc19e8221c91d54a98aa94",
+      "worker": "sha256:7da17b5f5019a3cd0ef1951cf980494466440bbea2ad918a52b171801630edf3",
+      "mcp": "sha256:e85cb572aa118b4185196a1214a5c23b6aa09bc4c8b0ff042b462948bf8e78a1",
+      "web": "sha256:7694c998d53cb450e5a9853c453ea4d1a45d1e137879f821e20431d193cf0f85",
+      "postgres": "sha256:f4754af4cac0eeee2528d0029e2ee508e955cc2f60d489b4c4e9462b0009f529",
+      "redis": "sha256:8ae8bdb8c2ca36fc3db58ff0a92eaac88041f5b9abe6b1af62b376f9e06ae613",
+      "migrate": "sha256:62356ea47db56f2e0b569b35ad0379ee51f94146d14072d0ec64711e590d8d61",
+      "seed": "sha256:4609b9072eeabf3c711068af6832fdf921895d03ea830e1a62734f98ed144cae",
+      "dispatcher": "sha256:dd8dacd86eff4e55fc4f0bcfcfc147a518f73107ea1ff0fbdc2b1e54635d66ca"
+    },
+    "configured_current_image_vulnerability_findings": 0,
+    "configured_current_image_secret_findings": 0,
+    "image_license_and_misconfiguration_scans": "not_configured",
+    "source_filesystem_and_history_scope": "Passing prior881f283 source scans retained; post-documentation final source/history scans belong to external delivery record.",
+    "sast": {
+      "prior_rules": 7,
+      "prior_targets": 973,
+      "prior_findings": 0,
+      "changed_paths": 6,
+      "supported_scanned_files": 5,
+      "unsupported_css_paths": 1,
+      "changed_target_rules": 7,
+      "changed_target_findings": 0,
+      "unchanged_inputs": 1026,
+      "declared_scope_inputs": 1032
+    },
+    "python_runtime_audit": {
+      "declared": 69,
+      "active_linux": 67,
+      "platform_inactive": 2,
+      "skipped": 0,
+      "vulnerabilities": 0,
+      "python": "3.13.15",
+      "pip_audit": "2.10.1",
+      "qualification": {
+        "path": "security-final-pip-audit-qualification-01.json",
+        "bytes": 7776,
+        "sha256": "121735f740c74818a445f452102b93698bb40d5d03c57ce21b127a9b55e987af"
+      }
+    },
+    "node_production_audit": {
+      "dependencies": 144,
+      "advisories": 0
+    },
+    "secret_exceptions": {
+      "preexisting": 19,
+      "assignment_reviewed_additions": 38,
+      "total_unique": 57,
+      "ignore_sha256": "ae6a5bec2e0a40471c693132098f5caed28d89b8ddf3d4f08f0657b46eab3968"
+    },
+    "ignored_installed_workspace_license_scan": "FAILED_RETAINED_THREE_CLASSIFICATIONS_PUBLIC_BINARY_RIGHTS_UNAPPROVED"
+  },
+  "synthetic_startup": {
+    "normal_start_receipt": {
+      "path": "full-stack-startup-01/receipt.json",
+      "bytes": 735,
+      "sha256": "9dcbf0b1fa57eb958ba636b36c80c6f6df95cfe5e1d63233023dd390d9ee3b47"
+    },
+    "normal_start_actual_sha": "881f283ee3fac18b3a513cea728c620c6554b5e4",
+    "normal_start_runner_seconds": 44.91,
+    "first_frontdoor_failure": {
+      "path": "full-stack-browser-smoke-01/receipt.json",
+      "bytes": 602,
+      "sha256": "9cd05d559f81f551069bd28a05ba2201807135bd596ade854caa7c10733d93bb"
+    },
+    "packaging_fix": "One public-assets COPY instruction; six image/source and HTTP200 byte matches.",
+    "web_build_receipt": {
+      "path": "web-public-assets-build-01/receipt.json",
+      "bytes": 1026,
+      "sha256": "27c6a20331931323cbb13f217c92cb112ba94daf7138ae4e614924d1e29d5c57"
+    },
+    "web_build_runner_seconds": 9.405,
+    "successful_frontdoor_receipt": {
+      "path": "full-stack-browser-smoke-02/receipt.json",
+      "bytes": 639,
+      "sha256": "f0b8321e9180b645bce81cf58cb2bf1474391bd0ff57fce0295e3f707fd1f719"
+    },
+    "successful_frontdoor_runner_seconds": 1.974,
+    "successful_frontdoor_executed_manifest": "2649f2a2cbb4e7b90e9b0fbcdb3842533300bdf653742bcc1a170dacfd1e86a7",
+    "successful_frontdoor_actual_head": "881f283ee3fac18b3a513cea728c620c6554b5e4 plus dirty webDockerfile; input2649 matches commit24",
+    "current_runtime_inspection": {
+      "path": "startup-runtime-after-public-01.json",
+      "bytes": 19275,
+      "sha256": "da90fce7113b07177636125d09217e8f59962436f48c2e305c1a5723be1f1cc5"
+    },
+    "runtime_services_healthy": 7,
+    "successful_one_shot_services": [
+      "migrate",
+      "seed"
+    ],
+    "financial_value_parity_claim": false,
+    "live_or_production_claim": false
+  },
+  "task_cleanup": {
+    "receipt": {
+      "path": "task-stack-cleanup-01/receipt.json",
+      "bytes": 950,
+      "sha256": "8ff1d2ef50b0e058a058433a3e5ba4c100398d8b1f11bb443dd78206a1ac0b11"
+    },
+    "after_inventory": {
+      "path": "startup-runtime-cleanup-01.json",
+      "bytes": 9899,
+      "sha256": "97cd4024436c29f62d97b55b046d089c3eb5ad9597d97d85ab59446d61673527"
+    },
+    "preservation": {
+      "path": "task-cleanup-final-01.json",
+      "bytes": 1381,
+      "sha256": "fe70bc5b1e4f187d75fcd84402bf213cb50e3655c8193d6a0a5d6713be2c60b7"
+    },
+    "runner_seconds": 3.943,
+    "task_containers_network_volume_removed": true,
+    "original_volumes_preserved": 2,
+    "venv_inode_preserved": 291333,
+    "qualified_images_preserved": 9,
+    "inactive_next_dev_files_removed": 549,
+    "inactive_next_dev_bytes_removed": 371911400,
+    "global_prune": false
+  },
+  "synthetic_captures": {
+    "review": {
+      "path": "startup-screenshot-review-01.json",
+      "bytes": 1047,
+      "sha256": "c087147ae68b4d17d3ee6e0bbfb8b5e687195ae7b56e7e58899d4c8756c2025a"
+    },
+    "images": [
+      {
+        "repository_path": "docs/media/synthetic-holdings-desktop.png",
+        "source": {
+          "path": "full-stack-holdings-synthetic-v4-desktop.png",
+          "bytes": 181570,
+          "sha256": "da93fc7dba43852705101590e7f0158b66be96bfc1d740c5465586cec5c65e4d"
+        },
+        "copied_bytes": 181570,
+        "copied_sha256": "da93fc7dba43852705101590e7f0158b66be96bfc1d740c5465586cec5c65e4d",
+        "source_and_destination_identical": true
+      },
+      {
+        "repository_path": "docs/media/synthetic-holdings-mobile.png",
+        "source": {
+          "path": "full-stack-holdings-synthetic-v4-mobile.png",
+          "bytes": 64414,
+          "sha256": "7afcbd1bcdafdcf41317f8330fdcf332267a41ecb078040e0cbaa8774d511a3b"
+        },
+        "copied_bytes": 64414,
+        "copied_sha256": "7afcbd1bcdafdcf41317f8330fdcf332267a41ecb078040e0cbaa8774d511a3b",
+        "source_and_destination_identical": true
+      }
+    ],
+    "qualification": "Genuine unedited synthetic point-in-time captures; warnings retained. Desktop1440x900; mobile360x1108 fullpage from360x800viewport. No independent financial-value-parity/performance/live/production claim."
+  }
+}

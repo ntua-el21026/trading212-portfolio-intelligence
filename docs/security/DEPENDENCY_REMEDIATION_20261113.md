@@ -115,11 +115,26 @@ different input scopes. Public binary obligations remain a separate review.
 Pinned Gitleaks 8.30.1 reproduced 38 history findings. Each was independently
 classified in [the exact-fingerprint review](SECRET_SCAN_REVIEW_20261113.json):
 37 recomputed contract/client digests and one synthetic report row identifier.
-Matched values were neither displayed nor retained in the review. The exceptions
-bind only the original commit, path, rule and line. No credential was found among
+Matched values were neither displayed nor retained in the review. These 38 new
+exact exceptions join 19 pre-existing fingerprints: 57 unique entries in total.
+No existing exception was removed. Each exception binds only its original commit,
+path, rule and line. No credential was found among
 these 38 results; this is not a comprehensive credential-free guarantee.
 
 The default Gitleaks rules, existing narrow checksum policy, high-confidence
 secret scan, vulnerability severity thresholds and required security jobs remain
 active. Scanner results, failures and scope limitations are reported separately
 from release and acceptance states.
+
+
+## Recorded artifact closure and delivery scope
+
+The [stabilization evidence index](../implementation/evidence/phase-3-stabilization-20261113.json)
+binds current immutable image IDs, the original and startup-image supplements,
+Linux-qualified Python and production Node audits, synthetic frontdoor recovery
+and scoped cleanup. The 67 active Linux Python requirements exclude two
+platform-inactive declarations; the audit skipped zero requirements. Source and
+history scans retain their actual preceding-source scope. Post-documentation
+scans, Git/CI observations and portable-export integrity belong to the later
+external delivery record. The three ignored installed-workspace license flags
+remain failed observations; public binary distribution is not authorized.

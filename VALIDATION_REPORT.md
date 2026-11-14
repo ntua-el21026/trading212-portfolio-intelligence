@@ -1,13 +1,28 @@
 # Validation Report
 
-## Current bounded stabilization, 2026-11-13
+## Current bounded stabilization, 2026-11-14
 
-The [stabilization record](docs/implementation/PHASE_3_STABILIZATION_20261113.md)
-tracks actual baseline reproductions and new command evidence from synchronized
-`64e2057cb9b1ddee11649f605e968b18bd559fcb`. Validation is in progress. The
-historical receipts below retain their original sources and do not combine into
-a current release pass. Phase 3 package acceptance and independent audit remain
-pending; production and Live are not authorized.
+Implementation `153854f7b32a235a8aa5bdaa13c079bc07407a05` preserves incremental
+passing observations for 132 required API-browser cases across 69 groups:
+67 actual full-group passes and two case partitions spanning 12 source snapshots.
+No API case ran at this packaging-only commit. Its one public-assets COPY leaves
+1,926 other inputs, including application/test/dependency inputs, identical to
+`881f283`. Metadata refresh is not a new browser execution or same-source pass.
+
+Current image artifact checks, dependency audits, ordinary synthetic startup,
+corrected frontdoor smoke and scoped cleanup have actual receipts in the
+[stabilization record](docs/implementation/PHASE_3_STABILIZATION_20261113.md)
+and [evidence index](docs/implementation/evidence/phase-3-stabilization-20261113.json).
+The initial frontdoor failure and all earlier failures remain retained. Prior
+source/filesystem/history scans qualify their recorded `881f283` source; final
+post-documentation scans and source equivalence, push/CI and portable-export
+verification are later external delivery observations.
+
+Complete Make validation was not rerun; complete coverage remains pending under
+the owner's instruction. Prior complete targets retain failed/interrupted
+outcomes and separate passing layers. All 30 Phase 3 rows and 48 scenarios,
+independent owner audit and acceptance remain pending. Production and Live are
+unauthorized; CI is owner-deferred. Historical records below retain their scope.
 
 ## Owner-authorized progression, 2026-09-14
 
