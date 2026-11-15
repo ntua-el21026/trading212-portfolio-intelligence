@@ -494,11 +494,24 @@ def decode_report_capture(payload: bytes) -> r.ReportCaptureSummary:
 
 
 def _chunk_payload(table: r.ReportTableKey, ordinal: int, rows: tuple[r.ReportRow, ...]) -> bytes:
-    _measure(rows, r.MAX_REPORT_CHUNK_BYTES)
-    return _json(
-        {"table": table.value, "ordinal": ordinal, "rows": _primitive(rows)},
-        r.MAX_REPORT_CHUNK_BYTES,
+    # Preserve the original row validation/error order, then charge the exact
+    # fixed envelope before allocating the complete primitive graph or output.
+    rows_size = _measure(rows, r.MAX_REPORT_CHUNK_BYTES)
+    envelope = _json(
+        {"table": table.value, "ordinal": ordinal, "rows": []}, r.MAX_REPORT_CHUNK_BYTES
     )
+    r.report_limit(rows_size + len(envelope) - 2 <= r.MAX_REPORT_CHUNK_BYTES, "encoded_bytes")
+    try:
+        payload = json.dumps(
+            {"table": table.value, "ordinal": ordinal, "rows": _primitive(rows)},
+            ensure_ascii=False,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+    except UnicodeEncodeError:
+        fail_validation("Report text must be valid Unicode.", field="text")
+    r.report_limit(len(payload) <= r.MAX_REPORT_CHUNK_BYTES, "encoded_bytes")
+    return payload
 
 
 def build_report_chunk(
