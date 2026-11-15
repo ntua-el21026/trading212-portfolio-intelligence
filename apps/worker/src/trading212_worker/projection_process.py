@@ -34,6 +34,10 @@ from trading212_domain.projection_validation import validate_projection_path_bas
 _PROTOCOL = b"t212pi.projection.worker.v1"
 _MAX_RSS = 512 * 1024 * 1024
 _MAX_FRAME = PROJECTION_MAX_BYTES + 1
+# Publication normalizes every retained asset row while holding the same slot
+# needed by heartbeats. Keep checkpoints small enough to release that slot
+# regularly; a single absolute path remains the indivisible recovery unit.
+_CHECKPOINT_ASSET_ROW_TARGET = 1024
 type ChunkCursor = tuple[ProjectionVariant, int]
 type LoadChunks = Callable[[ChunkCursor | None], tuple[ProjectionChunk, ...]]
 type SaveChunk = Callable[[ProjectionChunk], bool]
@@ -272,6 +276,11 @@ def calculate_private_projection(
             watchdog.join(timeout=1)
 
 
+def _checkpoint_path_limit(inputs: ProjectionInput) -> int:
+    rows_per_path = len(inputs.retained_months) * len(inputs.assumptions.assets)
+    return min(32, max(1, _CHECKPOINT_ASSET_ROW_TARGET // rows_per_path))
+
+
 def _child_session(connection: Connection) -> None:
     from trading212_analytics.projection import calculate_projection_chunk, finalize_projection
 
@@ -297,6 +306,7 @@ def _child_session(connection: Connection) -> None:
         inventory.add(chunk, frame[1:])
         chunks.append(chunk)
         previous = key
+    checkpoint_paths = _checkpoint_path_limit(inputs)
     for variant in inputs.variants:
         start = 0
         while start < inputs.paths:
@@ -304,7 +314,10 @@ def _child_session(connection: Connection) -> None:
                 start += 1
                 continue
             end = start + 1
-            while end < min(start + 32, inputs.paths) and (variant, end) not in inventory.paths:
+            while (
+                end < min(start + checkpoint_paths, inputs.paths)
+                and (variant, end) not in inventory.paths
+            ):
                 end += 1
             chunk = calculate_projection_chunk(inputs, start, end - start, variant=variant)
             encoded = projection_canonical_bytes(chunk)
