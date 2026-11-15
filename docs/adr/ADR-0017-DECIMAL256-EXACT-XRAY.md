@@ -6,7 +6,7 @@
 
 **Decision authority:** Owner-authorized Decimal-only numerical policy and the settled representative-root/lifecycle closure.
 
-**Scope:** P2-05 design only. P2-05 implementation is not_started; Phase 3 remains not_started.
+**Scope at decision date:** P2-05 design only; P2-05 implementation and Phase 3 were not_started.
 
 This narrowly amends the common precision and X-ray version declarations in the
 [v0.2 delta](../DESIGN_FREEZE_V0_2.md), [methods](../analytics/PHASE_2_METHODS.md),
@@ -274,7 +274,7 @@ never truncate proof references. A maximal legal singleton path must fit the 2 M
 public envelope. Larger pages may return RESULT_TOO_LARGE; a smaller requested
 page retains identical membership, run identity and reachability.
 
-## Implementation and comparability boundary
+## Original implementation and comparability boundary
 
 This is an authority decision, not implementation or acceptance evidence. Saved
 scratch scalar-oracle observations do not fulfill the graph, codec, persistence,
@@ -286,3 +286,17 @@ at their actual versions. Other Phase 2 methods remain 1.0.0 and release 0.2.0 i
 unchanged. P2-06 owns reports, P2-07 owns alerts, P2-08 owns intelligence-data-quality
 and actual company-effective-weight enrichment; company drift additionally needs
 an explicitly pinned entity-target basis. Phase 3 remains not_started.
+
+## Persistence clarification, 15 November 2026
+
+The owner reaffirmed the existing 32-MiB canonical X-ray input and result contract.
+Forward migration `20261115_0036` aligns the two `analytics_runs` checks and ORM
+predicates specifically for `xray`; other analytical kinds retain their previous
+limits. The independent public envelope remains 2 MiB. A populated downgrade
+refuses incompatible X-ray evidence before changing constraints or data.
+
+The implementation-state paragraph above records this ADR's historical decision
+context. Current Phase 3 work and source-qualified boundary observations are in the
+[consolidated Checkpoint B record](../implementation/PHASE_3_CHECKPOINT_B_CONSOLIDATED_20261115.md).
+The numerical method, precision, traversal, provenance and acceptance obligations
+of this ADR are unchanged.

@@ -7,28 +7,28 @@ valuation time, coverage and quality remain attached to results.
 
 ## Current status
 
-**Phase 3 is in progress.** The owner accepted the bounded Batch 1 and Batch 2
-deliveries; Checkpoint B remains under remediation. The
-[current record](docs/implementation/PHASE_3_CHECKPOINT_B_20261115.md) distinguishes
-measured performance, focused regression and synthetic recovery evidence from
-pending qualification. Desktop/mobile performance and all three viewport pagination journeys pass the
-unchanged 100-holding/1,000-event protocol. Admission p95 remains above its limit
-(0.772 s against 0.750 s), and tablet research LCP fails (2,724 ms against 2,500 ms).
-Actual report-size qualification and an X-ray specification/schema size conflict
-remain local work.
-All 30 acceptance rows and 48 scenarios remain pending, zero accepted. Complete
-P3-10 validation has not started and is outside the current remediation package.
-External credentials, deployment and distribution rights require separate decisions.
+**Phase 3 is in progress; Checkpoint B remains incomplete.** The current
+[consolidated record](docs/implementation/PHASE_3_CHECKPOINT_B_CONSOLIDATED_20261115.md)
+retains separate schema, projection-recovery and actual size-boundary passes.
+The latest admission p95 is 0.856597051 s against the unchanged 0.750 s limit;
+all ten jobs complete, and the 30-read p95/12-SQL limits pass. The material failure
+stops further performance loops and long local Make/coverage, clean installation
+and full browser qualification in this package. Those checks remain pending local.
+The earlier bounded report remains
+[historical evidence](docs/implementation/PHASE_3_CHECKPOINT_B_20261115.md).
+All 30 acceptance rows and 48 scenarios remain pending, zero accepted. Formal
+P3-10 has not started. CI, external credentials, deployment and distribution
+rights remain separate decisions.
 
 Consolidated Batch 1 adds focused aggregation,
 analytical and admission-boundary evidence under the
-[current functional-completion record](docs/implementation/PHASE_3_BATCH1_20261114.md).
+[Batch 1 record](docs/implementation/PHASE_3_BATCH1_20261114.md).
 Research reporting implements the approved exact item, zero-to-64 note revisions
 and optional exact review selection on the existing profile3 routes and four
 formats. Separate PostgreSQL artifact/retention checks and one desktop navigation
 case passed; their sources and limits are recorded in the
 [validation report](VALIDATION_REPORT.md#research-report-component-evidence-2026-11-14).
-The current schema adds migration `0035` and has 368 ORM tables; earlier
+The current schema includes forward migration `0036` and has 368 ORM tables; earlier
 364-table/`0034` records remain historical. Full validation and acceptance remain
 pending.
 The earlier bounded stabilization checkpoint records

@@ -4,6 +4,28 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Consolidated Checkpoint B qualification
+
+- Align X-ray canonical input/result persistence with its frozen 32-MiB contract
+  through additive migration `0036`; preserve other limits and all published
+  migrations. Bound projection checkpoint publication work while retaining exact
+  financial bytes, legacy resume, fences and actual storage accounting. Encode
+  preflighted report chunks once without changing bytes or admission controls.
+- Record actual near-32-MiB document admission/oversize rollback and genuine large
+  retained-X-ray REPORT fallback with current-rights denials. Preserve the JSON
+  job's independent bounded rendering failure with no artifact. Adapt operational
+  guards to the exact current synthetic task and retain metadata-only browser
+  attribution. The latest admission cohort still fails p95 0.856597051 s; Checkpoint
+  B remains incomplete. The material failure stops long local qualification in this package;
+  formal P3-10 and all row/scenario acceptance remain unstarted or pending.
+
+- Move only exact bare string, integer, Boolean and UUID validation branches before
+  typing reflection, preserving the frozen independent oracle and all other X-ray
+  validation. Record 250 focused passes and the later failed admission cohort;
+  no causal wall-time improvement or complete validation pass is inferred.
+
+### Earlier bounded checkpoints
+
 - Batch fresh physical-source metadata checks within each existing report
   authorization boundary and verify the full immutable X-ray pin once per
   research page. Preserve canonical bytes, current rights, cutoffs and financial

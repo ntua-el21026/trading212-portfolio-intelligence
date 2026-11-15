@@ -1,10 +1,45 @@
 # Phase 3 Mandatory Scenario Evidence
 
+## Current consolidated Checkpoint B qualification, 15 November
+
+The current [consolidated qualification record](PHASE_3_CHECKPOINT_B_CONSOLIDATED_20261115.md) follows owner authorization
+from clean main `dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267`. Checkpoint B remains
+**INCOMPLETE**. The latest genuine 30-read/ten-admission cohort fails admission
+p95/max **0.856597051 s** against 0.750 s (p50 0.617076987 s). All ten jobs complete;
+read p95 0.344801251 s and all 12-statement counts pass. Its unchanged source
+manifest is `3496f8bf9570cbc0152fcd3f4056ae4dbbe4b19531743028a609ed521630e919`,
+headed by `250dc7` with manifested working changes, not clean-commit validation.
+
+Forward schema `0036` aligns X-ray's frozen 32-MiB canonical bounds and retains
+368 ORM tables. Separate focused observations demonstrate dense projection
+heartbeat recovery, 33,508,886-byte report admission with genuine oversized
+rollback, and a 2,092-holding retained-X-ray REPORT fallback with DISPLAY,
+foreign-owner, expiry and revocation denial. The near-32-MiB JSON job fails
+boundedly with no artifact under independent rendering limits; it is not successful
+artifact evidence. A later tablet attribution diagnostic is not final browser
+qualification. Fresh-build viewport qualification, complete local Make/coverage,
+clean installation/build, recovery/resource checks and committed-source security
+remain pending.
+
+Complete applicable local Checkpoint B qualification was owner-authorized.
+Formal P3-10 has not started; its attempt count remains **0**. All **30 rows** and
+**48 scenarios** remain pending, **zero accepted**. CI is owner-deferred/unverified;
+production, Live, real credentials, paid providers, release and distribution rights
+remain separately unauthorized. Earlier checkpoint results below retain their
+historical source and authority.
+
+
 **Design:** Accepted; implementation and execution evidence pending
 
 **Inventory:** 48 distinct scenarios; none complete at design freeze
 
-## Current bounded remediation, 15 November
+The material admission failure stops this bounded package before further
+performance cohorts or long Make, coverage, complete browser or clean-install
+qualification. Those checks remain **pending local**, not externally blocked.
+Narrow source-affected regression and final security/closure results remain pending
+until their actual root executions are recorded. Formal P3-10 remains unstarted.
+
+## Historical bounded remediation, 15 November
 
 The owner-authorized [Checkpoint B package](PHASE_3_CHECKPOINT_B_20261115.md)
 starts from verified clean/live main `8fa5db7d0009ffd18f790ed4c9f498d130e86675`.
@@ -127,7 +162,7 @@ recovery and incomplete performance observations are recorded below.
 | P3-S48 | P3-10 | SBOM/signing/provenance and external release boundaries; [proof / gaps](PHASE_3_BATCH2_TRACEABILITY.md#mandatory-scenarios) | Verify local ephemeral signing machinery/source-image binding; actual evidence pack and 1.0.0 candidate never claim production attestation. | tests/unit/test_release_evidence.py::test_ephemeral_signing_performs_no_file_io_and_independent_public_key_verifies | pending |
 
 
-## Current bounded checkpoint observations
+## Historical bounded checkpoint observations
 
 The production NOT IN/MATERIALIZED query now passes five affected PostgreSQL
 cases (88.36 s) and real normal service with 100 EUR10 holdings and 1000 events,

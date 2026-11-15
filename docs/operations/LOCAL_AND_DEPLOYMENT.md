@@ -95,8 +95,11 @@ make migrate
 make seed-demo
 ```
 
-`make migrate` upgrades to the current Alembic head; the stabilization repair is
-`20261113_0034`, following `20260915_0030`. See the
+`make migrate` upgrades to the current source head `20261115_0036`, following
+research-report revision `20261114_0035`. The earlier stabilization repair
+`20261113_0034` follows `20260915_0030`. Revision `0036` aligns only X-ray's canonical
+input/result checks with the frozen 32-MiB contract and preserves all other limits;
+incompatible retained data prevents downgrade without mutation. See the
 [migration ledger](../../migrations/README.md) for reserved historical handoffs
 and the forward-repair policy. Re-running the upgrade and synthetic seed is
 safe. Migration downgrades are not an operational rollback mechanism.

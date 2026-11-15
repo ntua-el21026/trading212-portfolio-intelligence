@@ -141,7 +141,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "bounded_checkpoint_b_remediation_then_independent_review",
+  "next_gate": "owner_review_of_incomplete_checkpoint_b_and_bounded_follow_up",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -3790,5 +3790,339 @@
     ],
     "further_runtime_retries_in_this_package": false,
     "post_commit_observations": "Exact committed-candidate security, CI, source qualification, resource retirement and archive results are recorded in the final private handoff; these are not future pass claims."
+  },
+  "current_checkpoint_b_selector": "/checkpoint_b_consolidated_qualification",
+  "checkpoint_b_consolidated_qualification": {
+    "authority": "latest_owner_authorized_local_checkpoint_b_qualification",
+    "starting_main_sha": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+    "status": "bounded_closure_incomplete",
+    "checkpoint_b": "INCOMPLETE",
+    "report": "docs/implementation/PHASE_3_CHECKPOINT_B_CONSOLIDATED_20261115.md",
+    "schema_revision": "20261115_0036",
+    "orm_table_count": 368,
+    "acceptance": {
+      "accepted_rows": 0,
+      "pending_rows": 30,
+      "accepted_scenarios": 0,
+      "pending_scenarios": 48
+    },
+    "formal_p3_10_started": false,
+    "formal_p3_10_attempts": 0,
+    "complete_local_qualification_authorized": true,
+    "complete_local_qualification_status": "pending_local_not_started_after_material_failure",
+    "final_clean_candidate_sha": null,
+    "final_candidate_full_pass_claimed": false,
+    "latest_admission": {
+      "receipt": "admission-qualifying-scalar-dispatch-02",
+      "status": "failed",
+      "samples": 10,
+      "quantile_method": "nearest_rank",
+      "p50_seconds": 0.617076987,
+      "p95_seconds": 0.856597051,
+      "maximum_seconds": 0.856597051,
+      "required_p95_seconds": 0.75,
+      "completed_jobs": 10,
+      "source_manifest_sha256": "3496f8bf9570cbc0152fcd3f4056ae4dbbe4b19531743028a609ed521630e919",
+      "head_before": "250dc7c193f64a9be192b45a94cb9afd73680f72",
+      "whole_source_unchanged": true,
+      "clean_commit_pass_claimed": false
+    },
+    "latest_reads": {
+      "samples": 30,
+      "p95_seconds": 0.344801251,
+      "required_p95_seconds": 0.5,
+      "maximum_sql_statements": 12,
+      "status": "passed_focused"
+    },
+    "report_document_boundary": {
+      "status": "passed_focused",
+      "actual_document_bytes": 33508886,
+      "limit_bytes": 33554432,
+      "distance_from_limit_bytes": 45546,
+      "oversized_admission_rollback": "verified",
+      "json_worker": "failed_limit_exceeded_no_artifacts_as_asserted",
+      "successful_near_boundary_artifact_claimed": false
+    },
+    "retained_xray_reader": {
+      "status": "passed_focused",
+      "holdings": 2092,
+      "result_bytes": 32953788,
+      "input_bytes": 1161005,
+      "combined_bytes": 34134320,
+      "report_fallback": "verified",
+      "display_denial": "verified",
+      "foreign_expiry_revocation_denials": "verified",
+      "complete_new_research_item_or_report_capture_claimed": false
+    },
+    "pending_local": [
+      "admission_latency_above_unchanged_threshold",
+      "fresh_build_uninstrumented_supported_viewport_qualification",
+      "complete_local_make_coverage_clean_install_build",
+      "current_task_actual_restart_restore_resource_qualification",
+      "fresh_committed_source_security_and_evidence_integrity"
+    ],
+    "local_work_externally_blocked": false,
+    "ci": {
+      "status": "deferred_by_owner",
+      "verified": false
+    },
+    "production_live_credentials_paid_providers_release_distribution_authorized": false,
+    "independent_review": "pending",
+    "historical_bounded_record_pointer": "/bounded_checkpoint_b_remediation",
+    "observations": [
+      {
+        "receipt": "xray-schema-focused-green-01",
+        "outcome": "passed_focused",
+        "exit_code": 0,
+        "wrapper_seconds": 30.92,
+        "head_before": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "head_after": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "source_manifest_sha256": "921eba82458e22be41e2697ed72bbda08e9a2ef52b9f223300546cba0c1745c3",
+        "source_after_manifest_sha256": "99373942739288957eb64e7e549a23ae0bfd8c2b09f4838b760ca2ade03c5de1",
+        "whole_source_unchanged": false,
+        "changed_source_paths": [
+          "apps/worker/src/trading212_worker/projection_process.py",
+          "tests/integration/phase3_stack_restart.py",
+          "tests/integration/test_phase3_process_recovery.py",
+          "tests/integration/test_projection_dense_heartbeat_postgres.py",
+          "tests/unit/domain/test_report_chunk_preflight_encoding.py",
+          "tests/unit/test_phase3_stack_restart.py",
+          "tests/unit/worker/test_projection_checkpoint_work_bound.py"
+        ],
+        "scope": "24 cases pass"
+      },
+      {
+        "receipt": "xray-source-affected-head-compatibility-01",
+        "outcome": "passed_focused",
+        "exit_code": 0,
+        "wrapper_seconds": 44.473,
+        "head_before": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "head_after": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "source_manifest_sha256": "6917d87d0ee0e570c8b7a6e490ddc7d0928ce26a518cbc003b74a1c3ac2974dd",
+        "source_after_manifest_sha256": "c33a499ff43a79d4123c39a4a6ce4f284f67d9e7932a01eb5d214be0537670ef",
+        "whole_source_unchanged": false,
+        "changed_source_paths": ["tests/unit/test_api_e2e_research_timings.py"],
+        "scope": "4 cases pass"
+      },
+      {
+        "receipt": "projection-focused-green-01",
+        "outcome": "passed_focused",
+        "exit_code": 0,
+        "wrapper_seconds": 13.632,
+        "head_before": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "head_after": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "source_manifest_sha256": "ffc7cc715c519c7deeccd341f28354986ebf30c626036e7e14ff13c160c00989",
+        "source_after_manifest_sha256": "ffc7cc715c519c7deeccd341f28354986ebf30c626036e7e14ff13c160c00989",
+        "whole_source_unchanged": true,
+        "changed_source_paths": [],
+        "scope": "96 cases pass"
+      },
+      {
+        "receipt": "projection-dense-heartbeat-green-01",
+        "outcome": "passed_focused",
+        "exit_code": 0,
+        "wrapper_seconds": 54.998,
+        "head_before": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "head_after": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "source_manifest_sha256": "ffc7cc715c519c7deeccd341f28354986ebf30c626036e7e14ff13c160c00989",
+        "source_after_manifest_sha256": "ffc7cc715c519c7deeccd341f28354986ebf30c626036e7e14ff13c160c00989",
+        "whole_source_unchanged": true,
+        "changed_source_paths": [],
+        "scope": "1 case passes"
+      },
+      {
+        "receipt": "report-chunk-codec-focused-green-02",
+        "outcome": "passed_focused",
+        "exit_code": 0,
+        "wrapper_seconds": 3.741,
+        "head_before": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "head_after": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "source_manifest_sha256": "b84a580af12d586b6694dbe2c4d422a62ec4a60cd31c2328716663762200e40e",
+        "source_after_manifest_sha256": "b84a580af12d586b6694dbe2c4d422a62ec4a60cd31c2328716663762200e40e",
+        "whole_source_unchanged": true,
+        "changed_source_paths": [],
+        "scope": "365 cases pass"
+      },
+      {
+        "receipt": "research-timing-observer-green-01",
+        "outcome": "passed_focused",
+        "exit_code": 0,
+        "wrapper_seconds": 4.359,
+        "head_before": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "head_after": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "source_manifest_sha256": "31753fec35d214391fdbd2ce7e8e803ef4156034d6fd9435050b4ee399d0e260",
+        "source_after_manifest_sha256": "31753fec35d214391fdbd2ce7e8e803ef4156034d6fd9435050b4ee399d0e260",
+        "whole_source_unchanged": true,
+        "changed_source_paths": [],
+        "scope": "46 cases pass"
+      },
+      {
+        "receipt": "task-resource-guards-focused-green-01",
+        "outcome": "passed_focused",
+        "exit_code": 0,
+        "wrapper_seconds": 2.68,
+        "head_before": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "head_after": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "source_manifest_sha256": "b84a580af12d586b6694dbe2c4d422a62ec4a60cd31c2328716663762200e40e",
+        "source_after_manifest_sha256": "b84a580af12d586b6694dbe2c4d422a62ec4a60cd31c2328716663762200e40e",
+        "whole_source_unchanged": true,
+        "changed_source_paths": [],
+        "scope": "54 cases pass"
+      },
+      {
+        "receipt": "remaining-task-guard-and-observer-recovery-01",
+        "outcome": "passed_focused",
+        "exit_code": 0,
+        "wrapper_seconds": 2.795,
+        "head_before": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "head_after": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "source_manifest_sha256": "f54cf045c80e6a5acffe8a5b0e6dda9842d393d2303c5350ac287b157ee887fb",
+        "source_after_manifest_sha256": "f54cf045c80e6a5acffe8a5b0e6dda9842d393d2303c5350ac287b157ee887fb",
+        "whole_source_unchanged": true,
+        "changed_source_paths": [],
+        "scope": "22 cases pass; overlapping observer subset"
+      },
+      {
+        "receipt": "retained-reader-geometry-static-and-green-recovery-02",
+        "outcome": "passed_focused",
+        "exit_code": 0,
+        "wrapper_seconds": 0.728,
+        "head_before": "7cbc21eef81b16445d4523f2674f40feca295701",
+        "head_after": "7cbc21eef81b16445d4523f2674f40feca295701",
+        "source_manifest_sha256": "4a5b90dcf780993d5c1d1b26af16e55bc01cb27156260610fb72f506937db9b2",
+        "source_after_manifest_sha256": "4a5b90dcf780993d5c1d1b26af16e55bc01cb27156260610fb72f506937db9b2",
+        "whole_source_unchanged": true,
+        "changed_source_paths": [],
+        "scope": "13 geometry cases pass; static checks pass"
+      },
+      {
+        "receipt": "actual-near-32mib-report-boundary-01",
+        "outcome": "passed_focused",
+        "exit_code": 0,
+        "wrapper_seconds": 194.406,
+        "head_before": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "head_after": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
+        "source_manifest_sha256": "b84a580af12d586b6694dbe2c4d422a62ec4a60cd31c2328716663762200e40e",
+        "source_after_manifest_sha256": "31753fec35d214391fdbd2ce7e8e803ef4156034d6fd9435050b4ee399d0e260",
+        "whole_source_unchanged": false,
+        "changed_source_paths": [
+          "scripts/api_e2e_timings.py",
+          "tests/e2e/api-web/operational-performance.spec.ts",
+          "tests/unit/test_api_e2e_research_timings.py",
+          "tests/unit/test_phase3_remaining_family_task_guard.py"
+        ],
+        "scope": "1 boundary case passes; JSON job fails boundedly as asserted"
+      },
+      {
+        "receipt": "actual-retained-xray-reader-boundary-recovery-01",
+        "outcome": "passed_focused",
+        "exit_code": 0,
+        "wrapper_seconds": 75.168,
+        "head_before": "7cbc21eef81b16445d4523f2674f40feca295701",
+        "head_after": "7cbc21eef81b16445d4523f2674f40feca295701",
+        "source_manifest_sha256": "4a5b90dcf780993d5c1d1b26af16e55bc01cb27156260610fb72f506937db9b2",
+        "source_after_manifest_sha256": "4a5b90dcf780993d5c1d1b26af16e55bc01cb27156260610fb72f506937db9b2",
+        "whole_source_unchanged": true,
+        "changed_source_paths": [],
+        "scope": "1 genuine reader case passes"
+      },
+      {
+        "receipt": "admission-qualifying-codec-01",
+        "outcome": "failed",
+        "exit_code": 1,
+        "wrapper_seconds": 103.795,
+        "head_before": "7cbc21eef81b16445d4523f2674f40feca295701",
+        "head_after": "7cbc21eef81b16445d4523f2674f40feca295701",
+        "source_manifest_sha256": "4a5b90dcf780993d5c1d1b26af16e55bc01cb27156260610fb72f506937db9b2",
+        "source_after_manifest_sha256": "4a5b90dcf780993d5c1d1b26af16e55bc01cb27156260610fb72f506937db9b2",
+        "whole_source_unchanged": true,
+        "changed_source_paths": [],
+        "scope": "Performance gate fails; 30 reads and ten completed jobs retained"
+      },
+      {
+        "receipt": "xray-scalar-dispatch-static-green-recovery-02",
+        "outcome": "passed_focused",
+        "exit_code": 0,
+        "wrapper_seconds": 5.636,
+        "head_before": "250dc7c193f64a9be192b45a94cb9afd73680f72",
+        "head_after": "250dc7c193f64a9be192b45a94cb9afd73680f72",
+        "source_manifest_sha256": "3496f8bf9570cbc0152fcd3f4056ae4dbbe4b19531743028a609ed521630e919",
+        "source_after_manifest_sha256": "3496f8bf9570cbc0152fcd3f4056ae4dbbe4b19531743028a609ed521630e919",
+        "whole_source_unchanged": true,
+        "changed_source_paths": [],
+        "scope": "250 focused cases pass; scalar identity/oracle equivalence"
+      },
+      {
+        "receipt": "admission-qualifying-scalar-dispatch-02",
+        "outcome": "failed",
+        "exit_code": 1,
+        "wrapper_seconds": 105.614,
+        "head_before": "250dc7c193f64a9be192b45a94cb9afd73680f72",
+        "head_after": "250dc7c193f64a9be192b45a94cb9afd73680f72",
+        "source_manifest_sha256": "3496f8bf9570cbc0152fcd3f4056ae4dbbe4b19531743028a609ed521630e919",
+        "source_after_manifest_sha256": "3496f8bf9570cbc0152fcd3f4056ae4dbbe4b19531743028a609ed521630e919",
+        "whole_source_unchanged": true,
+        "changed_source_paths": [],
+        "scope": "Admission fails; read limits and ten jobs pass"
+      }
+    ],
+    "historical_admission_observations": [
+      {
+        "admission": {
+          "receipt": "admission-qualifying-codec-01",
+          "status": "failed",
+          "samples": 10,
+          "quantile_method": "nearest_rank",
+          "p50_seconds": 0.600787833,
+          "p95_seconds": 0.789630626,
+          "maximum_seconds": 0.789630626,
+          "required_p95_seconds": 0.75,
+          "completed_jobs": 10
+        },
+        "reads": {
+          "samples": 30,
+          "p95_seconds": 0.319352668,
+          "required_p95_seconds": 0.5,
+          "maximum_sql_statements": 12,
+          "status": "passed_focused"
+        },
+        "source_manifest_sha256": "4a5b90dcf780993d5c1d1b26af16e55bc01cb27156260610fb72f506937db9b2",
+        "scope": "first failed uninstrumented consolidated cohort; retained as history"
+      }
+    ],
+    "complete_local_qualification_attempts_in_this_package": 0,
+    "further_performance_cohorts_in_this_package": "none",
+    "closure_regression_and_security_checks": "pending_actual_root_results",
+    "bare_scalar_validation": {
+      "source": "packages/domain/src/trading212_domain/xray_validation.py",
+      "scope": "unchanged exact bare str/int/bool/UUID branches moved before typing reflection only",
+      "focused_cases_passed": 250,
+      "test_seconds": 4.18,
+      "frozen_oracle_ast_binding": "verified",
+      "causal_wall_time_improvement_claimed": false,
+      "receipt": "xray-scalar-dispatch-static-green-recovery-02"
+    },
+    "focused_static_checks": {
+      "changed_python_files": 29,
+      "format": "passed",
+      "lint": "passed",
+      "typing": "passed",
+      "architecture": "passed",
+      "broker_capabilities": 10,
+      "broker_boundary": "passed",
+      "generated_contracts": "passed",
+      "high_confidence_secret_check": {
+        "result": "failed",
+        "exit_code": 1,
+        "flagged_documents": 3,
+        "regex_occurrences": 6,
+        "classification": "verified_nonsecret_execution_receipt_metadata",
+        "unresolved_occurrences": 0,
+        "policy_or_exclusion_changes": false,
+        "execution_receipt": "closure-source-static-contracts-01/receipt.json",
+        "forensic_evidence": "closure-secret-pattern-forensic-classification-02.json"
+      },
+      "scope": "Focused checks only; no complete make validate, coverage or full browser claim."
+    }
   }
 }

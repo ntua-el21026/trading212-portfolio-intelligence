@@ -41,3 +41,17 @@ The existing pipeline gains typed participants; it does not gain broker writes.
 Required evidence covers real PostgreSQL concurrency, restart and Redis loss,
 cancellation, grant revocation, partial checkpoints, stale workers, retention,
 clean install/upgrade and independent synthetic restoration before local acceptance.
+
+## Checkpoint publication clarification, 15 November 2026
+
+Checkpoint production targets 1,024 retained asset rows per batch, with the existing
+32-path ceiling. One absolute path remains indivisible and can exceed that target.
+This controls publication granularity; it does not reduce the requested population
+or change financial identity, timeouts, lease checks, fencing or resource budgets.
+Previously retained 32-path checkpoints remain valid resume inputs. Additional
+checkpoint overhead is included in actual storage accounting. Final publication
+still requires complete canonical and normalized reconciliation in one transaction.
+
+The [consolidated Checkpoint B record](../implementation/PHASE_3_CHECKPOINT_B_CONSOLIDATED_20261115.md)
+retains the observed heartbeat self-contention and the focused recovery. Those
+observations do not establish a universal timing guarantee or Phase 3 acceptance.

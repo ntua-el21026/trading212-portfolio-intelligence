@@ -35,3 +35,20 @@ historical handoffs instead of silently splicing them into the applied chain.
 The repair permits downgrade only in a disposable database with no aggregate
 selection or owner-erasure identity; populated operational rollback remains a
 forward fix.
+
+## Current additive head
+
+The current source head is `20261115_0036`, after `20261114_0035` research-report
+provenance and `20261113_0034`. Revision `0035` adds four tables; `0036` adds no
+tables, so the ORM inventory remains 368. The new revision changes only the two
+`analytics_runs` canonical-byte checks to include X-ray in the existing 32-MiB
+branch. Historical 32-MiB and ordinary 8-MiB kinds remain unchanged, as do public
+response, report, artifact and scratch limits.
+
+Upgrade validates the replacement checks transactionally. Downgrade takes the
+same table lock and refuses if retained X-ray input or result exceeds the prior
+8-MiB limit; it never truncates, deletes or rewrites immutable evidence. Populated
+synthetic compatibility exercises retain verified backups before each transition.
+Operational rollback remains a reviewed forward fix, not a destructive downgrade.
+See the [current qualification record](../docs/implementation/PHASE_3_CHECKPOINT_B_CONSOLIDATED_20261115.md)
+for actual sources, failures and focused results; no production migration is claimed.
