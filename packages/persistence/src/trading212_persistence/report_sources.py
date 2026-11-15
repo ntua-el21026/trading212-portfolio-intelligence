@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, cast
 from uuid import UUID, uuid4
 
-from sqlalchemy import select, text
+from sqlalchemy import Boolean, case, false, func, select, text
 from sqlalchemy.orm import InstrumentedAttribute, Session
 from trading212_domain.report_v4 import ReportProofV4
 from trading212_domain.reports import (
@@ -304,6 +304,83 @@ def _physical_permit(
         for model in events
     ):
         raise _deny()
+
+
+def _physical_permit_many(
+    session: Session,
+    *,
+    owner_id: UUID,
+    family: str,
+    source_ids: tuple[UUID, ...],
+    source_use: ReportSourceUse,
+    now: datetime,
+) -> None:
+    """Fresh bounded physical metadata gates after each family's license checks.
+
+    The scalar gate remains the authority for other callers. These fixed-table
+    windows select only identities, original expiry and restriction flags; no
+    permission or result survives this invocation or transaction boundary.
+    """
+    if (
+        type(owner_id) is not UUID
+        or type(family) is not str
+        or family not in _PHYSICAL
+        or not isinstance(source_use, ReportSourceUse)
+        or type(source_ids) is not tuple
+        or len(source_ids) > MAX_REPORT_DATASET_ROWS
+        or any(type(identifier) is not UUID for identifier in source_ids)
+        or len(set(source_ids)) != len(source_ids)
+    ):
+        raise _deny()
+    now = require_utc(now)
+    model, reference = _PHYSICAL[family]
+    events = (
+        (sm.SourceExpiryEventModel, sm.SourceRetentionWorkModel)
+        if family in {"price", "fx", "benchmark", "corporate_action", "constituent"}
+        else (EnrichmentExpiryEventModel, EnrichmentRetentionWorkModel)
+    )
+    acquisition = (
+        case(
+            (
+                model.adapter_version == "premium_fixed_get_v1",
+                func.acquisition_source_restricted(
+                    owner_id, family, model.id, now, source_use.value, type_=Boolean
+                ),
+            ),
+            else_=False,
+        )
+        if family in {"price", "fx"}
+        and issubclass(model, (sm.PriceSnapshotModel, sm.FxSnapshotModel))
+        else false()
+    )
+    flags = tuple(
+        select(event.id)
+        .where(event.owner_id == owner_id, getattr(event, reference) == model.id)
+        .correlate(model)
+        .exists()
+        for event in events
+    )
+    for offset in range(0, len(source_ids), 512):
+        window = source_ids[offset : offset + 512]
+        rows = session.execute(
+            select(
+                model.id,
+                model.expires_at,
+                flags[0].label("expiry_pending"),
+                flags[1].label("retention_pending"),
+                acquisition.label("acquisition_restricted"),
+            ).where(model.owner_id == owner_id, model.id.in_(window))
+        ).all()
+        if len(rows) != len(window) or {row.id for row in rows} != set(window):
+            raise _deny()
+        if any(
+            row.expires_at <= now
+            or row.expiry_pending is not False
+            or row.retention_pending is not False
+            or row.acquisition_restricted is not False
+            for row in rows
+        ):
+            raise _deny()
 
 
 def authorize_report_sources(

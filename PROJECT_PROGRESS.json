@@ -7493,6 +7493,18 @@
         "required_research_lcp_p75_ms": 2500,
         "pagination_samples_passed": 15,
         "pagination_samples_required": 15
+      },
+      "A": {
+        "package": "A",
+        "state": "bounded_implementation_with_failed_admission_threshold",
+        "admission_p95_seconds": 0.772447935,
+        "required_admission_p95_seconds": 0.75,
+        "read_p95_seconds": 0.314842558,
+        "required_read_p95_seconds": 0.5,
+        "maximum_read_sql_statements": 12,
+        "reported_differential_and_codec_unit_passes": 479,
+        "reported_source_affected_postgresql_passes": 6,
+        "execution_status": "reported_from_retained_pre_commit_records; not rerun by commit helper"
       }
     }
   }

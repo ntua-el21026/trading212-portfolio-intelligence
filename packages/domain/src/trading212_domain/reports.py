@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import calendar
 import re
+import sys
 import types
 from dataclasses import dataclass, fields
 from datetime import date, datetime
@@ -354,28 +355,88 @@ def _typed(value: object, annotation: object) -> bool:
     return isinstance(annotation, type) and type(value) is annotation
 
 
+# Only immutable public record schema metadata enters this bounded cache.
+_REPORT_VALIDATION_MODULES = frozenset(
+    {
+        "trading212_domain.reports",
+        "trading212_domain.report_v3",
+        "trading212_domain.report_v4",
+        "trading212_domain.report_research",
+    }
+)
+
+
+def _closed_report_record(kind: type[ReportRecord]) -> bool:
+    module_name = type.__getattribute__(kind, "__module__")
+    if type(module_name) is not str or module_name not in _REPORT_VALIDATION_MODULES:
+        return False
+    module = sys.modules.get(module_name)
+    return module is not None and vars(module).get(type.__getattribute__(kind, "__name__")) is kind
+
+
+def _report_exact_type_ids(annotation: object) -> frozenset[int] | None:
+    origin = get_origin(annotation)
+    if origin is types.UnionType:
+        parts = tuple(_report_exact_type_ids(part) for part in get_args(annotation))
+        if any(part is None for part in parts):
+            return None
+        return frozenset(identity for part in parts if part is not None for identity in part)
+    if origin is not None:
+        # Tuple and unsupported annotation semantics stay with the original
+        # recursive validator, including its exact types and evaluation order.
+        return None
+    if isinstance(annotation, type):
+        return frozenset((id(annotation),))
+    return None
+
+
+@lru_cache(maxsize=128)
+def _record_validation_fields(
+    kind: type[ReportRecord],
+) -> tuple[tuple[str, object, frozenset[int] | None], ...]:
+    hints = _record_hints(cast("type", kind))
+    # Retain the annotation itself, strongly holding every expected type. Type
+    # identity IDs cannot be reused and cannot invoke hostile metaclass equality.
+    return tuple(
+        (item.name, hints[item.name], _report_exact_type_ids(hints[item.name]))
+        for item in fields(kind)
+    )
+
+
 @dataclass(frozen=True, slots=True, kw_only=True)
 class ReportRecord:
     """Only explicitly declared immutable report records enter the report codec."""
 
     def __post_init__(self) -> None:
-        hints = _record_hints(cast("type", type(self)))
-        for item in fields(self):
-            value = getattr(self, item.name)
-            if not _typed(value, hints[item.name]):
-                fail_validation("A typed report field is required.", field=item.name)
+        kind = type(self)
+        if _closed_report_record(kind):
+            validation_fields = _record_validation_fields(cast("type", kind))
+        else:
+            # External/dynamic records retain the pre-existing behavior and do
+            # not enter the public-schema validation-plan cache.
+            hints = _record_hints(cast("type", kind))
+            validation_fields = tuple((item.name, hints[item.name], None) for item in fields(self))
+        for name, annotation, exact_types in validation_fields:
+            value = getattr(self, name)
+            valid = (
+                id(type(value)) in exact_types
+                if exact_types is not None
+                else _typed(value, annotation)
+            )
+            if not valid:
+                fail_validation("A typed report field is required.", field=name)
             if type(value) is str:
-                report_limit(len(value) <= MAX_REPORT_TEXT_CHARS, item.name)
-                if item.name.endswith("digest"):
-                    report_digest(value, item.name)
+                report_limit(len(value) <= MAX_REPORT_TEXT_CHARS, name)
+                if name.endswith("digest"):
+                    report_digest(value, name)
             elif type(value) is datetime:
-                object.__setattr__(self, item.name, require_utc(value))
+                object.__setattr__(self, name, require_utc(value))
             elif type(value) is tuple:
-                report_limit(len(value) <= MAX_REPORT_DATASET_ROWS, item.name)
+                report_limit(len(value) <= MAX_REPORT_DATASET_ROWS, name)
             elif type(value) is bytes:
-                report_limit(len(value) <= MAX_REPORT_DOCUMENT_BYTES, item.name)
+                report_limit(len(value) <= MAX_REPORT_DOCUMENT_BYTES, name)
             elif type(value) is Decimal and not value.is_finite():
-                fail_validation("Report decimals must be finite.", field=item.name)
+                fail_validation("Report decimals must be finite.", field=name)
 
 
 def _selection_window(start: date, end: date) -> None:

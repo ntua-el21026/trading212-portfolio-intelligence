@@ -222,7 +222,7 @@ def _xray_report_sources(
     grants; the later canonical X-ray reader still verifies every original pin.
     No financial value or canonical reference is selected by this preflight.
     """
-    from .report_sources import _PHYSICAL, _license, _physical_permit
+    from .report_sources import _PHYSICAL, _license, _physical_permit_many
 
     dependency = XrayInputDependencyModel
     deadline = None
@@ -266,6 +266,7 @@ def _xray_report_sources(
         total += len(rows)
         if total > MAX_REPORT_DATASET_ROWS:
             raise _deny()
+        identifiers: list[UUID] = []
         for source, provider_id, license_id in rows:
             if source is None or (source.provider_id, source.license_version_id) != (
                 provider_id,
@@ -301,8 +302,16 @@ def _xray_report_sources(
             # source may validly outlive it; copying never renews either clock.
             if now >= original_deadline:
                 raise _deny()
-            _physical_permit(session, source, family, source_use=ReportSourceUse.REPORT, now=now)
+            identifiers.append(source.id)
             deadline = min(deadline or original_deadline, original_deadline)
+        _physical_permit_many(
+            session,
+            owner_id=auth.owner_id,
+            family=family,
+            source_ids=tuple(identifiers),
+            source_use=ReportSourceUse.REPORT,
+            now=now,
+        )
     return deadline
 
 
