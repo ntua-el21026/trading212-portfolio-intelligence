@@ -1160,3 +1160,5 @@ scoped corrections remain recorded separately in the validation report.
 The final component follow-up passed static/contracts,61 focused tests, configured
 security and dependency checks, a147-file changed-source secret scan and24 Python
 package builds in195.903s. Final immutable Phase3 validation remains pending.
+
+Bounded remediation package B implements one full immutable X-ray validation per research page cohort and preserves lazy per-item copying. Retained pre-commit browser observations pass desktop and mobile research LCP; tablet LCP p75 is 2,724 ms against the unchanged 2,500-ms limit. All 15 pagination samples pass. Checkpoint B remains incomplete; 0/30 acceptance rows and 0/48 scenarios are accepted. P3-10 was not executed. These observations do not constitute validation at this commit SHA.

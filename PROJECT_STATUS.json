@@ -3648,5 +3648,26 @@
       "complete_validation_or_owner_acceptance_claimed": false,
       "record_scope": "Documentation checkpoint; post-commit source scans, GitHub status and checksummed archive are recorded in the private delivery evidence and consolidated response."
     }
+  },
+  "bounded_remediation": {
+    "checkpoint_b": "INCOMPLETE",
+    "acceptance_rows_accepted": 0,
+    "acceptance_rows_total": 30,
+    "scenarios_accepted": 0,
+    "scenarios_total": 48,
+    "p3_10_executed": false,
+    "qualification": "Pre-commit source-qualified observations; no validation at this commit SHA is claimed.",
+    "packages": {
+      "B": {
+        "package": "B",
+        "state": "bounded_implementation_with_failed_tablet_performance",
+        "desktop_research_lcp_p75_ms": 2448,
+        "mobile_research_lcp_p75_ms": 1592,
+        "tablet_research_lcp_p75_ms": 2724,
+        "required_research_lcp_p75_ms": 2500,
+        "pagination_samples_passed": 15,
+        "pagination_samples_required": 15
+      }
+    }
   }
 }

@@ -9,9 +9,13 @@ import {
   type APIRequestContext,
   type Browser,
   type Page,
+  type Request,
+  type Response,
+  type Frame,
   type TestInfo,
 } from "@playwright/test";
 import { z } from "zod";
+import { navigationFlags } from "./performance-navigation-flags";
 
 // Frozen before execution; no warm-up sample is discarded.
 const RUNS = 5;
@@ -287,6 +291,156 @@ async function ready(page: Page, route: string) {
   await noOverflow(page);
 }
 
+/** Bounded metadata only: raw selectors, cursors and destinations stay in memory. */
+async function researchNavigationDiagnostics(page: Page) {
+  const expectedSelection = await page
+    .getByRole("form", { name: "Research selection", exact: true })
+    .evaluate((element) => {
+      const form = element as HTMLFormElement;
+      const destination = new URL(form.action, window.location.href);
+      const query = new URLSearchParams();
+      for (const [key, value] of new FormData(form))
+        if (typeof value === "string") query.append(key, value);
+      destination.search = query.toString();
+      return destination.href;
+    });
+  const started = performance.now();
+  let expectedNext: string | null = null;
+  let baselineItems: string[] | null = null;
+  const data: {
+    events: Record<string, string | number | boolean>[];
+    droppedEvents: number;
+    snapshotErrorTypes: string[];
+  } = { events: [], droppedEvents: 0, snapshotErrorTypes: [] };
+  function record(
+    kind: string,
+    raw: string,
+    extra: Record<string, string | number | boolean> = {},
+    includeOtherRoute = false,
+  ) {
+    const flags = navigationFlags(raw, expectedSelection, expectedNext);
+    if (!includeOtherRoute && (!flags.sameOrigin || !flags.routeMatches))
+      return;
+    if (data.events.length >= 128) {
+      data.droppedEvents += 1;
+      return;
+    }
+    data.events.push({
+      kind,
+      elapsedMs: performance.now() - started,
+      ...flags,
+      ...extra,
+    });
+  }
+  const onRequest = (request: Request) =>
+    record("request", request.url(), {
+      document: request.resourceType() === "document",
+      fetch: request.resourceType() === "fetch",
+      navigation: request.isNavigationRequest(),
+      get: request.method() === "GET",
+    });
+  const onResponse = (response: Response) =>
+    record("response", response.url(), { status: response.status() });
+  const onRequestFailed = (request: Request) =>
+    record("request_failed", request.url());
+  const onNavigated = (frame: Frame) => {
+    if (frame === page.mainFrame())
+      record("main_frame_committed", frame.url(), {}, true);
+  };
+  page.on("request", onRequest);
+  page.on("response", onResponse);
+  page.on("requestfailed", onRequestFailed);
+  page.on("framenavigated", onNavigated);
+  return {
+    data,
+    mark(kind: string) {
+      record(kind, page.url(), {}, true);
+    },
+    async snapshot(kind: string, pinNext = false) {
+      try {
+        const next = page.getByRole("link", {
+          name: "Next research items",
+          exact: true,
+        });
+        const nextCount = await next.count();
+        const href = nextCount === 1 ? await next.getAttribute("href") : null;
+        if (pinNext && href) expectedNext = new URL(href, page.url()).href;
+        const pageState = await page
+          .getByTestId("research-item")
+          .evaluateAll((items) => {
+            const body = document.body.textContent ?? "";
+            return {
+              documentComplete: document.readyState === "complete",
+              cursorInvalidVisible: body.includes("(CURSOR_INVALID)"),
+              sourceUnavailableVisible: body.includes("(SOURCE_UNAVAILABLE)"),
+              accessDeniedVisible: body.includes("(ACCESS_DENIED)"),
+              invalidSelectionVisible: body.includes(
+                "Invalid research selection",
+              ),
+              itemLinks: items.map((item) => {
+                for (const link of item.querySelectorAll("a")) {
+                  const destination = new URL(link.href, window.location.href);
+                  if (destination.pathname === "/research") {
+                    const identity = destination.searchParams.get("item");
+                    if (identity) return identity;
+                  }
+                }
+                return "";
+              }),
+            };
+          });
+        const itemLinks = pageState.itemLinks;
+        baselineItems ??= itemLinks;
+        const linkFlags = href
+          ? navigationFlags(href, expectedSelection, expectedNext)
+          : null;
+        record(
+          kind,
+          page.url(),
+          {
+            documentComplete: pageState.documentComplete,
+            cursorInvalidVisible: pageState.cursorInvalidVisible,
+            sourceUnavailableVisible: pageState.sourceUnavailableVisible,
+            accessDeniedVisible: pageState.accessDeniedVisible,
+            invalidSelectionVisible: pageState.invalidSelectionVisible,
+            nextLinkCount: nextCount,
+            nextHasCursor: linkFlags?.cursorPresent ?? false,
+            nextCursorSyntaxValid: linkFlags?.cursorSyntaxValid ?? false,
+            nextSelectionMatchesExpected:
+              linkFlags?.selectionMatchesExpected ?? false,
+            renderedItems: itemLinks.length,
+            baselineItemIdentitiesComplete: baselineItems.every(Boolean),
+            sameItemIdentitiesAsBaseline:
+              itemLinks.length === baselineItems.length &&
+              itemLinks.every(
+                (value, index) => value === baselineItems?.[index],
+              ),
+            firstPageLinkPresent:
+              (await page
+                .getByRole("link", {
+                  name: "First research items",
+                  exact: true,
+                })
+                .count()) === 1,
+          },
+          true,
+        );
+      } catch (error) {
+        if (data.snapshotErrorTypes.length < 4)
+          data.snapshotErrorTypes.push(
+            error instanceof Error ? error.name : "unknown",
+          );
+      }
+    },
+    dispose() {
+      page.off("request", onRequest);
+      page.off("response", onResponse);
+      page.off("requestfailed", onRequestFailed);
+      page.off("framenavigated", onNavigated);
+    },
+  };
+}
+
 async function sample(
   browser: Browser,
   route: "holdings" | "research",
@@ -305,6 +459,8 @@ async function sample(
     startedAt: new Date().toISOString(),
     outcome: "started",
   };
+  let navigation:
+    Awaited<ReturnType<typeof researchNavigationDiagnostics>> | undefined;
   try {
     expect(
       (
@@ -314,10 +470,10 @@ async function sample(
     const page = await context.newPage();
     const failures: string[] = [];
     const encodings = new Map<string, string>();
-    page.on("pageerror", (error) => failures.push(error.message));
+    page.on("pageerror", () => failures.push("pageerror"));
     page.on("console", (message) => {
       if (["error", "warning"].includes(message.type()))
-        failures.push(message.text());
+        failures.push(`console_${message.type()}`);
     });
     page.on("response", (response) => {
       const path = new URL(response.url()).pathname;
@@ -335,6 +491,19 @@ async function sample(
     await page.goto(target, { waitUntil: "networkidle" });
     await ready(page, route);
     const initial = await page.evaluate(() => ({
+      navigationTimings: performance
+        .getEntriesByType("navigation")
+        .map((entry) => {
+          const navigation = entry as PerformanceNavigationTiming;
+          return {
+            requestStart: navigation.requestStart,
+            responseStart: navigation.responseStart,
+            responseEnd: navigation.responseEnd,
+            domInteractive: navigation.domInteractive,
+            domContentLoadedEventEnd: navigation.domContentLoadedEventEnd,
+            loadEventEnd: navigation.loadEventEnd,
+          };
+        }),
       assets: performance
         .getEntriesByType("resource")
         .filter((value) => {
@@ -400,6 +569,12 @@ async function sample(
       interactionCensoredBelowMs,
       outcome: "measured_initial_document",
     });
+    if (route === "research") {
+      navigation = await researchNavigationDiagnostics(page);
+      partial.navigation = navigation.data;
+      await navigation.snapshot("before_filter");
+      navigation.mark("filter_click_started");
+    }
     const started = Date.now();
     await page
       .getByRole("button", {
@@ -410,6 +585,9 @@ async function sample(
     await page.waitForLoadState("networkidle");
     await ready(page, route);
     const filterCompletionMs = Date.now() - started;
+    await navigation?.snapshot("filter_ready");
+    await navigation?.snapshot("before_next", true);
+    navigation?.mark("next_click_started");
     const next = Date.now();
     await page
       .getByRole("link", {
@@ -417,6 +595,7 @@ async function sample(
         exact: route === "research",
       })
       .click();
+    navigation?.mark("next_click_returned");
     await expect
       .poll(() => new URL(page.url()).searchParams.has("cursor"))
       .toBe(true);
@@ -434,6 +613,38 @@ async function sample(
       ).toBeVisible();
     }
     const paginationCompletionMs = Date.now() - next;
+    await navigation?.snapshot("pagination_ready");
+    if (route === "research") {
+      if (!navigation)
+        throw new Error("Research pagination diagnostics are required.");
+      expect(navigation.data.droppedEvents).toBe(0);
+      expect(navigation.data.snapshotErrorTypes).toEqual([]);
+      expect(
+        navigation.data.events.findLast(
+          (observation) => observation.kind === "pagination_ready",
+        ),
+      ).toMatchObject({
+        sameOrigin: true,
+        routeMatches: true,
+        cursorPresent: true,
+        cursorSyntaxValid: true,
+        selectionMatchesExpected: true,
+        cursorMatchesExpectedNext: true,
+        documentComplete: true,
+        cursorInvalidVisible: false,
+        sourceUnavailableVisible: false,
+        accessDeniedVisible: false,
+        invalidSelectionVisible: false,
+        renderedItems: 25,
+        baselineItemIdentitiesComplete: true,
+        sameItemIdentitiesAsBaseline: false,
+        firstPageLinkPresent: true,
+        nextLinkCount: 1,
+        nextHasCursor: true,
+        nextCursorSyntaxValid: true,
+        nextSelectionMatchesExpected: true,
+      });
+    }
     if (ordinal === 1)
       await page.screenshot({
         path: info.outputPath(`${route}-${viewport.width}.png`),
@@ -462,8 +673,10 @@ async function sample(
   } catch (error) {
     partial.outcome = "failed";
     partial.errorType = error instanceof Error ? error.name : "unknown";
+    await navigation?.snapshot("failed_terminal");
     throw error;
   } finally {
+    navigation?.dispose();
     await writeFile(
       info.outputPath(`web-performance-${route}-${ordinal}.json`),
       JSON.stringify(partial, null, 2),

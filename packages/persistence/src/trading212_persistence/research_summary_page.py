@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from trading212_application import research as app
 from trading212_application.queries import cursor_binding
 from trading212_domain.research import MAX_RESEARCH_RESPONSE_BYTES
-from trading212_domain.research_facts import copy_research_portfolio_facts
+from trading212_domain.research_facts import copy_research_portfolio_facts_many
 from trading212_domain.research_serialization import research_record_digest
 from trading212_domain.serialization import canonical_json
 
@@ -213,11 +213,20 @@ def research_summary_page(
     items: list[app.ResearchItemView] = []
     selected: list[ResearchCandidate] = []
     next_cursor = None
-    for ordinal, candidate in enumerate(page.candidates):
-        revision = candidate.revision
-        preview = app.preview_research_portfolio(
-            copy_research_portfolio_facts(basis.pin, basis.result, revision.entity_id)
+    copied = (
+        copy_research_portfolio_facts_many(
+            basis.pin,
+            basis.result,
+            tuple(candidate.revision.entity_id for candidate in page.candidates),
         )
+        if page.candidates
+        else iter(())
+    )
+    for ordinal, (candidate, portfolio_facts) in enumerate(
+        zip(page.candidates, copied, strict=True)
+    ):
+        revision = candidate.revision
+        preview = app.preview_research_portfolio(portfolio_facts)
         while len(canonical_json(preview).encode()) > MAX_RESEARCH_RESPONSE_BYTES // 2:
             if not preview.warnings:
                 raise research_error(app.ResearchErrorCode.INPUT_BOUND_EXCEEDED)

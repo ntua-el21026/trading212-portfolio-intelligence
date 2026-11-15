@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
@@ -12,6 +13,7 @@ from .enums import QualityState, ValueOrigin
 from .errors import fail_validation
 from .research import (
     MAX_RESEARCH_EXPOSURE_PATHS,
+    MAX_RESEARCH_PAGE,
     ResearchExposureReason,
     ResearchRecord,
     inert_research_text,
@@ -139,6 +141,32 @@ def copy_research_portfolio_facts(
         or type(entity_id) is not UUID
     ):
         fail_validation("Canonical research exposure inputs are required.", field="portfolio_facts")
+    _validate_research_portfolio_pin(pin, value)
+    return _copy_research_portfolio_facts_from_validated_result(pin, value, entity_id)
+
+
+def copy_research_portfolio_facts_many(
+    pin: ResearchXrayPin, value: XrayCalculation, entity_ids: tuple[UUID, ...]
+) -> Iterator[ResearchPortfolioFacts]:
+    """Validate one immutable result now and copy its bounded selected entities lazily."""
+    if (
+        type(pin) is not ResearchXrayPin
+        or type(value) is not XrayCalculation
+        or type(entity_ids) is not tuple
+        or len(entity_ids) > MAX_RESEARCH_PAGE
+        or any(type(entity_id) is not UUID for entity_id in entity_ids)
+    ):
+        fail_validation("Canonical research exposure inputs are required.", field="portfolio_facts")
+    _validate_research_portfolio_pin(pin, value)
+    # An ordinary function validates before returning. Only per-entity copying
+    # is deferred, preserving the caller's existing response-prefix allocation.
+    return (
+        _copy_research_portfolio_facts_from_validated_result(pin, value, entity_id)
+        for entity_id in entity_ids
+    )
+
+
+def _validate_research_portfolio_pin(pin: ResearchXrayPin, value: XrayCalculation) -> None:
     if (
         pin.owner_id,
         pin.account_id,
@@ -173,6 +201,11 @@ def copy_research_portfolio_facts(
         value.policy.schema_version,
     ):
         fail_validation("Research X-ray pin differs from its retained result.", field="pin")
+
+
+def _copy_research_portfolio_facts_from_validated_result(
+    pin: ResearchXrayPin, value: XrayCalculation, entity_id: UUID
+) -> ResearchPortfolioFacts:
     dimensions = tuple(item for item in value.dimensions if item.dimension is XrayDimension.COMPANY)
     if len(dimensions) != 1:
         fail_validation(
