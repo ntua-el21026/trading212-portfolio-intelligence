@@ -73,6 +73,7 @@ from trading212_worker.xray_provider import SyntheticXrayBrokerProvider
 from trading212_worker.xray_seed import XRAY_CURSOR_KEY
 
 from tests.integration.phase3_operational_fixture import evidence
+from tests.integration.retained_xray_geometry import select_final_geometry
 from tests.integration.test_report_postgres import ReportCase
 from tests.integration.test_report_postgres import report_case as report_case
 from tests.integration.test_xray_reads_postgres import xray_read_case as xray_read_case
@@ -530,19 +531,17 @@ async def test_actual_large_retained_xray_uses_report_only_size_fallback(
             assert sizes["input_bytes"] <= MAX_BYTES and sizes["result_bytes"] <= MAX_BYTES
         assert run_id is not None
         if sizes["combined_bytes"] <= MAX_BYTES:
-            first = observations[0]
-            prior_result = first["result_bytes"]
-            assert isinstance(prior_result, int)
-            delta = sizes["result_bytes"] - prior_result
-            assert delta > 0
-            bytes_per_holding = (delta + 511) // 512
-            # This is a sizing target, not a changed admission limit or pass
-            # threshold. There is exactly one predicted final publication.
-            target_result_bytes = MAX_BYTES - 768 * 1024
-            predicted = 1024 + max(
-                1, (target_result_bytes - sizes["result_bytes"]) // bytes_per_holding
-            )
-            target = min(predicted, _MAX_HOLDINGS)
+            measured_geometries: list[dict[str, int]] = []
+            for observation in (observations[0], observations[1]):
+                measured: dict[str, int] = {}
+                for field in ("holdings", "result_bytes", "combined_bytes", "input_bytes"):
+                    value = observation[field]
+                    assert isinstance(value, int) and type(value) is int
+                    measured[field] = value
+                measured_geometries.append(measured)
+            forecast = select_final_geometry(*measured_geometries)
+            target = forecast["holdings"]
+            assert isinstance(target, int)
             assert 1024 < target <= _MAX_HOLDINGS
             await _register_entities(case, license, 1024, target, effective)
             step = perf_counter()
@@ -552,7 +551,8 @@ async def test_actual_large_retained_xray_uses_report_only_size_fallback(
             observations.append(
                 {
                     "holdings": target,
-                    "predicted_holdings": predicted,
+                    "predicted_holdings": target,
+                    "sizing_forecast": forecast,
                     "revision": 3,
                     **sizes,
                     "seconds": perf_counter() - step,
