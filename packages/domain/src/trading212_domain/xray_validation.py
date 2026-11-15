@@ -94,6 +94,27 @@ def hints(kind: type[object]) -> dict[str, Any]:
 
 
 def checked(value: object, annotation: Any, field: str) -> object:
+    # Bare primitive annotations need no typing decomposition. Keep their exact
+    # original admission checks; every composite/Decimal role follows below.
+    if annotation is str:
+        if type(value) is not str:
+            invalid(field)
+        assert isinstance(value, str)
+        if not value or len(value) > 1024 or any(ord(char) < 32 for char in value):
+            invalid(field)
+        return value
+    if annotation is int:
+        if type(value) is not int or not 0 <= value <= 2_147_483_647:
+            invalid(field)
+        return value
+    if annotation is bool:
+        if type(value) is not bool:
+            invalid(field)
+        return value
+    if annotation is UUID:
+        if type(value) is not UUID:
+            invalid(field)
+        return value
     origin = get_origin(annotation)
     arguments = get_args(annotation)
     if origin is Annotated:
@@ -118,22 +139,7 @@ def checked(value: object, annotation: Any, field: str) -> object:
         for item in value:
             checked(item, arguments[0], field)
         return value
-    if annotation is str:
-        if type(value) is not str:
-            invalid(field)
-        assert isinstance(value, str)
-        if not value or len(value) > 1024 or any(ord(char) < 32 for char in value):
-            invalid(field)
-    elif annotation is int:
-        if type(value) is not int or not 0 <= value <= 2_147_483_647:
-            invalid(field)
-    elif annotation is bool:
-        if type(value) is not bool:
-            invalid(field)
-    elif annotation is UUID:
-        if type(value) is not UUID:
-            invalid(field)
-    elif isinstance(annotation, type) and issubclass(annotation, Enum):
+    if isinstance(annotation, type) and issubclass(annotation, Enum):
         if type(value) is not annotation:
             invalid(field)
     elif annotation in (Money, CurrencyCode, Instant):
