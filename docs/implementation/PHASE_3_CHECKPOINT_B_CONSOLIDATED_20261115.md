@@ -141,8 +141,8 @@ Admission remains above its threshold. The bounded package stops before any
 further performance cohorts or long Make, coverage, complete browser or clean-
 installation qualification. Those checks remain pending local, not external.
 Current-task actual restart, restore, load and resource qualification also remain
-pending local. Narrow source-affected regression and fresh committed-source
-security/closure checks have no result claimed until their actual receipts exist.
+pending local. The committed-source observations below now qualify the narrow final regression
+and security scopes. Delivery integrity remains a separate post-commit record.
 Formal P3-10 remains unstarted. The earlier report and reader passes retain their
 recorded source; later scalar equivalence does not turn them into new executions.
 
@@ -164,8 +164,30 @@ log and source-manifest provenance. No unresolved occurrence remains. The failed
 scanner exit is preserved in `closure-source-static-contracts-01`; classification
 is recorded separately in `closure-secret-pattern-forensic-classification-02.json`.
 No rule, exclusion or public identifier was altered to change the scanner result.
-Fresh committed-source Gitleaks and SAST observations remain separate post-commit
-closure operations; no outcome is inferred here.
+At clean committed source `cb50452592bab2cf8d29f34f38d49770ce18199b`, the
+source-affected genuine retained-reader regression passed in 72.15 seconds;
+18 negative transport-boundary cases also passed. Complete source bookends were
+unchanged. These are separate focused executions.
+
+Fresh Gitleaks source and all-local-ref reachable-history scans returned 56 and
+two findings respectively; both exited **1 / FAILED**. Current classification
+independently verifies 54 inherited nonsecret source observations and two
+recomputable source digests; the two history observations are recomputable
+digests. Zero observations remain unresolved. Classification does not turn either
+scanner execution into a pass.
+
+The first changed-source SAST invocation exited 2 without a JSON report. A direct
+permission probe verified that UID 0 with capabilities dropped could not read the
+UID-1000/private-0700 source export. The recovery uses the matching nonroot UID
+and supported tool-specific temporary settings/log paths. Source permissions,
+read-only/no-network/resource restrictions, rules and targets remain unchanged.
+It passed all eight selected production/migration targets under the seven existing
+rules, with zero findings/errors. Migration `0035` remains byte-identical to the
+starting source. This is not a full configured-SAST execution.
+
+These observations retain their exact committed source and actual failed/recovered
+exits. Later documentation-only delivery commits do not create new test executions;
+final-SHA source/history scans and archive checks belong to the private handoff.
 
 ## Owner and external gates
 

@@ -18,8 +18,9 @@ foreign-owner, expiry and revocation denial. The near-32-MiB JSON job fails
 boundedly with no artifact under independent rendering limits; it is not successful
 artifact evidence. A later tablet attribution diagnostic is not final browser
 qualification. Fresh-build viewport qualification, complete local Make/coverage,
-clean installation/build, recovery/resource checks and committed-source security
-remain pending.
+clean installation/build and recovery/resource qualification remain pending.
+Focused committed-source regression and security observations are recorded in the
+consolidated report; scanner failures retain their actual status.
 
 Complete applicable local Checkpoint B qualification was owner-authorized.
 Formal P3-10 has not started; its attempt count remains **0**. All **30 rows** and
@@ -32,14 +33,24 @@ historical source and authority.
 The material admission failure stops this bounded package before further
 performance cohorts or long Make, coverage, complete browser or clean-install
 qualification. Those checks remain **pending local**, not externally blocked.
-Narrow source-affected regression and final security/closure results remain pending
-until their actual root executions are recorded. Formal P3-10 remains unstarted.
+Narrow source-affected regression and security checks have executed at `cb50452`;
+the linked report records their exact scope and failed/recovered exits. Complete
+qualification remains pending. Formal P3-10 remains unstarted.
 
 The focused changed-source checks passed formatting, lint, typing, architecture,
 broker and generated-contract checks. The high-confidence source checker failed
 with exit 1 in three documentation files. Its six occurrences are independently
 verified nonsecret execution-receipt metadata; the actual failed status and forensic
 provenance remain separate. No scanner rule or exclusion was changed.
+
+At clean `cb50452592bab2cf8d29f34f38d49770ce18199b`, the source-affected large
+retained-reader case passes (72.15 seconds) and 18 transport negatives pass.
+Fresh source/history Gitleaks scans fail with exit 1 and 56/two findings; all are
+verified nonsecret metadata or recomputable digests, zero unresolved. Changed-source
+plus `0035`/`0036` SAST passes eight targets under seven unchanged rules after a
+retained exit-2 private-mount permission failure. This is focused evidence, not a
+complete configured-SAST or local validation pass. Final delivery observations
+retain their actual SHA in the private handoff.
 
 ## Historical bounded Checkpoint B remediation, 2026-11-15
 

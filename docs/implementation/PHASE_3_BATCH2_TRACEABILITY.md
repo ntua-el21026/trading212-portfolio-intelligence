@@ -18,8 +18,9 @@ foreign-owner, expiry and revocation denial. The near-32-MiB JSON job fails
 boundedly with no artifact under independent rendering limits; it is not successful
 artifact evidence. A later tablet attribution diagnostic is not final browser
 qualification. Fresh-build viewport qualification, complete local Make/coverage,
-clean installation/build, recovery/resource checks and committed-source security
-remain pending.
+clean installation/build and recovery/resource qualification remain pending.
+Focused committed-source regression and security observations are recorded in the
+consolidated report; scanner failures retain their actual status.
 
 Complete applicable local Checkpoint B qualification was owner-authorized.
 Formal P3-10 has not started; its attempt count remains **0**. All **30 rows** and
@@ -43,8 +44,9 @@ observations are combined into a whole-suite, final-SHA or complete-validation p
 The material admission failure stops this bounded package before further
 performance cohorts or long Make, coverage, complete browser or clean-install
 qualification. Those checks remain **pending local**, not externally blocked.
-Narrow source-affected regression and final security/closure results remain pending
-until their actual root executions are recorded. Formal P3-10 remains unstarted.
+Narrow source-affected regression and security checks have executed at `cb50452`;
+the linked report records their exact scope and failed/recovered exits. Complete
+qualification remains pending. Formal P3-10 remains unstarted.
 
 ## Consolidated evidence references
 

@@ -7684,8 +7684,7 @@
       "admission_latency_above_unchanged_threshold",
       "fresh_build_uninstrumented_supported_viewport_qualification",
       "complete_local_make_coverage_clean_install_build",
-      "current_task_actual_restart_restore_resource_qualification",
-      "fresh_committed_source_security_and_evidence_integrity"
+      "current_task_actual_restart_restore_resource_qualification"
     ],
     "local_work_externally_blocked": false,
     "ci": {
@@ -7918,7 +7917,59 @@
     ],
     "complete_local_qualification_attempts_in_this_package": 0,
     "further_performance_cohorts_in_this_package": "none",
-    "closure_regression_and_security_checks": "pending_actual_root_results",
+    "closure_regression_and_security_checks": {
+      "source_sha": "cb50452592bab2cf8d29f34f38d49770ce18199b",
+      "source_tree": "e6b22597dbc6f58ed283c7606fbb60e8d3302362",
+      "working_tree_clean": true,
+      "source_affected_retained_reader": {
+        "receipt": "committed-source-affected-xray-reader-01/receipt.json",
+        "exit_code": 0,
+        "tests_passed": 1,
+        "test_seconds": 72.15,
+        "wrapper_seconds": 73.845,
+        "complete_source_unchanged": true
+      },
+      "negative_transport_boundary": {
+        "receipt": "committed-negative-transport-boundary-01/receipt.json",
+        "exit_code": 0,
+        "tests_passed": 18
+      },
+      "gitleaks_source": {
+        "receipt": "security-committed-source-gitleaks-01/receipt.json",
+        "exit_code": 1,
+        "findings": 56,
+        "scanner_result": "failed"
+      },
+      "gitleaks_reachable_history": {
+        "receipt": "security-committed-history-gitleaks-01/receipt.json",
+        "exit_code": 1,
+        "findings": 2,
+        "scanner_result": "failed"
+      },
+      "classification": {
+        "receipt": "security-committed-finding-classification-01/receipt.json",
+        "source_inherited_reviewed_nonsecret": 54,
+        "source_recomputed_digests": 2,
+        "history_recomputed_digests": 2,
+        "unknown_observations": 0,
+        "scanner_exits_remain_failed": true
+      },
+      "changed_source_and_migrations_sast": {
+        "initial_receipt": "security-committed-changed-migrations-sast-01/receipt.json",
+        "initial_exit_code": 2,
+        "initial_failure": "private_source_mount_unreadable_by_default_capability_restricted_uid0",
+        "recovery_receipt": "security-committed-changed-migrations-sast-recovery-02/receipt.json",
+        "recovery_exit_code": 0,
+        "actual_targets": 8,
+        "unchanged_rules": 7,
+        "findings": 0,
+        "scanner_errors": 0,
+        "scope": "changed production source plus migrations0035/0036; not full configured SAST",
+        "scanner_rules_targets_or_suppression_changes": false,
+        "operator_runtime_configuration_changed": true
+      },
+      "scope": "Separate focused committed-source observations; no complete validation pass or acceptance."
+    },
     "bare_scalar_validation": {
       "source": "packages/domain/src/trading212_domain/xray_validation.py",
       "scope": "unchanged exact bare str/int/bool/UUID branches moved before typing reflection only",
@@ -7949,6 +8000,7 @@
         "forensic_evidence": "closure-secret-pattern-forensic-classification-02.json"
       },
       "scope": "Focused checks only; no complete make validate, coverage or full browser claim."
-    }
+    },
+    "post_commit_delivery_integrity": "Actual source/archive/resource and final-SHA observations belong to the private post-commit handoff; no future pass is inferred."
   }
 }
