@@ -10,6 +10,12 @@
 
 ## Current state
 
+The first focused nine-service startup failed at the web forwarding boundary: Windows
+reserves TCP port 53000 within 52957–53056. The operator harness now retains its original
+53000 profile and a fixed 53500 fallback. All 37 source-affected guard cases pass;
+binding, readiness and CSRF Origin use the exact declared profile. Runtime recovery
+is pending; no Windows reservation, product contract or financial predicate changed.
+
 Consolidated Batch 2 is authorized and in progress from clean, synchronized live/local
 `main` at `5731a5039beb8f3c7272c9b387ac757de605a0e1`. The owner accepted Batch 1 as
 a bounded implementation checkpoint after independent review, reporting 64 Python
@@ -102,30 +108,72 @@ whole-lab SLO or summary was produced. Fresh mobile/tablet performance execution
 remain pending locally. Costly browser and optimization attempts stop at this bounded
 checkpoint. B is materially incomplete because the admission gate remains failed
 and representative performance remains incomplete; C/P3-10 has not started.
-Complete nine-service stack/restart qualification
-and remaining candidate release observations remain pending. `LICENSE` is unchanged.
+The focused four-application-image build passed at the clean pushed source described
+below. Complete nine-service startup/restart qualification and remaining release
+observations are pending. `LICENSE` is unchanged.
 Receipt manifests distinguish unchanged complete-source runs from scoped passes with
 unrelated concurrent edits; these observations are not complete validation.
 The synthetic restart harness now resides in
 `tests/integration/phase3_stack_restart.py` and runs through
 `python -m tests.integration.phase3_stack_restart`; its relocation preserves the
 transport boundary and all 31 guard assertions without a production wrapper.
-Tool preparation passed in 5.608 seconds. The codec's four-file/seven-rule scan
-reported zero findings in 118.697 seconds and the high confidence secret check
-passed in 1.632 seconds at their unchanged recorded source. The remaining fifteen
-explicit source inputs passed the same configured seven-rule scan with zero
-findings in 118.662 seconds. Those code inputs were unchanged; the full receipt
-records nine documentation paths changing during that scan, so it is a scoped pass.
+Tool preparation passed in 5.608 seconds. The configured seven-rule scans found
+zero findings in four codec files (118.697 seconds) and fifteen remaining source
+files (118.662 seconds). The latter scope retained unchanged code inputs while nine
+documentation paths changed. Migration `0035` retains its separate four-rule,
+one-file, zero-finding observation. These are scoped observations.
 
-All five Batch 2 implementation commits now exist. The earlier literal-DDL commit
-`ecc7c75221841eb64981ec3e971a36944052d48e` is pushed. The four later groups—codec,
-research authority/availability/query, account privacy/browser harness, and operational
-evidence tooling—are committed locally through
-`7ed9cb9e071515a54658dfd357faeb14fc7a90e4` and are not pushed. Their exact purposes and
-receipts are in the Batch 2 record. Preliminary documentation reconciliation,
-actual complete-stack/restart qualification, clean export and current source/history
-and dependency/container audits remain pending. These commits do not start C or a
-1.0 release, or change acceptance and licensing state.
+All six Batch 2 commits, comprising five implementation groups and preliminary
+documentation, are pushed through clean live/local main
+`71f478324daddbab9b2cf9a4275e18de9eb2997b`, tree
+`796ce9efcb5e7afcee1fabd94a212ba07d86307f`. An exact Git-blob export verified all
+1,999 files, modes and 50,869,179 bytes with no symlinks in 6.176 seconds.
+The Batch 2 record lists each commit and receipt.
+
+The first export Gitleaks wrapper failed because its capability-restricted root
+process could not read the private owner-only export; the retained failure includes
+a JSON decoding error. A separate permission probe reproduced the boundary. The
+corrected wrapper uses the verified export owner's nonroot identity, preserving
+permissions, rules and ignores. Actual source-directory and all-ref history scans
+then failed with 56 and two findings in 34.051 and 33.579 seconds. Independent
+classification bound 54 source findings to inherited reviewed nonsecret lines and
+two to independently recomputed source-digest metadata; history contains those same
+two digests. The proof `a4-source-history-gitleaks-classification-01.json` records
+zero unknown observations. Both scanners remain failed; classification is a separate
+review result and does not establish whole-source security clearance.
+
+The configured Trivy filesystem scope passed in 29.149 seconds with zero configured
+vulnerability, secret, misconfiguration and license findings. Its private copied
+database refreshed normally and records NextUpdate
+`2026-11-15T19:00:12.815668137Z`; this is not an old offline-cache freshness claim.
+The original stabilization cache was untouched. A fresh Python audit passed in
+6.486 seconds: 67 dependencies, zero skipped and zero vulnerabilities. The Node
+production audit passed in 0.565 seconds: 144 dependencies and zero vulnerabilities
+at every severity. Frozen offline requirements export did not install or synchronize
+dependencies. Older policy observations—16 approved, 21 negative and two adjacent
+cases—are reused only through exact input bindings, with their original helper
+provenance limitation retained; they were not rerun.
+
+After the owner restored the Docker Desktop/WSL runtime, only the task's PostgreSQL
+and Redis containers were resumed with the same identities, images, network and
+volume. The original nine qualified images and two volumes remain preserved.
+The original `.venv` inode and configuration were retained; the kernel filesystem
+device changed across the WSL restart, so identical uninterrupted environment state
+is not claimed. The focused 0.2.0 build of new API, worker, MCP and web image tags
+passed in 34.557 seconds at unchanged clean source. Storage images were not rebuilt
+and host dependencies were not installed. This is an A3 build observation; nine-service
+startup/restart, current image audits and final private archive/cleanup results
+remain pending.
+
+At `71f4783`, read-only GitHub observations show all three workflows
+`disabled_manually`, zero commit statuses and zero check runs. CI remains
+owner-deferred and unverified. The failed preflight-record path lookup and subsequent
+already-authorized push are retained in
+`bounded-push-postverification-and-path-error-01.json`; its verification is explicitly
+post-push. No source or history correction was required. B remains unstable,
+C/P3-10 has not started and its complete-attempt count remains zero. No complete
+validation, 1.0 release, signed release artifact, owner acceptance or production
+qualification is claimed.
 
 The historical sections below retain their checkpoint-time observations and pending
 plans. Current Batch 2 authorization and current acceptance state are stated above;

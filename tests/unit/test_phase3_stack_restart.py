@@ -135,6 +135,75 @@ def test_exact_nine_service_ownership_accepts_two_completed_startup_services_wit
     assert "never-copy-this-to-evidence" not in json.dumps(actual)
 
 
+def test_closed_fallback_port_profile_accepts_matching_host_and_network_bindings() -> None:
+    tool, plan, rows = _tool(), _plan(), _containers()
+    plan["ports"] = {
+        "postgres": 55432,
+        "redis": 56379,
+        "api": 58000,
+        "mcp": 58001,
+        "web": 53500,
+    }
+    web = rows[-1]
+    web["HostConfig"]["PortBindings"] = {"3000/tcp": [{"HostIp": "127.0.0.1", "HostPort": "53500"}]}
+    web["NetworkSettings"]["Ports"] = {"3000/tcp": [{"HostIp": "127.0.0.1", "HostPort": "53500"}]}
+    actual = tool.validate_containers(
+        rows, tool.validate_plan(plan), _IMAGES, _REPOSITORY, phase="ready"
+    )
+    assert set(actual) == set(_SERVICES)
+    assert actual["web"]["id"] == "9" * 64
+    assert actual["web"]["state"] == "running"
+
+
+def test_closed_port_profiles_refuse_an_unapproved_web_port() -> None:
+    plan = _plan()
+    plan["ports"] = {
+        "postgres": 55432,
+        "redis": 56379,
+        "api": 58000,
+        "mcp": 58001,
+        "web": 53501,
+    }
+    with pytest.raises(ValueError):
+        _tool().validate_plan(plan)
+
+
+@pytest.mark.parametrize(
+    ("inspect_field", "ports_field"),
+    [("HostConfig", "PortBindings"), ("NetworkSettings", "Ports")],
+)
+def test_original_plan_refuses_fallback_runtime_port(inspect_field: str, ports_field: str) -> None:
+    tool, rows = _tool(), _containers()
+    plan = tool.validate_plan(_plan())
+    web = rows[-1]
+    web["HostConfig"]["PortBindings"] = {"3000/tcp": [{"HostIp": "127.0.0.1", "HostPort": "53000"}]}
+    web[inspect_field][ports_field]["3000/tcp"][0]["HostPort"] = "53500"
+    with pytest.raises(ValueError):
+        tool.validate_containers(rows, plan, _IMAGES, _REPOSITORY, phase="ready")
+
+
+@pytest.mark.parametrize(
+    ("inspect_field", "ports_field"),
+    [("HostConfig", "PortBindings"), ("NetworkSettings", "Ports")],
+)
+def test_fallback_plan_refuses_original_runtime_port(inspect_field: str, ports_field: str) -> None:
+    tool, plan, rows = _tool(), _plan(), _containers()
+    plan["ports"] = {
+        "postgres": 55432,
+        "redis": 56379,
+        "api": 58000,
+        "mcp": 58001,
+        "web": 53500,
+    }
+    plan = tool.validate_plan(plan)
+    web = rows[-1]
+    web["HostConfig"]["PortBindings"] = {"3000/tcp": [{"HostIp": "127.0.0.1", "HostPort": "53500"}]}
+    web["NetworkSettings"]["Ports"] = {"3000/tcp": [{"HostIp": "127.0.0.1", "HostPort": "53500"}]}
+    web[inspect_field][ports_field]["3000/tcp"][0]["HostPort"] = "53000"
+    with pytest.raises(ValueError):
+        tool.validate_containers(rows, plan, _IMAGES, _REPOSITORY, phase="ready")
+
+
 @pytest.mark.parametrize(
     "mutation",
     [

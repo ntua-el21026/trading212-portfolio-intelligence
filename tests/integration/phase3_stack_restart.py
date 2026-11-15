@@ -26,6 +26,7 @@ from uuid import UUID, uuid4
 SERVICES = ("postgres", "redis", "migrate", "seed", "api", "worker", "dispatcher", "mcp", "web")
 _STARTUP = frozenset({"migrate", "seed"})
 _PORTS = {"postgres": 55432, "redis": 56379, "api": 58000, "mcp": 58001, "web": 53000}
+_FALLBACK_PORTS = {**_PORTS, "web": 53500}
 _TARGETS = {
     "postgres": "5432/tcp",
     "redis": "6379/tcp",
@@ -107,7 +108,10 @@ def validate_plan(value: object) -> dict[str, Any]:
         plan["postgres_volume"] == _PROJECT + "_postgres-data",
         "Only the existing task volume is supported.",
     )
-    _require(plan["ports"] == _PORTS, "The approved loopback ports must remain exact.")
+    _require(
+        plan["ports"] in (_PORTS, _FALLBACK_PORTS),
+        "The approved loopback ports must remain exact.",
+    )
     files = plan["compose_files"]
     _require(
         isinstance(files, list) and len(files) == 3 and len(set(files)) == 3,
@@ -120,7 +124,9 @@ def validate_plan(value: object) -> dict[str, Any]:
     return plan
 
 
-def _bindings(value: object, service: str, *, missing_allowed: bool = False) -> None:
+def _bindings(
+    value: object, service: str, ports: Mapping[str, int], *, missing_allowed: bool = False
+) -> None:
     bindings = _object(value or {})
     published = {key: rows for key, rows in bindings.items() if rows}
     if service not in _TARGETS:
@@ -137,7 +143,7 @@ def _bindings(value: object, service: str, *, missing_allowed: bool = False) -> 
             binding.get("HostIp") in {"127.0.0.1", "::1"}, "A public host binding is forbidden."
         )
         _require(
-            str(binding.get("HostPort")) == str(_PORTS[service]),
+            str(binding.get("HostPort")) == str(ports[service]),
             "The existing approved host port differs.",
         )
 
@@ -279,10 +285,11 @@ def validate_containers(
             host.get("NetworkMode") == _PROJECT + "_default", "The private task network differs."
         )
         if "PortBindings" in host:
-            _bindings(host["PortBindings"], service)
+            _bindings(host["PortBindings"], service, plan["ports"])
         _bindings(
             network.get("Ports"),
             service,
+            plan["ports"],
             missing_allowed=phase != "ready" and "PortBindings" in host,
         )
         networks = _object(network.get("Networks"))
@@ -608,7 +615,9 @@ class _Exercise:
                         ("mcp", "/health/ready"),
                         ("web", "/sign-in"),
                     ):
-                        response = client.get(f"http://127.0.0.1:{_PORTS[service]}{path}")
+                        response = client.get(
+                            f"http://127.0.0.1:{self.plan['ports'][service]}{path}"
+                        )
                         _require(
                             response.status_code == 200, "A restarted HTTP service is unavailable."
                         )
@@ -831,7 +840,7 @@ def _run(exercise: _Exercise) -> None:
             session = _request(exercise, client, "POST", "/api/v1/auth/local-session", status=201)
             csrf = session["csrf_token"]
             headers = {
-                "Origin": "http://localhost:53000",
+                "Origin": f"http://localhost:{exercise.plan['ports']['web']}",
                 "X-CSRF-Token": csrf,
                 "X-Idempotency-Key": "stack-assumptions-" + uuid4().hex,
             }
