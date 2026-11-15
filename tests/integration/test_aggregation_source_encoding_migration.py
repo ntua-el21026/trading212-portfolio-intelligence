@@ -136,7 +136,7 @@ async def test_populated_0030_forward_upgrade_preserves_source_and_rejects_unsaf
     alembic_command.check(config)
     with case.sessions() as session:
         assert session.execute(evidence_query).all() == before
-        assert session.scalar(text("SELECT version_num FROM alembic_version")) == "20261113_0034"
+        assert session.scalar(text("SELECT version_num FROM alembic_version")) == "20261115_0036"
     run = await store.create_run(case.principal, request)
     assert await store.create_run(case.principal, request) == run
     assert (
@@ -147,5 +147,5 @@ async def test_populated_0030_forward_upgrade_preserves_source_and_rejects_unsaf
     with pytest.raises(IntegrityError, match="empty aggregate identities"):
         alembic_command.downgrade(config, "20260915_0030")
     with case.sessions() as session:
-        assert session.scalar(text("SELECT version_num FROM alembic_version")) == "20261113_0034"
+        assert session.scalar(text("SELECT version_num FROM alembic_version")) == "20261115_0036"
         assert session.execute(evidence_query).all() == before

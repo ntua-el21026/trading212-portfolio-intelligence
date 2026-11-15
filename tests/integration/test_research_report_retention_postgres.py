@@ -136,7 +136,7 @@ async def test_populated_research_report_downgrade_refuses_without_mutating_stat
 
     before, schema_before, originals_before = retained_state(), schema_state(), originals(case)
     assert before[0] and before[1] and before[2]
-    assert schema_before[0] == "20261114_0035"
+    assert schema_before[0] == "20261115_0036"
     with case.research.xray.sessions() as session:
         assert (
             session.scalar(

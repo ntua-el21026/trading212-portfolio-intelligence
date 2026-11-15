@@ -743,7 +743,8 @@ for _bounded_model, _document in (
         CheckConstraint(
             f"octet_length({_document}) <= "
             + (
-                "CASE WHEN kind IN ('performance','benchmark','income','attribution','cash_flow') "
+                "CASE WHEN kind IN "
+                "('performance','benchmark','income','attribution','cash_flow','xray') "
                 "THEN 33554432 ELSE 8388608 END"
                 if _bounded_model is AnalyticsRunModel
                 else "8388608"
