@@ -10,7 +10,9 @@ valuation time, coverage and quality remain attached to results.
 **Phase 3 is in progress.** The owner accepted Batch 1 as a bounded implementation
 checkpoint. [Batch 2](docs/implementation/PHASE_3_BATCH2_20261114.md) adds transitive
 research-report authorization, account-switch privacy protection and focused
-synthetic recovery evidence. The latest report-admission measurement remains
+synthetic recovery evidence. A focused nine-service restart recovered a pending
+modeled projection in 34.64 seconds with unchanged checked financial data. The
+latest report-admission measurement remains
 above its frozen limit (p95 0.931 seconds against 0.750 seconds); final P3-10
 validation has therefore not started. Focused report journeys pass at the three
 required viewport sizes. The normal 1,000-event research request now passes after

@@ -13,7 +13,11 @@ report-admission failure keeps Checkpoint B and the complete P3-10 attempt
 pending; no frozen threshold, runtime pin or licensing right is changed here.
 The bounded research-query recovery preserves current authorization per statement.
 Its normal service pass is separate from incomplete browser pagination/performance
-qualification and does not establish the frozen operational SLOs.
+qualification and does not establish the frozen operational SLOs. A separate
+clean-source nine-service restart at `da2a6bb` recovered one modeled projection
+family in 34.635 seconds with matching checked financial fingerprints. Its focused
+scope and backup-before-cleanup evidence do not establish all-family recovery or
+immutable-source acceptance.
 
 ## Observed starting point
 

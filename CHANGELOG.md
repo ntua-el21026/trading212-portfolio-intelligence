@@ -14,7 +14,15 @@ All notable project changes are recorded here. The project follows semantic vers
   eight fixed literal migration DDL statements without changing scanner rules or
   licensing rights. Recover the normal 1,000-event research query with an
   authorization-equivalent membership set; preserve the later browser pagination
-  failure and incomplete performance evidence. All Phase 3 acceptance remains pending.
+  failure and incomplete performance evidence. Retain the original reserved-port
+  startup failure and add a fixed 53500 operator profile with 37 passing guards.
+  Record actual current-source nine-service startup/restart and 34.635-second
+  modeled projection recovery with matching canonical results, economic-table
+  hashes and duplicate-transport fencing. Back up all 12 connectable databases in the task cluster
+  and retire only the exact task stack, preserving original volumes and
+  images. The cleanup dump catalogs and hashes were verified; those dumps were
+  not restored. Final archive/security delivery remains pending. B is not stable, C/P3-10 has not started, and all Phase 3
+  acceptance remains pending.
 
 - Add independent aggregation, analytical and capacity-admission regressions with
   focused PostgreSQL evidence and retained failures/recoveries. Implement the approved

@@ -5658,7 +5658,7 @@
         "Required cases are discovered by parsing direct top-level literal test declarations and the current literal project array. No application/test module, Playwright collection, browser, fixture or test is executed. Unsupported declaration syntax prevents complete coverage claims.",
         "Earlier reports without a prior hash anchor are hashed now and retained as observations; they cannot independently authorize retained passing coverage. Report time/argv and the source/log receipt are verified separately.",
         "Zero-case attempts and prior failures remain recorded. A later pass records an outcome transition, without independently proving the cause of the earlier failure.",
-        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01\u201307 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
+        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01–07 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
         "Procfs denied access to some unrelated same-UID process descriptors after recorded lineage and readable API driver/fixture signatures were checked. Those descriptor blind spots are listed in terminal_quiescence.descriptor_access_limits; exhaustive process-descriptor visibility is not claimed. Recorded launcher and artifact-watcher termination are checked separately.",
         "This commit24 refresh executes metadata assembly only. The exact commit23-to24 input delta is one public-asset COPY line in infrastructure/docker/web.Dockerfile; all other recorded source inputs, including application/test/dependency files, are identical. Whole-source equality with every earlier API execution is false, including the 20 cases that previously matched commit23. No case is claimed executed at commit24.",
         "Report unreached-gates-03/api-browser/aggregation.spec.ts-api-chromium-desktop.json has its report hash first recorded at assembly; retained-coverage eligibility is false.",
@@ -5672,7 +5672,7 @@
     "latest_browser_recoveries": {
       "pwa": "Canonical fixture selector now seeds both authorized synthetic accounts; focused desktop1PASS, later tablet/mobile passes. All privacy/cache/auth assertions retained.",
       "scenario_report": "First INSERT actual physical created_at for12new exact synthetic parents/fiveclasses only under reports&&scenarios. DesktopPASS sourcea98... precedes stderr-only source25d... logging delta; desktop was not rerun. No existing UPDATE, production guard or financial/first-observed/expiry/digest change.",
-      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3\u21924\u21924/noBentry qualifies the tested setup/observation without establishing production causality."
+      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3→4→4/noBentry qualifies the tested setup/observation without establishing production causality."
     },
     "sast_scope": {
       "prior_rules": 7,
@@ -6275,6 +6275,101 @@
         "adjacent_cases": 2,
         "original_helper_contemporaneous_hash_limitation_retained": true,
         "current_execution_of_reused_cases_claimed": false
+      },
+      "retained_build02_image_audits": {
+        "status": "passed_configured_vulnerability_and_secret_scopes",
+        "image_source_sha": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
+        "summary": "a4-current-images-audit-final-01.json",
+        "results": [
+          {
+            "service": "postgres",
+            "image_id": "sha256:f4754af4cac0eeee2528d0029e2ee508e955cc2f60d489b4c4e9462b0009f529",
+            "receipt": "a4-current-image-postgres-01/receipt.json",
+            "report": "a4-checkpoint-isolated-01/a4-current-image-postgres-01.json",
+            "report_sha256": "91d225a4f2af743a135dc3e747436faf0423fafaa92383ac0e9fa040cd22e01e",
+            "exit_code": 0,
+            "seconds": 0.309,
+            "counts": {
+              "Vulnerabilities": 0,
+              "Secrets": 0
+            },
+            "source_unchanged": true
+          },
+          {
+            "service": "redis",
+            "image_id": "sha256:8ae8bdb8c2ca36fc3db58ff0a92eaac88041f5b9abe6b1af62b376f9e06ae613",
+            "receipt": "a4-current-image-redis-01/receipt.json",
+            "report": "a4-checkpoint-isolated-01/a4-current-image-redis-01.json",
+            "report_sha256": "35ff8be299a1aa822711920a83edb8868b81f24e90d6f3dd6c3782dc32c8b54a",
+            "exit_code": 0,
+            "seconds": 0.156,
+            "counts": {
+              "Vulnerabilities": 0,
+              "Secrets": 0
+            },
+            "source_unchanged": true
+          },
+          {
+            "service": "api",
+            "image_id": "sha256:b926c06c69a70eefa0b7292b47a349e126ac2167b626fefd0ea44bf1ba223db4",
+            "receipt": "a4-current-image-api-01/receipt.json",
+            "report": "a4-checkpoint-isolated-01/a4-current-image-api-01.json",
+            "report_sha256": "f66b838fa7e7baeefca07a61ac0c9c9e9005d87132d2c739e66f4efe585533ca",
+            "exit_code": 0,
+            "seconds": 2.596,
+            "counts": {
+              "Vulnerabilities": 0,
+              "Secrets": 0
+            },
+            "source_unchanged": true
+          },
+          {
+            "service": "worker",
+            "image_id": "sha256:a75f36803f0390792db7d31b9bd45635622f6bde632ec04ee476f488f10ac370",
+            "receipt": "a4-current-image-worker-01/receipt.json",
+            "report": "a4-checkpoint-isolated-01/a4-current-image-worker-01.json",
+            "report_sha256": "84dc9ab999b967573302c60d3973cfbbf62f94cbc3cccf5445af90049d49b6ba",
+            "exit_code": 0,
+            "seconds": 2.764,
+            "counts": {
+              "Vulnerabilities": 0,
+              "Secrets": 0
+            },
+            "source_unchanged": true
+          },
+          {
+            "service": "mcp",
+            "image_id": "sha256:eb4b08273f64328a22d1244365409aedd22eceef0ddd025fe8f134457ff64e75",
+            "receipt": "a4-current-image-mcp-01/receipt.json",
+            "report": "a4-checkpoint-isolated-01/a4-current-image-mcp-01.json",
+            "report_sha256": "d868ca760d92ea646e95672ed3cda9ffecad17dee18f60e9f4f711fb720809d0",
+            "exit_code": 0,
+            "seconds": 2.271,
+            "counts": {
+              "Vulnerabilities": 0,
+              "Secrets": 0
+            },
+            "source_unchanged": true
+          },
+          {
+            "service": "web",
+            "image_id": "sha256:d91aa3de00c6387f4aa26e8f491fb4fb18a3f7977187d5387688e390842a3367",
+            "receipt": "a4-current-image-web-01/receipt.json",
+            "report": "a4-checkpoint-isolated-01/a4-current-image-web-01.json",
+            "report_sha256": "357b4889b554de371414e263f89e5321ced26912d2db06abf2ffb2b7ca5cd4f9",
+            "exit_code": 0,
+            "seconds": 1.557,
+            "counts": {
+              "Vulnerabilities": 0,
+              "Secrets": 0
+            },
+            "source_unchanged": true
+          }
+        ],
+        "policy_unchanged": true,
+        "image_license_and_misconfiguration_scans": "NOT_CONFIGURED",
+        "redistribution_rights": "pending_owner_and_dependency_rights_decision",
+        "p3_10_pass_claimed": false
       }
     },
     "a3": {
@@ -6691,7 +6786,52 @@
           ]
         }
       },
-      "complete_nine_service_stack_restart": "actual_qualification_pending",
+      "complete_nine_service_stack_restart": {
+        "receipt": "a3-full-stack-restart-01/receipt.json",
+        "head": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
+        "source_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+        "source_after_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+        "source_unchanged": true,
+        "changed_source_paths": [],
+        "exit_code": 0,
+        "runner_seconds": 48.662,
+        "status": "passed_focused_local_preacceptance",
+        "source_tree_sha": "5f06353778d40c608ba82bd2dfa6256e0812d33f",
+        "artifact_directory": "a3-full-stack-restart-01-artifacts",
+        "artifacts": [
+          "001-plan.json",
+          "002-preflight.json",
+          "003-baseline.json",
+          "004-durable-boundary.json",
+          "005-all-nine-stopped.json",
+          "006-ready.json",
+          "007-recovered.json",
+          "008-duplicate-transport.json",
+          "009-verified.json",
+          "010-terminal.json"
+        ],
+        "services": 9,
+        "long_running_healthy": 7,
+        "one_shot_exit_zero": 2,
+        "all_nine_container_and_image_identities_preserved": true,
+        "network_and_volume_identity_preserved": true,
+        "recovery_seconds": 34.635317916000076,
+        "recovery_limit_seconds": 600,
+        "baseline_and_recovered_modeled_paths": 7,
+        "canonical_result_bytes": 18557,
+        "canonical_result_sha256": "f0e3cb3016e8c0acf8109bf7dd4c6a271735005b848d3f8f728e688a8cbeb4a6",
+        "baseline_and_recovered_canonical_result_equal": true,
+        "economic_table_row_hashes_equal": 13,
+        "real_duplicate_transport_fenced_and_drained": true,
+        "retained_and_pending_modeled_projection_scope_only": true,
+        "all_premium_family_recovery": "unverified",
+        "formal_phase3_acceptance": "pending",
+        "p3_10_complete_attempt_claimed": false,
+        "whole_browser_matrix_or_full_coverage_claimed": false,
+        "production_recovery_time_claimed": false,
+        "cleanup": "passed_later_separate_task_owned_retirement",
+        "cleanup_receipt": "a3-owned-stack-backup-and-retirement-01/receipt.json"
+      },
       "full_stack_restart_harness": {
         "path": "tests/integration/phase3_stack_restart.py",
         "module": "tests.integration.phase3_stack_restart",
@@ -6702,9 +6842,12 @@
         "existing_guard_cases": 31,
         "guard_assertions_preserved": true,
         "timers_and_resource_ownership_guards_changed": false,
-        "focused_runtime_requalification": "31_guard_cases_passed_after_relocation_actual_nine_service_startup_restart_pending",
+        "focused_runtime_requalification": "passed_current_source_focused_nine_service_startup_and_restart",
         "historical_receipt_source_paths_rewritten": false,
-        "relocated_guard_receipt": "a3-stack-harness-placement-affected-green-02/receipt.json"
+        "relocated_guard_receipt": "a3-stack-harness-placement-affected-green-02/receipt.json",
+        "current_guard_cases": 37,
+        "current_guard_receipt": "a3-web-port-profile-failed-and-affected-green-02/receipt.json",
+        "actual_restart_receipt": "a3-full-stack-restart-01/receipt.json"
       },
       "research_summary_scaling": {
         "status": "five_regressions_and_normal_thousand_service_passed_browser06_pagination_poll_failed_cause_unassigned",
@@ -6915,6 +7058,85 @@
         }
       },
       "focused_current_source_application_build": {
+        "receipt": "a3-stack-current-source-build-02/receipt.json",
+        "head": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
+        "source_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+        "source_after_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+        "source_unchanged": true,
+        "changed_source_paths": [],
+        "exit_code": 0,
+        "runner_seconds": 31.445,
+        "status": "passed_focused_four_application_image_build",
+        "runtime_version": "0.2.0",
+        "application_services": ["api", "worker", "mcp", "web"],
+        "only_new_task_image_tags_built": true,
+        "storage_images_rebuilt": false,
+        "host_dependency_install_or_venv_recreation": false,
+        "p3_10_or_clean_reproducible_build_gate_claimed": false,
+        "signed_release_claimed": false
+      },
+      "web_port_recovery": {
+        "status": "focused_guard_and_current_source_runtime_recovery_passed",
+        "original_web_port": 53000,
+        "fallback_web_port": 53500,
+        "cause": "Windows TCP exclusion52957-53056 includes53000; no global reservation changed",
+        "failed_start_receipt": "a3-stack-current-source-start-01",
+        "failed_start_exit_code": 1,
+        "failed_start_seconds": 30.487,
+        "regression_baseline": "3 failed,3 passed,31 deselected",
+        "affected_guard_recovery": "37 passed in0.11s",
+        "guard_receipt": "a3-web-port-profile-failed-and-affected-green-02",
+        "scope": "two closed operator port profiles; exact declared binding/readiness/Origin preserved; no product code/contracts/migrations change",
+        "complete_validation_attempts": 0,
+        "current_source_sha": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
+        "source_build": {
+          "receipt": "a3-stack-current-source-build-02/receipt.json",
+          "head": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
+          "source_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+          "source_after_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 31.445,
+          "status": "passed_focused_four_application_image_build",
+          "runtime_version": "0.2.0",
+          "application_services": ["api", "worker", "mcp", "web"],
+          "only_new_task_image_tags_built": true,
+          "storage_images_rebuilt": false,
+          "host_dependency_install_or_venv_recreation": false,
+          "p3_10_or_clean_reproducible_build_gate_claimed": false,
+          "signed_release_claimed": false
+        },
+        "startup": {
+          "receipt": "a3-stack-current-source-start-recovery-02/receipt.json",
+          "head": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
+          "source_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+          "source_after_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 20.452,
+          "status": "passed_focused_nine_service_startup",
+          "operator_web_port": 53500,
+          "original_failed_53000_observation_retained": true
+        },
+        "runtime_source_probes": {
+          "receipt": "a3-stack-image-source-probes-02/receipt.json",
+          "head": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
+          "source_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+          "source_after_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+          "source_unchanged": true,
+          "changed_source_paths": [],
+          "exit_code": 0,
+          "runner_seconds": 1.962,
+          "status": "passed_current_source_runtime_image_probes",
+          "runtime_version": "0.2.0",
+          "p3_10_or_image_security_audit_claimed": false
+        },
+        "full_nine_service_restart_receipt": "a3-full-stack-restart-01/receipt.json",
+        "original_failed_start_retained": true
+      },
+      "earlier_71f_application_build": {
         "receipt": "a3-stack-current-source-build-01/receipt.json",
         "head": "71f478324daddbab9b2cf9a4275e18de9eb2997b",
         "source_manifest_sha256": "bcbb1c4efb0a34f6302981347eeadb511895dd14b32bc0208983d35aebf3031d",
@@ -6934,19 +7156,36 @@
         "p3_10_or_clean_reproducible_build_gate_claimed": false,
         "signed_release_claimed": false
       },
-      "web_port_recovery": {
-        "status": "focused_guards_passed_runtime_recovery_pending",
-        "original_web_port": 53000,
-        "fallback_web_port": 53500,
-        "cause": "Windows TCP exclusion52957-53056 includes53000; no global reservation changed",
-        "failed_start_receipt": "a3-stack-current-source-start-01",
-        "failed_start_exit_code": 1,
-        "failed_start_seconds": 30.487,
-        "regression_baseline": "3 failed,3 passed,31 deselected",
-        "affected_guard_recovery": "37 passed in0.11s",
-        "guard_receipt": "a3-web-port-profile-failed-and-affected-green-02",
-        "scope": "two closed operator port profiles; exact declared binding/readiness/Origin preserved; no product code/contracts/migrations change",
-        "complete_validation_attempts": 0
+      "task_owned_stack_retirement": {
+        "receipt": "a3-owned-stack-backup-and-retirement-01/receipt.json",
+        "head": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
+        "source_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+        "source_after_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+        "source_unchanged": true,
+        "changed_source_paths": [],
+        "exit_code": 0,
+        "runner_seconds": 15.489,
+        "status": "passed_task_owned_backup_and_retirement",
+        "artifact_directory": "owned-stack-retirement-01-artifacts",
+        "terminal_artifact": "owned-stack-retirement-01-artifacts/05-terminal.json",
+        "scope_reinspected_before_mutation": true,
+        "queued_or_running_premium_or_report_jobs": 0,
+        "other_postgres_clients_before_dump": 0,
+        "all_writers_stopped": true,
+        "connectable_databases_backed_up": 12,
+        "backup_bytes": 70072624,
+        "custom_dump_catalogs_readable": true,
+        "each_dump_sha256_recorded_and_rehashed_before_storage_removal": true,
+        "cleanup_dumps_restored": false,
+        "earlier_full_schema_restore_is_separate": true,
+        "sanitized_bounded_logs_retained": true,
+        "exact_task_containers_removed": 9,
+        "exact_task_volume_removed": 1,
+        "exact_task_network_removed": 1,
+        "images_removed": 0,
+        "original_volume_metadata_preserved": 2,
+        "original_qualified_image_ids_preserved": 9,
+        "host_environment_or_original_evidence_deleted": false
       }
     },
     "a2": {
@@ -7051,7 +7290,7 @@
         "unchanged_desktop_rerun": false
       }
     },
-    "remaining_candidate_release_steps": "Six Batch 2 commits, including preliminary documentation, are pushed through 71f478324daddbab9b2cf9a4275e18de9eb2997b. Exact source export and scoped filesystem/dependency audits passed; source and history Gitleaks remain failed after classification of all retained findings with zero unknown. The focused 0.2.0 four-application-image build passed; nine-service startup/restart and final private archive/cleanup outcomes remain pending. Admission p95 0.930957544 seconds remains failed through the explicit component binding. Representative desktop attempt06 failed its five-second pagination cursor poll with cause unassigned; no research p75 or whole-lab SLO pass exists. B is not stable, C/P3-10 has not started, and complete attempt count is zero. All 30 rows and 48 scenarios remain pending, zero accepted. CI is owner-deferred/unverified and LICENSE is unchanged.",
+    "remaining_candidate_release_steps": "Seven Batch 2 commits are pushed through da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a. Focused current-source 0.2.0 image build, nine-service startup, runtime source probes and all-nine restart passed after the retained 53000 failure and fixed 53500 operator-profile recovery. Restart recovery took 34.635317916 seconds under the 600-second bound; canonical modeled projection bytes, thirteen economic-table hashes and service/storage identities matched, with duplicate transport fenced and drained. A4 source export and scoped audits retain their actual 71f4783 source; source56/history2 Gitleaks remain failed after nonsecret classification with zero unknown. Task-owned backup and retirement passed in 15.489 seconds after 12 custom database dumps totaling 70,072,624 bytes; dump catalogs and hashes were verified, but these cleanup dumps were not restored. Exact task containers/volume/network were removed while original volumes/images remained. Final-source security/CI, private archive and final delivery SHA await root observations. Admission p95 0.930957544 seconds remains above 0.750 through the explicit component binding; desktop performance attempt06 remains failed at its cursor poll with cause unassigned. B is not stable, C/P3-10 has not started and complete attempt count is zero. All 30 rows and 48 scenarios remain pending with zero accepted; LICENSE is unchanged.",
     "checkpoint_c": "not_started",
     "pending_rows": 30,
     "pending_scenarios": 48,
@@ -7059,7 +7298,7 @@
     "license_status": "unchanged_no_distribution_decision",
     "delivery_scope": "bounded_checkpoint_after_authorized_focused_closures_no_p3_10_attempt",
     "last_reconciled_date": "2026-11-15",
-    "current_main_sha": "71f478324daddbab9b2cf9a4275e18de9eb2997b",
+    "current_main_sha": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
     "new_commit_claimed": true,
     "codec_delivery": {
       "receipt": "codec-stage-commit-01.json",
@@ -7076,9 +7315,10 @@
       "codec",
       "a1",
       "web",
-      "ops"
+      "ops",
+      "operator_web_port_recovery"
     ],
-    "remote_main_last_verified_sha": "71f478324daddbab9b2cf9a4275e18de9eb2997b",
+    "remote_main_last_verified_sha": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
     "implementation_commits": [
       {
         "sha": "ecc7c75221841eb64981ec3e971a36944052d48e",
@@ -7123,13 +7363,22 @@
         "pushed": true,
         "paths": 16,
         "push_receipt": "b2-bounded-checkpoint-push-01/receipt.json"
+      },
+      {
+        "sha": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
+        "group": "operator_web_port_recovery",
+        "purpose": "Retain the original operator web-port profile and add a fixed 53500 recovery profile with exact binding, readiness and Origin guards.",
+        "receipt": "web-port-recovery-commit-01.json",
+        "pushed": true,
+        "push_receipt": "a3-web-port-checkpoint-push-01/receipt.json",
+        "paths": 6
       }
     ],
-    "batch2_implementation_commit_count": 5,
+    "batch2_implementation_commit_count": 6,
     "local_unpushed_implementation_commit_count": 0,
     "preliminary_documentation_reconciliation": "committed_and_pushed_at_71f478324daddbab9b2cf9a4275e18de9eb2997b",
-    "current_main_tree_sha": "796ce9efcb5e7afcee1fabd94a212ba07d86307f",
-    "batch2_commit_count": 6,
+    "current_main_tree_sha": "5f06353778d40c608ba82bd2dfa6256e0812d33f",
+    "batch2_commit_count": 7,
     "documentation_commits": [
       {
         "sha": "71f478324daddbab9b2cf9a4275e18de9eb2997b",
@@ -7179,13 +7428,51 @@
       "original_volumes_preserved": 2,
       "original_venv_inode_and_configuration_preserved": true,
       "kernel_filesystem_device_changed_across_wsl_restart": true,
-      "uninterrupted_or_identical_runtime_environment_claimed": false
+      "uninterrupted_or_identical_runtime_environment_claimed": false,
+      "final_original_input_preservation": {
+        "receipt": "delivery-preserved-inputs-01/receipt.json",
+        "status": "passed_declared_original_tools_cache_bytes_modes_and_venv_identity",
+        "original_regular_files": 650,
+        "original_regular_bytes": 1934880090,
+        "venv_inode_and_config_unchanged": true,
+        "venv_filesystem_device_changed": true,
+        "full_installed_environment_requalification_claimed": false
+      }
     },
     "private_evidence_delivery": {
       "archive": "pending_final_quiescent_evidence_snapshot",
       "archive_created": false,
-      "task_cleanup": "pending_actual_results",
+      "task_cleanup": "passed_exact_task_owned_backup_and_retirement",
+      "task_cleanup_receipt": "a3-owned-stack-backup-and-retirement-01/receipt.json",
       "complete_validation_or_signed_release_artifact_claimed": false
+    },
+    "operator_port_checkpoint_delivery": {
+      "receipt": "a3-web-port-checkpoint-push-01/receipt.json",
+      "head": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
+      "source_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+      "source_after_manifest_sha256": "c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0",
+      "source_unchanged": true,
+      "changed_source_paths": [],
+      "exit_code": 0,
+      "runner_seconds": 7.68,
+      "status": "pushed_and_verified_clean_local_live_main_equal",
+      "source_sha": "da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a",
+      "source_tree_sha": "5f06353778d40c608ba82bd2dfa6256e0812d33f",
+      "commit_proof": "web-port-recovery-commit-01.json",
+      "push_proof": "web-port-checkpoint-push-01.json",
+      "complete_validation_attempts": 0
+    },
+    "final_closure_observations": {
+      "status": "checkpoint_time_record_final_delivery_observations_recorded_separately",
+      "final_delivery_sha": null,
+      "final_delivery_tree_sha": null,
+      "final_source_security_receipt": null,
+      "final_source_ci_receipt": null,
+      "task_cleanup_receipt": "a3-owned-stack-backup-and-retirement-01/receipt.json",
+      "private_archive_manifest": null,
+      "archive_created": false,
+      "complete_validation_or_owner_acceptance_claimed": false,
+      "record_scope": "Documentation checkpoint; post-commit source scans, GitHub status and checksummed archive are recorded in the private delivery evidence and consolidated response."
     }
   }
 }

@@ -127,19 +127,51 @@ costly performance iterations stopped; mobile/tablet performance remains
 pending_local. Separate A2 report journeys at all required viewports remain
 qualified; these are distinct from representative performance.
 
-Configured SAST passed seven rules over four codec files (118.697 s) and 15 other
-current code files (118.662 s), with zero findings. The latter's code inputs stayed
-unchanged while nine documentation/status files changed. The earlier whole-
-worktree high-confidence secret check passed separately (1.632 s). Verified
-independent tool/cache copying is preparation, not a scan. Exact committed-source,
-history, fresh dependency and remaining A4 artifact gates are still pending.
+The separate focused runtime receipts bind clean
+`da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a`, tree
+`5f06353778d40c608ba82bd2dfa6256e0812d33f`, with unchanged source manifest
+`c3d4bb85b57039202788b1b6dd11ac4039a004309be6c3141ad077c641fa54b0`.
+Build 02 passed in 31.445 s, start-recovery02 in 20.452 s and image/source probes 02
+in 1.962 s. `a3-full-stack-restart-01` passed with a 48.662 s wrapper and recovery
+of 34.635317916 s under 600 s. All nine containers stopped and resumed with the same
+identities/images/network/volume: seven long-running services healthy and migrate/
+seed exited0. The retained/recovered seven-path modeled projection preserves
+canonical inputs, capture/result bytes and counts; all 13 economic table row/hash
+records are equal. Real-broker duplicate delivery drained without changing
+canonical state. All-premium-family recovery remains unverified. The original
+53000-port startup failure remains retained; the authorized recovery uses 53500.
+
+`a3-owned-stack-backup-and-retirement-01` separately passed in 15.489 s at the same
+unchanged source. Twelve connectable databases have 70,072,624 B of custom dumps,
+individual hashes, readable `pg_restore --list` catalogs and later rehashes. The
+nine exact task containers, one task volume and one task network were removed
+after backup; zero images were deleted and the two original volumes/nine qualified
+image IDs were preserved. These cleanup dumps were not restored.
+
+Configured scoped SAST and the earlier high-confidence source check retain their
+separate passes. At clean 71f478324daddbab9b2cf9a4275e18de9eb2997b, source Gitleaks
+failed with 56 findings (34.051 s) and all-ref history Gitleaks with two (33.579 s).
+The 54 inherited reviewed source findings and two new source-digest findings are
+classified nonsecret, with zero unknown observations. The status remains
+`REVIEW_COMPLETE_SCANNERS_REMAIN_FAILED`: scanner exits, policy and ignores are
+unchanged. Configured filesystem Trivy, fresh Python and production Node audits
+passed separately in 29.149 s, 6.486 s and 0.565 s. These observations retain their 71f
+source; final-source/complete candidate artifact qualification and private archive remain pending.
 
 The actual admission p95 failure remains0.930957544 s against 0.750 s, retained by
 `admission-failed-observation-component-binding-01.json`:1026 application/package
 inputs compared, only research_summary_query.py differs; four fixture/test inputs
 are equal and the authority is restored. No ten-job timing repeat or new latency
 pass is claimed. Checkpoint B remains pending; complete P3-10 attempts 0; all 30
-rows/all 48 scenarios remain pending, zero accepted. Focused A3 build/restart is
-already authorized from a clean committed 0.2.0 checkpoint before B, but its actual
-full-nine-service result remains pending. No 1.0 candidate/full Make/release claim.
-See the [qualified current observations](PHASE_3_BATCH2_TRACEABILITY.md#current-functional-recovery-and-incomplete-performance).
+rows/all 48 scenarios remain pending, zero accepted. The admission failure and
+incomplete desktop recovery06 performance remain material local gaps. No final-SHA/CI
+acceptance, 1.0 candidate, complete Make validation or release is claimed.
+See the [qualified runtime and audit observations](PHASE_3_BATCH2_TRACEABILITY.md#focused-nine-service-restart-and-prior-clean-source-audits).
+
+The six retained build02 images subsequently passed the configured vulnerability/
+secret checks (`a4-current-image-{api,worker,mcp,web,postgres,redis}-01`), with
+zero configured findings at the exact `da2a6bb` image identities. This scope
+uses the unchanged HIGH/CRITICAL, fix-available policy; it configures neither
+image license nor image misconfiguration scanning. Complete candidate SPDX,
+signing, artifact and reproducibility qualification remains separate. These
+observations change no acceptance status, licensing right or complete-gate result.

@@ -10,11 +10,18 @@
 
 ## Current state
 
-The first focused nine-service startup failed at the web forwarding boundary: Windows
-reserves TCP port 53000 within 52957–53056. The operator harness now retains its original
-53000 profile and a fixed 53500 fallback. All 37 source-affected guard cases pass;
-binding, readiness and CSRF Origin use the exact declared profile. Runtime recovery
-is pending; no Windows reservation, product contract or financial predicate changed.
+Focused nine-service startup and restart now pass at clean pushed source
+`da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a`, tree
+`5f06353778d40c608ba82bd2dfa6256e0812d33f`. The restart receipt records 48.662 seconds
+for the wrapper and 34.635317916 seconds for modeled projection recovery, below the
+600-second bound. This is focused local evidence; B remains materially incomplete
+and C/P3-10 has not started.
+
+The first startup's web-forwarding failure remains recorded: Windows reserves TCP
+53000 within 52957–53056. The operator harness retains the original 53000 profile
+and a fixed 53500 fallback. All 37 source-affected guard cases pass; binding,
+readiness and CSRF Origin use the declared profile. No Windows reservation,
+product contract or financial predicate changed.
 
 Consolidated Batch 2 is authorized and in progress from clean, synchronized live/local
 `main` at `5731a5039beb8f3c7272c9b387ac757de605a0e1`. The owner accepted Batch 1 as
@@ -108,29 +115,32 @@ whole-lab SLO or summary was produced. Fresh mobile/tablet performance execution
 remain pending locally. Costly browser and optimization attempts stop at this bounded
 checkpoint. B is materially incomplete because the admission gate remains failed
 and representative performance remains incomplete; C/P3-10 has not started.
-The focused four-application-image build passed at the clean pushed source described
-below. Complete nine-service startup/restart qualification and remaining release
-observations are pending. `LICENSE` is unchanged.
+The current-source focused image build and nine-service startup/restart passed as
+described below. Task-owned backup and retirement are complete. The six retained images passed
+configured vulnerability/secret scans; final delivery source, CI and archive
+observations are recorded separately. `LICENSE` is unchanged.
 Receipt manifests distinguish unchanged complete-source runs from scoped passes with
 unrelated concurrent edits; these observations are not complete validation.
 The synthetic restart harness now resides in
 `tests/integration/phase3_stack_restart.py` and runs through
 `python -m tests.integration.phase3_stack_restart`; its relocation preserves the
-transport boundary and all 31 guard assertions without a production wrapper.
+transport boundary and all 31 original guard assertions without a production wrapper.
+Six port-profile regressions bring the current source-affected guard scope to 37.
 Tool preparation passed in 5.608 seconds. The configured seven-rule scans found
 zero findings in four codec files (118.697 seconds) and fifteen remaining source
 files (118.662 seconds). The latter scope retained unchanged code inputs while nine
 documentation paths changed. Migration `0035` retains its separate four-rule,
 one-file, zero-finding observation. These are scoped observations.
 
-All six Batch 2 commits, comprising five implementation groups and preliminary
-documentation, are pushed through clean live/local main
-`71f478324daddbab9b2cf9a4275e18de9eb2997b`, tree
-`796ce9efcb5e7afcee1fabd94a212ba07d86307f`. An exact Git-blob export verified all
-1,999 files, modes and 50,869,179 bytes with no symlinks in 6.176 seconds.
-The Batch 2 record lists each commit and receipt.
+Seven Batch 2 commits, comprising six implementation/test groups and preliminary
+documentation, are pushed through clean live/local main `da2a6bb`, tree `5f063537`.
+The new operator-port recovery commit follows the six-commit `71f4783` checkpoint.
+At that earlier checkpoint, an exact Git-blob export verified all 1,999 files,
+modes and 50,869,179 bytes with no symlinks in 6.176 seconds. The A4 observations
+below retain their actual `71f4783` source; they do not qualify an unobserved final
+source. The Batch 2 record lists the delivery sequence and receipts.
 
-The first export Gitleaks wrapper failed because its capability-restricted root
+At `71f4783`, the first export Gitleaks wrapper failed because its capability-restricted root
 process could not read the private owner-only export; the retained failure includes
 a JSON decoding error. A separate permission probe reproduced the boundary. The
 corrected wrapper uses the verified export owner's nonroot identity, preserving
@@ -159,21 +169,49 @@ and Redis containers were resumed with the same identities, images, network and
 volume. The original nine qualified images and two volumes remain preserved.
 The original `.venv` inode and configuration were retained; the kernel filesystem
 device changed across the WSL restart, so identical uninterrupted environment state
-is not claimed. The focused 0.2.0 build of new API, worker, MCP and web image tags
-passed in 34.557 seconds at unchanged clean source. Storage images were not rebuilt
-and host dependencies were not installed. This is an A3 build observation; nine-service
-startup/restart, current image audits and final private archive/cleanup results
-remain pending.
+is not claimed. The earlier focused 0.2.0 four-application-image build passed in
+34.557 seconds at `71f4783`. After port-profile recovery, the current `da2a6bb`
+build passed in 31.445 seconds, nine-service startup in 20.452 seconds and runtime
+image/source probes in 1.962 seconds. Their complete-source bookends are unchanged.
+Storage images were not rebuilt and host dependencies were not installed.
+
+The actual all-nine restart passed (`a3-full-stack-restart-01`, 48.662 seconds).
+Seven long-running services were healthy and two initialization services exited
+zero. All nine container/image identities, network and volume remained the same
+across stop/start. The retained baseline and pending modeled projections had seven
+paths each; recovery completed in 34.635317916 seconds under the unchanged
+600-second bound. The recovered canonical result matched the baseline's 18,557
+bytes and SHA-256 `f0e3cb3016e8c0acf8109bf7dd4c6a271735005b848d3f8f728e688a8cbeb4a6`.
+All 13 economic-table row hashes matched. Real duplicate transport was fenced and
+drained without additional canonical results. Artifacts `001` through `010` retain
+these observations. The scope covers retained and pending modeled projections;
+all premium-family recovery and production recovery time remain unverified.
+
+Task-owned backup and retirement then passed in 15.489 seconds at unchanged
+`da2a6bb` source (`a3-owned-stack-backup-and-retirement-01`). Before mutation,
+the helper rechecked the exact service/storage identities and synthetic owner,
+confirmed zero queued/running premium/report jobs, stopped writers and observed
+zero other PostgreSQL clients. All 12 connectable databases were retained in custom
+dumps totaling 70,072,624 bytes, with per-dump SHA-256, readable restore catalogs
+and a second hash check before storage removal. These cleanup dumps were not
+restored; the earlier complete-schema restore remains separate evidence. Bounded
+sanitized logs are retained. The helper removed exactly nine task containers,
+one task volume and one task network, removed zero images, and verified preservation
+of the original two volume metadata records and nine qualified image IDs.
 
 At `71f4783`, read-only GitHub observations show all three workflows
 `disabled_manually`, zero commit statuses and zero check runs. CI remains
 owner-deferred and unverified. The failed preflight-record path lookup and subsequent
 already-authorized push are retained in
 `bounded-push-postverification-and-path-error-01.json`; its verification is explicitly
-post-push. No source or history correction was required. B remains unstable,
-C/P3-10 has not started and its complete-attempt count remains zero. No complete
-validation, 1.0 release, signed release artifact, owner acceptance or production
-qualification is claimed.
+post-push. No source or history correction was required. The later `da2a6bb`
+port-profile commit was separately pushed and verified clean. Final delivery security/CI, archive and Git identity observations are recorded
+separately in the private delivery evidence after this documentation checkpoint.
+The A4 results above retain their actual source and do not certify that delivery.
+B remains unstable, C/P3-10 has not started and its complete-attempt count remains
+zero. All 30 rows and 48 scenarios remain pending, zero accepted. No complete
+validation, full browser matrix, full coverage, 1.0 release, signed release artifact,
+owner acceptance or production qualification is claimed.
 
 The historical sections below retain their checkpoint-time observations and pending
 plans. Current Batch 2 authorization and current acceptance state are stated above;

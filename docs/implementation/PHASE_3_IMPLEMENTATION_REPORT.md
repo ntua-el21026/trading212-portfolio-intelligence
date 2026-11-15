@@ -4,7 +4,10 @@
 checkpoint `5731a5039beb8f3c7272c9b387ac757de605a0e1`. The
 [Batch 2 record](PHASE_3_BATCH2_20261114.md) distinguishes implemented transitive
 authorization and privacy corrections, focused synthetic evidence and retained
-failures. Report-admission p95 remains above its frozen limit; Checkpoint B and
+failures. A clean-source nine-service restart at `da2a6bb` recovered one modeled
+projection family in 34.635 seconds; source probes and backup-before-cleanup are
+recorded separately. This does not qualify all premium families or production.
+Report-admission p95 remains above its frozen limit; Checkpoint B and
 the conditional complete P3-10 attempt are pending. Complete attempt count is zero.
 The normal 1,000-event service query has a focused functional recovery, with all
 authorization predicates preserved. The subsequent browser case still fails at

@@ -1,6 +1,6 @@
 # Validation Report
 
-## Current Consolidated Batch 2, 2026-11-14
+## Current Consolidated Batch 2, 2026-11-14–15
 
 The owner accepted Batch 1 as a bounded implementation checkpoint and authorized
 local Batch 2 hardening. This does not accept Phase 3. The
@@ -52,13 +52,55 @@ profiles are retained separately. Only the materialized non-null source-ID set
 and equivalent NOT IN membership correction remain. The normal service failure
 has recovered; browser pagination/performance remains pending local diagnosis.
 No further expensive performance attempt or unchanged ten-admission measurement
-was started after these bounded observations. Complete stack restart, remaining
-security observations and release-artifact qualification retain their own status.
+was started after these bounded observations. The later focused stack results below
+remain separate from complete validation and release-artifact qualification.
 
 All 30 acceptance rows and 48 scenarios remain pending, zero accepted. GitHub
 Actions is owner-deferred/unverified. External provider credentials, production,
 hosted registration and binary/container distribution rights are separate
 prerequisites. No licensing grant or obligation is changed.
+
+### Clean-source restart and cleanup, 15 November
+
+At clean `da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a`, tree
+`5f06353778d40c608ba82bd2dfa6256e0812d33f`, the following separate focused
+commands retained unchanged complete-source manifests:
+
+| Receipt | Actual outcome |
+| --- | --- |
+| `a3-stack-current-source-build-02` | New task API, worker, MCP and web image builds passed in 31.445 seconds. Storage images and host dependencies were reused. |
+| `a3-stack-current-source-start-recovery-02` | Nine-service startup passed in 20.452 seconds using the closed web-port fallback 53500. The original port-53000 failure remains retained. |
+| `a3-stack-image-source-probes-02` | Bounded source/runtime probes passed in 1.962 seconds; these are not complete image audits. |
+| `a3-full-stack-restart-01` | Passed in 48.662 seconds; recovery from the durable pending boundary took 34.635 seconds, within the unchanged 600-second limit. Same nine container/image identities, network and volume; seven long-running services healthy and two one-shot services exited zero. |
+| `a3-owned-stack-backup-and-retirement-01` | Passed in 15.489 seconds after all runtime checks. Twelve task databases were exported into 70,072,624 bytes of custom dumps, individually hashed and checked with `pg_restore --list`; only the exact nine task containers, one task volume and one task network were removed. |
+
+The restart retained both the completed and pending seven-path modeled projections;
+canonical input/result bytes and all 13 checked economic-table fingerprints matched.
+A duplicate published to the real task broker drained with canonical state unchanged.
+There is no separate per-delivery consumer receipt or all-premium-family restart
+claim. The migrate/seed containers retain inherited unhealthy health metadata while
+exited zero; they are successful one-shot operations, not long-running services.
+Cleanup dumps preserve the final witnesses and retained query fixtures but were
+not restored again. The independently recorded 368-table restore remains separate.
+The original two volume metadata records, nine qualified image IDs and existing
+image builds were preserved; no image was deleted. Full current-SHA coverage,
+whole browser performance, release-artifact/signing/reproducibility and complete
+P3-10 gates remain unexecuted.
+
+The six retained build02 runtime images (API, worker, MCP, web, PostgreSQL and
+Redis) subsequently passed the unchanged configured Trivy vulnerability/secret
+checks (`a4-current-image-{api,worker,mcp,web,postgres,redis}-01`), with zero
+configured findings. Results bind the exact `da2a6bb` image inventory; migrate,
+seed and dispatcher are worker aliases. Image license and misconfiguration
+scanners are not configured and are not claimed. The existing HIGH/CRITICAL,
+fix-available policy is unchanged. Database freshness was observed within its
+15 November 19:00 UTC deadline. The post-scan full database hash matches the
+retained prior source-audit database; a contemporaneous full pre-scan hash was
+not recorded. Original stabilization tools/cache preservation separately passed:
+650 regular files, 1,934,880,090 bytes, with unchanged byte hashes and modes.
+The existing project environment inode/configuration is retained; its filesystem
+device changed across the WSL restart. These are bounded checks, not complete
+security certification or redistribution authorization.
 
 ## Historical Consolidated Batch 1, 2026-11-14
 
