@@ -10,6 +10,38 @@
 
 ## Current state
 
+The current authority is the owner's bounded Checkpoint B remediation from
+`8fa5db7d0009ffd18f790ed4c9f498d130e86675`. The
+[remediation record](docs/implementation/PHASE_3_CHECKPOINT_B_20261115.md) is the
+current evidence selector. Checkpoint B is **INCOMPLETE**. Admission p95 improved
+to 0.772447935 seconds but exceeds 0.750 seconds. All ten jobs completed; 30 reads
+passed p95 0.314842558 seconds with 12 SQL statements each. Desktop/mobile
+performance and all fifteen pagination journeys pass; tablet research LCP p75
+fails at 2,724 ms against 2,500 ms.
+
+The actual near-32-MiB report remains unqualified. Its large modeled source was
+fenced before admission, with an unexpired recorded lease; the cause remains
+unresolved. A separate X-ray source case exposes the frozen 32-MiB specification
+versus inherited 8-MiB database constraint. These are local engineering gaps,
+not external blockers. Limits, migrations and negative assertions remain intact.
+Focused risk/scenario restart and synthetic restore pass. New schema differential
+and affected codec cases pass (479), as do six affected PostgreSQL cases. Their
+individual source manifests do not constitute a complete-suite pass.
+
+All 30 acceptance rows and 48 scenarios remain pending, zero accepted. P3-10
+attempt count remains zero. Complete validation requires a subsequent separately
+authorized stage; the earlier conditional authorization below is historical.
+CI remains owner-deferred and unverified. Production, Live, credentials, paid
+providers, publication rights and deployment remain outside this authorization.
+Post-commit security, delivery integrity and exact resource-retirement observations
+are recorded in the final private handoff; no future result is claimed here.
+
+## Historical Batch 2 checkpoint observations
+
+The following record describes the preceding delivery and its authority at that
+time. Current remediation measurements and limitations are recorded above and in
+the linked Checkpoint B report.
+
 Focused nine-service startup and restart now pass at clean pushed source
 `da2a6bbe2e8b46716b92074c0ed2f29d4a2b6e2a`, tree
 `5f06353778d40c608ba82bd2dfa6256e0812d33f`. The restart receipt records 48.662 seconds
@@ -1160,7 +1192,3 @@ scoped corrections remain recorded separately in the validation report.
 The final component follow-up passed static/contracts,61 focused tests, configured
 security and dependency checks, a147-file changed-source secret scan and24 Python
 package builds in195.903s. Final immutable Phase3 validation remains pending.
-
-Bounded remediation package B implements one full immutable X-ray validation per research page cohort and preserves lazy per-item copying. Retained pre-commit browser observations pass desktop and mobile research LCP; tablet LCP p75 is 2,724 ms against the unchanged 2,500-ms limit. All 15 pagination samples pass. Checkpoint B remains incomplete; 0/30 acceptance rows and 0/48 scenarios are accepted. P3-10 was not executed. These observations do not constitute validation at this commit SHA.
-
-Bounded remediation package A batches exact physical source checks and compiles public report-field schema metadata while preserving exact type identity and legacy fallback. Retained pre-commit records report 479 differential/codec unit passes and six source-affected PostgreSQL passes. Final bounded admission p95 is 0.772447935 s against 0.750 s; read p95 is 0.314842558 s and the maximum read count is 12 SQL statements. Admission remains failed and Checkpoint B remains incomplete. Acceptance remains 0/30 rows and 0/48 scenarios; P3-10 was not executed. These observations do not constitute validation at this commit SHA.

@@ -6,18 +6,22 @@
 
 **Release target:** 1.0.0
 
-Current execution status is recorded in the
-[Consolidated Batch 2 record](PHASE_3_BATCH2_20261114.md). Focused source-qualified
-passes do not establish acceptance of this baseline. The latest measured
-report-admission failure keeps Checkpoint B and the complete P3-10 attempt
-pending; no frozen threshold, runtime pin or licensing right is changed here.
-The bounded research-query recovery preserves current authorization per statement.
-Its normal service pass is separate from incomplete browser pagination/performance
-qualification and does not establish the frozen operational SLOs. A separate
-clean-source nine-service restart at `da2a6bb` recovered one modeled projection
-family in 34.635 seconds with matching checked financial fingerprints. Its focused
-scope and backup-before-cleanup evidence do not establish all-family recovery or
-immutable-source acceptance.
+Current bounded remediation is recorded in the
+[Checkpoint B package](PHASE_3_CHECKPOINT_B_20261115.md), following the retained
+[Batch 2 record](PHASE_3_BATCH2_20261114.md). Qualifying desktop/mobile browser
+performance passes, but tablet research LCP p75 is 2,724 ms against 2,500 ms.
+All 15 research pagination journeys complete. This material local failure keeps
+Checkpoint B incomplete regardless of later admission or boundary results;
+final admission p95/max 0.772447935 s also fails 0.750 s, while read p95
+0.314842558 s and all 12-statement counts pass. Actual 32-MiB attempts fail before admission/rollback: the projection source
+worker returns FENCED, while X-ray publication exposes a frozen 32-MiB versus
+inherited generic 8-MiB schema conflict. Exact SQL attribution is inferred; the
+affected local work stops pending owner scope disposition, not external access. Focused risk/scenario
+recovery and other regressions remain separate observations. No frozen threshold,
+runtime pin, financial contract or licensing right changes. The complete P3-10
+stage is expressly excluded from this package. Earlier projection/full-stack/
+report/upgrade/RSS evidence retains its scope; final candidate security and
+delivery remain pending.
 
 ## Observed starting point
 

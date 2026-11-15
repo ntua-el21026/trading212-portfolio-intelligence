@@ -4,6 +4,18 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+- Batch fresh physical-source metadata checks within each existing report
+  authorization boundary and verify the full immutable X-ray pin once per
+  research page. Preserve canonical bytes, current rights, cutoffs and financial
+  values. Add bounded pagination diagnostics, actual report-size qualification
+  tooling and focused risk/scenario restart/restore evidence. Preserve all
+  performance failures; Checkpoint B and all Phase 3 acceptance remain pending.
+  Preserve an absent referenced historical coverage measure as explicitly
+  unavailable without inventing counts or changing financial values. Record the
+  fenced large projection source and the 32-MiB X-ray specification versus 8-MiB
+  database constraint. Full-size qualification remains failed; complete P3-10
+  validation is a subsequent stage.
+
 - Harden the acquired-FX to X-ray to research-item/report dependency chain before
   private decoding, preserving current and pinned REPORT rights, immutable proof
   and original-source deadlines. Correct unavailable research exposure and

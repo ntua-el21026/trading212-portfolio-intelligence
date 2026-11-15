@@ -7,19 +7,18 @@ valuation time, coverage and quality remain attached to results.
 
 ## Current status
 
-**Phase 3 is in progress.** The owner accepted Batch 1 as a bounded implementation
-checkpoint. [Batch 2](docs/implementation/PHASE_3_BATCH2_20261114.md) adds transitive
-research-report authorization, account-switch privacy protection and focused
-synthetic recovery evidence. A focused nine-service restart recovered a pending
-modeled projection in 34.64 seconds with unchanged checked financial data. The
-latest report-admission measurement remains
-above its frozen limit (p95 0.931 seconds against 0.750 seconds); final P3-10
-validation has therefore not started. Focused report journeys pass at the three
-required viewport sizes. The normal 1,000-event research request now passes after
-a bounded authorization-set query correction; its separate browser performance
-case remains incomplete at pagination. All 30 acceptance rows and 48 scenarios
-remain pending, zero accepted. Local unfinished work is distinct from external
-credentials, deployment and distribution-rights decisions.
+**Phase 3 is in progress.** The owner accepted the bounded Batch 1 and Batch 2
+deliveries; Checkpoint B remains under remediation. The
+[current record](docs/implementation/PHASE_3_CHECKPOINT_B_20261115.md) distinguishes
+measured performance, focused regression and synthetic recovery evidence from
+pending qualification. Desktop/mobile performance and all three viewport pagination journeys pass the
+unchanged 100-holding/1,000-event protocol. Admission p95 remains above its limit
+(0.772 s against 0.750 s), and tablet research LCP fails (2,724 ms against 2,500 ms).
+Actual report-size qualification and an X-ray specification/schema size conflict
+remain local work.
+All 30 acceptance rows and 48 scenarios remain pending, zero accepted. Complete
+P3-10 validation has not started and is outside the current remediation package.
+External credentials, deployment and distribution rights require separate decisions.
 
 Consolidated Batch 1 adds focused aggregation,
 analytical and admission-boundary evidence under the

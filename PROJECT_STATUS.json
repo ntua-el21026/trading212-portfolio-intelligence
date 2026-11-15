@@ -141,7 +141,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "bounded_stabilization_aggregation_recovery_and_independent_audit",
+  "next_gate": "bounded_checkpoint_b_remediation_then_independent_review",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -473,7 +473,7 @@
       "phase2_indexed_physical_retention": "implemented",
       "aggregation_vertical": "in_progress"
     },
-    "id": "P3-08"
+    "id": "P3-09"
   },
   "phase_transition": {
     "authority": "repository_owner",
@@ -1832,7 +1832,7 @@
         "Required cases are discovered by parsing direct top-level literal test declarations and the current literal project array. No application/test module, Playwright collection, browser, fixture or test is executed. Unsupported declaration syntax prevents complete coverage claims.",
         "Earlier reports without a prior hash anchor are hashed now and retained as observations; they cannot independently authorize retained passing coverage. Report time/argv and the source/log receipt are verified separately.",
         "Zero-case attempts and prior failures remain recorded. A later pass records an outcome transition, without independently proving the cause of the earlier failure.",
-        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01–07 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
+        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01\u201307 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
         "Procfs denied access to some unrelated same-UID process descriptors after recorded lineage and readable API driver/fixture signatures were checked. Those descriptor blind spots are listed in terminal_quiescence.descriptor_access_limits; exhaustive process-descriptor visibility is not claimed. Recorded launcher and artifact-watcher termination are checked separately.",
         "This commit24 refresh executes metadata assembly only. The exact commit23-to24 input delta is one public-asset COPY line in infrastructure/docker/web.Dockerfile; all other recorded source inputs, including application/test/dependency files, are identical. Whole-source equality with every earlier API execution is false, including the 20 cases that previously matched commit23. No case is claimed executed at commit24.",
         "Report unreached-gates-03/api-browser/aggregation.spec.ts-api-chromium-desktop.json has its report hash first recorded at assembly; retained-coverage eligibility is false.",
@@ -1846,7 +1846,7 @@
     "latest_browser_recoveries": {
       "pwa": "Canonical fixture selector now seeds both authorized synthetic accounts; focused desktop1PASS, later tablet/mobile passes. All privacy/cache/auth assertions retained.",
       "scenario_report": "First INSERT actual physical created_at for12new exact synthetic parents/fiveclasses only under reports&&scenarios. DesktopPASS sourcea98... precedes stderr-only source25d... logging delta; desktop was not rerun. No existing UPDATE, production guard or financial/first-observed/expiry/digest change.",
-      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3→4→4/noBentry qualifies the tested setup/observation without establishing production causality."
+      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3\u21924\u21924/noBentry qualifies the tested setup/observation without establishing production causality."
     },
     "sast_scope": {
       "prior_rules": 7,
@@ -3647,39 +3647,148 @@
       "archive_created": false,
       "complete_validation_or_owner_acceptance_claimed": false,
       "record_scope": "Documentation checkpoint; post-commit source scans, GitHub status and checksummed archive are recorded in the private delivery evidence and consolidated response."
-    }
+    },
+    "record_scope": "Historical bounded Batch 2 delivery; current followup is /bounded_checkpoint_b_remediation"
   },
-  "bounded_remediation": {
-    "checkpoint_b": "INCOMPLETE",
-    "acceptance_rows_accepted": 0,
-    "acceptance_rows_total": 30,
-    "scenarios_accepted": 0,
-    "scenarios_total": 48,
-    "p3_10_executed": false,
-    "qualification": "Pre-commit source-qualified observations; no validation at this commit SHA is claimed.",
-    "packages": {
-      "B": {
-        "package": "B",
-        "state": "bounded_implementation_with_failed_tablet_performance",
-        "desktop_research_lcp_p75_ms": 2448,
-        "mobile_research_lcp_p75_ms": 1592,
-        "tablet_research_lcp_p75_ms": 2724,
-        "required_research_lcp_p75_ms": 2500,
-        "pagination_samples_passed": 15,
-        "pagination_samples_required": 15
+  "bounded_checkpoint_b_remediation": {
+    "authority": "Final bounded remediation and Checkpoint B stabilization; no complete P3-10 stage",
+    "starting_main_sha": "8fa5db7d0009ffd18f790ed4c9f498d130e86675",
+    "status": "bounded_delivery_incomplete",
+    "checkpoint_b": "incomplete",
+    "report": "docs/implementation/PHASE_3_CHECKPOINT_B_20261115.md",
+    "acceptance": {
+      "pending_rows": 30,
+      "pending_scenarios": 48,
+      "accepted_rows": 0,
+      "accepted_scenarios": 0,
+      "owner_acceptance": "pending"
+    },
+    "latest_admission": {
+      "receipt": "a-final-qualifying-service-budgets-02/receipt.json",
+      "result": "failed",
+      "samples": 10,
+      "jobs_succeeded": 10,
+      "p50_seconds": 0.5447124080001231,
+      "p95_seconds": 0.7724479349999456,
+      "limit_seconds": 0.75,
+      "quantile": "nearest_rank",
+      "source": "unchanged_uncommitted_before_after_manifest_at_starting_head",
+      "raw_samples_complete": true,
+      "threshold_gate_passed": false
+    },
+    "latest_reads": {
+      "same_receipt_as_admission": true,
+      "result": "passed",
+      "samples": 30,
+      "p95_seconds": 0.31484255799841776,
+      "limit_seconds": 0.5,
+      "maximum_sql_statements": 12
+    },
+    "browser_performance": {
+      "desktop": "focused_pass",
+      "mobile": "focused_pass",
+      "tablet": "failed_research_lcp",
+      "desktop_receipt": "b-qualifying-desktop-after-copy-01/receipt.json",
+      "desktop_lcp_p75_ms": {
+        "holdings": 364,
+        "research": 2448
       },
-      "A": {
-        "package": "A",
-        "state": "bounded_implementation_with_failed_admission_threshold",
-        "admission_p95_seconds": 0.772447935,
-        "required_admission_p95_seconds": 0.75,
-        "read_p95_seconds": 0.314842558,
-        "required_read_p95_seconds": 0.5,
-        "maximum_read_sql_statements": 12,
-        "reported_differential_and_codec_unit_passes": 479,
-        "reported_source_affected_postgresql_passes": 6,
-        "execution_status": "reported_from_retained_pre_commit_records; not rerun by commit helper"
+      "desktop_interaction_p75_ms": 24,
+      "desktop_cls_max": 0,
+      "fixture_holdings": 100,
+      "fixture_events": 1000,
+      "samples_per_route": 5,
+      "complete_browser_matrix": "not_executed",
+      "mobile_receipt": "b-qualifying-mobile-after-copy-01/receipt.json",
+      "tablet_receipt": "b-qualifying-tablet-after-copy-01/receipt.json",
+      "mobile_lcp_p75_ms": {
+        "holdings": 380,
+        "research": 1592
+      },
+      "tablet_lcp_p75_ms": {
+        "holdings": 364,
+        "research": 2724
+      },
+      "lcp_limit_ms": 2500,
+      "all_fifteen_pagination_journeys_completed": true,
+      "blind_repetition_planned": false
+    },
+    "report_size_boundary": {
+      "status": "failed_before_near_boundary_admission",
+      "retained_activity_attempts": "failed_at_independent_proof_or_manifest_caps_before_32_mib",
+      "largest_observed_legal_activity_document_bytes": 24737005,
+      "normal_projection_calibration": "focused_pass_2203355_document_bytes",
+      "calibration_predicted_near_boundary_bytes": 33508878,
+      "prediction_is_executed_boundary_evidence": false,
+      "latest_receipt": "c1-real-near-32mib-clock-recovery-02/receipt.json",
+      "latest_worker_outcome": "fenced",
+      "latest_worker_job_state": "running",
+      "latest_worker_seconds": 30.102480718998777,
+      "lease_expiry_proven": false,
+      "near_boundary_rollback_verified": false
+    },
+    "remaining_family_recovery": {
+      "status": "focused_pass",
+      "families": ["risk", "scenario"],
+      "receipt": "c2-remaining-family-recovery-01/receipt.json",
+      "recovery_interval_seconds": 47.40871718500057,
+      "outage_through_ready_seconds": 10.445332389999749,
+      "backup_restore_seconds": 5.464929105999545,
+      "compared_tables": 368,
+      "unchanged_economic_tables": 13,
+      "production_rto_claimed": false
+    },
+    "complete_p3_10_attempts": 0,
+    "complete_p3_10_authorized_in_this_package": false,
+    "fresh_committed_candidate_security": "pending_post_commit_observation",
+    "ci": "deferred_by_owner_unverified",
+    "license": "unchanged_no_distribution_decision",
+    "local_work_externally_blocked": false,
+    "independent_review": "pending",
+    "evidence_location": "private_task_evidence; indexed checksummed delivery pending",
+    "prior_evidence": "preserved_read_only",
+    "final_delivery_sha": "post_commit_observation_in_private_delivery_receipt_and_handoff",
+    "historical_admission_observations": [
+      {
+        "receipt": "a-qualifying-service-budgets-01/receipt.json",
+        "result": "failed",
+        "samples": 10,
+        "jobs_succeeded": 10,
+        "p50_seconds": 0.6194261359996744,
+        "p95_seconds": 0.8478069590000814,
+        "limit_seconds": 0.75,
+        "quantile": "nearest_rank",
+        "source": "uncommitted_before_after_manifests_at_starting_head"
       }
-    }
+    ],
+    "xray_retained_reader": {
+      "status": "failed_source_publication_local_specification_schema_gap",
+      "receipt": "c1-real-retained-reader-boundary-01/receipt.json",
+      "canonical_specification_limit_bytes": 33554432,
+      "inherited_database_limit_bytes": 8388608,
+      "largest_actual_successful_result_bytes": 8102155,
+      "actual_successful_holdings": 512,
+      "failed_publication_holdings": 1024,
+      "exact_constraint_violation_observed": false,
+      "precise_failure_attribution": "inferred",
+      "schema_or_limit_changes": false,
+      "full_size_fallback_verified": false,
+      "blocked_external": false
+    },
+    "regression_evidence": {
+      "public_schema_differential_and_affected_codec_cases": 479,
+      "public_schema_differential_and_affected_codec_seconds": 2.63,
+      "source_affected_postgres_cases": 6,
+      "source_affected_postgres_seconds": 126.88,
+      "changed_python_files_static_passed": 16
+    },
+    "remaining_local_gaps": [
+      "admission_p95_above_0_750_seconds",
+      "tablet_research_lcp_p75_above_2500_ms",
+      "near_32_mib_report_source_first_attempt_fenced_before_admission",
+      "xray_32_mib_specification_vs_8_mib_database_constraint"
+    ],
+    "further_runtime_retries_in_this_package": false,
+    "post_commit_observations": "Exact committed-candidate security, CI, source qualification, resource retirement and archive results are recorded in the final private handoff; these are not future pass claims."
   }
 }

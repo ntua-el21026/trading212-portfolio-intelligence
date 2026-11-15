@@ -4,6 +4,26 @@
 
 **Inventory:** 48 distinct scenarios; none complete at design freeze
 
+## Current bounded remediation, 15 November
+
+The owner-authorized [Checkpoint B package](PHASE_3_CHECKPOINT_B_20261115.md)
+starts from verified clean/live main `8fa5db7d0009ffd18f790ed4c9f498d130e86675`.
+Its final qualifying attempt collects all 30 reads and ten admissions/jobs,
+but admission p95/max 0.772447935 s still exceeds 0.750 s. Admission p50 is
+0.544712408 s; read p95 0.314842558 s and all 12-statement counts pass. The retained diagnostic desktop fails research LCP p75 at 4,972 ms. Later
+qualifying desktop/mobile pass at 2,448/1,592 ms; tablet fails at 2,724 ms against
+2,500 ms. All 15 research pagination journeys complete. The tablet failure is
+material local work and independently keeps Checkpoint B INCOMPLETE. Actual near-32-MiB report and large retained-X-ray reader attempts also fail
+before their required boundaries: source-worker FENCED behavior and a verified
+32-MiB design versus inherited 8-MiB schema conflict remain local gaps. New risk/scenario queued recovery passes separately. Checkpoint B is
+INCOMPLETE; P3-10 is excluded from this package and its complete-attempt count is 0.
+All 30 rows and 48 scenarios remain pending, zero accepted. Later code corrections,
+final committed-source scans, cleanup and archive results require actual evidence.
+
+The Batch 1/2 observations below retain their historical scope. New focused
+results, retained failures, code/test paths and source qualifications are recorded
+in the linked report; they do not complete a row or scenario.
+
 The fixture and predicate column is normative. Actual selector pointers below identify
 implemented tests; a pointer is not an assertion that its full predicate passed.
 A row may become complete
@@ -26,7 +46,7 @@ These observations do not complete a scenario or establish a final-source full
 validation/CI pass.
 All 48 states below remain pending, zero accepted.
 
-The [Batch 2 traceability map](PHASE_3_BATCH2_TRACEABILITY.md#mandatory-scenarios)
+**Historical Batch 2 supplement:** The [Batch 2 traceability map](PHASE_3_BATCH2_TRACEABILITY.md#mandatory-scenarios)
 adds item-specific focused proof, source qualifications and remaining gaps. Latest
 complete-capture parity and 420 affected codec cases pass separately; admission p95
 .930957544 s>.750 s still fails. Checkpoint B remains pending; the complete attempt count is 0; no full validation or

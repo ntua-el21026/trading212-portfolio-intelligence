@@ -149,6 +149,44 @@ def _proof(
     )
 
 
+def _coverage_key(
+    builder: ReportBuilder,
+    context: r.ReportContext,
+    key: d.HistoricalCoverageKey,
+) -> str:
+    """Keep an absent referenced canonical measure explicitly unknown in reports."""
+    measure = key.value
+    fields = {f"{measure}.{label}" for label in ("expected_count", "available_count", "complete")}
+    provided = {
+        fact.metric_key for fact in builder.coverage if fact.set_key == context.coverage_set_key
+    }
+    # Existing measure facts remain authoritative, including any malformed
+    # incomplete triplet that the unchanged reference validator must reject.
+    if measure not in provided and not fields.intersection(provided):
+        reason = capture_note(
+            builder,
+            context,
+            key=f"{context.key}.coverage.{measure}.unavailable",
+            text="The canonical historical result does not provide this coverage measure.",
+            code="canonical_coverage_measure_missing",
+        )
+        builder.add_coverage(
+            r.ReportCoverageFact(
+                set_key=context.coverage_set_key,
+                family=context.family,
+                metric_key=measure,
+                value=r.ReportCell(
+                    kind=r.CellKind.BOOLEAN,
+                    value=None,
+                    state=r.CellState.UNAVAILABLE,
+                    context_key=context.key,
+                    reason_key=reason,
+                ),
+            )
+        )
+    return measure
+
+
 def _metric(
     builder: ReportBuilder,
     context: r.ReportContext,
@@ -186,7 +224,7 @@ def _metric(
         reason_key=reason,
         quality=value.quality,
         origin=r.ReportMetricOrigin(value.origin.value),
-        coverage_key=value.coverage_key.value,
+        coverage_key=_coverage_key(builder, context, value.coverage_key),
         method_key=context.method_key,
         method_version=context.method_version,
         provenance_set_key=context.provenance_set_key,

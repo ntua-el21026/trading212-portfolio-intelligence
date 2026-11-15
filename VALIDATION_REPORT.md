@@ -1,6 +1,26 @@
 # Validation Report
 
-## Current Consolidated Batch 2, 2026-11-14–15
+## Current bounded Checkpoint B remediation, 2026-11-15
+
+See the [source-qualified remediation record](docs/implementation/PHASE_3_CHECKPOINT_B_20261115.md)
+for exact receipts, failures, recoveries and pending checks. The latest genuine
+admission run failed p95 0.772447935 seconds against 0.750 seconds; all ten jobs
+completed. Its 30 reads passed p95 0.314842558 seconds with 12 SQL statements each.
+Desktop/mobile performance and all fifteen pagination journeys pass; tablet
+research LCP fails at 2,724 ms against 2,500 ms. The actual report-size test fails
+before admission because its modeled source is fenced. A separate large X-ray
+publication exposes the 32-MiB specification/8-MiB database conflict; exact
+constraint attribution is inferred. Neither size-boundary requirement is accepted.
+Risk/scenario queued-work recovery and a separate synthetic restore passed with
+canonical equivalence, exact source/ownership preservation and no duplicate effects.
+
+Checkpoint B is INCOMPLETE. All 30 rows and 48 scenarios remain pending, zero
+accepted. No complete P3-10 validation, coverage, clean install or browser matrix
+is authorized in this remediation package. Complete attempt count remains zero.
+Fresh committed-candidate security observations and delivery integrity belong to
+the post-commit handoff; no scanner success or final-SHA CI result is inferred.
+
+## Historical Consolidated Batch 2, 2026-11-14–15
 
 The owner accepted Batch 1 as a bounded implementation checkpoint and authorized
 local Batch 2 hardening. This does not accept Phase 3. The

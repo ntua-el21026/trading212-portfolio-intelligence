@@ -1,6 +1,25 @@
 # Phase 3 Implementation Report
 
-**Current:** Consolidated Batch 2 continues from owner-reviewed bounded Batch 1
+**Current bounded remediation:** The owner-authorized
+[Checkpoint B package](PHASE_3_CHECKPOINT_B_20261115.md) starts from clean live/local
+`8fa5db7d0009ffd18f790ed4c9f498d130e86675`. Focused physical-authority batching,
+research copy, missing historical proof and risk/scenario recovery evidence is
+recorded separately from failed admission/performance and failed actual size-boundary
+attempts. The near-32-MiB source worker returns FENCED before report admission;
+the retained-X-ray path exposes the frozen 32-MiB versus inherited 8-MiB schema
+conflict. Exact SQL attribution remains inferred. These local gaps require owner
+scope disposition; the retained new regressions remain failed and are not weakened.
+Final admission p95/max 0.772447935 s fails 0.750 s despite all ten jobs completing;
+read p95 0.314842558 s and all 12-statement counts pass. A public-schema-only
+validation plan has 479 differential/codec passes; six source-affected PostgreSQL
+authority/capture cases pass separately. Checkpoint B is INCOMPLETE.
+Qualifying desktop/mobile browser performance passes,
+but tablet research LCP p75 is 2,724 ms against 2,500 ms; all 15 research pagination
+journeys complete. All 30 rows and 48 scenarios remain pending, zero accepted. Fresh committed-source security, final source and package integrity
+remain pending. P3-10 is expressly excluded from this package; no complete Make,
+coverage, full-browser, release, CI or production qualification is claimed.
+
+**Historical Batch 2:** Consolidated Batch 2 continues from owner-reviewed bounded Batch 1
 checkpoint `5731a5039beb8f3c7272c9b387ac757de605a0e1`. The
 [Batch 2 record](PHASE_3_BATCH2_20261114.md) distinguishes implemented transitive
 authorization and privacy corrections, focused synthetic evidence and retained
