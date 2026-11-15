@@ -63,7 +63,7 @@ def _docker(*arguments: str) -> str:
 
 def _container(service: Literal["postgres", "redis"]) -> str:
     project = os.environ["T212PI_PHASE3_TASK_PROJECT"]
-    assert project == "t212pi_batch2_20261114"
+    assert project in {"t212pi_batch2_20261114", "t212pi_batch2_consolidated_b_20261115"}
     identifiers = _docker(
         "ps",
         "-q",

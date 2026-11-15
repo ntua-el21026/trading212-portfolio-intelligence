@@ -20,6 +20,12 @@ _SERVICES = ("postgres", "redis", "migrate", "seed", "api", "worker", "dispatche
 _IMAGES = {service: "sha256:" + f"{index:x}" * 64 for index, service in enumerate(_SERVICES, 1)}
 
 
+@pytest.fixture(autouse=True)
+def _legacy_task_project_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Historical metadata fixtures explicitly retain their original task scope."""
+    monkeypatch.setenv("T212PI_PHASE3_TASK_PROJECT", _PROJECT)
+
+
 def _tool() -> ModuleType:
     path = Path("tests/integration/phase3_stack_restart.py")
     assert path.is_file(), "The guarded full-stack restart driver is not implemented."

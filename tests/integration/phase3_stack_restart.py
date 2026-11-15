@@ -35,6 +35,7 @@ _TARGETS = {
     "web": "3000/tcp",
 }
 _PROJECT = "t212pi_batch2_20261114"
+_CURRENT_PROJECT = "t212pi_batch2_consolidated_b_20261115"
 _HEX40 = re.compile(r"^[0-9a-f]{40}$")
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
 _IMAGE = re.compile(r"^sha256:[0-9a-f]{64}$")
@@ -52,6 +53,15 @@ def _require(condition: object, message: str) -> None:
         raise ValueError(message)
 
 
+def _project() -> str:
+    project = os.environ.get("T212PI_PHASE3_TASK_PROJECT", _PROJECT)
+    _require(
+        project in {_PROJECT, _CURRENT_PROJECT},
+        "Only an authorized exact task project is supported.",
+    )
+    return project
+
+
 def _path(value: object) -> Path:
     _require(isinstance(value, str) and len(value) <= 4096, "Invalid operator path.")
     path = Path(cast(str, value))
@@ -63,6 +73,7 @@ def _path(value: object) -> Path:
 
 def validate_plan(value: object) -> dict[str, Any]:
     plan = _object(value)
+    project = _project()
     _require(
         set(plan)
         == {
@@ -90,7 +101,9 @@ def validate_plan(value: object) -> dict[str, Any]:
         plan["qualification"] == "focused_local_preacceptance",
         "Only focused local evidence is supported.",
     )
-    _require(plan["project"] == _PROJECT, "Only the existing authorized task project is supported.")
+    _require(
+        plan["project"] == project, "The plan differs from the selected authorized task project."
+    )
     for name in ("source_commit", "source_tree"):
         _require(
             isinstance(plan[name], str) and _HEX40.fullmatch(plan[name]),
@@ -105,7 +118,7 @@ def validate_plan(value: object) -> dict[str, Any]:
         plan["postgres_container_id"] != plan["redis_container_id"], "Storage container IDs differ."
     )
     _require(
-        plan["postgres_volume"] == _PROJECT + "_postgres-data",
+        plan["postgres_volume"] == project + "_postgres-data",
         "Only the existing task volume is supported.",
     )
     _require(
@@ -208,6 +221,10 @@ def validate_containers(
     allowed_tmpfs: Mapping[str, frozenset[str]] | None = None,
 ) -> dict[str, Any]:
     """Validate raw inspect data; return only nonsecret identity/state metadata."""
+    project = _project()
+    _require(
+        plan.get("project") == project, "The resource plan differs from the selected task project."
+    )
     _require(phase in {"ready", "stopped", "owned"}, "Unknown stack boundary.")
     _require(
         isinstance(value, list) and len(value) == len(SERVICES),
@@ -225,7 +242,7 @@ def validate_containers(
         if not isinstance(service, str) or service not in SERVICES or service in actual:
             raise ValueError("Duplicate or foreign service membership.")
         _require(
-            labels.get("com.docker.compose.project") == _PROJECT,
+            labels.get("com.docker.compose.project") == project,
             "A container belongs to another project.",
         )
         _require(
@@ -282,7 +299,7 @@ def validate_containers(
         host, network = _object(row.get("HostConfig")), _object(row.get("NetworkSettings"))
         _require(host.get("Privileged") is False, "Privileged containers are forbidden.")
         _require(
-            host.get("NetworkMode") == _PROJECT + "_default", "The private task network differs."
+            host.get("NetworkMode") == project + "_default", "The private task network differs."
         )
         if "PortBindings" in host:
             _bindings(host["PortBindings"], service, plan["ports"])
@@ -294,9 +311,9 @@ def validate_containers(
         )
         networks = _object(network.get("Networks"))
         _require(
-            set(networks) == {_PROJECT + "_default"}, "Foreign network membership is forbidden."
+            set(networks) == {project + "_default"}, "Foreign network membership is forbidden."
         )
-        network_id = _object(networks[_PROJECT + "_default"]).get("NetworkID")
+        network_id = _object(networks[project + "_default"]).get("NetworkID")
         if phase == "ready":
             _require(
                 isinstance(network_id, str) and _HEX64.fullmatch(network_id),
@@ -419,7 +436,16 @@ class _Exercise:
         self.images: dict[str, str] = {}
         self.allowed_tmpfs: dict[str, frozenset[str]] = {}
         self.operator_hashes: dict[Path, str] = {}
-        self.compose = ["compose", "--project-name", _PROJECT, "--env-file", plan["env_file"]]
+        _require(
+            plan["project"] == _project(), "The exercise differs from the selected task project."
+        )
+        self.compose = [
+            "compose",
+            "--project-name",
+            plan["project"],
+            "--env-file",
+            plan["env_file"],
+        ]
         for path in plan["compose_files"]:
             self.compose.extend(["--file", path])
 
@@ -489,7 +515,7 @@ class _Exercise:
                 "--quiet",
                 "--no-trunc",
                 "--filter",
-                "label=com.docker.compose.project=" + _PROJECT,
+                "label=com.docker.compose.project=" + self.plan["project"],
             ]
         ).split()
         _require(
@@ -578,7 +604,7 @@ class _Exercise:
             "Only the original local task volume is supported.",
         )
         _require(
-            labels.get("com.docker.compose.project") == _PROJECT
+            labels.get("com.docker.compose.project") == self.plan["project"]
             and labels.get("com.docker.compose.volume") == "postgres-data",
             "The authoritative volume is not owned by this project.",
         )
