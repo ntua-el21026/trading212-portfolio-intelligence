@@ -491,6 +491,7 @@ async function sample(
     await page.goto(target, { waitUntil: "networkidle" });
     await ready(page, route);
     const initial = await page.evaluate(() => ({
+      timeOrigin: performance.timeOrigin,
       navigationTimings: performance
         .getEntriesByType("navigation")
         .map((entry) => {

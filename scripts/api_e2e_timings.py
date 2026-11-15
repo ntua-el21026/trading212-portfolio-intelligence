@@ -1,4 +1,4 @@
-"""Opt-in, bounded diagnostics for the real historical browser fixture only."""
+"""Opt-in bounded diagnostics for fixed synthetic browser-fixture routes."""
 
 from __future__ import annotations
 
@@ -13,8 +13,8 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from functools import wraps
 from threading import RLock
-from time import perf_counter
-from typing import Literal
+from time import perf_counter, thread_time
+from typing import Literal, Protocol
 from unittest.mock import patch
 
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
@@ -29,9 +29,27 @@ Route = Literal[
     "attribution",
     "income",
     "cash_flow",
+    "research",
     "other",
 ]
-Phase = Literal["capture", "capture_decode", "calculate", "verify", "persist_uses", "read_result"]
+Phase = Literal[
+    "capture",
+    "capture_decode",
+    "calculate",
+    "verify",
+    "persist_uses",
+    "read_result",
+    "research_authorize",
+    "research_summary",
+    "research_retained_read",
+    "research_candidates",
+    "research_payloads",
+    "research_copy",
+    "research_capabilities",
+    "research_provenance",
+    "research_response",
+    "research_wire",
+]
 Event = Literal[
     "api_start",
     "api_headers",
@@ -43,8 +61,10 @@ Event = Literal[
     "phase_start",
     "phase_done",
     "truncated",
+    "sql_done",
 ]
-Origin = Literal["historical", "source"]
+Origin = Literal["historical", "source", "research"]
+SQLKind = Literal["statement", "lock"]
 MAX_REQUESTS = 256
 MAX_EVENTS = 4096
 
@@ -64,6 +84,7 @@ def route_label(path: str) -> Route:
         return "benchmark_catalog"
     routes: tuple[tuple[str, Route], ...] = (
         ("summary", "summary"),
+        ("research", "research"),
         ("performance/(?:series|intelligence)", "performance"),
         ("benchmark-comparison", "benchmark"),
         ("attribution", "attribution"),
@@ -88,7 +109,12 @@ class _Request:
     started: float
 
 
+class _ResearchSQLContext(Protocol):
+    _research_fixture_timing: tuple[_Request, Phase | None, float, float, SQLKind]
+
+
 _active: ContextVar[_Request | None] = ContextVar("e2e_timing_request", default=None)
+_research_phase: ContextVar[Phase | None] = ContextVar("e2e_research_phase", default=None)
 
 
 class _Recorder:
@@ -130,6 +156,8 @@ class _Recorder:
         seconds: float | None = None,
         status: int | None = None,
         failed: bool = False,
+        cpu_seconds: float | None = None,
+        sql_kind: SQLKind | None = None,
     ) -> None:
         with self.lock:
             if self.closed:
@@ -151,6 +179,10 @@ class _Recorder:
                 fields["origin"] = origin
             if seconds is not None:
                 fields["seconds"] = seconds
+            if cpu_seconds is not None:
+                fields["cpu_seconds"] = cpu_seconds
+            if sql_kind is not None:
+                fields["sql_kind"] = sql_kind
             if status is not None:
                 fields["status"] = status
             if failed:
@@ -162,7 +194,7 @@ class _Recorder:
             self.closed = True
 
 
-def _timed[**P, T](function: Callable[P, T], phase: Phase) -> Callable[P, T]:
+def _timed[**P, T](function: Callable[P, T], phase: Phase, *, cpu: bool = False) -> Callable[P, T]:
     @wraps(function)
     def call(*args: P.args, **kwargs: P.kwargs) -> T:
         request = _active.get()
@@ -170,20 +202,29 @@ def _timed[**P, T](function: Callable[P, T], phase: Phase) -> Callable[P, T]:
             return function(*args, **kwargs)
         request.recorder.emit(request, "phase_start", phase=phase)
         started, failed = perf_counter(), True
+        cpu_started = thread_time() if cpu else None
+        token = _research_phase.set(phase) if cpu else None
         try:
             result = function(*args, **kwargs)
             failed = False
             return result
         finally:
             request.recorder.emit(
-                request, "phase_done", phase=phase, seconds=perf_counter() - started, failed=failed
+                request,
+                "phase_done",
+                phase=phase,
+                seconds=perf_counter() - started,
+                failed=failed,
+                cpu_seconds=None if cpu_started is None else thread_time() - cpu_started,
             )
+            if token is not None:
+                _research_phase.reset(token)
 
     return call
 
 
 class _ThreadBridge:
-    """Replace only two fixture-scoped module bindings, never global asyncio."""
+    """Replace selected fixture-module bindings, never global asyncio."""
 
     def __init__(self, origin: Origin) -> None:
         self.origin = origin
@@ -224,13 +265,18 @@ class _ThreadBridge:
 
 
 class _Middleware:
-    def __init__(self, app: ASGIApp, recorder: _Recorder) -> None:
+    def __init__(self, app: ASGIApp, recorder: _Recorder, *, research_only: bool = False) -> None:
         self.app, self.recorder = app, recorder
+        self.research_only = research_only
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         request = (
             self.recorder.request(route_label(scope["path"]))
-            if (scope["type"] == "http" and scope["path"].startswith("/api/v1/"))
+            if (
+                scope["type"] == "http"
+                and scope["path"].startswith("/api/v1/")
+                and (not self.research_only or route_label(scope["path"]) == "research")
+            )
             else None
         )
         if request is None:
@@ -255,10 +301,102 @@ class _Middleware:
             _active.reset(token)
 
 
+def _research_sql_before(
+    connection: object,
+    cursor: object,
+    statement: str,
+    parameters: object,
+    context: _ResearchSQLContext,
+    executemany: bool,
+) -> None:
+    request = _active.get()
+    if request is None or request.route != "research":
+        return
+    # Inspect only whether this fixed statement requests an advisory lock. Never
+    # retain SQL, parameter, resource, column, header or exception material.
+    kind: SQLKind = "lock" if "pg_advisory" in statement else "statement"
+    context._research_fixture_timing = (
+        request,
+        _research_phase.get(),
+        perf_counter(),
+        thread_time(),
+        kind,
+    )
+
+
+def _research_sql_after(
+    connection: object,
+    cursor: object,
+    statement: str,
+    parameters: object,
+    context: _ResearchSQLContext,
+    executemany: bool,
+) -> None:
+    mark: tuple[_Request, Phase | None, float, float, SQLKind] | None = getattr(
+        context, "_research_fixture_timing", None
+    )
+    if mark is None:
+        return
+    del context._research_fixture_timing
+    request, phase, started, cpu_started, kind = mark
+    if _active.get() is not request:
+        return
+    request.recorder.emit(
+        request,
+        "sql_done",
+        phase=phase,
+        seconds=perf_counter() - started,
+        cpu_seconds=thread_time() - cpu_started,
+        sql_kind=kind,
+    )
+
+
 @contextmanager
-def fixture_timings(app: ASGIApp, *, enabled: bool) -> Iterator[ASGIApp]:
+def _research_fixture_timings(app: ASGIApp) -> Iterator[ASGIApp]:
+    from sqlalchemy import event
+    from sqlalchemy.engine import Engine
+    from trading212_api import research_routes, research_schemas
+    from trading212_persistence import research_service, research_summary_page
+
+    recorder = _Recorder()
+    try:
+        with ExitStack() as stack:
+            stack.enter_context(
+                patch.object(research_service, "asyncio", _ThreadBridge("research"))
+            )
+            targets: tuple[tuple[object, str, Phase], ...] = (
+                (research_service, "authorize_research_page", "research_authorize"),
+                (research_service, "research_summary_page", "research_summary"),
+                (research_summary_page, "read_research_xray", "research_retained_read"),
+                (research_summary_page, "research_candidate_page", "research_candidates"),
+                (research_summary_page, "research_event_payloads", "research_payloads"),
+                (research_summary_page, "copy_research_portfolio_facts_many", "research_copy"),
+                (research_summary_page, "require_research_capabilities", "research_capabilities"),
+                (research_summary_page, "finish_research_xray", "research_provenance"),
+                (research_routes, "research_response", "research_response"),
+                (research_schemas, "research_view", "research_wire"),
+            )
+            for module, name, phase in targets:
+                stack.enter_context(
+                    patch.object(module, name, _timed(getattr(module, name), phase, cpu=True))
+                )
+            event.listen(Engine, "before_cursor_execute", _research_sql_before)
+            stack.callback(event.remove, Engine, "before_cursor_execute", _research_sql_before)
+            event.listen(Engine, "after_cursor_execute", _research_sql_after)
+            stack.callback(event.remove, Engine, "after_cursor_execute", _research_sql_after)
+            yield _Middleware(app, recorder, research_only=True)
+    finally:
+        recorder.close()
+
+
+@contextmanager
+def fixture_timings(app: ASGIApp, *, enabled: bool, research: bool = False) -> Iterator[ASGIApp]:
     if not enabled:
         yield app
+        return
+    if research:
+        with _research_fixture_timings(app) as observed:
+            yield observed
         return
     from trading212_analytics import historical as analytics
     from trading212_persistence import historical_base, historical_publication, source_store

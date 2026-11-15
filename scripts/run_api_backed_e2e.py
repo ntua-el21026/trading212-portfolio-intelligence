@@ -697,7 +697,11 @@ def _serve_fixture(database_url: str, *, cleanup_ready: ThreadEvent | None = Non
         return {"reset": True}
 
     enabled = timings_enabled(os.environ.get("T212PI_E2E_TIMINGS", "0"))
-    with fixture_timings(app, enabled=enabled and historical == "1") as observed_app:
+    with fixture_timings(
+        app,
+        enabled=enabled and (historical == "1" or web_performance == "1"),
+        research=web_performance == "1",
+    ) as observed_app:
         uvicorn.run(
             observed_app,
             host="127.0.0.1",
