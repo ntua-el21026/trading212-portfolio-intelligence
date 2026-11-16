@@ -4,7 +4,18 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
-### Consolidated Checkpoint B qualification
+### Admission latency investigation, 16 November 2026
+
+- Retain the new unchanged-source admission failure: p95 0.779183911 s against
+  0.750 s, with all ten jobs completed and read p95/SQL limits passing. Record
+  complete broad and reduced diagnostics, exact per-stage observations and their
+  material timing perturbation. No production bottleneck or performance benefit
+  is established; no production code, tests, migrations or limits change.
+- Stop admission remediation as FAILED with unresolved observer/environment/CPU
+  attribution. Preserve every earlier failure; complete local qualification remains
+  pending, all 30 rows and 48 scenarios remain pending, and P3-10 stays unstarted.
+
+### Historical consolidated Checkpoint B qualification, 15 November
 
 - Align X-ray canonical input/result persistence with its frozen 32-MiB contract
   through additive migration `0036`; preserve other limits and all published

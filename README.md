@@ -7,18 +7,22 @@ valuation time, coverage and quality remain attached to results.
 
 ## Current status
 
-**Phase 3 is in progress; Checkpoint B remains incomplete.** The current
-[consolidated record](docs/implementation/PHASE_3_CHECKPOINT_B_CONSOLIDATED_20261115.md)
-retains separate schema, projection-recovery and actual size-boundary passes.
-The latest admission p95 is 0.856597051 s against the unchanged 0.750 s limit;
-all ten jobs complete, and the 30-read p95/12-SQL limits pass. The material failure
-stops further performance loops and long local Make/coverage, clean installation
-and full browser qualification in this package. Those checks remain pending local.
-The earlier bounded report remains
-[historical evidence](docs/implementation/PHASE_3_CHECKPOINT_B_20261115.md).
+**Phase 3 is in progress; Checkpoint B remains incomplete.** The
+[16 November admission investigation](docs/implementation/PHASE_3_ADMISSION_REMEDIATION_20261116.md) confirms an uninstrumented
+admission p95 of **0.779183911 s** against the unchanged **0.750 s** limit.
+All ten jobs complete; read p95 **0.324819180 s** and the **12-SQL** limit pass.
+Broad and reduced observers materially perturb timing and do not establish a
+production cause. No production code, tests or migrations changed; admission
+remediation is **FAILED**, and the bounded investigation stops.
+
+The [15 November consolidated record](docs/implementation/PHASE_3_CHECKPOINT_B_CONSOLIDATED_20261115.md)
+retains separate schema, projection-recovery and genuine size-boundary passes,
+with its earlier admission failures preserved. Complete local Make/coverage,
+clean-install/build, browser and recovery qualification remain pending local.
 All 30 acceptance rows and 48 scenarios remain pending, zero accepted. Formal
-P3-10 has not started. CI, external credentials, deployment and distribution
-rights remain separate decisions.
+P3-10 has not started. CI, external credentials, production/Live and distribution
+rights remain separate decisions. The earlier bounded report remains
+[historical evidence](docs/implementation/PHASE_3_CHECKPOINT_B_20261115.md).
 
 Consolidated Batch 1 adds focused aggregation,
 analytical and admission-boundary evidence under the

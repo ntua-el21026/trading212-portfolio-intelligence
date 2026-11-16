@@ -1,10 +1,32 @@
 # Phase 3 Implementation Report
 
-## Current consolidated Checkpoint B qualification, 15 November
+## Current admission diagnosis, 16 November
 
-The current [consolidated qualification record](PHASE_3_CHECKPOINT_B_CONSOLIDATED_20261115.md) follows owner authorization
+The [focused admission record](PHASE_3_ADMISSION_REMEDIATION_20261116.md) starts from clean live/local
+main `8adf4806528fc186a0778c9d08d71d636fe1b562`.
+**Admission remediation FAILED; Checkpoint B remains incomplete.** The new
+uninstrumented 30-read/ten-admission baseline fails p95/max **0.779183911 s**
+against **0.750 s**; all ten jobs complete. Read p95 **0.324819180 s** and
+maximum **12 SQL statements** pass. Earlier qualifying failures remain historical.
+
+Broad and reduced observers retain every sample and exact source manifests, but
+their inflated timings are diagnostic evidence, not qualifying performance.
+The unexplained observer/environment/CPU inflation prevents a verified production
+cause or justified optimization. No production code, tests or migrations changed;
+the bounded investigation stops without another cohort or speculative correction.
+
+All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**.
+Complete Make/coverage, browser, clean-install/build and expanded recovery/resource
+qualification remain **pending_local**, not external blockers. Checkpoint B is not
+accepted; formal P3-10 has not started. CI activation, providers/credentials,
+production/Live, licensing and distribution retain their separate owner gates.
+The 15 November consolidated observations below retain their original sources.
+
+## Historical consolidated Checkpoint B qualification, 15 November
+
+The historical [consolidated qualification record](PHASE_3_CHECKPOINT_B_CONSOLIDATED_20261115.md) follows owner authorization
 from clean main `dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267`. Checkpoint B remains
-**INCOMPLETE**. The latest genuine 30-read/ten-admission cohort fails admission
+**INCOMPLETE**. Its last genuine 30-read/ten-admission cohort fails admission
 p95/max **0.856597051 s** against 0.750 s (p50 0.617076987 s). All ten jobs complete;
 read p95 0.344801251 s and all 12-statement counts pass. Its unchanged source
 manifest is `3496f8bf9570cbc0152fcd3f4056ae4dbbe4b19531743028a609ed521630e919`,

@@ -5,7 +5,7 @@
   "branch": "main",
   "base_branch": "main",
   "baseline_sha": "c566c080762f9d74996e1bdd19d1254848f8f17f",
-  "updated_at": "2026-11-15",
+  "updated_at": "2026-11-16",
   "current_candidate": {
     "phase": "phase_3",
     "release": "1.0.0",
@@ -141,7 +141,7 @@
     }
   },
   "remaining_external_conditions": 4,
-  "next_gate": "owner_review_of_incomplete_checkpoint_b_and_bounded_follow_up",
+  "next_gate": "owner_review_of_failed_bounded_admission_diagnosis_and_measurement_comparability",
   "audit_remediation": {
     "stage": "A",
     "status": "complete",
@@ -1832,7 +1832,7 @@
         "Required cases are discovered by parsing direct top-level literal test declarations and the current literal project array. No application/test module, Playwright collection, browser, fixture or test is executed. Unsupported declaration syntax prevents complete coverage claims.",
         "Earlier reports without a prior hash anchor are hashed now and retained as observations; they cannot independently authorize retained passing coverage. Report time/argv and the source/log receipt are verified separately.",
         "Zero-case attempts and prior failures remain recorded. A later pass records an outcome transition, without independently proving the cause of the earlier failure.",
-        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01\u201307 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
+        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01–07 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
         "Procfs denied access to some unrelated same-UID process descriptors after recorded lineage and readable API driver/fixture signatures were checked. Those descriptor blind spots are listed in terminal_quiescence.descriptor_access_limits; exhaustive process-descriptor visibility is not claimed. Recorded launcher and artifact-watcher termination are checked separately.",
         "This commit24 refresh executes metadata assembly only. The exact commit23-to24 input delta is one public-asset COPY line in infrastructure/docker/web.Dockerfile; all other recorded source inputs, including application/test/dependency files, are identical. Whole-source equality with every earlier API execution is false, including the 20 cases that previously matched commit23. No case is claimed executed at commit24.",
         "Report unreached-gates-03/api-browser/aggregation.spec.ts-api-chromium-desktop.json has its report hash first recorded at assembly; retained-coverage eligibility is false.",
@@ -1846,7 +1846,7 @@
     "latest_browser_recoveries": {
       "pwa": "Canonical fixture selector now seeds both authorized synthetic accounts; focused desktop1PASS, later tablet/mobile passes. All privacy/cache/auth assertions retained.",
       "scenario_report": "First INSERT actual physical created_at for12new exact synthetic parents/fiveclasses only under reports&&scenarios. DesktopPASS sourcea98... precedes stderr-only source25d... logging delta; desktop was not rerun. No existing UPDATE, production guard or financial/first-observed/expiry/digest change.",
-      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3\u21924\u21924/noBentry qualifies the tested setup/observation without establishing production causality."
+      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3→4→4/noBentry qualifies the tested setup/observation without establishing production causality."
     },
     "sast_scope": {
       "prior_rules": 7,
@@ -3791,7 +3791,7 @@
     "further_runtime_retries_in_this_package": false,
     "post_commit_observations": "Exact committed-candidate security, CI, source qualification, resource retirement and archive results are recorded in the final private handoff; these are not future pass claims."
   },
-  "current_checkpoint_b_selector": "/checkpoint_b_consolidated_qualification",
+  "current_checkpoint_b_selector": "/checkpoint_b_admission_remediation",
   "checkpoint_b_consolidated_qualification": {
     "authority": "latest_owner_authorized_local_checkpoint_b_qualification",
     "starting_main_sha": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
@@ -4176,5 +4176,275 @@
       "scope": "Focused checks only; no complete make validate, coverage or full browser claim."
     },
     "post_commit_delivery_integrity": "Actual source/archive/resource and final-SHA observations belong to the private post-commit handoff; no future pass is inferred."
+  },
+  "checkpoint_b_admission_remediation": {
+    "date": "2026-11-16",
+    "status": "FAILED",
+    "disposition": "Admission remediation FAILED",
+    "checkpoint_b_status": "INCOMPLETE",
+    "owner": "Michail Athanasios Peppas",
+    "implementation_report": "docs/implementation/PHASE_3_ADMISSION_REMEDIATION_20261116.md",
+    "starting_live_local_main_sha": "8adf4806528fc186a0778c9d08d71d636fe1b562",
+    "application_implementation_changed": false,
+    "test_workload_or_threshold_changed": false,
+    "migration_or_projection_change": false,
+    "formal_p3_10_started": false,
+    "complete_local_validation_attempts": 0,
+    "independent_review": "pending",
+    "owner_acceptance": "pending",
+    "accepted_rows": 0,
+    "pending_rows": 30,
+    "accepted_scenarios": 0,
+    "pending_scenarios": 48,
+    "local_work_externally_blocked": false,
+    "thresholds": {
+      "admission_p95_seconds": 0.75,
+      "read_p95_seconds": 0.5,
+      "maximum_current_read_sql": 12,
+      "admission_samples": 10,
+      "read_samples": 30,
+      "quantile_method": "nearest_rank"
+    },
+    "cohorts": [
+      {
+        "receipt": "admission-uninstrumented-baseline-01/receipt.json",
+        "raw": "operations-service-budgets-94759c646c5c408ebca60717c7645092.json",
+        "raw_sha256": "d139fa243f89d4dce61a16b8c2b18eff2c68f57e5db0fc5ceb10c02aa3fa9f53",
+        "kind": "uninstrumented_qualifying_baseline",
+        "actual_source_sha": "8adf4806528fc186a0778c9d08d71d636fe1b562",
+        "actual_source_manifest_sha256": "dbaf6fc96c7cb09b4d679b516a20247c7b41439d6d7530ac0bded01a1847b4f6",
+        "complete_source_unchanged": true,
+        "clean_worktree": true,
+        "exit_code": 1,
+        "wrapper_seconds": 99.622,
+        "admission": {
+          "max_seconds": 0.7791839110000183,
+          "p50_seconds": 0.5613386039999568,
+          "p95_seconds": 0.7791839110000183,
+          "samples": 10
+        },
+        "admission_samples_seconds": [
+          0.7647446870000749, 0.6079143919998842, 0.5613386039999568,
+          0.7791839110000183, 0.5464656770000147, 0.5459795550000308,
+          0.5414329279999492, 0.5638585060000878, 0.5605255550001402,
+          0.5681402680002066
+        ],
+        "read": {
+          "max_seconds": 0.3371396630000163,
+          "p50_seconds": 0.11106548999987353,
+          "p95_seconds": 0.3248191800000768,
+          "samples": 30
+        },
+        "maximum_read_sql": 12,
+        "completed_jobs": 10,
+        "SLO_pass_claimed": false
+      },
+      {
+        "receipt": "admission-instrumented-diagnostic-01/receipt.json",
+        "raw": "operations-service-budgets-282fa3c6dc45447dbaa934b03ad102c8.json",
+        "raw_sha256": "7cb5d8f50bbced01506d0411cc64905cfa8b802c93149d701c5fc8043e8bcf52",
+        "kind": "instrumented_diagnostic_only",
+        "actual_source_sha": "8adf4806528fc186a0778c9d08d71d636fe1b562",
+        "actual_source_manifest_sha256": "dbaf6fc96c7cb09b4d679b516a20247c7b41439d6d7530ac0bded01a1847b4f6",
+        "complete_source_unchanged": true,
+        "clean_worktree": true,
+        "exit_code": 1,
+        "wrapper_seconds": 213.731,
+        "admission": {
+          "max_seconds": 1.9819619459999558,
+          "p50_seconds": 1.4698407990003943,
+          "p95_seconds": 1.9819619459999558,
+          "samples": 10
+        },
+        "admission_samples_seconds": [
+          1.9819619459999558, 1.4698407990003943, 1.3745500250001896,
+          1.793289791999996, 1.7955344090000835, 1.4898338070001955,
+          1.7393046880001748, 1.3432769589999225, 1.3724965370001883,
+          1.299970433999988
+        ],
+        "read": {
+          "max_seconds": 0.603392329000144,
+          "p50_seconds": 0.2787123849998352,
+          "p95_seconds": 0.5686640650001209,
+          "samples": 30
+        },
+        "maximum_read_sql": 12,
+        "completed_jobs": 10,
+        "SLO_pass_claimed": false
+      },
+      {
+        "receipt": "admission-reduced-observer-confirmation-01/receipt.json",
+        "raw": "operations-service-budgets-0e53382e693942d691c947f2d1bf64ad.json",
+        "raw_sha256": "709fbdf0c8279c56f39e86104ebd9a8f17f751ca84cbfd831181ea716e64b336",
+        "kind": "reduced_observer_diagnostic_only",
+        "actual_source_sha": "8adf4806528fc186a0778c9d08d71d636fe1b562",
+        "actual_source_manifest_sha256": "dbaf6fc96c7cb09b4d679b516a20247c7b41439d6d7530ac0bded01a1847b4f6",
+        "complete_source_unchanged": true,
+        "clean_worktree": true,
+        "exit_code": 1,
+        "wrapper_seconds": 207.059,
+        "admission": {
+          "max_seconds": 1.7472818679998454,
+          "p50_seconds": 1.3281813459998375,
+          "p95_seconds": 1.7472818679998454,
+          "samples": 10
+        },
+        "admission_samples_seconds": [
+          1.7472818679998454, 1.4080304409999371, 1.6607599779999873,
+          1.2050454720001653, 1.2540967490003823, 1.675036297999668,
+          1.1578299980001248, 1.3281813459998375, 1.657514982000066,
+          1.0601071830001274
+        ],
+        "read": {
+          "max_seconds": 0.5507844649996514,
+          "p50_seconds": 0.26577217300018674,
+          "p95_seconds": 0.49972626499993567,
+          "samples": 30
+        },
+        "maximum_read_sql": 12,
+        "completed_jobs": 10,
+        "SLO_pass_claimed": false
+      }
+    ],
+    "observer_only_calibration": {
+      "receipt": "observer-only-calibration-01/receipt.json",
+      "exit_code": 0,
+      "production_or_database_calls": 0,
+      "empty_3052_span_cpu_ms_range": [10.740636, 12.001699],
+      "synthetic_677_cursor_callback_cpu_ms_range": [3.43778, 4.050542],
+      "calibration_subtracted_from_timings": false,
+      "limitation": "This limited calibration does not explain the material diagnostic inflation or model real allocation/GC/environment effects."
+    },
+    "reduced_observer_rows": [
+      {
+        "ordinal": 1,
+        "total_wall_seconds": 1.7472818679998454,
+        "worker_cpu_seconds": 1.109533007,
+        "sql_wall_seconds": 0.557980477,
+        "driver_commit_wall_seconds": 0.198838168,
+        "natural_gc_wall_seconds": 0.039830968,
+        "generation2_gc_wall_seconds": 0.0,
+        "worker_runqueue_seconds": 8.9293e-5
+      },
+      {
+        "ordinal": 2,
+        "total_wall_seconds": 1.4080304409999371,
+        "worker_cpu_seconds": 0.9685548,
+        "sql_wall_seconds": 0.486688965,
+        "driver_commit_wall_seconds": 0.067804384,
+        "natural_gc_wall_seconds": 0.026723316,
+        "generation2_gc_wall_seconds": 0.0,
+        "worker_runqueue_seconds": 0.004685096
+      },
+      {
+        "ordinal": 3,
+        "total_wall_seconds": 1.6607599779999873,
+        "worker_cpu_seconds": 1.304253702,
+        "sql_wall_seconds": 0.434040107,
+        "driver_commit_wall_seconds": 0.036018548,
+        "natural_gc_wall_seconds": 0.344827892,
+        "generation2_gc_wall_seconds": 0.320546485,
+        "worker_runqueue_seconds": 0.002025676
+      },
+      {
+        "ordinal": 4,
+        "total_wall_seconds": 1.2050454720001653,
+        "worker_cpu_seconds": 0.953012378,
+        "sql_wall_seconds": 0.354175294,
+        "driver_commit_wall_seconds": 0.005844858,
+        "natural_gc_wall_seconds": 0.022554519,
+        "generation2_gc_wall_seconds": 0.0,
+        "worker_runqueue_seconds": 6.9922e-5
+      },
+      {
+        "ordinal": 5,
+        "total_wall_seconds": 1.2540967490003823,
+        "worker_cpu_seconds": 0.968712511,
+        "sql_wall_seconds": 0.391199044,
+        "driver_commit_wall_seconds": 0.004453891,
+        "natural_gc_wall_seconds": 0.035373805,
+        "generation2_gc_wall_seconds": 0.0,
+        "worker_runqueue_seconds": 0.000201615
+      },
+      {
+        "ordinal": 6,
+        "total_wall_seconds": 1.675036297999668,
+        "worker_cpu_seconds": 1.370957727,
+        "sql_wall_seconds": 0.383562071,
+        "driver_commit_wall_seconds": 0.032547157,
+        "natural_gc_wall_seconds": 0.407813747,
+        "generation2_gc_wall_seconds": 0.382941156,
+        "worker_runqueue_seconds": 0.000197939
+      },
+      {
+        "ordinal": 7,
+        "total_wall_seconds": 1.1578299980001248,
+        "worker_cpu_seconds": 0.896899358,
+        "sql_wall_seconds": 0.349008871,
+        "driver_commit_wall_seconds": 0.013285174,
+        "natural_gc_wall_seconds": 0.030185075,
+        "generation2_gc_wall_seconds": 0.0,
+        "worker_runqueue_seconds": 9.6946e-5
+      },
+      {
+        "ordinal": 8,
+        "total_wall_seconds": 1.3281813459998375,
+        "worker_cpu_seconds": 1.007924432,
+        "sql_wall_seconds": 0.392611508,
+        "driver_commit_wall_seconds": 0.039024967,
+        "natural_gc_wall_seconds": 0.027927692,
+        "generation2_gc_wall_seconds": 0.0,
+        "worker_runqueue_seconds": 0.00445674
+      },
+      {
+        "ordinal": 9,
+        "total_wall_seconds": 1.657514982000066,
+        "worker_cpu_seconds": 1.369798228,
+        "sql_wall_seconds": 0.396523766,
+        "driver_commit_wall_seconds": 0.006010449,
+        "natural_gc_wall_seconds": 0.409688595,
+        "generation2_gc_wall_seconds": 0.383493037,
+        "worker_runqueue_seconds": 0.001565341
+      },
+      {
+        "ordinal": 10,
+        "total_wall_seconds": 1.0601071830001274,
+        "worker_cpu_seconds": 0.83250448,
+        "sql_wall_seconds": 0.316081409,
+        "driver_commit_wall_seconds": 0.005290328,
+        "natural_gc_wall_seconds": 0.031351545,
+        "generation2_gc_wall_seconds": 0.0,
+        "worker_runqueue_seconds": 0.001585848
+      }
+    ],
+    "findings": {
+      "baseline_admission_latency": "FAILED",
+      "diagnostic_integrity": "exact_10_original_samples_matched_both_variants_and_patches_callbacks_restored",
+      "direct_observations": [
+        "Natural generation2 garbage collection contributes 269.557-386.556 ms in broad trace; 320.546-383.493 ms in reduced confirmation.",
+        "Driver commits vary materially in both diagnostic cohorts.",
+        "Broad sampler found no blockers at its sampled instants; reduced confirmation does not measure server waits.",
+        "Worker runqueue counters are small at observed boundaries; GIL/WSL host and CPU frequency behavior remain unmeasured.",
+        "Diagnostic reads and worker CPU materially exceed untouched baseline even after removing broad spans, per-query traces and sampler."
+      ],
+      "baseline_dominant_bottleneck": "not_established",
+      "cause_of_diagnostic_inflation": "unresolved",
+      "CPU_SQL_GC_commit_categories": "overlapping observations; not additive causal contributions",
+      "optimization_supported": "none",
+      "production_correction_attempts": 0,
+      "further_runtime_cohorts_in_this_package": "none"
+    },
+    "remaining_local": [
+      "Baseline/environment/observer comparability and causal admission diagnosis",
+      "Evidence-supported correction and repeated uninstrumented qualification",
+      "Complete Checkpoint B Make/coverage/build/clean-install/browser/restart/restore/resource gates after material failure is resolved"
+    ],
+    "ci": "owner_deferred_unverified_no_activation",
+    "security": "Policies, rules, exclusions and historical findings unchanged; prior nonzero scanner statuses remain failed, not rerun as complete security gates in this focused package.",
+    "license_distribution_production_provider_gates": "unchanged_separately_owner_controlled",
+    "post_commit_delivery_integrity": "Actual final source synchronization, archive checksum and resource retirement belong to private final handoff, not an inferred future pass.",
+    "latest_uninstrumented_qualification_pointer": "/checkpoint_b_admission_remediation/cohorts/0",
+    "latest_qualifying_admission_p95_seconds": 0.7791839110000183,
+    "latest_qualifying_read_p95_seconds": 0.3248191800000768
   }
 }
