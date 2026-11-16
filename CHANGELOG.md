@@ -6,6 +6,11 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Final Checkpoint B local qualification
 
+- Bound the worker health command to one genuine ping reply using the existing
+  application and unchanged timeout budgets. Preserve the original restart
+  deadline failure, diagnostic timings and focused response/privacy evidence;
+  qualify the corrected image separately.
+
 - Prevent native browser form restoration from showing an account identity that
   differs from the loaded document. Preserve current authorization and masking.
   Qualify projection readiness and genuine held account switches; retain the

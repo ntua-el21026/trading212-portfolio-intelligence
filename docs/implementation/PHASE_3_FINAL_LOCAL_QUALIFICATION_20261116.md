@@ -185,7 +185,7 @@ A bounded history diagnostic independently observes native form restoration:
 Back loads a new document (not BFCache), with URL, HTML selected attributes and
 financial markers for the secondary account, but live select values for the
 primary account. `AccountSelect` now explicitly disables autocomplete for its
-routing control. This is the only application-code change in this package;
+routing control. This is the first application-code change in this package;
 previous statements about unchanged application code describe their earlier scopes.
 Existing component tests, strict web typing and component lint pass. The genuine
 history regression passes on desktop, tablet and mobile after the actual new build.
@@ -208,6 +208,46 @@ produces one pass and the same Back failure (31.398 seconds). These focused resu
 do not transform the failed 75-cell invocation into a complete passing matrix.
 Current-code performance, legacy Demo, container and security checks continue
 independently. All acceptance states remain pending.
+
+## Worker health deadline correction
+
+Six current-source images build successfully at clean `b89eea3` (631.302 seconds),
+with all six runtime package-manager checks passing. The stack starts with seven
+healthy long-running services and two completed one-shot jobs. The first restart
+invocation omits the driver's required synthetic `DATABASE_URL` and fails before
+service mutation; that original preflight remains. The corrected invocation then
+fails the unchanged 600-second exercise deadline. Its separate 120-second cleanup
+cannot establish worker health; total wrapper time is 720.928 seconds. No successful
+nine-service recovery is inferred from its retained baseline and queued boundary.
+
+Docker records repeated worker probes ending at approximately 8.045 seconds with
+exit -1. One bounded diagnostic on the unchanged image observes the original
+application CLI returning a genuine pong at 4.073 seconds, then exiting successfully
+at 10.124 seconds. The post-pong interval is 6.051 seconds: installed Kombu source
+explains five seconds of collecting additional replies; the remaining interval is
+unpartitioned. Docker-client CPU time is not container Python CPU evidence.
+A diagnostic reference using the same `tasks.celery_app`, `timeout=5` and `limit=1`
+returns one valid pong: application import 3.355 seconds wall/CPU, control 0.045
+seconds, total 3.400 seconds, outer Docker invocation 4.285 seconds. These are
+separate diagnostic observations, not qualifying health or recovery measurements.
+
+The internal health probe now uses that application's single-reply inspection and
+fails silently on missing application, invalid/absent pong or exceptions. Docker's
+eight-second cap, five-second reply timeout, 30-second interval, 15-second start
+period and three retries remain unchanged. Consumer configuration, task
+registration, financial code and permissions are unchanged. This preserves the
+existing any-responsive-worker liveness predicate; it does not certify a particular
+container, database readiness or job completion.
+
+All ten new response/privacy cases pass under focused coverage (15.508 seconds).
+The new module has 100% of its 12 measured statements and four branches covered;
+its native data is copied and verified before reporting, with parallel inputs kept.
+This is module-only evidence, separate from the earlier full coverage measurement
+and missing cumulative native data. Two existing worker configuration/dispatcher
+cases pass in a separate earlier ten-case invocation. Original red collection,
+format/import-order and typing failures remain beside their focused recoveries.
+Current-source image and full nine-service qualification of the correction remain
+pending. Previously qualified tags and actual source-qualified failures are retained.
 
 ## Qualification and acceptance
 

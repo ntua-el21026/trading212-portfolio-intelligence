@@ -54,5 +54,5 @@ RUN for manager_dir in /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin /opt/ve
 
 USER app
 HEALTHCHECK --interval=30s --timeout=8s --start-period=15s --retries=3 \
-  CMD ["celery", "-A", "trading212_worker.tasks:celery_app", "inspect", "ping", "--timeout", "5"]
+  CMD ["python", "-m", "trading212_worker.health_probe"]
 CMD ["celery", "-A", "trading212_worker.tasks:celery_app", "worker", "--loglevel=INFO", "--concurrency=1"]
