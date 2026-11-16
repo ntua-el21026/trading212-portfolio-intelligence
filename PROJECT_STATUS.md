@@ -19,6 +19,14 @@ also fails admission; no production optimization is justified yet. Admission-spe
 execution has stopped at its two-cohort limit. Independent remaining local gates
 continue. Exact task recovery guards retain foreign-resource denial.
 
+The complete service-backed execution at `cdab340` retains **880 passes, ten
+failures and 72 setup errors**. Targeted test-only corrections recover the
+affected cases in separate 80-case and one-case observations; the original
+invocation remains failed. Original combined coverage is **87.865%**, above 70%;
+a later focused-only recombination fails separately and retains its data-handling
+limitation. Current-build browser, clean-install, container and security
+qualification continue.
+
 All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**.
 Formal P3-10 has not started; CI, providers, production and distribution remain
 separately owner gated. Earlier records retain their historical source qualification.

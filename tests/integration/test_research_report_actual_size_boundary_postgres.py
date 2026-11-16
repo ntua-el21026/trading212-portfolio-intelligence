@@ -396,6 +396,12 @@ def _measure_retained(
 def _capture_measurement(case: ProjectionJobCase, saved: SavedProjection) -> dict[str, object]:
     before = _state(case)
     selected = replace(report_selection(case), formats=(r.ReportFormat.JSON,))
+
+    def clock() -> datetime:
+        # The genuine worker publishes after case.now; use the service's current
+        # operational clock while retaining the original financial source cutoff.
+        return max(case.now, datetime.now(UTC))
+
     try:
         with case.sessions() as session:
             try:
@@ -404,25 +410,25 @@ def _capture_measurement(case: ProjectionJobCase, saved: SavedProjection) -> dic
                     case.principal,
                     account_id=selected.account_id,
                     required_scopes=selection_scopes(selected),
-                    now=case.now,
+                    now=clock(),
                 )
                 report_owner_lock(session, auth.owner_id)
                 sink = ReportInputSink(
                     session,
                     auth,
                     selection=selected,
-                    expires_at=case.now + timedelta(days=1),
-                    clock=lambda: case.now,
+                    expires_at=clock() + timedelta(days=1),
+                    clock=clock,
                 )
                 capture = PostgresReportCapture(
                     session,
                     auth,
                     source_use=r.ReportSourceUse.REPORT,
                     sessions=case.sessions,
-                    clock=lambda: case.now,
+                    clock=clock,
                     cursor_signing_key=XRAY_CURSOR_KEY,
                 ).capture_report(selected, sink=sink)
-                auth.check(session, now=case.now)
+                auth.check(session, now=clock())
                 sink.finish(capture)
                 measurement = _measure_retained(case, saved, sink.row.id, session)
             finally:

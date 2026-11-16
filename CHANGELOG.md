@@ -6,6 +6,12 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Final Checkpoint B local qualification
 
+- Qualify the complete integration/migration scope and retain all original
+  failures. Correct isolated database targets, cleanup-event doubles, current
+  trigger assertions, owner-lock concurrency setup and calibration operational
+  time; rerun only affected failures. Record the original coverage pass and the
+  separate focused-data recombination failure without a combined suite-pass claim.
+
 - Align ordinary premium-report authorization test doubles with the required
   research-dependency header lookup; preserve all original denial assertions and
   the complete isolated coverage execution's original failures.

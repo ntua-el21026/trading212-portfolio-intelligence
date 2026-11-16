@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 from collections.abc import Iterator
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
@@ -13,6 +14,7 @@ from alembic import command
 from alembic.config import Config
 from psycopg import sql
 from sqlalchemy import Engine, delete, func, select, text, update
+from sqlalchemy.engine import make_url
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
 from trading212_application import targets as app
@@ -48,6 +50,8 @@ from trading212_persistence.target_models import (
 )
 from trading212_security.principals import AuthorizationError, Principal, Scope
 
+from tests.integration.test_migrations import _database_url
+
 pytestmark = pytest.mark.integration
 NOW = datetime(2026, 9, 7, 12, tzinfo=UTC)
 KEY = b"target-service-integration-cursor-signing-key"
@@ -56,14 +60,21 @@ KEY = b"target-service-integration-cursor-signing-key"
 @pytest.fixture(scope="module")
 def target_database() -> Iterator[tuple[Engine, sessionmaker[Session]]]:
     name = "t212pi_targets_" + uuid4().hex[:12]
-    admin = "postgresql://portfolio:portfolio@127.0.0.1:5432/postgres"
+    base_url = make_url(_database_url())
+    admin = (
+        base_url.set(database="postgres")
+        .render_as_string(hide_password=False)
+        .replace("postgresql+psycopg://", "postgresql://", 1)
+    )
     with psycopg.connect(admin, autocommit=True) as connection:
         connection.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))
-    url = "postgresql+psycopg://portfolio:portfolio@127.0.0.1:5432/" + name
+    url = base_url.set(database=name).render_as_string(hide_password=False)
     cfg = Config("alembic.ini")
     cfg.set_main_option("sqlalchemy.url", url)
     engine = None
+    original_url = os.environ.get("DATABASE_URL")
     try:
+        os.environ["DATABASE_URL"] = url
         command.upgrade(cfg, "head")
         command.upgrade(cfg, "head")
         command.check(cfg)
@@ -71,6 +82,10 @@ def target_database() -> Iterator[tuple[Engine, sessionmaker[Session]]]:
         engine = create_database_engine(url)
         yield engine, create_session_factory(engine)
     finally:
+        if original_url is None:
+            os.environ.pop("DATABASE_URL", None)
+        else:
+            os.environ["DATABASE_URL"] = original_url
         if engine is not None:
             engine.dispose()
         with psycopg.connect(admin, autocommit=True) as connection:

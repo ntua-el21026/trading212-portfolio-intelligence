@@ -8,6 +8,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from threading import Event
 from uuid import UUID
 
 import psycopg
@@ -47,7 +48,8 @@ def test_browser_launches_use_fresh_databases_and_preserve_configured_database(
                 monkeypatch.setenv("TEST_DATABASE_URL", configured_url)
             launches: list[str] = []
 
-            def serve(database_url: str) -> None:
+            def serve(database_url: str, *, cleanup_ready: Event) -> None:
+                assert cleanup_ready.is_set()
                 assert database_url != base_url
                 assert os.environ["DATABASE_URL"] == database_url
                 name = make_url(database_url).database
@@ -123,7 +125,8 @@ from fastapi import FastAPI
 from sqlalchemy.engine import make_url
 from scripts import run_api_backed_e2e as runner
 
-def serve(database_url):
+def serve(database_url, *, cleanup_ready):
+    assert cleanup_ready.is_set()
     @asynccontextmanager
     async def lifespan(app):
         Path(sys.argv[1]).write_text(make_url(database_url).database)

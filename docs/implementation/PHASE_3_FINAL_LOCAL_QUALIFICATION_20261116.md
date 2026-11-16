@@ -82,6 +82,90 @@ Further service-backed coverage uses its own exact source and receipt; any combi
 coverage measure must verify identical measured production files across inputs and
 remain separate from a fictitious complete same-SHA test pass.
 
+## Complete service-backed execution and focused corrections
+
+At clean `cdab340fc9f6418c63ec342177540450cf0cf8c7`, all 962 selected integration
+and migration cases execute: **880 passed, ten failed, 72 setup errors**, two
+warnings, exit 1, 13,173.685 wrapper seconds. The original receipt is
+`coverage-python-integration-all-01/receipt.json`; source manifest
+`4f4380abd80a3e33bee606ae7c1a05a58800d6e108facedae9da6392c706aa6e` remains unchanged.
+
+All 72 setup errors are connection refusals at port 5432. Three legacy fixtures
+ignored the configured isolated server at port 55432: planning (18 affected
+cases), sources (30), and virtual targets (24). Both administrative and disposable
+database URLs now use the existing configured-URL helper. Alembic's environment
+override is scoped and restored; generated names, seeding, repeated upgrades,
+schema checks and disposable cleanup remain intact.
+
+Four browser-fixture failures use obsolete server doubles without the required
+cleanup event. Their correction retains database isolation, collision and SIGTERM
+checks. Three schema failures expect obsolete trigger messages; current messages
+and explicit SQLSTATE 23514 preserve the same capacity and retention denials.
+The preliminary report calibration uses a frozen operational clock preceding its
+real-time worker publication. Its correction follows the existing advancing
+report-service clock, retaining financial inputs, source cutoffs and REPORT use.
+
+The shared-evidence test initially fails before its intended header race because
+the mandatory owner lock serializes publication and purge earlier. Reusing an
+existing provider still acquires that lock through the cleanup-epoch trigger.
+The final test therefore proves both owner-lock orderings, logical-copy release
+before physical deletion, and post-purge republication denial. SQLSTATE 55P03,
+the 200-ms transaction timeout and all ordinary database guards remain.
+
+Only the 81 failed/error cases affected by these corrections are rerun under
+coverage: **80 pass, one concurrency case fails**, exit 1, 114.882 seconds,
+manifest `3e54b147a50d0d67bd668f1e050bf80a85188b59b2311ce536c6c38cbc18028b`.
+The corrected single concurrency case then passes separately, exit 0, 6.542
+seconds, manifest `e2007f72557b1b1db73d31465bfe7e69b5d88a8ed1f40852502e22b9a55ec1dd`.
+Receipts are `coverage-integration-focused-recovery-01/receipt.json` and
+`coverage-shared-evidence-recovery-02/receipt.json`. Original full-suite failures
+remain failures. These are manifested working-source observations; no complete
+passing committed-source invocation is inferred. Application code, migrations,
+authorization, limits and scanner policy are unchanged.
+
+## Coverage measurement and retained operator limitation
+
+The original combined report passes the unchanged 70% threshold: **87.86518955%**
+combined, **91.36115935%** lines and **75.42820622%** branches. Its exact counts are
+76,282/83,495 lines and 17,703/23,470 branches. `coverage-report-01/receipt.json`
+exits 0; original `coverage/coverage.json` and XML remain intact. Production source
+equivalence between the component executions is recorded separately from suite
+success.
+
+A follow-up operator command starts a new combination containing only the two
+focused recovery inputs. Its report, JSON and XML commands exit 2 at
+45.76471271%; this is a focused data set, not a production coverage regression.
+Coverage 7.16 reporting automatically consumes parallel inputs unless its separate
+keep-combined option is supplied. The initial reporting step consumed those raw
+SQLite inputs despite the preceding combine command's keep option; their original
+JSON/XML reports and execution receipts remain. The follow-up did not append the
+original combined data. Both actual command outcomes and this data-retention
+limitation remain visible. No complete suite is repeated to reconstruct raw data.
+The original cumulative SQLite inputs are unavailable; regenerating a cumulative
+native base remains pending local. The preserved native full reports still support
+their original measurement. Future accumulation must append explicitly, retain
+combined inputs during reporting and snapshot the native base before reporting.
+
+## Current boundary, recovery and resource observations
+
+Within the failed complete integration execution, the genuine near-32-MiB report
+test passes separately: **33,508,874 encoded bytes**, 45,558 below its document cap,
+52 chunks, maximum chunk 1,047,537 bytes and manifest 66,652 bytes. Oversized
+admission reaches the exact `document_bytes` guard and preserves persistent state,
+capacity and immutable sources. Its large JSON job remains bounded by independent
+artifact limits; no successful near-boundary artifact is claimed. The preliminary
+calibration failure and its focused recovery remain separate.
+
+Other actual observations include the 256-MiB retained-capacity rejection boundary,
+0036 canonical X-ray byte boundaries, retained-X-ray authorization, dense heartbeat
+recovery and modeled-family recovery. Maximum projection work completes in
+88.376 seconds with peak worker-tree RSS 348,307,456 bytes, within 240 seconds and
+512 MiB. Synthetic backup/restore takes 5.087 seconds; recovery through validated
+reads takes 27.082 seconds. A real SIGKILL outage retains canonical chunks and
+fencing, with readiness after 6.980 seconds and actual lease redispatch after
+61.129 seconds. These scoped observations neither accept a scenario nor certify a
+production recovery objective.
+
 ## Qualification and acceptance
 
 Aggregate Make, complete suites/coverage, strict static checks, generated contracts,

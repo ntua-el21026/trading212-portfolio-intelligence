@@ -5658,7 +5658,7 @@
         "Required cases are discovered by parsing direct top-level literal test declarations and the current literal project array. No application/test module, Playwright collection, browser, fixture or test is executed. Unsupported declaration syntax prevents complete coverage claims.",
         "Earlier reports without a prior hash anchor are hashed now and retained as observations; they cannot independently authorize retained passing coverage. Report time/argv and the source/log receipt are verified separately.",
         "Zero-case attempts and prior failures remain recorded. A later pass records an outcome transition, without independently proving the cause of the earlier failure.",
-        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01–07 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
+        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01\u201307 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
         "Procfs denied access to some unrelated same-UID process descriptors after recorded lineage and readable API driver/fixture signatures were checked. Those descriptor blind spots are listed in terminal_quiescence.descriptor_access_limits; exhaustive process-descriptor visibility is not claimed. Recorded launcher and artifact-watcher termination are checked separately.",
         "This commit24 refresh executes metadata assembly only. The exact commit23-to24 input delta is one public-asset COPY line in infrastructure/docker/web.Dockerfile; all other recorded source inputs, including application/test/dependency files, are identical. Whole-source equality with every earlier API execution is false, including the 20 cases that previously matched commit23. No case is claimed executed at commit24.",
         "Report unreached-gates-03/api-browser/aggregation.spec.ts-api-chromium-desktop.json has its report hash first recorded at assembly; retained-coverage eligibility is false.",
@@ -5672,7 +5672,7 @@
     "latest_browser_recoveries": {
       "pwa": "Canonical fixture selector now seeds both authorized synthetic accounts; focused desktop1PASS, later tablet/mobile passes. All privacy/cache/auth assertions retained.",
       "scenario_report": "First INSERT actual physical created_at for12new exact synthetic parents/fiveclasses only under reports&&scenarios. DesktopPASS sourcea98... precedes stderr-only source25d... logging delta; desktop was not rerun. No existing UPDATE, production guard or financial/first-observed/expiry/digest change.",
-      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3→4→4/noBentry qualifies the tested setup/observation without establishing production causality."
+      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3\u21924\u21924/noBentry qualifies the tested setup/observation without establishing production causality."
     },
     "sast_scope": {
       "prior_rules": 7,
@@ -8277,7 +8277,7 @@
     "date": "2026-11-16",
     "owner": "Michail Athanasios Peppas",
     "status": "failed_cause_unresolved",
-    "disposition": "Admission remediation FAILED — cause unresolved",
+    "disposition": "Admission remediation FAILED \u2014 cause unresolved",
     "checkpoint_b": "INCOMPLETE",
     "implementation_report": "docs/implementation/PHASE_3_CONTROLLED_ENVIRONMENT_20261116.md",
     "starting_source_sha": "1e86141984470df6ddfc485d2c41cee3113f8511",
@@ -8464,6 +8464,51 @@
         "1 unchanged high-confidence source-secret pattern assertion"
       ]
     },
-    "report_authorization_test_recovery": "Represent absent normalized research dependency in existing Session doubles; verify mandatory metadata header query and preserve all denials. Thirteen affected cases pass; original full scope remains failed."
+    "report_authorization_test_recovery": "Represent absent normalized research dependency in existing Session doubles; verify mandatory metadata header query and preserve all denials. Thirteen affected cases pass; original full scope remains failed.",
+    "service_backed_python_coverage": {
+      "source_sha": "cdab340fc9f6418c63ec342177540450cf0cf8c7",
+      "source_manifest_sha256": "4f4380abd80a3e33bee606ae7c1a05a58800d6e108facedae9da6392c706aa6e",
+      "receipt": "coverage-python-integration-all-01/receipt.json",
+      "exit_code": 1,
+      "elapsed_seconds": 13173.685,
+      "passed": 880,
+      "failed": 10,
+      "errors": 72,
+      "warnings": 2,
+      "status": "FAIL"
+    },
+    "integration_test_corrections": {
+      "production_changed": false,
+      "setup_error_cause": "Three fixtures hardcoded port 5432 instead of the configured isolated server.",
+      "focused_81_case_receipt": "coverage-integration-focused-recovery-01/receipt.json",
+      "focused_81_case_result": {
+        "passed": 80,
+        "failed": 1,
+        "exit_code": 1
+      },
+      "single_concurrency_recovery_receipt": "coverage-shared-evidence-recovery-02/receipt.json",
+      "single_concurrency_recovery_result": {
+        "passed": 1,
+        "exit_code": 0
+      },
+      "scope": "Manifested working-source observations; original full scope remains failed. No repeated full suite."
+    },
+    "original_coverage_measurement": {
+      "status": "PASS",
+      "receipt": "coverage-report-01/receipt.json",
+      "combined_percent": 87.86518954798298,
+      "line_percent": 91.36115935085934,
+      "branch_percent": 75.42820622070728,
+      "threshold_percent": 70,
+      "scope": "Measured production sources are byte/mode equivalent across inputs; not a complete passing same-SHA suite."
+    },
+    "follow_up_coverage_recombination": {
+      "status": "FAIL",
+      "receipt": "coverage-report-recoveries-02/receipt.json",
+      "exit_code": 2,
+      "combined_percent": 45.76471271263522,
+      "scope": "Focused recovery data only; initial raw inputs were consumed automatically by coverage 7.16 reporting. Original full JSON/XML and receipts remain intact. No raw data reconstructed or full tests repeated.",
+      "cumulative_native_regeneration": "PENDING_LOCAL"
+    }
   }
 }

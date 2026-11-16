@@ -460,13 +460,16 @@ def test_definition_version_capacity_is_shared_across_families(
     session.execute(text("SET CONSTRAINTS ALL IMMEDIATE"))
     session.execute(text("SET CONSTRAINTS ALL DEFERRED"))
     with (
-        pytest.raises(IntegrityError, match="Premium version capacity unavailable"),
+        pytest.raises(
+            IntegrityError, match="aggregate shared definition capacity exceeded"
+        ) as failure,
         session.begin_nested(),
     ):
         if last_family == "scenario":
             definition(session, owner, account)
         else:
             risk_version(session, owner, account, calendar)
+    assert getattr(failure.value.orig, "sqlstate", None) == "23514"
 
 
 def test_scenario_retention_cannot_be_inserted_already_completed(
@@ -515,7 +518,7 @@ def test_scenario_retention_cannot_be_inserted_already_completed(
         ),
     )
     with (
-        pytest.raises(IntegrityError, match="Scenario retention cannot begin completed"),
+        pytest.raises(IntegrityError, match="Premium retention cannot begin completed") as failure,
         session.begin_nested(),
     ):
         session.execute(
@@ -526,6 +529,7 @@ def test_scenario_retention_cannot_be_inserted_already_completed(
         """),
             dict(id=uuid4(), owner=owner, account=account, root=root, now=NOW),
         )
+    assert getattr(failure.value.orig, "sqlstate", None) == "23514"
 
 
 def test_shared_evidence_publication_serializes_with_physical_purge(
@@ -572,6 +576,10 @@ def test_shared_evidence_publication_serializes_with_physical_purge(
         setup.flush()
         v1.sealed = True
         setup.flush()
+        version_values = {
+            column.name: getattr(v1, column.name)
+            for column in ScenarioSensitivityVersionModel.__table__.c
+        }
         version_id, evidence_id, payload_id = v1.id, evidence.id, physical.id
         setup.commit()
         setup.add(
@@ -585,23 +593,55 @@ def test_shared_evidence_publication_serializes_with_physical_purge(
             )
         )
         setup.commit()
-    with Session(database_engine) as publisher, Session(database_engine) as purger:
-        v2, _ = source(publisher, owner, evidence_count=1)
-        purger.execute(
-            delete(ScenarioSensitivityEvidencePayloadModel).where(
-                ScenarioSensitivityEvidencePayloadModel.id == payload_id
+        with (
+            pytest.raises(
+                IntegrityError,
+                match="Sensitivity source identity or published payload is immutable",
+            ) as pending_copy,
+            setup.begin_nested(),
+        ):
+            setup.execute(
+                delete(ScenarioSensitivityEvidencePayloadModel).where(
+                    ScenarioSensitivityEvidencePayloadModel.id == payload_id
+                )
             )
+        assert getattr(pending_copy.value.orig, "sqlstate", None) == "23514"
+        setup.execute(
+            update(ScenarioSensitivityEvidenceLinkModel)
+            .where(
+                ScenarioSensitivityEvidenceLinkModel.owner_id == owner,
+                ScenarioSensitivityEvidenceLinkModel.version_id == version_id,
+                ScenarioSensitivityEvidenceLinkModel.evidence_id == evidence_id,
+            )
+            .values(copy_pending=False)
         )
+        setup.commit()
+    with Session(database_engine) as publisher, Session(database_engine) as purger:
+        source(publisher, owner, evidence_count=1)
+        with pytest.raises(
+            OperationalError, match="Sensitivity source purge owner is busy"
+        ) as owner_busy:
+            purger.execute(
+                delete(ScenarioSensitivityEvidencePayloadModel).where(
+                    ScenarioSensitivityEvidencePayloadModel.id == payload_id
+                )
+            )
+        assert getattr(owner_busy.value.orig, "sqlstate", None) == "55P03"
+        purger.rollback()
+        publisher.rollback()
+        deleted = purger.execute(
+            delete(ScenarioSensitivityEvidencePayloadModel)
+            .where(ScenarioSensitivityEvidencePayloadModel.id == payload_id)
+            .returning(ScenarioSensitivityEvidencePayloadModel.id)
+        )
+        assert deleted.scalar_one() == payload_id
         publisher.execute(text("SET LOCAL lock_timeout = '200ms'"))
-        with pytest.raises(OperationalError) as failure:
+        # Reverse the ordering: the mandatory cleanup-epoch trigger serializes
+        # a new version at the owner boundary before it can reuse shared evidence.
+        with pytest.raises(OperationalError, match="Projection policy owner is busy") as failure:
             publisher.add(
-                ScenarioSensitivityEvidenceLinkModel(
-                    id=uuid4(),
-                    owner_id=owner,
-                    version_id=v2.id,
-                    evidence_id=evidence_id,
-                    observation_id=None,
-                    created_at=NOW,
+                ScenarioSensitivityVersionModel(
+                    **dict(version_values, id=uuid4(), revision=2, sealed=False)
                 )
             )
             publisher.flush()
@@ -610,7 +650,9 @@ def test_shared_evidence_publication_serializes_with_physical_purge(
         purger.commit()
     with Session(database_engine) as retry:
         v3, _ = source(retry, owner, evidence_count=1)
-        with pytest.raises(IntegrityError, match="Sensitivity evidence payload unavailable"):
+        with pytest.raises(
+            IntegrityError, match="Sensitivity evidence payload unavailable"
+        ) as missing_payload:
             retry.add(
                 ScenarioSensitivityEvidenceLinkModel(
                     id=uuid4(),
@@ -622,6 +664,7 @@ def test_shared_evidence_publication_serializes_with_physical_purge(
                 )
             )
             retry.flush()
+        assert getattr(missing_payload.value.orig, "sqlstate", None) == "23514"
         retry.rollback()
 
 
