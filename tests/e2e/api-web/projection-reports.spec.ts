@@ -1128,6 +1128,21 @@ test("saved projection and pinned goal produce complete four-format profile4 rep
   await expect(page).toHaveURL(new RegExp(`account=${baseline}`));
   cleared(page, baseline, profile, "projection");
   await expect(
+    page.getByRole("heading", {
+      name: "Projection and goal reports",
+      level: 1,
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page
+      .locator('form[action="/reports/premium"]')
+      .filter({
+        has: page.getByRole("button", { name: "Choose account", exact: true }),
+      })
+      .getByRole("combobox", { name: "Account", exact: true }),
+  ).toHaveValue(baseline);
+  await expect(
     page.getByRole("heading", { name: "Private artifacts", exact: true }),
   ).toHaveCount(0);
   await expect(

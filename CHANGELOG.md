@@ -6,6 +6,11 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Final Checkpoint B local qualification
 
+- Prevent native browser form restoration from showing an account identity that
+  differs from the loaded document. Preserve current authorization and masking.
+  Qualify projection readiness and genuine held account switches; retain the
+  pending-navigation Back failure on all viewports without weakening its checks.
+
 - Qualify the complete integration/migration scope and retain all original
   failures. Correct isolated database targets, cleanup-event doubles, current
   trigger assertions, owner-lock concurrency setup and calibration operational

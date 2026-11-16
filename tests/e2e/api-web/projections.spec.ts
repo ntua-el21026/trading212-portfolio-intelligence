@@ -423,6 +423,14 @@ test("owned immutable assumptions and goals execute and page exact saved project
     .poll(() => new URL(page.url()).searchParams.get("account"))
     .toBe(otherAccount);
   expect([...new URL(page.url()).searchParams.keys()]).toEqual(["account"]);
+  await expect(
+    page.getByRole("heading", { name: "Projections", level: 1, exact: true }),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole("navigation", { name: "Projection workspace", exact: true })
+      .getByRole("link", { name: "Saved runs", exact: true }),
+  ).toHaveAttribute("href", `/projections?view=runs&account=${otherAccount}`);
   await expect(page.getByText(runId, { exact: true })).toHaveCount(0);
   await presentation(page);
   await page.screenshot({

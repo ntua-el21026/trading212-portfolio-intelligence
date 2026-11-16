@@ -95,6 +95,7 @@ export function AccountSelect({
   );
   return (
     <select
+      autoComplete="off"
       aria-label={label}
       name={name}
       disabled={!accounts.length || !hydrated}

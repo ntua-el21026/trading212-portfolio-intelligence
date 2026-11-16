@@ -166,6 +166,49 @@ fencing, with readiness after 6.980 seconds and actual lease redispatch after
 61.129 seconds. These scoped observations neither accept a scenario nor certify a
 production recovery objective.
 
+## Current browser qualification and bounded correction
+
+The complete production-build API browser run at clean `7c2828a` executes all
+75 spec/viewport cells: **128 passing tests, ten failures, zero skipped, flaky or
+global errors**, exit 1. All three complete five-sample performance protocols
+pass, with research LCP p75 desktop/tablet/mobile **2,328/2,336/2,332 ms**.
+All three research-report journeys perform genuine PDF, CSV, XLSX and JSON
+operations. These results retain that source and build, not a later whole-matrix pass.
+
+Four projection failures start keyboard checks on a loading skeleton after URL
+changes. Explicit positive heading and account-scoped readiness checks preserve
+all original privacy negatives, keyboard iterations and timeouts. All six affected
+projection spec/viewport cells pass separately in `api-projection-browser-readiness-01`
+(exit 0, 401.626 seconds), manifested working source `ace3e0726291fe3ef100e5de6a79888382390bbf11998c7fb9dade387325f8e8`.
+
+A bounded history diagnostic independently observes native form restoration:
+Back loads a new document (not BFCache), with URL, HTML selected attributes and
+financial markers for the secondary account, but live select values for the
+primary account. `AccountSelect` now explicitly disables autocomplete for its
+routing control. This is the only application-code change in this package;
+previous statements about unchanged application code describe their earlier scopes.
+Existing component tests, strict web typing and component lint pass. The genuine
+history regression passes on desktop, tablet and mobile after the actual new build.
+Authorization, account masking and document navigation remain unchanged.
+
+Two old delayed tests intercept only an RSC request although account switches
+replace the document. Their updated exact same-origin context interception also
+covers the application's service-worker fetch. Native keyboard input supersedes
+the held response without Playwright's locator navigation wait. Diagnostic-only
+CDP sessions are removed from the Back case; all original URL, account, privacy,
+pre/post-release assertions and timeouts remain. Superseding-account checks pass
+on all three viewports. Pending-navigation Back remains **FAIL** on all three:
+`page.goBack` reports `ERR_ABORTED` before the required post-Back assertions.
+No further production correction or causal attribution is inferred. This bounded
+browser diagnostic loop has stopped. All original and intermediate failures remain.
+
+The source-qualified tablet/mobile five-case reruns each produce four passes and
+one Back failure (47.740/46.745 seconds). Desktop's focused two-case bare rerun
+produces one pass and the same Back failure (31.398 seconds). These focused results
+do not transform the failed 75-cell invocation into a complete passing matrix.
+Current-code performance, legacy Demo, container and security checks continue
+independently. All acceptance states remain pending.
+
 ## Qualification and acceptance
 
 Aggregate Make, complete suites/coverage, strict static checks, generated contracts,

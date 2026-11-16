@@ -126,30 +126,59 @@ test("a delayed account response cannot replace the account currently selected i
   const held = new Promise<void>((resolve) => {
     release = resolve;
   });
-  await page.route(
-    (url) =>
-      url.pathname === "/" &&
-      url.searchParams.get("account") === second.id &&
-      url.searchParams.has("_rsc"),
+  const destination = new URL("/", page.url());
+  destination.searchParams.set("account", second.id);
+  const serviceWorkerUrl = new URL("/sw.js", destination).href;
+  await page.context().route(
+    (url) => url.href === destination.href,
     async (route) => {
+      const navigationRequest = route.request();
+      const serviceWorker = navigationRequest.serviceWorker();
+      const workerFetch = serviceWorker?.url() === serviceWorkerUrl;
+      const mainDocument =
+        serviceWorker === null &&
+        navigationRequest.isNavigationRequest() &&
+        navigationRequest.resourceType() === "document" &&
+        navigationRequest.frame() === page.mainFrame();
+      if (
+        navigationRequest.method() !== "GET" ||
+        (!workerFetch && !mainDocument)
+      ) {
+        await route.fallback();
+        return;
+      }
       const response = await route.fetch();
       requested = true;
       await held;
       await route.fulfill({ response });
     },
   );
+  const control = await accountControl(page);
+  const optionValues = await control
+    .locator("option:enabled")
+    .evaluateAll((options) =>
+      options.map((option) => (option as HTMLOptionElement).value),
+    );
+  expect(optionValues.filter((value) => value === primary)).toHaveLength(1);
+  expect(optionValues.filter((value) => value === second.id)).toHaveLength(1);
+  const primaryKey = optionValues.at(0) === primary ? "Home" : "End";
+  expect(
+    primaryKey === "Home" ? optionValues.at(0) : optionValues.at(-1),
+    "Primary account is the verified native keyboard endpoint",
+  ).toBe(primary);
   try {
+    await control.focus();
+    await expect(control).toBeFocused();
     await page
       .getByRole("combobox", { name: "Portfolio account", exact: true })
       .selectOption(second.id);
     await expect.poll(() => requested, { timeout: 20_000 }).toBe(true);
-    // A second actual account choice supersedes the outstanding B response.
-    await page
-      .getByRole("combobox", { name: "Portfolio account", exact: true })
-      .selectOption(primary);
+    // Native keyboard input can supersede the held document without waiting
+    // for Playwright's locator navigation precheck to complete that document.
+    await page.keyboard.press(primaryKey);
   } finally {
     release();
-    await page.unrouteAll({ behavior: "wait" });
+    await page.context().unrouteAll({ behavior: "wait" });
   }
   await assertAccount(page, request, primary);
   await expect(
@@ -160,32 +189,9 @@ test("a delayed account response cannot replace the account currently selected i
 test("Back during a pending account navigation restores the earlier account before the response arrives", async ({
   page,
   request,
-}, testInfo) => {
+}) => {
   test.setTimeout(120_000);
   const second = (await accounts(request)).find((row) => row.id !== primary)!;
-  async function recordHistory(phase: string) {
-    const session = await page.context().newCDPSession(page);
-    try {
-      const history = await session.send("Page.getNavigationHistory");
-      testInfo.annotations.push({
-        type: "account-history-diagnostic",
-        description: JSON.stringify({
-          phase,
-          current_index: history.currentIndex,
-          entries: history.entries.map((entry) => {
-            const url = new URL(entry.url);
-            return {
-              id: entry.id,
-              pathname: url.pathname,
-              account: url.searchParams.get("account"),
-            };
-          }),
-        }),
-      });
-    } finally {
-      await session.detach();
-    }
-  }
   async function navigate(label: string) {
     const primaryNav = page.getByRole("navigation", {
       name: "Primary",
@@ -205,7 +211,6 @@ test("Back during a pending account navigation restores the earlier account befo
       url.pathname === "/holdings" &&
       url.searchParams.get("account") === primary,
   );
-  await recordHistory("holdings");
   await navigate("Overview");
   await expect(page).toHaveURL(
     (url) =>
@@ -215,18 +220,32 @@ test("Back during a pending account navigation restores the earlier account befo
     page.getByRole("heading", { name: "Overview", exact: true }),
   ).toBeVisible();
   await assertAccount(page, request, primary);
-  await recordHistory("overview");
   let release: () => void = () => {};
   let requested = false;
   const held = new Promise<void>((resolve) => {
     release = resolve;
   });
-  await page.route(
-    (url) =>
-      url.pathname === "/" &&
-      url.searchParams.get("account") === second.id &&
-      url.searchParams.has("_rsc"),
+  const destination = new URL("/", page.url());
+  destination.searchParams.set("account", second.id);
+  const serviceWorkerUrl = new URL("/sw.js", destination).href;
+  await page.context().route(
+    (url) => url.href === destination.href,
     async (route) => {
+      const navigationRequest = route.request();
+      const serviceWorker = navigationRequest.serviceWorker();
+      const workerFetch = serviceWorker?.url() === serviceWorkerUrl;
+      const mainDocument =
+        serviceWorker === null &&
+        navigationRequest.isNavigationRequest() &&
+        navigationRequest.resourceType() === "document" &&
+        navigationRequest.frame() === page.mainFrame();
+      if (
+        navigationRequest.method() !== "GET" ||
+        (!workerFetch && !mainDocument)
+      ) {
+        await route.fallback();
+        return;
+      }
       const response = await route.fetch();
       requested = true;
       await held;
@@ -243,17 +262,6 @@ test("Back during a pending account navigation restores the earlier account befo
       (url) =>
         url.pathname === "/" && url.searchParams.get("account") === primary,
     );
-    await recordHistory("held-account-response");
-    testInfo.annotations.push({
-      type: "before-back-history",
-      description: JSON.stringify(
-        await page.evaluate(() => ({
-          pathname: location.pathname,
-          account: new URL(location.href).searchParams.get("account"),
-          history_length: history.length,
-        })),
-      ),
-    });
     await page.goBack();
     await expect(page).toHaveURL(
       (url) =>
@@ -276,7 +284,7 @@ test("Back during a pending account navigation restores the earlier account befo
       .toEqual([primary]);
   } finally {
     release();
-    await page.unrouteAll({ behavior: "wait" });
+    await page.context().unrouteAll({ behavior: "wait" });
   }
   await expect(page).toHaveURL(
     (url) =>
