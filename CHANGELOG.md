@@ -6,6 +6,10 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Final Checkpoint B local qualification
 
+- Align ordinary premium-report authorization test doubles with the required
+  research-dependency header lookup; preserve all original denial assertions and
+  the complete isolated coverage execution's original failures.
+
 - Narrow the scenario manifest test's expanded report-binding union explicitly;
   preserve the original strict-typing aggregate failure and focused recovery.
 

@@ -16,6 +16,7 @@ from trading212_persistence.report_models import (
     ReportInputSnapshotModel,
     ReportJobModel,
 )
+from trading212_persistence.report_research_models import ReportInputResearchDependencyModel
 from trading212_security.principals import AuthorizationError
 
 from tests.unit.analytics.xray_factories import AT, uid
@@ -85,7 +86,7 @@ def test_authorization_dispatch_uses_actual_family_and_only_permanent_metadata(
     version: int, kind: str, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     session = Mock(spec=Session)
-    session.scalar.side_effect = [version, False, None]
+    session.scalar.side_effect = [version, None, False, None]
     dependency = SimpleNamespace(
         kind=kind, run_id=uid(10), input_digest="a" * 64, result_digest="b" * 64
     )
@@ -128,7 +129,7 @@ def test_profile_and_single_dependency_mismatches_fail_closed(
     version: int, kind: str, count: int, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     session = Mock(spec=Session)
-    session.scalar.side_effect = [version, False]
+    session.scalar.side_effect = [version, None, False]
     session.scalars.return_value.all.return_value = [
         SimpleNamespace(kind=kind, run_id=uid(10)) for _ in range(count)
     ]
@@ -149,7 +150,7 @@ def test_source_restriction_or_missing_sql_decision_precedes_metadata_access(
     restricted: bool | None, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     session = Mock(spec=Session)
-    session.scalar.side_effect = [3, restricted]
+    session.scalar.side_effect = [3, None, restricted]
     session.scalars.return_value.all.return_value = [
         SimpleNamespace(kind="scenario", run_id=uid(10))
     ]
@@ -166,11 +167,13 @@ def test_source_restriction_or_missing_sql_decision_precedes_metadata_access(
 
 def test_legacy_empty_lineage_needs_no_premium_metadata_lookup() -> None:
     session = Mock(spec=Session)
-    session.scalar.return_value = 1
+    session.scalar.side_effect = [1, None]
     session.scalars.return_value.all.return_value = []
     auth = Mock(spec=ReportAuthorization)
     auth.owner_id, auth.account_id = uid(1), uid(2)
     sources.authorize_report_premium_sources(
         session, cast(ReportAuthorization, auth), input_id=uid(3), now=AT.value
     )
-    session.scalar.assert_called_once()
+    calls = session.scalar.call_args_list
+    assert len(calls) == 2
+    assert calls[1].args[0].column_descriptions[0]["entity"] is ReportInputResearchDependencyModel

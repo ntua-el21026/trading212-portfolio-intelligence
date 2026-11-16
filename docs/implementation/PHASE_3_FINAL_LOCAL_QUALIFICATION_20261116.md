@@ -53,13 +53,34 @@ The upcoming complete suites establish their own counts and outcomes.
 ## Preserved aggregate failure and strict-typing recovery
 
 The sole `make validate` attempt at clean `6e481021977a99ba14183f0cff79fd1c1492656a`
-exits2 after31.707 seconds. Formatting, lint, architecture and exact broker checks
+exits 2 after 31.707 seconds. Formatting, lint, architecture and exact broker checks
 pass; strict mypy finds one `union-attr` error in the existing profile3 scenario
 manifest test after research joined its binding union. An explicit scenario-type
 assertion preserves the exact digest and all negative schema checks while allowing
-sound narrowing. All25 source-affected schema tests pass; the failed strict typing
+sound narrowing. All 25 source-affected schema tests pass; the failed strict typing
 gate is rerun separately. The aggregate target remains failed, not retrospectively
 validated by a later component recovery. Unreached independent gates continue.
+
+## Complete isolated coverage execution and source-affected recovery
+
+At clean `8f6b775fcaf54095bb5509556a454f6c0f070366`, all 5,996 selected unit,
+property, contract and security cases execute under coverage. The original run
+exits 1: **5,984 passed, 12 failed**, four warnings, 1,128.869 wrapper seconds.
+Eleven failures are stale positional Session doubles in profile3 authorization
+unit tests: the mandatory normalized research-dependency header lookup now occurs
+before ordinary premium authorization. The correction represents its absent row
+explicitly rather than bypassing that check. The legacy case now verifies both
+metadata-only lookups and the actual research-header entity; all original family,
+license, source-restriction and denial assertions remain. All 13 source-affected
+cases pass separately, with strict typing/lint/format checks. No production code
+changes. The twelfth failure is the existing repository secret-pattern assertion:
+three paths/six inherited reviewed nonsecret metadata matches. Its actual scanner
+and test failures remain; no rules, excludes or tests are weakened.
+
+This focused recovery does not relabel the original complete execution as passed.
+Further service-backed coverage uses its own exact source and receipt; any combined
+coverage measure must verify identical measured production files across inputs and
+remain separate from a fictitious complete same-SHA test pass.
 
 ## Qualification and acceptance
 

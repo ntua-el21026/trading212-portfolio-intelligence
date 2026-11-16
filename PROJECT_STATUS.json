@@ -4623,6 +4623,21 @@
       "receipt": "local-make-validate-01/receipt.json",
       "failed_gate": "strict Python typing: one profile3 binding union attribute in an existing scenario test"
     },
-    "typing_correction": "Explicit scenario-binding assertion strengthens the existing test and retains exact digest/negative assertions; no contract change."
+    "typing_correction": "Explicit scenario-binding assertion strengthens the existing test and retains exact digest/negative assertions; no contract change.",
+    "isolated_python_coverage": {
+      "source_sha": "8f6b775fcaf54095bb5509556a454f6c0f070366",
+      "receipt": "coverage-python-isolated-all-01/receipt.json",
+      "exit_code": 1,
+      "passed": 5984,
+      "failed": 12,
+      "warnings": 4,
+      "elapsed_seconds": 1128.869,
+      "status": "FAIL",
+      "retained_failure_families": [
+        "11 stale report-v3 Session doubles",
+        "1 unchanged high-confidence source-secret pattern assertion"
+      ]
+    },
+    "report_authorization_test_recovery": "Represent absent normalized research dependency in existing Session doubles; verify mandatory metadata header query and preserve all denials. Thirteen affected cases pass; original full scope remains failed."
   }
 }
