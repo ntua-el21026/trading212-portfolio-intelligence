@@ -4,6 +4,16 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Controlled admission environment diagnosis
+
+- Record four startup comparisons and three complete unchanged-source workload
+  cohorts. Preserve every failure and the prospectively amended three-run budget.
+  The bare command fails admission p95 1.022774345 s; all ten jobs complete and
+  read/SQL limits pass. Identical off-mode context returns different timing levels;
+  no isolated production cause or correction is claimed.
+- Synchronize current status and preserve historical records, 30 pending rows and
+  48 pending scenarios. Complete qualification and P3-10 remain unstarted here.
+
 ### Admission latency investigation, 16 November 2026
 
 - Retain the new unchanged-source admission failure: p95 0.779183911 s against

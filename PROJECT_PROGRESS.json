@@ -7617,7 +7617,7 @@
     "further_runtime_retries_in_this_package": false,
     "post_commit_observations": "Exact committed-candidate security, CI, source qualification, resource retirement and archive results are recorded in the final private handoff; these are not future pass claims."
   },
-  "current_checkpoint_b_selector": "/checkpoint_b_admission_remediation",
+  "current_checkpoint_b_selector": "/checkpoint_b_controlled_environment_diagnosis",
   "checkpoint_b_consolidated_qualification": {
     "authority": "latest_owner_authorized_local_checkpoint_b_qualification",
     "starting_main_sha": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
@@ -8272,5 +8272,151 @@
     "latest_uninstrumented_qualification_pointer": "/checkpoint_b_admission_remediation/cohorts/0",
     "latest_qualifying_admission_p95_seconds": 0.7791839110000183,
     "latest_qualifying_read_p95_seconds": 0.3248191800000768
+  },
+  "checkpoint_b_controlled_environment_diagnosis": {
+    "date": "2026-11-16",
+    "owner": "Michail Athanasios Peppas",
+    "status": "failed_cause_unresolved",
+    "disposition": "Admission remediation FAILED — cause unresolved",
+    "checkpoint_b": "INCOMPLETE",
+    "implementation_report": "docs/implementation/PHASE_3_CONTROLLED_ENVIRONMENT_20261116.md",
+    "starting_source_sha": "1e86141984470df6ddfc485d2c41cee3113f8511",
+    "runtime_source_manifest_sha256": "19718315b104fbf8eaa4940e4d3c8153331c14a8f550d3d4f3d04284ecaf63d9",
+    "production_change": false,
+    "test_or_workload_or_threshold_change": false,
+    "cohorts": [
+      {
+        "case": "A0",
+        "kind": "common_context_off_no_timed_observer",
+        "receipt": "controlled-A0-off/receipt.json",
+        "raw": {
+          "bytes": 4351,
+          "file": "operations-service-budgets-85c1127aa6ff402cab814cdecfd2c7cb.json",
+          "sha256": "99250463423362dfcfdd19b0db3dca927bb10d76bead5c58eaee5da1b0e04d4b"
+        },
+        "exit_code": 1,
+        "elapsed_seconds": 211.917,
+        "source_sha": "1e86141984470df6ddfc485d2c41cee3113f8511",
+        "source_manifest_sha256": "19718315b104fbf8eaa4940e4d3c8153331c14a8f550d3d4f3d04284ecaf63d9",
+        "admission": {
+          "max_seconds": 1.7091432929992152,
+          "p50_seconds": 1.3200082040002599,
+          "p95_seconds": 1.7091432929992152,
+          "samples": 10
+        },
+        "read": {
+          "max_seconds": 0.6923112670001501,
+          "p50_seconds": 0.26523598300082085,
+          "p95_seconds": 0.6466135379996558,
+          "samples": 30
+        },
+        "max_read_sql": 12,
+        "completed_jobs": 10,
+        "over_750ms_ordinals": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      },
+      {
+        "case": "B",
+        "kind": "bare_original_uninstrumented",
+        "receipt": "controlled-B-bare/receipt.json",
+        "raw": {
+          "file": "operations-service-budgets-adeb462ca1f14c5f8e5476ca9671fb07.json",
+          "bytes": 4352,
+          "sha256": "2bb5692c34bc894bddf42abb20b2d7260230598614c77d105c459d157f3948af"
+        },
+        "exit_code": 1,
+        "elapsed_seconds": 108.198,
+        "source_sha": "1e86141984470df6ddfc485d2c41cee3113f8511",
+        "source_manifest_sha256": "19718315b104fbf8eaa4940e4d3c8153331c14a8f550d3d4f3d04284ecaf63d9",
+        "admission": {
+          "max_seconds": 1.0227743449995614,
+          "p50_seconds": 0.5714660949997779,
+          "p95_seconds": 1.0227743449995614,
+          "samples": 10
+        },
+        "read": {
+          "max_seconds": 0.3822759189997669,
+          "p50_seconds": 0.1262795049997294,
+          "p95_seconds": 0.340622338000685,
+          "samples": 30
+        },
+        "max_read_sql": 12,
+        "completed_jobs": 10,
+        "over_750ms_ordinals": [1]
+      },
+      {
+        "case": "A1",
+        "kind": "common_context_off_no_timed_observer",
+        "receipt": "controlled-A1-off/receipt.json",
+        "raw": {
+          "bytes": 4361,
+          "file": "operations-service-budgets-4642e2a7eb774f11903ae333b4cea8ce.json",
+          "sha256": "4fc969730fc922207be2adf483080c0773f29b862016cd9caf303f5d1640de6f"
+        },
+        "exit_code": 1,
+        "elapsed_seconds": 102.929,
+        "source_sha": "1e86141984470df6ddfc485d2c41cee3113f8511",
+        "source_manifest_sha256": "19718315b104fbf8eaa4940e4d3c8153331c14a8f550d3d4f3d04284ecaf63d9",
+        "admission": {
+          "max_seconds": 1.076423162001447,
+          "p50_seconds": 0.5855892390009103,
+          "p95_seconds": 1.076423162001447,
+          "samples": 10
+        },
+        "read": {
+          "max_seconds": 0.36088472900155466,
+          "p50_seconds": 0.11802282499957073,
+          "p95_seconds": 0.33782558599887125,
+          "samples": 30
+        },
+        "max_read_sql": 12,
+        "completed_jobs": 10,
+        "over_750ms_ordinals": [1]
+      }
+    ],
+    "original_bare_qualifying_case": "B",
+    "original_bare_admission_p95_seconds": 1.0227743449995614,
+    "original_bare_read_p95_seconds": 0.340622338000685,
+    "startup_probe_cells": 4,
+    "measured_startup_dimensions_equal": true,
+    "timed_observer_cohorts_executed": 0,
+    "planned_timer_calibration_added_80_call_wall_ns": {
+      "min": 40152,
+      "max": 116631
+    },
+    "calibration_subtracted": false,
+    "cohort_budget": 3,
+    "cohorts_executed": 3,
+    "budget_amendment": "After A0 and before B: retain budget, substitute bare original control for proposed timed observer, then repeat A0 off context.",
+    "verified_production_causes": [],
+    "supported_inferences": [
+      "Common plugin/PYTHONPATH context or timed observer work alone is insufficient to explain all observed inflation; off-mode repeat is much faster.",
+      "First-use behavior contributes a reproducible association in B/A1; mechanism not isolated.",
+      "Temporal or unrecorded runtime/database/host state may contribute, but no specific cause is verified."
+    ],
+    "unresolved": [
+      "CPU versus SQL/commit/GC components of bare first-admission delay",
+      "Why source-equivalent off-mode A0 was slower than A1",
+      "Actual timed-worker CPU frequency/thermal/Windows-host scheduling and short-lived resource pressure",
+      "Initial fixture index/statistics/prepared-plan and per-admission connection state"
+    ],
+    "PG_settings_limits_and_start_time_before_after_equal": true,
+    "pending_rows": 30,
+    "pending_scenarios": 48,
+    "accepted_rows": 0,
+    "accepted_scenarios": 0,
+    "owner_acceptance": "pending",
+    "independent_review": "pending",
+    "p3_10_started": false,
+    "complete_local_validation_executed": false,
+    "local_work_externally_blocked": false,
+    "further_cohorts_in_this_package": 0,
+    "next_action": "Independently validate a passive first-admission processCPU versus database commit/wait measurement, preserving the bare entrypoint, before selecting an optimization. Do not rerun complete gates or infer a GC/JIT/host defect from these data.",
+    "external_owner_gates": [
+      "CI activation",
+      "Credentialed or paid provider checks",
+      "Production/Live/hosted infrastructure",
+      "Dependency/binary/container distribution rights"
+    ],
+    "delivery_integrity": "Actual final source, CI, scanner classification, resource retirement and archive checksums belong to private closure evidence."
   }
 }

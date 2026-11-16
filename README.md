@@ -7,22 +7,25 @@ valuation time, coverage and quality remain attached to results.
 
 ## Current status
 
-**Phase 3 is in progress; Checkpoint B remains incomplete.** The
-[16 November admission investigation](docs/implementation/PHASE_3_ADMISSION_REMEDIATION_20261116.md) confirms an uninstrumented
-admission p95 of **0.779183911 s** against the unchanged **0.750 s** limit.
-All ten jobs complete; read p95 **0.324819180 s** and the **12-SQL** limit pass.
-Broad and reduced observers materially perturb timing and do not establish a
-production cause. No production code, tests or migrations changed; admission
-remediation is **FAILED**, and the bounded investigation stops.
+**Phase 3 is in progress; Checkpoint B remains incomplete.**
 
-The [15 November consolidated record](docs/implementation/PHASE_3_CHECKPOINT_B_CONSOLIDATED_20261115.md)
-retains separate schema, projection-recovery and genuine size-boundary passes,
-with its earlier admission failures preserved. Complete local Make/coverage,
-clean-install/build, browser and recovery qualification remain pending local.
-All 30 acceptance rows and 48 scenarios remain pending, zero accepted. Formal
-P3-10 has not started. CI, external credentials, production/Live and distribution
-rights remain separate decisions. The earlier bounded report remains
-[historical evidence](docs/implementation/PHASE_3_CHECKPOINT_B_20261115.md).
+The [controlled environment record](docs/implementation/PHASE_3_CONTROLLED_ENVIRONMENT_20261116.md) retains three complete original
+workload executions at clean main `1e86141984470df6ddfc485d2c41cee3113f8511`.
+The bare original command fails admission p95 **1.022774345 s** against **0.750 s**;
+read p95 **0.340622338 s**, maximum **12 SQL statements**, and all ten completions pass.
+Two off-mode contexts return admission p95 **1.709143293 / 1.076423162 s**.
+The same off-mode context does not reproduce the earlier timing level consistently.
+First-admission delay is a supported inference; CPU, SQL/commit, GC and host causes
+remain unresolved. No production correction is justified, and the three-run budget
+is exhausted. Application code, tests, migrations and thresholds remain unchanged.
+
+All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**.
+Complete Checkpoint B qualification remains **pending_local**; formal P3-10 has not
+started. CI, provider credentials, production/Live and distribution remain separate
+owner gates. Earlier records below retain their original source qualifications.
+
+Earlier source-qualified admission observations remain in the
+[preceding report](docs/implementation/PHASE_3_ADMISSION_REMEDIATION_20261116.md).
 
 Consolidated Batch 1 adds focused aggregation,
 analytical and admission-boundary evidence under the
