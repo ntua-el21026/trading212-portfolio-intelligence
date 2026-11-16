@@ -50,6 +50,17 @@ new test whose shared port-inspection dependency was not doubled. Its focused
 recovery fixes that test boundary; original failure and recovery remain distinct.
 The upcoming complete suites establish their own counts and outcomes.
 
+## Preserved aggregate failure and strict-typing recovery
+
+The sole `make validate` attempt at clean `6e481021977a99ba14183f0cff79fd1c1492656a`
+exits2 after31.707 seconds. Formatting, lint, architecture and exact broker checks
+pass; strict mypy finds one `union-attr` error in the existing profile3 scenario
+manifest test after research joined its binding union. An explicit scenario-type
+assertion preserves the exact digest and all negative schema checks while allowing
+sound narrowing. All25 source-affected schema tests pass; the failed strict typing
+gate is rerun separately. The aggregate target remains failed, not retrospectively
+validated by a later component recovery. Unreached independent gates continue.
+
 ## Qualification and acceptance
 
 Aggregate Make, complete suites/coverage, strict static checks, generated contracts,

@@ -6,6 +6,9 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Final Checkpoint B local qualification
 
+- Narrow the scenario manifest test's expanded report-binding union explicitly;
+  preserve the original strict-typing aggregate failure and focused recovery.
+
 - Admit the exact owner-authorized disposable qualification project in recovery
   harnesses while preserving resource identity, historical and foreign-task denials.
 - Retain both final admission failures and continue independently executable local

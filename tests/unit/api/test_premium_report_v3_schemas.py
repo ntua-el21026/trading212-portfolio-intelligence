@@ -150,6 +150,7 @@ def test_empty_page_and_expired_job_require_explicit_profile_markers() -> None:
 def test_manifest_loses_neither_exact_decimal_strings_nor_strict_proof_pin_checks() -> None:
     value = manifest_v3()
     checked = wire.PremiumReportManifestV3.model_validate(value)
+    assert isinstance(checked.document.premium_binding, wire.PremiumReportScenarioRunBindingV3)
     assert (
         checked.document.premium_binding.result_digest
         == value["document"]["premium_binding"]["result_digest"]

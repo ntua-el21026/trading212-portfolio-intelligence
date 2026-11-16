@@ -8440,6 +8440,15 @@
     "accepted_scenarios": 0,
     "formal_owner_acceptance": "pending",
     "CI_activation": "owner_deferred",
-    "distribution_rights": "pending_owner_decision"
+    "distribution_rights": "pending_owner_decision",
+    "aggregate_make_validate": {
+      "source_sha": "6e481021977a99ba14183f0cff79fd1c1492656a",
+      "exit_code": 2,
+      "elapsed_seconds": 31.707,
+      "status": "FAIL",
+      "receipt": "local-make-validate-01/receipt.json",
+      "failed_gate": "strict Python typing: one profile3 binding union attribute in an existing scenario test"
+    },
+    "typing_correction": "Explicit scenario-binding assertion strengthens the existing test and retains exact digest/negative assertions; no contract change."
   }
 }
