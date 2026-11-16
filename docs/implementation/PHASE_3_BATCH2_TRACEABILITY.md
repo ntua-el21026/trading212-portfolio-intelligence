@@ -1,6 +1,18 @@
 # Phase 3 Batch 2 Traceability
 
-## Current controlled environment diagnosis, 16 November
+## Current final local qualification, 16 November
+
+Phase 3 Checkpoint B remains incomplete. The final bare admission control exceeds its unchanged 750 ms limit. Back during a held account navigation fails on desktop, tablet and mobile before the required account-state checks. Web artifact repeatability and cumulative native coverage remain unresolved; configured SAST retains a nonzero scanner exit despite zero rule findings.
+
+Separate current-code browser performance and genuine PDF, CSV, XLSX and JSON research-report journeys pass on all three viewports. The corrected nine-service synthetic restart passes at `1497a1d`, with measured recovery of 51.235 seconds. Original aggregate failures and later focused recoveries retain their own sources; no complete current-SHA validation pass is claimed.
+
+All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**. See the [qualification record](PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md) and [complete traceability](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md). P3-10 has not started. CI activation, credentialed providers, production/Live and distribution remain separately gated.
+
+See the [qualification record](PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md) and [complete 30-row/48-scenario traceability](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md).
+
+Earlier records retain their historical source qualifications; all formal states remain pending.
+
+## Historical controlled environment diagnosis, 16 November
 
 The [controlled environment record](PHASE_3_CONTROLLED_ENVIRONMENT_20261116.md) retains three complete original
 workload executions at clean main `1e86141984470df6ddfc485d2c41cee3113f8511`.

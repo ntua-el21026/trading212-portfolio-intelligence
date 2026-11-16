@@ -7,78 +7,15 @@ valuation time, coverage and quality remain attached to results.
 
 ## Current status
 
-The [final local qualification record](docs/implementation/PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md) follows the owner-authorized
-continuation from clean main `6a5fb4bc8a65df1c588534d486170ab0535ae226`.
-Qualification is in progress; Checkpoint B remains incomplete. The final bare
-admission control fails p95 **0.832402193 s**; read p95 **0.341415128 s**,
-maximum12 SQL statements and all ten jobs pass. The external passive diagnostic
-also fails admission; no production optimization is justified yet. Admission-specific
-execution has stopped at its two-cohort limit. Independent remaining local gates
-continue. Exact task recovery guards retain foreign-resource denial.
+Phase 3 Checkpoint B remains incomplete. The final bare admission control exceeds its unchanged 750 ms limit. Back during a held account navigation fails on desktop, tablet and mobile before the required account-state checks. Web artifact repeatability and cumulative native coverage remain unresolved; configured SAST retains a nonzero scanner exit despite zero rule findings.
 
-The complete service-backed execution at `cdab340` retains **880 passes, ten
-failures and 72 setup errors**. Targeted test-only corrections recover the
-affected cases in separate 80-case and one-case observations; the original
-invocation remains failed. Original combined coverage is **87.865%**, above 70%;
-a later focused-only recombination fails separately and retains its data-handling
-limitation. Current-build browser, clean-install, container and security
-qualification continue.
+Separate current-code browser performance and genuine PDF, CSV, XLSX and JSON research-report journeys pass on all three viewports. The corrected nine-service synthetic restart passes at `1497a1d`, with measured recovery of 51.235 seconds. Original aggregate failures and later focused recoveries retain their own sources; no complete current-SHA validation pass is claimed.
 
-All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**.
-Formal P3-10 has not started; CI, providers, production and distribution remain
-separately owner gated. Earlier records retain their historical source qualification.
+All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**. See the [qualification record](docs/implementation/PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md) and [complete traceability](docs/implementation/PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md). P3-10 has not started. CI activation, credentialed providers, production/Live and distribution remain separately gated.
 
-## Historical controlled environment diagnosis
+## Qualification history
 
-
-**Phase 3 is in progress; Checkpoint B remains incomplete.**
-
-The [controlled environment record](docs/implementation/PHASE_3_CONTROLLED_ENVIRONMENT_20261116.md) retains three complete original
-workload executions at clean main `1e86141984470df6ddfc485d2c41cee3113f8511`.
-The bare original command fails admission p95 **1.022774345 s** against **0.750 s**;
-read p95 **0.340622338 s**, maximum **12 SQL statements**, and all ten completions pass.
-Two off-mode contexts return admission p95 **1.709143293 / 1.076423162 s**.
-The same off-mode context does not reproduce the earlier timing level consistently.
-First-admission delay is a supported inference; CPU, SQL/commit, GC and host causes
-remain unresolved. No production correction is justified, and the three-run budget
-is exhausted. Application code, tests, migrations and thresholds remain unchanged.
-
-All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**.
-Complete Checkpoint B qualification remains **pending_local**; formal P3-10 has not
-started. CI, provider credentials, production/Live and distribution remain separate
-owner gates. Earlier records below retain their original source qualifications.
-
-Earlier source-qualified admission observations remain in the
-[preceding report](docs/implementation/PHASE_3_ADMISSION_REMEDIATION_20261116.md).
-
-Consolidated Batch 1 adds focused aggregation,
-analytical and admission-boundary evidence under the
-[Batch 1 record](docs/implementation/PHASE_3_BATCH1_20261114.md).
-Research reporting implements the approved exact item, zero-to-64 note revisions
-and optional exact review selection on the existing profile3 routes and four
-formats. Separate PostgreSQL artifact/retention checks and one desktop navigation
-case passed; their sources and limits are recorded in the
-[validation report](VALIDATION_REPORT.md#research-report-component-evidence-2026-11-14).
-The current schema includes forward migration `0036` and has 368 ORM tables; earlier
-364-table/`0034` records remain historical. Full validation and acceptance remain
-pending.
-The earlier bounded stabilization checkpoint records
-aggregation recovery, dependency/image checks and synthetic startup/browser
-observations at their exact sources. Incremental validation retains explicit
-case partitions and earlier failures; it does not establish a new whole-suite
-pass. See [current status](PROJECT_STATUS.md), the
-[stabilization record](docs/implementation/PHASE_3_STABILIZATION_20261113.md) and
-[evidence index](docs/implementation/evidence/phase-3-stabilization-20261113.json).
-Phase 3 acceptance and independent review remain pending. Production and
-Live are unauthorized; GitHub Actions remains owner-deferred and unverified.
-
-Phase 1 has source-bound acceptance evidence. Phase 2 was accepted by the owner
-for progression after the R-01/R-02 corrections; that decision is distinct from
-independent verification of every release gate.
-[Machine status](PROJECT_STATUS.json) and
-[progress](PROJECT_PROGRESS.json) retain current versus historical selectors.
-Earlier README delivery records are preserved in the
-[historical snapshot](docs/history/readme-before-portfolio-preparation.md).
+Earlier controlled admission, stabilization and Batch 1/2 observations retain their source qualifications in the [current report](docs/implementation/PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md), [controlled environment record](docs/implementation/PHASE_3_CONTROLLED_ENVIRONMENT_20261116.md), [Batch 1 report](docs/implementation/PHASE_3_BATCH1_20261114.md) and [Batch 2 report](docs/implementation/PHASE_3_BATCH2_20261114.md). Phase 1 has source-bound acceptance evidence; the owner accepted Phase 2 for progression. Those decisions do not accept Phase 3.
 
 ## Architecture and implemented scope
 

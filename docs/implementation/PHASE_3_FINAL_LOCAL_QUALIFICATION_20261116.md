@@ -1,8 +1,9 @@
 # Phase 3 final Checkpoint B local qualification, 16 November 2026
 
-**Owner:** Michail Athanasios Peppas. **Status:** Qualification in progress;
-Checkpoint B incomplete. All 30 acceptance rows and 48 scenarios remain pending,
-zero accepted. Formal P3-10 has not started.
+**Owner:** Michail Athanasios Peppas. **Status:** Local qualification executed
+with material unresolved failures; private post-commit closure pending.
+Checkpoint B remains incomplete. All 30 acceptance rows and 48 scenarios
+remain pending, zero accepted. Formal P3-10 has not started.
 
 ## Authority and baseline
 
@@ -48,7 +49,7 @@ threshold or security-policy contract changes.
 The first source-patched focused execution retains 106 passing cases and one failed
 new test whose shared port-inspection dependency was not doubled. Its focused
 recovery fixes that test boundary; original failure and recovery remain distinct.
-The upcoming complete suites establish their own counts and outcomes.
+The subsequent complete-suite executions and their retained failures are recorded below.
 
 ## Preserved aggregate failure and strict-typing recovery
 
@@ -168,94 +169,90 @@ production recovery objective.
 
 ## Current browser qualification and bounded correction
 
-The complete production-build API browser run at clean `7c2828a` executes all
-75 spec/viewport cells: **128 passing tests, ten failures, zero skipped, flaky or
-global errors**, exit 1. All three complete five-sample performance protocols
-pass, with research LCP p75 desktop/tablet/mobile **2,328/2,336/2,332 ms**.
-All three research-report journeys perform genuine PDF, CSV, XLSX and JSON
-operations. These results retain that source and build, not a later whole-matrix pass.
+The complete clean-`7c2828a` production API browser execution retains 75 spec/viewport cells, 128 passing tests and ten failures, exit 1 in 4050.594 seconds. Zero skips, flakes or global errors are reported. Four projection failures begin keyboard checks while the new account route is still loading. Explicit positive heading and account-scoped readiness checks preserve every negative assertion, timeout and 55+55 keyboard traversal. All six affected projection cells pass separately in `api-projection-browser-readiness-01` (401.626 seconds, working manifest `ace3e0726291fe3ef100e5de6a79888382390bbf11998c7fb9dade387325f8e8`).
 
-Four projection failures start keyboard checks on a loading skeleton after URL
-changes. Explicit positive heading and account-scoped readiness checks preserve
-all original privacy negatives, keyboard iterations and timeouts. All six affected
-projection spec/viewport cells pass separately in `api-projection-browser-readiness-01`
-(exit 0, 401.626 seconds), manifested working source `ace3e0726291fe3ef100e5de6a79888382390bbf11998c7fb9dade387325f8e8`.
+A bounded passive lifecycle diagnostic verifies native form restoration on a new back-forward document, with matching secondary URL/HTML selection/financial markers but primary live select values. The routing `AccountSelect` disables autocomplete; account authorization, masking and document navigation remain intact. Native history passes on all three viewports. Delayed tests now hold the exact main document or the same-origin service worker's actual fetch. Real native keyboard input supersedes the held response on all viewports. Back still fails `ERR_ABORTED` on all three before post-Back account and late-response predicates. Its product/browser/harness cause remains unresolved; the diagnostic loop stopped without changing those assertions.
 
-A bounded history diagnostic independently observes native form restoration:
-Back loads a new document (not BFCache), with URL, HTML selected attributes and
-financial markers for the secondary account, but live select values for the
-primary account. `AccountSelect` now explicitly disables autocomplete for its
-routing control. This is the first application-code change in this package;
-previous statements about unchanged application code describe their earlier scopes.
-Existing component tests, strict web typing and component lint pass. The genuine
-history regression passes on desktop, tablet and mobile after the actual new build.
-Authorization, account masking and document navigation remain unchanged.
+The later clean-`b89eea3` current-code performance execution `account-routing-browser-performance-02` passes in 783.884 seconds. Each viewport retains five holdings and five research samples. Research LCP p75 is desktop/tablet/mobile 2336/2360/2332 ms against 2500 ms; maximum interaction is 24 ms, CLS is 0 and counted application JavaScript is 63137 bytes. All original samples and thresholds remain. The separate `current-code-research-report-browser-02` passes three genuine PDF/CSV/XLSX/JSON generation, manifest/download and denial journeys in 361.498 seconds. Subsequent worker-only source changes do not alter their frontend inputs; these observations are not whole-source executions at the later SHA.
 
-Two old delayed tests intercept only an RSC request although account switches
-replace the document. Their updated exact same-origin context interception also
-covers the application's service-worker fetch. Native keyboard input supersedes
-the held response without Playwright's locator navigation wait. Diagnostic-only
-CDP sessions are removed from the Back case; all original URL, account, privacy,
-pre/post-release assertions and timeouts remain. Superseding-account checks pass
-on all three viewports. Pending-navigation Back remains **FAIL** on all three:
-`page.goBack` reports `ERR_ABORTED` before the required post-Back assertions.
-No further production correction or causal attribution is inferred. This bounded
-browser diagnostic loop has stopped. All original and intermediate failures remain.
-
-The source-qualified tablet/mobile five-case reruns each produce four passes and
-one Back failure (47.740/46.745 seconds). Desktop's focused two-case bare rerun
-produces one pass and the same Back failure (31.398 seconds). These focused results
-do not transform the failed 75-cell invocation into a complete passing matrix.
-Current-code performance, legacy Demo, container and security checks continue
-independently. All acceptance states remain pending.
+The configured legacy desktop/mobile Demo matrix passes all 196 cases in 206.010 seconds. It changes only generated `next-env.d.ts`; `legacy-generated-source-restoration-03` restores the exact committed bytes afterward. That recovery does not retrospectively turn the browser execution into an immutable-source pass. The original failed aggregate and every intermediate failure remain separate.
 
 ## Worker health deadline correction
 
-Six current-source images build successfully at clean `b89eea3` (631.302 seconds),
-with all six runtime package-manager checks passing. The stack starts with seven
-healthy long-running services and two completed one-shot jobs. The first restart
-invocation omits the driver's required synthetic `DATABASE_URL` and fails before
-service mutation; that original preflight remains. The corrected invocation then
-fails the unchanged 600-second exercise deadline. Its separate 120-second cleanup
-cannot establish worker health; total wrapper time is 720.928 seconds. No successful
-nine-service recovery is inferred from its retained baseline and queued boundary.
+The first clean-`b89eea3` six-image build succeeds in 631.302 seconds. The original restart preflight fails before service mutation because its synthetic DATABASE_URL was omitted. The corrected run fails the unchanged 600-second exercise limit and its separate 120-second cleanup, total 720.928 seconds. Those failures remain retained.
 
-Docker records repeated worker probes ending at approximately 8.045 seconds with
-exit -1. One bounded diagnostic on the unchanged image observes the original
-application CLI returning a genuine pong at 4.073 seconds, then exiting successfully
-at 10.124 seconds. The post-pong interval is 6.051 seconds: installed Kombu source
-explains five seconds of collecting additional replies; the remaining interval is
-unpartitioned. Docker-client CPU time is not container Python CPU evidence.
-A diagnostic reference using the same `tasks.celery_app`, `timeout=5` and `limit=1`
-returns one valid pong: application import 3.355 seconds wall/CPU, control 0.045
-seconds, total 3.400 seconds, outer Docker invocation 4.285 seconds. These are
-separate diagnostic observations, not qualifying health or recovery measurements.
+Docker probe observations and one bounded unchanged-image diagnostic show a genuine pong at 4.073 seconds, but original CLI completion at 10.124 seconds. Installed Kombu source explains five seconds collecting additional replies; the remaining post-pong time is unpartitioned. A diagnostic reference using the same application, timeout 5 and limit 1 completes in 3.400 seconds. These are diagnostic observations, not substituted recovery evidence.
 
-The internal health probe now uses that application's single-reply inspection and
-fails silently on missing application, invalid/absent pong or exceptions. Docker's
-eight-second cap, five-second reply timeout, 30-second interval, 15-second start
-period and three retries remain unchanged. Consumer configuration, task
-registration, financial code and permissions are unchanged. This preserves the
-existing any-responsive-worker liveness predicate; it does not certify a particular
-container, database readiness or job completion.
+The internal probe now imports the unchanged real Celery application, collects one structured pong and fails silently on missing/invalid responses or exceptions. Consumer configuration, task registration, financial code and permissions remain unchanged. Docker's 30 s interval, 8 s timeout, 15 s start period and three retries remain fixed. This preserves an any-responsive-worker liveness predicate; it does not certify a specific container, database readiness or job completion.
 
-All ten new response/privacy cases pass under focused coverage (15.508 seconds).
-The new module has 100% of its 12 measured statements and four branches covered;
-its native data is copied and verified before reporting, with parallel inputs kept.
-This is module-only evidence, separate from the earlier full coverage measurement
-and missing cumulative native data. Two existing worker configuration/dispatcher
-cases pass in a separate earlier ten-case invocation. Original red collection,
-format/import-order and typing failures remain beside their focused recoveries.
-Current-source image and full nine-service qualification of the correction remain
-pending. Previously qualified tags and actual source-qualified failures are retained.
+Ten new response/privacy cases pass under focused coverage in 15.508 seconds; the module's 12 measured statements and four branches are 100% covered. This module-only data is copied and verified before reporting. Two existing configuration cases passed in a separate earlier ten-case invocation. No global coverage result is manufactured from these scopes.
+
+At clean `1497a1df908ad2ea1f471c469ce0c9fd26e8a6cb`, the six new qualification images build in 975.900 seconds and runtime package-manager checks pass in 4.188 seconds. `nine-service-health-qualification-03` passes exit 0 in 74.938 seconds, with measured synthetic recovery of 51.234597695 seconds. Its indexed artifacts retain exact source/image/resource identities, durable projection boundary, canonical fingerprints and duplicate-transport checks. It supplies this driver's scoped recovery proof, not all-family or production RTO certification. Prior qualified images and failed execution evidence remain distinct.
+
+## Clean installation and repeatability
+
+Isolated clean Python and Node installation, workspace verification, Python package builds and Web build execute at the frozen `7c2828a` source. The original project environment, installed dependencies and caches are preserved; task runtimes remain separate. These observations precede the later routing and health changes and are not relabeled final-SHA installation evidence.
+
+Both original and repeated build outputs are preserved. The actual `clean-repeat-compare-01` exits 1 in 12.275 seconds: Python has zero content/type/mode differences, while Web has 271. Separately, 3378 filesystem mtime changes are observed. The record does not attribute the 271 differences solely to timestamps or exclude differing files. Successful individual builds do not establish byte reproducibility.
+
+Original production-source coverage is 87.86518954798298%, above 70%, with line 91.36115935085934% and branch 75.42820622070728%. Its qualified production inputs are byte/mode equivalent, while the underlying complete test executions retain failures and separate sources. Reporting consumed earlier native parallel inputs. Original JSON/XML and receipts remain; focused-only recombination separately fails at 45.7647127%. The new health module's 100% measurement is a separate module-only observation. Complete cumulative native coverage has not been regenerated; no expensive full-suite rerun is performed to hide this limitation.
+
+## Current security and artifact qualification
+
+At clean application candidate `1497a1d`, the frozen production Python audit passes. The Node audit exits 0 under its configured threshold, reporting zero high/critical and one moderate vulnerability. A fresh database-backed Trivy filesystem execution exits 0 in 724.135 seconds; six qualification-image scans also exit 0. Their HIGH,CRITICAL severity filter and ignore-unfixed policy remain unchanged. These results do not establish zero vulnerabilities at all severities or dependency/binary/container redistribution rights.
+
+Configured SAST ultimately discovers all 996 expected target paths under seven configured rules with zero rule findings. It still exits 3 in 17.026 seconds, retaining one code 3 warning for `apps/web/tests/research-report-actions.test.ts`. Its underlying error-type object is withheld and the cause is unresolved; no production parse defect is inferred. Two earlier protocol failures remain. The separate changed-source scan passes, but does not override the full configured gate. No rule, suppression or policy is weakened.
+
+The local artifact bundle passes source/SBOM/image/provenance/signature qualification in 35.706 seconds. One positive verification and two negative integrity checks (actual CLI exits 0/1/1) are retained by the passing integrity wrapper. The ephemeral public key SHA-256 is `95fe61e1abcfe1efd5f3cd8c13d70670dbc8744342d7d1959356ad0103453cb2`; no private signing key is retained. This is private synthetic/local artifact evidence, not production signing attestation or distribution authorization.
+
+Retained predecessor Gitleaks source/history scans report nonzero exits; their 56/2 findings were classified nonsecret at their historical sources. A classification does not change the actual scanner exit. Fresh exact final-commit source and reachable-history attempt 2 runs occur after this documentation freeze. Their actual SHA, source manifests, reports, exits, counts and classifications are supplied in indexed private `post-commit-closure.json` and the final handoff. This document does not predict those outcomes or claim final-SHA scanner success. `LICENSE.md` and third-party obligations remain unchanged; public GitHub visibility is distinct from proprietary ownership and distribution rights.
 
 ## Qualification and acceptance
 
-Aggregate Make, complete suites/coverage, strict static checks, generated contracts,
-current-build browser matrix, 0036/populated migration compatibility, synthetic
-recovery/restore/resources, clean installation/build and configured security gates
-remain in progress until actual execution receipts exist. No combined pass is
-inferred from planned commands or partial evidence. Synthetic resilience does not
-certify production RTO/RPO. All 30/48 remain formally pending for independent owner
-acceptance. CI is owner-deferred; licensing and binary/container distribution rights
-remain separate. LICENSE.md and scanner policies are unchanged.
+**C. CHECKPOINT B INCOMPLETE — MATERIAL UNRESOLVED FAILURES.** Admission latency has no verified production cause, pending-navigation Back has no established product/browser/harness cause, Web artifact repeatability fails and complete cumulative native coverage is unavailable. Configured SAST also retains its nonzero exit and unresolved warning. Each gate below records its actual source-qualified observation; passing focused scopes are not combined into a complete current-SHA pass.
+
+All **30 acceptance rows** and **48 scenarios** remain formally pending, **zero accepted**. The [complete traceability record](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md) maps every requirement to code, tests, execution/source evidence and remaining action. Synthetic restore/restart results do not certify production RTO/RPO. P3-10 has not started. CI activation, real providers, production/Live, licensing and distribution remain separately gated. Final committed-source scanner and evidence-archive closure is supplied privately after documentation freeze; no public count or success is predicted.
+
+Exact disposable cleanup completes separately: two positively identified synthetic Redis keys are retained as opaque DUMPs with expiry metadata and readback verification before WATCH-guarded deletion; no queue payload is removed. The subsequent guarded retirement passes in 19.919 seconds and removes only the task's nine containers, owned volume and owned network. Original two volumes, nine qualified images, five preceding archives, the original environment and dependencies remain protected. All twelve task qualification-tag bindings retain their recorded image IDs. Final metadata binding passes in 4.692 seconds after the original metadata-only selector failure; no JUnit case or guard is removed.
+
+| Gate | Observed state | Evidence | Qualification |
+|---|---|---|---|
+| Original aggregate make validate | FAIL | local-make-validate-01/receipt.json, strict-python-type-recovery-02/receipt.json | The complete invocation at `6e4810` fails strict typing, exit 2 in 31.707 s. The specific typing correction passes separately; the aggregate target was not repeated or relabeled. |
+| Complete isolated Python execution | FAIL | coverage-python-isolated-all-01/receipt.json, report-v3-auth-mock-recovery-01/receipt.json | At `8f6b775`:5,984 pass/12 fail, exit 1 in 1128.869 s. Eleven stale report Session doubles and one unchanged high-confidence source-secret assertion are retained;13 affected authorization cases pass separately after the fixture correction. |
+| Complete service-backed Python execution | FAIL | coverage-python-integration-all-01/receipt.json, coverage-integration-focused-recovery-01/receipt.json, coverage-shared-evidence-recovery-02/receipt.json | At `cdab340`:880 pass/10 fail/72 setup errors, exit 1 in 13173.685 s. The affected recovery has80 pass/1 fail, followed by a separate one-case pass. No fictional complete-suite recovery is constructed. |
+| TypeScript component suites and affected checks | PASS | typescript-unit-all-01/receipt.json, typescript-typecheck-01/receipt.json, account-routing-unit-01/receipt.json, account-routing-final-web-types-01/receipt.json | The complete8f6b775 component execution passes961 tests in 109 files. Changed account-routing components and strict web typing pass separately; later worker-health changes do not alter frontend inputs. |
+| Scoped static, architecture and generated-contract checks | PASS | generated-contracts-01/receipt.json, worker-health-static-recovery-03/receipt.json, worker-health-architecture-check-03/receipt.json, account-routing-final-format-01/receipt.json | Generated contracts pass at `8f6b775`; the final health source has focused lint/strict typing/architecture recovery and account/browser files retain formatting checks. These source-qualified component checks do not replace failed aggregate Make. |
+| Executed migration/upgrade/downgrade subsets | PASS | coverage-python-integration-all-01/receipt.json, coverage-integration-focused-recovery-01/receipt.json, coverage-shared-evidence-recovery-02/receipt.json | The original failed full integration run independently contains48passing migration cases, including22 X-ray canonical payload migration cases. Scenario-schema/fixture recoveries remain separate. Published migrations are unchanged; this is scoped evidence, not a green full PostgreSQL suite. |
+| Original production-source coverage measurement | PASS | coverage-report-01/receipt.json, coverage-json-01/receipt.json, coverage-xml-01/receipt.json | Original combined coverage87.86518954798298% passes70%; line 91.36115935085934%, branch 75.42820622070728%. Production inputs were byte/mode equivalent; underlying full test executions retain failures and separate sources. |
+| Cumulative native coverage data | PENDING_LOCAL | coverage-report-recoveries-02/receipt.json, worker-health-coverage-report-03/receipt.json | Reporting consumed the earlier native parallel files. Retained JSON/XML and receipts preserve the original measurement; focused-only recombination fails 45.7647127%. New health-module100% is separate module-only evidence. A complete cumulative native dataset has not been regenerated. |
+| Report admission latency | FAIL | admission-original-control-01/receipt.json, admission-external-passive-02/receipt.json | The final bare control at `6a5fb4bc` fails p95/max0.832402193 s against 0.750 s; ten jobs and30 reads complete, read p95 0.341415128 s and maximum 12 statements pass. Passive diagnostic admission 1.007202906 s is a separate failure. Cause unresolved; bounded investigation stopped. |
+| Original complete API browser matrix | FAIL | api-browser-matrix-01/receipt.json | One complete clean `7c2828a` 75-cell execution retains128 passing tests/10 failures, no skips/flakes/global errors, exit 1 in 4050.594 s. Separate later recoveries do not turn it into a complete passing matrix. |
+| Focused projection browser readiness | PASS | api-projection-browser-readiness-01/receipt.json | All 6 projection/projection-report viewport cells pass separately in 401.626 s on exact unchanged working manifest `ace3e072...`, after positive new-account route-readiness assertions. Original privacy negatives and55+55 keyboard steps remain. |
+| Current-code three-viewport browser performance | PASS | account-routing-browser-performance-02/receipt.json | At clean `b89eea3`, all 3 current-app protocols pass with 5 samples per route: research LCP p75 desktop/tablet/mobile2336/2360/2332 ms against 2500; interactions at most24 ms, CLS 0, application JS 63137 B. Later health-module/Docker changes have no affected frontend inputs. |
+| Current-code four-format research report journeys | PASS | current-code-research-report-browser-02/receipt.json | Three genuine desktop/tablet/mobile journeys at clean `b89eea3` pass in 361.498 s, covering selected immutable sources, real PDF/CSV/XLSX/JSON generation, manifest/download and access-denial behavior. No historical build substituted. |
+| Legacy Demo browser execution | PASS | demo-browser-matrix-01/receipt.json, legacy-generated-source-restoration-03/receipt.json | All 196 actual cases pass on the configured desktop/mobile projects. The run changes only generated next-env.d.ts; exact restoration is subsequent and does not retrospectively make the run immutable-source. |
+| Back under a genuinely held account document | FAIL | account-routing-workspace-bare-held-recovery-05/receipt.json, account-routing-workspace-tablet-qualification-06/receipt.json, account-routing-workspace-mobile-qualification-06/receipt.json | Back fails ERR_ABORTED on all 3 viewports before required post-Back account/late-response proof. Native account history and real-keyboard supersession pass separately. Product/browser/harness cause remains unresolved; the bounded diagnostic loop stopped. |
+| Scoped synthetic restart and retained restore/recovery evidence | PASS | nine-service-health-qualification-03/receipt.json, coverage-python-integration-all-01/receipt.json | At clean `1497a1d`, nine-service restart passes exit 0 in 74.938 s; measured recovery51.234597695 s, exact resource/canonical and duplicate-transport predicates retained. Original integration separately contains passing operational/process/family/restore-restriction cases. The nine-service run is not proof of every modeled family or production RTO. |
+| Isolated clean install and local build executions | PASS | clean-python-install-01/receipt.json, clean-node-install-01/receipt.json, clean-python-build-01/receipt.json, clean-web-build-01/receipt.json, clean-verify-01/receipt.json | Frozen-source `7c2828a` isolated installs and Python/Web builds pass without changing the original environment. These sources precede later routing/health corrections; no complete current `1497` clean-install pass or byte reproducibility is inferred. |
+| Web artifact byte repeatability | FAIL | clean-repeat-compare-01/receipt.json, clean-repeat-first-inventory-01/receipt.json, clean-repeat-repeat-01/receipt.json | The actual paired `7c2828a` comparison fails:271 Web content/type/mode differences,0 Python differences;3,378 mtime changes separately observed. Both outputs are preserved. No exclusions, timestamp-only explanation or current-SHA repeatability pass is invented. |
+| Current-source six-image build and runtime controls | PASS | qualification-health-six-image-build-02/receipt.json, qualification-health-runtime-package-manager-check-02/receipt.json, qualification-health-stack-readiness-02/receipt.json | All 6 unique private qualification images build at clean `1497a1d` in 975.900 s; runtime package-manager checks and the initial seven-long-running/two-one-shot service state pass. Original qualified tags/images are separate and retained; no distribution right is granted. |
+| Full configured SAST | FAIL | candidate-security-01-configured-sast/receipt.json, candidate-security-configured-sast-diagnostic-02/receipt.json, candidate-security-configured-sast-project-root-03/receipt.json | Final configured scan discovers all996 expected target paths under 7 configured rules and0 rule findings, but scanner/command exit 3 with one code 3 warning at research-report-actions.test.ts. Underlying error-type object is withheld; cause unresolved. Two earlier protocol failures remain; zero findings do not imply a passing scanner. |
+| Retained predecessor Gitleaks exits and owner disposition | OWNER_DECISION_REQUIRED | Separate prerequisite | Historical source 56/history 2 findings were classified nonsecret in retained independently reviewed records; scanner exits remain 1. These are not fresh1497 executions. Existing source/history reports remain in prior evidence archives; no fabricated current receipt is assigned. |
+| Exact final-commit source/history scanner closure | PENDING_LOCAL | post-commit-closure.json | After final documentation commit, actual source/history attempt 2 reports, exits, finding counts, classifications and final Git/source identities are recorded in indexed private post-commit-closure.json. Public documentation does not predict these outcomes. |
+| Exact disposable resource retirement | PASS | final-owned-stack-backup-retirement-04/receipt.json, retire-exact-known-recovery-result-05/receipt.json, final-owned-stack-backup-retirement-05/receipt.json | After the retained safe retirement 04 failure, exact cleanup 05 passes in 2.043 s: two known synthetic Redis keys are DUMP/fsync/readback-preserved before per-database WATCH deletion; no queue payload is deleted. Guarded retirement 05 passes in 19.919 s, removing only nine exact task containers, one owned task volume and one owned task network. Original resources and all twelve qualification-tag image bindings are retained. |
+| GitHub Actions policy and final-SHA observation | OWNER_DECISION_REQUIRED | Separate prerequisite | Keep all 3workflows owner-deferred and disabled. Final source server/workflow/run observation belongs to the post-commit closure; no CI activation or success is claimed. |
+| Licensing, visibility wording and redistribution | OWNER_DECISION_REQUIRED | Separate prerequisite | LICENSE.md and third-party obligations are unchanged. Existing public-visibility wording proposal awaits owner decision. Source publication is distinct from rights to distribute dependencies, signed binaries or container images. |
+| Credentialed providers and production prerequisites | BLOCKED_EXTERNAL | Separate prerequisite | Real Trading212/provider verification, paid activation, hosted OAuth/MCP/ChatGPT registration and production ownership/credentials require external owner prerequisites outside this authorization. Synthetic local unfinished work is not reclassified as external. |
+| Private local artifact bundle and negative integrity cases | PASS | candidate-local-artifact-evidence-01/receipt.json, candidate-local-artifact-negative-integrity-01/receipt.json | Local source/SBOM/image/provenance/signature bundle qualifies at `1497a1d` in 35.706 s. One positive verification and two negative integrity checks (actual CLI exits 0/1/1) are preserved by the passing 1.138 s integrity wrapper. Ephemeral public key95fe61e1... is bound; no private signing key is retained, no production attestation/publication/distribution right is claimed. |
+| Frozen production Python dependency audit | PASS | candidate-security-01-requirements/receipt.json, candidate-security-01-python-audit/receipt.json | Actual frozen production requirements export and isolated Python audit pass at `1497a1d`. Preserve exact tool/report/environment bindings; do not expand this to unexecuted dependencies or redistribution rights. |
+| Node dependency audit at configured severity | PASS | candidate-security-01-node-audit/receipt.json | Actual Node audit exits0 at `1497a1d` under the unchanged configured threshold.0 high/critical findings;1 moderate finding remains in reported counts. Do not claim zero vulnerabilities at all severities. |
+| Configured filesystem vulnerability/security scan | PASS | candidate-security-01-trivy-fs/receipt.json | Fresh database scan exits0 in 724.135 s with0 filtered Vulnerabilities/Secrets/Misconfigurations/Licenses across 10 sections. HIGH,CRITICAL and ignore-unfixed policies are unchanged; this is neither an all-severity guarantee nor a license-rights decision. |
+| postgres qualification-image scan | PASS | candidate-security-01-trivy-image-postgres/receipt.json | Actual1497a1d qualification-image scan exits0 at the configured HIGH,CRITICAL threshold with unchanged ignore-unfixed policy. Exact source/image/report binding is retained; no all-severity or distribution authorization claim. |
+| redis qualification-image scan | PASS | candidate-security-01-trivy-image-redis/receipt.json | Actual1497a1d qualification-image scan exits0 at the configured HIGH,CRITICAL threshold with unchanged ignore-unfixed policy. Exact source/image/report binding is retained; no all-severity or distribution authorization claim. |
+| api qualification-image scan | PASS | candidate-security-01-trivy-image-api/receipt.json | Actual1497a1d qualification-image scan exits0 at the configured HIGH,CRITICAL threshold with unchanged ignore-unfixed policy. Exact source/image/report binding is retained; no all-severity or distribution authorization claim. |
+| worker qualification-image scan | PASS | candidate-security-01-trivy-image-worker/receipt.json | Actual1497a1d qualification-image scan exits0 at the configured HIGH,CRITICAL threshold with unchanged ignore-unfixed policy. Exact source/image/report binding is retained; no all-severity or distribution authorization claim. |
+| mcp qualification-image scan | PASS | candidate-security-01-trivy-image-mcp/receipt.json | Actual1497a1d qualification-image scan exits0 at the configured HIGH,CRITICAL threshold with unchanged ignore-unfixed policy. Exact source/image/report binding is retained; no all-severity or distribution authorization claim. |
+| web qualification-image scan | PASS | candidate-security-01-trivy-image-web/receipt.json | Actual1497a1d qualification-image scan exits0 at the configured HIGH,CRITICAL threshold with unchanged ignore-unfixed policy. Exact source/image/report binding is retained; no all-severity or distribution authorization claim. |
+| Changed-source SAST subset | PASS | candidate-security-01-changed-sast/receipt.json | Actual changed-source SAST subset passes exit 0 in 6.814 s. This narrow observation does not override the configured-scope exit 3 failure. |
+| Final all78 metadata binding | PASS | final-traceability-binding-01/receipt.json, final-traceability-binding-recovery-02/receipt.json | The original 0.445 s metadata-only overlong-selector failure is retained. Corrected binder 02 passes exit 0 in 4.692 s using bounded parameter-hash display for long JUnit selectors; source JUnit is unchanged, no case is dropped and no bound is raised. The complete public traceability contains exactly 30 acceptance rows and 48 scenarios, all formally pending. |
+| Final indexed archive and private post-commit closure | PENDING_LOCAL | post-commit-closure.json | Seal only after final source/history scans and closed evidence. The reviewed operator includes every regular evidence file, verifies all execution receipts/bookends/logs and stream-verifies members; actual archive path/size/checksum come from its future completed seal, not this documentation draft. |

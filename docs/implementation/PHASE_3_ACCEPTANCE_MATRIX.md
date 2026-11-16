@@ -1,6 +1,18 @@
 # Phase 3 Acceptance Matrix
 
-## Current controlled environment diagnosis, 16 November
+## Current final local qualification, 16 November
+
+Phase 3 Checkpoint B remains incomplete. The final bare admission control exceeds its unchanged 750 ms limit. Back during a held account navigation fails on desktop, tablet and mobile before the required account-state checks. Web artifact repeatability and cumulative native coverage remain unresolved; configured SAST retains a nonzero scanner exit despite zero rule findings.
+
+Separate current-code browser performance and genuine PDF, CSV, XLSX and JSON research-report journeys pass on all three viewports. The corrected nine-service synthetic restart passes at `1497a1d`, with measured recovery of 51.235 seconds. Original aggregate failures and later focused recoveries retain their own sources; no complete current-SHA validation pass is claimed.
+
+All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**. See the [qualification record](PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md) and [complete traceability](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md). P3-10 has not started. CI activation, credentialed providers, production/Live and distribution remain separately gated.
+
+See the [qualification record](PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md) and [complete 30-row/48-scenario traceability](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md).
+
+Earlier records retain their historical source qualifications; all formal states remain pending.
+
+## Historical controlled environment diagnosis, 16 November
 
 The [controlled environment record](PHASE_3_CONTROLLED_ENVIRONMENT_20261116.md) retains three complete original
 workload executions at clean main `1e86141984470df6ddfc485d2c41cee3113f8511`.
@@ -111,36 +123,36 @@ to progression. No local row is blocked merely because paid/live access is absen
 
 | ID | Package | Acceptance predicate | Required scenarios | State |
 | --- | --- | --- | --- | --- |
-| P3-RISK-001 | P3-01 | Input alignment and canonical historical capture | P3-S01,P3-S02,P3-S03; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-RISK-002 | P3-01 | Numerical references, PSD and edge behavior | P3-S04,P3-S05,P3-S06,P3-S07,P3-S08; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-RISK-003 | P3-01 | Concentration, canonical risk views and quality | P3-S09,P3-S35; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-STRESS-001 | P3-02 | Immutable scenarios, ownership and precedence | P3-S10,P3-S11; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-STRESS-002 | P3-02 | Evidence-backed sensitivities and historical replay | P3-S12,P3-S13; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-STRESS-003 | P3-02 | Editor/history/comparison and report parity | P3-S14,P3-S35; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-PROJ-001 | P3-03 | Reproducible bounded simulation and financial conservation | P3-S15,P3-S16,P3-S17,P3-S18; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-PROJ-002 | P3-03 | Goal probability, shortfall, uncertainty and sensitivity | P3-S19,P3-S20; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-PROJ-003 | P3-03 | Durable admission, cancellation and restart fencing | P3-S21,P3-S22; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-RESEARCH-001 | P3-04 | Exposure-ranked sources, revisions and owner workflow | P3-S23,P3-S24; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-RESEARCH-002 | P3-04 | Untrusted content and optional synthesis boundaries | P3-S25; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-RESEARCH-003 | P3-04 | Ownership, current licenses, export and physical retention | P3-S26; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-MCP-001 | P3-05 | Real authentication and preserved/new closed registry | P3-S33,P3-S34; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-MCP-002 | P3-05 | Accessible canonical resources and strict CSP | P3-S36; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-MCP-003 | P3-05 | Cross-interface quality/source/value parity | P3-S35; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-WEB-001 | P3-06 | Installable PWA and safe static offline behavior | P3-S37,P3-S38; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-WEB-002 | P3-06 | Navigation, palette, saved layouts and account-safe selection | P3-S39; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-WEB-003 | P3-06 | Measured accessibility, responsive layout and local performance | P3-S40; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-PROVIDER-001 | P3-07 | Documented typed adapters and realistic replay coverage | P3-S27; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-PROVIDER-002 | P3-07 | Bounded secure transport and failure policies | P3-S28; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-PROVIDER-003 | P3-07 | Explicit failover, provenance, entitlements and blocked live access | P3-S29; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-ACCOUNT-001 | P3-08 | Authorized aggregation, economic identity and FX | P3-S30; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-ACCOUNT-002 | P3-08 | Evidenced transfer classification and degraded coverage | P3-S31; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-ACCOUNT-003 | P3-08 | Canonical synthetic second broker and sealed Trading 212 | P3-S32; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-OPS-001 | P3-09 | Internal adversarial coverage and artifact minimization | P3-S41,P3-S42; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-OPS-002 | P3-09 | Durable failure/restart and clean synthetic restore | P3-S44,P3-S46; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-OPS-003 | P3-09 | Measured load/queue/query/security and build controls | P3-S47,P3-S48; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-RC-001 | P3-10 | Complete canonical journeys and preserved regressions | P3-S35,P3-S43; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-RC-002 | P3-10 | Clean install, accepted Phase 2 upgrade and repeat | P3-S45; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
-| P3-RC-003 | P3-10 | Immutable release/evidence/provenance and honest external boundaries | P3-S48; [focused proof / pending local](PHASE_3_BATCH2_TRACEABILITY.md#acceptance-rows) | pending |
+| P3-RISK-001 | P3-01 | Input alignment and canonical historical capture | P3-S01,P3-S02,P3-S03; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-RISK-002 | P3-01 | Numerical references, PSD and edge behavior | P3-S04,P3-S05,P3-S06,P3-S07,P3-S08; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-RISK-003 | P3-01 | Concentration, canonical risk views and quality | P3-S09,P3-S35; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-STRESS-001 | P3-02 | Immutable scenarios, ownership and precedence | P3-S10,P3-S11; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-STRESS-002 | P3-02 | Evidence-backed sensitivities and historical replay | P3-S12,P3-S13; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-STRESS-003 | P3-02 | Editor/history/comparison and report parity | P3-S14,P3-S35; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-PROJ-001 | P3-03 | Reproducible bounded simulation and financial conservation | P3-S15,P3-S16,P3-S17,P3-S18; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-PROJ-002 | P3-03 | Goal probability, shortfall, uncertainty and sensitivity | P3-S19,P3-S20; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-PROJ-003 | P3-03 | Durable admission, cancellation and restart fencing | P3-S21,P3-S22; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-RESEARCH-001 | P3-04 | Exposure-ranked sources, revisions and owner workflow | P3-S23,P3-S24; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-RESEARCH-002 | P3-04 | Untrusted content and optional synthesis boundaries | P3-S25; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-RESEARCH-003 | P3-04 | Ownership, current licenses, export and physical retention | P3-S26; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-MCP-001 | P3-05 | Real authentication and preserved/new closed registry | P3-S33,P3-S34; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-MCP-002 | P3-05 | Accessible canonical resources and strict CSP | P3-S36; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-MCP-003 | P3-05 | Cross-interface quality/source/value parity | P3-S35; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-WEB-001 | P3-06 | Installable PWA and safe static offline behavior | P3-S37,P3-S38; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-WEB-002 | P3-06 | Navigation, palette, saved layouts and account-safe selection | P3-S39; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-WEB-003 | P3-06 | Measured accessibility, responsive layout and local performance | P3-S40; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-PROVIDER-001 | P3-07 | Documented typed adapters and realistic replay coverage | P3-S27; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-PROVIDER-002 | P3-07 | Bounded secure transport and failure policies | P3-S28; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-PROVIDER-003 | P3-07 | Explicit failover, provenance, entitlements and blocked live access | P3-S29; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-ACCOUNT-001 | P3-08 | Authorized aggregation, economic identity and FX | P3-S30; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-ACCOUNT-002 | P3-08 | Evidenced transfer classification and degraded coverage | P3-S31; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-ACCOUNT-003 | P3-08 | Canonical synthetic second broker and sealed Trading 212 | P3-S32; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-OPS-001 | P3-09 | Internal adversarial coverage and artifact minimization | P3-S41,P3-S42; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-OPS-002 | P3-09 | Durable failure/restart and clean synthetic restore | P3-S44,P3-S46; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-OPS-003 | P3-09 | Measured load/queue/query/security and build controls | P3-S47,P3-S48; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-RC-001 | P3-10 | Complete canonical journeys and preserved regressions | P3-S35,P3-S43; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-RC-002 | P3-10 | Clean install, accepted Phase 2 upgrade and repeat | P3-S45; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
+| P3-RC-003 | P3-10 | Immutable release/evidence/provenance and honest external boundaries | P3-S48; [focused proof / pending local](PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md#acceptance-rows) | pending |
 
 
 **Historical Batch 2 supplement:** The [Batch 2 traceability map](PHASE_3_BATCH2_TRACEABILITY.md) records all 30 rows

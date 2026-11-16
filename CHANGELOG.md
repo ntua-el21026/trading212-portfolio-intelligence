@@ -6,6 +6,12 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### Final Checkpoint B local qualification
 
+- Bound the final local qualification to application candidate `1497a1d`, retaining admission, pending-navigation Back, Web repeatability, cumulative coverage and configured-SAST limitations.
+- Complete current-code desktop/tablet/mobile performance and four-format research-report journeys; retain the original failed browser aggregate and separate focused recoveries.
+- Qualify the single-reply worker health probe and synthetic nine-service restart without changing health deadlines, task registration, authorization or financial calculations.
+- Prepare complete 30-row/48-scenario traceability with every formal state pending. Preserve actual scanner exits and record final committed-source secret scans in the private post-commit closure.
+- Preserve and retire only positively identified disposable task resources after exact backups and opaque Redis DUMP verification; retain original volumes, images, environments and all preceding evidence archives.
+
 - Bound the worker health command to one genuine ping reply using the existing
   application and unchanged timeout budgets. Preserve the original restart
   deadline failure, diagnostic timings and focused response/privacy evidence;

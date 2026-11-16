@@ -4596,7 +4596,7 @@
   "checkpoint_b_final_local_qualification": {
     "date": "2026-11-16",
     "owner": "Michail Athanasios Peppas",
-    "status": "qualification_in_progress",
+    "status": "qualification_completed_with_material_failures_pending_post_commit_closure",
     "checkpoint_b": "INCOMPLETE",
     "baseline_sha": "6a5fb4bc8a65df1c588534d486170ab0535ae226",
     "implementation_report": "docs/implementation/PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md",
@@ -4605,8 +4605,8 @@
     "admission_passive_diagnostic_p95_seconds": 1.0072029059992929,
     "admission_specific_execution_stopped": true,
     "production_optimization": false,
-    "harness_change": "One exact authorized disposable project in three closed selectors; existing negative predicates retained.",
-    "complete_local_qualification": "in_progress",
+    "harness_change": "Exact-task recovery selectors; stale fixture/protocol corrections; positive route readiness and actual held document/service-worker navigation tests; no requirement or timeout weakened.",
+    "complete_local_qualification": "independently_executable_local_scopes_attempted_material_failures_retained",
     "p3_10_started": false,
     "pending_rows": 30,
     "pending_scenarios": 48,
@@ -4683,6 +4683,425 @@
       "combined_percent": 45.76471271263522,
       "scope": "Focused recovery data only; initial raw inputs were consumed automatically by coverage 7.16 reporting. Original full JSON/XML and receipts remain intact. No raw data reconstructed or full tests repeated.",
       "cumulative_native_regeneration": "PENDING_LOCAL"
+    },
+    "application_candidate_sha": "1497a1df908ad2ea1f471c469ce0c9fd26e8a6cb",
+    "application_candidate_tree": "d4bbc393f6ed7fec4ed173853a1debbc99eb0b97",
+    "application_source_manifest_sha256": "5054eed76e8fb9de540095e6a5e09f4a3648eb02a3c7e633613b96ee071529d7",
+    "traceability_report": "docs/implementation/PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md",
+    "browser_specific_diagnosis_stopped": true,
+    "browser_observations": {
+      "original_complete_matrix": {
+        "status": "FAIL",
+        "execution": {
+          "receipt": "api-browser-matrix-01/receipt.json",
+          "receipt_sha256": "168b9ea2f90a422f0ccf45c915cce168ce5977f6b841371f1ea1b21234f8c983",
+          "source_sha": "7c2828a3eabaf3f5c751e69bf19d94e449cb7e58",
+          "source_tree": "654225d53f30b1e969c46939d6e7ad76cc179df0",
+          "source_manifest_sha256": "86fcff253a7b981d692f3fd82fb48d0c62ef79138c2294f43f0494ea6cb8ceeb",
+          "source_after_manifest_sha256": "86fcff253a7b981d692f3fd82fb48d0c62ef79138c2294f43f0494ea6cb8ceeb",
+          "source_unchanged": true,
+          "working_tree_status_before": "",
+          "exit_code": 1,
+          "elapsed_seconds": 4050.594
+        },
+        "cells": 75,
+        "passed": 128,
+        "failed": 10,
+        "skipped": 0,
+        "flaky": 0,
+        "scope": "One complete clean7c execution; focused recoveries do not replace this result."
+      },
+      "projection_focused_recovery": {
+        "status": "PASS",
+        "execution": {
+          "receipt": "api-projection-browser-readiness-01/receipt.json",
+          "receipt_sha256": "2d57319787288b604854f4d1caf0170f7c84f317feaa3c84e2558baba2b49f97",
+          "source_sha": "7c2828a3eabaf3f5c751e69bf19d94e449cb7e58",
+          "source_tree": "654225d53f30b1e969c46939d6e7ad76cc179df0",
+          "source_manifest_sha256": "ace3e0726291fe3ef100e5de6a79888382390bbf11998c7fb9dade387325f8e8",
+          "source_after_manifest_sha256": "ace3e0726291fe3ef100e5de6a79888382390bbf11998c7fb9dade387325f8e8",
+          "source_unchanged": true,
+          "working_tree_status_before": "M apps/web/components/account-context.tsx\n M tests/e2e/api-web/projection-reports.spec.ts\n M tests/e2e/api-web/projections.spec.ts\n M tests/e2e/api-web/workspace.spec.ts",
+          "exit_code": 0,
+          "elapsed_seconds": 401.626
+        },
+        "cells": 6,
+        "scope": "Separate manifested working-source observation; not a complete suite."
+      },
+      "current_code_performance": {
+        "status": "PASS",
+        "execution": {
+          "receipt": "account-routing-browser-performance-02/receipt.json",
+          "receipt_sha256": "ad947edfef1aee881bee7a44cf5f119c63541c907658515d5fadd3fc48a0506b",
+          "source_sha": "b89eea3d5437d4eb22b3f94406e786e0adb958ed",
+          "source_tree": "a239d6d272df86735fa105ad8aac83deaba52c97",
+          "source_manifest_sha256": "8208d52fa35ff242e6d7b18018f4f2115063a89b90717a707e5547a474b42a9c",
+          "source_after_manifest_sha256": "8208d52fa35ff242e6d7b18018f4f2115063a89b90717a707e5547a474b42a9c",
+          "source_unchanged": true,
+          "working_tree_status_before": "",
+          "exit_code": 0,
+          "elapsed_seconds": 783.884
+        },
+        "viewports": 3,
+        "routes": ["holdings", "research"],
+        "samples_per_route_per_viewport": 5,
+        "scope": "Actual browser execution at clean b89eea3 uses retained host-account-routing-build-02, produced at HEAD 7c2828a with manifested working source ace3e0726291fe3ef100e5de6a79888382390bbf11998c7fb9dade387325f8e8. The recorded comparison establishes exact relevant build-input equivalence to clean b89eea3; later worker-health changes leave frontend inputs unchanged. No build execution at clean b89eea3 or the later whole-source SHA is claimed."
+      },
+      "current_code_research_reports": {
+        "status": "PASS",
+        "execution": {
+          "receipt": "current-code-research-report-browser-02/receipt.json",
+          "receipt_sha256": "e04bece47a0bc12ad2a4036ed347f5f6f60766b89ee29af695f8b5d16843572d",
+          "source_sha": "b89eea3d5437d4eb22b3f94406e786e0adb958ed",
+          "source_tree": "a239d6d272df86735fa105ad8aac83deaba52c97",
+          "source_manifest_sha256": "8208d52fa35ff242e6d7b18018f4f2115063a89b90717a707e5547a474b42a9c",
+          "source_after_manifest_sha256": "8208d52fa35ff242e6d7b18018f4f2115063a89b90717a707e5547a474b42a9c",
+          "source_unchanged": true,
+          "working_tree_status_before": "",
+          "exit_code": 0,
+          "elapsed_seconds": 361.498
+        },
+        "viewports": 3,
+        "formats": ["pdf", "csv", "xlsx", "json"],
+        "scope": "Genuine source-selected generation, manifest and download journeys on b89; owner/license/retention clauses retain separate evidence."
+      },
+      "legacy_demo": {
+        "status": "PASS",
+        "execution": {
+          "receipt": "demo-browser-matrix-01/receipt.json",
+          "receipt_sha256": "3343d7861156e0b62a81d8cb7d20eca9a4be87fc090f525f071bebab0061a03e",
+          "source_sha": "b89eea3d5437d4eb22b3f94406e786e0adb958ed",
+          "source_tree": "a239d6d272df86735fa105ad8aac83deaba52c97",
+          "source_manifest_sha256": "8208d52fa35ff242e6d7b18018f4f2115063a89b90717a707e5547a474b42a9c",
+          "source_after_manifest_sha256": "3504a3e552cfacf41a728d9619f23c5cd6e71f841505b28a71d88ab8f11cf3ce",
+          "source_unchanged": false,
+          "working_tree_status_before": "",
+          "exit_code": 0,
+          "elapsed_seconds": 206.01
+        },
+        "passed": 196,
+        "scope": "Actual execution passed with generated next-env.d.ts drift; not an immutable-source pass. Exact restoration is separate.",
+        "restoration": {
+          "receipt": "legacy-generated-source-restoration-03/receipt.json",
+          "receipt_sha256": "692e59b1c2e8d145193330d4db57044e5a115554ea4c22c1e976a8dce0fefe80",
+          "source_sha": "b89eea3d5437d4eb22b3f94406e786e0adb958ed",
+          "source_tree": "a239d6d272df86735fa105ad8aac83deaba52c97",
+          "source_manifest_sha256": "3504a3e552cfacf41a728d9619f23c5cd6e71f841505b28a71d88ab8f11cf3ce",
+          "source_after_manifest_sha256": "8208d52fa35ff242e6d7b18018f4f2115063a89b90717a707e5547a474b42a9c",
+          "source_unchanged": false,
+          "working_tree_status_before": "M apps/web/next-env.d.ts",
+          "exit_code": 0,
+          "elapsed_seconds": 0.074
+        }
+      },
+      "pending_account_back": {
+        "status": "FAIL",
+        "viewports": ["desktop", "tablet", "mobile"],
+        "receipts": [
+          "account-routing-workspace-bare-held-recovery-05/receipt.json",
+          "account-routing-workspace-tablet-qualification-06/receipt.json",
+          "account-routing-workspace-mobile-qualification-06/receipt.json"
+        ],
+        "failure": "page.goBack ERR_ABORTED before required post-Back account and late-response assertions",
+        "root_cause": "unresolved; no attribution to product, BFCache or a particular diagnostic RPC",
+        "scope": "Bounded browser diagnosis stopped; all original assertions remain."
+      }
+    },
+    "worker_health_and_nine_service_recovery": {
+      "status": "PASS",
+      "execution": {
+        "receipt": "nine-service-health-qualification-03/receipt.json",
+        "receipt_sha256": "5c20d57ac0948248ed985cc34aef70fbd2db20b557eda7d0d817091b2c162a77",
+        "source_sha": "1497a1df908ad2ea1f471c469ce0c9fd26e8a6cb",
+        "source_tree": "d4bbc393f6ed7fec4ed173853a1debbc99eb0b97",
+        "source_manifest_sha256": "5054eed76e8fb9de540095e6a5e09f4a3648eb02a3c7e633613b96ee071529d7",
+        "source_after_manifest_sha256": "5054eed76e8fb9de540095e6a5e09f4a3648eb02a3c7e633613b96ee071529d7",
+        "source_unchanged": true,
+        "working_tree_status_before": "",
+        "exit_code": 0,
+        "elapsed_seconds": 74.938
+      },
+      "recovery_seconds": 51.23459769500187,
+      "artifacts": "nine-service-health-qualification-03-artifacts",
+      "previous_failed_executions": [
+        {
+          "receipt": "nine-service-restart-01/receipt.json",
+          "receipt_sha256": "35b7f6cbe8e38a4317252c8113ce22ce74c9cb7cb648d30044f14c7c7a03b8e0",
+          "source_sha": "b89eea3d5437d4eb22b3f94406e786e0adb958ed",
+          "source_tree": "a239d6d272df86735fa105ad8aac83deaba52c97",
+          "source_manifest_sha256": "8208d52fa35ff242e6d7b18018f4f2115063a89b90717a707e5547a474b42a9c",
+          "source_after_manifest_sha256": "8208d52fa35ff242e6d7b18018f4f2115063a89b90717a707e5547a474b42a9c",
+          "source_unchanged": true,
+          "working_tree_status_before": "",
+          "exit_code": 1,
+          "elapsed_seconds": 2.113
+        },
+        {
+          "receipt": "nine-service-restart-recovery-02/receipt.json",
+          "receipt_sha256": "466c3ed80ba7a01e97e25ba50064e319bfab8b81baffdf738d6dec0d003f0361",
+          "source_sha": "b89eea3d5437d4eb22b3f94406e786e0adb958ed",
+          "source_tree": "a239d6d272df86735fa105ad8aac83deaba52c97",
+          "source_manifest_sha256": "8208d52fa35ff242e6d7b18018f4f2115063a89b90717a707e5547a474b42a9c",
+          "source_after_manifest_sha256": "8208d52fa35ff242e6d7b18018f4f2115063a89b90717a707e5547a474b42a9c",
+          "source_unchanged": true,
+          "working_tree_status_before": "",
+          "exit_code": 1,
+          "elapsed_seconds": 720.928
+        }
+      ],
+      "health_correction": "Existing tasks.celery_app ping with timeout5 and limit1. Docker30s interval/8s timeout/15s start period/3 retries unchanged. Same any-responsive-worker predicate; no container-specific, DB-readiness or production-RTO claim.",
+      "focused_probe_module_coverage": {
+        "status": "PASS",
+        "execution": {
+          "receipt": "worker-health-coverage-report-03/receipt.json",
+          "receipt_sha256": "79c6f771b2f20331b962ea79af6cdb84778a80e32dafaa028e87e54cd088ff22",
+          "source_sha": "b89eea3d5437d4eb22b3f94406e786e0adb958ed",
+          "source_tree": "a239d6d272df86735fa105ad8aac83deaba52c97",
+          "source_manifest_sha256": "74fe54a3d30995675a7fabdfccc4329b3f05b077c490e093a0e4a5cdc8e6e8c0",
+          "source_after_manifest_sha256": "74fe54a3d30995675a7fabdfccc4329b3f05b077c490e093a0e4a5cdc8e6e8c0",
+          "source_unchanged": true,
+          "working_tree_status_before": "M infrastructure/docker/worker.Dockerfile\n?? apps/worker/src/trading212_worker/health_probe.py\n?? tests/unit/test_worker_health.py",
+          "exit_code": 0,
+          "elapsed_seconds": 0.246
+        },
+        "scope": "New module only;12 statements and4 branches100%. Separate from original full production-source coverage and missing cumulative native data."
+      },
+      "six_image_build": {
+        "status": "PASS",
+        "execution": {
+          "receipt": "qualification-health-six-image-build-02/receipt.json",
+          "receipt_sha256": "b565ba49f81272926cd58830eb0049271607060e1e14e3f3fb1c547098b24e7f",
+          "source_sha": "1497a1df908ad2ea1f471c469ce0c9fd26e8a6cb",
+          "source_tree": "d4bbc393f6ed7fec4ed173853a1debbc99eb0b97",
+          "source_manifest_sha256": "5054eed76e8fb9de540095e6a5e09f4a3648eb02a3c7e633613b96ee071529d7",
+          "source_after_manifest_sha256": "5054eed76e8fb9de540095e6a5e09f4a3648eb02a3c7e633613b96ee071529d7",
+          "source_unchanged": true,
+          "working_tree_status_before": "",
+          "exit_code": 0,
+          "elapsed_seconds": 975.9
+        },
+        "scope": "Private local qualification tags only; no publication/distribution rights inferred."
+      },
+      "runtime_package_manager_check": {
+        "status": "PASS",
+        "execution": {
+          "receipt": "qualification-health-runtime-package-manager-check-02/receipt.json",
+          "receipt_sha256": "86d6502bc047f435f7fd1a7120fd27a74ce8155c9b467738edf0f1e4eb0eb069",
+          "source_sha": "1497a1df908ad2ea1f471c469ce0c9fd26e8a6cb",
+          "source_tree": "d4bbc393f6ed7fec4ed173853a1debbc99eb0b97",
+          "source_manifest_sha256": "5054eed76e8fb9de540095e6a5e09f4a3648eb02a3c7e633613b96ee071529d7",
+          "source_after_manifest_sha256": "5054eed76e8fb9de540095e6a5e09f4a3648eb02a3c7e633613b96ee071529d7",
+          "source_unchanged": true,
+          "working_tree_status_before": "",
+          "exit_code": 0,
+          "elapsed_seconds": 4.188
+        }
+      }
+    },
+    "clean_install_and_repeatability": {
+      "clean_python_install": {
+        "status": "PASS",
+        "execution": {
+          "receipt": "clean-python-install-01/receipt.json",
+          "receipt_sha256": "0713902b41d3d59316419deaad5594aff70ec04678bc653a912170d1604c9fa8",
+          "source_sha": "7c2828a3eabaf3f5c751e69bf19d94e449cb7e58",
+          "source_tree": "654225d53f30b1e969c46939d6e7ad76cc179df0",
+          "source_manifest_sha256": "86fcff253a7b981d692f3fd82fb48d0c62ef79138c2294f43f0494ea6cb8ceeb",
+          "source_after_manifest_sha256": "86fcff253a7b981d692f3fd82fb48d0c62ef79138c2294f43f0494ea6cb8ceeb",
+          "source_unchanged": true,
+          "working_tree_status_before": "",
+          "exit_code": 0,
+          "elapsed_seconds": 478.615
+        }
+      },
+      "clean_node_install": {
+        "status": "PASS",
+        "execution": {
+          "receipt": "clean-node-install-01/receipt.json",
+          "receipt_sha256": "8443ac00ca1ac91ca7b3173548b8b79f48ec5a0956153d218081bf851e798a35",
+          "source_sha": "7c2828a3eabaf3f5c751e69bf19d94e449cb7e58",
+          "source_tree": "654225d53f30b1e969c46939d6e7ad76cc179df0",
+          "source_manifest_sha256": "86fcff253a7b981d692f3fd82fb48d0c62ef79138c2294f43f0494ea6cb8ceeb",
+          "source_after_manifest_sha256": "86fcff253a7b981d692f3fd82fb48d0c62ef79138c2294f43f0494ea6cb8ceeb",
+          "source_unchanged": true,
+          "working_tree_status_before": "",
+          "exit_code": 0,
+          "elapsed_seconds": 46.439
+        }
+      },
+      "clean_python_build": {
+        "status": "PASS",
+        "execution": {
+          "receipt": "clean-python-build-01/receipt.json",
+          "receipt_sha256": "cd2bb2677c34672d52c20ad6e69a2527c88b7b5233bc70e2953ce665ddd776a8",
+          "source_sha": "7c2828a3eabaf3f5c751e69bf19d94e449cb7e58",
+          "source_tree": "654225d53f30b1e969c46939d6e7ad76cc179df0",
+          "source_manifest_sha256": "86fcff253a7b981d692f3fd82fb48d0c62ef79138c2294f43f0494ea6cb8ceeb",
+          "source_after_manifest_sha256": "86fcff253a7b981d692f3fd82fb48d0c62ef79138c2294f43f0494ea6cb8ceeb",
+          "source_unchanged": true,
+          "working_tree_status_before": "",
+          "exit_code": 0,
+          "elapsed_seconds": 9.285
+        }
+      },
+      "clean_web_build": {
+        "status": "PASS",
+        "execution": {
+          "receipt": "clean-web-build-01/receipt.json",
+          "receipt_sha256": "aef8b0260835ed45e2dd6f7e4c6349c5b30d25860f0a9c426faa8a715d509b56",
+          "source_sha": "7c2828a3eabaf3f5c751e69bf19d94e449cb7e58",
+          "source_tree": "654225d53f30b1e969c46939d6e7ad76cc179df0",
+          "source_manifest_sha256": "86fcff253a7b981d692f3fd82fb48d0c62ef79138c2294f43f0494ea6cb8ceeb",
+          "source_after_manifest_sha256": "86fcff253a7b981d692f3fd82fb48d0c62ef79138c2294f43f0494ea6cb8ceeb",
+          "source_unchanged": true,
+          "working_tree_status_before": "",
+          "exit_code": 0,
+          "elapsed_seconds": 15.846
+        }
+      },
+      "repeatability": {
+        "status": "FAIL",
+        "execution": {
+          "receipt": "clean-repeat-compare-01/receipt.json",
+          "receipt_sha256": "25ab26b1af0343730af5b1ace6135d66c05517e23cc87ba01ccd547b169d9ebd",
+          "source_sha": "7c2828a3eabaf3f5c751e69bf19d94e449cb7e58",
+          "source_tree": "654225d53f30b1e969c46939d6e7ad76cc179df0",
+          "source_manifest_sha256": "86fcff253a7b981d692f3fd82fb48d0c62ef79138c2294f43f0494ea6cb8ceeb",
+          "source_after_manifest_sha256": "86fcff253a7b981d692f3fd82fb48d0c62ef79138c2294f43f0494ea6cb8ceeb",
+          "source_unchanged": true,
+          "working_tree_status_before": "",
+          "exit_code": 1,
+          "elapsed_seconds": 12.275
+        },
+        "python_content_type_mode_differences": 0,
+        "web_content_type_mode_differences": 271,
+        "mtime_changes_observed": 3378,
+        "scope": "Actual7c paired build comparison; current1497 whole-source clean-install/reproducibility not inferred. Both outputs preserved; no exclusion or failure reclassification."
+      }
+    },
+    "remaining_current_gates": {
+      "admission": "FAIL",
+      "pending_account_back": "FAIL",
+      "cumulative_native_coverage_regeneration": "PENDING_LOCAL",
+      "web_artifact_reproducibility": "FAIL",
+      "current_security_and_artifact_classification": "completed_with_explicit_configured_sast_failure_and_deferred_post_commit_secret_counts",
+      "final_source_evidence_archive_and_resource_inventory": "PENDING_LOCAL",
+      "ci_activation": "OWNER_DECISION_REQUIRED",
+      "distribution_rights": "OWNER_DECISION_REQUIRED",
+      "credentialed_providers_and_production_prerequisites": "BLOCKED_EXTERNAL",
+      "configured_sast": "FAIL",
+      "resource_cleanup": "PASS",
+      "traceability_metadata_binding": "PASS"
+    },
+    "disposition": "C. CHECKPOINT B INCOMPLETE \u2014 MATERIAL UNRESOLVED FAILURES",
+    "application_corrections": [
+      "Routing AccountSelect autocomplete disabled after measured native form restoration.",
+      "Existing real Celery application single-reply health collection within unchanged Docker deadlines."
+    ],
+    "production_optimization_scope": "No admission-path production optimization; financial computations and broker boundary unchanged.",
+    "security_observations": {
+      "configured_sast": {
+        "status": "FAIL",
+        "receipt": "candidate-security-configured-sast-project-root-03/receipt.json",
+        "actual_exit": 3,
+        "configured_rules": 7,
+        "actual_expected_target_paths": 996,
+        "findings": 0,
+        "warning_code": 3,
+        "warning_path": "apps/web/tests/research-report-actions.test.ts",
+        "cause": "unresolved; raw error-type object withheld",
+        "previous_protocol_failures_retained": true
+      },
+      "python_audit": {
+        "status": "PASS",
+        "receipt": "candidate-security-01-python-audit/receipt.json"
+      },
+      "node_audit": {
+        "status": "PASS",
+        "receipt": "candidate-security-01-node-audit/receipt.json",
+        "high": 0,
+        "critical": 0,
+        "moderate": 1
+      },
+      "trivy_fs": {
+        "status": "PASS",
+        "receipt": "candidate-security-01-trivy-fs/receipt.json",
+        "elapsed_seconds": 724.135,
+        "filter": "HIGH,CRITICAL",
+        "ignore_unfixed_unchanged": true,
+        "all_severity_or_licensing_rights_claimed": false
+      },
+      "trivy_images": {
+        "status": "PASS",
+        "services": ["postgres", "redis", "api", "worker", "mcp", "web"],
+        "filter": "HIGH,CRITICAL",
+        "ignore_unfixed_unchanged": true
+      },
+      "gitleaks_predecessor": {
+        "actual_scan_status": "FAIL",
+        "source_findings": 56,
+        "history_findings": 2,
+        "actual_scanner_exit": 1,
+        "classification": "retained nonsecret classifications at historical sources; not a fresh1497 scan"
+      },
+      "gitleaks_final_committed_source": {
+        "status": "PENDING_LOCAL",
+        "closure_record": "post-commit-closure.json",
+        "finding_counts": null,
+        "exit_codes": null,
+        "same_sha_pass_claimed": false,
+        "scope": "Actual attempt2 source/history results are recorded after final documentation commit; no later documentation commit solely for counts."
+      }
+    },
+    "local_artifact_integrity": {
+      "status": "PASS",
+      "build_receipt": "candidate-local-artifact-evidence-01/receipt.json",
+      "negative_receipt": "candidate-local-artifact-negative-integrity-01/receipt.json",
+      "negative_actual_cli_exits": [0, 1, 1],
+      "public_key_sha256": "95fe61e1abcfe1efd5f3cd8c13d70670dbc8744342d7d1959356ad0103453cb2",
+      "private_key_retained": false,
+      "production_attestation_or_distribution_authorized": false
+    },
+    "resource_retirement": {
+      "status": "PASS",
+      "prior_failed_receipt": "final-owned-stack-backup-retirement-04/receipt.json",
+      "exact_key_cleanup_receipt": "retire-exact-known-recovery-result-05/receipt.json",
+      "exact_key_cleanup_elapsed_seconds": 2.043,
+      "retirement_receipt": "final-owned-stack-backup-retirement-05/receipt.json",
+      "retirement_elapsed_seconds": 19.919,
+      "known_routing_keys_dumped_then_deleted": 1,
+      "known_owned_result_keys_dumped_then_deleted": 1,
+      "queue_payloads_deleted": 0,
+      "task_containers_removed": 9,
+      "owned_task_volumes_removed": 1,
+      "owned_task_networks_removed": 1,
+      "retirement_terminal_sha256": "07dd96b4477263c910dc93f5e340cb018e61af512090934149aa6d316171fcc4",
+      "twelve_qualified_tag_bindings_unchanged_proof": "qualified-image-preservation-post-retirement-05.json",
+      "original_volumes": 2,
+      "original_qualified_images": 9,
+      "prior_archives": 5,
+      "original_venv_and_installed_dependencies_preserved": true
+    },
+    "traceability_binding": {
+      "status": "PASS",
+      "prior_failed_receipt": "final-traceability-binding-01/receipt.json",
+      "actual_receipt": "final-traceability-binding-recovery-02/receipt.json",
+      "elapsed_seconds": 4.692,
+      "public_input_sha256": "465a6db97c23291faf67954527f33b465818b4358feae479b9633bf3c98886e4",
+      "accepted_rows": 0,
+      "pending_rows": 30,
+      "accepted_scenarios": 0,
+      "pending_scenarios": 48,
+      "source_junit_unchanged": true,
+      "selectors_bounded_without_losing_cases": true
+    },
+    "gitleaks_final_committed_source": {
+      "status": "PENDING_LOCAL",
+      "closure_record": "post-commit-closure.json",
+      "finding_counts": null,
+      "exit_codes": null,
+      "same_sha_pass_claimed": false,
+      "scope": "Actual attempt2 source/history results are recorded after final documentation commit; no later documentation commit solely for counts."
     }
   }
 }
