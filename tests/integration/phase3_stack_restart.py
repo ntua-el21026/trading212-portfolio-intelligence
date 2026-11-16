@@ -36,6 +36,7 @@ _TARGETS = {
 }
 _PROJECT = "t212pi_batch2_20261114"
 _CURRENT_PROJECT = "t212pi_batch2_consolidated_b_20261115"
+_FINAL_PROJECT = "t212pi_batch2_final_checkpoint_b_20261116"
 _HEX40 = re.compile(r"^[0-9a-f]{40}$")
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")
 _IMAGE = re.compile(r"^sha256:[0-9a-f]{64}$")
@@ -56,7 +57,7 @@ def _require(condition: object, message: str) -> None:
 def _project() -> str:
     project = os.environ.get("T212PI_PHASE3_TASK_PROJECT", _PROJECT)
     _require(
-        project in {_PROJECT, _CURRENT_PROJECT},
+        project in {_PROJECT, _CURRENT_PROJECT, _FINAL_PROJECT},
         "Only an authorized exact task project is supported.",
     )
     return project

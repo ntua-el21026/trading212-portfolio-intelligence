@@ -1,6 +1,22 @@
 # Validation Report
 
-## Current controlled environment diagnosis, 16 November
+## Current final local qualification, 16 November
+
+The [final local qualification record](docs/implementation/PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md) follows the owner-authorized
+continuation from clean main `6a5fb4bc8a65df1c588534d486170ab0535ae226`.
+Qualification is in progress; Checkpoint B remains incomplete. The final bare
+admission control fails p95 **0.832402193 s**; read p95 **0.341415128 s**,
+maximum12 SQL statements and all ten jobs pass. The external passive diagnostic
+also fails admission; no production optimization is justified yet. Admission-specific
+execution has stopped at its two-cohort limit. Independent remaining local gates
+continue. Exact task recovery guards retain foreign-resource denial.
+
+All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**.
+Formal P3-10 has not started; CI, providers, production and distribution remain
+separately owner gated. Earlier records retain their historical source qualification.
+
+## Historical controlled environment diagnosis
+
 
 The [controlled environment record](docs/implementation/PHASE_3_CONTROLLED_ENVIRONMENT_20261116.md) retains three complete original
 workload executions at clean main `1e86141984470df6ddfc485d2c41cee3113f8511`.

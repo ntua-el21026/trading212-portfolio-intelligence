@@ -4,6 +4,13 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Final Checkpoint B local qualification
+
+- Admit the exact owner-authorized disposable qualification project in recovery
+  harnesses while preserving resource identity, historical and foreign-task denials.
+- Retain both final admission failures and continue independently executable local
+  qualification. No production optimization or formal acceptance is claimed.
+
 ### Controlled admission environment diagnosis
 
 - Record four startup comparisons and three complete unchanged-source workload

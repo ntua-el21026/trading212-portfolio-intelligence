@@ -128,6 +128,7 @@ def _owned_dependencies(engine: Engine) -> dict[str, str]:
     assert project in {
         "t212pi_batch2_checkpoint_b_20261115",
         "t212pi_batch2_consolidated_b_20261115",
+        "t212pi_batch2_final_checkpoint_b_20261116",
     }
     assert engine.url.host == "127.0.0.1" and engine.url.port == 55432
     assert engine.url.database and engine.url.database.startswith("t212pi_xray_reads_")

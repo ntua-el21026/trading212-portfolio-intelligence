@@ -7617,7 +7617,7 @@
     "further_runtime_retries_in_this_package": false,
     "post_commit_observations": "Exact committed-candidate security, CI, source qualification, resource retirement and archive results are recorded in the final private handoff; these are not future pass claims."
   },
-  "current_checkpoint_b_selector": "/checkpoint_b_controlled_environment_diagnosis",
+  "current_checkpoint_b_selector": "/checkpoint_b_final_local_qualification",
   "checkpoint_b_consolidated_qualification": {
     "authority": "latest_owner_authorized_local_checkpoint_b_qualification",
     "starting_main_sha": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
@@ -8418,5 +8418,28 @@
       "Dependency/binary/container distribution rights"
     ],
     "delivery_integrity": "Actual final source, CI, scanner classification, resource retirement and archive checksums belong to private closure evidence."
+  },
+  "checkpoint_b_final_local_qualification": {
+    "date": "2026-11-16",
+    "owner": "Michail Athanasios Peppas",
+    "status": "qualification_in_progress",
+    "checkpoint_b": "INCOMPLETE",
+    "baseline_sha": "6a5fb4bc8a65df1c588534d486170ab0535ae226",
+    "implementation_report": "docs/implementation/PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md",
+    "explicit_admission_cohorts": 2,
+    "admission_original_control_p95_seconds": 0.8324021930002345,
+    "admission_passive_diagnostic_p95_seconds": 1.0072029059992929,
+    "admission_specific_execution_stopped": true,
+    "production_optimization": false,
+    "harness_change": "One exact authorized disposable project in three closed selectors; existing negative predicates retained.",
+    "complete_local_qualification": "in_progress",
+    "p3_10_started": false,
+    "pending_rows": 30,
+    "pending_scenarios": 48,
+    "accepted_rows": 0,
+    "accepted_scenarios": 0,
+    "formal_owner_acceptance": "pending",
+    "CI_activation": "owner_deferred",
+    "distribution_rights": "pending_owner_decision"
   }
 }
