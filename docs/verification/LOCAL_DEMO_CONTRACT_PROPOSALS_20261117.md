@@ -1,5 +1,10 @@
 # LOCAL/DEMO qualification contract proposals
 
+**Decision boundary:** LOCAL/DEMO acceptance on 17 November 2026 does not approve
+these proposals. They remain proposed future contracts; original thresholds,
+scanner policies and failed execution results are unchanged. See the
+[owner acceptance](../implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md).
+
 **Prepared for:** Michail Athanasios Peppas. **Date:** 17 November 2026.
 **Status:** proposals for owner review; no accepted policy or original gate changed.
 

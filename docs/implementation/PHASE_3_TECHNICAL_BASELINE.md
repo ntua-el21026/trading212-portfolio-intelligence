@@ -6,9 +6,21 @@
 
 **Release target:** 1.0.0
 
-## Current final local qualification, 16 November
+## Accepted LOCAL/DEMO implementation, 17 November
 
-The current application qualification candidate is `1497a1df908ad2ea1f471c469ce0c9fd26e8a6cb` (tree `d4bbc393f6ed7fec4ed173853a1debbc99eb0b97`). The schema remains revision `0036` with the documented 368 ORM tables; published migrations and financial contracts are unchanged. Subsequent runtime evidence includes a same-source six-image build and successful synthetic nine-service restart. The worker health probe uses the real Celery application with one reply, preserving its five-second reply budget and Docker's 30 s interval, 8 s timeout, 15 s start period and three retries.
+The owner accepts the bounded LOCAL/DEMO milestone at
+`cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`. See the
+[accepted architecture snapshot](../DESIGN_FREEZE_LOCAL_DEMO_20261117.md),
+[scope and independent review](LOCAL_DEMO_ACCEPTANCE_20261117.md), and
+[implementation evidence](LOCAL_DEMO_IMPLEMENTATION_20261117.md).
+This additive baseline preserves the technical and financial contracts below.
+Phase 3 Checkpoint B remains INCOMPLETE; 30 rows and 48 scenarios remain pending,
+zero accepted. P3-10 is unstarted. Historical qualification sections retain their
+own dates, sources and observed failures.
+
+## Historical final local qualification, 16 November
+
+The application qualification candidate for that historical execution was `1497a1df908ad2ea1f471c469ce0c9fd26e8a6cb` (tree `d4bbc393f6ed7fec4ed173853a1debbc99eb0b97`). The schema remains revision `0036` with the documented 368 ORM tables; published migrations and financial contracts are unchanged. Subsequent runtime evidence includes a same-source six-image build and successful synthetic nine-service restart. The worker health probe uses the real Celery application with one reply, preserving its five-second reply budget and Docker's 30 s interval, 8 s timeout, 15 s start period and three retries.
 
 Frontend browser executions run at clean `b89eea3` using retained `host-account-routing-build-02`, produced at HEAD `7c2828a` with manifested working source `ace3e0726291fe3ef100e5de6a79888382390bbf11998c7fb9dade387325f8e8`. The retained comparison establishes exact relevant build-input equivalence to clean `b89eea3`; the subsequent worker-only change does not alter frontend inputs. Original Make, full test and browser failures, Web repeatability differences and the native coverage gap remain visible. Configured SAST scans all 996 expected targets under seven configured rules but exits 3 with one warning; zero rule findings do not establish a passing gate. Final committed-source Gitleaks outcomes are recorded after documentation freeze in private `post-commit-closure.json`. All 30 rows and 48 scenarios remain pending; no release, production, CI activation or redistribution is authorized.
 

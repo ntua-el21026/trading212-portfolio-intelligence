@@ -1,6 +1,13 @@
 # Portfolio Intelligence — UI Redesign Implementation and Closeout Roadmap
 
-**Status:** LOCAL/DEMO implementation authorized on 17 November 2026; independent review pending.
+The original design and planning text below records its cited preparation snapshot.
+It is retained as development provenance, not as a current implementation plan.
+For the accepted result, see the [architecture freeze](../DESIGN_FREEZE_LOCAL_DEMO_20261117.md),
+[owner acceptance](../implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md) and
+[implementation report](../implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md).
+No further UI implementation is authorized by this historical document.
+
+**Status:** Historical planning record; implemented LOCAL/DEMO milestone accepted on 17 November 2026.
 **Current authority:** [Owner-authorized scope](../implementation/LOCAL_DEMO_SCOPE_20261117.md). Earlier snapshots below are historical.
 **Prepared:** 2026-11-16.
 **Related:** `UI_UX_DESIGN_SPECIFICATION.md` and `UI_REDESIGN_CODEX_PROMPT.md`.

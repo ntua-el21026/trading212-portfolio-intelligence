@@ -1,6 +1,13 @@
 # Portfolio Intelligence — UI/UX Design Specification
 
-**Status:** authorized visual implementation reference for the LOCAL/DEMO milestone; independent acceptance pending.
+The original design and planning text below records its cited preparation snapshot.
+It is retained as development provenance, not as a current implementation plan.
+For the accepted result, see the [architecture freeze](../DESIGN_FREEZE_LOCAL_DEMO_20261117.md),
+[owner acceptance](../implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md) and
+[implementation report](../implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md).
+No further UI implementation is authorized by this historical document.
+
+**Status:** Historical planning record; implemented LOCAL/DEMO milestone accepted on 17 November 2026.
 **Sequencing update, 17 November 2026:** [Owner-authorized scope](../implementation/LOCAL_DEMO_SCOPE_20261117.md) permits UI work while Checkpoint B remains INCOMPLETE. The original preparation snapshot below remains historical.
 **Prepared:** 2026-11-16.
 **Repository:** ntua-el21026/trading212-portfolio-intelligence.
@@ -12,8 +19,8 @@
 
 1. This document is a **proposed additive visual specification**, subordinate to `AGENTS.md`, `docs/DESIGN_INDEX.md`, accepted design freezes/ADRs, broker allowlist, active phase manifests, and security/financial policies. Conflicts require owner resolution; this document never silently supersedes higher authority.
 2. The six supplied screenshots are **synthetic design references**, not proof of live UI behavior, feature existence, numerical correctness, source coverage, or accessibility. Their financial values, dates, labels, statuses, and imagined controls cannot be copied as production facts.
-3. Verified from the cited GitHub snapshot: `apps/web` uses Next.js 16.4.1, React 19.2.8, TypeScript, Recharts 3.10.1, Lucide React, application CSS/CSS modules, and `@trading212/ui` primitives. Existing shared UI elements include `Surface`, `Button`, `StatusPill`, `Notice`, `EmptyState`, and `Skeleton`. Current `apps/web/app/styles.css` supplies light-only semantic tokens and responsive breakpoints at 74rem, 58rem, 46rem, and 24rem. There is also a command palette, mobile navigation, and PWA runtime.
-4. No claim is made that the visual design has been implemented or browser-tested. Re-confirm all framework versions, routes, constraints, and acceptance status against the future implementation SHA.
+3. Verified from the cited GitHub snapshot: `apps/web` uses Next.js 16.4.1, React 19.2.8, TypeScript, Recharts 3.10.1, Lucide React, application CSS/CSS modules, and `@trading212/ui` primitives. Existing shared UI elements include `Surface`, `Button`, `StatusPill`, `Notice`, `EmptyState`, and `Skeleton`. At that reference snapshot, `apps/web/app/styles.css` supplies light-only semantic tokens and responsive breakpoints at 74rem, 58rem, 46rem, and 24rem. There is also a command palette, mobile navigation, and PWA runtime.
+4. At preparation, this draft made no claim of implementation or browser execution. Re-confirm all framework versions, routes, constraints, and acceptance status against the future implementation SHA.
 
 ### Design goals
 

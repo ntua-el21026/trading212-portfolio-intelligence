@@ -10,7 +10,7 @@ Documentation is part of the executable contract. It defines product scope, fina
 
 | Class | Examples | Change rule |
 |---|---|---|
-| Design freeze | `DESIGN_FREEZE_V0_1.md`, additive `DESIGN_FREEZE_V0_2.md` | Superseding ADR and synchronized updates required |
+| Design freeze | `DESIGN_FREEZE_V0_1.md`, additive `DESIGN_FREEZE_V0_2.md`, accepted `DESIGN_FREEZE_LOCAL_DEMO_20261117.md` | Superseding ADR and synchronized updates required |
 | ADR | `docs/adr/*` | Immutable after acceptance except typo/metadata corrections; supersede rather than rewrite decisions |
 | Security/provider contract | Trading 212 contract, security architecture, allowlist | Review exact boundary and negative tests in same commit |
 | Phase authority | Phase specification, technical baseline, acceptance matrix | Update before or with implementation that resolves a detail |
@@ -80,6 +80,23 @@ Allowed work-package states:
 - `blocked_external`
 - `implemented_unverified`
 - `complete`
+
+### Scoped milestone acceptance
+
+Owner acceptance must identify its scope, date, reviewed source and review evidence.
+The [LOCAL/DEMO acceptance](implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md)
+is recorded separately from formal Phase 3 acceptance, in the identical additive
+`local_demo_milestone` objects of `PROJECT_STATUS.json` and `PROJECT_PROGRESS.json`.
+The existing schema version, Phase 3 acceptance fields, candidate/evidence records
+and original execution-source fields retain their meaning. The milestone's
+`accepted_items` count refers to formal Phase 3 items and remains zero.
+
+Owner-reported independent review is labelled separately from retained execution
+receipts and new documentation checks. Accepting a scoped milestone does not
+convert failed scans, performance measurements or historical suites into passes,
+nor approve a future contract proposal. An additive implemented-architecture
+snapshot preserves earlier accepted freezes. Future material architectural change
+requires an explicit new owner decision and the ADR process in section 5.
 
 ## 9. Validation
 

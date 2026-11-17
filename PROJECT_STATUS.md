@@ -8,9 +8,18 @@
 
 **Updated:** 2026-11-17
 
-## Current LOCAL/DEMO implementation
+## Accepted LOCAL/DEMO milestone
 
-**LOCAL/DEMO IMPLEMENTATION COMPLETE — INDEPENDENT REVIEW PENDING.**
+**LOCAL/DEMO MILESTONE: ACCEPTED — 17 November 2026.**
+
+The owner accepts snapshot `cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`
+after a scoped independent review. The [acceptance record](docs/implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md)
+separates the coordinator's owner-reported 981 frontend unit, 55 focused frontend
+and two Python fixture-clock passes, plus passing scoped type/lint/docs checks,
+from the original implementation executions below. The reviewed architecture is
+recorded in the [accepted LOCAL/DEMO freeze](docs/DESIGN_FREEZE_LOCAL_DEMO_20261117.md).
+Implementation is complete within this bounded scope; no new implementation phase
+is underway. Formal project closure awaits the owner's consolidation review.
 
 The [implementation and qualification report](docs/implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md)
 records the owner-authorized reduced milestone at implementation `e1e8da7` (broader UI evidence at `65d1d0d`).
@@ -32,6 +41,9 @@ scenarios remain pending, zero accepted**. P3-10, CI, providers, production and
 distribution remain separately gated. The revised sequencing is recorded in the
 [LOCAL/DEMO scope](docs/implementation/LOCAL_DEMO_SCOPE_20261117.md).
 
+The [documentation consolidation record](docs/implementation/LOCAL_DEMO_CONSOLIDATION_20261117.md)
+provides the editorial audit, changed-file inventory and bounded-check provenance.
+
 ## Historical bounded qualification, 17 November
 
 The [bounded qualification package](docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md)
@@ -42,14 +54,14 @@ operator failures remain recorded. All 966 TypeScript tests pass. Focused Back
 journeys pass on desktop/tablet/mobile after the verified correction; the failed
 12-pass/3-timeout workspace execution remains separate.
 
-Admission remains failed and unresolved. Current whole-tree Web repeatability
-fails with 277 differences. Complete current browser qualification remains locally
+Admission remains failed and unresolved. That checkpoint's whole-tree Web repeatability
+fails with 277 differences. Complete browser qualification at that checkpoint remains locally
 pending on capture privacy; new restart/restore/artifact qualification stops at
 the nonempty-Redis preservation prerequisite. Clean installs/builds and six image
 builds pass separately. Security scanner exits and classifications remain distinct;
 final delivery-SHA security/CI observations accompany the private closure.
 All 30 rows and 48 scenarios remain pending, zero accepted; P3-10 is not started.
-See the [complete current traceability supplement](docs/implementation/PHASE_3_BOUNDED_TRACEABILITY_20261117.md).
+See the [historical traceability supplement](docs/implementation/PHASE_3_BOUNDED_TRACEABILITY_20261117.md).
 Historical records below retain their original source qualifications.
 
 ## Historical final local qualification, 16 November

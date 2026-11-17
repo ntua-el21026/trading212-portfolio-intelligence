@@ -1,8 +1,15 @@
-# Codex Prompt — Gated, Whole-Application UI/UX Modernization
+# UI modernization — historical implementation prompt
 
-**STATUS: OWNER-AUTHORIZED LOCAL/DEMO IMPLEMENTATION, 17 November 2026.**
+**Status:** Historical implementation prompt; the resulting LOCAL/DEMO milestone
+was accepted on 17 November 2026.
 
-The [current scope record](../implementation/LOCAL_DEMO_SCOPE_20261117.md) supersedes the original Checkpoint B-before-UI sequencing. Independent acceptance remains pending.
+Retained as development provenance. The [owner acceptance](../implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md),
+[architecture freeze](../DESIGN_FREEZE_LOCAL_DEMO_20261117.md) and
+[implementation report](../implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md)
+describe the completed result. The instructions below are historical and do not
+start another implementation package.
+
+The [current scope record](../implementation/LOCAL_DEMO_SCOPE_20261117.md) supersedes the original Checkpoint B-before-UI sequencing. The subsequent bounded owner acceptance is recorded in the linked acceptance record.
 
 The following prompt is designed to be copied into **one** Codex conversation after the three design documents have been reviewed and committed. The prompt's authorization is **limited to the explicitly approved UI package** and does not grant P3-10, CI, Live, provider, deployment, or distribution authority.
 

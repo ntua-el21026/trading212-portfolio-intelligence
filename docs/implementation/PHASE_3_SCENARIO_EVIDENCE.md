@@ -2,18 +2,20 @@
 
 ## Current LOCAL/DEMO supplement, 17 November
 
-The owner authorizes concurrent UI modernization and bounded stabilization under
-[the LOCAL/DEMO contract](LOCAL_DEMO_SCOPE_20261117.md). The
+The owner accepted the completed LOCAL/DEMO milestone on 17 November 2026 at
+`cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`; the
+[acceptance record](LOCAL_DEMO_ACCEPTANCE_20261117.md) defines that bounded scope.
+The [LOCAL/DEMO contract](LOCAL_DEMO_SCOPE_20261117.md),
 [current report](LOCAL_DEMO_IMPLEMENTATION_20261117.md),
 [32-route checklist](LOCAL_DEMO_ROUTE_COVERAGE_20261117.md) and
-[complete 30-row/48-scenario overlay](LOCAL_DEMO_TRACEABILITY_20261117.md) map new
+[complete 30-row/48-scenario overlay](LOCAL_DEMO_TRACEABILITY_20261117.md) map the milestone's
 focused tests, responsive UI and genuine four-format research journeys to the
 retained requirements. They preserve every original failure and source binding.
 
 All **30 acceptance rows and 48 scenarios remain pending, zero accepted**.
 Checkpoint B remains INCOMPLETE. The original performance, reproducibility,
 complete-qualification and owner/external gates are not waived for Phase 3.
-Local Demo completion does not authorize P3-10, CI, providers or production.
+LOCAL/DEMO acceptance does not authorize P3-10, CI, providers or production.
 
 ## Historical bounded qualification, 17 November
 

@@ -1,5 +1,11 @@
 # LOCAL/DEMO route coverage — 17 November 2026
 
+**Current milestone:** LOCAL/DEMO accepted by the owner on 17 November 2026,
+reviewed at `cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`; see the
+[scoped acceptance](LOCAL_DEMO_ACCEPTANCE_20261117.md). This is distinct from the
+implementation and execution sources below. Formal Phase 3 counts remain
+30 rows and 48 scenarios pending, zero accepted.
+
 The final implementation is `e1e8da74846d9a248740bbf7560ea9b7183b32bc`.
 Its supplement to the broader UI baseline changes one production `aria-label`
 attribute and one regression. The compact selector's original 320-pixel failure,

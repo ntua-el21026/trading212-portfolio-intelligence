@@ -3,6 +3,14 @@
 **Status:** Phase 1 operational contract
 **Release:** `0.1.0`
 
+**Current reading path:** The [LOCAL/DEMO architecture freeze](../DESIGN_FREEZE_LOCAL_DEMO_20261117.md)
+and [README local setup](../../README.md#local-setup) describe the accepted current
+milestone. This document retains the foundation operating contract; Phase 3
+[operations](PHASE_3_OPERATIONS.md) define additional qualification obligations.
+Historical instructions do not authorize new cleanup, provider or production
+operations. The [scoped owner acceptance](../implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md)
+preserves those boundaries.
+
 ## Independent audit correction operations
 
 Collection traversal quotas are hard, including for an owner's first request:

@@ -1,120 +1,177 @@
 # Trading 212 Portfolio Intelligence
 
-A strictly read-only portfolio analytics platform combining brokerage ingestion,
-financial accounting, reconciliation, saved analysis and API, web and MCP views.
-Monetary values use explicit currencies and Decimal representations; source,
-valuation time, coverage and quality remain attached to results.
+A read-only portfolio analytics system with exact decimal accounting, traceable
+source data, asynchronous analysis and responsive web, API and MCP interfaces.
 
-## Current status
+Portfolio analysis depends on reconciling positions, cash flows, prices and
+reference data recorded at different times and in different currencies. This
+project makes those dependencies explicit: results retain their valuation time,
+source evidence, methodology, coverage and data-quality state. The implementation
+connects brokerage ingestion and financial accounting to saved analyses, research
+notes, manual planning and private reports.
 
-The owner-authorized **LOCAL/DEMO implementation is complete, pending independent
-review**. A shared responsive design covers the application with persistent
-light, dark and system appearance. Targeted synthetic checks cover navigation,
-account isolation and genuine research-report generation and downloads.
-See the [implementation report](docs/implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md),
-[32-route checklist](docs/implementation/LOCAL_DEMO_ROUTE_COVERAGE_20261117.md) and
-[source-qualified evidence overlay](docs/implementation/LOCAL_DEMO_TRACEABILITY_20261117.md).
+**The [LOCAL/DEMO milestone was accepted on 17 November 2026](docs/implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md).** The
+[accepted architecture baseline](docs/DESIGN_FREEZE_LOCAL_DEMO_20261117.md)
+defines the completed synthetic demonstration and local implementation scope.
+External-provider and production qualification remain separate.
 
-Phase 3 Checkpoint B remains **incomplete**. Original admission and whole-tree Web
-repeatability failures, inherited nonzero secret-scanner exits, known dependency
-advisories and unexecuted complete qualification remain explicit. All **30 acceptance
-rows and 48 scenarios remain pending, zero accepted**. No complete current-SHA
-Phase 3 pass or production readiness is claimed. P3-10, CI, real providers,
-production and redistribution remain separately gated.
+## Interface
 
-## Qualification history
+<table>
+  <tr>
+    <th width="50%">Desktop · Light</th>
+    <th width="50%">Desktop · Dark</th>
+  </tr>
+  <tr>
+    <td>
+      <a href="docs/media/local-demo-overview-light-20261117.png">
+        <img src="docs/media/local-demo-overview-light-20261117.png" alt="Synthetic portfolio overview in light mode, with allocation, holdings, reconciliation and source-quality information" width="100%">
+      </a>
+    </td>
+    <td>
+      <a href="docs/media/local-demo-overview-dark-20261117.png">
+        <img src="docs/media/local-demo-overview-dark-20261117.png" alt="The same synthetic portfolio overview in dark mode, retaining its financial values and source-quality information" width="100%">
+      </a>
+    </td>
+  </tr>
+</table>
 
-Earlier controlled admission, stabilization and Batch 1/2 observations retain their source qualifications in the [16 November report](docs/implementation/PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md), [controlled environment record](docs/implementation/PHASE_3_CONTROLLED_ENVIRONMENT_20261116.md), [Batch 1 report](docs/implementation/PHASE_3_BATCH1_20261114.md) and [Batch 2 report](docs/implementation/PHASE_3_BATCH2_20261114.md). Phase 1 has source-bound acceptance evidence; the owner accepted Phase 2 for progression. Those decisions do not accept Phase 3.
+The same synthetic snapshot in both appearances. Open either image for full-size
+detail.
 
-## Architecture and implemented scope
+<p align="center">
+  <a href="docs/media/local-demo-holdings-mobile-20261117.png">
+    <img src="docs/media/local-demo-holdings-mobile-20261117.png" alt="Mobile Holdings in dark mode, showing account selection, search and sort controls, a scrollable positions table and bottom navigation" width="260">
+  </a>
+  <br>
+  <em>Holdings on a 390-pixel mobile viewport.</em>
+</p>
 
-~~~text
-Next.js web / PWA ---- HTTPS API ----+
-                                    +-- application services -- Decimal analytics
-MCP tools/resources ----------------+           |
-Worker and retained jobs -----------------------+-- PostgreSQL / source evidence
-                                                     |
-                                              GET-only provider adapters
-~~~
+These are genuine application captures using synthetic data. The
+[capture manifest](docs/media/local-demo-captures-20261117.json) records their
+dimensions, hashes and source provenance. Light, dark and system appearances share
+the same semantic design tokens; the saved preference survives navigation, account
+switches and sign-out.
 
-Source implements typed ingestion, quantity/cash/value reconciliation, snapshots,
-cash-flow-aware performance, manual contribution planning, internal virtual
-targets, reference-source coverage, look-through exposure, saved reports and
-alerts. Risk, scenario, projection and research components have scoped evidence;
-their presence does not establish complete Phase 3 acceptance. PostgreSQL is
-authoritative; Redis supports coordination and caching.
+## Implemented capabilities
 
-The broker boundary permits exactly the
-[allowlisted capabilities](config/contracts/trading212-read-allowlist.yaml).
-There is no broker order, transfer, CFD or Trading 212 Pie mutation. Internal
-targets and manual allocation proposals do not execute broker actions. Browser
-and MCP clients receive authorized projections rather than broker credentials
-or generic HTTP, SQL or filesystem access.
+| Area | Implementation |
+| --- | --- |
+| Portfolio accounting | Positions, cash, transactions, dividends, immutable snapshots, allocation and quantity/cash/value reconciliation. |
+| Historical analysis | Cash-flow-aware performance, benchmark comparisons, income, attribution and retained source/FX observations. |
+| Exposure and planning | Fund look-through with explicit unknown coverage, internal target portfolios, drift and manual contribution proposals. |
+| Saved analytical work | Versioned risk, stress-scenario, projection and goal definitions, with saved inputs, job states, results and limitations. |
+| Research and reporting | Retained source revisions, owner notes and review acknowledgments; explicit evidence selection for PDF, CSV, XLSX and JSON reports. |
+| User interfaces | Account-scoped REST and MCP operations, responsive web/PWA pages, alert rules, saved workspace layouts and authorized artifact downloads. |
 
-The stack uses FastAPI/Pydantic, SQLAlchemy/Alembic and Celery in Python,
-Next.js/React/TypeScript on the web, PostgreSQL and Redis.
+Internal plans, targets and reports never place trades or modify a broker account.
+The [32-route coverage record](docs/implementation/LOCAL_DEMO_ROUTE_COVERAGE_20261117.md)
+distinguishes implemented features from the browser paths exercised during the
+accepted milestone.
 
-## Local development
+## Architecture
 
-The workspace contains [API](apps/api/), [worker](apps/worker/),
-[MCP](apps/mcp/) and [web](apps/web/) applications. Shared packages cover
-[domain contracts](packages/domain/), [analytics](packages/analytics/),
-[persistence](packages/persistence/), [security](packages/security/) and the
-[sealed broker adapter](packages/trading212/). The tracked synthetic fixtures
-and contract specifications support inspection without a brokerage account.
-
-Use Python 3.13.15, uv 0.12.7, Node.js 24.20.0, Corepack, pnpm 10.34.5 and GNU Make. Docker Compose
-is required for database-backed and full-stack gates. Review the
-[current technical baseline](docs/implementation/PHASE_3_TECHNICAL_BASELINE.md),
-[security corrections](docs/security/DEPENDENCY_REMEDIATION_20261113.md) and
-[operations guide](docs/operations/LOCAL_AND_DEPLOYMENT.md) before starting
-services. Keep secrets server-side in ignored local configuration. Use synthetic
-seed data before configuring any external read-only provider.
-
-~~~bash
-make bootstrap
-make docs-check
-make format-check
-make lint
-make typecheck
-make test-unit
-make build
-~~~
-
-These are project commands, not a claim they all pass at this checkpoint.
-make run-dependencies starts local dependencies; make run-local performs the
-documented migration/seed/start sequence. Review account-selection configuration
-and the current checkpoint instead of copying a historical scratch override.
-No provider connection is needed for synthetic unit tests.
-Compose defines seven long-running services and two one-shot migration/seed
-services. Focused database checks need only PostgreSQL and, where used, Redis.
-
-### Configuration without a broker connection
-
-Use [.env.example](.env.example) as the configuration reference. Copy it to an
-ignored `.env` for Compose and set a local database password; host processes
-require explicitly exported settings. Keep these synthetic defaults for an
-initial local review:
-
-```dotenv
-T212PI_ENVIRONMENT=local
-T212PI_WORKER_PROVIDER=synthetic
-T212PI_TRADING212_ENVIRONMENT=demo
-T212PI_TRADING212_LIVE_ENABLED=false
-T212PI_RUN_TRADING212_DEMO_SMOKE=0
-T212PI_TRADING212_CREDENTIAL_BUNDLE=
+```text
+Web / PWA --> FastAPI --+
+                       +--> Application services --> Domain / analytics
+MCP tools/resources ---+             |
+                                     v
+PostgreSQL <--------------------------+
+    ^
+    |
+    +--> Workers + dispatcher <--> Redis
+                   |
+                   v
+       Trading 212 adapter (10 GET capabilities)
 ```
 
-Local synthetic authentication is restricted to loopback. Review the
-[credential and Demo procedure](docs/operations/CREDENTIALS_AND_DEMO_VALIDATION.md)
-before any separately authorized provider validation. Private credential files,
-the original operator's environment and external checkpoint diagnostics are
-absent from a clean clone; their absence does not prevent reviewing source or
-synthetic test cases. The September resume document records those historical
-local paths, rather than portable prerequisites.
+The applications share typed domain, application, analytics, persistence and
+security packages. REST, web and MCP adapters expose bounded operations over those
+services. PostgreSQL holds canonical financial data, retained evidence and durable
+job state. Outbox dispatch separates accepted work from queue delivery; Redis
+provides non-authoritative messaging, coordination and caching. Background workers
+perform ingestion and bounded analytical/report jobs.
 
-For a fresh synthetic application instance, the following uses a separate local
-Compose project and a public demo database password. It needs no broker account:
+| Layer | Technology |
+| --- | --- |
+| Financial and application services | Python 3.13, FastAPI, Pydantic, Decimal |
+| Persistence | PostgreSQL 18, SQLAlchemy, Alembic |
+| Background processing | Celery, PostgreSQL job/outbox records, Redis 8 |
+| Web and visualizations | Next.js 16, React 19, TypeScript, Recharts, CSS Modules and shared UI primitives |
+| Interfaces and verification | REST, MCP, generated contracts, pytest, Hypothesis, Vitest and Playwright |
+
+The [accepted architecture freeze](docs/DESIGN_FREEZE_LOCAL_DEMO_20261117.md)
+describes the implemented topology; the [foundation architecture](docs/SYSTEM_ARCHITECTURE.md)
+retains the original package boundaries and runtime contracts. Lockfiles and the
+[technical baseline](docs/implementation/PHASE_3_TECHNICAL_BASELINE.md) define exact
+tool and dependency versions.
+
+## Financial correctness and privacy
+
+Authoritative monetary accounting uses Decimal/NUMERIC representations, explicit
+currencies and declared rounding rules. Cross-currency values require sourced FX;
+deposits and withdrawals remain distinct from internal purchase/sale flows.
+Timestamps use timezone-aware UTC. Missing, unavailable, stale, partial, estimated,
+unreconciled, failed and actual zero values remain distinguishable. Results retain
+method/version, source time, provenance, coverage and warnings; modeled results
+also retain their assumptions and numerical profiles. Charts use numeric screen
+coordinates while exact server values remain available in labels and tables.
+
+The broker adapter admits exactly the
+[ten allowlisted GET capabilities](config/contracts/trading212-read-allowlist.yaml)
+and rejects other methods, paths and parameters before dispatch. Broker credentials
+stay server-side. Account-scoped authorization and current source permissions
+govern private reads and downloads; artifacts carry declared formats, sizes and
+SHA-256 digests. Browser and MCP surfaces expose typed operations rather than
+generic HTTP, SQL or filesystem access. See the
+[financial policy](docs/analytics/FINANCIAL_CALCULATION_POLICY.md),
+[reconciliation policy](docs/analytics/DATA_QUALITY_AND_RECONCILIATION.md) and
+[security architecture](docs/security/SECURITY_ARCHITECTURE.md).
+
+## Engineering evidence
+
+Tests separate unit, property, contract, security, migration, integration and
+browser concerns. Synthetic fixtures support financial invariants, negative
+authorization cases and explicit failure/recovery behavior. Source identity,
+commands, outcomes and artifact hashes qualify each retained observation.
+
+The owner reports that independent review of the accepted `cd2ff67` implementation
+reran **981 frontend unit cases**, **55 focused frontend regressions** and **2 Python fixture-clock
+tests**, together with frontend typecheck, lint and documentation checks. The review
+also verified the retained evidence archive and its 481 members. These separate
+executions are not added into a new test total.
+
+Earlier source-qualified LOCAL/DEMO evidence includes 150 representative route
+views, light/dark/mobile captures, account-isolation checks and three genuine
+research-report journeys with twelve four-format browser downloads and independent
+artifact inspection. The broader browser and database-backed suites were not
+independently rerun during the acceptance review. The
+[implementation report](docs/implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md)
+and [validation report](VALIDATION_REPORT.md) retain the exact scopes and outcomes.
+
+## Local setup
+
+### Browser-only Demo
+
+With Node.js **24.20.0** and Corepack available, run from the repository root:
+
+```bash
+corepack prepare pnpm@10.34.5 --activate
+corepack pnpm install --frozen-lockfile
+PORTFOLIO_DEMO_MODE=1 T212PI_WEB_ENVIRONMENT=local \
+  corepack pnpm --filter @trading212/web dev --hostname 127.0.0.1
+```
+
+Open `http://127.0.0.1:3000/sign-in` and choose **Enter demo portfolio**.
+This preview needs no database, brokerage account or provider credentials. It
+demonstrates the synthetic interface; operations requiring retained analytical or
+research services show their connected-runtime requirements.
+
+### Persistent LOCAL runtime
+
+Use Python **3.13.15**, uv **0.12.7**, Node.js **24.20.0**, Corepack/pnpm
+**10.34.5**, GNU Make and Docker Compose. From a fresh checkout with the default
+local ports available:
 
 ```bash
 export COMPOSE_PROJECT_NAME=t212pi_synthetic
@@ -123,77 +180,58 @@ make bootstrap
 make run-local
 ```
 
-Open `http://localhost:3000/sign-in`, select **Start local session**, then choose
-an authorized synthetic account if prompted. The seed is idempotent. Use
-`make stop-local` in the same shell to stop this project while retaining its
-volume. When using a different local password for host tests, set matching
-`DATABASE_URL` and `TEST_DATABASE_URL`; the example URLs in `.env.example` use
-the synthetic password above. Current startup qualification is recorded in the
-stabilization report.
+The password shown is the public synthetic development value. The commands install
+the locked workspace and start PostgreSQL, Redis, migration/seed jobs, API,
+workers, dispatcher, MCP and web. The seed is deterministic and idempotent; the
+worker uses the synthetic provider. Open `http://localhost:3000/sign-in` and choose
+**Start local session**. Research-specific report examples additionally require
+retained research fixtures and their current access grants.
 
-## Current synthetic interface
+Use [.env.example](.env.example) for configuration and the
+[local operations guide](docs/operations/LOCAL_AND_DEPLOYMENT.md) for host development,
+ports and service details. In the same shell, `make stop-local` stops that Compose
+project while retaining its named data volume. No real account access is required
+for either demonstration.
 
-![LOCAL/DEMO overview in light mode](docs/media/local-demo-overview-light-20261117.png)
+## Status and qualification boundaries
 
-[Dark desktop](docs/media/local-demo-overview-dark-20261117.png),
-[tablet](docs/media/local-demo-overview-tablet-20261117.png) and
-[mobile holdings](docs/media/local-demo-holdings-mobile-20261117.png) use the same
-semantic palette. These are genuine synthetic browser captures, with
-[dimensions, hashes and source provenance](docs/media/local-demo-captures-20261117.json).
-Choose **Appearance** in the header or Settings. The saved preference survives
-navigation, account switches and sign-out; System follows the device. The separate
-immutable public offline-v1 fallback retains its fixed-dark design and no-JavaScript
-privacy boundary.
+The owner has accepted the LOCAL/DEMO implementation and architecture baseline.
+Broader Phase 3 qualification remains separate: Checkpoint B is incomplete, all
+30 acceptance rows and 48 scenarios remain pending with zero accepted, and P3-10
+is unstarted. CI remains disabled/unverified; real-provider activation, Live access
+and production deployment remain outside the accepted scope.
 
-For a visual preview with existing dependencies and no database or broker access:
+Five deep route patterns retain source/shared-unit evidence without fresh
+dedicated browser execution. The immutable public offline fallback intentionally
+uses a fixed-dark palette. Historical admission-performance, whole-Web-tree
+repeatability and nonzero scanner outcomes remain recorded, alongside independently
+classified nonsecret findings and the known framework/dependency advisory. These
+limitations and proposed future qualification contracts are documented in
+[project status](PROJECT_STATUS.md) and the
+[contract proposals](docs/verification/LOCAL_DEMO_CONTRACT_PROPOSALS_20261117.md);
+the proposals have not changed the original gates or thresholds.
 
-```bash
-PORTFOLIO_DEMO_MODE=1 T212PI_WEB_ENVIRONMENT=local \
-  pnpm --filter @trading212/web dev --hostname 127.0.0.1
-```
+## Reading guide
 
-Open `http://127.0.0.1:3000/sign-in` and select **Enter demo portfolio**. Advanced
-research, analytical jobs and reports require the connected synthetic LOCAL runtime
-above; the visual Demo preserves explicit connected-runtime states. The known
-framework advisory may cause an upgrade reminder; retain it and follow the
-unchanged normal-retry behavior described in the implementation report.
+| Question | Start here |
+| --- | --- |
+| What is the accepted baseline? | [LOCAL/DEMO architecture freeze](docs/DESIGN_FREEZE_LOCAL_DEMO_20261117.md) and [design index](docs/DESIGN_INDEX.md) |
+| How is the system structured? | [System architecture](docs/SYSTEM_ARCHITECTURE.md) and [domain/data model](docs/architecture/DOMAIN_AND_DATA_MODEL.md) |
+| How are financial results derived? | [Financial policy](docs/analytics/FINANCIAL_CALCULATION_POLICY.md), [performance accounting](docs/analytics/PERFORMANCE_ACCOUNTING.md) and [data quality](docs/analytics/DATA_QUALITY_AND_RECONCILIATION.md) |
+| How are access and private data protected? | [Security architecture](docs/security/SECURITY_ARCHITECTURE.md) and [broker integration contract](docs/integrations/TRADING212_API_CONTRACT.md) |
+| How do I reproduce local behavior? | [Local operations](docs/operations/LOCAL_AND_DEPLOYMENT.md), [Makefile](Makefile) and [test strategy](docs/engineering/TEST_STRATEGY.md) |
+| What was implemented and checked? | [Implementation report](docs/implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md), [route coverage](docs/implementation/LOCAL_DEMO_ROUTE_COVERAGE_20261117.md) and [validation report](VALIDATION_REPORT.md) |
 
-## Historical synthetic interface example
+Repository maintenance follows the [documentation governance](docs/DOCUMENT_GOVERNANCE.md):
+commit directly to `main`; no branches or pull requests. Changes preserve a linear
+history and receive validation appropriate to their scope.
 
-![Synthetic holdings with explicit data-quality states](docs/media/synthetic-holdings-desktop.png)
+## Author and license
 
-Genuine point-in-time synthetic holdings with partial, stale and unavailable data
-states. Desktop: 1440×900. [Mobile full-page capture](docs/media/synthetic-holdings-mobile.png):
-360×1108 from a 360×800 viewport. Capture provenance is in the evidence index.
+Created and maintained by **Michail Athanasios Peppas** as an independent software
+engineering project.
 
-## Verification and interpretation
-
-Tests separate unit, property, contract, security, migration, integration and
-browser checks. An offline pass does not qualify a database, browser, deployment,
-licensed data source or real opening-history coverage.
-[VALIDATION_REPORT.md](VALIDATION_REPORT.md) retains exact-source historical
-observations; [PROJECT_STATUS.md](PROJECT_STATUS.md) identifies outstanding gates.
-Do not combine repeated or differently scoped receipts into a new acceptance.
-
-For a first technical review, read the
-[design index](docs/DESIGN_INDEX.md),
-[financial policy](docs/analytics/FINANCIAL_CALCULATION_POLICY.md),
-[reconciliation policy](docs/analytics/DATA_QUALITY_AND_RECONCILIATION.md),
-[security architecture](docs/security/SECURITY_ARCHITECTURE.md) and
-[Trading 212 contract](docs/integrations/TRADING212_API_CONTRACT.md).
-
-## Provenance and release
-
-This independent project is maintained by Michail Athanasios Peppas. Source,
-dependency locks, synthetic fixtures and source-bound receipts provide evidence;
-repository size and test inventories are not product acceptance. Retained
-agent-assisted development/review records document assistance without replacing
-technical validation.
-
-The existing [proprietary license](LICENSE.md) remains in force. Review provider,
-reference-data and third-party rights and use synthetic data for a public
-demonstration. Accessibility, licensing and deployment are separate decisions.
-The standing [delivery policy](AGENTS.md) is to commit directly to `main`, with
-no branches or pull requests, using small, fast-forward commits. Historical
-task-specific branch records describe earlier work. Git delivery, release
-acceptance and production deployment are separate decisions.
+The source is governed by the proprietary terms in [LICENSE.md](LICENSE.md).
+Repository visibility and access grant no license to redistribute or deploy it. Third-party
+dependency, reference-data and provider rights retain their own terms and require
+review before distribution.

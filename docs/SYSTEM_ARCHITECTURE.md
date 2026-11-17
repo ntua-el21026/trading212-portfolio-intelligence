@@ -2,6 +2,14 @@
 
 **Status:** Accepted for Design Freeze v0.1
 
+**Document scope:** This is the v0.1 foundation contract. Its phase-specific
+inventories and implementation plans retain that historical scope. The
+[accepted LOCAL/DEMO architecture freeze](DESIGN_FREEZE_LOCAL_DEMO_20261117.md)
+records the implemented system at the owner-reviewed 17 November snapshot,
+including the current 38-tool/11-resource MCP surface, 32 page routes and existing
+worker topology. It is additive to this foundation; production examples below
+remain deployment designs rather than evidence of an accepted production system.
+
 ## 1. Context
 
 Trading 212 Portfolio Intelligence ingests read-only brokerage data, converts it into a canonical auditable portfolio model, performs deterministic calculations, and serves the same results to a web/PWA client and a ChatGPT MCP application.

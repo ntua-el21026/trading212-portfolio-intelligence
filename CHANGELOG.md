@@ -4,6 +4,20 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Accepted LOCAL/DEMO baseline and documentation consolidation, 17 November
+
+- Record the owner's bounded acceptance of `cd2ff67`, with the coordinator's
+  independently rerun checks reported separately from implementation receipts.
+- Freeze the implemented architecture, financial/security boundaries, 32-route UI,
+  worker topology and 38-tool/11-resource MCP surface without changing behavior.
+- Reorganize the README and documentation reading path around the engineering
+  problem, implemented system, real synthetic screenshots and local reproduction.
+- Reconcile human and machine-readable milestone status. Preserve all 30 Phase 3
+  rows and 48 scenarios as pending, historical failures, unapproved contract
+  proposals and deferred CI/provider/production/licensing decisions.
+- Classify completed UI planning materials as historical provenance. No application,
+  dependency, migration, workflow, licensing or qualification-policy change.
+
 ### LOCAL/DEMO workspace modernization, 17 November
 
 - Preserve the appearance selector's accessible name at compact widths. Retain

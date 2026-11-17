@@ -2,11 +2,17 @@
 
 **Owner:** Michail Athanasios Peppas. **Recorded:** 17 November 2026.
 **Starting main:** `f19caa1153b0cf3acc41c47aba3a773b888741ff`.
-**State:** authorized implementation; independent review pending.
+**State:** implementation complete; LOCAL/DEMO accepted by the owner on 17 November 2026.
+**Accepted snapshot:** `cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`.
 
-## Revised sequencing
+The [scoped acceptance record](LOCAL_DEMO_ACCEPTANCE_20261117.md) records the
+completed independent review and its limits. The [architecture freeze](../DESIGN_FREEZE_LOCAL_DEMO_20261117.md)
+defines the accepted implemented baseline. The authorization and execution plan
+below retain the original milestone contract; no new implementation is underway.
 
-The owner's current instruction authorizes immediate whole-application UI
+## Original implementation sequencing
+
+The owner's implementation instruction authorized whole-application UI
 modernization alongside bounded application stabilization. It supersedes only
 the design drafts' prerequisite that Checkpoint B be accepted before UI work.
 Checkpoint B remains INCOMPLETE; all 30 acceptance rows and 48 scenarios remain
@@ -36,7 +42,7 @@ Classification of a nonsecret match never converts a nonzero scanner exit to PAS
 A genuine functional, financial or security defect is not waived by this scope.
 Original Checkpoint B and Phase 3 qualification requirements remain intact.
 
-## Implementation and verification plan
+## Historical implementation and verification plan
 
 A. Record authority; investigate retained application failures and resource state.
 B. Centralize semantic design tokens and light/dark/system themes.

@@ -2,7 +2,24 @@
 
 ## LOCAL/DEMO qualification, 17 November 2026
 
-**Targeted LOCAL/DEMO evidence passes; independent review remains pending.**
+**LOCAL/DEMO MILESTONE: ACCEPTED by the owner on 17 November 2026.**
+
+The [scoped acceptance](docs/implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md)
+records the coordinator's independent review of `cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`:
+981 frontend unit, 55 focused frontend and two fixture-clock tests passed, with
+scoped typecheck, lint and documentation checks passing, as reported by the owner.
+The review also verified the retained archive and all 481 members. It did not rerun
+the broader browser or database-backed suites. This consolidation executes only
+documentation and integrity checks; it does not repeat or relabel those tests.
+
+The [architecture freeze](docs/DESIGN_FREEZE_LOCAL_DEMO_20261117.md) captures the
+accepted implementation. Original execution evidence follows with its own sources;
+Checkpoint B remains INCOMPLETE, all 30 rows and 48 scenarios pending, zero accepted.
+
+The [documentation consolidation record](docs/implementation/LOCAL_DEMO_CONSOLIDATION_20261117.md)
+provides the editorial audit, changed-file inventory and bounded-check provenance.
+
+### Original targeted implementation evidence
 The [current report](docs/implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md)
 records exact commands, exits, source manifests, original failures and focused
 recoveries. The [32-route checklist](docs/implementation/LOCAL_DEMO_ROUTE_COVERAGE_20261117.md)

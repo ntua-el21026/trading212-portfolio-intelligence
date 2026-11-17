@@ -2,6 +2,13 @@
 
 **Status:** Accepted design; execution evidence pending
 
+**Current scope:** The [LOCAL/DEMO milestone](../implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md)
+is owner-accepted; the [architecture freeze](../DESIGN_FREEZE_LOCAL_DEMO_20261117.md)
+records its implemented baseline. This document retains the broader Phase 3
+qualification obligations, with results in the [validation report](../../VALIDATION_REPORT.md).
+It does not imply that all modeled exercises have passed or authorize new runs,
+resource cleanup, CI, providers or production. Formal Phase 3 acceptance remains pending.
+
 Ten packages,30 acceptance rows,48 scenarios. Completion requires actual selectors,
 commands and retained immutable source-bound evidence. Planned tests are obligations,
 not results. Preserve complete Phase1/2/StageA tests without weakened checks.

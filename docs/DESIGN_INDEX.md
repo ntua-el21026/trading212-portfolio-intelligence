@@ -1,11 +1,32 @@
 # Design Index and Authority Order
 
-**Status:** Accepted  
-**Design freeze:** v0.1 foundation, v0.2 Phase 2 delta and v1.0 Phase 3 delta
+**Status:** Accepted
+**Design freeze:** v0.1 foundation, v0.2 Phase 2 delta, v1.0 Phase 3 delta and the accepted LOCAL/DEMO baseline of 17 November 2026
 
 **Implementation branch:** `main`
 
 This file is the entry point for architecture, implementation, and review.
+
+## Primary reading path
+
+| Reader question | Maintained entry point |
+| --- | --- |
+| What is implemented and accepted? | [Project overview](../README.md) and [scoped owner acceptance](implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md) |
+| How does the current system work? | [Accepted LOCAL/DEMO architecture freeze](DESIGN_FREEZE_LOCAL_DEMO_20261117.md) |
+| How are financial values and incomplete data handled? | [Calculation policy](analytics/FINANCIAL_CALCULATION_POLICY.md) and [quality/reconciliation](analytics/DATA_QUALITY_AND_RECONCILIATION.md) |
+| What are the access and privacy boundaries? | [Security architecture](security/SECURITY_ARCHITECTURE.md) and [Phase 3 privacy contract](security/PHASE_3_SECURITY_PRIVACY.md) |
+| How can it be demonstrated locally? | [README setup](../README.md#local-setup) and [local operations](operations/LOCAL_AND_DEPLOYMENT.md) |
+| What was actually verified? | [Validation summary](../VALIDATION_REPORT.md), [implementation evidence](implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md) and [route coverage](implementation/LOCAL_DEMO_ROUTE_COVERAGE_20261117.md) |
+| What remains outside the accepted scope? | [Status](../PROJECT_STATUS.md), [formal Phase 3 traceability](implementation/LOCAL_DEMO_TRACEABILITY_20261117.md) and [unapproved contract proposals](verification/LOCAL_DEMO_CONTRACT_PROPOSALS_20261117.md) |
+
+The LOCAL/DEMO milestone is owner-accepted at `cd2ff67`; the additive freeze records
+that implemented baseline. Phase 3 Checkpoint B remains incomplete; its 30 rows
+and 48 scenarios remain pending, zero accepted. The foundation freezes and accepted
+ADRs continue to govern their contracts. Implementation reports preserve dated
+observations, including failures. Historical UI drafts and prompts under
+`docs/design/` describe the preparation and execution of the completed redesign;
+they are development provenance, not current end-user instructions or a new plan.
+The contract proposals remain proposed and do not revise existing gates.
 
 ## 1. Authority and precedence
 
@@ -13,7 +34,7 @@ When documents conflict, apply this order from highest to lowest authority:
 
 1. Explicit owner instruction in the current task.
 2. `AGENTS.md` repository operating and safety policy.
-3. `docs/DESIGN_FREEZE_V0_1.md` and its additive deltas `docs/DESIGN_FREEZE_V0_2.md` and `docs/DESIGN_FREEZE_V1_0.md`.
+3. `docs/DESIGN_FREEZE_V0_1.md` and its additive deltas `docs/DESIGN_FREEZE_V0_2.md` and `docs/DESIGN_FREEZE_V1_0.md`, together with [the accepted LOCAL/DEMO snapshot](DESIGN_FREEZE_LOCAL_DEMO_20261117.md) within its bounded implementation scope. The snapshot does not supersede the earlier financial, security or formal phase-acceptance contracts.
 4. Accepted ADRs under `docs/adr/`.
 5. Security and external-provider contracts:
    - `docs/security/SECURITY_ARCHITECTURE.md`
@@ -38,7 +59,7 @@ When documents conflict, apply this order from highest to lowest authority:
 
 `PHASE_1_TECHNICAL_BASELINE.md` is authoritative for Phase 1 runtime/toolchain versions and supersedes older version examples elsewhere. The machine-readable Trading 212 allowlist and its human-readable contract must agree; any disagreement blocks implementation until corrected.
 
-## 2. Required reading for Phase 1
+## 2. Foundation reading order for Phase 1
 
 Read in this order:
 

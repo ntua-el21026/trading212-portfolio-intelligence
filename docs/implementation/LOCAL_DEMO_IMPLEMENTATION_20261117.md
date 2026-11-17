@@ -1,7 +1,15 @@
 # LOCAL/DEMO stabilization and UI implementation — 17 November 2026
 
 **Owner:** Michail Athanasios Peppas.
-**Disposition:** LOCAL/DEMO IMPLEMENTATION COMPLETE — INDEPENDENT REVIEW PENDING.
+**Current disposition:** LOCAL/DEMO MILESTONE ACCEPTED by the owner on 17 November 2026.
+**Accepted delivery snapshot:** `cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`.
+**Original delivery disposition:** implementation complete; independent review pending at delivery.
+
+The [acceptance addendum](LOCAL_DEMO_ACCEPTANCE_20261117.md) records the subsequent
+owner decision and scoped independent review. Its owner-reported test executions
+are separate from the original receipts below. The [architecture freeze](../DESIGN_FREEZE_LOCAL_DEMO_20261117.md)
+is an additive record of the accepted implementation; no historical result is
+reclassified by acceptance.
 **Starting main:** `f19caa1153b0cf3acc41c47aba3a773b888741ff`.
 **Implementation commit:** `e1e8da74846d9a248740bbf7560ea9b7183b32bc`.
 **Broader UI qualification baseline:** `65d1d0db8bc9b8bb2682bc74b73cdcd4c5828ffc`.
@@ -265,7 +273,12 @@ archive exclusions for preserved runtime/reference duplicates. Archive size,
 SHA-256, inventory verification and final Git synchronization are recorded in the
 post-commit private delivery record and conversation.
 
-## Independent owner review
+## Historical delivery review checklist
+
+The subsequent [owner acceptance](LOCAL_DEMO_ACCEPTANCE_20261117.md) completed the
+scoped independent LOCAL/DEMO review. The original handoff checklist below is
+retained as historical context. Proposed policy changes, broader Phase 3 acceptance
+and external deployment/distribution decisions remain separate.
 
 - Review the LOCAL/DEMO scope, 32-route checklist, evidence qualifications, theme
   behavior, synthetic captures and known fixed-dark offline fallback.
