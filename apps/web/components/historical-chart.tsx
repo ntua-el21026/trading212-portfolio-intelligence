@@ -37,6 +37,19 @@ interface GeometryRow {
   [key: string]: string | number | null | HistoricalChartRow;
 }
 
+// Translate the existing application palette at the chart boundary. Callers keep
+// their series contract; custom colors continue to pass through unchanged.
+const themedSeriesColors: Readonly<Record<string, string>> = {
+  "#006f53": "var(--pi-chart-portfolio)",
+  "#047857": "var(--pi-chart-portfolio)",
+  "#345a95": "var(--pi-chart-benchmark)",
+  "#416bb0": "var(--pi-chart-benchmark)",
+  "#547ba9": "var(--pi-chart-benchmark)",
+  "#475569": "var(--pi-chart-auxiliary)",
+  "#986229": "var(--pi-chart-warning)",
+  "#ad5825": "var(--pi-chart-negative)",
+};
+
 export function HistoricalChart({
   label,
   rows,
@@ -81,7 +94,7 @@ export function HistoricalChart({
             margin={{ top: 16, right: 20, bottom: 8, left: 4 }}
           >
             <CartesianGrid
-              stroke="#e2e7ed"
+              stroke="var(--pi-chart-grid)"
               strokeDasharray="3 4"
               vertical={false}
             />
@@ -90,12 +103,14 @@ export function HistoricalChart({
               axisLine={false}
               tickLine={false}
               fontSize={11}
+              tick={{ fill: "var(--pi-chart-axis)" }}
               minTickGap={28}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
               fontSize={11}
+              tick={{ fill: "var(--pi-chart-axis)" }}
               width={70}
               domain={[
                 (minimum: number) => Math.min(0, minimum),
@@ -107,8 +122,19 @@ export function HistoricalChart({
                   : formatMoney(String(value), 0)
               }
             />
-            <ReferenceLine y={0} stroke="#9ba8b4" />
+            <ReferenceLine y={0} stroke="var(--pi-chart-axis)" />
             <Tooltip
+              isAnimationActive={false}
+              cursor={{ stroke: "var(--pi-chart-axis)" }}
+              contentStyle={{
+                backgroundColor: "var(--pi-chart-tooltip-bg)",
+                borderColor: "var(--pi-chart-tooltip-border)",
+                borderRadius: 12,
+                color: "var(--pi-chart-tooltip-text)",
+                fontSize: "0.8rem",
+              }}
+              itemStyle={{ color: "var(--pi-chart-tooltip-text)" }}
+              labelStyle={{ color: "var(--pi-chart-tooltip-text)" }}
               formatter={(_value, name, item) => {
                 const row = item.payload as GeometryRow;
                 const key = String(item.dataKey);
@@ -121,27 +147,37 @@ export function HistoricalChart({
                 ];
               }}
             />
-            <Legend />
+            <Legend
+              position="top"
+              iconSize={12}
+              labelStyle={{ color: "var(--pi-chart-axis)" }}
+              wrapperStyle={{ fontSize: "0.75rem", paddingBottom: 12 }}
+            />
             {series.map((column) =>
               column.kind === "bar" ? (
                 <Bar
                   key={column.key}
                   dataKey={column.key}
                   name={column.label}
-                  fill={column.color}
+                  fill={themedSeriesColors[column.color] ?? column.color}
                   isAnimationActive={false}
                   maxBarSize={18}
+                  radius={[3, 3, 0, 0]}
                 />
               ) : (
                 <Line
                   key={column.key}
                   dataKey={column.key}
                   name={column.label}
-                  stroke={column.color}
-                  strokeWidth={2}
+                  stroke={themedSeriesColors[column.color] ?? column.color}
+                  strokeWidth={2.5}
                   type="linear"
                   dot={false}
-                  activeDot={{ r: 4 }}
+                  activeDot={{
+                    r: 4,
+                    stroke: "var(--color-surface)",
+                    strokeWidth: 2,
+                  }}
                   isAnimationActive={false}
                   connectNulls={false}
                 />

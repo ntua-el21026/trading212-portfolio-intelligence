@@ -8,25 +8,27 @@ import { formatHistoricalPercent } from "../lib/historical-format";
 export { SnapshotChart } from "./snapshot-chart";
 
 const allocationColors = [
-  "#006f53",
-  "#199a68",
-  "#55be6b",
-  "#9ad996",
-  "#2d72c4",
-  "#a7b0be",
+  "var(--pi-chart-allocation-1)",
+  "var(--pi-chart-allocation-2)",
+  "var(--pi-chart-allocation-3)",
+  "var(--pi-chart-allocation-4)",
+  "var(--pi-chart-allocation-5)",
+  "var(--pi-chart-allocation-6)",
 ];
 
 export function AllocationChart({
   data,
 }: Readonly<{ data: AllocationResponse[] }>) {
   const chartData = data
-    .filter((item) => item.weight !== null)
-    .map((item) => ({
+    .map((item, index) => ({
+      // Keep the table's source-row color when an unavailable weight is omitted.
+      color: allocationColors[index % allocationColors.length],
       label: item.label,
       original: item,
       // Conversion is chart geometry only; displayed values remain canonical strings.
-      value: Number(item.weight),
-    }));
+      value: item.weight === null ? null : Number(item.weight),
+    }))
+    .filter((item) => item.value !== null);
   return (
     <div
       aria-label="Direct allocation by holding, including cash"
@@ -43,17 +45,23 @@ export function AllocationChart({
             nameKey="label"
             outerRadius="90%"
             paddingAngle={1}
-            stroke="#ffffff"
+            stroke="var(--color-surface)"
             strokeWidth={2}
           >
-            {chartData.map((entry, index) => (
-              <Cell
-                fill={allocationColors[index % allocationColors.length]}
-                key={entry.original.id}
-              />
+            {chartData.map((entry) => (
+              <Cell fill={entry.color} key={entry.original.id} />
             ))}
           </Pie>
           <Tooltip
+            isAnimationActive={false}
+            contentStyle={{
+              backgroundColor: "var(--pi-chart-tooltip-bg)",
+              borderColor: "var(--pi-chart-tooltip-border)",
+              borderRadius: 12,
+              color: "var(--pi-chart-tooltip-text)",
+              fontSize: "0.8rem",
+            }}
+            itemStyle={{ color: "var(--pi-chart-tooltip-text)" }}
             formatter={(_value, _name, item) => {
               const original = item.payload.original as AllocationResponse;
               return [formatHistoricalPercent(original.weight), original.label];

@@ -149,7 +149,7 @@ export function SnapshotChart({
               margin={{ bottom: 12, left: 8, right: 20, top: 12 }}
             >
               <CartesianGrid
-                stroke="#e2e7ed"
+                stroke="var(--pi-chart-grid)"
                 strokeDasharray="3 4"
                 vertical={false}
               />
@@ -162,6 +162,7 @@ export function SnapshotChart({
                 axisLine={false}
                 tickLine={false}
                 fontSize={11}
+                tick={{ fill: "var(--pi-chart-axis)" }}
                 minTickGap={40}
                 tickFormatter={(time: number) =>
                   new Intl.DateTimeFormat("en-GB", {
@@ -178,6 +179,7 @@ export function SnapshotChart({
                 axisLine={false}
                 tickLine={false}
                 fontSize={11}
+                tick={{ fill: "var(--pi-chart-axis)" }}
                 width={76}
                 padding={{ top: 8, bottom: 8 }}
                 domain={[
@@ -194,6 +196,7 @@ export function SnapshotChart({
               <Tooltip
                 isAnimationActive={false}
                 filterNull={false}
+                cursor={{ stroke: "var(--pi-chart-axis)" }}
                 content={({ active, payload }) => {
                   const hovered = payload?.[0]?.payload as PlotRow | undefined;
                   if (!active || !hovered) return null;
@@ -233,15 +236,22 @@ export function SnapshotChart({
                 type="linear"
                 connectNulls={false}
                 isAnimationActive={false}
-                stroke={hasCoincidentPoints ? "none" : "#006f53"}
-                strokeWidth={2}
+                stroke={
+                  hasCoincidentPoints ? "none" : "var(--pi-chart-portfolio)"
+                }
+                strokeWidth={2.5}
                 dot={{
-                  fill: "#006f53",
-                  stroke: "#ffffff",
+                  fill: "var(--pi-chart-portfolio)",
+                  stroke: "var(--color-surface)",
                   strokeWidth: 1,
                   r: 4,
                 }}
-                activeDot={{ fill: "#006f53", stroke: "#ffffff", r: 5 }}
+                activeDot={{
+                  fill: "var(--pi-chart-portfolio)",
+                  stroke: "var(--color-surface)",
+                  strokeWidth: 2,
+                  r: 5,
+                }}
               />
             </LineChart>
           </ResponsiveContainer>

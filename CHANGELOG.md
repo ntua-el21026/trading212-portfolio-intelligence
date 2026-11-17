@@ -6,6 +6,11 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### LOCAL/DEMO workspace modernization, 17 November
 
+- Theme the existing allocation, historical and snapshot charts with shared
+  palette/axis/grid/tooltip tokens; retain canonical value formatters and gaps.
+  Keep chart/table colors aligned when an unavailable allocation row is omitted,
+  with a synthetic regression preserving all source rows and exact tooltip values.
+
 - Apply one semantic light/dark/system palette to shared controls, tables, forms,
   feature surfaces, navigation and loading/error states across the application.
 - Add a local visual preference cookie, server-selected first-paint colors and
