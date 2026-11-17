@@ -43,6 +43,11 @@
   min-width: 0;
   box-sizing: border-box;
   min-height: 44px;
+  border: 1px solid var(--pi-control-border);
+  border-radius: var(--pi-radius-control);
+  background: var(--color-surface);
+  color: var(--color-navy);
+  padding: 0.625rem 0.75rem;
 }
 .widgets {
   display: grid;
@@ -51,9 +56,10 @@
   list-style: none;
 }
 .widget {
-  border: 1px solid var(--color-border, #344355);
+  border: 1px solid var(--color-border);
   padding: 1rem;
-  border-radius: 0.75rem;
+  border-radius: var(--pi-radius-panel);
+  background: var(--color-surface);
   min-width: 0;
 }
 .widget fieldset {
@@ -83,7 +89,7 @@
   padding: 0.75rem;
 }
 .identity {
-  font-family: var(--font-mono, monospace);
+  font-family: var(--font-mono);
   overflow-wrap: anywhere;
 }
 @media (max-width: 1000px) {

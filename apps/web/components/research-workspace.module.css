@@ -45,8 +45,8 @@
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-panel);
+  border: 1px solid var(--pi-control-border);
+  border-radius: var(--pi-radius-control);
   background: var(--color-surface);
   color: var(--color-navy);
   padding: 0.65rem;

@@ -1,3 +1,4 @@
+import { ThemeSettings } from "../../../components/theme";
 import {
   AccountRequired,
   AccountView,
@@ -45,6 +46,7 @@ export default async function SettingsPage({
           title="Settings"
           description="Manage your owner preferences."
         />
+        <ThemeSettings />
         {layoutsCard}
         <Notice title="Portfolio access required">
           Connection settings require current portfolio access.
@@ -55,6 +57,7 @@ export default async function SettingsPage({
   if (!accountSelection.account)
     return (
       <div className="page-stack">
+        <ThemeSettings />
         {layoutsCard}
         <AccountRequired selection={accountSelection} />
       </div>
@@ -73,6 +76,7 @@ export default async function SettingsPage({
           title="Connection & settings"
         />
         <div className="settings-grid">
+          <ThemeSettings />
           <PwaSettings />
           {layoutsCard}
           <PremiumProviderStatusCard

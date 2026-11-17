@@ -85,6 +85,7 @@ export function DesktopNavigation() {
               aria-label={label}
               aria-current={isCurrent(pathname, href) ? "page" : undefined}
               className="nav-link"
+              title={label}
               href={accountHref(href, selection.account?.id ?? null)}
             >
               <Icon aria-hidden="true" size={19} strokeWidth={1.7} />
@@ -101,6 +102,7 @@ export function DesktopNavigation() {
               aria-label={label}
               aria-current={isCurrent(pathname, href) ? "page" : undefined}
               className="nav-link"
+              title={label}
               href={accountHref(href, selection.account?.id ?? null)}
             >
               <Icon aria-hidden="true" size={19} strokeWidth={1.7} />

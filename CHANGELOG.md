@@ -4,6 +4,20 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### LOCAL/DEMO workspace modernization, 17 November
+
+- Apply one semantic light/dark/system palette to shared controls, tables, forms,
+  feature surfaces, navigation and loading/error states across the application.
+- Add a local visual preference cookie, server-selected first-paint colors and
+  accessible appearance controls in the header and Settings, without inline
+  initialization scripts, new backend endpoints or dependency changes.
+- Modernize the vector wordmark, responsive shell and navigation. Preserve
+  account masking, native history, all destinations and keyboard focus reveal;
+  correct demonstrated magnification overflow and tablet wordmark overlap.
+- Qualify representative synthetic desktop/tablet/mobile flows, including themes,
+  filters, pagination, native Back, sign-out and genuine report downloads. Original
+  Phase 3 failures and independent acceptance gates remain separate.
+
 ### Targeted report-fixture stabilization, 17 November
 
 - Give the real-time acquired research-report completion case an explicit UTC

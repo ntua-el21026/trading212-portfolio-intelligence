@@ -95,10 +95,11 @@
 .tooltip {
   max-width: min(24rem, 80vw);
   padding: 0.75rem;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface);
-  color: var(--color-navy);
+  border: 1px solid var(--pi-chart-tooltip-border);
+  border-radius: var(--pi-radius-control);
+  background: var(--pi-chart-tooltip-bg);
+  color: var(--pi-chart-tooltip-text);
+  box-shadow: var(--pi-shadow-panel);
   font-size: 0.8rem;
   line-height: 1.5;
   overflow-wrap: anywhere;

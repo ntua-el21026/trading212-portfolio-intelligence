@@ -1,5 +1,6 @@
 "use client";
 
+import { ThemeControl } from "./theme";
 import { CommandPalette } from "./command-palette";
 import { NavigationIntentProvider } from "./navigation-intent";
 
@@ -102,7 +103,23 @@ function SelectedAppShell({
       </a>
       <header className="topbar">
         <Link className="brand" href={accountHref("/", account?.id ?? null)}>
-          Portfolio Intelligence
+          <svg
+            className="brand-mark"
+            width="34"
+            height="36"
+            viewBox="0 0 34 36"
+            aria-hidden="true"
+            fill="currentColor"
+          >
+            <rect x="1" y="23" width="7" height="12" rx="3.5" />
+            <rect x="13" y="12" width="7" height="23" rx="3.5" />
+            <rect x="25" y="1" width="7" height="34" rx="3.5" />
+          </svg>
+          <span>
+            Portfolio
+            <br />
+            Intelligence
+          </span>
         </Link>
         <AccountSelector />
         <div className="topbar__sync">
@@ -115,6 +132,10 @@ function SelectedAppShell({
           </span>
         </div>
         <div className="topbar__account">
+          <ThemeControl />
+          <span className="topbar__readonly">
+            <LockKeyhole aria-hidden="true" size={15} /> Read-only
+          </span>
           <CommandPalette />
           <UserRound aria-hidden="true" size={22} strokeWidth={1.6} />
           <span>
