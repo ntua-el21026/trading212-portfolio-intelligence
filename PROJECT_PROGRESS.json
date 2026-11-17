@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "trading212-portfolio-intelligence",
-  "updated_at": "2026-11-16",
+  "updated_at": "2026-11-17",
   "current_candidate": {
     "phase": "phase_3",
     "release": "1.0.0",
@@ -5658,7 +5658,7 @@
         "Required cases are discovered by parsing direct top-level literal test declarations and the current literal project array. No application/test module, Playwright collection, browser, fixture or test is executed. Unsupported declaration syntax prevents complete coverage claims.",
         "Earlier reports without a prior hash anchor are hashed now and retained as observations; they cannot independently authorize retained passing coverage. Report time/argv and the source/log receipt are verified separately.",
         "Zero-case attempts and prior failures remain recorded. A later pass records an outcome transition, without independently proving the cause of the earlier failure.",
-        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01\u201307 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
+        "Only the declared preflight03, aggregation/historical/intelligence/PWA/scenario-report/workspace recovery attempts and resume01–07 are in scope. Demo, other test gates, image scans and delivery evidence require their separate receipts.",
         "Procfs denied access to some unrelated same-UID process descriptors after recorded lineage and readable API driver/fixture signatures were checked. Those descriptor blind spots are listed in terminal_quiescence.descriptor_access_limits; exhaustive process-descriptor visibility is not claimed. Recorded launcher and artifact-watcher termination are checked separately.",
         "This commit24 refresh executes metadata assembly only. The exact commit23-to24 input delta is one public-asset COPY line in infrastructure/docker/web.Dockerfile; all other recorded source inputs, including application/test/dependency files, are identical. Whole-source equality with every earlier API execution is false, including the 20 cases that previously matched commit23. No case is claimed executed at commit24.",
         "Report unreached-gates-03/api-browser/aggregation.spec.ts-api-chromium-desktop.json has its report hash first recorded at assembly; retained-coverage eligibility is false.",
@@ -5672,7 +5672,7 @@
     "latest_browser_recoveries": {
       "pwa": "Canonical fixture selector now seeds both authorized synthetic accounts; focused desktop1PASS, later tablet/mobile passes. All privacy/cache/auth assertions retained.",
       "scenario_report": "First INSERT actual physical created_at for12new exact synthetic parents/fiveclasses only under reports&&scenarios. DesktopPASS sourcea98... precedes stderr-only source25d... logging delta; desktop was not rerun. No existing UPDATE, production guard or financial/first-observed/expiry/digest change.",
-      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3\u21924\u21924/noBentry qualifies the tested setup/observation without establishing production causality."
+      "workspace": "Original desktop3PASS2FAIL, focused1PASS1FAIL, then Back-onlyPASS. Original Holdings Back expectation and failed hypotheses retained. Safe CDP history3→4→4/noBentry qualifies the tested setup/observation without establishing production causality."
     },
     "sast_scope": {
       "prior_rules": 7,
@@ -7617,7 +7617,7 @@
     "further_runtime_retries_in_this_package": false,
     "post_commit_observations": "Exact committed-candidate security, CI, source qualification, resource retirement and archive results are recorded in the final private handoff; these are not future pass claims."
   },
-  "current_checkpoint_b_selector": "/checkpoint_b_final_local_qualification",
+  "current_checkpoint_b_selector": "/checkpoint_b_bounded_qualification_20261117",
   "checkpoint_b_consolidated_qualification": {
     "authority": "latest_owner_authorized_local_checkpoint_b_qualification",
     "starting_main_sha": "dabd98ff0cb5ff4c954d4465cebc71ea2a9a0267",
@@ -8277,7 +8277,7 @@
     "date": "2026-11-16",
     "owner": "Michail Athanasios Peppas",
     "status": "failed_cause_unresolved",
-    "disposition": "Admission remediation FAILED \u2014 cause unresolved",
+    "disposition": "Admission remediation FAILED — cause unresolved",
     "checkpoint_b": "INCOMPLETE",
     "implementation_report": "docs/implementation/PHASE_3_CONTROLLED_ENVIRONMENT_20261116.md",
     "starting_source_sha": "1e86141984470df6ddfc485d2c41cee3113f8511",
@@ -8819,7 +8819,7 @@
       "resource_cleanup": "PASS",
       "traceability_metadata_binding": "PASS"
     },
-    "disposition": "C. CHECKPOINT B INCOMPLETE \u2014 MATERIAL UNRESOLVED FAILURES",
+    "disposition": "C. CHECKPOINT B INCOMPLETE — MATERIAL UNRESOLVED FAILURES",
     "application_corrections": [
       "Routing AccountSelect autocomplete disabled after measured native form restoration.",
       "Existing real Celery application single-reply health collection within unchanged Docker deadlines."
@@ -8929,5 +8929,40 @@
       "same_sha_pass_claimed": false,
       "scope": "Actual attempt2 source/history results are recorded after final documentation commit; no later documentation commit solely for counts."
     }
+  },
+  "checkpoint_b_bounded_qualification_20261117": {
+    "date": "2026-11-17",
+    "owner": "Michail Athanasios Peppas",
+    "status": "in_progress",
+    "checkpoint_b": "incomplete",
+    "baseline_sha": "a9f4164225750312d0d3dd0e4440d9bf2a41890f",
+    "implementation_report": "docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md",
+    "admission_investigation": {
+      "status": "FAIL",
+      "source_sha": "a9f4164225750312d0d3dd0e4440d9bf2a41890f",
+      "bare_p95_seconds": [1.9193211699998756, 0.7742574220001188],
+      "diagnostic_p95_seconds": 0.9918858230000751,
+      "cause": "unresolved",
+      "bounded_investigation_stopped": true,
+      "production_optimization": false
+    },
+    "configured_sast": {
+      "status": "PASS",
+      "exit_code": 0,
+      "selected_targets": 996,
+      "rules": 7,
+      "findings": 0,
+      "receipt": "sast-full-configured-01/receipt.json",
+      "source_class": "manifested_working_source",
+      "source_manifest_sha256": "89de16d9c05cf51d60960a6215160dce1828804d2b1c7f5375a30fd46b2a9c8b"
+    },
+    "pending_rows": 30,
+    "pending_scenarios": 48,
+    "accepted_rows": 0,
+    "accepted_scenarios": 0,
+    "formal_owner_acceptance": "pending",
+    "p3_10_started": false,
+    "CI_activation": "owner_deferred",
+    "distribution_rights": "owner_decision_required"
   }
 }

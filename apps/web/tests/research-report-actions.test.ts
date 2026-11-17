@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ReportApiError } from "@trading212/api-contracts";
 import { submitResearchReportCommand } from "../lib/research-report-actions";
 import { account, id, item, other } from "./research-ui-fixtures";
+type ApiContractsModule = typeof import("@trading212/api-contracts");
 
 const mocks = vi.hoisted(() => ({
   clients: vi.fn(),
@@ -18,7 +19,7 @@ vi.mock("../lib/research-adapter", () => ({
 }));
 vi.mock("next/cache", () => ({ revalidatePath: mocks.refresh }));
 vi.mock("@trading212/api-contracts", async (original) => ({
-  ...(await original<typeof import("@trading212/api-contracts")>()),
+  ...(await original<ApiContractsModule>()),
   ResearchApiClient: class {
     get_research_item = mocks.item;
   },

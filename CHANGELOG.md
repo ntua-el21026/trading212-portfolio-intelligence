@@ -4,6 +4,16 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Bounded Checkpoint B qualification, 17 November
+
+- Preserve the failed final admission controls and bounded CPU/GC diagnostic;
+  retain unresolved causality without speculative production changes.
+- Name the existing research-report mock module type to avoid the pinned SAST
+  parser failure. Preserve emitted JavaScript and all assertions; qualify all
+  seven configured rules across 996 files and the 12 affected Web tests.
+- Keep the remaining browser, repeatability and complete native coverage work
+  pending, with all 30 acceptance rows and 48 scenarios awaiting owner acceptance.
+
 ### Final Checkpoint B local qualification
 
 - Bound the final local qualification to application candidate `1497a1d`, retaining admission, pending-navigation Back, Web repeatability, cumulative coverage and configured-SAST limitations.

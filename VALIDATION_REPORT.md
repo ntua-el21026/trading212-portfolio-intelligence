@@ -1,6 +1,16 @@
 # Validation Report
 
-## Current final local qualification, 16 November
+## Current bounded qualification, 17 November
+
+The [bounded qualification package](docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md)
+is in progress. Admission remains failed after the final three-cohort diagnostic;
+no production optimization is justified. A type-only compatibility correction
+passes the full configured SAST scan (996 files, seven rules, exit 0), with all
+12 affected Web tests and strict typing passing. Browser, native coverage and
+remaining qualification work are pending. Historical results below keep their
+original sources. All 30 rows and 48 scenarios remain pending; P3-10 is not started.
+
+## Historical final local qualification, 16 November
 
 Phase 3 Checkpoint B remains incomplete. The final bare admission control exceeds its unchanged 750 ms limit. Back during a held account navigation fails on desktop, tablet and mobile before the required account-state checks. Web artifact repeatability and cumulative native coverage remain unresolved; configured SAST retains a nonzero scanner exit despite zero rule findings.
 
