@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useState } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { StrictMode, useState } from "react";
 
 import {
   AccountProvider,
@@ -165,5 +165,155 @@ describe("account presentation boundary", () => {
     expect(
       screen.getByRole("option", { name: "Account unavailable" }),
     ).toBeInTheDocument();
+  });
+});
+
+// Unit model only: genuine browser cancellation/history remains an independent gate.
+describe("pending account intent and history ownership", () => {
+  let originalHref: string;
+  beforeEach(() => {
+    originalHref = window.location.href;
+    navigation.query = `account=${first.id}`;
+    navigation.pathname = "/";
+    navigation.push.mockReset();
+    navigation.documentNavigate.mockReset();
+    window.history.replaceState({ __NA: true }, "", `/?account=${first.id}`);
+  });
+  afterEach(() => {
+    window.history.replaceState(null, "", originalHref);
+  });
+
+  function historyTarget(pathname: string, query: string) {
+    // Next hooks expose the target URL after its native history traversal.
+    navigation.pathname = pathname;
+    navigation.query = query;
+    window.history.replaceState({ __NA: true }, "", `${pathname}?${query}`);
+    window.dispatchEvent(
+      new PopStateEvent("popstate", { state: window.history.state }),
+    );
+  }
+
+  it("restores the primary history account after pending secondary intent and masks a late secondary payload", async () => {
+    const user = userEvent.setup();
+    const view = render(<View />);
+    await user.type(
+      screen.getByRole("textbox", { name: "Account draft" }),
+      "A-only draft",
+    );
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Portfolio account" }),
+      second.id,
+    );
+    expect(navigation.documentNavigate).toHaveBeenCalledExactlyOnceWith(
+      `/?account=${second.id}`,
+    );
+    expect(
+      screen.queryByText(`Loaded account ${first.id}`),
+    ).not.toBeInTheDocument();
+    expect(
+      view.container.querySelectorAll("[data-portfolio-account]"),
+    ).toHaveLength(0);
+    expect(
+      screen.queryByRole("textbox", { name: "Account draft" }),
+    ).not.toBeInTheDocument();
+
+    act(() => historyTarget("/holdings", `account=${first.id}`));
+    view.rerender(<View />);
+    expect(
+      screen.getByRole("combobox", { name: "Portfolio account" }),
+    ).toHaveValue(first.id);
+    expect(
+      view.container.querySelector("[data-portfolio-account]"),
+    ).toHaveAttribute("data-portfolio-account", first.id);
+    expect(screen.getByText(`Loaded account ${first.id}`)).toBeVisible();
+    expect(screen.getByRole("textbox", { name: "Account draft" })).toHaveValue(
+      "",
+    );
+
+    view.rerender(<View loadedAccount={second.id} />);
+    expect(
+      screen.getByRole("combobox", { name: "Portfolio account" }),
+    ).toHaveValue(first.id);
+    expect(
+      view.container.querySelectorAll("[data-portfolio-account]"),
+    ).toHaveLength(0);
+    expect(
+      screen.queryByText(`Loaded account ${second.id}`),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("textbox", { name: "Account draft" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Loading the selected portfolio",
+    );
+
+    view.rerender(<View />);
+    expect(screen.getByText(`Loaded account ${first.id}`)).toBeVisible();
+    expect(screen.getByRole("textbox", { name: "Account draft" })).toHaveValue(
+      "",
+    );
+    expect(navigation.documentNavigate).toHaveBeenCalledTimes(1);
+    expect(navigation.push).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["malformed", "account=invalid"],
+    ["duplicate", `account=${first.id}&account=${second.id}`],
+    ["foreign", "account=f791a374-cc3e-4e73-9168-a120c0d54cec"],
+  ])(
+    "rejects a %s history account after pending secondary intent without exposing late account payloads",
+    async (_label, query) => {
+      const user = userEvent.setup();
+      const view = render(<View />);
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: "Portfolio account" }),
+        second.id,
+      );
+      act(() => historyTarget("/holdings", query));
+      for (const loadedAccount of [second.id, first.id]) {
+        view.rerender(<View loadedAccount={loadedAccount} />);
+        expect(
+          screen.getByRole("combobox", { name: "Portfolio account" }),
+        ).toHaveValue("");
+        expect(
+          view.container.querySelectorAll("[data-portfolio-account]"),
+        ).toHaveLength(0);
+        expect(
+          screen.queryByText(`Loaded account ${loadedAccount}`),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByRole("textbox", { name: "Account draft" }),
+        ).not.toBeInTheDocument();
+      }
+      expect(navigation.documentNavigate).toHaveBeenCalledTimes(1);
+      expect(navigation.push).not.toHaveBeenCalled();
+    },
+  );
+
+  it("removes its history listener when the provider unmounts, including StrictMode cleanup", () => {
+    const add = vi.spyOn(window, "addEventListener");
+    const remove = vi.spyOn(window, "removeEventListener");
+    try {
+      const view = render(
+        <StrictMode>
+          <View />
+        </StrictMode>,
+      );
+      const historyRegistrations = add.mock.calls.filter(
+        ([type]) => type === "popstate",
+      );
+      expect(historyRegistrations.length).toBeGreaterThan(0);
+      view.unmount();
+      for (const [, listener] of historyRegistrations) {
+        expect(
+          remove.mock.calls.some(
+            ([type, removed]) => type === "popstate" && removed === listener,
+          ),
+        ).toBe(true);
+      }
+    } finally {
+      add.mockRestore();
+      remove.mockRestore();
+    }
   });
 });

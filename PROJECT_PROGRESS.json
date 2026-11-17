@@ -8952,9 +8952,10 @@
       "selected_targets": 996,
       "rules": 7,
       "findings": 0,
-      "receipt": "sast-full-configured-01/receipt.json",
+      "receipt": "account-history-full-configured-sast-02/receipt.json",
       "source_class": "manifested_working_source",
-      "source_manifest_sha256": "89de16d9c05cf51d60960a6215160dce1828804d2b1c7f5375a30fd46b2a9c8b"
+      "source_manifest_sha256": "e9c475217bf06fcf8ffc2bc47266c80094536272bf81ecfd89b7382207c1d370",
+      "source_parent_sha": "9ffe93452a86155b24b7945698981a56e2c8d696"
     },
     "pending_rows": 30,
     "pending_scenarios": 48,
@@ -8963,6 +8964,50 @@
     "formal_owner_acceptance": "pending",
     "p3_10_started": false,
     "CI_activation": "owner_deferred",
-    "distribution_rights": "owner_decision_required"
+    "distribution_rights": "owner_decision_required",
+    "browser_back": {
+      "status": "PASS",
+      "scope": "three_focused_genuine_Back_journeys",
+      "viewports": ["desktop", "tablet", "mobile"],
+      "source_parent_sha": "9ffe93452a86155b24b7945698981a56e2c8d696",
+      "source_manifest_sha256": "5469a1757ab799cf88709d4ff8164251d538af5a884f6e3631bdd42c3563df77",
+      "unit_red": {
+        "passed": 6,
+        "failed": 5
+      },
+      "unit_green": {
+        "passed": 11,
+        "failed": 0
+      },
+      "original_workspace_attempt": {
+        "status": "FAIL",
+        "passed": 12,
+        "failed": 3,
+        "timeouts": 3
+      },
+      "original_assertions_timeouts_and_response_hold_preserved": true,
+      "aggregate_pass_claimed": false
+    },
+    "native_coverage_preflight": {
+      "status": "PASS",
+      "checks": 6,
+      "receipt": "native-copy-v3-qualification-02/receipt.json",
+      "complete_suite_execution": "pending",
+      "uninspectable_process_absence_claimed": false
+    },
+    "next_dependency_advisory": {
+      "status": "OWNER_DECISION_REQUIRED",
+      "installed_version": "16.4.1",
+      "advisory": "GHSA-rhh4-g77r-r9qj",
+      "severity": "Moderate",
+      "documented_patched_version": "16.4.5",
+      "dependency_or_policy_changed": false,
+      "successful_build_clears_advisory": false
+    },
+    "correction_static_checks": {
+      "status": "PASS",
+      "receipt": "account-history-complete-static-01/receipt.json",
+      "aggregate_make_validate_pass_claimed": false
+    }
   }
 }

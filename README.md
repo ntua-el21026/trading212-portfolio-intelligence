@@ -7,15 +7,23 @@ valuation time, coverage and quality remain attached to results.
 
 ## Current status
 
-Phase 3 Checkpoint B remains incomplete. The final bare admission control exceeds its unchanged 750 ms limit. Back during a held account navigation fails on desktop, tablet and mobile before the required account-state checks. Web artifact repeatability and cumulative native coverage remain unresolved; configured SAST retains a nonzero scanner exit despite zero rule findings.
+Phase 3 Checkpoint B remains incomplete. The bounded 17 November package retains
+failed admission measurements and unresolved Web artifact repeatability. A
+configured-SAST parser correction passes; genuine held-response Back journeys
+pass on desktop, tablet and mobile after a narrow account-intent correction.
+Complete Python/native coverage and remaining qualification are still pending.
+Known dependency advisories and original failed executions remain explicit.
 
-Separate current-code browser performance and genuine PDF, CSV, XLSX and JSON research-report journeys pass on all three viewports. The corrected nine-service synthetic restart passes at `1497a1d`, with measured recovery of 51.235 seconds. Original aggregate failures and later focused recoveries retain their own sources; no complete current-SHA validation pass is claimed.
-
-All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**. See the [qualification record](docs/implementation/PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md) and [complete traceability](docs/implementation/PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md). P3-10 has not started. CI activation, credentialed providers, production/Live and distribution remain separately gated.
+All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**.
+See the [current bounded report](docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md)
+and [historical complete traceability](docs/implementation/PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md).
+No complete current-SHA validation pass, Phase 3 acceptance or production readiness
+is claimed. P3-10, CI activation, real providers, production and distribution remain
+separately gated. The three UI design documents remain drafts.
 
 ## Qualification history
 
-Earlier controlled admission, stabilization and Batch 1/2 observations retain their source qualifications in the [current report](docs/implementation/PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md), [controlled environment record](docs/implementation/PHASE_3_CONTROLLED_ENVIRONMENT_20261116.md), [Batch 1 report](docs/implementation/PHASE_3_BATCH1_20261114.md) and [Batch 2 report](docs/implementation/PHASE_3_BATCH2_20261114.md). Phase 1 has source-bound acceptance evidence; the owner accepted Phase 2 for progression. Those decisions do not accept Phase 3.
+Earlier controlled admission, stabilization and Batch 1/2 observations retain their source qualifications in the [16 November report](docs/implementation/PHASE_3_FINAL_LOCAL_QUALIFICATION_20261116.md), [controlled environment record](docs/implementation/PHASE_3_CONTROLLED_ENVIRONMENT_20261116.md), [Batch 1 report](docs/implementation/PHASE_3_BATCH1_20261114.md) and [Batch 2 report](docs/implementation/PHASE_3_BATCH2_20261114.md). Phase 1 has source-bound acceptance evidence; the owner accepted Phase 2 for progression. Those decisions do not accept Phase 3.
 
 ## Architecture and implemented scope
 

@@ -11,12 +11,15 @@
 ## Current bounded qualification, 17 November
 
 The [bounded qualification package](docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md)
-is in progress. Admission remains failed after the final three-cohort diagnostic;
-no production optimization is justified. A type-only compatibility correction
-passes the full configured SAST scan (996 files, seven rules, exit 0), with all
-12 affected Web tests and strict typing passing. Browser, native coverage and
-remaining qualification work are pending. Historical results below keep their
-original sources. All 30 rows and 48 scenarios remain pending; P3-10 is not started.
+is in progress. Admission remains failed after the final bounded diagnostic.
+The SAST type correction passes its configured scan and 12 affected tests.
+Genuine held-response Back journeys now pass on desktop, tablet and mobile after
+verified waiter and account-intent corrections; all 11 focused account tests pass.
+The preceding 12-pass/3-timeout workspace attempt remains a separate failure.
+Native-copy prerequisites pass; the complete suites, cumulative native coverage
+and remaining qualification are pending. The pinned Next.js advisory remains an
+explicit dependency limitation. All 30 rows and 48 scenarios remain pending;
+P3-10 is not started. Historical results below retain their original sources.
 
 ## Historical final local qualification, 16 November
 

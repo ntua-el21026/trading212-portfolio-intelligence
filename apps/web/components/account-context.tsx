@@ -8,6 +8,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import {
   createContext,
   useContext,
+  useEffect,
   useState,
   useSyncExternalStore,
   type ReactNode,
@@ -48,6 +49,12 @@ export function AccountProvider({
   const pathname = usePathname();
   const navigationRef = useNavigationVersionRef();
   const [intent, setIntent] = useState<string | null>(null);
+  useEffect(() => {
+    // History supersedes a held document switch; resolve its canonical URL.
+    const restoreHistory = () => setIntent(null);
+    window.addEventListener("popstate", restoreHistory);
+    return () => window.removeEventListener("popstate", restoreHistory);
+  }, []);
   const requested = intent ?? accountParameter(query);
   // Mask prior account content until document navigation discards its private
   // server payload and client router cache. A new document resolves its own URL.

@@ -5,6 +5,7 @@ import {
   expect,
   test,
   type APIRequestContext,
+  type CDPSession,
   type Page,
 } from "@playwright/test";
 import {
@@ -37,6 +38,69 @@ async function accountControl(page: Page) {
   await expect(control).toHaveCount(1);
   await expect(control).toBeEnabled();
   return control;
+}
+// The generic goBack waiter can consume an older held document's cancellation.
+// Use its native history command and confirm its actual entry and frame URL.
+async function backToPreviousHistoryEntry(page: Page) {
+  let session: CDPSession | undefined;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let expired = false;
+  const step = (stage: string) => {
+    test
+      .info()
+      .annotations.push({ type: "native-history-step", description: stage });
+  };
+  const traverse = async () => {
+    const active = await page.context().newCDPSession(page);
+    if (expired) {
+      await active.detach();
+      return;
+    }
+    session = active;
+    step("session-created");
+    const history = await active.send("Page.getNavigationHistory");
+    step("history-read");
+    const target = history.entries[history.currentIndex - 1];
+    if (!target)
+      throw new Error("A previous browser history entry is required.");
+    if (expired) return;
+    step("dispatch-back");
+    await active.send("Page.navigateToHistoryEntry", { entryId: target.id });
+    step("back-dispatched");
+    await expect
+      .poll(
+        async () => {
+          const current = await active.send("Page.getNavigationHistory");
+          return (
+            current.entries[current.currentIndex]?.id === target.id &&
+            page.url() === target.url
+          );
+        },
+        { timeout: 15_000 },
+      )
+      .toBe(true);
+    step("target-entry-and-frame-observed");
+    await page.waitForLoadState("load");
+    step("target-load-observed");
+  };
+  try {
+    // Preserve the original single15s navigation bound across setup, commit and load.
+    await Promise.race([
+      traverse(),
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => {
+          expired = true;
+          step("deadline-expired");
+          reject(new Error("Browser Back exceeded its navigation deadline."));
+        }, 15_000);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+    step("detaching");
+    await session?.detach();
+    step("detached");
+  }
 }
 async function selectAccount(page: Page, account: string) {
   await (await accountControl(page)).selectOption(account);
@@ -262,12 +326,15 @@ test("Back during a pending account navigation restores the earlier account befo
       (url) =>
         url.pathname === "/" && url.searchParams.get("account") === primary,
     );
-    await page.goBack();
+    await backToPreviousHistoryEntry(page);
     await expect(page).toHaveURL(
       (url) =>
         url.pathname === "/holdings" &&
         url.searchParams.get("account") === primary,
     );
+    await expect(
+      page.getByRole("heading", { name: "Holdings", exact: true }),
+    ).toBeVisible();
     await expect(
       page.getByRole("combobox", { name: "Portfolio account", exact: true }),
     ).toHaveValue(primary);

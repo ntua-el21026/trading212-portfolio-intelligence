@@ -89,11 +89,118 @@ Private receipts: `sast-failed-file-metadata-02`,
 actual scanner exits remain separate. Secret-scanner failures are not changed
 by this SAST result.
 
+## Browser Back: verified waiter and account-intent corrections
+
+The first lifecycle diagnostic blocks on renderer evaluation while the response
+is held and reaches the original 120-second test deadline. It does not prove the
+product's cause. A corrected diagnostic uses browser-process history and passive
+network events during the hold. Chromium cancels the secondary document request,
+commits the previous primary-account Holdings history entry, and changes its
+actual history index from 4 to 3 before release. Playwright's generic `goBack`
+waiter instead rejects the cancelled older request with `ERR_ABORTED`.
+
+Using the same native Chromium history command for the exact previous entry lets
+the original assertions execute. That unchanged-production probe then fails:
+the URL identifies the primary account while the selector retains the secondary
+account. The provider's pending switch intent survives same-document history.
+The minimal application correction clears that intent on `popstate` and removes
+its exact listener on unmount. URL selection, authorization and private view
+masking remain authoritative. Five new regressions initially fail alongside six
+passing existing cases; all eleven pass after correction. They cover restoration,
+late secondary payload masking, form-state isolation, malformed/duplicate/foreign
+selections and StrictMode cleanup.
+
+An intermediate observer-based Back helper reaches the original global timeout
+on every viewport. Each complete workspace invocation contains four passes and
+one failure: **12 passes and 3 timeouts overall**. Its artifacts do not identify
+which observer or cleanup operation blocks; that attribution remains unresolved.
+The final helper uses the already demonstrated native browser-process protocol,
+confirms the exact history entry and Playwright's actual frame URL, retains the
+original shared 15-second navigation bound and all original assertions, and adds
+positive proof that Holdings is visible. Fixed stage annotations contain no
+payloads, URLs or credentials. No assertion accepts an abort; no retries or skips
+are added. The genuine response remains held until after the Back assertions,
+then the original late-response checks execute.
+
+Only the three failed Back cases are repeated on the unchanged application:
+
+| Viewport | Actual result | Wrapper seconds | Receipt |
+| --- | --- | ---: | --- |
+| Desktop | PASS, 1 case | 56.168 | `account-history-back-only-desktop-05/receipt.json` |
+| Tablet | PASS, 1 case | 51.137 | `account-history-back-only-tablet-05/receipt.json` |
+| Mobile | PASS, 1 case | 50.897 | `account-history-back-only-mobile-05/receipt.json` |
+
+All three share working-source manifest
+`5469a1757ab799cf88709d4ff8164251d538af5a884f6e3631bdd42c3563df77`
+at parent `9ffe93452a86155b24b7945698981a56e2c8d696`. The production build
+`account-history-current-build-normal-retry-04` contains the same corrected
+application input; later edits affect only browser-test orchestration. The failed
+workspace matrix remains failed, separate from these focused recoveries. Neither
+it nor the preceding complete API matrix becomes a passing aggregate.
+
+Original execution evidence remains in `browser-back-lifecycle-desktop-01`,
+`browser-back-lifecycle-desktop-02`, `browser-back-target-entry-desktop-03`,
+`account-history-unit-red-01`, `account-history-unit-green-02` and the three
+`account-history-workspace-*-04` receipts and reports. Explicit ESLint configuration
+corrects an initial invocation that searched outside its workspace; no lint rule
+or exclusion changes.
+
+## Dependency advisory and actual build outcomes
+
+The pinned Next.js 16.4.1 build emits an agent upgrade reminder and exits 1 as
+`SecurityFatalError`. The installed framework permits an identical normal retry;
+those separate retries exit 0. No skip flag, upgrade preference, dependency pin,
+security rule or branch changes. The failed build attempts remain failed.
+
+The [official advisory](https://github.com/vercel/next.js/security/advisories/GHSA-rhh4-g77r-r9qj)
+identifies a Moderate cache-disclosure/poisoning issue affecting versions through
+16.4.4 and patched in 16.4.5. This source does not declare `use cache` or
+`cacheComponents`; that observation does not resolve every published advisory or
+establish absence of runtime exposure. Successful compilation does not clear the
+dependency limitation. A dependency-patch decision remains separate from this
+bounded correction and from distribution rights.
+
+## Native coverage preservation prerequisites
+
+The new operator first exposes unavailable file-descriptor inspection for three
+unrelated session processes; it does not claim those processes are absent. A
+proposed C-symbol VFS identification then fails because this qualified Python has
+builtin SQLite. Both failed preparations remain retained before any full suite.
+
+The corrected operator qualifies actual default SQLite lock interoperability on
+the exact runtime and evidence filesystem: all six small synthetic checks pass.
+A held writer prevents copying; a closed writer permits an exact unchanged copy;
+new writers are blocked before and after copying while the source fence is held.
+Snapshots use one source descriptor, stable identities and hashes, fsync and
+explicit sidecar refusal. The proof concerns cooperating writers on the qualified
+runtime, not arbitrary VFSes or uninspectable-process absence. No source SQL,
+coverage threshold, test selection or security policy changes.
+
+`native-copy-v3-qualification-02/receipt.json` exits 0 in 0.554 seconds;
+`native-copy-v3-regression-02/qualification.json` binds the actual six checks,
+Python 3.13.15, builtin SQLite 3.53.1, helper hashes and filesystem. The complete
+suite and cumulative native coverage remain pending until executed on a frozen
+committed candidate. Raw phase inputs and a native combined base must be retained
+before reporting, with `combine --keep` and report/JSON/XML `--keep-combined`.
+
+## Correction validation checkpoint
+
+`make format-check lint typecheck generated-check docs-check` passes, exit 0 in
+92.167 s, including architecture and the exact ten-GET broker-boundary checks.
+The full configured `make sast-check` passes again after the history correction:
+exit 0 in 132.280 s, seven rules, 996 files and zero findings. Both executions
+preserve working-source manifest
+`e9c475217bf06fcf8ffc2bc47266c80094536272bf81ecfd89b7382207c1d370`
+at parent `9ffe93452a86155b24b7945698981a56e2c8d696`. Receipts are
+`account-history-complete-static-01/receipt.json` and
+`account-history-full-configured-sast-02/receipt.json`. Later status-only metadata
+records these actual results; no aggregate test or acceptance pass is inferred.
+
 ## Remaining qualification
 
-Browser Back lifecycle diagnosis, a current-source paired build comparison,
-focused Python prerequisite checks, one complete compatible native coverage
-attempt, security closure and complete traceability reconciliation remain pending
+A current-source paired build comparison, focused Python prerequisite checks,
+one complete compatible native coverage attempt, security closure and complete
+traceability reconciliation remain pending
 in this continuing package. Historical scanner, browser, coverage and build
 failures remain visible. No complete current-SHA validation pass is claimed.
 

@@ -11,8 +11,14 @@ All notable project changes are recorded here. The project follows semantic vers
 - Name the existing research-report mock module type to avoid the pinned SAST
   parser failure. Preserve emitted JavaScript and all assertions; qualify all
   seven configured rules across 996 files and the 12 affected Web tests.
-- Keep the remaining browser, repeatability and complete native coverage work
-  pending, with all 30 acceptance rows and 48 scenarios awaiting owner acceptance.
+- Retire pending account intent on browser history and retain tenant masking,
+  native Back behavior and late-response protection. Preserve the five failing
+  regressions, their eleven-case recovery, the failed workspace matrix and three
+  separate passing Back journeys; do not construct an aggregate pass.
+- Qualify native coverage snapshot prerequisites before the complete attempt;
+  retain the actual initial operator failures and known Next.js advisories.
+- Keep repeatability and complete native coverage pending, with all 30 acceptance
+  rows and 48 scenarios awaiting independent owner acceptance.
 
 ### Final Checkpoint B local qualification
 
