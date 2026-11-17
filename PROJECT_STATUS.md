@@ -10,13 +10,29 @@
 
 ## Current LOCAL/DEMO implementation
 
-The owner authorizes concurrent bounded stabilization and whole-application UI
-modernization under the [LOCAL/DEMO scope](docs/implementation/LOCAL_DEMO_SCOPE_20261117.md).
-Implementation is in progress; targeted validation and independent review are
-pending. Original Checkpoint B failures are retained below. No acceptance row,
-scenario, P3-10, CI, provider, production or distribution gate changes.
+**LOCAL/DEMO IMPLEMENTATION COMPLETE — INDEPENDENT REVIEW PENDING.**
 
-## Current bounded qualification, 17 November
+The [implementation and qualification report](docs/implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md)
+records the owner-authorized reduced milestone at implementation `e1e8da7` (broader UI evidence at `65d1d0d`).
+Shared themes and responsive presentation cover all 32 page-route patterns.
+Targeted evidence includes 980 earlier working-source Web unit cases, 54 final
+source-affected cases, nine PostgreSQL and two fixture-clock cases, 17 broker/
+financial/architecture cases, build/type/lint/contract checks, 150 synthetic
+route/theme/device views and genuine three-device research reports with twelve
+four-format downloads and independent content checks. The final accessible-name
+correction adds 14 passing affected tests and 12 viewport/theme combinations. Each receipt keeps its own
+source; no aggregate final-SHA Phase 3 pass is claimed.
+
+See the [32-route checklist](docs/implementation/LOCAL_DEMO_ROUTE_COVERAGE_20261117.md)
+and [all 78 formal items](docs/implementation/LOCAL_DEMO_TRACEABILITY_20261117.md).
+Checkpoint B remains INCOMPLETE, with original performance/reproducibility failures,
+nonzero inherited secret-scanner exits and unexecuted complete qualification kept
+visible. The offline-v1 public fallback remains fixed dark. All **30 rows and 48
+scenarios remain pending, zero accepted**. P3-10, CI, providers, production and
+distribution remain separately gated. The revised sequencing is recorded in the
+[LOCAL/DEMO scope](docs/implementation/LOCAL_DEMO_SCOPE_20261117.md).
+
+## Historical bounded qualification, 17 November
 
 The [bounded qualification package](docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md)
 has closed with material failures at implementation candidate `55bf78d`. Complete

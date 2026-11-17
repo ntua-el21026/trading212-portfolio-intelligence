@@ -6,6 +6,16 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ### LOCAL/DEMO workspace modernization, 17 November
 
+- Preserve the appearance selector's accessible name at compact widths. Retain
+  the failing 320-pixel browser probe and red unit case; qualify the one-attribute
+  correction with 14 affected tests and 12 viewport/theme combinations.
+
+- Publish the implementation report, 32-route checklist and complete 30-row /
+  48-scenario evidence overlay; keep every formal acceptance item pending.
+- Record targeted final-source checks, genuine three-device four-format research
+  downloads, privacy guards, preservation backups, retained failures, known
+  limitations and owner-review proposals; add four verified synthetic UI captures.
+
 - Theme the existing allocation, historical and snapshot charts with shared
   palette/axis/grid/tooltip tokens; retain canonical value formatters and gaps.
   Keep chart/table colors aligned when an unavailable allocation row is omitted,

@@ -1,6 +1,21 @@
 # Phase 3 Acceptance Matrix
 
-## Current bounded qualification, 17 November
+## Current LOCAL/DEMO supplement, 17 November
+
+The owner authorizes concurrent UI modernization and bounded stabilization under
+[the LOCAL/DEMO contract](LOCAL_DEMO_SCOPE_20261117.md). The
+[current report](LOCAL_DEMO_IMPLEMENTATION_20261117.md),
+[32-route checklist](LOCAL_DEMO_ROUTE_COVERAGE_20261117.md) and
+[complete 30-row/48-scenario overlay](LOCAL_DEMO_TRACEABILITY_20261117.md) map new
+focused tests, responsive UI and genuine four-format research journeys to the
+retained requirements. They preserve every original failure and source binding.
+
+All **30 acceptance rows and 48 scenarios remain pending, zero accepted**.
+Checkpoint B remains INCOMPLETE. The original performance, reproducibility,
+complete-qualification and owner/external gates are not waived for Phase 3.
+Local Demo completion does not authorize P3-10, CI, providers or production.
+
+## Historical bounded qualification, 17 November
 
 The [closed bounded report](PHASE_3_BOUNDED_QUALIFICATION_20261117.md) and
 [complete 78-item supplement](PHASE_3_BOUNDED_TRACEABILITY_20261117.md) bind actual

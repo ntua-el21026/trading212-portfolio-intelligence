@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "scope": "First-party synthetic LOCAL/DEMO interface documentation; original six mockups are not embedded.",
+  "captures": [
+    {
+      "path": "docs/media/local-demo-overview-light-20261117.png",
+      "bytes": 212116,
+      "sha256": "6790d63e3d969b31773a31242e4002e0a26f1ac77b9fa26e26e79d52a0dd3d4d",
+      "viewport": [
+        1440,
+        1024
+      ],
+      "theme": "light",
+      "source_receipt": "demo-final-functional-recovery/receipt.json",
+      "observed_source_manifest": "15c0bee3663ac15a87212809b8c4e0141d19e8b6074c70145951a8b7d3aa2172",
+      "byte_equivalent_implementation_commit": "65d1d0db8bc9b8bb2682bc74b73cdcd4c5828ffc",
+      "synthetic_only": true,
+      "browser_chrome_urls_or_transport_captures": false
+    },
+    {
+      "path": "docs/media/local-demo-overview-dark-20261117.png",
+      "bytes": 216533,
+      "sha256": "887dc451f9ba05c75c7032217b16155f73a8eed7533d6ded2761c102ca2d69a6",
+      "viewport": [
+        1440,
+        1024
+      ],
+      "theme": "dark",
+      "source_receipt": "demo-final-functional-recovery/receipt.json",
+      "observed_source_manifest": "15c0bee3663ac15a87212809b8c4e0141d19e8b6074c70145951a8b7d3aa2172",
+      "byte_equivalent_implementation_commit": "65d1d0db8bc9b8bb2682bc74b73cdcd4c5828ffc",
+      "synthetic_only": true,
+      "browser_chrome_urls_or_transport_captures": false
+    },
+    {
+      "path": "docs/media/local-demo-overview-tablet-20261117.png",
+      "bytes": 93741,
+      "sha256": "6e2e52d86b52a643f028d744a0c32cd73061356e357da15313a29ea3c3356704",
+      "viewport": [
+        768,
+        1024
+      ],
+      "theme": "light",
+      "source_receipt": "demo-final-functional-recovery/receipt.json",
+      "observed_source_manifest": "15c0bee3663ac15a87212809b8c4e0141d19e8b6074c70145951a8b7d3aa2172",
+      "byte_equivalent_implementation_commit": "65d1d0db8bc9b8bb2682bc74b73cdcd4c5828ffc",
+      "synthetic_only": true,
+      "browser_chrome_urls_or_transport_captures": false
+    },
+    {
+      "path": "docs/media/local-demo-holdings-mobile-20261117.png",
+      "bytes": 49097,
+      "sha256": "31169531fc981422ef19633931a13338c04b2f8478538ad470275123c221199d",
+      "viewport": [
+        390,
+        844
+      ],
+      "theme": "dark",
+      "source_receipt": "demo-final-functional-recovery/receipt.json",
+      "observed_source_manifest": "15c0bee3663ac15a87212809b8c4e0141d19e8b6074c70145951a8b7d3aa2172",
+      "byte_equivalent_implementation_commit": "65d1d0db8bc9b8bb2682bc74b73cdcd4c5828ffc",
+      "synthetic_only": true,
+      "browser_chrome_urls_or_transport_captures": false
+    }
+  ]
+}

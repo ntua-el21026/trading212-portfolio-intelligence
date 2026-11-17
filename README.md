@@ -7,21 +7,20 @@ valuation time, coverage and quality remain attached to results.
 
 ## Current status
 
-Phase 3 Checkpoint B remains incomplete. The SAST parser and account-intent
-corrections pass their focused checks, including genuine held-response Back on
-three viewports. Complete Python executions still fail; native branch-aware
-coverage passes at 88.05%, and 966 TypeScript tests pass. Admission and whole-tree
-Web repeatability remain failed. Complete current browser and restart/restore
-qualification retain explicit local prerequisites. Known dependency advisories,
-original failures and post-commit security observations remain separate.
+The owner-authorized **LOCAL/DEMO implementation is complete, pending independent
+review**. A shared responsive design covers the application with persistent
+light, dark and system appearance. Targeted synthetic checks cover navigation,
+account isolation and genuine research-report generation and downloads.
+See the [implementation report](docs/implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md),
+[32-route checklist](docs/implementation/LOCAL_DEMO_ROUTE_COVERAGE_20261117.md) and
+[source-qualified evidence overlay](docs/implementation/LOCAL_DEMO_TRACEABILITY_20261117.md).
 
-All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**.
-See the [current bounded report](docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md),
-the [current 78-item traceability](docs/implementation/PHASE_3_BOUNDED_TRACEABILITY_20261117.md),
-and [historical complete traceability](docs/implementation/PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md).
-No complete current-SHA validation pass, Phase 3 acceptance or production readiness
-is claimed. P3-10, CI activation, real providers, production and distribution remain
-separately gated. The three UI design documents remain drafts.
+Phase 3 Checkpoint B remains **incomplete**. Original admission and whole-tree Web
+repeatability failures, inherited nonzero secret-scanner exits, known dependency
+advisories and unexecuted complete qualification remain explicit. All **30 acceptance
+rows and 48 scenarios remain pending, zero accepted**. No complete current-SHA
+Phase 3 pass or production readiness is claimed. P3-10, CI, real providers,
+production and redistribution remain separately gated.
 
 ## Qualification history
 
@@ -132,7 +131,34 @@ volume. When using a different local password for host tests, set matching
 the synthetic password above. Current startup qualification is recorded in the
 stabilization report.
 
-## Synthetic interface example
+## Current synthetic interface
+
+![LOCAL/DEMO overview in light mode](docs/media/local-demo-overview-light-20261117.png)
+
+[Dark desktop](docs/media/local-demo-overview-dark-20261117.png),
+[tablet](docs/media/local-demo-overview-tablet-20261117.png) and
+[mobile holdings](docs/media/local-demo-holdings-mobile-20261117.png) use the same
+semantic palette. These are genuine synthetic browser captures, with
+[dimensions, hashes and source provenance](docs/media/local-demo-captures-20261117.json).
+Choose **Appearance** in the header or Settings. The saved preference survives
+navigation, account switches and sign-out; System follows the device. The separate
+immutable public offline-v1 fallback retains its fixed-dark design and no-JavaScript
+privacy boundary.
+
+For a visual preview with existing dependencies and no database or broker access:
+
+```bash
+PORTFOLIO_DEMO_MODE=1 T212PI_WEB_ENVIRONMENT=local \
+  pnpm --filter @trading212/web dev --hostname 127.0.0.1
+```
+
+Open `http://127.0.0.1:3000/sign-in` and select **Enter demo portfolio**. Advanced
+research, analytical jobs and reports require the connected synthetic LOCAL runtime
+above; the visual Demo preserves explicit connected-runtime states. The known
+framework advisory may cause an upgrade reminder; retain it and follow the
+unchanged normal-retry behavior described in the implementation report.
+
+## Historical synthetic interface example
 
 ![Synthetic holdings with explicit data-quality states](docs/media/synthetic-holdings-desktop.png)
 

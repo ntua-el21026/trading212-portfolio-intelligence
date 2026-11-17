@@ -9141,10 +9141,31 @@
   "local_demo_milestone": {
     "authority": "docs/implementation/LOCAL_DEMO_SCOPE_20261117.md",
     "starting_sha": "f19caa1153b0cf3acc41c47aba3a773b888741ff",
-    "implementation_status": "in_progress",
-    "local_validation_status": "pending",
+    "implementation_status": "complete",
+    "local_validation_status": "reported_passed",
     "independent_review_status": "pending",
     "phase3_acceptance_unchanged": true,
-    "p3_10_authorized": false
+    "p3_10_authorized": false,
+    "implementation_source_sha": "e1e8da74846d9a248740bbf7560ea9b7183b32bc",
+    "local_validation_scope": "targeted_local_demo; individual receipt sources preserved",
+    "local_validation_evidence": "docs/implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md",
+    "acceptance_rows_pending": 30,
+    "scenarios_pending": 48,
+    "accepted_items": 0,
+    "original_checkpoint_b_status": "incomplete",
+    "known_limitations": [
+      "Original admission and whole-Web byte equality gates remain failed and were not rerun.",
+      "Inherited nonzero secret-scanner exits remain distinct from reviewed nonsecret classifications.",
+      "No new complete Python/integration/coverage/browser-matrix/restore/release qualification.",
+      "Immutable public offline-v1 fallback remains fixed dark.",
+      "Known Next.js advisory remains a dependency patch recommendation."
+    ],
+    "broader_ui_qualification_source_sha": "65d1d0db8bc9b8bb2682bc74b73cdcd4c5828ffc",
+    "final_accessibility_supplement": {
+      "unit_cases": 14,
+      "browser_combinations": 12,
+      "source_manifest_prefix": "41f7f0ab",
+      "one_production_aria_attribute": true
+    }
   }
 }

@@ -1,5 +1,32 @@
 # Validation Report
 
+## LOCAL/DEMO qualification, 17 November 2026
+
+**Targeted LOCAL/DEMO evidence passes; independent review remains pending.**
+The [current report](docs/implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md)
+records exact commands, exits, source manifests, original failures and focused
+recoveries. The [32-route checklist](docs/implementation/LOCAL_DEMO_ROUTE_COVERAGE_20261117.md)
+and [30-row/48-scenario overlay](docs/implementation/LOCAL_DEMO_TRACEABILITY_20261117.md)
+retain partial and historical evidence separately. Broader code bytes were verified against
+`65d1d0db8bc9b8bb2682bc74b73cdcd4c5828ffc`; the one-attribute accessibility supplement
+at `e1e8da74846d9a248740bbf7560ea9b7183b32bc` has 14 affected tests and 12 viewport/theme
+combinations passing. Executions remain
+qualified by their actual parent and working manifest.
+
+The package runs focused application/security/financial tests and static/build
+checks, 150 responsive Demo views, and genuine three-device research generation,
+manifest inspection and twelve verified PDF/CSV/XLSX/JSON downloads. The initial
+build advisory exits, helper failures, expiry observation and recoveries are
+preserved. No complete `make validate`, Python/integration/coverage regeneration,
+full historical browser/CWV matrix, new admission benchmark, paired-build
+comparison, clean-install or full restart/restore was run in this reduced scope.
+NOT RUN does not mean PASS. Original Checkpoint B failures remain failures.
+
+All 30 acceptance rows and 48 scenarios remain pending, zero accepted. Checkpoint B
+is INCOMPLETE; P3-10 and CI remain unauthorized. Original scanner exits, dependency
+advisories, fixed-dark public offline fallback, licensing and external gates remain
+explicit limitations. The following earlier qualification sections are historical.
+
 ## Current bounded qualification, 17 November
 
 The [bounded qualification package](docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md)
