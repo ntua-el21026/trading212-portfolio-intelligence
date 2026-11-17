@@ -57,6 +57,12 @@ describe("local appearance preference", () => {
     );
   });
 
+  it("retains an accessible selector name when compact styling hides its visual label", () => {
+    preference();
+    screen.getByText("Appearance", { exact: true }).style.display = "none";
+    expect(screen.getByRole("combobox", { name: "Appearance" })).toBeVisible();
+  });
+
   it("switches the root and persists only the visual preference, without touching other cookies", async () => {
     const user = userEvent.setup();
     document.cookie = "unrelated_preference=preserved; Path=/";

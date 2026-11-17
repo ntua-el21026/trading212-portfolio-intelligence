@@ -71,6 +71,7 @@ export function ThemeControl() {
     <label className="theme-control" htmlFor={id}>
       <span>Appearance</span>
       <select
+        aria-label="Appearance"
         id={id}
         value={theme.preference}
         onChange={(event) => theme.choose(themePreference(event.target.value))}
