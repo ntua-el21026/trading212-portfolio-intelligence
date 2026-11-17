@@ -15,10 +15,15 @@ All notable project changes are recorded here. The project follows semantic vers
   native Back behavior and late-response protection. Preserve the five failing
   regressions, their eleven-case recovery, the failed workspace matrix and three
   separate passing Back journeys; do not construct an aggregate pass.
-- Qualify native coverage snapshot prerequisites before the complete attempt;
-  retain the actual initial operator failures and known Next.js advisories.
-- Keep repeatability and complete native coverage pending, with all 30 acceptance
-  rows and 48 scenarios awaiting independent owner acceptance.
+- Execute the complete Python scopes once: 6,005 pass/1 fail and 960 pass/2 fail;
+  retain those exits alongside 88.05% independently verified native coverage.
+- Verify all 966 TypeScript tests, isolated clean installs/builds and six current
+  image builds. Retain the actual paired-build failure with 277 Web differences.
+- Preserve the unresolved storage failure beside one separate diagnostic pass;
+  stop restart/restore on two retained Redis keys and keep full browser capture
+  qualification pending. Restore original host build outputs without deletion.
+- Publish all 78 requirement/scenario mappings and retain scanner/operator failures,
+  recoveries and final source-qualified closure. All formal acceptance stays pending.
 
 ### Final Checkpoint B local qualification
 

@@ -1,11 +1,11 @@
 # Phase 3 bounded Checkpoint B qualification, 17 November 2026
 
 **Owner:** Michail Athanasios Peppas  
-**State:** In progress; Checkpoint B incomplete; independent acceptance pending.
+**State:** Bounded package closed with failures; Checkpoint B incomplete; independent acceptance pending.
 
 ## Authority and source
 
-The live, local and remote-tracking `main` baseline is
+The initial verified live, local and remote-tracking `main` baseline was
 `a9f4164225750312d0d3dd0e4440d9bf2a41890f`, tree
 `76a02391d9b6be35149cab69c8ecf5fc533b4130`. Its only changes since the
 preceding qualification delivery are three draft UI design documents. They remain
@@ -178,10 +178,10 @@ coverage threshold, test selection or security policy changes.
 
 `native-copy-v3-qualification-02/receipt.json` exits 0 in 0.554 seconds;
 `native-copy-v3-regression-02/qualification.json` binds the actual six checks,
-Python 3.13.15, builtin SQLite 3.53.1, helper hashes and filesystem. The complete
-suite and cumulative native coverage remain pending until executed on a frozen
-committed candidate. Raw phase inputs and a native combined base must be retained
-before reporting, with `combine --keep` and report/JSON/XML `--keep-combined`.
+Python 3.13.15, builtin SQLite 3.53.1, helper hashes and filesystem. The complete suites subsequently execute at the candidate below. Their failed
+outcomes and the separately qualified cumulative native coverage remain distinct.
+Raw phase inputs and a native combined base are retained before reporting, with
+`combine --keep` and report/JSON/XML `--keep-combined`.
 
 ## Correction validation checkpoint
 
@@ -196,16 +196,179 @@ at parent `9ffe93452a86155b24b7945698981a56e2c8d696`. Receipts are
 `account-history-full-configured-sast-02/receipt.json`. Later status-only metadata
 records these actual results; no aggregate test or acceptance pass is inferred.
 
-## Remaining qualification
+## Complete implementation-candidate qualification
 
-A current-source paired build comparison, focused Python prerequisite checks,
-one complete compatible native coverage attempt, security closure and complete
-traceability reconciliation remain pending
-in this continuing package. Historical scanner, browser, coverage and build
-failures remain visible. No complete current-SHA validation pass is claimed.
+The clean, synchronized implementation candidate is
+`55bf78ddc258bac0ae9c17abd2db672212bba78d`, tree
+`469c19b5980682a1547866f917e048740c578fa5`. Source bookends preserve manifest
+`b00fc0f6b9927518da66ff994249d7d1ac3d3708960976ed9c958aa27d40f03f`.
+The later documentation delivery is a separate SHA; unchanged implementation
+bytes do not constitute another complete execution. Python 3.13.15, Node 24.20.0,
+pnpm 10.34.5 and uv 0.12.7 remain qualified. Original dependencies and CPU/database
+settings are preserved. Expensive operations run serially.
 
-The retained build comparison includes generated private framework keys,
-expiration clocks, action identities and real execution traces. A safe correction
-cannot make private keys predictable or exclude substantive artifacts. Any change
-to that artifact contract requires a separate owner decision. A historical failed
-pair is not current-source qualification.
+| Gate / actual command scope | Result | Actual outcome and receipt |
+| --- | --- | --- |
+| `coverage run -m pytest tests/unit tests/property tests/contract tests/security` | FAIL | 6,005 pass, 1 fail, zero errors/skips; exit 1; 2,378.503 s; `python-full-01-isolated/receipt.json` |
+| `coverage run -m pytest -m 'migrations or integration'` | FAIL | 960 pass, 2 fail, zero errors/skips; exit 1; 15,086.414 s; `python-full-01-integration/receipt.json` |
+| `corepack pnpm test:unit` | PASS | 966 tests in 109 files; exit 0; 11.884 s; `typescript-complete-candidate-01/receipt.json` |
+| Native `coverage combine --keep`, report, JSON and XML `--keep-combined` | PASS, scoped | Actual exits 0/0/0/0; unchanged 70% branch-aware threshold: 88.05021452407436%; separate metadata postvalidation 0 |
+| Clean Python/Node install, workspace, Python/Web build and verification | PASS | All eight component operations exit 0; new private environment; `clean-current-*-01/receipt.json` and `clean-install-01/` |
+| Paired complete artifact comparison | FAIL | Both builds exit 0; comparison exits 1; 277 Web differences, zero Python differences; `paired-current-v2-compare-01/receipt.json` |
+| Six current-candidate images and runtime package-manager probes | PASS, scoped | Actual exits 0/0; 17.724 / 1.826 s; `candidate55bf-six-image-build-01` / `candidate55bf-runtime-package-managers-01` |
+| Production Python dependency audit | PASS | pip-audit 2.10.1; 67 active packages, zero skips/vulnerabilities; actual audit 0; `candidate-dependency-python-audit-01` |
+| Production Node dependency audit | PASS at configured threshold | Actual audit 0 at HIGH threshold; one Moderate remains; `candidate-dependency-node-audit-01` |
+| Full configured Trivy source scan | PASS scanner; operator failures retained | Two actual scanner exits 0; two adapter/operator exits 2; existing-observation metadata postvalidation 0; details below |
+| New backup/restore and nine-service restart | PENDING_LOCAL | Backup prerequisite exits 1 before any dump or restore; two Redis keys are preserved; dependent transition/restart not executed |
+| Complete current API/browser, LCP and four-format browser matrix | PENDING_LOCAL | Local pre-capture privacy prerequisite is unresolved; three focused Back passes remain separate |
+| Current complete `make validate` | PENDING_LOCAL | Not repeated: the complete Python commands already fail and the aggregate would repeat unchanged suites; historical aggregate FAIL remains FAIL |
+| Final delivery source/history security and GitHub metadata | PENDING_LOCAL at this commit | Execute after documentation freeze; exact post-commit receipts and actual outcomes accompany the private final delivery |
+
+All exact argv, environment observations, durations, exits, raw logs, JUnit and
+before/after manifests are retained privately. The [78-item supplement](PHASE_3_BOUNDED_TRACEABILITY_20261117.md)
+binds 49 actual execution records. Neither this matrix nor the supplement combines
+separate runs into a full-suite pass.
+
+### Python failures and independent coverage
+
+The isolated failure is
+`test_repository_contains_no_high_confidence_secret`; the checker reports three
+path/rule messages. The integration failures are
+`test_acquired_fx_complete_chain_preserves_authority_and_four_format_proof`
+(`storage_unavailable` during completion) and
+`test_measured_research_read_query_and_report_admission_budgets` (admission p95
+4.034860579 s under coverage). The latter completes all ten genuine jobs and
+thirty reads; read p95 is 0.357222205 s and maximum SQL count is 12. Covered timings
+are not another bare qualifying cohort. The earlier bare admission failure and
+unresolved attribution remain unchanged.
+
+The original full controller then exits 2 because its reporting metadata and data
+directories collide, before any combine command starts. A separate reporting-only
+recovery runs combine/report/JSON/XML successfully, but its validator exits 2 on
+a legitimate Coverage 7.16 display field. The final metadata-only postvalidation
+passes: all 14 producer fields, 622 per-file records, counter identities, XML,
+source proofs, receipts, sealed native base and original inputs agree. Statements
+are 76,433/83,507 (91.52885386853796%); branches 17,764/23,474
+(75.675215131635%). Both failed suite exits and both earlier operator exits remain.
+No tests or successful coverage commands are repeated for these reporting fixes.
+
+One opted-in focused storage diagnostic passes in 83.641 s without reproducing
+the original failure. A single read-only scalar query takes 0.001935 s and observes
+valid job/input/fence/lease predicates; the DB clock is about 33.94 s beyond the
+fixture clock, still inside the unchanged 60-second lease. No original SQL error
+occurs. A bounded earlier PostgreSQL-log classification finds a public stale-fence
+reason in a conservative time window, without exact job correlation. This supports
+a hypothesis, not a verified cause. The original storage failure remains unresolved;
+no fixture/production clock, heartbeat, timeout or assertion is changed. Focused
+native data is retained separately and never merged into complete-suite coverage.
+
+### Independent byte boundaries and recovery cases
+
+All 22 PostgreSQL X-ray canonical-payload migration cases pass, as do the 12 core
+migration cases and the other selected populated-upgrade/compatibility cases.
+Published revision `0036` is unchanged; there is no new migration. Exact encoded
+X-ray 32-MiB input/result, oversized rejection, unaffected kinds and safe downgrade
+contracts retain their own executed tests.
+
+Both actual report calibration/boundary cases pass. The real near-boundary
+capture measures **33,508,884 bytes**, 45,548 below its 33,554,432-byte document
+cap, with 52 chunks, a 66,657-byte manifest and maximum chunk 1,047,537 bytes.
+Oversized admission rejects at `document_bytes` with unchanged persistent state;
+foreign manifest access precedes private-payload selection. The legal document's
+complete rows exceed the independent 10,485,760-byte artifact cap, so its genuine
+worker correctly terminates `LIMIT_EXCEEDED` without artifact publication. This
+is successful boundary enforcement, not a successful oversized artifact export.
+The executed boundary observation lasts 350.486 s and preserves both sources.
+No X-ray, document, manifest, chunk, artifact or 512-MiB projection limit changes.
+
+Complete-suite modeled recovery/restore tests retain individual results in the
+supplement. A new nine-service observation is not inferred from them. All 17
+metadata guard regressions pass, and image/tag/original-volume protection passes.
+The actual new backup helper nevertheless refuses before dumping or creating a
+restore database: Redis DB0 contains two keys. A read-only diagnostic checks all
+16 database counts, fixed resource identity, disabled persistence and idle clients;
+it reads no key names or values. Nothing is flushed, deleted or recreated.
+The task Redis remains running and its PostgreSQL volume remains preserved.
+Current restart, restored financial witness and signed artifact pack therefore
+remain locally pending. This is a data-preservation prerequisite, not an external
+credential blocker. Historical synthetic restart/RTO observations remain historical.
+
+### Complete artifact comparison and safe limits
+
+Both builds use the same exact source/export, verified installed dependency
+copies, tools and controlled environment. All four original artifact roots remain
+in the comparison. Of 277 Web differences, 239 are common-file content differences
+and 38 are membership differences; there are zero type/mode changes. Another
+3,377 mtime differences are recorded separately. Build ID, preview material,
+server-action mapping, encryption material and trace bytes differ. No private
+field value or individual key hash is emitted. Python artifacts match.
+
+The initial private preparation fails on a missing `json` import before building.
+Its evidence remains; a separate derivative fixes only that import and uses fresh
+namespaces. It produces the actual failing pair. No files are excluded, no bytes
+normalized and no crypto inputs made predictable. Defining another artifact
+contract or key lifecycle requires an owner decision; the existing whole-tree
+repeatability requirement remains failed.
+
+Clean install/build is an independent component pass, not repeatability. Six
+current images build and pass runtime package-manager checks while all earlier
+image IDs/tag bindings and original-volume metadata remain intact. Tracked source
+bookends do not prove exclusive Docker-context membership: filename/type review
+finds no present private-input candidates, but `.dockerignore` and ignored local
+patterns are not identical. No private input is read or new ignore policy added.
+
+### Trivy metadata recovery and final security boundary
+
+The first actual full configured scan exits 0 with a fresh supported vulnerability
+DB and no reported findings; its adapter exits 2 on a legitimate aggregate target.
+The pinned public [Trivy producer](https://github.com/aquasecurity/trivy/blob/e1fd17a0ea4a8cf24bc4b4dd7e2cfbf4bb31b994/pkg/scan/local/service.go#L360-L383)
+emits exactly `Loose File License(s)`, class `license-file`, without Type. A narrow
+private adapter recognizes only that tuple; eight metadata regressions preserve
+all rows, findings and per-license path denials. Rules, severity, targets and
+license policy are unchanged.
+
+The one full configured repeat also exits 0, with a fresh DB and zero findings,
+and recognizes that exact tuple. Its enclosing operator exits 2 because a final
+metadata-wording edit overlaps execution. A subsequent metadata-only check
+reconstructs the exact recorded executed-source hash from that one known edit,
+verifies existing command/source/export/tool/DB/receipt facts and exits 0. It makes
+no scanner request and does not rewrite either previous operator failure. Its
+reconstructed source is explicitly distinguished from an originally retained
+file. Original and recovery evidence remain separately indexed.
+
+Fresh delivery-SHA SAST, high-confidence, source/reachable-history Gitleaks and
+independent findings review follow the documentation commit. Their actual exits
+and classifications belong to the private post-commit closure record; historical
+nonsecret classifications never convert scanner failures into passes. Workflow
+status is read only; CI activation remains owner-deferred. License wording and
+third-party obligations are unchanged. Public source visibility supplies no
+additional dependency, binary or container distribution rights. The existing
+[license wording proposal](../verification/LICENSE-VISIBILITY-WORDING-PROPOSAL.md)
+requires owner review.
+
+## Preservation, remaining work and disposition
+
+The original 593-entry host Next output and original `next-env.d.ts` and
+`tsconfig.tsbuildinfo` are restored after listener checks, with exact byte/type/
+mode verification. Every task build is retained privately. Existing `.venv`,
+dependencies, images, two original volumes and all previous archives are preserved.
+The two task Redis keys prevent cleanup that could lose unique state. Resource inspection reads no process arguments, real-account credentials, signed
+URLs or private account input payloads. Authenticated local fixtures use synthetic
+accounts; existing tools handle Git/GitHub transport authentication. The exact ten-GET default-deny broker boundary and financial contracts
+remain intact; UI draft documents, published migrations, workflows and licensing
+rights are unchanged.
+
+The smallest next actions are bounded ownership/retention classification of the
+two Redis keys before restart/restore; closing browser capture before the full
+matrix; reproducing the original storage failure with causal evidence; owner
+review of the whole-tree artifact contract; and owner-directed next steps for the
+failed admission requirement and remaining security/dependency decisions. No
+further admission-specific cohort or speculative optimization is performed here.
+
+All 30 rows and 48 scenarios remain pending, zero accepted. The indexed private
+archive and post-commit closure supply final delivery SHA, exact security/CI
+observations, inventory and checksum without a self-referential recommit loop.
+No complete final-SHA validation, formal acceptance, Phase 3 completion, P3-10,
+production, external-provider or distribution claim is made.
+
+**CHECKPOINT B INCOMPLETE — NOT READY FOR ACCEPTANCE.**

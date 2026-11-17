@@ -3,15 +3,22 @@
 ## Current bounded qualification, 17 November
 
 The [bounded qualification package](docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md)
-is in progress. Admission remains failed after the final bounded diagnostic.
-The SAST type correction passes its configured scan and 12 affected tests.
-Genuine held-response Back journeys now pass on desktop, tablet and mobile after
-verified waiter and account-intent corrections; all 11 focused account tests pass.
-The preceding 12-pass/3-timeout workspace attempt remains a separate failure.
-Native-copy prerequisites pass; the complete suites, cumulative native coverage
-and remaining qualification are pending. The pinned Next.js advisory remains an
-explicit dependency limitation. All 30 rows and 48 scenarios remain pending;
-P3-10 is not started. Historical results below retain their original sources.
+has closed with material failures at implementation candidate `55bf78d`. Complete
+Python executions report 6,005 pass/1 fail and 960 pass/2 fail, both exit 1, with
+zero errors/skips. Native branch-aware coverage passes at 88.05%; the earlier
+operator failures remain recorded. All 966 TypeScript tests pass. Focused Back
+journeys pass on desktop/tablet/mobile after the verified correction; the failed
+12-pass/3-timeout workspace execution remains separate.
+
+Admission remains failed and unresolved. Current whole-tree Web repeatability
+fails with 277 differences. Complete current browser qualification remains locally
+pending on capture privacy; new restart/restore/artifact qualification stops at
+the nonempty-Redis preservation prerequisite. Clean installs/builds and six image
+builds pass separately. Security scanner exits and classifications remain distinct;
+final delivery-SHA security/CI observations accompany the private closure.
+All 30 rows and 48 scenarios remain pending, zero accepted; P3-10 is not started.
+See the [complete current traceability supplement](docs/implementation/PHASE_3_BOUNDED_TRACEABILITY_20261117.md).
+Historical records below retain their original source qualifications.
 
 ## Historical final local qualification, 16 November
 

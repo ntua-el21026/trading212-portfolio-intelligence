@@ -1,6 +1,17 @@
 # Phase 3 Mandatory Scenario Evidence
 
-## Current final local qualification, 16 November
+## Current bounded qualification, 17 November
+
+The [closed bounded report](PHASE_3_BOUNDED_QUALIFICATION_20261117.md) and
+[complete 78-item supplement](PHASE_3_BOUNDED_TRACEABILITY_20261117.md) bind actual
+commands, source manifests, tests, failures, focused recoveries and remaining gaps.
+Complete Python suites fail; native coverage passes separately. Admission and Web
+repeatability remain failed, with current browser and recovery prerequisites
+locally pending. All **30 acceptance rows** and **48 scenarios** remain formally
+pending, **zero accepted**. Independent owner acceptance and P3-10 remain separate.
+
+
+## Historical final local qualification, 16 November
 
 Phase 3 Checkpoint B remains incomplete. The final bare admission control exceeds its unchanged 750 ms limit. Back during a held account navigation fails on desktop, tablet and mobile before the required account-state checks. Web artifact repeatability and cumulative native coverage remain unresolved; configured SAST retains a nonzero scanner exit despite zero rule findings.
 

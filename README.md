@@ -7,15 +7,17 @@ valuation time, coverage and quality remain attached to results.
 
 ## Current status
 
-Phase 3 Checkpoint B remains incomplete. The bounded 17 November package retains
-failed admission measurements and unresolved Web artifact repeatability. A
-configured-SAST parser correction passes; genuine held-response Back journeys
-pass on desktop, tablet and mobile after a narrow account-intent correction.
-Complete Python/native coverage and remaining qualification are still pending.
-Known dependency advisories and original failed executions remain explicit.
+Phase 3 Checkpoint B remains incomplete. The SAST parser and account-intent
+corrections pass their focused checks, including genuine held-response Back on
+three viewports. Complete Python executions still fail; native branch-aware
+coverage passes at 88.05%, and 966 TypeScript tests pass. Admission and whole-tree
+Web repeatability remain failed. Complete current browser and restart/restore
+qualification retain explicit local prerequisites. Known dependency advisories,
+original failures and post-commit security observations remain separate.
 
 All **30 acceptance rows** and **48 scenarios** remain pending, **zero accepted**.
-See the [current bounded report](docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md)
+See the [current bounded report](docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md),
+the [current 78-item traceability](docs/implementation/PHASE_3_BOUNDED_TRACEABILITY_20261117.md),
 and [historical complete traceability](docs/implementation/PHASE_3_FINAL_LOCAL_TRACEABILITY_20261116.md).
 No complete current-SHA validation pass, Phase 3 acceptance or production readiness
 is claimed. P3-10, CI activation, real providers, production and distribution remain

@@ -5107,7 +5107,7 @@
   "checkpoint_b_bounded_qualification_20261117": {
     "date": "2026-11-17",
     "owner": "Michail Athanasios Peppas",
-    "status": "in_progress",
+    "status": "completed_with_failures",
     "checkpoint_b": "incomplete",
     "baseline_sha": "a9f4164225750312d0d3dd0e4440d9bf2a41890f",
     "implementation_report": "docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md",
@@ -5166,7 +5166,7 @@
       "status": "PASS",
       "checks": 6,
       "receipt": "native-copy-v3-qualification-02/receipt.json",
-      "complete_suite_execution": "pending",
+      "complete_suite_execution": "executed_failed",
       "uninspectable_process_absence_claimed": false
     },
     "next_dependency_advisory": {
@@ -5182,6 +5182,134 @@
       "status": "PASS",
       "receipt": "account-history-complete-static-01/receipt.json",
       "aggregate_make_validate_pass_claimed": false
+    },
+    "tested_implementation_sha": "55bf78ddc258bac0ae9c17abd2db672212bba78d",
+    "tested_implementation_tree": "469c19b5980682a1547866f917e048740c578fa5",
+    "traceability_report": "docs/implementation/PHASE_3_BOUNDED_TRACEABILITY_20261117.md",
+    "complete_suite_pass_claimed": false,
+    "complete_python": {
+      "status": "FAIL",
+      "source_sha": "55bf78ddc258bac0ae9c17abd2db672212bba78d",
+      "isolated": {
+        "passed": 6005,
+        "failed": 1,
+        "errors": 0,
+        "skipped": 0,
+        "exit_code": 1,
+        "receipt": "python-full-01-isolated/receipt.json"
+      },
+      "integration": {
+        "passed": 960,
+        "failed": 2,
+        "errors": 0,
+        "skipped": 0,
+        "exit_code": 1,
+        "receipt": "python-full-01-integration/receipt.json"
+      },
+      "original_controller_exit": 2,
+      "reporting_recovery_exit": 2
+    },
+    "native_coverage": {
+      "status": "PASS",
+      "source_sha": "55bf78ddc258bac0ae9c17abd2db672212bba78d",
+      "branch_aware_percent": 88.05021452407436,
+      "threshold": 70,
+      "complete_inputs_only": true,
+      "coverage_command_exits": [0, 0, 0, 0],
+      "metadata_postvalidation_exit": 0,
+      "receipt": "python-reporting-metadata-postvalidation-launch-01/receipt.json",
+      "underlying_complete_suites_passed": false
+    },
+    "typescript_complete": {
+      "status": "PASS",
+      "source_sha": "55bf78ddc258bac0ae9c17abd2db672212bba78d",
+      "passed": 966,
+      "files": 109,
+      "exit_code": 0,
+      "receipt": "typescript-complete-candidate-01/receipt.json"
+    },
+    "web_repeatability": {
+      "status": "FAIL",
+      "source_sha": "55bf78ddc258bac0ae9c17abd2db672212bba78d",
+      "comparison_exit": 1,
+      "web_differences": 277,
+      "python_differences": 0,
+      "common_content_differences": 239,
+      "membership_differences": 38,
+      "mode_differences": 0,
+      "type_differences": 0,
+      "receipt": "paired-current-v2-compare-01/receipt.json",
+      "contract_or_crypto_changed": false
+    },
+    "research_report_storage_failure": {
+      "status": "FAIL",
+      "original_complete_case": "storage_unavailable",
+      "focused_diagnostic": "PASS",
+      "original_cause": "unresolved_not_reproduced",
+      "fixture_or_production_changed": false,
+      "receipt": "acquired-storage-focused-diagnostic-01/receipt.json"
+    },
+    "clean_install_build": {
+      "status": "PASS",
+      "source_sha": "55bf78ddc258bac0ae9c17abd2db672212bba78d",
+      "component_operation_count": 8,
+      "receipt_directory": "clean-install-01",
+      "original_environment_preserved": true
+    },
+    "container_build": {
+      "status": "PASS",
+      "source_sha": "55bf78ddc258bac0ae9c17abd2db672212bba78d",
+      "images": 6,
+      "receipt": "candidate55bf-six-image-build-01/receipt.json",
+      "original_images_tags_preserved": true,
+      "distribution_authorized": false
+    },
+    "current_browser_matrix": {
+      "status": "PENDING_LOCAL",
+      "reason": "Unclosed pre-capture SDK/worker artifact privacy prerequisite; no current complete matrix execution or historical-build substitution."
+    },
+    "current_recovery_artifacts": {
+      "status": "PENDING_LOCAL",
+      "backup_prerequisite_exit": 1,
+      "task_redis_keys_preserved": 2,
+      "key_names_or_values_read": false,
+      "new_dump_restore_or_nine_service_restart_executed": false,
+      "receipt": "candidate55bf-task-backup-restore-v2-command-01/receipt.json",
+      "external_blocker_claimed": false
+    },
+    "dependency_audits": {
+      "python": {
+        "status": "PASS",
+        "packages": 67,
+        "skips": 0,
+        "vulnerabilities": 0,
+        "actual_exit": 0
+      },
+      "node": {
+        "status": "PASS",
+        "actual_exit": 0,
+        "threshold": "high",
+        "moderate": 1
+      },
+      "trivy": {
+        "status": "PASS_SCANNER_WITH_SEPARATE_OPERATOR_FAILURES",
+        "actual_full_scanner_exits": [0, 0],
+        "original_operator_exits": [2, 2],
+        "existing_observation_metadata_postvalidation_exit": 0,
+        "receipt": "candidate-dependency-trivy-existing-metadata-postvalidation-01/receipt.json"
+      }
+    },
+    "final_delivery_security": {
+      "status": "PENDING_LOCAL_AT_DOCUMENTATION_COMMIT",
+      "scope": "Exact committed delivery source/history and read-only workflow observations; actual post-commit receipts in private final closure.",
+      "historical_classifications_convert_failed_scanners_to_pass": false
+    },
+    "resource_preservation": {
+      "original_host_output_entries_restored": 593,
+      "original_venv_dependencies_images_volumes_and_archives_preserved": true,
+      "task_build_outputs_retained": true,
+      "task_redis_state_cleanup_deferred_to_preserve_unique_state": true,
+      "process_arguments_inspected": false
     }
   }
 }
