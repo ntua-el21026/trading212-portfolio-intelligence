@@ -8,6 +8,14 @@
 
 **Updated:** 2026-11-17
 
+## Current LOCAL/DEMO implementation
+
+The owner authorizes concurrent bounded stabilization and whole-application UI
+modernization under the [LOCAL/DEMO scope](docs/implementation/LOCAL_DEMO_SCOPE_20261117.md).
+Implementation is in progress; targeted validation and independent review are
+pending. Original Checkpoint B failures are retained below. No acceptance row,
+scenario, P3-10, CI, provider, production or distribution gate changes.
+
 ## Current bounded qualification, 17 November
 
 The [bounded qualification package](docs/implementation/PHASE_3_BOUNDED_QUALIFICATION_20261117.md)

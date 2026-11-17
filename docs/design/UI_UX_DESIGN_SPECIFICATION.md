@@ -1,6 +1,7 @@
 # Portfolio Intelligence — UI/UX Design Specification
 
-**Status:** DRAFT FOR OWNER REVIEW — documentation publication does not mean design approval, implementation, or phase acceptance.
+**Status:** authorized visual implementation reference for the LOCAL/DEMO milestone; independent acceptance pending.
+**Sequencing update, 17 November 2026:** [Owner-authorized scope](../implementation/LOCAL_DEMO_SCOPE_20261117.md) permits UI work while Checkpoint B remains INCOMPLETE. The original preparation snapshot below remains historical.
 **Prepared:** 2026-11-16.
 **Repository:** ntua-el21026/trading212-portfolio-intelligence.
 **Reference code snapshot:** GitHub `main` at `74a406149aa47d3b8bbe709a07d63a0f588803ad`. The detailed frontend inventory was read at ancestor `7c2828a`; the seven-commit GitHub comparison confirms that the only subsequent frontend source edit was the account-selector navigation correction. Re-inventory whichever `main` is live before implementing.
@@ -322,8 +323,9 @@ The future UI package is **not accepted** until each applicable requirement is e
 
 ## 12. Review status and next step
 
-This document is ready for owner review as a **non-authoritative design proposal**. It may be committed to `docs/design/` solely as planning documentation after the completed Codex package is independently checked for a safe repository handoff. Its presence on `main` does not approve implementation.
-
-The newly reported Checkpoint B has material unresolved admission, pending-navigation Back, configured SAST, Web repeatability and cumulative native coverage issues. No visual redesign work may begin until the owner/reviewer independently accepts the necessary preceding phase gate and separately authorizes the UI package.
-
-The accompanying roadmap defines phase gates. The accompanying Codex prompt is a **future-use candidate**; it cannot itself mark Checkpoint B accepted, authorize P3-10, or override security/financial requirements.
+The owner now authorizes implementation under the bounded
+[LOCAL/DEMO completion contract](../implementation/LOCAL_DEMO_SCOPE_20261117.md).
+This supersedes the original requirement to accept Checkpoint B before UI work.
+Independent UI review and all original Phase 3 acceptance requirements remain
+separate. Historical failures retain their source qualifications; P3-10, CI,
+providers, production and redistribution remain closed.

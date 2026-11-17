@@ -1,6 +1,6 @@
 # Phase 3 bounded Checkpoint B qualification, 17 November 2026
 
-**Owner:** Michail Athanasios Peppas  
+**Owner:** Michail Athanasios Peppas
 **State:** Bounded package closed with failures; Checkpoint B incomplete; independent acceptance pending.
 
 ## Authority and source

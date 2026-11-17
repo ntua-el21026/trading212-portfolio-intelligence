@@ -1,6 +1,8 @@
 # Codex Prompt — Gated, Whole-Application UI/UX Modernization
 
-**STATUS: PREPARED DRAFT — DO NOT SEND OR EXECUTE UNTIL THE OWNER/REVIEWER HAS CLEARED THE PREREQUISITES.**
+**STATUS: OWNER-AUTHORIZED LOCAL/DEMO IMPLEMENTATION, 17 November 2026.**
+
+The [current scope record](../implementation/LOCAL_DEMO_SCOPE_20261117.md) supersedes the original Checkpoint B-before-UI sequencing. Independent acceptance remains pending.
 
 The following prompt is designed to be copied into **one** Codex conversation after the three design documents have been reviewed and committed. The prompt's authorization is **limited to the explicitly approved UI package** and does not grant P3-10, CI, Live, provider, deployment, or distribution authority.
 
@@ -24,7 +26,7 @@ Before doing anything:
    - `UI_UX_DESIGN_SPECIFICATION.md`
    - `UI_IMPLEMENTATION_ROADMAP.md`
    - `UI_REDESIGN_CODEX_PROMPT.md`
-4. Confirm **in writing** that the preceding Checkpoint B has been **independently accepted**, not merely reported complete by Codex, and that the owner has separately authorized this UI work package and resolved any design-freeze conflict.
+4. Confirm the recorded owner authorization for concurrent LOCAL/DEMO stabilization and UI implementation. Checkpoint B remains INCOMPLETE; no acceptance or P3-10 authority follows.
 5. If any precondition is missing, disputed or contradicted by current evidence, **STOP WITHOUT EDITING**. Report exact source SHA, missing acceptance/authority, and the smallest safe owner decision needed. Do not equate `blocked_external` with unresolved local failures. This prompt is NOT P3-10 authorization.
 6. Verify there is no concurrent writer on `main` and that the local checkout is clean and synchronized. Never create a branch or PR, force-push, reset, rebase, amend published commits, or rewrite history. Use only coherent, validated, fast-forward commits directly to `main`.
 
@@ -123,7 +125,7 @@ Deliver evidence, not a claim. Keep existing quality gates intact and run all re
 5. Accessibility: keyboard traversal, dialog focus, sticky-header focus visibility, contrast, target sizing, error announcements, accessible names, non-color state cues, reduced motion and zoom.
 6. Responsive checks at representative desktop (~1440px), tablet (~768px), mobile (~390–432px), narrow 320px and 200% zoom. Ensure no page-level horizontal scrolling or hidden action controls.
 7. Synthetic screenshots of **all six reference areas** in both themes and desktop/tablet/mobile; representative additional route/deep-page/empty/error states. Each screenshot must have exact route, viewport, fixture, SHA and outcome metadata.
-8. Preserve and rerun applicable performance contracts including admission p95 ≤0.750s, read p95 ≤0.500s and ≤12 read SQL statements, browser LCP gates and any other then-authoritative thresholds, under unchanged source-qualified protocols. **Do not use UI redesign as a pretext to change these requirements.**
+8. Preserve original performance contracts and historical failures. Use targeted browser smoke checks for LOCAL/DEMO; do not repeat admission or multi-hour full qualification without renewed approval. The 0.750-second admission gate remains unchanged and may be nonblocking for Demo only.
 9. Check security scanner actual exit codes and finding classifications separately; a classified nonsecret finding is not a passing scanner. Record CI as disabled/unverified unless owner separately activates it.
 10. Evidence manifest: exact commands, exits, timings, source SHA, dependencies, failing cases, bounded recoveries, hashes and explicit `passed`/`failed`/`pending_local`/`blocked_external` states.
 
@@ -154,6 +156,7 @@ If a material failure persists, **STOP, REPORT INCOMPLETE, and preserve the evid
 
 ## Owner/reviewer usage note
 
-Do **not** send this prompt while Checkpoint B is still incomplete or while another writer is modifying `main`. The completed 16 November Checkpoint B package still reports material failures. The reviewer may publish these three documents as draft planning artifacts **without** authorizing implementation. Once the owner separately accepts the applicable phase and approves the UI package, copy only the text between the BEGIN/END markers to Codex.
-
-The UI modernization is a prerequisite to an aesthetically complete release **only if the owner chooses to include it in the release scope**. It is not a substitute for formal Phase 3/P3-10 acceptance or an authorization to use production credentials.
+The owner has explicitly authorized this LOCAL/DEMO package while Checkpoint B
+remains incomplete. Follow the current scope record and direct owner instructions
+if any older prompt language suggests broader qualification. Independent review,
+P3-10, CI, provider access, production and distribution remain separate decisions.

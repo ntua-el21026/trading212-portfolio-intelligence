@@ -4,6 +4,14 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### LOCAL/DEMO authorization, 17 November
+
+- Record owner authorization for concurrent UI modernization and bounded
+  stabilization; preserve Checkpoint B failures, original contracts and all
+  independent acceptance gates.
+- Replace obsolete design-draft sequencing prerequisites with the targeted
+  LOCAL/DEMO completion and verification contract.
+
 ### Bounded Checkpoint B qualification, 17 November
 
 - Preserve the failed final admission controls and bounded CPU/GC diagnostic;

@@ -1,6 +1,7 @@
 # Portfolio Intelligence — UI Redesign Implementation and Closeout Roadmap
 
-**Status:** DRAFT PLANNING ARTIFACT — not implementation authorization.
+**Status:** LOCAL/DEMO implementation authorized on 17 November 2026; independent review pending.
+**Current authority:** [Owner-authorized scope](../implementation/LOCAL_DEMO_SCOPE_20261117.md). Earlier snapshots below are historical.
 **Prepared:** 2026-11-16.
 **Related:** `UI_UX_DESIGN_SPECIFICATION.md` and `UI_REDESIGN_CODEX_PROMPT.md`.
 **Live snapshot inspected:** `main` `74a406149aa47d3b8bbe709a07d63a0f588803ad`. Earlier detailed frontend inspection used ancestor `7c2828a`; the subsequent diff was inspected and does not alter the enumerated route structure. Recheck the live SHA before any later implementation.
@@ -9,7 +10,7 @@
 
 The completed Phase 3 Checkpoint B report explicitly remains **INCOMPLETE**. The uninstrumented admission p95 is **0.832402193 seconds** against **0.750**; pending-navigation Back fails across desktop/tablet/mobile; configured SAST exits 3; Web repeatability reports 271 content/type/mode differences; cumulative native coverage remains pending. Historical aggregate suites retain their failures. All 30 Phase 3 acceptance rows and 48 scenarios remain pending, zero accepted; P3-10 is not started, and CI is owner-deferred. These are **reported results corroborated in published status documentation**, not independently rerun tests. **None of the design work below resolves or waives those existing gates.**
 
-The proposed UI modernization is a visually extensive but behavior-preserving change. It is not automatically included in a previously frozen Phase 3 baseline. The owner/reviewer must confirm its sequencing and any required additive design approval before coding starts.
+The proposed UI modernization is a visually extensive but behavior-preserving change. It is not automatically included in a previously frozen Phase 3 baseline. The owner has now explicitly authorized its LOCAL/DEMO implementation while Checkpoint B remains INCOMPLETE.
 
 ## 2. Gate sequence
 
@@ -19,12 +20,12 @@ The proposed UI modernization is a visually extensive but behavior-preserving ch
 | G1 — Running Codex handoff | Codex posts final output; current live/local `main` rechecked | Independently classify actual tests, security, performance, migrations, docs and failure receipts |
 | G2 — Checkpoint B disposition | Applicable full qualification and unchanged performance contract reviewed | Explicit Checkpoint B accepted, or retain INCOMPLETE; **current state is INCOMPLETE** |
 | G3 — Design document commit | Owner's advance instruction to publish after Codex finishes, plus safe synchronized `main` | One docs-only linear commit to `main` after repository and authority checks; files remain DRAFT and do not alter G2 |
-| G4 — UI implementation authorization | Checkpoint B accepted, design freeze/ADR interactions resolved, and owner approves the bounded UI package | A future Codex prompt may be executed; no P3-10, CI or provider authority implied |
-| G5 — UI implementation and qualification | Clean synchronized `main`, confirmed ZIP, complete route map and fixed tests | Full visual/functional/security/performance evidence on immutable UI SHA; no partial-pass aggregation |
+| G4 — UI implementation authorization | Explicit owner LOCAL/DEMO authorization recorded; financial/security authority preserved | A future Codex prompt may be executed; no P3-10, CI or provider authority implied |
+| G5 — UI implementation and qualification | Clean synchronized `main`, confirmed ZIP, complete route map and fixed tests | Targeted LOCAL/DEMO visual/functional/security/build evidence; original phase gates retained separately |
 | G6 — Independent UI review | Final SHA, receipts, screenshot matrix, complete test artifacts | Accept, reject or require scoped remediation |
 | G7 — P3-10 and project closeout | Separate explicit owner P3-10 authorization and all applicable prior gates | Release-candidate qualification and independently recorded acceptance; external gates reported honestly |
 
-**Safety rule:** G3 is an independent, documentation-only planning action and may occur while G2 remains INCOMPLETE. **G4/G5 remain closed** until G2 is explicitly accepted. Do not represent documentation publication as Checkpoint B acceptance. If the new design conflicts with accepted freeze documents, hold G3 until the owner approves a compatible additive clarification.
+**Safety rule:** G3 is an independent, documentation-only planning action and may occur while G2 remains INCOMPLETE. **G4/G5 are now authorized for LOCAL/DEMO only**, independently of G2, by the current owner instruction. Do not represent documentation publication as Checkpoint B acceptance. If the new design conflicts with accepted freeze documents, hold G3 until the owner approves a compatible additive clarification.
 
 ## 3. Prepared-document placement after the Codex handoff
 
@@ -101,7 +102,7 @@ Implement each with shared tokens, small reviewable commits and direct regressio
 
 ### U6 — Exact implementation-source validation
 
-- Record immutable implementation SHA before full suite execution. Execute existing relevant formatting, lint, typecheck, generated contracts, architecture/security, unit/property/contract/integration/migration, build, coverage, browser/API E2E, docs and existing performance checks according to active phase authority.
+- Record the exact implementation source. Run targeted LOCAL/DEMO formatting, lint, strict typing, generated-contract, architecture, security-critical, unit, build, documentation and representative browser/API checks. Complete multi-hour suites require renewed owner approval; record them NOT RUN. Original Phase 3 requirements and failed gates remain unchanged.
 - Re-run any failures after correction **without hiding original failure receipts**. If source changes, previous passing evidence is not silently promoted to final-SHA qualification.
 - Test actual data-quality states, authorization boundaries, exact ten GET allowlist, account scoping, exports and read-only broker behavior.
 - Run browser visual matrix in light/dark across desktop/tablet/mobile using synthetic fixtures only. Capture route, viewport, theme, timestamp, SHA and artifact hashes.
@@ -129,8 +130,8 @@ Implement each with shared tokens, small reviewable commits and direct regressio
 | UI-09 | Charts are responsive, semantically correct and theme-aware | Chart tests, visual screenshots, unit/tooltip checks |
 | UI-10 | Loading/partial/stale/unavailable/error paths render honestly | State fixture tests and screenshots |
 | UI-11 | Exports/downloads, report navigation and paginated collections retained | Existing E2E/negative tests |
-| UI-12 | Web build/type/lint/format, full required suites | Exact commands, exit codes, durations, source manifests |
-| UI-13 | Performance is not degraded and historical gates remain unchanged | Comparable full protocol results; never altered thresholds |
+| UI-12 | Web build/type/lint/format and targeted LOCAL/DEMO suites | Exact commands, exit codes, durations, source manifests |
+| UI-13 | Performance is not degraded and historical gates remain unchanged | Targeted browser observations and historical performance limitations; no new full admission experiment or altered thresholds |
 | UI-14 | Security/scanner findings and CI reported truthfully | Scanner exits/findings classification, statuses/workflows and owner gate |
 | UI-15 | New SVG/assets and dependencies have redistribution rights if shipped | Asset/dependency license inventory |
 
