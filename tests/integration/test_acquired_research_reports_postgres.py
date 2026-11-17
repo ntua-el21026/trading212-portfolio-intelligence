@@ -301,7 +301,9 @@ async def test_acquired_fx_complete_chain_preserves_authority_and_four_format_pr
         assert deadline is not None and deadline <= source.expires_at
     key = uuid4().hex
     pending = await generate(report, key=key)
-    finished = await complete(report, pending)
+    # The actual worker lease shares PostgreSQL's UTC clock. Keep the financial
+    # observation/cutoff fixture clock unchanged while real rendering takes time.
+    finished = await complete(report, pending, worker_clock=lambda: datetime.now(UTC))
     copied = await download_v3(
         report.reports, report.research.xray.principal, report.research.account_id, finished
     )

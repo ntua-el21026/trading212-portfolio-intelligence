@@ -4,6 +4,15 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Targeted report-fixture stabilization, 17 November
+
+- Give the real-time acquired research-report completion case an explicit UTC
+  worker clock while preserving logical source cutoffs and controlled-time tests.
+- Demonstrate PostgreSQL rejection of a lagging-clock stale claim, safe reclaim
+  and continued authorization/fence enforcement: nine focused database cases and
+  two fixture-clock unit cases pass. Preserve the original uncorrelated storage
+  failure as historical evidence; no production lease or migration changed.
+
 ### LOCAL/DEMO authorization, 17 November
 
 - Record owner authorization for concurrent UI modernization and bounded

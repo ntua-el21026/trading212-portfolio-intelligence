@@ -1,7 +1,8 @@
 """Actual normalized research grant, immutable revisions and existing four-format jobs."""
 
+from collections.abc import Callable
 from dataclasses import dataclass, replace
-from datetime import timedelta
+from datetime import datetime, timedelta
 from uuid import UUID, uuid4
 
 import pytest
@@ -249,10 +250,17 @@ def message(case: ResearchReportCase, status: app.ReportJobStatus) -> report_job
         )
 
 
-async def complete(case: ResearchReportCase, pending: app.ReportJobStatus) -> app.ReportJobStatus:
+async def complete(
+    case: ResearchReportCase,
+    pending: app.ReportJobStatus,
+    *,
+    worker_clock: Callable[[], datetime] | None = None,
+) -> app.ReportJobStatus:
+    """Preserve logical fixture time unless a real-time worker is explicitly selected."""
     state = await execute_report_message(
         PostgresReportJobStore(
-            case.research.xray.sessions, clock=lambda: case.research.xray.now[0]
+            case.research.xray.sessions,
+            clock=(lambda: case.research.xray.now[0]) if worker_clock is None else worker_clock,
         ),
         message(case, pending),
         consumer_id="research-report-test",
