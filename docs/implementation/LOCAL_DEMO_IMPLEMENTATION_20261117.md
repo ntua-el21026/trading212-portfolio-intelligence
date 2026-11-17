@@ -1,7 +1,7 @@
 # LOCAL/DEMO stabilization and UI implementation — 17 November 2026
 
 **Owner:** Michail Athanasios Peppas.
-**Current disposition:** LOCAL/DEMO MILESTONE ACCEPTED by the owner on 17 November 2026.
+**Current disposition:** LOCAL/DEMO COMPLETE — ACCEPTED — ARCHITECTURE FROZEN — PROJECT CLOSED by the owner on 17 November 2026.
 **Accepted delivery snapshot:** `cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`.
 **Original delivery disposition:** implementation complete; independent review pending at delivery.
 
@@ -233,13 +233,15 @@ At the prior f19 delivery, Gitleaks source/history exits were 1 (56 and 2 findin
 respectively); the high-confidence checker exited 1 with 14 reviewed nonsecret
 occurrences. Classifications do not turn those scans green. New complete
 scans were not automatically repeated. A changed-source check is separately scoped
-in the delivery index. Original security policies and LICENSE.md are unchanged.
+in the delivery index. At implementation delivery, security policies and LICENSE.md
+were unchanged; the later approved wording correction is recorded below.
 
 [Reproducibility and scanner proposals](../verification/LOCAL_DEMO_CONTRACT_PROPOSALS_20261117.md)
 require owner review before changing any accepted contract. Public source visibility
 is distinct from rights to redistribute dependencies, binaries or container images.
-The existing license-visibility wording proposal remains pending. No distribution
-or licensing grant was made. CI remains owner-deferred and unverified; workflows
+The owner subsequently approved and implemented the minimal [license-visibility
+wording correction](../verification/LICENSE-VISIBILITY-WORDING-PROPOSAL.md) at final
+LOCAL/DEMO closure. No distribution or licensing grant was made. CI remains owner-deferred and unverified; workflows
 are not activated. Provider credentials, paid services, hosted OAuth/MCP registration,
 production ownership, attestations and deployment remain separately gated.
 

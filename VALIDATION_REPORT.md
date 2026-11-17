@@ -2,7 +2,16 @@
 
 ## LOCAL/DEMO qualification, 17 November 2026
 
-**LOCAL/DEMO MILESTONE: ACCEPTED by the owner on 17 November 2026.**
+**LOCAL/DEMO: COMPLETE — ACCEPTED — ARCHITECTURE FROZEN — PROJECT CLOSED.**
+
+The owner's final closure follows independent review of consolidation `25d7b6e`;
+the reviewed implementation remains `cd2ff67`. The final license edit removes only
+“private and” from the descriptive sentence and grants no additional rights.
+Closure requires only bounded documentation/integrity checks; no new application
+qualification is claimed. Project-exclusive local evidence may be permanently
+removed under the owner's post-publication cleanup authorization. Historical
+results and hashes retain their original provenance without guaranteeing ongoing
+local availability.
 
 The [scoped acceptance](docs/implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md)
 records the coordinator's independent review of `cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`:

@@ -1,32 +1,30 @@
-# Public visibility and proprietary ownership — wording proposal
+# Public visibility and proprietary ownership — implemented wording decision
 
-**Status:** Proposed wording only; owner approval pending. `LICENSE.md` is unchanged.
+**Status:** Owner-approved and implemented on 17 November 2026.
 
-The repository is publicly visible on GitHub. Its current notice describes the
-materials as "private and proprietary", while README and SECURITY distinguish
-public visibility from proprietary ownership. The requested owner name remains
-**Michail Athanasios Peppas**.
+The owner approved the existing minimal descriptive correction in `LICENSE.md`:
+**“are private and proprietary”** becomes **“are proprietary”**. The repository
+is publicly visible; proprietary ownership and the name **Michail Athanasios Peppas**
+are preserved.
 
-## Minimal proposed change
+## Exact implemented change
 
-In the existing descriptive sentence, replace only **"private and proprietary"**
-with **"proprietary"**. The proposed sentence is:
+Only the two words **“private and”** were removed from the descriptive sentence:
 
 > This repository and all source code, documentation, designs, data models, tests,
 > assets, prompts, and related materials are proprietary.
 
-The title, copyright notice, prior-written-authorization requirement, restrictions
-on use/copying/modification/distribution and the dependency-license paragraph
-remain verbatim. No open-source license, additional reuse grant, binary/image
-distribution permission or changed third-party obligation is proposed.
+The title, copyright notice, all-rights-reserved statement, prior-written-
+authorization requirement, restrictions and third-party dependency paragraph
+remain unchanged. No new use, modification, redistribution, deployment or
+commercial right is granted.
 
-Public GitHub visibility and platform view/fork terms are distinct from a project
-reuse license; see [GitHub's licensing guidance](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository).
-Existing third-party notices, including
-[the report font notice](../../apps/worker/src/trading212_worker/report_assets/LICENSE),
-remain intact and applicable. This proposal does not replace those notices or
-resolve binary/dependency compatibility questions.
+Public GitHub visibility and platform view/fork terms remain distinct from a
+project reuse license; see [GitHub's licensing guidance](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository).
+Existing third-party notices, including [the report font notice](../../apps/worker/src/trading212_worker/report_assets/LICENSE),
+remain applicable. Provider-data rights, dependency compatibility, binary/container
+redistribution and deployment rights remain separately governed and unresolved.
 
-An owner decision is required before applying even this descriptive edit. Batch 1
-does not authorize a change to licensing grants or obligations. Public dependency,
-binary or container redistribution remains a separate rights review and decision.
+The [LOCAL/DEMO closure record](../implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md#project-closure)
+records the owner's final decision. This wording correction changes no broader
+licensing grant or obligation.

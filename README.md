@@ -10,7 +10,9 @@ source evidence, methodology, coverage and data-quality state. The implementatio
 connects brokerage ingestion and financial accounting to saved analyses, research
 notes, manual planning and private reports.
 
-**The [LOCAL/DEMO milestone was accepted on 17 November 2026](docs/implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md).** The
+**LOCAL/DEMO: COMPLETE — ACCEPTED — ARCHITECTURE FROZEN — PROJECT CLOSED.**
+The [owner acceptance and closure](docs/implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md)
+were recorded on 17 November 2026. The
 [accepted architecture baseline](docs/DESIGN_FREEZE_LOCAL_DEMO_20261117.md)
 defines the completed synthetic demonstration and local implementation scope.
 External-provider and production qualification remain separate.
@@ -195,7 +197,8 @@ for either demonstration.
 
 ## Status and qualification boundaries
 
-The owner has accepted the LOCAL/DEMO implementation and architecture baseline.
+The owner has accepted and formally closed the LOCAL/DEMO project, preserving its
+reviewed implementation and architecture baseline.
 Broader Phase 3 qualification remains separate: Checkpoint B is incomplete, all
 30 acceptance rows and 48 scenarios remain pending with zero accepted, and P3-10
 is unstarted. CI remains disabled/unverified; real-provider activation, Live access

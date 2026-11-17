@@ -10,7 +10,7 @@
 
 ## Accepted LOCAL/DEMO milestone
 
-**LOCAL/DEMO MILESTONE: ACCEPTED — 17 November 2026.**
+**LOCAL/DEMO: COMPLETE — ACCEPTED — ARCHITECTURE FROZEN — PROJECT CLOSED.**
 
 The owner accepts snapshot `cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`
 after a scoped independent review. The [acceptance record](docs/implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md)
@@ -19,7 +19,13 @@ and two Python fixture-clock passes, plus passing scoped type/lint/docs checks,
 from the original implementation executions below. The reviewed architecture is
 recorded in the [accepted LOCAL/DEMO freeze](docs/DESIGN_FREEZE_LOCAL_DEMO_20261117.md).
 Implementation is complete within this bounded scope; no new implementation phase
-is underway. Formal project closure awaits the owner's consolidation review.
+is underway. The owner completed the consolidation review at `25d7b6e` and
+formally closed the LOCAL/DEMO project on 17 November 2026. The reviewed
+implementation remains `cd2ff67`; the final closure commit is documentation only.
+The minimal license-visibility wording is owner-approved and implemented without
+changing rights. Permanent removal of verified project-exclusive local resources,
+including private evidence, is authorized after GitHub publication checks pass;
+unclassified or shared resources remain protected.
 
 The [implementation and qualification report](docs/implementation/LOCAL_DEMO_IMPLEMENTATION_20261117.md)
 records the owner-authorized reduced milestone at implementation `e1e8da7` (broader UI evidence at `65d1d0d`).

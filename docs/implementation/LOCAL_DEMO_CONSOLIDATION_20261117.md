@@ -7,8 +7,11 @@
 
 Trading 212 Portfolio Intelligence is an owner-accepted, architecture-frozen
 LOCAL/DEMO software-engineering portfolio project with a professionally documented
-implementation and explicitly bounded qualification. Formal project closure
-remains an owner decision after review of this consolidation.
+implementation and explicitly bounded qualification. At consolidation delivery,
+formal project closure awaited owner review. The owner has since completed that
+review and [closed the LOCAL/DEMO project](LOCAL_DEMO_ACCEPTANCE_20261117.md#project-closure),
+with the separately approved license wording correction implemented. The execution
+tables and changed-file inventory below retain their historical consolidation scope.
 
 ## Acceptance and evidence
 
@@ -99,13 +102,13 @@ changed, so no application regression run was required by the authorized scope.
 | Real providers, Live, production, hosted registration | Separate external prerequisites and owner authorization required |
 | Redis and retained resources | Two unclassified keys, original databases/volumes/images/environments and evidence preserved; no cleanup performed |
 | Semantic reproducibility/scanner proposals | [Proposed only](../verification/LOCAL_DEMO_CONTRACT_PROPOSALS_20261117.md); acceptance does not approve them |
-| License visibility / redistribution | [Wording proposal](../verification/LICENSE-VISIBILITY-WORDING-PROPOSAL.md) pending; `LICENSE.md` unchanged; dependency/binary/container rights unresolved |
+| License visibility / redistribution | Minimal [wording correction](../verification/LICENSE-VISIBILITY-WORDING-PROPOSAL.md) subsequently approved and implemented at closure; dependency/binary/container rights unresolved |
 
-The public GitHub metadata was read to confirm public visibility. The license's
-“private and proprietary” wording remains an explicitly documented presentation
-inconsistency pending owner approval of the existing minimal proposal. Source
-visibility does not authorize reuse, provider-data redistribution or binary/image
-publication.
+The public GitHub metadata was read to confirm public visibility. At consolidation
+delivery the license's “private and proprietary” wording awaited an owner decision;
+the owner has since approved and implemented the minimal descriptive correction.
+Source visibility does not authorize reuse, provider-data redistribution or
+binary/image publication.
 
 ## Complete changed-file inventory
 

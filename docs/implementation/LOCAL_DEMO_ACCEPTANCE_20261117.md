@@ -1,6 +1,6 @@
 # LOCAL/DEMO owner acceptance — 17 November 2026
 
-**Status:** Accepted, for the LOCAL/DEMO milestone only.
+**Status:** COMPLETE — ACCEPTED — ARCHITECTURE FROZEN — PROJECT CLOSED, for LOCAL/DEMO only.
 **Owner:** Michail Athanasios Peppas.
 **Acceptance date:** 17 November 2026.
 **Reviewed snapshot:** `cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`.
@@ -69,13 +69,34 @@ without fresh dedicated browser journeys, fixed-dark offline fallback, unclassif
 Redis keys and deferred full qualification remain visible in the
 [limitations record](LOCAL_DEMO_IMPLEMENTATION_20261117.md) and
 [contract proposals](../verification/LOCAL_DEMO_CONTRACT_PROPOSALS_20261117.md).
-Acceptance does not approve those proposed policy changes or amend licensing.
-The public repository's `LICENSE.md` still describes the materials as “private
-and proprietary”; the [minimal visibility-wording proposal](../verification/LICENSE-VISIBILITY-WORDING-PROPOSAL.md)
-remains unapproved. Proprietary ownership, source visibility and permission to
-redistribute dependencies, binaries or containers remain distinct.
+Acceptance does not approve the proposed reproducibility or scanner-policy changes.
+The owner separately approved and implemented the [minimal license-visibility
+wording correction](../verification/LICENSE-VISIBILITY-WORDING-PROPOSAL.md).
+Proprietary ownership, source visibility and permission to redistribute
+dependencies, provider data, binaries or containers remain distinct.
 
 Future material architectural changes require an explicit new owner decision and
-the existing ADR process. Formal project closure remains an owner decision after
-review of the documentation consolidation; no further implementation phase is
-started by this record.
+the existing ADR process. No further implementation phase is started by this record.
+
+## Project closure
+
+On 17 November 2026 the owner completed the independent review of documentation
+consolidation `25d7b6e17548ba794c20f5cdd3d41a83f672e8a4` and formally closed the
+accepted LOCAL/DEMO project. The reviewed implementation remains
+`cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`; the accepted architecture freeze is
+unchanged. The final documentation/license commit does not replace that baseline.
+
+**LOCAL/DEMO: COMPLETE — ACCEPTED — ARCHITECTURE FROZEN — PROJECT CLOSED.**
+
+The owner authorizes permanent removal of verified project-exclusive local source,
+environments, build outputs, caches, temporary resources and private evidence,
+including archives not held on GitHub, only after successful publication and
+integrity verification. Historical archive hashes and execution receipts in
+published reports identify the original evidence; they do not guarantee continuing
+local availability after this authorized cleanup. Private evidence is not uploaded.
+Shared resources and unclassified Redis data remain protected.
+
+Closure does not accept Checkpoint B, the 30 Phase 3 rows or the 48 scenarios.
+Those items remain incomplete/pending with zero formal acceptances. P3-10 is
+unstarted; CI remains disabled/unverified, real-provider qualification is not
+completed, and production/Live and redistribution remain separately gated.

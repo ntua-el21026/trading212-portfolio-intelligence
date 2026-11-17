@@ -20,7 +20,9 @@ This file is the entry point for architecture, implementation, and review.
 | What remains outside the accepted scope? | [Status](../PROJECT_STATUS.md), [formal Phase 3 traceability](implementation/LOCAL_DEMO_TRACEABILITY_20261117.md) and [unapproved contract proposals](verification/LOCAL_DEMO_CONTRACT_PROPOSALS_20261117.md) |
 
 The LOCAL/DEMO milestone is owner-accepted at `cd2ff67`; the additive freeze records
-that implemented baseline. Phase 3 Checkpoint B remains incomplete; its 30 rows
+that implemented baseline. The owner has completed the consolidation review and
+[closed the LOCAL/DEMO project](implementation/LOCAL_DEMO_ACCEPTANCE_20261117.md#project-closure).
+Phase 3 Checkpoint B remains incomplete; its 30 rows
 and 48 scenarios remain pending, zero accepted. The foundation freezes and accepted
 ADRs continue to govern their contracts. Implementation reports preserve dated
 observations, including failures. Historical UI drafts and prompts under

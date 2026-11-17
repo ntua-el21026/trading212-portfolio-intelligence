@@ -4,6 +4,20 @@ All notable project changes are recorded here. The project follows semantic vers
 
 ## [Unreleased]
 
+### Final LOCAL/DEMO project closure, 17 November 2026
+
+- Record the owner's completed independent consolidation review and formal closure:
+  COMPLETE — ACCEPTED — ARCHITECTURE FROZEN — PROJECT CLOSED, for LOCAL/DEMO only.
+- Preserve reviewed implementation `cd2ff67`, the accepted architecture freeze,
+  historical results, 30 pending Phase 3 rows and 48 pending scenarios, zero
+  formally accepted Phase 3 items, and separate external/CI/production gates.
+- Implement the exact owner-approved license wording change from “are private and
+  proprietary” to “are proprietary”; preserve every substantive restriction and
+  third-party obligation. Broader redistribution and provider-data rights remain separate.
+- Record authorization for permanent removal of verified project-exclusive local
+  resources and private evidence after successful GitHub publication checks,
+  protecting shared resources and unclassified Redis data.
+
 ### Accepted LOCAL/DEMO baseline and documentation consolidation, 17 November
 
 - Record the owner's bounded acceptance of `cd2ff67`, with the coordinator's

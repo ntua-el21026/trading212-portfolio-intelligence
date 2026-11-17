@@ -2,7 +2,7 @@
 
 **Owner:** Michail Athanasios Peppas. **Recorded:** 17 November 2026.
 **Starting main:** `f19caa1153b0cf3acc41c47aba3a773b888741ff`.
-**State:** implementation complete; LOCAL/DEMO accepted by the owner on 17 November 2026.
+**State:** COMPLETE — ACCEPTED — ARCHITECTURE FROZEN — PROJECT CLOSED, by owner decision on 17 November 2026.
 **Accepted snapshot:** `cd2ff67be870983b4a321d49b8d33bdc68d8ed2d`.
 
 The [scoped acceptance record](LOCAL_DEMO_ACCEPTANCE_20261117.md) records the

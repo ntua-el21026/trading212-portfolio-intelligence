@@ -32,5 +32,20 @@
   },
   "ci_status": "disabled_unverified",
   "production_readiness": "not_authorized",
-  "distribution_rights": "pending_owner_decision"
+  "distribution_rights": "pending_owner_decision",
+  "project_closure": {
+    "status": "closed",
+    "scope": "local_demo_only",
+    "date": "2026-11-17",
+    "owner_review_status": "complete",
+    "reviewed_consolidation_sha": "25d7b6e17548ba794c20f5cdd3d41a83f672e8a4",
+    "reviewed_implementation_sha": "cd2ff67be870983b4a321d49b8d33bdc68d8ed2d",
+    "project_exclusive_local_cleanup": "owner_authorized_after_verified_publication",
+    "private_evidence_permanent_removal_authorized": true
+  },
+  "license_visibility_wording": {
+    "status": "owner_approved_implemented",
+    "date": "2026-11-17",
+    "rights_changed": false
+  }
 }
